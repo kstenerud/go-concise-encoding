@@ -1,10 +1,26 @@
 package cbe
 
-import "bytes"
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
+// TODO:
+// - Array: too many or too few bytes
+// - Array: Tried to start different data type before completion
+// - Array: Concenience functions
+// - Comment: invalid characters
+// - String: 0-15, more bytes
+// - String: invalid characters
+// - Container: Unbalanced containers
+// - Container: Unterminated container
+// - Container: Max depth exceeded
+// - Map: Bad key
+// - Map: Missing value
+// - Readme examples
+// - Spec examples?
 
-func assertEncoded(t* testing.T, encoder *Encoder, expected []byte) {
+func assertEncoded(t *testing.T, encoder *Encoder, expected []byte) {
 	actual := encoder.Encoded()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
@@ -12,12 +28,12 @@ func assertEncoded(t* testing.T, encoder *Encoder, expected []byte) {
 }
 
 func TestPadding(t *testing.T) {
-	assertEncoded(t, New(9).Padding(1),[]byte{127})
-	assertEncoded(t, New(9).Padding(2),[]byte{127, 127})
+	assertEncoded(t, New(9).Padding(1), []byte{127})
+	assertEncoded(t, New(9).Padding(2), []byte{127, 127})
 }
 
 func TestNil(t *testing.T) {
-	assertEncoded(t, New(9).Nil(),[]byte{126})
+	assertEncoded(t, New(9).Nil(), []byte{126})
 }
 
 func TestIntSmall(t *testing.T) {
@@ -67,13 +83,14 @@ func TestFloat64(t *testing.T) {
 func TestList(t *testing.T) {
 	assertEncoded(t, New(9).ListBegin(), []byte{0x93})
 	assertEncoded(t, New(9).ListBegin().ListEnd(), []byte{0x93, 0x95})
-	// TODO: More
+	assertEncoded(t, New(9).ListBegin().Int(1).String("a").ListEnd(), []byte{0x93, 0x01, 0x81, 0x61, 0x95})
 }
 
 func TestMap(t *testing.T) {
 	assertEncoded(t, New(9).MapBegin(), []byte{0x94})
 	assertEncoded(t, New(9).MapBegin().ListEnd(), []byte{0x94, 0x95})
-	// TODO: More
+	assertEncoded(t, New(9).MapBegin().String("1").Uint(1).String("2").Uint(2).ListEnd(),
+		[]byte{0x94, 0x81, 0x31, 0x01, 0x81, 0x32, 0x02, 0x95})
 }
 
 func TestBinary(t *testing.T) {

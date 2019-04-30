@@ -1,16 +1,30 @@
 /*
-*/
+ */
 package cbe
 
-import "math"
-import "time"
-import "github.com/kstenerud/go-smalltime"
+import (
+	"math"
+	"time"
 
-const
-(
-    maxValue6Bit int64 = 0x3f
-    maxValue14Bit int64 = 0x3fff
-    maxValue30Bit int64 = 0x3fffffff
+	// "github.com/ericlagergren/decimal"
+	"github.com/kstenerud/go-smalltime"
+	// "github.com/mewmew/float"
+	// "github.com/shabbyrobe/go-num"
+)
+
+const (
+	maxValue6Bit  int64 = 0x3f
+	maxValue14Bit int64 = 0x3fff
+	maxValue30Bit int64 = 0x3fffffff
+)
+
+type arrayType int
+
+const (
+	arrayTypeNone arrayType = iota
+	arrayTypeBinary
+	arrayTypeString
+	arrayTypeComment
 )
 
 func is6BitLength(value int64) bool {
@@ -25,31 +39,30 @@ func is30BitLength(value int64) bool {
 	return value <= maxValue30Bit
 }
 
-func fitsInSmall(value int64) bool {
+func intFitsInSmallint(value int64) bool {
 	return value >= smallIntMin && value <= smallIntMax
 }
 
-func uintFitsInSmall(value uint64) bool {
+func uintFitsInSmallint(value uint64) bool {
 	return value <= uint64(smallIntMax)
 }
 
-func fitsInUInt8(value uint64) bool {
+func fitsInUint8(value uint64) bool {
 	return value <= math.MaxUint8
 }
 
-func fitsInUInt16(value uint64) bool {
+func fitsInUint16(value uint64) bool {
 	return value <= math.MaxUint16
 }
 
-func fitsInUInt32(value uint64) bool {
+func fitsInUint32(value uint64) bool {
 	return value <= math.MaxUint32
 }
 
 type Encoder struct {
 	maxContainerDepth int
-	// TODO: this is insufficient
-	isInArray bool
-	encoded []byte
+	arrayType         arrayType
+	encoded           []byte
 }
 
 func New(maxContainerDepth int) *Encoder {
@@ -59,64 +72,61 @@ func New(maxContainerDepth int) *Encoder {
 	return encoder
 }
 
-func (encoder *Encoder) addBytes(bytes []byte) *Encoder {
+func (encoder *Encoder) addBytes(bytes []byte) {
 	encoder.encoded = append(encoder.encoded, bytes...)
-	return encoder
 }
 
-func (encoder *Encoder) addPrimitive8(value byte) *Encoder {
+func (encoder *Encoder) addPrimitive8(value byte) {
 	encoder.encoded = append(encoder.encoded, value)
-	return encoder
 }
 
-func (encoder *Encoder) addPrimitive16(value uint16) *Encoder {
-	return encoder.addBytes([]byte{byte(value), byte(value>>8)})
+func (encoder *Encoder) addPrimitive16(value uint16) {
+	encoder.addBytes([]byte{byte(value), byte(value >> 8)})
 }
 
-func (encoder *Encoder) addPrimitive32(value uint32) *Encoder {
-	return encoder.addBytes([]byte{
-			byte(value), byte(value>>8),
-			byte(value>>16), byte(value>>24),
-		})
+func (encoder *Encoder) addPrimitive32(value uint32) {
+	encoder.addBytes([]byte{
+		byte(value), byte(value >> 8),
+		byte(value >> 16), byte(value >> 24),
+	})
 }
 
-func (encoder *Encoder) addPrimitive64(value uint64) *Encoder {
-	return encoder.addBytes([]byte{
-			byte(value), byte(value>>8), byte(value>>16),
-			byte(value>>24), byte(value>>32), byte(value>>40),
-			byte(value>>48), byte(value>>56),
-		})
+func (encoder *Encoder) addPrimitive64(value uint64) {
+	encoder.addBytes([]byte{
+		byte(value), byte(value >> 8), byte(value >> 16),
+		byte(value >> 24), byte(value >> 32), byte(value >> 40),
+		byte(value >> 48), byte(value >> 56),
+	})
 }
 
-func (encoder *Encoder) addType(typeValue typeField) *Encoder {
-	return encoder.addPrimitive8(byte(typeValue))
+func (encoder *Encoder) addType(typeValue typeField) {
+	encoder.addPrimitive8(byte(typeValue))
 }
 
-func (encoder *Encoder) addArrayLength(length int64) *Encoder {
+func (encoder *Encoder) addArrayLength(length int64) {
 	switch {
 	case is6BitLength(length):
-		return encoder.addPrimitive8(byte(length << 2 | length6Bit))
+		encoder.addPrimitive8(byte(length<<2 | length6Bit))
 	case is14BitLength(length):
-		return encoder.addPrimitive16(uint16(length << 2 | length14Bit))
+		encoder.addPrimitive16(uint16(length<<2 | length14Bit))
 	case is30BitLength(length):
-		return encoder.addPrimitive32(uint32(length << 2 | length30Bit))
+		encoder.addPrimitive32(uint32(length<<2 | length30Bit))
 	default:
-		return encoder.addPrimitive64(uint64(length << 2 | length62Bit))
+		encoder.addPrimitive64(uint64(length<<2 | length62Bit))
 	}
 }
 
-func (encoder *Encoder) enterArray() *Encoder {
-	// TODO: sanity checks
-	encoder.isInArray = true
-	return encoder
+func (encoder *Encoder) enterArray(newArrayType arrayType) {
+	// TODO: Rework API a bit so that String() etc don't have dual meanings
+	if encoder.arrayType != arrayTypeNone && encoder.arrayType != newArrayType {
+		panic("Cannot start new array when already in an array")
+	}
+	encoder.arrayType = newArrayType
 }
 
-func (encoder *Encoder) leaveArray() *Encoder {
-	// TODO: sanity checks
-	encoder.isInArray = false
-	return encoder
+func (encoder *Encoder) leaveArray() {
+	encoder.arrayType = arrayTypeNone
 }
-
 
 func (encoder *Encoder) Padding(byteCount int) *Encoder {
 	for i := 0; i < byteCount; i++ {
@@ -126,126 +136,161 @@ func (encoder *Encoder) Padding(byteCount int) *Encoder {
 }
 
 func (encoder *Encoder) Nil() *Encoder {
-	return encoder.addType(typeNil)
+	encoder.addType(typeNil)
+	return encoder
 }
 
-func (encoder *Encoder) UInt(value uint64) *Encoder {
+func (encoder *Encoder) Uint(value uint64) *Encoder {
 	switch {
-	case uintFitsInSmall(value):
-		return encoder.addPrimitive8(byte(value))
-	case fitsInUInt8(value):
-		return encoder.addType(typePosInt8).addPrimitive8(uint8(value))
-	case fitsInUInt16(value):
-		return encoder.addType(typePosInt16).addPrimitive16(uint16(value))
-	case fitsInUInt32(value):
-		return encoder.addType(typePosInt32).addPrimitive32(uint32(value))
+	case uintFitsInSmallint(value):
+		encoder.addPrimitive8(byte(value))
+	case fitsInUint8(value):
+		encoder.addType(typePosInt8)
+		encoder.addPrimitive8(uint8(value))
+	case fitsInUint16(value):
+		encoder.addType(typePosInt16)
+		encoder.addPrimitive16(uint16(value))
+	case fitsInUint32(value):
+		encoder.addType(typePosInt32)
+		encoder.addPrimitive32(uint32(value))
 	default:
-		return encoder.addType(typePosInt64).addPrimitive64(value)
+		encoder.addType(typePosInt64)
+		encoder.addPrimitive64(value)
 	}
+	return encoder
 }
 
 func (encoder *Encoder) Int(value int64) *Encoder {
 	if value >= 0 {
-		return encoder.UInt(uint64(value))
+		encoder.Uint(uint64(value))
+		return encoder
 	}
 
-	uvalue := uint64(-value);
+	uvalue := uint64(-value)
 
 	switch {
-	case fitsInSmall(value):
-		return encoder.addPrimitive8(byte(value))
-	case fitsInUInt8(uvalue):
-		return encoder.addType(typeNegInt8).addPrimitive8(uint8(uvalue))
-	case fitsInUInt16(uvalue):
-		return encoder.addType(typeNegInt16).addPrimitive16(uint16(uvalue))
-	case fitsInUInt32(uvalue):
-		return encoder.addType(typeNegInt32).addPrimitive32(uint32(uvalue))
+	case intFitsInSmallint(value):
+		encoder.addPrimitive8(byte(value))
+	case fitsInUint8(uvalue):
+		encoder.addType(typeNegInt8)
+		encoder.addPrimitive8(uint8(uvalue))
+	case fitsInUint16(uvalue):
+		encoder.addType(typeNegInt16)
+		encoder.addPrimitive16(uint16(uvalue))
+	case fitsInUint32(uvalue):
+		encoder.addType(typeNegInt32)
+		encoder.addPrimitive32(uint32(uvalue))
 	default:
-		return encoder.addType(typeNegInt64).addPrimitive64(uvalue)
+		encoder.addType(typeNegInt64)
+		encoder.addPrimitive64(uvalue)
 	}
+	return encoder
 }
 
 func (encoder *Encoder) Float(value float64) *Encoder {
 	asfloat32 := float32(value)
 	if float64(asfloat32) == value {
-		return encoder.addType(typeFloat32).addPrimitive32(math.Float32bits(asfloat32))
+		encoder.addType(typeFloat32)
+		encoder.addPrimitive32(math.Float32bits(asfloat32))
+	} else {
+		encoder.addType(typeFloat64)
+		encoder.addPrimitive64(math.Float64bits(value))
 	}
-	return encoder.addType(typeFloat64).addPrimitive64(math.Float64bits(value))
+	return encoder
 }
 
 func (encoder *Encoder) Time(value time.Time) *Encoder {
-	return encoder.addType(typeTime).addPrimitive64(uint64(smalltime.FromTime(value)))
+	encoder.addType(typeTime)
+	encoder.addPrimitive64(uint64(smalltime.FromTime(value)))
+	return encoder
 }
 
 func (encoder *Encoder) ListBegin() *Encoder {
-	return encoder.addType(typeList)
+	encoder.addType(typeList)
+	return encoder
 }
 
 func (encoder *Encoder) endContainer() *Encoder {
-	return encoder.addType(typeEndContainer)
+	encoder.addType(typeEndContainer)
+	return encoder
 }
 
 func (encoder *Encoder) ListEnd() *Encoder {
-	return encoder.endContainer()
+	encoder.endContainer()
+	return encoder
 }
 
 func (encoder *Encoder) MapBegin() *Encoder {
-	return encoder.addType(typeMap)
+	encoder.addType(typeMap)
+	return encoder
 }
 
 func (encoder *Encoder) MapEnd() *Encoder {
-	return encoder.endContainer()
+	encoder.endContainer()
+	return encoder
 }
 
 func (encoder *Encoder) BinaryBegin(length int64) *Encoder {
-	return encoder.enterArray().addType(typeBinary).addArrayLength(length)
+	encoder.enterArray(arrayTypeBinary)
+	encoder.addType(typeBinary)
+	encoder.addArrayLength(length)
+	return encoder
 }
 
 func (encoder *Encoder) Binary(value []byte) *Encoder {
-	wasInArray := encoder.isInArray
+	wasInArray := encoder.arrayType != arrayTypeNone
 	if !wasInArray {
 		encoder.BinaryBegin(int64(len(value)))
 	}
 	encoder.addBytes(value)
 	if !wasInArray {
-		return encoder.BinaryEnd()
+		encoder.BinaryEnd()
 	}
 	return encoder
 }
 
 func (encoder *Encoder) BinaryEnd() *Encoder {
-	return encoder.leaveArray()
+	encoder.leaveArray()
+	return encoder
 }
 
 func (encoder *Encoder) StringBegin(length int64) *Encoder {
-	if(length <= 15) {
-		return encoder.addType(typeString0 + typeField(length))
+	encoder.enterArray(arrayTypeString)
+	if length <= 15 {
+		encoder.addType(typeString0 + typeField(length))
+	} else {
+		encoder.addType(typeString)
+		encoder.addArrayLength(length)
 	}
-	return encoder.enterArray().addType(typeString).addArrayLength(length)
+	return encoder
 }
 
 func (encoder *Encoder) String(value string) *Encoder {
-	// TODO: Differentiate the array types, sanity checks
-	wasInArray := encoder.isInArray
+	wasInArray := encoder.arrayType != arrayTypeNone
 	if !wasInArray {
 		encoder.StringBegin(int64(len(value)))
 	}
 	encoder.addBytes([]byte(value))
 	if !wasInArray {
-		return encoder.StringEnd()
+		encoder.StringEnd()
 	}
 	return encoder
 }
 
 func (encoder *Encoder) StringEnd() *Encoder {
-	return encoder.leaveArray()
+	encoder.leaveArray()
+	return encoder
 }
 
 func (encoder *Encoder) Comment(value string) *Encoder {
-	return encoder.addType(typeComment).addArrayLength(int64(len(value))).addBytes([]byte(value))
+	encoder.enterArray(arrayTypeComment)
+	encoder.addType(typeComment)
+	encoder.addArrayLength(int64(len(value)))
+	encoder.addBytes([]byte(value))
+	encoder.leaveArray()
+	return encoder
 }
 
 func (encoder *Encoder) Encoded() []byte {
 	return encoder.encoded
 }
-
