@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	maxValue6Bit  int64 = 0x3f
-	maxValue14Bit int64 = 0x3fff
-	maxValue30Bit int64 = 0x3fffffff
+	maxValue6Bit  uint64 = 0x3f
+	maxValue14Bit uint64 = 0x3fff
+	maxValue30Bit uint64 = 0x3fffffff
 )
 
 type arrayType int
@@ -27,15 +27,15 @@ const (
 	arrayTypeComment
 )
 
-func is6BitLength(value int64) bool {
+func is6BitLength(value uint64) bool {
 	return value <= maxValue6Bit
 }
 
-func is14BitLength(value int64) bool {
+func is14BitLength(value uint64) bool {
 	return value <= maxValue14Bit
 }
 
-func is30BitLength(value int64) bool {
+func is30BitLength(value uint64) bool {
 	return value <= maxValue30Bit
 }
 
@@ -103,7 +103,7 @@ func (encoder *Encoder) addType(typeValue typeField) {
 	encoder.addPrimitive8(byte(typeValue))
 }
 
-func (encoder *Encoder) addArrayLength(length int64) {
+func (encoder *Encoder) addArrayLength(length uint64) {
 	switch {
 	case is6BitLength(length):
 		encoder.addPrimitive8(byte(length<<2 | length6Bit))
@@ -230,31 +230,28 @@ func (encoder *Encoder) MapEnd() *Encoder {
 	return encoder
 }
 
-func (encoder *Encoder) BinaryBegin(length int64) *Encoder {
+func (encoder *Encoder) BinaryBegin(length uint64) *Encoder {
 	encoder.enterArray(arrayTypeBinary)
 	encoder.addType(typeBinary)
 	encoder.addArrayLength(length)
 	return encoder
 }
 
+func (encoder *Encoder) BinaryData(value []byte) *Encoder {
+	// TODO: sanity checks
+	encoder.addBytes([]byte(value))
+	// TODO: If all bytes written
+	if true {
+		encoder.leaveArray()
+	}
+	return encoder
+}
+
 func (encoder *Encoder) Binary(value []byte) *Encoder {
-	wasInArray := encoder.arrayType != arrayTypeNone
-	if !wasInArray {
-		encoder.BinaryBegin(int64(len(value)))
-	}
-	encoder.addBytes(value)
-	if !wasInArray {
-		encoder.BinaryEnd()
-	}
-	return encoder
+	return encoder.BinaryBegin(uint64(len(value))).BinaryData(value)
 }
 
-func (encoder *Encoder) BinaryEnd() *Encoder {
-	encoder.leaveArray()
-	return encoder
-}
-
-func (encoder *Encoder) StringBegin(length int64) *Encoder {
+func (encoder *Encoder) StringBegin(length uint64) *Encoder {
 	encoder.enterArray(arrayTypeString)
 	if length <= 15 {
 		encoder.addType(typeString0 + typeField(length))
@@ -265,27 +262,24 @@ func (encoder *Encoder) StringBegin(length int64) *Encoder {
 	return encoder
 }
 
-func (encoder *Encoder) String(value string) *Encoder {
-	wasInArray := encoder.arrayType != arrayTypeNone
-	if !wasInArray {
-		encoder.StringBegin(int64(len(value)))
-	}
+func (encoder *Encoder) StringData(value []byte) *Encoder {
+	// TODO: sanity checks
 	encoder.addBytes([]byte(value))
-	if !wasInArray {
-		encoder.StringEnd()
+	// TODO: If all bytes written
+	if true {
+		encoder.leaveArray()
 	}
 	return encoder
 }
 
-func (encoder *Encoder) StringEnd() *Encoder {
-	encoder.leaveArray()
-	return encoder
+func (encoder *Encoder) String(value string) *Encoder {
+	return encoder.StringBegin(uint64(len(value))).StringData([]byte(value))
 }
 
 func (encoder *Encoder) Comment(value string) *Encoder {
 	encoder.enterArray(arrayTypeComment)
 	encoder.addType(typeComment)
-	encoder.addArrayLength(int64(len(value)))
+	encoder.addArrayLength(uint64(len(value)))
 	encoder.addBytes([]byte(value))
 	encoder.leaveArray()
 	return encoder
