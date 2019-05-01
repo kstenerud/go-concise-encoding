@@ -1,6 +1,7 @@
 package cbe
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -10,7 +11,7 @@ import (
 
 type decoderError error
 type callbackError error
-type endOfBufferExit bool
+type endOfBufferExit error
 
 type DecoderCallbacks struct {
 	OnNil          func() error
@@ -51,7 +52,7 @@ type Decoder struct {
 // TODO: Maybe allow these to be natural sized ints?
 func (decoder *Decoder) reserveBytes(byteCount uint64) {
 	if uint64(decoder.bufferPos)+byteCount > uint64(len(decoder.buffer)) {
-		// TODO: panic
+		panic(endOfBufferExit(errors.New("")))
 	}
 	decoder.bytesToConsume = byteCount
 }
@@ -165,10 +166,11 @@ func (decoder *Decoder) readArrayLength() uint64 {
 	}
 }
 
+// TODO: 128 bit support
 func (decoder *Decoder) decodeNegInt64() int64 {
 	value := decoder.readPrimitive64()
 	if value&0x8000000000000000 != 0 {
-		// TODO: Error
+		panic(decoderError(fmt.Errorf("Value %v is too big to be represented as negative", value)))
 		return 0
 	} else {
 		return -int64(value)
@@ -176,24 +178,22 @@ func (decoder *Decoder) decodeNegInt64() int64 {
 }
 
 func (decoder *Decoder) enterContainer(newContainerType containerType) {
-	// TODO: Error if container depth >= max
-	// TODO: Error if in array
+	if decoder.containerDepth >= len(decoder.currentContainerType) {
+		panic(decoderError(fmt.Errorf("Exceeded max container depth of %v", len(decoder.currentContainerType))))
+	}
 	decoder.containerDepth++
 	decoder.currentContainerType[decoder.containerDepth] = newContainerType
 }
 
-func (decoder *Decoder) leaveContainer() {
-	// TODO: Error if not in container
+func (decoder *Decoder) leaveContainer() containerType {
+	if decoder.containerDepth <= 0 {
+		panic(decoderError(fmt.Errorf("Got container end but not in a container")))
+	}
 	decoder.containerDepth--
-}
-
-func (decoder *Decoder) getCurrentContainerType() containerType {
-	// TODO: Error if not in container
-	return decoder.currentContainerType[decoder.containerDepth]
+	return decoder.currentContainerType[decoder.containerDepth+1]
 }
 
 func (decoder *Decoder) beginArray(newArrayType arrayType) {
-	// TODO: Error if already in array
 	decoder.currentArrayType = newArrayType
 	switch newArrayType {
 	case arrayTypeBinary:
@@ -215,7 +215,6 @@ func checkCallback(err error) {
 }
 
 func (decoder *Decoder) setArrayLength(length uint64) {
-	// TODO: Error if already in array
 	decoder.arrayBytesRemaining = length
 	checkCallback(decoder.arrayLengthCallback(decoder.arrayBytesRemaining))
 }
@@ -225,10 +224,16 @@ func (decoder *Decoder) decodeArrayLength() {
 }
 
 func (decoder *Decoder) decodeArrayData() {
-	// TODO: Make this more intelligent
-	// Needs to decide how much data is available and only grab that,
-	// leaving the rest for the next feed() call.
-	bytes := decoder.readPrimitiveBytes(decoder.arrayBytesRemaining)
+	bytesToDecode := decoder.arrayBytesRemaining
+	bytesRemaining := uint64(len(decoder.buffer) - decoder.bufferPos)
+	if bytesRemaining < bytesToDecode {
+		bytesToDecode = bytesRemaining
+	}
+	bytes := decoder.readPrimitiveBytes(bytesToDecode)
+	decoder.arrayBytesRemaining -= bytesToDecode
+	if decoder.arrayBytesRemaining == 0 {
+		decoder.currentArrayType = arrayTypeNone
+	}
 	checkCallback(decoder.arrayDecodeCallback(bytes))
 }
 
@@ -315,8 +320,7 @@ func (decoder *Decoder) Feed(data []byte) (err error) {
 			decoder.enterContainer(containerTypeMap)
 			checkCallback(decoder.callbacks.OnMapBegin())
 		case typeEndContainer:
-			oldContainerType := decoder.getCurrentContainerType()
-			decoder.leaveContainer()
+			oldContainerType := decoder.leaveContainer()
 			switch oldContainerType {
 			case containerTypeList:
 				checkCallback(decoder.callbacks.OnListEnd())
@@ -375,7 +379,9 @@ func (decoder *Decoder) Feed(data []byte) (err error) {
 }
 
 func (decoder *Decoder) End() error {
-	// TODO
+	if decoder.containerDepth > 0 {
+		return fmt.Errorf("Document still has open containers")
+	}
 	return nil
 }
 
