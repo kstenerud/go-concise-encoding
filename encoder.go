@@ -18,15 +18,6 @@ const (
 	maxValue30Bit uint64 = 0x3fffffff
 )
 
-type arrayType int
-
-const (
-	arrayTypeNone arrayType = iota
-	arrayTypeBinary
-	arrayTypeString
-	arrayTypeComment
-)
-
 func is6BitLength(value uint64) bool {
 	return value <= maxValue6Bit
 }
@@ -60,102 +51,114 @@ func fitsInUint32(value uint64) bool {
 }
 
 type Encoder struct {
-	maxContainerDepth int
-	arrayType         arrayType
-	encoded           []byte
+	containerDepth       int
+	currentArrayType     arrayType
+	currentContainerType []containerType
+	encoded              []byte
 }
 
 func New(maxContainerDepth int) *Encoder {
 	encoder := new(Encoder)
-	encoder.maxContainerDepth = maxContainerDepth
+	encoder.currentContainerType = make([]containerType, maxContainerDepth)
 	encoder.encoded = make([]byte, 0)
 	return encoder
 }
 
-func (encoder *Encoder) addBytes(bytes []byte) {
+func (encoder *Encoder) encodeBytes(bytes []byte) {
 	encoder.encoded = append(encoder.encoded, bytes...)
 }
 
-func (encoder *Encoder) addPrimitive8(value byte) {
+func (encoder *Encoder) encodePrimitive8(value byte) {
 	encoder.encoded = append(encoder.encoded, value)
 }
 
-func (encoder *Encoder) addPrimitive16(value uint16) {
-	encoder.addBytes([]byte{byte(value), byte(value >> 8)})
+func (encoder *Encoder) encodePrimitive16(value uint16) {
+	encoder.encodeBytes([]byte{byte(value), byte(value >> 8)})
 }
 
-func (encoder *Encoder) addPrimitive32(value uint32) {
-	encoder.addBytes([]byte{
+func (encoder *Encoder) encodePrimitive32(value uint32) {
+	encoder.encodeBytes([]byte{
 		byte(value), byte(value >> 8),
 		byte(value >> 16), byte(value >> 24),
 	})
 }
 
-func (encoder *Encoder) addPrimitive64(value uint64) {
-	encoder.addBytes([]byte{
+func (encoder *Encoder) encodePrimitive64(value uint64) {
+	encoder.encodeBytes([]byte{
 		byte(value), byte(value >> 8), byte(value >> 16),
 		byte(value >> 24), byte(value >> 32), byte(value >> 40),
 		byte(value >> 48), byte(value >> 56),
 	})
 }
 
-func (encoder *Encoder) addType(typeValue typeField) {
-	encoder.addPrimitive8(byte(typeValue))
+func (encoder *Encoder) encodeTypeField(typeValue typeField) {
+	encoder.encodePrimitive8(byte(typeValue))
 }
 
-func (encoder *Encoder) addArrayLength(length uint64) {
+func (encoder *Encoder) encodeArrayLengthField(length uint64) {
 	switch {
 	case is6BitLength(length):
-		encoder.addPrimitive8(byte(length<<2 | length6Bit))
+		encoder.encodePrimitive8(byte(length<<2 | length6Bit))
 	case is14BitLength(length):
-		encoder.addPrimitive16(uint16(length<<2 | length14Bit))
+		encoder.encodePrimitive16(uint16(length<<2 | length14Bit))
 	case is30BitLength(length):
-		encoder.addPrimitive32(uint32(length<<2 | length30Bit))
+		encoder.encodePrimitive32(uint32(length<<2 | length30Bit))
 	default:
-		encoder.addPrimitive64(uint64(length<<2 | length62Bit))
+		encoder.encodePrimitive64(uint64(length<<2 | length62Bit))
 	}
 }
 
 func (encoder *Encoder) enterArray(newArrayType arrayType) {
 	// TODO: Rework API a bit so that String() etc don't have dual meanings
-	if encoder.arrayType != arrayTypeNone && encoder.arrayType != newArrayType {
+	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
 		panic("Cannot start new array when already in an array")
 	}
-	encoder.arrayType = newArrayType
+	encoder.currentArrayType = newArrayType
 }
 
 func (encoder *Encoder) leaveArray() {
-	encoder.arrayType = arrayTypeNone
+	encoder.currentArrayType = arrayTypeNone
+}
+
+func (encoder *Encoder) enterContainer(newContainerType containerType) {
+	// TODO: Error if container depth >= max
+	encoder.containerDepth++
+	encoder.currentContainerType[encoder.containerDepth] = newContainerType
+}
+
+func (encoder *Encoder) leaveContainer() {
+	// TODO: Error if container depth == 0
+	encoder.containerDepth--
 }
 
 func (encoder *Encoder) Padding(byteCount int) *Encoder {
 	for i := 0; i < byteCount; i++ {
-		encoder.addType(typePadding)
+		encoder.encodeTypeField(typePadding)
 	}
 	return encoder
 }
 
 func (encoder *Encoder) Nil() *Encoder {
-	encoder.addType(typeNil)
+	encoder.encodeTypeField(typeNil)
 	return encoder
 }
 
 func (encoder *Encoder) Uint(value uint64) *Encoder {
 	switch {
 	case uintFitsInSmallint(value):
-		encoder.addPrimitive8(byte(value))
+		encoder.encodePrimitive8(byte(value))
 	case fitsInUint8(value):
-		encoder.addType(typePosInt8)
-		encoder.addPrimitive8(uint8(value))
+		encoder.encodeTypeField(typePosInt8)
+		encoder.encodePrimitive8(uint8(value))
 	case fitsInUint16(value):
-		encoder.addType(typePosInt16)
-		encoder.addPrimitive16(uint16(value))
+		encoder.encodeTypeField(typePosInt16)
+		encoder.encodePrimitive16(uint16(value))
 	case fitsInUint32(value):
-		encoder.addType(typePosInt32)
-		encoder.addPrimitive32(uint32(value))
+		encoder.encodeTypeField(typePosInt32)
+		encoder.encodePrimitive32(uint32(value))
 	default:
-		encoder.addType(typePosInt64)
-		encoder.addPrimitive64(value)
+		encoder.encodeTypeField(typePosInt64)
+		encoder.encodePrimitive64(value)
 	}
 	return encoder
 }
@@ -170,19 +173,19 @@ func (encoder *Encoder) Int(value int64) *Encoder {
 
 	switch {
 	case intFitsInSmallint(value):
-		encoder.addPrimitive8(byte(value))
+		encoder.encodePrimitive8(byte(value))
 	case fitsInUint8(uvalue):
-		encoder.addType(typeNegInt8)
-		encoder.addPrimitive8(uint8(uvalue))
+		encoder.encodeTypeField(typeNegInt8)
+		encoder.encodePrimitive8(uint8(uvalue))
 	case fitsInUint16(uvalue):
-		encoder.addType(typeNegInt16)
-		encoder.addPrimitive16(uint16(uvalue))
+		encoder.encodeTypeField(typeNegInt16)
+		encoder.encodePrimitive16(uint16(uvalue))
 	case fitsInUint32(uvalue):
-		encoder.addType(typeNegInt32)
-		encoder.addPrimitive32(uint32(uvalue))
+		encoder.encodeTypeField(typeNegInt32)
+		encoder.encodePrimitive32(uint32(uvalue))
 	default:
-		encoder.addType(typeNegInt64)
-		encoder.addPrimitive64(uvalue)
+		encoder.encodeTypeField(typeNegInt64)
+		encoder.encodePrimitive64(uvalue)
 	}
 	return encoder
 }
@@ -190,56 +193,59 @@ func (encoder *Encoder) Int(value int64) *Encoder {
 func (encoder *Encoder) Float(value float64) *Encoder {
 	asfloat32 := float32(value)
 	if float64(asfloat32) == value {
-		encoder.addType(typeFloat32)
-		encoder.addPrimitive32(math.Float32bits(asfloat32))
+		encoder.encodeTypeField(typeFloat32)
+		encoder.encodePrimitive32(math.Float32bits(asfloat32))
 	} else {
-		encoder.addType(typeFloat64)
-		encoder.addPrimitive64(math.Float64bits(value))
+		encoder.encodeTypeField(typeFloat64)
+		encoder.encodePrimitive64(math.Float64bits(value))
 	}
 	return encoder
 }
 
 func (encoder *Encoder) Time(value time.Time) *Encoder {
-	encoder.addType(typeTime)
-	encoder.addPrimitive64(uint64(smalltime.FromTime(value)))
+	encoder.encodeTypeField(typeTime)
+	encoder.encodePrimitive64(uint64(smalltime.FromTime(value)))
 	return encoder
 }
 
 func (encoder *Encoder) ListBegin() *Encoder {
-	encoder.addType(typeList)
+	encoder.enterContainer(containerTypeList)
+	encoder.encodeTypeField(typeList)
 	return encoder
 }
 
-func (encoder *Encoder) endContainer() *Encoder {
-	encoder.addType(typeEndContainer)
+func (encoder *Encoder) containerEnd() *Encoder {
+	encoder.leaveContainer()
+	encoder.encodeTypeField(typeEndContainer)
 	return encoder
 }
 
 func (encoder *Encoder) ListEnd() *Encoder {
-	encoder.endContainer()
+	encoder.containerEnd()
 	return encoder
 }
 
 func (encoder *Encoder) MapBegin() *Encoder {
-	encoder.addType(typeMap)
+	encoder.enterContainer(containerTypeMap)
+	encoder.encodeTypeField(typeMap)
 	return encoder
 }
 
 func (encoder *Encoder) MapEnd() *Encoder {
-	encoder.endContainer()
+	encoder.containerEnd()
 	return encoder
 }
 
 func (encoder *Encoder) BinaryBegin(length uint64) *Encoder {
 	encoder.enterArray(arrayTypeBinary)
-	encoder.addType(typeBinary)
-	encoder.addArrayLength(length)
+	encoder.encodeTypeField(typeBinary)
+	encoder.encodeArrayLengthField(length)
 	return encoder
 }
 
 func (encoder *Encoder) BinaryData(value []byte) *Encoder {
 	// TODO: sanity checks
-	encoder.addBytes([]byte(value))
+	encoder.encodeBytes([]byte(value))
 	// TODO: If all bytes written
 	if true {
 		encoder.leaveArray()
@@ -254,17 +260,17 @@ func (encoder *Encoder) Binary(value []byte) *Encoder {
 func (encoder *Encoder) StringBegin(length uint64) *Encoder {
 	encoder.enterArray(arrayTypeString)
 	if length <= 15 {
-		encoder.addType(typeString0 + typeField(length))
+		encoder.encodeTypeField(typeString0 + typeField(length))
 	} else {
-		encoder.addType(typeString)
-		encoder.addArrayLength(length)
+		encoder.encodeTypeField(typeString)
+		encoder.encodeArrayLengthField(length)
 	}
 	return encoder
 }
 
 func (encoder *Encoder) StringData(value []byte) *Encoder {
 	// TODO: sanity checks
-	encoder.addBytes([]byte(value))
+	encoder.encodeBytes([]byte(value))
 	// TODO: If all bytes written
 	if true {
 		encoder.leaveArray()
@@ -278,9 +284,9 @@ func (encoder *Encoder) String(value string) *Encoder {
 
 func (encoder *Encoder) Comment(value string) *Encoder {
 	encoder.enterArray(arrayTypeComment)
-	encoder.addType(typeComment)
-	encoder.addArrayLength(uint64(len(value)))
-	encoder.addBytes([]byte(value))
+	encoder.encodeTypeField(typeComment)
+	encoder.encodeArrayLengthField(uint64(len(value)))
+	encoder.encodeBytes([]byte(value))
 	encoder.leaveArray()
 	return encoder
 }

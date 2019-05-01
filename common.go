@@ -59,3 +59,20 @@ const (
 	length30Bit uint64 = 2
 	length62Bit uint64 = 3
 )
+
+type arrayType int
+
+const (
+	arrayTypeNone arrayType = iota
+	arrayTypeBinary
+	arrayTypeString
+	arrayTypeComment
+)
+
+type containerType int
+
+const (
+	containerTypeNone containerType = iota
+	containerTypeList
+	containerTypeMap
+)

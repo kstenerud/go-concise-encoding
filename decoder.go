@@ -30,38 +30,57 @@ type DecoderCallbacks struct {
 }
 
 type Decoder struct {
-	buffer              []byte
-	bufferPos           int
-	currentArrayType    arrayType
-	arrayBytesRemaining uint64
-	arrayDecodeCallback func([]byte) error
-	arrayLengthCallback func(uint64) error
-	callbacks           *DecoderCallbacks
+	buffer               []byte
+	bufferPos            int
+	bytesToConsume       uint64
+	containerDepth       int
+	currentArrayType     arrayType
+	currentContainerType []containerType
+	arrayBytesRemaining  uint64
+	arrayDecodeCallback  func([]byte) error
+	arrayLengthCallback  func(uint64) error
+	callbacks            *DecoderCallbacks
+}
+
+// TODO: Maybe allow these to be natural sized ints?
+func (decoder *Decoder) reserveBytes(byteCount uint64) {
+	if uint64(decoder.bufferPos)+byteCount > uint64(len(decoder.buffer)) {
+		// TODO: panic
+	}
+	decoder.bytesToConsume = byteCount
+}
+
+func (decoder *Decoder) consumeReservedBytes() {
+	decoder.bufferPos += int(decoder.bytesToConsume)
 }
 
 func (decoder *Decoder) readPrimitive8() uint {
+	decoder.reserveBytes(1)
 	value := uint(decoder.buffer[decoder.bufferPos])
-	decoder.bufferPos += 1
+	decoder.consumeReservedBytes()
 	return value
 }
 
 func (decoder *Decoder) readPrimitive16() uint {
+	decoder.reserveBytes(2)
 	value := uint(decoder.buffer[decoder.bufferPos]) |
 		uint(decoder.buffer[decoder.bufferPos+1])<<8
-	decoder.bufferPos += 2
+	decoder.consumeReservedBytes()
 	return value
 }
 
 func (decoder *Decoder) readPrimitive32() uint {
+	decoder.reserveBytes(4)
 	value := uint(decoder.buffer[decoder.bufferPos]) |
 		uint(decoder.buffer[decoder.bufferPos+1])<<8 |
 		uint(decoder.buffer[decoder.bufferPos+2])<<16 |
 		uint(decoder.buffer[decoder.bufferPos+3])<<24
-	decoder.bufferPos += 4
+	decoder.consumeReservedBytes()
 	return value
 }
 
 func (decoder *Decoder) readPrimitive64() uint64 {
+	decoder.reserveBytes(8)
 	value := uint64(decoder.buffer[decoder.bufferPos]) |
 		uint64(decoder.buffer[decoder.bufferPos+1])<<8 |
 		uint64(decoder.buffer[decoder.bufferPos+2])<<16 |
@@ -70,14 +89,14 @@ func (decoder *Decoder) readPrimitive64() uint64 {
 		uint64(decoder.buffer[decoder.bufferPos+5])<<40 |
 		uint64(decoder.buffer[decoder.bufferPos+6])<<48 |
 		uint64(decoder.buffer[decoder.bufferPos+7])<<56
-	decoder.bufferPos += 8
+	decoder.consumeReservedBytes()
 	return value
 }
 
 func (decoder *Decoder) readPrimitiveBytes(byteCount uint64) []byte {
-	// TODO handle end of input from feed()
+	decoder.reserveBytes(byteCount)
 	bytes := decoder.buffer[decoder.bufferPos : decoder.bufferPos+int(byteCount)]
-	decoder.bufferPos += int(byteCount)
+	decoder.consumeReservedBytes()
 	return bytes
 }
 
@@ -98,11 +117,11 @@ func (decoder *Decoder) readInt64() int64 {
 }
 
 func (decoder *Decoder) readFloat32() float32 {
-	return float32(decoder.readPrimitive32())
+	return math.Float32frombits(uint32(decoder.readPrimitive32()))
 }
 
 func (decoder *Decoder) readFloat64() float64 {
-	return float64(decoder.readPrimitive64())
+	return math.Float64frombits(decoder.readPrimitive64())
 }
 
 func (decoder *Decoder) readType() typeField {
@@ -140,10 +159,35 @@ func (decoder *Decoder) readArrayLength() uint64 {
 	}
 }
 
-func (decoder *Decoder) startArray(newArrayType arrayType) {
-	if decoder.currentArrayType != arrayTypeNone {
-		// TODO: error
+func (decoder *Decoder) decodeNegInt64() int64 {
+	value := decoder.readPrimitive64()
+	if value&0x8000000000000000 != 0 {
+		// TODO: Error
+		return 0
+	} else {
+		return -int64(value)
 	}
+}
+
+func (decoder *Decoder) enterContainer(newContainerType containerType) {
+	// TODO: Error if container depth >= max
+	// TODO: Error if in array
+	decoder.containerDepth++
+	decoder.currentContainerType[decoder.containerDepth] = newContainerType
+}
+
+func (decoder *Decoder) leaveContainer() {
+	// TODO: Error if not in container
+	decoder.containerDepth--
+}
+
+func (decoder *Decoder) getCurrentContainerType() containerType {
+	// TODO: Error if not in container
+	return decoder.currentContainerType[decoder.containerDepth]
+}
+
+func (decoder *Decoder) beginArray(newArrayType arrayType) {
+	// TODO: Error if already in array
 	decoder.currentArrayType = newArrayType
 	switch newArrayType {
 	case arrayTypeBinary:
@@ -159,6 +203,7 @@ func (decoder *Decoder) startArray(newArrayType arrayType) {
 }
 
 func (decoder *Decoder) setArrayLength(length uint64) error {
+	// TODO: Error if already in array
 	decoder.arrayBytesRemaining = length
 	return decoder.arrayLengthCallback(decoder.arrayBytesRemaining)
 }
@@ -169,6 +214,8 @@ func (decoder *Decoder) decodeArrayLength() error {
 
 func (decoder *Decoder) decodeArrayData() error {
 	// TODO: Make this more intelligent
+	// Needs to decide how much data is available and only grab that,
+	// leaving the rest for the next feed() call.
 	bytes := decoder.readPrimitiveBytes(decoder.arrayBytesRemaining)
 	if err := decoder.arrayDecodeCallback(bytes); err != nil {
 		return err
@@ -176,13 +223,27 @@ func (decoder *Decoder) decodeArrayData() error {
 	return nil
 }
 
+func (decoder *Decoder) decodeStringOfLength(length uint64) error {
+	decoder.beginArray(arrayTypeString)
+	if err := decoder.setArrayLength(length); err != nil {
+		return err
+	}
+	return decoder.decodeArrayData()
+}
+
 func (decoder *Decoder) feed(data []byte) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			// TODO: Handle the situation
+			// err = something
+			// run off buffer: type runtime.errorString, value "runtime error: index out of range"
+			// Could be brittle if callback code causes a panic...
 		}
 	}()
 
+	// TODO: Check for unfinished array
+
+	// TODO: replace this broken for loop
 	for i := decoder.bufferPos; i < len(decoder.buffer); {
 		dataType := decoder.readType()
 		if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
@@ -244,13 +305,8 @@ func (decoder *Decoder) feed(data []byte) (err error) {
 				}
 			}
 		case typeNegInt64:
-			value := decoder.readPrimitive64()
-			if value&0x8000000000000000 != 0 {
-				// TODO: Error
-			} else {
-				if err := decoder.callbacks.OnInt64(-int64(value)); err != nil {
-					return err
-				}
+			if err := decoder.callbacks.OnInt64(decoder.decodeNegInt64()); err != nil {
+				return err
 			}
 		case typeTime:
 			// TODO: Specify time zone?
@@ -264,17 +320,30 @@ func (decoder *Decoder) feed(data []byte) (err error) {
 		case typePadding:
 			// Ignore
 		case typeList:
+			decoder.enterContainer(containerTypeList)
 			if err := decoder.callbacks.OnListBegin(); err != nil {
 				return err
 			}
 		case typeMap:
+			decoder.enterContainer(containerTypeMap)
 			if err := decoder.callbacks.OnMapBegin(); err != nil {
 				return err
 			}
 		case typeEndContainer:
-			// TODO
+			oldContainerType := decoder.getCurrentContainerType()
+			decoder.leaveContainer()
+			switch oldContainerType {
+			case containerTypeList:
+				if err := decoder.callbacks.OnListEnd(); err != nil {
+					return err
+				}
+			case containerTypeMap:
+				if err := decoder.callbacks.OnMapEnd(); err != nil {
+					return err
+				}
+			}
 		case typeBinary:
-			decoder.startArray(arrayTypeBinary)
+			decoder.beginArray(arrayTypeBinary)
 			if err := decoder.decodeArrayLength(); err != nil {
 				return err
 			}
@@ -282,7 +351,7 @@ func (decoder *Decoder) feed(data []byte) (err error) {
 				return err
 			}
 		case typeComment:
-			decoder.startArray(arrayTypeComment)
+			decoder.beginArray(arrayTypeComment)
 			if err := decoder.decodeArrayLength(); err != nil {
 				return err
 			}
@@ -290,7 +359,7 @@ func (decoder *Decoder) feed(data []byte) (err error) {
 				return err
 			}
 		case typeString:
-			decoder.startArray(arrayTypeString)
+			decoder.beginArray(arrayTypeString)
 			if err := decoder.decodeArrayLength(); err != nil {
 				return err
 			}
@@ -298,30 +367,70 @@ func (decoder *Decoder) feed(data []byte) (err error) {
 				return err
 			}
 		case typeString0:
+			decoder.beginArray(arrayTypeString)
 			if err := decoder.setArrayLength(0); err != nil {
 				return err
 			}
 		case typeString1:
-			if err := decoder.setArrayLength(1); err != nil {
-				return err
-			}
-			if err := decoder.decodeArrayData(); err != nil {
+			if err := decoder.decodeStringOfLength(1); err != nil {
 				return err
 			}
 		case typeString2:
+			if err := decoder.decodeStringOfLength(2); err != nil {
+				return err
+			}
 		case typeString3:
+			if err := decoder.decodeStringOfLength(3); err != nil {
+				return err
+			}
 		case typeString4:
+			if err := decoder.decodeStringOfLength(4); err != nil {
+				return err
+			}
 		case typeString5:
+			if err := decoder.decodeStringOfLength(5); err != nil {
+				return err
+			}
 		case typeString6:
+			if err := decoder.decodeStringOfLength(6); err != nil {
+				return err
+			}
 		case typeString7:
+			if err := decoder.decodeStringOfLength(7); err != nil {
+				return err
+			}
 		case typeString8:
+			if err := decoder.decodeStringOfLength(8); err != nil {
+				return err
+			}
 		case typeString9:
+			if err := decoder.decodeStringOfLength(9); err != nil {
+				return err
+			}
 		case typeString10:
+			if err := decoder.decodeStringOfLength(10); err != nil {
+				return err
+			}
 		case typeString11:
+			if err := decoder.decodeStringOfLength(11); err != nil {
+				return err
+			}
 		case typeString12:
+			if err := decoder.decodeStringOfLength(12); err != nil {
+				return err
+			}
 		case typeString13:
+			if err := decoder.decodeStringOfLength(13); err != nil {
+				return err
+			}
 		case typeString14:
+			if err := decoder.decodeStringOfLength(14); err != nil {
+				return err
+			}
 		case typeString15:
+			if err := decoder.decodeStringOfLength(15); err != nil {
+				return err
+			}
 		}
 		// TODO: 128 bit and decimal
 	}
@@ -329,5 +438,5 @@ func (decoder *Decoder) feed(data []byte) (err error) {
 }
 
 func (decoder *Decoder) end() {
-
+	// TODO
 }
