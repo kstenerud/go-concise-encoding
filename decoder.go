@@ -1,11 +1,16 @@
 package cbe
 
 import (
+	"fmt"
 	"math"
 	"time"
 
 	"github.com/kstenerud/go-smalltime"
 )
+
+type decoderError error
+type callbackError error
+type endOfBufferExit bool
 
 type DecoderCallbacks struct {
 	OnNil          func() error
@@ -32,6 +37,7 @@ type DecoderCallbacks struct {
 type Decoder struct {
 	buffer               []byte
 	bufferPos            int
+	streamOffset         uint64
 	bytesToConsume       uint64
 	containerDepth       int
 	currentArrayType     arrayType
@@ -202,241 +208,180 @@ func (decoder *Decoder) beginArray(newArrayType arrayType) {
 	}
 }
 
-func (decoder *Decoder) setArrayLength(length uint64) error {
+func checkCallback(err error) {
+	if err != nil {
+		panic(callbackError(err))
+	}
+}
+
+func (decoder *Decoder) setArrayLength(length uint64) {
 	// TODO: Error if already in array
 	decoder.arrayBytesRemaining = length
-	return decoder.arrayLengthCallback(decoder.arrayBytesRemaining)
+	checkCallback(decoder.arrayLengthCallback(decoder.arrayBytesRemaining))
 }
 
-func (decoder *Decoder) decodeArrayLength() error {
-	return decoder.setArrayLength(decoder.readArrayLength())
+func (decoder *Decoder) decodeArrayLength() {
+	decoder.setArrayLength(decoder.readArrayLength())
 }
 
-func (decoder *Decoder) decodeArrayData() error {
+func (decoder *Decoder) decodeArrayData() {
 	// TODO: Make this more intelligent
 	// Needs to decide how much data is available and only grab that,
 	// leaving the rest for the next feed() call.
 	bytes := decoder.readPrimitiveBytes(decoder.arrayBytesRemaining)
-	if err := decoder.arrayDecodeCallback(bytes); err != nil {
-		return err
-	}
-	return nil
+	checkCallback(decoder.arrayDecodeCallback(bytes))
 }
 
-func (decoder *Decoder) decodeStringOfLength(length uint64) error {
+func (decoder *Decoder) decodeStringOfLength(length uint64) {
 	decoder.beginArray(arrayTypeString)
-	if err := decoder.setArrayLength(length); err != nil {
-		return err
-	}
-	return decoder.decodeArrayData()
+	decoder.setArrayLength(length)
+	decoder.decodeArrayData()
 }
 
-func (decoder *Decoder) feed(data []byte) (err error) {
+func (decoder *Decoder) Feed(data []byte) (err error) {
 	defer func() {
+		decoder.streamOffset += uint64(decoder.bufferPos)
+		decoder.buffer = nil
 		if r := recover(); r != nil {
-			// TODO: Handle the situation
-			// err = something
-			// run off buffer: type runtime.errorString, value "runtime error: index out of range"
-			// Could be brittle if callback code causes a panic...
+			switch r.(type) {
+			case endOfBufferExit:
+				err = nil
+			case callbackError:
+				offset := (decoder.streamOffset + uint64(decoder.bufferPos))
+				err = fmt.Errorf("cbe: offset %v: error from callback: %v", offset, r)
+			case decoderError:
+				offset := (decoder.streamOffset + uint64(decoder.bufferPos))
+				err = fmt.Errorf("cbe: offset %v: %v", offset, r)
+			default:
+				err = fmt.Errorf("cbe: internal error: %v", r)
+			}
 		}
 	}()
 
-	// TODO: Check for unfinished array
+	decoder.buffer = data
+	decoder.bufferPos = 0
 
-	// TODO: replace this broken for loop
-	for i := decoder.bufferPos; i < len(decoder.buffer); {
+	if decoder.currentArrayType != arrayTypeNone {
+		decoder.decodeArrayData()
+	}
+
+	for {
 		dataType := decoder.readType()
 		if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
-			if err := decoder.callbacks.OnInt(int(int8(dataType))); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnInt(int(int8(dataType))))
 			continue
 		}
 		switch dataType {
 		case typeTrue:
-			if err := decoder.callbacks.OnBool(true); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnBool(true))
 		case typeFalse:
-			if err := decoder.callbacks.OnBool(false); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnBool(false))
 		case typeFloat32:
-			if err := decoder.callbacks.OnFloat32(decoder.readFloat32()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnFloat32(decoder.readFloat32()))
 		case typeFloat64:
-			if err := decoder.callbacks.OnFloat64(decoder.readFloat64()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnFloat64(decoder.readFloat64()))
 		case typePosInt8:
-			if err := decoder.callbacks.OnUint(decoder.readPrimitive8()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnUint(decoder.readPrimitive8()))
 		case typePosInt16:
-			if err := decoder.callbacks.OnUint(decoder.readPrimitive16()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnUint(decoder.readPrimitive16()))
 		case typePosInt32:
-			if err := decoder.callbacks.OnUint(decoder.readPrimitive32()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnUint(decoder.readPrimitive32()))
 		case typePosInt64:
-			if err := decoder.callbacks.OnUint64(decoder.readPrimitive64()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnUint64(decoder.readPrimitive64()))
 		case typeNegInt8:
-			if err := decoder.callbacks.OnInt(-int(decoder.readPrimitive8())); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnInt(-int(decoder.readPrimitive8())))
 		case typeNegInt16:
-			if err := decoder.callbacks.OnInt(-int(decoder.readPrimitive16())); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnInt(-int(decoder.readPrimitive16())))
 		case typeNegInt32:
 			value := -int64(decoder.readPrimitive32())
 			if value < math.MinInt32 {
-				if err := decoder.callbacks.OnInt64(value); err != nil {
-					return err
-				}
+				checkCallback(decoder.callbacks.OnInt64(value))
 			} else {
-				if err := decoder.callbacks.OnInt(int(value)); err != nil {
-					return err
-				}
+				checkCallback(decoder.callbacks.OnInt(int(value)))
 			}
 		case typeNegInt64:
-			if err := decoder.callbacks.OnInt64(decoder.decodeNegInt64()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnInt64(decoder.decodeNegInt64()))
 		case typeTime:
 			// TODO: Specify time zone?
-			if err := decoder.callbacks.OnTime(decoder.readTime().AsTime()); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnTime(decoder.readTime().AsTime()))
 		case typeNil:
-			if err := decoder.callbacks.OnNil(); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnNil())
 		case typePadding:
 			// Ignore
 		case typeList:
 			decoder.enterContainer(containerTypeList)
-			if err := decoder.callbacks.OnListBegin(); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnListBegin())
 		case typeMap:
 			decoder.enterContainer(containerTypeMap)
-			if err := decoder.callbacks.OnMapBegin(); err != nil {
-				return err
-			}
+			checkCallback(decoder.callbacks.OnMapBegin())
 		case typeEndContainer:
 			oldContainerType := decoder.getCurrentContainerType()
 			decoder.leaveContainer()
 			switch oldContainerType {
 			case containerTypeList:
-				if err := decoder.callbacks.OnListEnd(); err != nil {
-					return err
-				}
+				checkCallback(decoder.callbacks.OnListEnd())
 			case containerTypeMap:
-				if err := decoder.callbacks.OnMapEnd(); err != nil {
-					return err
-				}
+				checkCallback(decoder.callbacks.OnMapEnd())
 			}
 		case typeBinary:
 			decoder.beginArray(arrayTypeBinary)
-			if err := decoder.decodeArrayLength(); err != nil {
-				return err
-			}
-			if err := decoder.decodeArrayData(); err != nil {
-				return err
-			}
+			decoder.decodeArrayLength()
+			decoder.decodeArrayData()
 		case typeComment:
 			decoder.beginArray(arrayTypeComment)
-			if err := decoder.decodeArrayLength(); err != nil {
-				return err
-			}
-			if err := decoder.decodeArrayData(); err != nil {
-				return err
-			}
+			decoder.decodeArrayLength()
+			decoder.decodeArrayData()
 		case typeString:
 			decoder.beginArray(arrayTypeString)
-			if err := decoder.decodeArrayLength(); err != nil {
-				return err
-			}
-			if err := decoder.decodeArrayData(); err != nil {
-				return err
-			}
+			decoder.decodeArrayLength()
+			decoder.decodeArrayData()
 		case typeString0:
 			decoder.beginArray(arrayTypeString)
-			if err := decoder.setArrayLength(0); err != nil {
-				return err
-			}
+			decoder.setArrayLength(0)
 		case typeString1:
-			if err := decoder.decodeStringOfLength(1); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(1)
 		case typeString2:
-			if err := decoder.decodeStringOfLength(2); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(2)
 		case typeString3:
-			if err := decoder.decodeStringOfLength(3); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(3)
 		case typeString4:
-			if err := decoder.decodeStringOfLength(4); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(4)
 		case typeString5:
-			if err := decoder.decodeStringOfLength(5); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(5)
 		case typeString6:
-			if err := decoder.decodeStringOfLength(6); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(6)
 		case typeString7:
-			if err := decoder.decodeStringOfLength(7); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(7)
 		case typeString8:
-			if err := decoder.decodeStringOfLength(8); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(8)
 		case typeString9:
-			if err := decoder.decodeStringOfLength(9); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(9)
 		case typeString10:
-			if err := decoder.decodeStringOfLength(10); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(10)
 		case typeString11:
-			if err := decoder.decodeStringOfLength(11); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(11)
 		case typeString12:
-			if err := decoder.decodeStringOfLength(12); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(12)
 		case typeString13:
-			if err := decoder.decodeStringOfLength(13); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(13)
 		case typeString14:
-			if err := decoder.decodeStringOfLength(14); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(14)
 		case typeString15:
-			if err := decoder.decodeStringOfLength(15); err != nil {
-				return err
-			}
+			decoder.decodeStringOfLength(15)
 		}
 		// TODO: 128 bit and decimal
 	}
 	return nil
 }
 
-func (decoder *Decoder) end() {
+func (decoder *Decoder) End() error {
 	// TODO
+	return nil
+}
+
+func (decoder *Decoder) Decode(document []byte) error {
+	if err := decoder.Feed(document); err != nil {
+		return err
+	}
+	return decoder.End()
 }
