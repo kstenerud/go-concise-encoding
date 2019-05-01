@@ -13,20 +13,20 @@ import (
 )
 
 const (
-	maxValue6Bit  uint64 = 0x3f
-	maxValue14Bit uint64 = 0x3fff
-	maxValue30Bit uint64 = 0x3fffffff
+	maxValue6Bit  int64 = 0x3f
+	maxValue14Bit int64 = 0x3fff
+	maxValue30Bit int64 = 0x3fffffff
 )
 
-func is6BitLength(value uint64) bool {
+func is6BitLength(value int64) bool {
 	return value <= maxValue6Bit
 }
 
-func is14BitLength(value uint64) bool {
+func is14BitLength(value int64) bool {
 	return value <= maxValue14Bit
 }
 
-func is30BitLength(value uint64) bool {
+func is30BitLength(value int64) bool {
 	return value <= maxValue30Bit
 }
 
@@ -95,7 +95,7 @@ func (encoder *Encoder) encodeTypeField(typeValue typeField) {
 	encoder.encodePrimitive8(byte(typeValue))
 }
 
-func (encoder *Encoder) encodeArrayLengthField(length uint64) {
+func (encoder *Encoder) encodeArrayLengthField(length int64) {
 	switch {
 	case is6BitLength(length):
 		encoder.encodePrimitive8(byte(length<<2 | length6Bit))
@@ -239,7 +239,7 @@ func (encoder *Encoder) MapEnd() *Encoder {
 func (encoder *Encoder) BinaryBegin(length uint64) *Encoder {
 	encoder.enterArray(arrayTypeBinary)
 	encoder.encodeTypeField(typeBinary)
-	encoder.encodeArrayLengthField(length)
+	encoder.encodeArrayLengthField(int64(length))
 	return encoder
 }
 
@@ -263,7 +263,7 @@ func (encoder *Encoder) StringBegin(length uint64) *Encoder {
 		encoder.encodeTypeField(typeString0 + typeField(length))
 	} else {
 		encoder.encodeTypeField(typeString)
-		encoder.encodeArrayLengthField(length)
+		encoder.encodeArrayLengthField(int64(length))
 	}
 	return encoder
 }
@@ -285,7 +285,7 @@ func (encoder *Encoder) String(value string) *Encoder {
 func (encoder *Encoder) Comment(value string) *Encoder {
 	encoder.enterArray(arrayTypeComment)
 	encoder.encodeTypeField(typeComment)
-	encoder.encodeArrayLengthField(uint64(len(value)))
+	encoder.encodeArrayLengthField(int64(len(value)))
 	encoder.encodeBytes([]byte(value))
 	encoder.leaveArray()
 	return encoder

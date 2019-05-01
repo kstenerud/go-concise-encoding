@@ -38,20 +38,20 @@ type DecoderCallbacks struct {
 type Decoder struct {
 	buffer               []byte
 	bufferPos            int
-	streamOffset         uint64
-	bytesToConsume       uint64
+	streamOffset         int64
+	bytesToConsume       int64
 	containerDepth       int
 	currentArrayType     arrayType
 	currentContainerType []containerType
-	arrayBytesRemaining  uint64
+	arrayBytesRemaining  int64
 	arrayDecodeCallback  func([]byte) error
 	arrayLengthCallback  func(uint64) error
 	callbacks            *DecoderCallbacks
 }
 
 // TODO: Maybe allow these to be natural sized ints?
-func (decoder *Decoder) reserveBytes(byteCount uint64) {
-	if uint64(decoder.bufferPos)+byteCount > uint64(len(decoder.buffer)) {
+func (decoder *Decoder) reserveBytes(byteCount int64) {
+	if int64(decoder.bufferPos)+byteCount > int64(len(decoder.buffer)) {
 		panic(endOfBufferExit(errors.New("")))
 	}
 	decoder.bytesToConsume = byteCount
@@ -100,7 +100,7 @@ func (decoder *Decoder) readPrimitive64() uint64 {
 	return value
 }
 
-func (decoder *Decoder) readPrimitiveBytes(byteCount uint64) []byte {
+func (decoder *Decoder) readPrimitiveBytes(byteCount int64) []byte {
 	decoder.reserveBytes(byteCount)
 	bytes := decoder.buffer[decoder.bufferPos : decoder.bufferPos+int(byteCount)]
 	decoder.consumeReservedBytes()
@@ -139,28 +139,28 @@ func (decoder *Decoder) readTime() smalltime.Smalltime {
 	return smalltime.Smalltime(decoder.readPrimitive64())
 }
 
-func (decoder *Decoder) readArrayLength() uint64 {
+func (decoder *Decoder) readArrayLength() int64 {
 	firstByte := decoder.readPrimitive8()
-	switch uint64(firstByte & 3) {
+	switch int64(firstByte & 3) {
 	case length6Bit:
-		return uint64(firstByte >> 2)
+		return int64(firstByte >> 2)
 	case length14Bit:
-		return uint64(firstByte>>2) |
-			uint64(decoder.readPrimitive8())<<6
+		return int64(firstByte>>2) |
+			int64(decoder.readPrimitive8())<<6
 	case length30Bit:
-		return uint64(firstByte>>2) |
-			uint64(decoder.readPrimitive8())<<6 |
-			uint64(decoder.readPrimitive8())<<14 |
-			uint64(decoder.readPrimitive8())<<22
+		return int64(firstByte>>2) |
+			int64(decoder.readPrimitive8())<<6 |
+			int64(decoder.readPrimitive8())<<14 |
+			int64(decoder.readPrimitive8())<<22
 	case length62Bit:
-		return uint64(firstByte>>2) |
-			uint64(decoder.readPrimitive8())<<6 |
-			uint64(decoder.readPrimitive8())<<14 |
-			uint64(decoder.readPrimitive8())<<22 |
-			uint64(decoder.readPrimitive8())<<30 |
-			uint64(decoder.readPrimitive8())<<38 |
-			uint64(decoder.readPrimitive8())<<46 |
-			uint64(decoder.readPrimitive8())<<54
+		return int64(firstByte>>2) |
+			int64(decoder.readPrimitive8())<<6 |
+			int64(decoder.readPrimitive8())<<14 |
+			int64(decoder.readPrimitive8())<<22 |
+			int64(decoder.readPrimitive8())<<30 |
+			int64(decoder.readPrimitive8())<<38 |
+			int64(decoder.readPrimitive8())<<46 |
+			int64(decoder.readPrimitive8())<<54
 	default: // TODO: 128 bit
 		return 0
 	}
@@ -214,9 +214,9 @@ func checkCallback(err error) {
 	}
 }
 
-func (decoder *Decoder) setArrayLength(length uint64) {
+func (decoder *Decoder) setArrayLength(length int64) {
 	decoder.arrayBytesRemaining = length
-	checkCallback(decoder.arrayLengthCallback(decoder.arrayBytesRemaining))
+	checkCallback(decoder.arrayLengthCallback(uint64(decoder.arrayBytesRemaining)))
 }
 
 func (decoder *Decoder) decodeArrayLength() {
@@ -225,7 +225,7 @@ func (decoder *Decoder) decodeArrayLength() {
 
 func (decoder *Decoder) decodeArrayData() {
 	bytesToDecode := decoder.arrayBytesRemaining
-	bytesRemaining := uint64(len(decoder.buffer) - decoder.bufferPos)
+	bytesRemaining := int64(len(decoder.buffer) - decoder.bufferPos)
 	if bytesRemaining < bytesToDecode {
 		bytesToDecode = bytesRemaining
 	}
@@ -237,7 +237,7 @@ func (decoder *Decoder) decodeArrayData() {
 	checkCallback(decoder.arrayDecodeCallback(bytes))
 }
 
-func (decoder *Decoder) decodeStringOfLength(length uint64) {
+func (decoder *Decoder) decodeStringOfLength(length int64) {
 	decoder.beginArray(arrayTypeString)
 	decoder.setArrayLength(length)
 	decoder.decodeArrayData()
@@ -245,17 +245,17 @@ func (decoder *Decoder) decodeStringOfLength(length uint64) {
 
 func (decoder *Decoder) Feed(data []byte) (err error) {
 	defer func() {
-		decoder.streamOffset += uint64(decoder.bufferPos)
+		decoder.streamOffset += int64(decoder.bufferPos)
 		decoder.buffer = nil
 		if r := recover(); r != nil {
 			switch r.(type) {
 			case endOfBufferExit:
 				err = nil
 			case callbackError:
-				offset := (decoder.streamOffset + uint64(decoder.bufferPos))
+				offset := (decoder.streamOffset + int64(decoder.bufferPos))
 				err = fmt.Errorf("cbe: offset %v: error from callback: %v", offset, r)
 			case decoderError:
-				offset := (decoder.streamOffset + uint64(decoder.bufferPos))
+				offset := (decoder.streamOffset + int64(decoder.bufferPos))
 				err = fmt.Errorf("cbe: offset %v: %v", offset, r)
 			default:
 				err = fmt.Errorf("cbe: internal error: %v", r)

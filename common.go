@@ -54,10 +54,10 @@ const (
 )
 
 const (
-	length6Bit  uint64 = 0
-	length14Bit uint64 = 1
-	length30Bit uint64 = 2
-	length62Bit uint64 = 3
+	length6Bit  int64 = 0
+	length14Bit int64 = 1
+	length30Bit int64 = 2
+	length62Bit int64 = 3
 )
 
 type arrayType int
