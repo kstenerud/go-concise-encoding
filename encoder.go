@@ -57,7 +57,7 @@ type Encoder struct {
 	encoded              []byte
 }
 
-func New(maxContainerDepth int) *Encoder {
+func NewEncoder(maxContainerDepth int) *Encoder {
 	encoder := new(Encoder)
 	encoder.currentContainerType = make([]containerType, maxContainerDepth)
 	encoder.encoded = make([]byte, 0)

@@ -145,8 +145,8 @@ func (buffer *decodeBuffer) readArrayLength() int64 {
 func (buffer *decodeBuffer) readNegInt64() int64 {
 	value := buffer.readPrimitive64()
 	// TODO: This won't be an error once 128 bit support is added
-	if value&0x8000000000000000 != 0 {
-		panic(decoderError(fmt.Errorf("Value %v is too big to be represented as negative", value)))
+	if value&0x8000000000000000 != 0 && value != 0x8000000000000000 {
+		panic(decoderError(fmt.Errorf("Value %016x is too big to be represented as negative", value)))
 		return 0
 	} else {
 		return -int64(value)

@@ -51,7 +51,7 @@ const (
 
 const (
 	smallIntMin int64 = -106
-	smallIntMax int64 = 106
+	smallIntMax int64 = 105
 )
 
 const (

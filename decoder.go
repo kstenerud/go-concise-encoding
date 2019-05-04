@@ -11,26 +11,26 @@ const maxPartialBufferSize = 16
 type decoderError error
 type callbackError error
 
-type DecoderCallbacks struct {
-	OnNil          func() error
-	OnBool         func(value bool) error
-	OnInt          func(value int) error
-	OnInt64        func(value int64) error
-	OnUint         func(value uint) error
-	OnUint64       func(value uint64) error
-	OnFloat32      func(value float32) error
-	OnFloat64      func(value float64) error
-	OnTime         func(value time.Time) error
-	OnListBegin    func() error
-	OnListEnd      func() error
-	OnMapBegin     func() error
-	OnMapEnd       func() error
-	OnStringBegin  func(byteCount uint64) error
-	OnStringData   func(bytes []byte) error
-	OnCommentBegin func(byteCount uint64) error
-	OnCommentData  func(bytes []byte) error
-	OnBinaryBegin  func(byteCount uint64) error
-	OnBinaryData   func(bytes []byte) error
+type DecoderCallbacks interface {
+	OnNil() error
+	OnBool(value bool) error
+	OnInt(value int) error
+	OnInt64(value int64) error
+	OnUint(value uint) error
+	OnUint64(value uint64) error
+	OnFloat32(value float32) error
+	OnFloat64(value float64) error
+	OnTime(value time.Time) error
+	OnListBegin() error
+	OnListEnd() error
+	OnMapBegin() error
+	OnMapEnd() error
+	OnStringBegin(byteCount uint64) error
+	OnStringData(bytes []byte) error
+	OnCommentBegin(byteCount uint64) error
+	OnCommentData(bytes []byte) error
+	OnBinaryBegin(byteCount uint64) error
+	OnBinaryData(bytes []byte) error
 }
 
 type containerData struct {
@@ -46,12 +46,13 @@ type arrayData struct {
 }
 
 type Decoder struct {
-	streamOffset  int64
-	buffer        decodeBuffer
-	partialBuffer decodeBuffer
-	container     containerData
-	array         arrayData
-	callbacks     *DecoderCallbacks
+	streamOffset      int64
+	buffer            decodeBuffer
+	partialBuffer     decodeBuffer
+	container         containerData
+	array             arrayData
+	callbacks         DecoderCallbacks
+	maxContainerDepth int
 }
 
 func (decoder *Decoder) enterContainer(newContainerType containerType) {
@@ -139,7 +140,11 @@ func (decoder *Decoder) decodeStringOfLength(buffer *decodeBuffer, length int64)
 
 func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
-		checkCallback(decoder.callbacks.OnInt(int(int8(dataType))))
+		if int8(dataType) >= 0 {
+			checkCallback(decoder.callbacks.OnUint(uint(dataType)))
+		} else {
+			checkCallback(decoder.callbacks.OnInt(int(int8(dataType))))
+		}
 		return
 	}
 
@@ -172,7 +177,9 @@ func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 			checkCallback(decoder.callbacks.OnInt(int(value)))
 		}
 	case typeNegInt64:
-		checkCallback(decoder.callbacks.OnInt64(buffer.readNegInt64()))
+		v := buffer.readNegInt64()
+		e := decoder.callbacks.OnInt64(v)
+		checkCallback(e)
 	case typeSmalltime:
 		// TODO: Specify time zone?
 		checkCallback(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
@@ -270,6 +277,13 @@ func (decoder *Decoder) handleFailedByteReservation(reservedByteCount int) {
 	decoder.partialBuffer.pos = 0
 }
 
+func NewDecoder(maxContainerDepth int, callbacks DecoderCallbacks) *Decoder {
+	decoder := new(Decoder)
+	decoder.callbacks = callbacks
+	decoder.maxContainerDepth = maxContainerDepth
+	return decoder
+}
+
 func (decoder *Decoder) Feed(data []byte) (err error) {
 	panicHandler := func() {
 		if r := recover(); r != nil {
@@ -300,7 +314,7 @@ func (decoder *Decoder) Feed(data []byte) (err error) {
 
 	decoder.feedFromBuffer(&decoder.buffer, panicHandler)
 
-	return nil
+	return err
 }
 
 func (decoder *Decoder) End() error {
