@@ -3,16 +3,17 @@ package cbe
 type typeField uint8
 
 const (
-	typeTrue         typeField = 0x6b
-	typeFalse        typeField = 0x6c
-	typeFloat32      typeField = 0x6d
-	typeFloat64      typeField = 0x6e
-	typeFloat128     typeField = 0x6f
-	typePosInt8      typeField = 0x70
-	typePosInt16     typeField = 0x71
-	typePosInt32     typeField = 0x72
-	typePosInt64     typeField = 0x73
-	typePosInt128    typeField = 0x74
+	typePosInt8      typeField = 0x6a
+	typePosInt16     typeField = 0x6b
+	typePosInt32     typeField = 0x6c
+	typePosInt64     typeField = 0x6d
+	typePosInt128    typeField = 0x6e
+	typeNil          typeField = 0x6f
+	typeFalse        typeField = 0x70
+	typeTrue         typeField = 0x71
+	typeFloat32      typeField = 0x72
+	typeFloat64      typeField = 0x73
+	typeFloat128     typeField = 0x74
 	typeDecimal32    typeField = 0x75
 	typeDecimal64    typeField = 0x76
 	typeDecimal128   typeField = 0x77
@@ -21,8 +22,8 @@ const (
 	typeNegInt32     typeField = 0x7a
 	typeNegInt64     typeField = 0x7b
 	typeNegInt128    typeField = 0x7c
-	typeTime         typeField = 0x7d
-	typeNil          typeField = 0x7e
+	typeSmalltime    typeField = 0x7d
+	typeNanotime     typeField = 0x7e
 	typePadding      typeField = 0x7f
 	typeString0      typeField = 0x80
 	typeString1      typeField = 0x81

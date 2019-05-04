@@ -4,6 +4,8 @@ github.com/ericlagergren/decimal v0.0.0-20190420051523-6335edbaa640 h1:VMAacqPM0
 github.com/ericlagergren/decimal v0.0.0-20190420051523-6335edbaa640/go.mod h1:mdYyfAkzn9kyJ/kMk/7WE9ufl9lflh+2NvecQ5mAghs=
 github.com/kstenerud/go-smalltime v1.0.0 h1:kt0RaeRgyduYZZFhs8IzlyAOUlvghh5EPKSTgd14Ehg=
 github.com/kstenerud/go-smalltime v1.0.0/go.mod h1:Bvglsl8DUrosUmin3RCvZRRQUeH2R8PKvM92wLEPPyA=
+github.com/kstenerud/go-smalltime v1.1.0 h1:wKtMbzGCZz7K9DfsG3ARlHRMV3aVrXK6nEZbzfSRyNo=
+github.com/kstenerud/go-smalltime v1.1.0/go.mod h1:Bvglsl8DUrosUmin3RCvZRRQUeH2R8PKvM92wLEPPyA=
 github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/mewmew/float v0.0.0-20181121163145-c0f786d7da73 h1:bTqCgPsW3TFb9MFtvaOmGFWVhCmN3EmRw02zkchdOHo=
 github.com/mewmew/float v0.0.0-20181121163145-c0f786d7da73/go.mod h1:obQBs6O+vjhgOZLkGdALxItKw4xrI49lSBEnAMO6lWI=

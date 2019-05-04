@@ -203,8 +203,13 @@ func (encoder *Encoder) Float(value float64) *Encoder {
 }
 
 func (encoder *Encoder) Time(value time.Time) *Encoder {
-	encoder.encodeTypeField(typeTime)
-	encoder.encodePrimitive64(uint64(smalltime.FromTime(value)))
+	if value.Nanosecond()%1000 == 0 {
+		encoder.encodeTypeField(typeSmalltime)
+		encoder.encodePrimitive64(uint64(smalltime.SmalltimeFromTime(value)))
+	} else {
+		encoder.encodeTypeField(typeNanotime)
+		encoder.encodePrimitive64(uint64(smalltime.NanotimeFromTime(value)))
+	}
 	return encoder
 }
 

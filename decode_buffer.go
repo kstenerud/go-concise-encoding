@@ -107,8 +107,12 @@ func (buffer *decodeBuffer) readFloat64() float64 {
 	return math.Float64frombits(buffer.readPrimitive64())
 }
 
-func (buffer *decodeBuffer) readTime() smalltime.Smalltime {
+func (buffer *decodeBuffer) readSmalltime() smalltime.Smalltime {
 	return smalltime.Smalltime(buffer.readPrimitive64())
+}
+
+func (buffer *decodeBuffer) readNanotime() smalltime.Nanotime {
+	return smalltime.Nanotime(buffer.readPrimitive64())
 }
 
 func (buffer *decodeBuffer) readArrayLength() int64 {

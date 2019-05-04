@@ -173,9 +173,12 @@ func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 		}
 	case typeNegInt64:
 		checkCallback(decoder.callbacks.OnInt64(buffer.readNegInt64()))
-	case typeTime:
+	case typeSmalltime:
 		// TODO: Specify time zone?
-		checkCallback(decoder.callbacks.OnTime(buffer.readTime().AsTime()))
+		checkCallback(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
+	case typeNanotime:
+		// TODO: Specify time zone?
+		checkCallback(decoder.callbacks.OnTime(buffer.readNanotime().AsTime()))
 	case typeNil:
 		checkCallback(decoder.callbacks.OnNil())
 	case typePadding:
