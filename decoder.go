@@ -2,7 +2,6 @@ package cbe
 
 import (
 	"fmt"
-	"math"
 	"time"
 )
 
@@ -14,12 +13,9 @@ type callbackError error
 type DecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
-	OnInt(value int) error
-	OnInt64(value int64) error
-	OnUint(value uint) error
-	OnUint64(value uint64) error
-	OnFloat32(value float32) error
-	OnFloat64(value float64) error
+	OnInt(value int64) error
+	OnUint(value uint64) error
+	OnFloat(value float64) error
 	OnTime(value time.Time) error
 	OnListBegin() error
 	OnListEnd() error
@@ -141,9 +137,9 @@ func (decoder *Decoder) decodeStringOfLength(buffer *decodeBuffer, length int64)
 func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
 		if int8(dataType) >= 0 {
-			checkCallback(decoder.callbacks.OnUint(uint(dataType)))
+			checkCallback(decoder.callbacks.OnUint(uint64(dataType)))
 		} else {
-			checkCallback(decoder.callbacks.OnInt(int(int8(dataType))))
+			checkCallback(decoder.callbacks.OnInt(int64(int8(dataType))))
 		}
 		return
 	}
@@ -154,32 +150,25 @@ func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	case typeFalse:
 		checkCallback(decoder.callbacks.OnBool(false))
 	case typeFloat32:
-		checkCallback(decoder.callbacks.OnFloat32(buffer.readFloat32()))
+		checkCallback(decoder.callbacks.OnFloat(float64(buffer.readFloat32())))
 	case typeFloat64:
-		checkCallback(decoder.callbacks.OnFloat64(buffer.readFloat64()))
+		checkCallback(decoder.callbacks.OnFloat(buffer.readFloat64()))
 	case typePosInt8:
-		checkCallback(decoder.callbacks.OnUint(buffer.readPrimitive8()))
+		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive8())))
 	case typePosInt16:
-		checkCallback(decoder.callbacks.OnUint(buffer.readPrimitive16()))
+		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive16())))
 	case typePosInt32:
-		checkCallback(decoder.callbacks.OnUint(buffer.readPrimitive32()))
+		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive32())))
 	case typePosInt64:
-		checkCallback(decoder.callbacks.OnUint64(buffer.readPrimitive64()))
+		checkCallback(decoder.callbacks.OnUint(buffer.readPrimitive64()))
 	case typeNegInt8:
-		checkCallback(decoder.callbacks.OnInt(-int(buffer.readPrimitive8())))
+		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive8())))
 	case typeNegInt16:
-		checkCallback(decoder.callbacks.OnInt(-int(buffer.readPrimitive16())))
+		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive16())))
 	case typeNegInt32:
-		value := -int64(buffer.readPrimitive32())
-		if value < math.MinInt32 {
-			checkCallback(decoder.callbacks.OnInt64(value))
-		} else {
-			checkCallback(decoder.callbacks.OnInt(int(value)))
-		}
+		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive32())))
 	case typeNegInt64:
-		v := buffer.readNegInt64()
-		e := decoder.callbacks.OnInt64(v)
-		checkCallback(e)
+		checkCallback(decoder.callbacks.OnInt(buffer.readNegInt64()))
 	case typeSmalltime:
 		// TODO: Specify time zone?
 		checkCallback(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
