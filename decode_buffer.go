@@ -37,6 +37,13 @@ func (buffer *decodeBuffer) consumeReservedBytes() {
 	buffer.pos += buffer.bytesToConsume
 }
 
+func (buffer *decodeBuffer) peekPrimitive8() uint {
+	if buffer.pos == len(buffer.data) {
+		panic(failedByteCountReservation(1))
+	}
+	return uint(buffer.data[buffer.pos])
+}
+
 func (buffer *decodeBuffer) readPrimitive8() uint {
 	buffer.reserveBytes(1)
 	value := uint(buffer.data[buffer.pos])
@@ -116,29 +123,15 @@ func (buffer *decodeBuffer) readNanotime() smalltime.Nanotime {
 }
 
 func (buffer *decodeBuffer) readArrayLength() int64 {
-	firstByte := buffer.readPrimitive8()
-	switch int64(firstByte & 3) {
+	switch int64(buffer.peekPrimitive8() & 3) {
 	case length6Bit:
-		return int64(firstByte >> 2)
+		return int64(buffer.readPrimitive8() >> 2)
 	case length14Bit:
-		return int64(firstByte>>2) |
-			int64(buffer.readPrimitive8())<<6
+		return int64(buffer.readPrimitive16() >> 2)
 	case length30Bit:
-		return int64(firstByte>>2) |
-			int64(buffer.readPrimitive8())<<6 |
-			int64(buffer.readPrimitive8())<<14 |
-			int64(buffer.readPrimitive8())<<22
-	case length62Bit:
-		return int64(firstByte>>2) |
-			int64(buffer.readPrimitive8())<<6 |
-			int64(buffer.readPrimitive8())<<14 |
-			int64(buffer.readPrimitive8())<<22 |
-			int64(buffer.readPrimitive8())<<30 |
-			int64(buffer.readPrimitive8())<<38 |
-			int64(buffer.readPrimitive8())<<46 |
-			int64(buffer.readPrimitive8())<<54
-	default: // TODO: 128 bit
-		return 0
+		return int64(buffer.readPrimitive32() >> 2)
+	default:
+		return int64(buffer.readPrimitive64() >> 2)
 	}
 }
 

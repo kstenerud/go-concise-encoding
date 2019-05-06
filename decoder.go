@@ -107,7 +107,7 @@ func (decoder *Decoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
 }
 
 func (decoder *Decoder) decodeArrayData(buffer *decodeBuffer) {
-	if decoder.array.currentType == arrayTypeNone {
+	if decoder.array.currentType == arrayTypeNone || decoder.array.byteCountRemaining == 0 {
 		return
 	}
 
@@ -309,6 +309,9 @@ func (decoder *Decoder) Feed(data []byte) (err error) {
 func (decoder *Decoder) End() error {
 	if decoder.container.depth > 0 {
 		return fmt.Errorf("Document still has open containers")
+	}
+	if decoder.array.byteCountRemaining > 0 {
+		return fmt.Errorf("Array is still open, expecting %d more bytes", decoder.array.byteCountRemaining)
 	}
 	return nil
 }

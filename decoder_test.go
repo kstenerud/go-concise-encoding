@@ -1,201 +1,8 @@
 package cbe
 
 import (
-	"fmt"
 	"testing"
-	"time"
 )
-
-type Nil int
-
-type testCallbacks struct {
-	nextValue        interface{}
-	containerStack   []interface{}
-	currentList      []interface{}
-	currentMap       map[interface{}]interface{}
-	currentArray     []byte
-	currentArrayType arrayType
-}
-
-func (callbacks *testCallbacks) setCurrentContainer() {
-	lastEntry := len(callbacks.containerStack) - 1
-	callbacks.currentList = nil
-	callbacks.currentMap = nil
-	if lastEntry >= 0 {
-		container := callbacks.containerStack[lastEntry]
-		if list, ok := container.([]interface{}); ok {
-			callbacks.currentList = list
-		} else {
-			callbacks.currentMap = container.(map[interface{}]interface{})
-		}
-	}
-}
-
-func (callbacks *testCallbacks) containerBegin(container interface{}) {
-	callbacks.containerStack = append(callbacks.containerStack, container)
-	callbacks.setCurrentContainer()
-}
-
-func (callbacks *testCallbacks) listBegin() {
-	callbacks.containerBegin(new([]interface{}))
-}
-
-func (callbacks *testCallbacks) mapBegin() {
-	callbacks.containerBegin(new(map[interface{}]interface{}))
-}
-
-func (callbacks *testCallbacks) containerEnd() {
-	length := len(callbacks.containerStack)
-	if length > 0 {
-		callbacks.containerStack = callbacks.containerStack[:length-1]
-		callbacks.setCurrentContainer()
-	}
-}
-
-func (callbacks *testCallbacks) arrayBegin(newArrayType arrayType, length int) {
-	callbacks.currentArray = make([]byte, 0, length)
-	callbacks.currentArrayType = newArrayType
-	if length == 0 {
-		if callbacks.currentArrayType == arrayTypeBinary {
-			callbacks.storeValue(callbacks.currentArray)
-		} else {
-			callbacks.storeValue(string(callbacks.currentArray))
-		}
-	}
-}
-
-func (callbacks *testCallbacks) arrayData(data []byte) {
-	callbacks.currentArray = append(callbacks.currentArray, data...)
-	if len(callbacks.currentArray) == cap(callbacks.currentArray) {
-		if callbacks.currentArrayType == arrayTypeBinary {
-			callbacks.storeValue(callbacks.currentArray)
-		} else {
-			callbacks.storeValue(string(callbacks.currentArray))
-		}
-	}
-}
-
-func (callbacks *testCallbacks) storeValue(value interface{}) {
-	if callbacks.currentList != nil {
-		callbacks.currentList = append(callbacks.currentList, value)
-		return
-	}
-
-	if callbacks.currentMap != nil {
-		if callbacks.nextValue == nil {
-			callbacks.nextValue = value
-		} else {
-			callbacks.currentMap[callbacks.nextValue] = value
-			callbacks.nextValue = nil
-		}
-		return
-	}
-
-	if callbacks.nextValue != nil {
-		panic(fmt.Errorf("Top level object already exists: %v", callbacks.nextValue))
-	}
-	callbacks.nextValue = value
-}
-
-func (callbacks *testCallbacks) getValue() interface{} {
-	if len(callbacks.containerStack) != 0 {
-		return callbacks.containerStack[0]
-	}
-	return callbacks.nextValue
-}
-
-func (callbacks *testCallbacks) OnNil() error {
-	callbacks.storeValue(new(Nil))
-	return nil
-}
-
-func (callbacks *testCallbacks) OnBool(value bool) error {
-	callbacks.storeValue(value)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnInt(value int64) error {
-	callbacks.storeValue(value)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnUint(value uint64) error {
-	callbacks.storeValue(value)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnFloat(value float64) error {
-	callbacks.storeValue(value)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnTime(value time.Time) error {
-	callbacks.storeValue(value)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnListBegin() error {
-	callbacks.listBegin()
-	return nil
-}
-
-func (callbacks *testCallbacks) OnListEnd() error {
-	callbacks.containerEnd()
-	return nil
-}
-
-func (callbacks *testCallbacks) OnMapBegin() error {
-	callbacks.mapBegin()
-	return nil
-}
-
-func (callbacks *testCallbacks) OnMapEnd() error {
-	callbacks.containerEnd()
-	return nil
-}
-
-func (callbacks *testCallbacks) OnStringBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeString, int(byteCount))
-	return nil
-}
-
-func (callbacks *testCallbacks) OnStringData(bytes []byte) error {
-	callbacks.arrayData(bytes)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnCommentBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeComment, int(byteCount))
-	return nil
-}
-
-func (callbacks *testCallbacks) OnCommentData(bytes []byte) error {
-	callbacks.arrayData(bytes)
-	return nil
-}
-
-func (callbacks *testCallbacks) OnBinaryBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeBinary, int(byteCount))
-	return nil
-}
-
-func (callbacks *testCallbacks) OnBinaryData(bytes []byte) error {
-	callbacks.arrayData(bytes)
-	return nil
-}
-
-func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
-	callbacks := new(testCallbacks)
-	decoder := NewDecoder(9, callbacks)
-	err := decoder.Feed(encoded)
-	if err != nil {
-		t.Errorf("Error: %v", err)
-	}
-	actual := callbacks.getValue()
-	if actual != expected {
-		t.Errorf("Expected [%v], actual [%v]", expected, actual)
-	}
-}
 
 func TestDecodeSmallInt(t *testing.T) {
 	assertDecoded(t, []byte{0x00}, uint64(0))
@@ -232,6 +39,116 @@ func TestDecodeInt64(t *testing.T) {
 	assertDecoded(t, []byte{0x7d, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80}, int64(-0x8000000000000000))
 }
 
-func TestDecodeString(t *testing.T) {
-	assertDecoded(t, []byte{0x80}, "")
+func TestDecodeStringSmall(t *testing.T) {
+	for i := 0; i < 15; i++ {
+		value := generateString(i)
+		encoded := []byte{byte(0x80 + i)}
+		encoded = append(encoded, []byte(value)...)
+		assertDecoded(t, encoded, value)
+	}
+}
+
+func TestDecodeString0(t *testing.T) {
+	value := generateString(0)
+	encoded := []byte{0x90, 0 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeString1(t *testing.T) {
+	value := generateString(1)
+	encoded := []byte{0x90, 1 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeString16(t *testing.T) {
+	value := generateString(16)
+	encoded := []byte{0x90, 16 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeString64(t *testing.T) {
+	value := generateString(64)
+	encoded := []byte{0x90, 0x01, 0x01}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeString16384(t *testing.T) {
+	value := generateString(16384)
+	encoded := []byte{0x90, 0x02, 0x00, 0x01, 0x00}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeComment0(t *testing.T) {
+	value := generateString(0)
+	encoded := []byte{0x92, 0 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeComment1(t *testing.T) {
+	value := generateString(1)
+	encoded := []byte{0x92, 1 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeComment16(t *testing.T) {
+	value := generateString(16)
+	encoded := []byte{0x92, 16 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeComment64(t *testing.T) {
+	value := generateString(64)
+	encoded := []byte{0x92, 0x01, 0x01}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeComment16384(t *testing.T) {
+	value := generateString(16384)
+	encoded := []byte{0x92, 0x02, 0x00, 0x01, 0x00}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeBinary0(t *testing.T) {
+	value := generateBinary(0)
+	encoded := []byte{0x91, 0 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeBinary1(t *testing.T) {
+	value := generateBinary(1)
+	encoded := []byte{0x91, 1 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeBinary16(t *testing.T) {
+	value := generateBinary(16)
+	encoded := []byte{0x91, 16 << 2}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeBinary64(t *testing.T) {
+	value := generateBinary(64)
+	encoded := []byte{0x91, 0x01, 0x01}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
+}
+
+func TestDecodeBinary16384(t *testing.T) {
+	value := generateBinary(16384)
+	encoded := []byte{0x91, 0x02, 0x00, 0x01, 0x00}
+	encoded = append(encoded, []byte(value)...)
+	assertDecoded(t, encoded, value)
 }
