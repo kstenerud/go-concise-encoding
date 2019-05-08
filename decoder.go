@@ -10,7 +10,7 @@ const maxPartialBufferSize = 16
 type decoderError error
 type callbackError error
 
-type DecoderCallbacks interface {
+type CbeDecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
 	OnInt(value int64) error
@@ -23,10 +23,29 @@ type DecoderCallbacks interface {
 	OnMapEnd() error
 	OnStringBegin(byteCount uint64) error
 	OnStringData(bytes []byte) error
-	OnCommentBegin(byteCount uint64) error
-	OnCommentData(bytes []byte) error
 	OnBinaryBegin(byteCount uint64) error
 	OnBinaryData(bytes []byte) error
+}
+
+// This version of the callbacks allows you to capture comments as well.
+type CbeDecoderCommentCallbacks interface {
+	OnNil() error
+	OnBool(value bool) error
+	OnInt(value int64) error
+	OnUint(value uint64) error
+	OnFloat(value float64) error
+	OnTime(value time.Time) error
+	OnListBegin() error
+	OnListEnd() error
+	OnMapBegin() error
+	OnMapEnd() error
+	OnStringBegin(byteCount uint64) error
+	OnStringData(bytes []byte) error
+	OnBinaryBegin(byteCount uint64) error
+	OnBinaryData(bytes []byte) error
+	// Only these two are different
+	OnCommentBegin(byteCount uint64) error
+	OnCommentData(bytes []byte) error
 }
 
 type containerData struct {
@@ -41,17 +60,18 @@ type arrayData struct {
 	onData             func([]byte) error
 }
 
-type Decoder struct {
+type CbeDecoder struct {
 	streamOffset      int64
 	buffer            decodeBuffer
 	partialBuffer     decodeBuffer
 	container         containerData
 	array             arrayData
-	callbacks         DecoderCallbacks
+	callbacks         CbeDecoderCallbacks
+	commentCallbacks  CbeDecoderCommentCallbacks
 	maxContainerDepth int
 }
 
-func (decoder *Decoder) enterContainer(newContainerType containerType) {
+func (decoder *CbeDecoder) enterContainer(newContainerType containerType) {
 	if decoder.container.depth >= len(decoder.container.currentType) {
 		panic(decoderError(fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))))
 	}
@@ -59,7 +79,7 @@ func (decoder *Decoder) enterContainer(newContainerType containerType) {
 	decoder.container.currentType[decoder.container.depth] = newContainerType
 }
 
-func (decoder *Decoder) leaveContainer() containerType {
+func (decoder *CbeDecoder) leaveContainer() containerType {
 	if decoder.container.depth <= 0 {
 		panic(decoderError(fmt.Errorf("Got container end but not in a container")))
 	}
@@ -67,15 +87,15 @@ func (decoder *Decoder) leaveContainer() containerType {
 	return decoder.container.currentType[decoder.container.depth+1]
 }
 
-func (decoder *Decoder) beginArray(newArrayType arrayType) {
+func (decoder *CbeDecoder) beginArray(newArrayType arrayType) {
 	decoder.array.currentType = newArrayType
 	switch newArrayType {
 	case arrayTypeBinary:
 		decoder.array.onBegin = decoder.callbacks.OnBinaryBegin
 		decoder.array.onData = decoder.callbacks.OnBinaryData
 	case arrayTypeComment:
-		decoder.array.onBegin = decoder.callbacks.OnCommentBegin
-		decoder.array.onData = decoder.callbacks.OnCommentData
+		decoder.array.onBegin = decoder.commentCallbacks.OnCommentBegin
+		decoder.array.onData = decoder.commentCallbacks.OnCommentData
 	case arrayTypeString:
 		decoder.array.onBegin = decoder.callbacks.OnStringBegin
 		decoder.array.onData = decoder.callbacks.OnStringData
@@ -88,16 +108,18 @@ func checkCallback(err error) {
 	}
 }
 
-func (decoder *Decoder) setArrayLength(length int64) {
+func (decoder *CbeDecoder) setArrayLength(length int64) {
 	decoder.array.byteCountRemaining = length
-	checkCallback(decoder.array.onBegin(uint64(decoder.array.byteCountRemaining)))
+	if decoder.array.onBegin != nil {
+		checkCallback(decoder.array.onBegin(uint64(decoder.array.byteCountRemaining)))
+	}
 }
 
-func (decoder *Decoder) decodeArrayLength(buffer *decodeBuffer) {
+func (decoder *CbeDecoder) decodeArrayLength(buffer *decodeBuffer) {
 	decoder.setArrayLength(buffer.readArrayLength())
 }
 
-func (decoder *Decoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
+func (decoder *CbeDecoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
 	decodeByteCount := decoder.array.byteCountRemaining
 	bytesRemaining := len(buffer.data) - buffer.pos
 	if int64(bytesRemaining) < decodeByteCount {
@@ -106,7 +128,7 @@ func (decoder *Decoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
 	return int(decodeByteCount)
 }
 
-func (decoder *Decoder) decodeArrayData(buffer *decodeBuffer) {
+func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 	if decoder.array.currentType == arrayTypeNone || decoder.array.byteCountRemaining == 0 {
 		return
 	}
@@ -121,20 +143,22 @@ func (decoder *Decoder) decodeArrayData(buffer *decodeBuffer) {
 	if decoder.array.byteCountRemaining == 0 {
 		decoder.array.currentType = arrayTypeNone
 	}
-	checkCallback(decoder.array.onData(bytes))
+	if decoder.array.onData != nil {
+		checkCallback(decoder.array.onData(bytes))
+	}
 	if decoder.array.byteCountRemaining > 0 {
 		// 0 because we don't want to reserve space in the partial buffer
 		panic(failedByteCountReservation(0))
 	}
 }
 
-func (decoder *Decoder) decodeStringOfLength(buffer *decodeBuffer, length int64) {
+func (decoder *CbeDecoder) decodeStringOfLength(buffer *decodeBuffer, length int64) {
 	decoder.beginArray(arrayTypeString)
 	decoder.setArrayLength(length)
 	decoder.decodeArrayData(buffer)
 }
 
-func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
+func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
 		if int8(dataType) >= 0 {
 			checkCallback(decoder.callbacks.OnUint(uint64(dataType)))
@@ -242,7 +266,7 @@ func (decoder *Decoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	// TODO: 128 bit and decimal
 }
 
-func (decoder *Decoder) feedFromBuffer(buffer *decodeBuffer, panicHandlerFunc func()) {
+func (decoder *CbeDecoder) feedFromBuffer(buffer *decodeBuffer, panicHandlerFunc func()) {
 	defer panicHandlerFunc()
 	decoder.decodeArrayData(buffer)
 
@@ -255,7 +279,7 @@ func (decoder *Decoder) feedFromBuffer(buffer *decodeBuffer, panicHandlerFunc fu
 	}
 }
 
-func (decoder *Decoder) handleFailedByteReservation(reservedByteCount int) {
+func (decoder *CbeDecoder) handleFailedByteReservation(reservedByteCount int) {
 	existingBytes := decoder.buffer.data[decoder.buffer.pos:len(decoder.buffer.data)]
 	if decoder.partialBuffer.data == nil {
 		decoder.partialBuffer.data = make([]byte, maxPartialBufferSize)
@@ -266,14 +290,17 @@ func (decoder *Decoder) handleFailedByteReservation(reservedByteCount int) {
 	decoder.partialBuffer.pos = 0
 }
 
-func NewDecoder(maxContainerDepth int, callbacks DecoderCallbacks) *Decoder {
-	decoder := new(Decoder)
+func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
+	decoder := new(CbeDecoder)
 	decoder.callbacks = callbacks
 	decoder.maxContainerDepth = maxContainerDepth
+	if commentCallbacks, ok := callbacks.(CbeDecoderCommentCallbacks); ok {
+		decoder.commentCallbacks = commentCallbacks
+	}
 	return decoder
 }
 
-func (decoder *Decoder) Feed(data []byte) (err error) {
+func (decoder *CbeDecoder) Feed(data []byte) (err error) {
 	panicHandler := func() {
 		if r := recover(); r != nil {
 			switch r.(type) {
@@ -306,7 +333,7 @@ func (decoder *Decoder) Feed(data []byte) (err error) {
 	return err
 }
 
-func (decoder *Decoder) End() error {
+func (decoder *CbeDecoder) End() error {
 	if decoder.container.depth > 0 {
 		return fmt.Errorf("Document still has open containers")
 	}
@@ -316,7 +343,7 @@ func (decoder *Decoder) End() error {
 	return nil
 }
 
-func (decoder *Decoder) Decode(document []byte) error {
+func (decoder *CbeDecoder) Decode(document []byte) error {
 	if err := decoder.Feed(document); err != nil {
 		return err
 	}

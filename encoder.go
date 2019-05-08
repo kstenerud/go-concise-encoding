@@ -50,40 +50,40 @@ func fitsInUint32(value uint64) bool {
 	return value <= math.MaxUint32
 }
 
-type Encoder struct {
+type CbeEncoder struct {
 	containerDepth       int
 	currentArrayType     arrayType
 	currentContainerType []containerType
 	encoded              []byte
 }
 
-func NewEncoder(maxContainerDepth int) *Encoder {
-	encoder := new(Encoder)
+func NewCbeEncoder(maxContainerDepth int) *CbeEncoder {
+	encoder := new(CbeEncoder)
 	encoder.currentContainerType = make([]containerType, maxContainerDepth)
 	encoder.encoded = make([]byte, 0)
 	return encoder
 }
 
-func (encoder *Encoder) encodeBytes(bytes []byte) {
+func (encoder *CbeEncoder) encodeBytes(bytes []byte) {
 	encoder.encoded = append(encoder.encoded, bytes...)
 }
 
-func (encoder *Encoder) encodePrimitive8(value byte) {
+func (encoder *CbeEncoder) encodePrimitive8(value byte) {
 	encoder.encoded = append(encoder.encoded, value)
 }
 
-func (encoder *Encoder) encodePrimitive16(value uint16) {
+func (encoder *CbeEncoder) encodePrimitive16(value uint16) {
 	encoder.encodeBytes([]byte{byte(value), byte(value >> 8)})
 }
 
-func (encoder *Encoder) encodePrimitive32(value uint32) {
+func (encoder *CbeEncoder) encodePrimitive32(value uint32) {
 	encoder.encodeBytes([]byte{
 		byte(value), byte(value >> 8),
 		byte(value >> 16), byte(value >> 24),
 	})
 }
 
-func (encoder *Encoder) encodePrimitive64(value uint64) {
+func (encoder *CbeEncoder) encodePrimitive64(value uint64) {
 	encoder.encodeBytes([]byte{
 		byte(value), byte(value >> 8), byte(value >> 16),
 		byte(value >> 24), byte(value >> 32), byte(value >> 40),
@@ -91,11 +91,11 @@ func (encoder *Encoder) encodePrimitive64(value uint64) {
 	})
 }
 
-func (encoder *Encoder) encodeTypeField(typeValue typeField) {
+func (encoder *CbeEncoder) encodeTypeField(typeValue typeField) {
 	encoder.encodePrimitive8(byte(typeValue))
 }
 
-func (encoder *Encoder) encodeArrayLengthField(length int64) {
+func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
 	switch {
 	case is6BitLength(length):
 		encoder.encodePrimitive8(byte(length<<2 | length6Bit))
@@ -108,7 +108,7 @@ func (encoder *Encoder) encodeArrayLengthField(length int64) {
 	}
 }
 
-func (encoder *Encoder) enterArray(newArrayType arrayType) {
+func (encoder *CbeEncoder) enterArray(newArrayType arrayType) {
 	// TODO: Rework API a bit so that String() etc don't have dual meanings
 	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
 		panic("Cannot start new array when already in an array")
@@ -116,34 +116,34 @@ func (encoder *Encoder) enterArray(newArrayType arrayType) {
 	encoder.currentArrayType = newArrayType
 }
 
-func (encoder *Encoder) leaveArray() {
+func (encoder *CbeEncoder) leaveArray() {
 	encoder.currentArrayType = arrayTypeNone
 }
 
-func (encoder *Encoder) enterContainer(newContainerType containerType) {
+func (encoder *CbeEncoder) enterContainer(newContainerType containerType) {
 	// TODO: Error if container depth >= max
 	encoder.containerDepth++
 	encoder.currentContainerType[encoder.containerDepth] = newContainerType
 }
 
-func (encoder *Encoder) leaveContainer() {
+func (encoder *CbeEncoder) leaveContainer() {
 	// TODO: Error if container depth == 0
 	encoder.containerDepth--
 }
 
-func (encoder *Encoder) Padding(byteCount int) error {
+func (encoder *CbeEncoder) Padding(byteCount int) error {
 	for i := 0; i < byteCount; i++ {
 		encoder.encodeTypeField(typePadding)
 	}
 	return nil
 }
 
-func (encoder *Encoder) Nil() error {
+func (encoder *CbeEncoder) Nil() error {
 	encoder.encodeTypeField(typeNil)
 	return nil
 }
 
-func (encoder *Encoder) Bool(value bool) error {
+func (encoder *CbeEncoder) Bool(value bool) error {
 	if value {
 		encoder.encodeTypeField(typeTrue)
 	} else {
@@ -152,7 +152,7 @@ func (encoder *Encoder) Bool(value bool) error {
 	return nil
 }
 
-func (encoder *Encoder) Uint(value uint64) error {
+func (encoder *CbeEncoder) Uint(value uint64) error {
 	switch {
 	case uintFitsInSmallint(value):
 		encoder.encodePrimitive8(byte(value))
@@ -172,7 +172,7 @@ func (encoder *Encoder) Uint(value uint64) error {
 	return nil
 }
 
-func (encoder *Encoder) Int(value int64) error {
+func (encoder *CbeEncoder) Int(value int64) error {
 	if value >= 0 {
 		encoder.Uint(uint64(value))
 		return nil
@@ -199,7 +199,7 @@ func (encoder *Encoder) Int(value int64) error {
 	return nil
 }
 
-func (encoder *Encoder) Float(value float64) error {
+func (encoder *CbeEncoder) Float(value float64) error {
 	asfloat32 := float32(value)
 	if float64(asfloat32) == value {
 		encoder.encodeTypeField(typeFloat32)
@@ -211,7 +211,7 @@ func (encoder *Encoder) Float(value float64) error {
 	return nil
 }
 
-func (encoder *Encoder) Time(value time.Time) error {
+func (encoder *CbeEncoder) Time(value time.Time) error {
 	if value.Nanosecond()%1000 == 0 {
 		encoder.encodeTypeField(typeSmalltime)
 		encoder.encodePrimitive64(uint64(smalltime.SmalltimeFromTime(value)))
@@ -222,40 +222,40 @@ func (encoder *Encoder) Time(value time.Time) error {
 	return nil
 }
 
-func (encoder *Encoder) ListBegin() error {
+func (encoder *CbeEncoder) ListBegin() error {
 	encoder.enterContainer(containerTypeList)
 	encoder.encodeTypeField(typeList)
 	return nil
 }
 
-func (encoder *Encoder) containerEnd() error {
+func (encoder *CbeEncoder) containerEnd() error {
 	encoder.leaveContainer()
 	encoder.encodeTypeField(typeEndContainer)
 	return nil
 }
 
-func (encoder *Encoder) ListEnd() error {
+func (encoder *CbeEncoder) ListEnd() error {
 	return encoder.containerEnd()
 }
 
-func (encoder *Encoder) MapBegin() error {
+func (encoder *CbeEncoder) MapBegin() error {
 	encoder.enterContainer(containerTypeMap)
 	encoder.encodeTypeField(typeMap)
 	return nil
 }
 
-func (encoder *Encoder) MapEnd() error {
+func (encoder *CbeEncoder) MapEnd() error {
 	return encoder.containerEnd()
 }
 
-func (encoder *Encoder) BinaryBegin(length uint64) error {
+func (encoder *CbeEncoder) BinaryBegin(length uint64) error {
 	encoder.enterArray(arrayTypeBinary)
 	encoder.encodeTypeField(typeBinary)
 	encoder.encodeArrayLengthField(int64(length))
 	return nil
 }
 
-func (encoder *Encoder) BinaryData(value []byte) error {
+func (encoder *CbeEncoder) BinaryData(value []byte) error {
 	// TODO: sanity checks
 	encoder.encodeBytes([]byte(value))
 	// TODO: If all bytes written
@@ -265,14 +265,14 @@ func (encoder *Encoder) BinaryData(value []byte) error {
 	return nil
 }
 
-func (encoder *Encoder) Bytes(value []byte) error {
+func (encoder *CbeEncoder) Bytes(value []byte) error {
 	if err := encoder.BinaryBegin(uint64(len(value))); err != nil {
 		return err
 	}
 	return encoder.BinaryData(value)
 }
 
-func (encoder *Encoder) StringBegin(length uint64) error {
+func (encoder *CbeEncoder) StringBegin(length uint64) error {
 	encoder.enterArray(arrayTypeString)
 	if length <= 15 {
 		encoder.encodeTypeField(typeString0 + typeField(length))
@@ -283,7 +283,7 @@ func (encoder *Encoder) StringBegin(length uint64) error {
 	return nil
 }
 
-func (encoder *Encoder) StringData(value []byte) error {
+func (encoder *CbeEncoder) StringData(value []byte) error {
 	// TODO: sanity checks
 	encoder.encodeBytes([]byte(value))
 	// TODO: If all bytes written
@@ -293,7 +293,7 @@ func (encoder *Encoder) StringData(value []byte) error {
 	return nil
 }
 
-func (encoder *Encoder) String(value string) error {
+func (encoder *CbeEncoder) String(value string) error {
 	if err := encoder.StringBegin(uint64(len(value))); err != nil {
 		return err
 	}
@@ -301,7 +301,7 @@ func (encoder *Encoder) String(value string) error {
 	return encoder.StringData([]byte(value))
 }
 
-func (encoder *Encoder) Comment(value string) error {
+func (encoder *CbeEncoder) Comment(value string) error {
 	encoder.enterArray(arrayTypeComment)
 	encoder.encodeTypeField(typeComment)
 	encoder.encodeArrayLengthField(int64(len(value)))
@@ -310,6 +310,6 @@ func (encoder *Encoder) Comment(value string) error {
 	return nil
 }
 
-func (encoder *Encoder) Encoded() []byte {
+func (encoder *CbeEncoder) Encoded() []byte {
 	return encoder.encoded
 }

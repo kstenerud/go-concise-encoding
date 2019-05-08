@@ -3,7 +3,6 @@ package cbe
 import (
 	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 )
@@ -188,7 +187,7 @@ func (callbacks *testCallbacks) OnBinaryData(bytes []byte) error {
 
 func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
 	callbacks := new(testCallbacks)
-	decoder := NewDecoder(9, callbacks)
+	decoder := NewCbeDecoder(9, callbacks)
 	err := decoder.Feed(encoded)
 	if err != nil {
 		t.Errorf("Error: %v", err)
@@ -203,22 +202,4 @@ func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Expected [%v], actual [%v]", expected, actual)
 	}
-}
-
-var chars = [...]byte{
-	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-	'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-}
-
-func generateString(length int) string {
-	var result strings.Builder
-	for i := 0; i < length; i++ {
-		result.WriteByte(chars[i%len(chars)])
-	}
-	return result.String()
-}
-
-func generateBinary(length int) []byte {
-	return []byte(generateString(length))
 }
