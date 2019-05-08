@@ -131,19 +131,28 @@ func (encoder *Encoder) leaveContainer() {
 	encoder.containerDepth--
 }
 
-func (encoder *Encoder) Padding(byteCount int) *Encoder {
+func (encoder *Encoder) Padding(byteCount int) error {
 	for i := 0; i < byteCount; i++ {
 		encoder.encodeTypeField(typePadding)
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) Nil() *Encoder {
+func (encoder *Encoder) Nil() error {
 	encoder.encodeTypeField(typeNil)
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) Uint(value uint64) *Encoder {
+func (encoder *Encoder) Bool(value bool) error {
+	if value {
+		encoder.encodeTypeField(typeTrue)
+	} else {
+		encoder.encodeTypeField(typeFalse)
+	}
+	return nil
+}
+
+func (encoder *Encoder) Uint(value uint64) error {
 	switch {
 	case uintFitsInSmallint(value):
 		encoder.encodePrimitive8(byte(value))
@@ -160,13 +169,13 @@ func (encoder *Encoder) Uint(value uint64) *Encoder {
 		encoder.encodeTypeField(typePosInt64)
 		encoder.encodePrimitive64(value)
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) Int(value int64) *Encoder {
+func (encoder *Encoder) Int(value int64) error {
 	if value >= 0 {
 		encoder.Uint(uint64(value))
-		return encoder
+		return nil
 	}
 
 	uvalue := uint64(-value)
@@ -187,10 +196,10 @@ func (encoder *Encoder) Int(value int64) *Encoder {
 		encoder.encodeTypeField(typeNegInt64)
 		encoder.encodePrimitive64(uvalue)
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) Float(value float64) *Encoder {
+func (encoder *Encoder) Float(value float64) error {
 	asfloat32 := float32(value)
 	if float64(asfloat32) == value {
 		encoder.encodeTypeField(typeFloat32)
@@ -199,10 +208,10 @@ func (encoder *Encoder) Float(value float64) *Encoder {
 		encoder.encodeTypeField(typeFloat64)
 		encoder.encodePrimitive64(math.Float64bits(value))
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) Time(value time.Time) *Encoder {
+func (encoder *Encoder) Time(value time.Time) error {
 	if value.Nanosecond()%1000 == 0 {
 		encoder.encodeTypeField(typeSmalltime)
 		encoder.encodePrimitive64(uint64(smalltime.SmalltimeFromTime(value)))
@@ -210,59 +219,60 @@ func (encoder *Encoder) Time(value time.Time) *Encoder {
 		encoder.encodeTypeField(typeNanotime)
 		encoder.encodePrimitive64(uint64(smalltime.NanotimeFromTime(value)))
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) ListBegin() *Encoder {
+func (encoder *Encoder) ListBegin() error {
 	encoder.enterContainer(containerTypeList)
 	encoder.encodeTypeField(typeList)
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) containerEnd() *Encoder {
+func (encoder *Encoder) containerEnd() error {
 	encoder.leaveContainer()
 	encoder.encodeTypeField(typeEndContainer)
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) ListEnd() *Encoder {
-	encoder.containerEnd()
-	return encoder
+func (encoder *Encoder) ListEnd() error {
+	return encoder.containerEnd()
 }
 
-func (encoder *Encoder) MapBegin() *Encoder {
+func (encoder *Encoder) MapBegin() error {
 	encoder.enterContainer(containerTypeMap)
 	encoder.encodeTypeField(typeMap)
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) MapEnd() *Encoder {
-	encoder.containerEnd()
-	return encoder
+func (encoder *Encoder) MapEnd() error {
+	return encoder.containerEnd()
 }
 
-func (encoder *Encoder) BinaryBegin(length uint64) *Encoder {
+func (encoder *Encoder) BinaryBegin(length uint64) error {
 	encoder.enterArray(arrayTypeBinary)
 	encoder.encodeTypeField(typeBinary)
 	encoder.encodeArrayLengthField(int64(length))
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) BinaryData(value []byte) *Encoder {
+func (encoder *Encoder) BinaryData(value []byte) error {
 	// TODO: sanity checks
 	encoder.encodeBytes([]byte(value))
 	// TODO: If all bytes written
 	if true {
 		encoder.leaveArray()
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) Binary(value []byte) *Encoder {
-	return encoder.BinaryBegin(uint64(len(value))).BinaryData(value)
+func (encoder *Encoder) Bytes(value []byte) error {
+	if err := encoder.BinaryBegin(uint64(len(value))); err != nil {
+		return err
+	}
+	return encoder.BinaryData(value)
 }
 
-func (encoder *Encoder) StringBegin(length uint64) *Encoder {
+func (encoder *Encoder) StringBegin(length uint64) error {
 	encoder.enterArray(arrayTypeString)
 	if length <= 15 {
 		encoder.encodeTypeField(typeString0 + typeField(length))
@@ -270,30 +280,34 @@ func (encoder *Encoder) StringBegin(length uint64) *Encoder {
 		encoder.encodeTypeField(typeString)
 		encoder.encodeArrayLengthField(int64(length))
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) StringData(value []byte) *Encoder {
+func (encoder *Encoder) StringData(value []byte) error {
 	// TODO: sanity checks
 	encoder.encodeBytes([]byte(value))
 	// TODO: If all bytes written
 	if true {
 		encoder.leaveArray()
 	}
-	return encoder
+	return nil
 }
 
-func (encoder *Encoder) String(value string) *Encoder {
-	return encoder.StringBegin(uint64(len(value))).StringData([]byte(value))
+func (encoder *Encoder) String(value string) error {
+	if err := encoder.StringBegin(uint64(len(value))); err != nil {
+		return err
+	}
+
+	return encoder.StringData([]byte(value))
 }
 
-func (encoder *Encoder) Comment(value string) *Encoder {
+func (encoder *Encoder) Comment(value string) error {
 	encoder.enterArray(arrayTypeComment)
 	encoder.encodeTypeField(typeComment)
 	encoder.encodeArrayLengthField(int64(len(value)))
 	encoder.encodeBytes([]byte(value))
 	encoder.leaveArray()
-	return encoder
+	return nil
 }
 
 func (encoder *Encoder) Encoded() []byte {
