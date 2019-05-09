@@ -61,14 +61,13 @@ type arrayData struct {
 }
 
 type CbeDecoder struct {
-	streamOffset      int64
-	buffer            decodeBuffer
-	partialBuffer     decodeBuffer
-	container         containerData
-	array             arrayData
-	callbacks         CbeDecoderCallbacks
-	commentCallbacks  CbeDecoderCommentCallbacks
-	maxContainerDepth int
+	streamOffset     int64
+	buffer           decodeBuffer
+	partialBuffer    decodeBuffer
+	container        containerData
+	array            arrayData
+	callbacks        CbeDecoderCallbacks
+	commentCallbacks CbeDecoderCommentCallbacks
 }
 
 func (decoder *CbeDecoder) enterContainer(newContainerType containerType) {
@@ -293,7 +292,7 @@ func (decoder *CbeDecoder) handleFailedByteReservation(reservedByteCount int) {
 func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
 	decoder := new(CbeDecoder)
 	decoder.callbacks = callbacks
-	decoder.maxContainerDepth = maxContainerDepth
+	decoder.container.currentType = make([]containerType, maxContainerDepth)
 	if commentCallbacks, ok := callbacks.(CbeDecoderCommentCallbacks); ok {
 		decoder.commentCallbacks = commentCallbacks
 	}
