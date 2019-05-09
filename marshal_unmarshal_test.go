@@ -2,7 +2,6 @@ package cbe
 
 import (
 	"bytes"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -49,60 +48,72 @@ func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 	}
 }
 
-func TestNil(t *testing.T) {
+func TestMarshalUnmarshalNil(t *testing.T) {
 	assertMarshalUnmarshal(t, nil)
 }
 
-func TestBool(t *testing.T) {
+func TestMarshalUnmarshalBool(t *testing.T) {
 	assertMarshalUnmarshal(t, false)
 	assertMarshalUnmarshal(t, true)
 }
 
-func Test0(t *testing.T) {
+func TestMarshalUnmarshal0(t *testing.T) {
 	assertMarshalUnmarshal(t, 0)
 }
 
-func TestN1(t *testing.T) {
+func TestMarshalUnmarshalN1(t *testing.T) {
 	assertMarshalUnmarshal(t, -1)
 }
 
-func Test200(t *testing.T) {
+func TestMarshalUnmarshal200(t *testing.T) {
 	assertMarshalUnmarshal(t, 200)
 }
 
-func Test2000(t *testing.T) {
+func TestMarshalUnmarshal2000(t *testing.T) {
 	assertMarshalUnmarshal(t, 2000)
 }
 
-func Test1_5(t *testing.T) {
+func TestMarshalUnmarshal1_5(t *testing.T) {
 	assertMarshalUnmarshal(t, 1.5)
 }
 
-func Test1_0123(t *testing.T) {
+func TestMarshalUnmarshal1_0123(t *testing.T) {
 	assertMarshalUnmarshal(t, 1.0123)
 }
 
-func TestTimeNow(t *testing.T) {
+func TestMarshalUnmarshalTimeNow(t *testing.T) {
 	assertMarshalUnmarshal(t, time.Now().UTC())
 }
 
-func TestEmptyString(t *testing.T) {
+func TestMarshalUnmarshalEmptyString(t *testing.T) {
 	assertMarshalUnmarshal(t, "")
 }
 
-func TestShortString(t *testing.T) {
+func TestMarshalUnmarshalShortString(t *testing.T) {
 	assertMarshalUnmarshal(t, "This is a test")
 }
 
-func TestLongString(t *testing.T) {
+func TestMarshalUnmarshalLongString(t *testing.T) {
 	assertMarshalUnmarshal(t, "This is a longer string test that goes beyond 15 characters.")
 }
 
-func TestBytesSlice(t *testing.T) {
+func TestMarshalUnmarshalBytesSlice(t *testing.T) {
 	assertMarshalUnmarshal(t, []byte{1, 2, 3, 4, 5})
 }
 
-func TestBytesArray(t *testing.T) {
+func TestMarshalUnmarshalBytesArray(t *testing.T) {
 	array := [...]byte{1, 2}
 	assertMarshalUnmarshal(t, array)
+}
+
+type MyTestStruct struct {
+	IntValue    int
+	FloatValue  float32
+	StringValue string
+	ByteValue   []byte
+}
+
+func TestMarshalUnmarshalStruct(t *testing.T) {
+	structValue := new(MyTestStruct)
+	assertMarshalUnmarshal(t, structValue)
 }
