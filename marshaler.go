@@ -99,8 +99,31 @@ func marshalReflectValue(encoder PrimitiveEncoder, rv *reflect.Value) error {
 			}
 		}
 		return encoder.MapEnd()
-	case reflect.Slice, reflect.Array:
-		if rv.Elem().Kind() == reflect.Uint8 {
+	case reflect.Array:
+		if rv.CanAddr() {
+			v := rv.Slice(0, rv.Len())
+			return marshalReflectValue(encoder, &v)
+		} else if rv.Type().Elem().Kind() == reflect.Uint8 {
+			// TODO: Is there a better way to do this?
+			tempSlice := make([]byte, rv.Len())
+			for i := 0; i < rv.Len(); i++ {
+				tempSlice[i] = rv.Index(i).Interface().(uint8)
+			}
+			return Marshal(encoder, tempSlice)
+		} else {
+			if err := encoder.ListBegin(); err != nil {
+				return err
+			}
+			for i := 0; i < rv.Len(); i++ {
+				v := rv.Index(i)
+				if err := marshalReflectValue(encoder, &v); err != nil {
+					return err
+				}
+			}
+			return encoder.ListEnd()
+		}
+	case reflect.Slice:
+		if rv.Type().Elem().Kind() == reflect.Uint8 {
 			return encoder.Bytes(rv.Bytes())
 		}
 		if err := encoder.ListBegin(); err != nil {
