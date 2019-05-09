@@ -76,11 +76,13 @@ func marshalReflectValue(encoder PrimitiveEncoder, rv *reflect.Value) error {
 			// TODO: tags: marshalKey, marshalShortKey? encodedKey?
 			k := field.Name
 			v := rv.Field(i)
-			if err := Marshal(encoder, k); err != nil {
-				return err
-			}
-			if err := Marshal(encoder, v); err != nil {
-				return err
+			if v.CanInterface() {
+				if err := Marshal(encoder, k); err != nil {
+					return err
+				}
+				if err := marshalReflectValue(encoder, &v); err != nil {
+					return err
+				}
 			}
 		}
 		return encoder.MapEnd()
