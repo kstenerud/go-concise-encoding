@@ -97,6 +97,9 @@ func deepEquivalence(a, b reflect.Value) bool {
 		}
 		return true
 	case reflect.Map:
+		if a.Len() != b.Len() {
+			return false
+		}
 		iter := a.MapRange()
 		for iter.Next() {
 			k := iter.Key()

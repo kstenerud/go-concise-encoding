@@ -52,15 +52,16 @@ func (this *Unmarshaler) containerBegin(container interface{}) error {
 }
 
 func (this *Unmarshaler) listBegin() error {
-	return this.containerBegin(new([]interface{}))
+	return this.containerBegin(make([]interface{}, 0))
 }
 
 func (this *Unmarshaler) mapBegin() error {
-	return this.containerBegin(new(map[interface{}]interface{}))
+	return this.containerBegin(make(map[interface{}]interface{}))
 }
 
 func (this *Unmarshaler) containerEnd() error {
 	length := len(this.containerStack)
+	this.nextValue = this.containerStack[length-1]
 	if length > 0 {
 		this.containerStack = this.containerStack[:length-1]
 		return this.setCurrentContainer()

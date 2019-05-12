@@ -35,12 +35,22 @@ func assertMarshaled(t *testing.T, value interface{}, expected []byte) {
 }
 
 func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
+	assertMarshalUnmarshalProduces(t, expected, expected)
+}
+
+func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected interface{}) {
 	encoder := NewCbeEncoder(100)
-	Marshal(encoder, expected)
+	if err := Marshal(encoder, input); err != nil {
+		t.Errorf("Unexpected error while marshling: %v", err)
+		return
+	}
 	document := encoder.Encoded()
 	unmarshaler := new(Unmarshaler)
 	decoder := NewCbeDecoder(100, unmarshaler)
-	decoder.Decode(document)
+	if err := decoder.Decode(document); err != nil {
+		t.Errorf("Unexpected error while decoding: %v", err)
+		return
+	}
 	actual := unmarshaler.Unmarshaled()
 
 	if !DeepEquivalence(actual, expected) {
@@ -113,7 +123,26 @@ type MyTestStruct struct {
 	ByteValue   []byte
 }
 
+func TestMarshalUnmarshalStructZero(t *testing.T) {
+	structValue := new(MyTestStruct)
+	mapValue := make(map[interface{}]interface{})
+	mapValue["IntValue"] = structValue.IntValue
+	mapValue["FloatValue"] = structValue.FloatValue
+	mapValue["StringValue"] = structValue.StringValue
+	mapValue["ByteValue"] = structValue.ByteValue
+	assertMarshalUnmarshalProduces(t, structValue, mapValue)
+}
+
 func TestMarshalUnmarshalStruct(t *testing.T) {
 	structValue := new(MyTestStruct)
-	assertMarshalUnmarshal(t, structValue)
+	structValue.IntValue = 4000
+	structValue.FloatValue = 2.5
+	structValue.StringValue = "test"
+	structValue.ByteValue = []byte{0x00, 0x01, 0x02}
+	mapValue := make(map[interface{}]interface{})
+	mapValue["IntValue"] = structValue.IntValue
+	mapValue["FloatValue"] = structValue.FloatValue
+	mapValue["StringValue"] = structValue.StringValue
+	mapValue["ByteValue"] = structValue.ByteValue
+	assertMarshalUnmarshalProduces(t, structValue, mapValue)
 }

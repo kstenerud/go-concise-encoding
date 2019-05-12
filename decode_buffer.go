@@ -9,6 +9,7 @@ import (
 )
 
 type failedByteCountReservation int
+type endOfData int
 
 type decodeBuffer struct {
 	data           []byte
@@ -16,14 +17,14 @@ type decodeBuffer struct {
 	bytesToConsume int
 }
 
-func (buffer *decodeBuffer) readType() (result typeField, err error) {
+func (buffer *decodeBuffer) readType() typeField {
 	if buffer.pos >= len(buffer.data) {
-		err = fmt.Errorf("End of data")
-	} else {
-		result = typeField(buffer.data[buffer.pos])
-		buffer.pos++
+		panic(endOfData(1))
 	}
-	return result, err
+
+	result := typeField(buffer.data[buffer.pos])
+	buffer.pos++
+	return result
 }
 
 func (buffer *decodeBuffer) reserveBytes(byteCount int) {
@@ -139,7 +140,7 @@ func (buffer *decodeBuffer) readNegInt64() int64 {
 	value := buffer.readPrimitive64()
 	// TODO: This won't be an error once 128 bit support is added
 	if value&0x8000000000000000 != 0 && value != 0x8000000000000000 {
-		panic(decoderError(fmt.Errorf("Value %016x is too big to be represented as negative", value)))
+		panic(decoderError{fmt.Errorf("Value %016x is too big to be represented as negative", value)})
 		return 0
 	} else {
 		return -int64(value)

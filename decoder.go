@@ -7,8 +7,13 @@ import (
 
 const maxPartialBufferSize = 16
 
-type decoderError error
-type callbackError error
+type decoderError struct {
+	err error
+}
+
+type callbackError struct {
+	err error
+}
 
 type CbeDecoderCallbacks interface {
 	OnNil() error
@@ -72,7 +77,7 @@ type CbeDecoder struct {
 
 func (decoder *CbeDecoder) enterContainer(newContainerType containerType) {
 	if decoder.container.depth >= len(decoder.container.currentType) {
-		panic(decoderError(fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))))
+		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))})
 	}
 	decoder.container.depth++
 	decoder.container.currentType[decoder.container.depth] = newContainerType
@@ -80,7 +85,7 @@ func (decoder *CbeDecoder) enterContainer(newContainerType containerType) {
 
 func (decoder *CbeDecoder) leaveContainer() containerType {
 	if decoder.container.depth <= 0 {
-		panic(decoderError(fmt.Errorf("Got container end but not in a container")))
+		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
 	decoder.container.depth--
 	return decoder.container.currentType[decoder.container.depth+1]
@@ -103,7 +108,7 @@ func (decoder *CbeDecoder) beginArray(newArrayType arrayType) {
 
 func checkCallback(err error) {
 	if err != nil {
-		panic(callbackError(err))
+		panic(callbackError{err})
 	}
 }
 
@@ -136,7 +141,6 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 	if int64(decodeByteCount) > decoder.array.byteCountRemaining {
 		decodeByteCount = int(decoder.array.byteCountRemaining)
 	}
-
 	bytes := buffer.readPrimitiveBytes(decodeByteCount)
 	decoder.array.byteCountRemaining -= int64(decodeByteCount)
 	if decoder.array.byteCountRemaining == 0 {
@@ -265,17 +269,12 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 	// TODO: 128 bit and decimal
 }
 
-func (decoder *CbeDecoder) feedFromBuffer(buffer *decodeBuffer, panicHandlerFunc func()) {
-	defer panicHandlerFunc()
+func (decoder *CbeDecoder) feedFromBuffer(buffer *decodeBuffer) error {
 	decoder.decodeArrayData(buffer)
-
 	for {
-		objectType, err := buffer.readType()
-		if err != nil {
-			break
-		}
-		decoder.decodeObject(buffer, objectType)
+		decoder.decodeObject(buffer, buffer.readType())
 	}
+	return nil
 }
 
 func (decoder *CbeDecoder) handleFailedByteReservation(reservedByteCount int) {
@@ -300,25 +299,28 @@ func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDec
 }
 
 func (decoder *CbeDecoder) Feed(data []byte) (err error) {
-	panicHandler := func() {
+	defer func() {
 		if r := recover(); r != nil {
 			switch r.(type) {
+			case endOfData:
+				// Nothing to do
 			case failedByteCountReservation:
 				decoder.handleFailedByteReservation(int(r.(failedByteCountReservation)))
 				err = nil
 			case callbackError:
 				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
-				err = fmt.Errorf("cbe: offset %v: error from callback: %v", offset, r)
+				err = fmt.Errorf("cbe: offset %v: error from callback: %v", offset, r.(callbackError).err)
 			case decoderError:
 				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
-				err = fmt.Errorf("cbe: offset %v: %v", offset, r)
+				err = fmt.Errorf("cbe: offset %v: %v", offset, r.(decoderError).err)
 			default:
-				err = fmt.Errorf("cbe: internal error: %v", r)
+				panic(r)
+				// err = fmt.Errorf("cbe: internal error: %v", r)
 			}
 		}
 		decoder.streamOffset += int64(decoder.buffer.pos)
 		decoder.buffer.data = nil
-	}
+	}()
 
 	// TODO: This needs to only check partial buffer for existing data, and decode 1 payload only.
 	// Also, need to fetch remainder of data!
@@ -327,14 +329,14 @@ func (decoder *CbeDecoder) Feed(data []byte) (err error) {
 	decoder.buffer.data = data
 	decoder.buffer.pos = 0
 
-	decoder.feedFromBuffer(&decoder.buffer, panicHandler)
+	err = decoder.feedFromBuffer(&decoder.buffer)
 
 	return err
 }
 
 func (decoder *CbeDecoder) End() error {
 	if decoder.container.depth > 0 {
-		return fmt.Errorf("Document still has open containers")
+		return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
 	}
 	if decoder.array.byteCountRemaining > 0 {
 		return fmt.Errorf("Array is still open, expecting %d more bytes", decoder.array.byteCountRemaining)
