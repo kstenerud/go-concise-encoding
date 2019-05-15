@@ -193,6 +193,11 @@ func getMapValue(aMap reflect.Value, aKey reflect.Value) reflect.Value {
 }
 
 func deepEquivalence(a, b reflect.Value) bool {
+	if !a.IsValid() && !b.IsValid() {
+		// Special case: untyped nil
+		return true
+	}
+
 	switch a.Kind() {
 	case reflect.Interface, reflect.Ptr:
 		return deepEquivalence(a.Elem(), b.Elem())

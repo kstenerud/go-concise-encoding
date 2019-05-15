@@ -29,19 +29,14 @@ func NewUnsupportedTypeError(unsupportedType reflect.Type) UnsupportedTypeError 
 }
 
 func Marshal(encoder PrimitiveEncoder, object interface{}) error {
-	if object == nil {
-		return encoder.Nil()
-	}
-
 	rv := reflect.ValueOf(object)
 	return marshalReflectValue(encoder, &rv)
 }
 
 func marshalReflectValue(encoder PrimitiveEncoder, rv *reflect.Value) error {
-	// TODO: IsNil is only for chan, func, interface, map, pointer, or slice
-	// if rv.IsNil() {
-	// 	return encoder.Nil()
-	// }
+	if !rv.IsValid() {
+		return encoder.Nil()
+	}
 
 	switch rv.Kind() {
 	// case reflect.Complex64, reflect.Complex128:

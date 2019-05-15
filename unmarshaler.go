@@ -120,7 +120,7 @@ func (this *Unmarshaler) storeValue(value interface{}) {
 }
 
 func (this *Unmarshaler) OnNil() error {
-	// Ignored
+	this.storeValue(nil)
 	return nil
 }
 
@@ -180,12 +180,12 @@ func (this *Unmarshaler) OnStringData(bytes []byte) error {
 }
 
 func (this *Unmarshaler) OnCommentBegin(byteCount uint64) error {
-	this.arrayBegin(arrayTypeComment, int(byteCount))
+	// Ignored
 	return nil
 }
 
 func (this *Unmarshaler) OnCommentData(bytes []byte) error {
-	this.arrayData(bytes)
+	// Ignored
 	return nil
 }
 

@@ -117,10 +117,28 @@ func TestMarshalUnmarshalBytesArray(t *testing.T) {
 	assertMarshalUnmarshal(t, array)
 }
 
+func TestMarshalUnmarshalList(t *testing.T) {
+	assertMarshalUnmarshal(t, []interface{}{
+		1, 2, "test", 4,
+	})
+}
+
+func TestMarshalUnmarshalListNil(t *testing.T) {
+	assertMarshalUnmarshal(t, []interface{}{
+		1, nil, "test", 4,
+	})
+}
+
 func TestMarshalUnmarshalMap(t *testing.T) {
 	assertMarshalUnmarshal(t, map[interface{}]interface{}{
 		"a": 1,
 		2:   "b",
+	})
+}
+
+func TestMarshalUnmarshalMapNil(t *testing.T) {
+	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+		"a": nil,
 	})
 }
 
