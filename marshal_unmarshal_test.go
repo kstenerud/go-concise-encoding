@@ -124,11 +124,36 @@ func TestMarshalUnmarshalMap(t *testing.T) {
 	})
 }
 
-func TestMarshalUnmarshalDeepMap(t *testing.T) {
+func TestMarshalUnmarshalMapMap(t *testing.T) {
 	assertMarshalUnmarshal(t, map[interface{}]interface{}{
 		1: 2,
 		"deep-map": map[interface{}]interface{}{
 			3: 1000,
+		},
+	})
+}
+
+func TestMarshalUnmarshalListList(t *testing.T) {
+	assertMarshalUnmarshal(t, []interface{}{
+		1, []interface{}{
+			2, "test", 4,
+		},
+	})
+}
+
+func TestMarshalUnmarshalListMap(t *testing.T) {
+	assertMarshalUnmarshal(t, []interface{}{
+		1, map[interface{}]interface{}{
+			2: 3, 4: "blah",
+		},
+	})
+}
+
+func TestMarshalUnmarshalMapList(t *testing.T) {
+	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+		1: 2,
+		"deep-list": []interface{}{
+			2, "some list entry",
 		},
 	})
 }
