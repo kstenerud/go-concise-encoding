@@ -155,9 +155,7 @@ func TestBinaryTooShort(t *testing.T) {
 	encoder := NewCbeEncoder(100)
 	assertSuccess(t, encoder.BinaryBegin(10))
 	assertSuccess(t, encoder.BinaryData(make([]byte, 9)))
-	assertPanics(t, func() {
-		encoder.Encoded()
-	})
+	assertFailure(t, encoder.End())
 }
 
 func TestStringTooLong(t *testing.T) {
@@ -170,9 +168,7 @@ func TestStringTooShort(t *testing.T) {
 	encoder := NewCbeEncoder(100)
 	assertSuccess(t, encoder.StringBegin(8))
 	assertSuccess(t, encoder.StringData([]byte("abcdefg")))
-	assertPanics(t, func() {
-		encoder.Encoded()
-	})
+	assertFailure(t, encoder.End())
 }
 
 func TestCommentTooLong(t *testing.T) {
@@ -185,7 +181,5 @@ func TestCommentTooShort(t *testing.T) {
 	encoder := NewCbeEncoder(100)
 	assertSuccess(t, encoder.CommentBegin(8))
 	assertSuccess(t, encoder.CommentData([]byte("abcdefg")))
-	assertPanics(t, func() {
-		encoder.Encoded()
-	})
+	assertFailure(t, encoder.End())
 }

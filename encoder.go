@@ -327,9 +327,13 @@ func (encoder *CbeEncoder) Comment(value string) error {
 	return encoder.CommentData([]byte(value))
 }
 
-func (encoder *CbeEncoder) Encoded() []byte {
+func (encoder *CbeEncoder) End() error {
 	if encoder.remainingArrayLength > 0 {
-		panic(fmt.Errorf("Incomplete encode: Current array is unfinished"))
+		return fmt.Errorf("Incomplete encode: Current array is unfinished")
 	}
+	return nil
+}
+
+func (encoder *CbeEncoder) Encoded() []byte {
 	return encoder.encoded
 }
