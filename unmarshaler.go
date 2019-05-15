@@ -23,98 +23,100 @@ type PrimitiveDecoderCallbacks interface {
 }
 
 type Unmarshaler struct {
-	nextValue        interface{}
+	topObject        interface{}
 	containerStack   []interface{}
+	mapKeyStack      []interface{}
 	currentList      []interface{}
 	currentMap       map[interface{}]interface{}
+	currentMapKey    interface{}
 	currentArray     []byte
 	currentArrayType arrayType
 }
 
-func (this *Unmarshaler) setCurrentContainer() error {
-	lastEntry := len(this.containerStack) - 1
-	this.currentList = nil
-	this.currentMap = nil
-	if lastEntry >= 0 {
-		container := this.containerStack[lastEntry]
+func (this *Unmarshaler) stackCurrentContainer() {
+	if this.currentList != nil {
+		this.containerStack = append(this.containerStack, this.currentList)
+		this.currentList = nil
+	} else {
+		this.containerStack = append(this.containerStack, this.currentMap)
+		this.currentMap = nil
+	}
+	this.mapKeyStack = append(this.mapKeyStack, this.currentMapKey)
+	this.currentMapKey = nil
+}
+
+func (this *Unmarshaler) listBegin() {
+	this.stackCurrentContainer()
+	this.currentList = make([]interface{}, 0)
+}
+
+func (this *Unmarshaler) mapBegin() {
+	this.stackCurrentContainer()
+	this.currentMap = make(map[interface{}]interface{})
+}
+
+func (this *Unmarshaler) containerEnd() {
+	var oldContainer interface{}
+	if this.currentList != nil {
+		oldContainer = this.currentList
+	} else {
+		oldContainer = this.currentMap
+	}
+
+	length := len(this.containerStack)
+	this.currentMapKey = this.mapKeyStack[length-1]
+	container := this.containerStack[length-1]
+	this.containerStack = this.containerStack[:length-1]
+
+	if container != nil {
 		if list, ok := container.([]interface{}); ok {
 			this.currentList = list
+			this.currentMap = nil
 		} else {
 			this.currentMap = container.(map[interface{}]interface{})
+			this.currentList = nil
 		}
 	}
-	return nil
+
+	this.storeValue(oldContainer)
 }
 
-func (this *Unmarshaler) containerBegin(container interface{}) error {
-	this.containerStack = append(this.containerStack, container)
-	return this.setCurrentContainer()
-}
-
-func (this *Unmarshaler) listBegin() error {
-	return this.containerBegin(make([]interface{}, 0))
-}
-
-func (this *Unmarshaler) mapBegin() error {
-	return this.containerBegin(make(map[interface{}]interface{}))
-}
-
-func (this *Unmarshaler) containerEnd() error {
-	length := len(this.containerStack)
-	this.nextValue = this.containerStack[length-1]
-	if length > 0 {
-		this.containerStack = this.containerStack[:length-1]
-		return this.setCurrentContainer()
-	}
-	return nil
-}
-
-func (this *Unmarshaler) arrayBegin(newArrayType arrayType, length int) error {
+func (this *Unmarshaler) arrayBegin(newArrayType arrayType, length int) {
 	this.currentArray = make([]byte, 0, length)
 	this.currentArrayType = newArrayType
 	if length == 0 {
 		if this.currentArrayType == arrayTypeBinary {
-			return this.storeValue(this.currentArray)
+			this.storeValue(this.currentArray)
 		} else {
-			return this.storeValue(string(this.currentArray))
+			this.storeValue(string(this.currentArray))
 		}
 	}
-	return nil
 }
 
-func (this *Unmarshaler) arrayData(data []byte) error {
+func (this *Unmarshaler) arrayData(data []byte) {
 	this.currentArray = append(this.currentArray, data...)
 	if len(this.currentArray) == cap(this.currentArray) {
 		if this.currentArrayType == arrayTypeBinary {
-			return this.storeValue(this.currentArray)
+			this.storeValue(this.currentArray)
 		} else {
-			return this.storeValue(string(this.currentArray))
+			this.storeValue(string(this.currentArray))
 		}
 	}
-	return nil
 }
 
-func (this *Unmarshaler) storeValue(value interface{}) error {
+func (this *Unmarshaler) storeValue(value interface{}) {
+	this.topObject = value
+
 	if this.currentList != nil {
 		this.currentList = append(this.currentList, value)
-		return nil
-	}
-
-	if this.currentMap != nil {
-		if this.nextValue == nil {
-			this.nextValue = value
+	} else if this.currentMap != nil {
+		if this.currentMapKey == nil {
+			this.currentMapKey = value
 		} else {
-			this.currentMap[this.nextValue] = value
-			this.nextValue = nil
+			this.currentMap[this.currentMapKey] = value
+			this.currentMapKey = nil
 		}
-		return nil
 	}
-
-	if this.nextValue != nil {
-		return fmt.Errorf("Top level object already exists: %v", this.nextValue)
-	}
-	this.nextValue = value
-	return nil
 }
 
 func (this *Unmarshaler) OnNil() error {
@@ -123,70 +125,82 @@ func (this *Unmarshaler) OnNil() error {
 }
 
 func (this *Unmarshaler) OnBool(value bool) error {
-	return this.storeValue(value)
+	this.storeValue(value)
+	return nil
 }
 
 func (this *Unmarshaler) OnInt(value int64) error {
-	return this.storeValue(value)
+	this.storeValue(value)
+	return nil
 }
 
 func (this *Unmarshaler) OnUint(value uint64) error {
-	return this.storeValue(value)
+	this.storeValue(value)
+	return nil
 }
 
 func (this *Unmarshaler) OnFloat(value float64) error {
-	return this.storeValue(value)
+	this.storeValue(value)
+	return nil
 }
 
 func (this *Unmarshaler) OnTime(value time.Time) error {
-	return this.storeValue(value)
+	this.storeValue(value)
+	return nil
 }
 
 func (this *Unmarshaler) OnListBegin() error {
-	return this.listBegin()
+	this.listBegin()
+	return nil
 }
 
 func (this *Unmarshaler) OnListEnd() error {
-	return this.containerEnd()
+	this.containerEnd()
+	return nil
 }
 
 func (this *Unmarshaler) OnMapBegin() error {
-	return this.mapBegin()
+	this.mapBegin()
+	return nil
 }
 
 func (this *Unmarshaler) OnMapEnd() error {
-	return this.containerEnd()
+	this.containerEnd()
+	return nil
 }
 
 func (this *Unmarshaler) OnStringBegin(byteCount uint64) error {
-	return this.arrayBegin(arrayTypeString, int(byteCount))
+	this.arrayBegin(arrayTypeString, int(byteCount))
+	return nil
 }
 
 func (this *Unmarshaler) OnStringData(bytes []byte) error {
-	return this.arrayData(bytes)
+	this.arrayData(bytes)
+	return nil
 }
 
 func (this *Unmarshaler) OnCommentBegin(byteCount uint64) error {
-	return this.arrayBegin(arrayTypeComment, int(byteCount))
+	this.arrayBegin(arrayTypeComment, int(byteCount))
+	return nil
 }
 
 func (this *Unmarshaler) OnCommentData(bytes []byte) error {
-	return this.arrayData(bytes)
+	this.arrayData(bytes)
+	return nil
 }
 
 func (this *Unmarshaler) OnBinaryBegin(byteCount uint64) error {
-	return this.arrayBegin(arrayTypeBinary, int(byteCount))
+	this.arrayBegin(arrayTypeBinary, int(byteCount))
+	return nil
 }
 
 func (this *Unmarshaler) OnBinaryData(bytes []byte) error {
-	return this.arrayData(bytes)
+	this.arrayData(bytes)
+	return nil
 }
 
 func (this *Unmarshaler) Unmarshaled() interface{} {
-	if len(this.containerStack) != 0 {
-		return this.containerStack[0]
-	}
-	return this.nextValue
+	return this.topObject
 }
 
 func (this *Unmarshaler) UnmarshaledTo(dest interface{}) interface{} {

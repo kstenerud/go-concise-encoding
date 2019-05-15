@@ -2,6 +2,7 @@ package cbe
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -54,7 +55,7 @@ func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected in
 	actual := unmarshaler.Unmarshaled()
 
 	if !DeepEquivalence(actual, expected) {
-		t.Errorf("Expected %t %v, actual %t %v", expected, expected, actual, actual)
+		t.Errorf("Expected %t: <%v>, actual %t: <%v>", expected, expected, actual, actual)
 	}
 }
 
@@ -116,6 +117,22 @@ func TestMarshalUnmarshalBytesArray(t *testing.T) {
 	assertMarshalUnmarshal(t, array)
 }
 
+func TestMarshalUnmarshalMap(t *testing.T) {
+	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+		"a": 1,
+		2:   "b",
+	})
+}
+
+func TestMarshalUnmarshalDeepMap(t *testing.T) {
+	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+		1: 2,
+		"deep-map": map[interface{}]interface{}{
+			3: 1000,
+		},
+	})
+}
+
 type MyTestStruct struct {
 	IntValue    int
 	FloatValue  float32
@@ -125,12 +142,12 @@ type MyTestStruct struct {
 
 func TestMarshalUnmarshalStructZero(t *testing.T) {
 	structValue := new(MyTestStruct)
-	mapValue := make(map[interface{}]interface{})
-	mapValue["IntValue"] = structValue.IntValue
-	mapValue["FloatValue"] = structValue.FloatValue
-	mapValue["StringValue"] = structValue.StringValue
-	mapValue["ByteValue"] = structValue.ByteValue
-	assertMarshalUnmarshalProduces(t, structValue, mapValue)
+	assertMarshalUnmarshalProduces(t, structValue, map[interface{}]interface{}{
+		"IntValue":    structValue.IntValue,
+		"FloatValue":  structValue.FloatValue,
+		"StringValue": structValue.StringValue,
+		"ByteValue":   structValue.ByteValue,
+	})
 }
 
 func TestMarshalUnmarshalStruct(t *testing.T) {
@@ -139,10 +156,10 @@ func TestMarshalUnmarshalStruct(t *testing.T) {
 	structValue.FloatValue = 2.5
 	structValue.StringValue = "test"
 	structValue.ByteValue = []byte{0x00, 0x01, 0x02}
-	mapValue := make(map[interface{}]interface{})
-	mapValue["IntValue"] = structValue.IntValue
-	mapValue["FloatValue"] = structValue.FloatValue
-	mapValue["StringValue"] = structValue.StringValue
-	mapValue["ByteValue"] = structValue.ByteValue
-	assertMarshalUnmarshalProduces(t, structValue, mapValue)
+	assertMarshalUnmarshalProduces(t, structValue, map[interface{}]interface{}{
+		"IntValue":    structValue.IntValue,
+		"FloatValue":  structValue.FloatValue,
+		"StringValue": structValue.StringValue,
+		"ByteValue":   structValue.ByteValue,
+	})
 }
