@@ -6,7 +6,6 @@ import (
 )
 
 // TODO:
-// - Array: Tried to start different data type before completion
 // - Comment: invalid characters
 // - String: invalid characters
 // - Container: Unbalanced containers
@@ -182,4 +181,11 @@ func TestCommentTooShort(t *testing.T) {
 	assertSuccess(t, encoder.CommentBegin(8))
 	assertSuccess(t, encoder.CommentData([]byte("abcdefg")))
 	assertFailure(t, encoder.End())
+}
+
+func TestChangeArrayType(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.BinaryBegin(10))
+	assertSuccess(t, encoder.BinaryData(make([]byte, 5)))
+	assertFailure(t, encoder.StringBegin(10))
 }

@@ -110,18 +110,6 @@ func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
 	}
 }
 
-func (encoder *CbeEncoder) enterArray(newArrayType arrayType) {
-	// TODO: Rework API a bit so that String() etc don't have dual meanings
-	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
-		panic("Cannot start new array when already in an array")
-	}
-	encoder.currentArrayType = newArrayType
-}
-
-func (encoder *CbeEncoder) leaveArray() {
-	encoder.currentArrayType = arrayTypeNone
-}
-
 func (encoder *CbeEncoder) enterContainer(newContainerType containerType) {
 	// TODO: Error if container depth >= max
 	encoder.containerDepth++
@@ -250,9 +238,13 @@ func (encoder *CbeEncoder) MapEnd() error {
 	return encoder.containerEnd()
 }
 
-func (encoder *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) {
-	encoder.enterArray(newArrayType)
+func (encoder *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) error {
+	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
+		return fmt.Errorf("Cannot start new array when already in an array")
+	}
+	encoder.currentArrayType = newArrayType
 	encoder.remainingArrayLength = int64(length)
+	return nil
 }
 
 func (encoder *CbeEncoder) arrayAddData(value []byte) error {
@@ -263,13 +255,15 @@ func (encoder *CbeEncoder) arrayAddData(value []byte) error {
 	encoder.encodeBytes(value)
 	encoder.remainingArrayLength -= length
 	if encoder.remainingArrayLength == 0 {
-		encoder.leaveArray()
+		encoder.currentArrayType = arrayTypeNone
 	}
 	return nil
 }
 
 func (encoder *CbeEncoder) BinaryBegin(length uint64) error {
-	encoder.arrayBegin(arrayTypeBinary, length)
+	if err := encoder.arrayBegin(arrayTypeBinary, length); err != nil {
+		return err
+	}
 	encoder.encodeTypeField(typeBinary)
 	encoder.encodeArrayLengthField(int64(length))
 	return nil
@@ -287,7 +281,9 @@ func (encoder *CbeEncoder) Bytes(value []byte) error {
 }
 
 func (encoder *CbeEncoder) StringBegin(length uint64) error {
-	encoder.arrayBegin(arrayTypeString, length)
+	if err := encoder.arrayBegin(arrayTypeString, length); err != nil {
+		return err
+	}
 	if length <= 15 {
 		encoder.encodeTypeField(typeString0 + typeField(length))
 	} else {
@@ -310,7 +306,9 @@ func (encoder *CbeEncoder) String(value string) error {
 }
 
 func (encoder *CbeEncoder) CommentBegin(length uint64) error {
-	encoder.arrayBegin(arrayTypeComment, length)
+	if err := encoder.arrayBegin(arrayTypeComment, length); err != nil {
+		return err
+	}
 	encoder.encodeTypeField(typeComment)
 	encoder.encodeArrayLengthField(int64(length))
 	return nil
