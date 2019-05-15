@@ -6,11 +6,8 @@ import (
 )
 
 // TODO:
-// - Array: too many or too few bytes
 // - Array: Tried to start different data type before completion
-// - Array: Concenience functions
 // - Comment: invalid characters
-// - String: 0-15, more bytes
 // - String: invalid characters
 // - Container: Unbalanced containers
 // - Container: Unterminated container
@@ -19,6 +16,35 @@ import (
 // - Map: Missing value
 // - Readme examples
 // - Spec examples?
+
+func testPanics(function func()) (didPanic bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			didPanic = true
+		}
+	}()
+	didPanic = false
+	function()
+	return didPanic
+}
+
+func assertPanics(t *testing.T, function func()) {
+	if !testPanics(function) {
+		t.Errorf("Should have panicked but didn't")
+	}
+}
+
+func assertSuccess(t *testing.T, err error) {
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
+
+func assertFailure(t *testing.T, err error) {
+	if err == nil {
+		t.Errorf("Unexpected success")
+	}
+}
 
 func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
 	encoder := NewCbeEncoder(100)
@@ -107,7 +133,6 @@ func TestBinary(t *testing.T) {
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1}) }, []byte{0x91, 0x04, 0x01})
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2}) }, []byte{0x91, 0x08, 0x01, 0x02})
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2, 3}) }, []byte{0x91, 0x0c, 0x01, 0x02, 0x03})
-	// TODO: Longer than 64 bytes
 }
 
 func TestString(t *testing.T) {
@@ -118,5 +143,49 @@ func TestString(t *testing.T) {
 		0x90, 0x40, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
 		0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
 	})
-	// TODO: Longer than 64 bytes
+}
+
+func TestBinaryTooLong(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.BinaryBegin(10))
+	assertFailure(t, encoder.BinaryData(make([]byte, 11)))
+}
+
+func TestBinaryTooShort(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.BinaryBegin(10))
+	assertSuccess(t, encoder.BinaryData(make([]byte, 9)))
+	assertPanics(t, func() {
+		encoder.Encoded()
+	})
+}
+
+func TestStringTooLong(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.StringBegin(6))
+	assertFailure(t, encoder.StringData([]byte("abcdefg")))
+}
+
+func TestStringTooShort(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.StringBegin(8))
+	assertSuccess(t, encoder.StringData([]byte("abcdefg")))
+	assertPanics(t, func() {
+		encoder.Encoded()
+	})
+}
+
+func TestCommentTooLong(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.CommentBegin(6))
+	assertFailure(t, encoder.CommentData([]byte("abcdefg")))
+}
+
+func TestCommentTooShort(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.CommentBegin(8))
+	assertSuccess(t, encoder.CommentData([]byte("abcdefg")))
+	assertPanics(t, func() {
+		encoder.Encoded()
+	})
 }

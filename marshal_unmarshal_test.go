@@ -2,7 +2,6 @@ package cbe
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
 	"testing"
 	"time"

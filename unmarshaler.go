@@ -1,7 +1,6 @@
 package cbe
 
 import (
-	"fmt"
 	"time"
 )
 

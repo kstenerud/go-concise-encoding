@@ -3,6 +3,7 @@
 package cbe
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -53,6 +54,7 @@ func fitsInUint32(value uint64) bool {
 type CbeEncoder struct {
 	containerDepth       int
 	currentArrayType     arrayType
+	remainingArrayLength int64
 	currentContainerType []containerType
 	encoded              []byte
 }
@@ -248,21 +250,33 @@ func (encoder *CbeEncoder) MapEnd() error {
 	return encoder.containerEnd()
 }
 
+func (encoder *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) {
+	encoder.enterArray(newArrayType)
+	encoder.remainingArrayLength = int64(length)
+}
+
+func (encoder *CbeEncoder) arrayAddData(value []byte) error {
+	length := int64(len(value))
+	if length > encoder.remainingArrayLength {
+		return fmt.Errorf("Data length exceeds array length by %v bytes", length-encoder.remainingArrayLength)
+	}
+	encoder.encodeBytes(value)
+	encoder.remainingArrayLength -= length
+	if encoder.remainingArrayLength == 0 {
+		encoder.leaveArray()
+	}
+	return nil
+}
+
 func (encoder *CbeEncoder) BinaryBegin(length uint64) error {
-	encoder.enterArray(arrayTypeBinary)
+	encoder.arrayBegin(arrayTypeBinary, length)
 	encoder.encodeTypeField(typeBinary)
 	encoder.encodeArrayLengthField(int64(length))
 	return nil
 }
 
 func (encoder *CbeEncoder) BinaryData(value []byte) error {
-	// TODO: sanity checks
-	encoder.encodeBytes([]byte(value))
-	// TODO: If all bytes written
-	if true {
-		encoder.leaveArray()
-	}
-	return nil
+	return encoder.arrayAddData(value)
 }
 
 func (encoder *CbeEncoder) Bytes(value []byte) error {
@@ -273,7 +287,7 @@ func (encoder *CbeEncoder) Bytes(value []byte) error {
 }
 
 func (encoder *CbeEncoder) StringBegin(length uint64) error {
-	encoder.enterArray(arrayTypeString)
+	encoder.arrayBegin(arrayTypeString, length)
 	if length <= 15 {
 		encoder.encodeTypeField(typeString0 + typeField(length))
 	} else {
@@ -284,13 +298,7 @@ func (encoder *CbeEncoder) StringBegin(length uint64) error {
 }
 
 func (encoder *CbeEncoder) StringData(value []byte) error {
-	// TODO: sanity checks
-	encoder.encodeBytes([]byte(value))
-	// TODO: If all bytes written
-	if true {
-		encoder.leaveArray()
-	}
-	return nil
+	return encoder.arrayAddData(value)
 }
 
 func (encoder *CbeEncoder) String(value string) error {
@@ -301,15 +309,27 @@ func (encoder *CbeEncoder) String(value string) error {
 	return encoder.StringData([]byte(value))
 }
 
-func (encoder *CbeEncoder) Comment(value string) error {
-	encoder.enterArray(arrayTypeComment)
+func (encoder *CbeEncoder) CommentBegin(length uint64) error {
+	encoder.arrayBegin(arrayTypeComment, length)
 	encoder.encodeTypeField(typeComment)
-	encoder.encodeArrayLengthField(int64(len(value)))
-	encoder.encodeBytes([]byte(value))
-	encoder.leaveArray()
+	encoder.encodeArrayLengthField(int64(length))
 	return nil
 }
 
+func (encoder *CbeEncoder) CommentData(value []byte) error {
+	return encoder.arrayAddData(value)
+}
+
+func (encoder *CbeEncoder) Comment(value string) error {
+	if err := encoder.CommentBegin(uint64(len(value))); err != nil {
+		return err
+	}
+	return encoder.CommentData([]byte(value))
+}
+
 func (encoder *CbeEncoder) Encoded() []byte {
+	if encoder.remainingArrayLength > 0 {
+		panic(fmt.Errorf("Incomplete encode: Current array is unfinished"))
+	}
 	return encoder.encoded
 }
