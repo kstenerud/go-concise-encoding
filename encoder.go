@@ -116,11 +116,6 @@ func (encoder *CbeEncoder) enterContainer(newContainerType containerType) {
 	encoder.currentContainerType[encoder.containerDepth] = newContainerType
 }
 
-func (encoder *CbeEncoder) leaveContainer() {
-	// TODO: Error if container depth == 0
-	encoder.containerDepth--
-}
-
 func (encoder *CbeEncoder) Padding(byteCount int) error {
 	for i := 0; i < byteCount; i++ {
 		encoder.encodeTypeField(typePadding)
@@ -219,7 +214,10 @@ func (encoder *CbeEncoder) ListBegin() error {
 }
 
 func (encoder *CbeEncoder) containerEnd() error {
-	encoder.leaveContainer()
+	if encoder.containerDepth <= 0 {
+		return fmt.Errorf("No containers are open")
+	}
+	encoder.containerDepth--
 	encoder.encodeTypeField(typeEndContainer)
 	return nil
 }
@@ -328,6 +326,9 @@ func (encoder *CbeEncoder) Comment(value string) error {
 func (encoder *CbeEncoder) End() error {
 	if encoder.remainingArrayLength > 0 {
 		return fmt.Errorf("Incomplete encode: Current array is unfinished")
+	}
+	if encoder.containerDepth > 0 {
+		return fmt.Errorf("Not all containers have been closed")
 	}
 	return nil
 }

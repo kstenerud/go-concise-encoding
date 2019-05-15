@@ -8,8 +8,6 @@ import (
 // TODO:
 // - Comment: invalid characters
 // - String: invalid characters
-// - Container: Unbalanced containers
-// - Container: Unterminated container
 // - Container: Max depth exceeded
 // - Map: Bad key
 // - Map: Missing value
@@ -188,4 +186,29 @@ func TestChangeArrayType(t *testing.T) {
 	assertSuccess(t, encoder.BinaryBegin(10))
 	assertSuccess(t, encoder.BinaryData(make([]byte, 5)))
 	assertFailure(t, encoder.StringBegin(10))
+}
+
+func TestUnbalancedContainers(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.ListBegin())
+	assertFailure(t, encoder.End())
+}
+
+func TestCloseListTooManyTimes(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.ListBegin())
+	assertSuccess(t, encoder.ListEnd())
+	assertFailure(t, encoder.ListEnd())
+}
+
+func TestCloseMapTooManyTimes(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.MapBegin())
+	assertSuccess(t, encoder.MapEnd())
+	assertFailure(t, encoder.MapEnd())
+}
+
+func TestCloseNoContainer(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertFailure(t, encoder.ListEnd())
 }
