@@ -117,6 +117,35 @@ func TestMarshalUnmarshalBytesArray(t *testing.T) {
 	assertMarshalUnmarshal(t, array)
 }
 
+func TestMarshalUnmarshalLongBytesArray(t *testing.T) {
+	array := [...]byte{
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	}
+	assertMarshalUnmarshal(t, array)
+}
+
+func TestMarshalUnmarshalLongerBytesArray(t *testing.T) {
+	array := make([]byte, 60000)
+	assertMarshalUnmarshal(t, array)
+}
+
+func TestMarshalUnmarshalAllBasicTypes(t *testing.T) {
+	assertMarshalUnmarshal(t, []interface{}{
+		1, 250, 1000, 100000, 10000000000,
+		-1, -250, -1000, -100000000000,
+		1.5, 1.9582384465,
+		"string", []byte{10, 11, 12},
+		time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+		time.Date(2000, 1, 1, 0, 0, 0, 9999999, time.UTC),
+	})
+}
+
 func TestMarshalUnmarshalList(t *testing.T) {
 	assertMarshalUnmarshal(t, []interface{}{
 		1, 2, "test", 4,
