@@ -242,16 +242,13 @@ func (encoder *CbeEncoder) Uint(value uint64) error {
 }
 
 func (encoder *CbeEncoder) Int(value int64) error {
-	if value >= 0 {
-		encoder.Uint(uint64(value))
-		return nil
-	}
-
 	uvalue := uint64(-value)
 
 	switch {
 	case intFitsInSmallint(value):
 		encoder.encodePrimitive8(byte(value))
+	case value >= 0:
+		return encoder.Uint(uint64(value))
 	case fitsInUint8(uvalue):
 		encoder.encodeTypeField(typeNegInt8)
 		encoder.encodePrimitive8(uint8(uvalue))
