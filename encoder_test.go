@@ -8,9 +8,6 @@ import (
 // TODO:
 // - Comment: invalid characters
 // - String: invalid characters
-// - Container: Max depth exceeded
-// - Map: Bad key
-// - Map: Missing value
 // - Readme examples
 // - Spec examples?
 
@@ -270,4 +267,14 @@ func TestListWithComments(t *testing.T) {
 	assertSuccess(t, encoder.Comment("Yet another comment"))
 	assertSuccess(t, encoder.ListEnd())
 	assertSuccess(t, encoder.Comment("A comment after the list"))
+}
+
+func TestContainerLimitExceeded(t *testing.T) {
+	encoder := NewCbeEncoder(4)
+	assertSuccess(t, encoder.ListBegin())
+	assertSuccess(t, encoder.ListBegin())
+	assertSuccess(t, encoder.MapBegin())
+	assertSuccess(t, encoder.Bool(true))
+	assertSuccess(t, encoder.ListBegin())
+	assertFailure(t, encoder.MapBegin())
 }

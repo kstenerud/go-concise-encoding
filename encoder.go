@@ -62,8 +62,8 @@ type CbeEncoder struct {
 
 func NewCbeEncoder(maxContainerDepth int) *CbeEncoder {
 	encoder := new(CbeEncoder)
-	encoder.currentContainerType = make([]containerType, maxContainerDepth)
-	encoder.hasStoredMapKey = make([]bool, maxContainerDepth)
+	encoder.currentContainerType = make([]containerType, maxContainerDepth+1)
+	encoder.hasStoredMapKey = make([]bool, maxContainerDepth+1)
 	encoder.encoded = make([]byte, 0)
 	return encoder
 }
@@ -112,11 +112,14 @@ func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
 	}
 }
 
-func (encoder *CbeEncoder) containerBegin(newContainerType containerType) {
-	// TODO: Error if container depth >= max
+func (encoder *CbeEncoder) containerBegin(newContainerType containerType) error {
+	if encoder.containerDepth+1 >= len(encoder.currentContainerType) {
+		return fmt.Errorf("Max container depth exceeded")
+	}
 	encoder.containerDepth++
 	encoder.currentContainerType[encoder.containerDepth] = newContainerType
 	encoder.hasStoredMapKey[encoder.containerDepth] = false
+	return nil
 }
 
 func (encoder *CbeEncoder) containerEnd() error {
@@ -254,7 +257,9 @@ func (encoder *CbeEncoder) ListBegin() error {
 	if err := encoder.assertNotExpectingMapKey("list"); err != nil {
 		return err
 	}
-	encoder.containerBegin(containerTypeList)
+	if err := encoder.containerBegin(containerTypeList); err != nil {
+		return err
+	}
 	encoder.encodeTypeField(typeList)
 	return nil
 }
@@ -267,7 +272,9 @@ func (encoder *CbeEncoder) MapBegin() error {
 	if err := encoder.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
-	encoder.containerBegin(containerTypeMap)
+	if err := encoder.containerBegin(containerTypeMap); err != nil {
+		return err
+	}
 	encoder.encodeTypeField(typeMap)
 	return nil
 }
