@@ -153,22 +153,38 @@ func TestDecodeBytes16384(t *testing.T) {
 	assertDecoded(t, encoded, value)
 }
 
+func TestDecodeMapNilKey(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x94, 0x6f, 0x00, 0x95}))
+}
+
+func TestDecodeMapListKey(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x94, 0x93, 0x95, 0x00, 0x95}))
+}
+
+func TestDecodeMapMapKey(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x94, 0x94, 0x95, 0x00, 0x95}))
+}
+
 func TestDecodeUnbalancedContainers(t *testing.T) {
-	assertFailure(t, tryDecode([]byte{0x94}))
+	assertFailure(t, tryDecode(9, []byte{0x94}))
 }
 
 func TestDecodeListClosedTooManyTimes(t *testing.T) {
-	assertFailure(t, tryDecode([]byte{0x93, 0x95, 0x95}))
+	assertFailure(t, tryDecode(9, []byte{0x93, 0x95, 0x95}))
 }
 
 func TestDecodeMapClosedTooManyTimes(t *testing.T) {
-	assertFailure(t, tryDecode([]byte{0x94, 0x95, 0x95}))
+	assertFailure(t, tryDecode(9, []byte{0x94, 0x95, 0x95}))
 }
 
 func TestDecodeCloseNoContainer(t *testing.T) {
-	assertFailure(t, tryDecode([]byte{0x95}))
+	assertFailure(t, tryDecode(9, []byte{0x95}))
 }
 
 func TestDecodeMapMissingValue(t *testing.T) {
-	assertFailure(t, tryDecode([]byte{0x94, 0x00, 0x95}))
+	assertFailure(t, tryDecode(9, []byte{0x94, 0x00, 0x95}))
+}
+
+func TestDecodeContainerLimitExceeded(t *testing.T) {
+	assertFailure(t, tryDecode(4, []byte{0x93, 0x93, 0x94, 0x00, 0x93, 0x93, 0x95, 0x95, 0x95, 0x95, 0x95}))
 }

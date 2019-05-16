@@ -241,9 +241,9 @@ func (callbacks *testCallbacks) OnBytesData(bytes []byte) error {
 	return nil
 }
 
-func decodeDocument(encoded []byte) (result interface{}, err error) {
+func decodeDocument(maxDepth int, encoded []byte) (result interface{}, err error) {
 	callbacks := new(testCallbacks)
-	decoder := NewCbeDecoder(100, callbacks)
+	decoder := NewCbeDecoder(maxDepth, callbacks)
 	if err := decoder.Feed(encoded); err != nil {
 		return nil, err
 	}
@@ -254,13 +254,13 @@ func decodeDocument(encoded []byte) (result interface{}, err error) {
 	return result, err
 }
 
-func tryDecode(encoded []byte) error {
-	_, err := decodeDocument(encoded)
+func tryDecode(maxDepth int, encoded []byte) error {
+	_, err := decodeDocument(maxDepth, encoded)
 	return err
 }
 
 func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
-	actual, err := decodeDocument(encoded)
+	actual, err := decodeDocument(100, encoded)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 		return

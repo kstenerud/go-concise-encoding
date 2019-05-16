@@ -95,12 +95,12 @@ func (decoder *CbeDecoder) flipMapKeyStatus() {
 
 func (decoder *CbeDecoder) assertNotExpectingMapKey(keyType string) {
 	if decoder.isExpectingMapKey() {
-		panic(fmt.Errorf("Cannot use type %v as a map key", keyType))
+		panic(decoderError{fmt.Errorf("Cannot use type %v as a map key", keyType)})
 	}
 }
 
 func (decoder *CbeDecoder) containerBegin(newContainerType containerType) {
-	if decoder.container.depth >= len(decoder.container.currentType) {
+	if decoder.container.depth+1 >= len(decoder.container.currentType) {
 		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))})
 	}
 	decoder.container.depth++
@@ -253,9 +253,11 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 	case typePadding:
 		// Ignore
 	case typeList:
+		decoder.assertNotExpectingMapKey("list")
 		decoder.containerBegin(containerTypeList)
 		checkCallback(decoder.callbacks.OnListBegin())
 	case typeMap:
+		decoder.assertNotExpectingMapKey("map")
 		decoder.containerBegin(containerTypeMap)
 		checkCallback(decoder.callbacks.OnMapBegin())
 	case typeEndContainer:
