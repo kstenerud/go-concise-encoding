@@ -156,3 +156,19 @@ func TestDecodeBytes16384(t *testing.T) {
 func TestDecodeUnbalancedContainers(t *testing.T) {
 	assertFailure(t, tryDecode([]byte{0x94}))
 }
+
+func TestDecodeListClosedTooManyTimes(t *testing.T) {
+	assertFailure(t, tryDecode([]byte{0x93, 0x95, 0x95}))
+}
+
+func TestDecodeMapClosedTooManyTimes(t *testing.T) {
+	assertFailure(t, tryDecode([]byte{0x94, 0x95, 0x95}))
+}
+
+func TestDecodeCloseNoContainer(t *testing.T) {
+	assertFailure(t, tryDecode([]byte{0x95}))
+}
+
+func TestDecodeMapMissingValue(t *testing.T) {
+	assertFailure(t, tryDecode([]byte{0x94, 0x00, 0x95}))
+}

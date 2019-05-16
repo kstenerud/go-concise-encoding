@@ -113,7 +113,7 @@ func (decoder *CbeDecoder) containerEnd() containerType {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
 	if decoder.isExpectingMapValue() {
-		panic(fmt.Errorf("Expecting map value for already processed key"))
+		panic(decoderError{fmt.Errorf("Expecting map value for already processed key")})
 	}
 
 	decoder.container.depth--
