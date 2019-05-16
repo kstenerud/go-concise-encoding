@@ -71,6 +71,7 @@ type CbeDecoder struct {
 	array            arrayData
 	callbacks        CbeDecoderCallbacks
 	commentCallbacks CbeDecoderCommentCallbacks
+	firstItemDecoded bool
 }
 
 func checkCallback(err error) {
@@ -322,7 +323,12 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 func (decoder *CbeDecoder) feedFromBuffer(buffer *decodeBuffer) error {
 	decoder.decodeArrayData(buffer)
 	for {
-		decoder.decodeObject(buffer, buffer.readType())
+		objectType := buffer.readType()
+		if decoder.container.depth == 0 && decoder.firstItemDecoded {
+			panic(decoderError{fmt.Errorf("Extra top level object detected")})
+		}
+		decoder.decodeObject(buffer, objectType)
+		decoder.firstItemDecoded = true
 	}
 	return nil
 }

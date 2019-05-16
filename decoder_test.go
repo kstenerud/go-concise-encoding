@@ -153,6 +153,30 @@ func TestDecodeBytes16384(t *testing.T) {
 	assertDecoded(t, encoded, value)
 }
 
+func TestDecodeBytesTooShort(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x91, 0x08, 0x00}))
+}
+
+func TestDecodeBytesTooLong(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x91, 0x04, 0x00, 0x00}))
+}
+
+func TestDecodeStringTooShort(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x82, 0x00}))
+}
+
+func TestDecodeStringTooLong(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x82, 0x40, 0x41, 0x42}))
+}
+
+func TestDecodeCommentTooShort(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x92, 0x08, 0x00}))
+}
+
+func TestDecodeCommentTooLong(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x92, 0x04, 0x40, 0x41}))
+}
+
 func TestDecodeMapNilKey(t *testing.T) {
 	assertFailure(t, tryDecode(9, []byte{0x94, 0x6f, 0x00, 0x95}))
 }
