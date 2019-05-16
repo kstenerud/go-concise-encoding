@@ -5,16 +5,6 @@ import (
 	"time"
 )
 
-const maxPartialBufferSize = 16
-
-type decoderError struct {
-	err error
-}
-
-type callbackError struct {
-	err error
-}
-
 type CbeDecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
@@ -32,25 +22,19 @@ type CbeDecoderCallbacks interface {
 	OnBytesData(bytes []byte) error
 }
 
-// This version of the callbacks allows you to capture comments as well.
 type CbeDecoderCommentCallbacks interface {
-	OnNil() error
-	OnBool(value bool) error
-	OnInt(value int64) error
-	OnUint(value uint64) error
-	OnFloat(value float64) error
-	OnTime(value time.Time) error
-	OnListBegin() error
-	OnListEnd() error
-	OnMapBegin() error
-	OnMapEnd() error
-	OnStringBegin(byteCount uint64) error
-	OnStringData(bytes []byte) error
-	OnBytesBegin(byteCount uint64) error
-	OnBytesData(bytes []byte) error
-	// Only these two are different
 	OnCommentBegin(byteCount uint64) error
 	OnCommentData(bytes []byte) error
+}
+
+const maxPartialBufferSize = 16
+
+type decoderError struct {
+	err error
+}
+
+type callbackError struct {
+	err error
 }
 
 type containerData struct {
@@ -65,6 +49,19 @@ type arrayData struct {
 	onData             func([]byte) error
 }
 
+type fakeDecoderCallbacksStruct struct {
+}
+
+var ignoredCommentCallbacks fakeDecoderCallbacksStruct
+
+func (callbacks *fakeDecoderCallbacksStruct) OnCommentBegin(byteCount uint64) error {
+	return nil
+}
+
+func (callbacks *fakeDecoderCallbacksStruct) OnCommentData(bytes []byte) error {
+	return nil
+}
+
 type CbeDecoder struct {
 	streamOffset     int64
 	buffer           decodeBuffer
@@ -75,7 +72,13 @@ type CbeDecoder struct {
 	commentCallbacks CbeDecoderCommentCallbacks
 }
 
-func (decoder *CbeDecoder) enterContainer(newContainerType containerType) {
+func checkCallback(err error) {
+	if err != nil {
+		panic(callbackError{err})
+	}
+}
+
+func (decoder *CbeDecoder) beginContainer(newContainerType containerType) {
 	if decoder.container.depth >= len(decoder.container.currentType) {
 		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))})
 	}
@@ -83,7 +86,7 @@ func (decoder *CbeDecoder) enterContainer(newContainerType containerType) {
 	decoder.container.currentType[decoder.container.depth] = newContainerType
 }
 
-func (decoder *CbeDecoder) leaveContainer() containerType {
+func (decoder *CbeDecoder) endContainer() containerType {
 	if decoder.container.depth <= 0 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
@@ -103,12 +106,6 @@ func (decoder *CbeDecoder) beginArray(newArrayType arrayType) {
 	case arrayTypeString:
 		decoder.array.onBegin = decoder.callbacks.OnStringBegin
 		decoder.array.onData = decoder.callbacks.OnStringData
-	}
-}
-
-func checkCallback(err error) {
-	if err != nil {
-		panic(callbackError{err})
 	}
 }
 
@@ -207,13 +204,13 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 	case typePadding:
 		// Ignore
 	case typeList:
-		decoder.enterContainer(containerTypeList)
+		decoder.beginContainer(containerTypeList)
 		checkCallback(decoder.callbacks.OnListBegin())
 	case typeMap:
-		decoder.enterContainer(containerTypeMap)
+		decoder.beginContainer(containerTypeMap)
 		checkCallback(decoder.callbacks.OnMapBegin())
 	case typeEndContainer:
-		oldContainerType := decoder.leaveContainer()
+		oldContainerType := decoder.endContainer()
 		switch oldContainerType {
 		case containerTypeList:
 			checkCallback(decoder.callbacks.OnListEnd())
@@ -265,8 +262,8 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 		decoder.decodeStringOfLength(buffer, 14)
 	case typeString15:
 		decoder.decodeStringOfLength(buffer, 15)
+		// TODO: 128 bit and decimal
 	}
-	// TODO: 128 bit and decimal
 }
 
 func (decoder *CbeDecoder) feedFromBuffer(buffer *decodeBuffer) error {
@@ -288,12 +285,18 @@ func (decoder *CbeDecoder) handleFailedByteReservation(reservedByteCount int) {
 	decoder.partialBuffer.pos = 0
 }
 
+// ----------
+// Public API
+// ----------
+
 func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
 	decoder := new(CbeDecoder)
 	decoder.callbacks = callbacks
 	decoder.container.currentType = make([]containerType, maxContainerDepth)
 	if commentCallbacks, ok := callbacks.(CbeDecoderCommentCallbacks); ok {
 		decoder.commentCallbacks = commentCallbacks
+	} else {
+		decoder.commentCallbacks = &ignoredCommentCallbacks
 	}
 	return decoder
 }
@@ -309,10 +312,10 @@ func (decoder *CbeDecoder) Feed(data []byte) (err error) {
 				err = nil
 			case callbackError:
 				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
-				err = fmt.Errorf("cbe: offset %v: error from callback: %v", offset, r.(callbackError).err)
+				err = fmt.Errorf("cbe: offset %v: Error from callback: %v", offset, r.(callbackError).err)
 			case decoderError:
 				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
-				err = fmt.Errorf("cbe: offset %v: %v", offset, r.(decoderError).err)
+				err = fmt.Errorf("cbe: offset %v: Decode error: %v", offset, r.(decoderError).err)
 			default:
 				panic(r)
 				// err = fmt.Errorf("cbe: internal error: %v", r)

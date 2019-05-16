@@ -178,16 +178,6 @@ func (this *Unmarshaler) OnStringData(bytes []byte) error {
 	return nil
 }
 
-func (this *Unmarshaler) OnCommentBegin(byteCount uint64) error {
-	// Ignored
-	return nil
-}
-
-func (this *Unmarshaler) OnCommentData(bytes []byte) error {
-	// Ignored
-	return nil
-}
-
 func (this *Unmarshaler) OnBytesBegin(byteCount uint64) error {
 	this.arrayBegin(arrayTypeBytes, int(byteCount))
 	return nil
