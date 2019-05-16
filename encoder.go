@@ -56,12 +56,14 @@ type CbeEncoder struct {
 	currentArrayType     arrayType
 	remainingArrayLength int64
 	currentContainerType []containerType
+	hasStoredMapKey      []bool
 	encoded              []byte
 }
 
 func NewCbeEncoder(maxContainerDepth int) *CbeEncoder {
 	encoder := new(CbeEncoder)
 	encoder.currentContainerType = make([]containerType, maxContainerDepth)
+	encoder.hasStoredMapKey = make([]bool, maxContainerDepth)
 	encoder.encoded = make([]byte, 0)
 	return encoder
 }
@@ -110,10 +112,42 @@ func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
 	}
 }
 
-func (encoder *CbeEncoder) enterContainer(newContainerType containerType) {
+func (encoder *CbeEncoder) containerBegin(newContainerType containerType) {
 	// TODO: Error if container depth >= max
 	encoder.containerDepth++
 	encoder.currentContainerType[encoder.containerDepth] = newContainerType
+	encoder.hasStoredMapKey[encoder.containerDepth] = false
+}
+
+func (encoder *CbeEncoder) containerEnd() error {
+	if encoder.containerDepth <= 0 {
+		return fmt.Errorf("No containers are open")
+	}
+	encoder.containerDepth--
+	encoder.encodeTypeField(typeEndContainer)
+	encoder.flipMapKeyStatus()
+	return nil
+}
+
+func (encoder *CbeEncoder) isExpectingMapKey() bool {
+	return encoder.currentContainerType[encoder.containerDepth] == containerTypeMap &&
+		!encoder.hasStoredMapKey[encoder.containerDepth]
+}
+
+func (encoder *CbeEncoder) isExpectingMapValue() bool {
+	return encoder.currentContainerType[encoder.containerDepth] == containerTypeMap &&
+		encoder.hasStoredMapKey[encoder.containerDepth]
+}
+
+func (encoder *CbeEncoder) flipMapKeyStatus() {
+	encoder.hasStoredMapKey[encoder.containerDepth] = !encoder.hasStoredMapKey[encoder.containerDepth]
+}
+
+func (encoder *CbeEncoder) assertNotExpectingMapKey(keyType string) error {
+	if encoder.isExpectingMapKey() {
+		return fmt.Errorf("Cannot use type %v as a map key", keyType)
+	}
+	return nil
 }
 
 func (encoder *CbeEncoder) Padding(byteCount int) error {
@@ -124,7 +158,11 @@ func (encoder *CbeEncoder) Padding(byteCount int) error {
 }
 
 func (encoder *CbeEncoder) Nil() error {
+	if err := encoder.assertNotExpectingMapKey("nil"); err != nil {
+		return err
+	}
 	encoder.encodeTypeField(typeNil)
+	encoder.flipMapKeyStatus()
 	return nil
 }
 
@@ -134,6 +172,7 @@ func (encoder *CbeEncoder) Bool(value bool) error {
 	} else {
 		encoder.encodeTypeField(typeFalse)
 	}
+	encoder.flipMapKeyStatus()
 	return nil
 }
 
@@ -154,6 +193,7 @@ func (encoder *CbeEncoder) Uint(value uint64) error {
 		encoder.encodeTypeField(typePosInt64)
 		encoder.encodePrimitive64(value)
 	}
+	encoder.flipMapKeyStatus()
 	return nil
 }
 
@@ -181,6 +221,7 @@ func (encoder *CbeEncoder) Int(value int64) error {
 		encoder.encodeTypeField(typeNegInt64)
 		encoder.encodePrimitive64(uvalue)
 	}
+	encoder.flipMapKeyStatus()
 	return nil
 }
 
@@ -193,6 +234,7 @@ func (encoder *CbeEncoder) Float(value float64) error {
 		encoder.encodeTypeField(typeFloat64)
 		encoder.encodePrimitive64(math.Float64bits(value))
 	}
+	encoder.flipMapKeyStatus()
 	return nil
 }
 
@@ -204,21 +246,16 @@ func (encoder *CbeEncoder) Time(value time.Time) error {
 		encoder.encodeTypeField(typeNanotime)
 		encoder.encodePrimitive64(uint64(smalltime.NanotimeFromTime(value)))
 	}
+	encoder.flipMapKeyStatus()
 	return nil
 }
 
 func (encoder *CbeEncoder) ListBegin() error {
-	encoder.enterContainer(containerTypeList)
-	encoder.encodeTypeField(typeList)
-	return nil
-}
-
-func (encoder *CbeEncoder) containerEnd() error {
-	if encoder.containerDepth <= 0 {
-		return fmt.Errorf("No containers are open")
+	if err := encoder.assertNotExpectingMapKey("list"); err != nil {
+		return err
 	}
-	encoder.containerDepth--
-	encoder.encodeTypeField(typeEndContainer)
+	encoder.containerBegin(containerTypeList)
+	encoder.encodeTypeField(typeList)
 	return nil
 }
 
@@ -227,12 +264,18 @@ func (encoder *CbeEncoder) ListEnd() error {
 }
 
 func (encoder *CbeEncoder) MapBegin() error {
-	encoder.enterContainer(containerTypeMap)
+	if err := encoder.assertNotExpectingMapKey("map"); err != nil {
+		return err
+	}
+	encoder.containerBegin(containerTypeMap)
 	encoder.encodeTypeField(typeMap)
 	return nil
 }
 
 func (encoder *CbeEncoder) MapEnd() error {
+	if encoder.isExpectingMapValue() {
+		return fmt.Errorf("Expecting map value for already stored key")
+	}
 	return encoder.containerEnd()
 }
 
@@ -253,6 +296,9 @@ func (encoder *CbeEncoder) arrayAddData(value []byte) error {
 	encoder.encodeBytes(value)
 	encoder.remainingArrayLength -= length
 	if encoder.remainingArrayLength == 0 {
+		if encoder.currentArrayType != arrayTypeComment {
+			encoder.flipMapKeyStatus()
+		}
 		encoder.currentArrayType = arrayTypeNone
 	}
 	return nil

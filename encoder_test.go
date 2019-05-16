@@ -212,3 +212,62 @@ func TestCloseNoContainer(t *testing.T) {
 	encoder := NewCbeEncoder(100)
 	assertFailure(t, encoder.ListEnd())
 }
+
+func TestMapMissingValue(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.MapBegin())
+	assertSuccess(t, encoder.Int(1))
+	assertFailure(t, encoder.MapEnd())
+}
+
+func TestMapNilKey(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.MapBegin())
+	assertFailure(t, encoder.Nil())
+}
+
+func TestMapListKey(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.MapBegin())
+	assertFailure(t, encoder.ListBegin())
+}
+
+func TestMapMapKey(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.MapBegin())
+	assertFailure(t, encoder.MapBegin())
+}
+
+func TestMapBytesKey(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.MapBegin())
+	assertSuccess(t, encoder.Bytes([]byte{1, 2, 3}))
+	assertSuccess(t, encoder.Bytes([]byte{4, 5, 6}))
+	assertSuccess(t, encoder.MapEnd())
+}
+
+func TestMapWithComments(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.Comment("A comment before the map"))
+	assertSuccess(t, encoder.MapBegin())
+	assertSuccess(t, encoder.Comment("A comment"))
+	assertSuccess(t, encoder.String("a key"))
+	assertSuccess(t, encoder.Comment("Another comment"))
+	assertSuccess(t, encoder.Bool(true))
+	assertSuccess(t, encoder.Comment("Yet another comment"))
+	assertSuccess(t, encoder.MapEnd())
+	assertSuccess(t, encoder.Comment("A comment after the map"))
+}
+
+func TestListWithComments(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertSuccess(t, encoder.Comment("A comment before the list"))
+	assertSuccess(t, encoder.ListBegin())
+	assertSuccess(t, encoder.Comment("A comment"))
+	assertSuccess(t, encoder.String("a string"))
+	assertSuccess(t, encoder.Comment("Another comment"))
+	assertSuccess(t, encoder.Bool(true))
+	assertSuccess(t, encoder.Comment("Yet another comment"))
+	assertSuccess(t, encoder.ListEnd())
+	assertSuccess(t, encoder.Comment("A comment after the list"))
+}
