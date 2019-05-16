@@ -1,11 +1,64 @@
 package cbe
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
+
+// General
+
+var stringGeneratorChars = [...]byte{
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+	'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+}
+
+func generateString(length int) string {
+	var result strings.Builder
+	for i := 0; i < length; i++ {
+		result.WriteByte(stringGeneratorChars[i%len(stringGeneratorChars)])
+	}
+	return result.String()
+}
+
+func generateBytes(length int) []byte {
+	return []byte(generateString(length))
+}
+
+func testPanics(function func()) (didPanic bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			didPanic = true
+		}
+	}()
+	didPanic = false
+	function()
+	return didPanic
+}
+
+func assertPanics(t *testing.T, function func()) {
+	if !testPanics(function) {
+		t.Errorf("Should have panicked but didn't")
+	}
+}
+
+func assertSuccess(t *testing.T, err error) {
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
+
+func assertFailure(t *testing.T, err error) {
+	if err == nil {
+		t.Errorf("Unexpected success")
+	}
+}
+
+// Decoder
 
 type Nil int
 
@@ -24,10 +77,13 @@ func (callbacks *testCallbacks) setCurrentContainer() {
 	callbacks.currentMap = nil
 	if lastEntry >= 0 {
 		container := callbacks.containerStack[lastEntry]
-		if list, ok := container.([]interface{}); ok {
-			callbacks.currentList = list
-		} else {
+		switch container.(type) {
+		case []interface{}:
+			callbacks.currentList = container.([]interface{})
+		case map[interface{}]interface{}:
 			callbacks.currentMap = container.(map[interface{}]interface{})
+		case *map[interface{}]interface{}:
+			callbacks.currentMap = *(container.(*map[interface{}]interface{}))
 		}
 	}
 }
@@ -185,21 +241,77 @@ func (callbacks *testCallbacks) OnBytesData(bytes []byte) error {
 	return nil
 }
 
-func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
+func decodeDocument(encoded []byte) (result interface{}, err error) {
 	callbacks := new(testCallbacks)
-	decoder := NewCbeDecoder(9, callbacks)
-	err := decoder.Feed(encoded)
+	decoder := NewCbeDecoder(100, callbacks)
+	if err := decoder.Feed(encoded); err != nil {
+		return nil, err
+	}
+	if err := decoder.End(); err != nil {
+		return nil, err
+	}
+	result = callbacks.getValue()
+	return result, err
+}
+
+func tryDecode(encoded []byte) error {
+	_, err := decodeDocument(encoded)
+	return err
+}
+
+func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
+	actual, err := decodeDocument(encoded)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 		return
 	}
-	err = decoder.End()
-	if err != nil {
-		t.Errorf("Error: %v", err)
-		return
-	}
-	actual := callbacks.getValue()
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Expected [%v], actual [%v]", expected, actual)
+	}
+}
+
+// Encoder
+
+func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
+	encoder := NewCbeEncoder(100)
+	function(encoder)
+	actual := encoder.Encoded()
+	if !bytes.Equal(actual, expected) {
+		t.Errorf("Expected %v, actual %v", expected, actual)
+	}
+}
+
+// Marshal / Unmarshal
+
+func assertMarshaled(t *testing.T, value interface{}, expected []byte) {
+	encoder := NewCbeEncoder(100)
+	Marshal(encoder, value)
+	actual := encoder.Encoded()
+	if !bytes.Equal(actual, expected) {
+		t.Errorf("Expected %v, actual %v", expected, actual)
+	}
+}
+
+func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
+	assertMarshalUnmarshalProduces(t, expected, expected)
+}
+
+func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected interface{}) {
+	encoder := NewCbeEncoder(100)
+	if err := Marshal(encoder, input); err != nil {
+		t.Errorf("Unexpected error while marshling: %v", err)
+		return
+	}
+	document := encoder.Encoded()
+	unmarshaler := new(Unmarshaler)
+	decoder := NewCbeDecoder(100, unmarshaler)
+	if err := decoder.Decode(document); err != nil {
+		t.Errorf("Unexpected error while decoding: %v", err)
+		return
+	}
+	actual := unmarshaler.Unmarshaled()
+
+	if !DeepEquivalence(actual, expected) {
+		t.Errorf("Expected %t: <%v>, actual %t: <%v>", expected, expected, actual, actual)
 	}
 }

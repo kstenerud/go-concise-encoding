@@ -152,3 +152,7 @@ func TestDecodeBytes16384(t *testing.T) {
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, encoded, value)
 }
+
+func TestDecodeUnbalancedContainers(t *testing.T) {
+	assertFailure(t, tryDecode([]byte{0x94}))
+}

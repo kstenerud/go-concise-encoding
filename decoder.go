@@ -38,8 +38,9 @@ type callbackError struct {
 }
 
 type containerData struct {
-	depth       int
-	currentType []containerType
+	depth              int
+	currentType        []containerType
+	hasProcessedMapKey []bool
 }
 
 type arrayData struct {
@@ -78,23 +79,48 @@ func checkCallback(err error) {
 	}
 }
 
-func (decoder *CbeDecoder) beginContainer(newContainerType containerType) {
+func (decoder *CbeDecoder) isExpectingMapKey() bool {
+	return decoder.container.currentType[decoder.container.depth] == containerTypeMap &&
+		!decoder.container.hasProcessedMapKey[decoder.container.depth]
+}
+
+func (decoder *CbeDecoder) isExpectingMapValue() bool {
+	return decoder.container.currentType[decoder.container.depth] == containerTypeMap &&
+		decoder.container.hasProcessedMapKey[decoder.container.depth]
+}
+
+func (decoder *CbeDecoder) flipMapKeyStatus() {
+	decoder.container.hasProcessedMapKey[decoder.container.depth] = !decoder.container.hasProcessedMapKey[decoder.container.depth]
+}
+
+func (decoder *CbeDecoder) assertNotExpectingMapKey(keyType string) {
+	if decoder.isExpectingMapKey() {
+		panic(fmt.Errorf("Cannot use type %v as a map key", keyType))
+	}
+}
+
+func (decoder *CbeDecoder) containerBegin(newContainerType containerType) {
 	if decoder.container.depth >= len(decoder.container.currentType) {
 		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))})
 	}
 	decoder.container.depth++
 	decoder.container.currentType[decoder.container.depth] = newContainerType
+	decoder.container.hasProcessedMapKey[decoder.container.depth] = false
 }
 
-func (decoder *CbeDecoder) endContainer() containerType {
+func (decoder *CbeDecoder) containerEnd() containerType {
 	if decoder.container.depth <= 0 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
+	if decoder.isExpectingMapValue() {
+		panic(fmt.Errorf("Expecting map value for already processed key"))
+	}
+
 	decoder.container.depth--
 	return decoder.container.currentType[decoder.container.depth+1]
 }
 
-func (decoder *CbeDecoder) beginArray(newArrayType arrayType) {
+func (decoder *CbeDecoder) arrayBegin(newArrayType arrayType) {
 	decoder.array.currentType = newArrayType
 	switch newArrayType {
 	case arrayTypeBytes:
@@ -130,7 +156,12 @@ func (decoder *CbeDecoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
 }
 
 func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
-	if decoder.array.currentType == arrayTypeNone || decoder.array.byteCountRemaining == 0 {
+	if decoder.array.currentType == arrayTypeNone {
+		return
+	}
+	if decoder.array.byteCountRemaining == 0 {
+		decoder.array.currentType = arrayTypeNone
+		decoder.flipMapKeyStatus()
 		return
 	}
 
@@ -142,6 +173,7 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 	decoder.array.byteCountRemaining -= int64(decodeByteCount)
 	if decoder.array.byteCountRemaining == 0 {
 		decoder.array.currentType = arrayTypeNone
+		decoder.flipMapKeyStatus()
 	}
 	if decoder.array.onData != nil {
 		checkCallback(decoder.array.onData(bytes))
@@ -153,7 +185,7 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 }
 
 func (decoder *CbeDecoder) decodeStringOfLength(buffer *decodeBuffer, length int64) {
-	decoder.beginArray(arrayTypeString)
+	decoder.arrayBegin(arrayTypeString)
 	decoder.setArrayLength(length)
 	decoder.decodeArrayData(buffer)
 }
@@ -165,73 +197,92 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 		} else {
 			checkCallback(decoder.callbacks.OnInt(int64(int8(dataType))))
 		}
+		decoder.flipMapKeyStatus()
 		return
 	}
 
 	switch dataType {
 	case typeTrue:
 		checkCallback(decoder.callbacks.OnBool(true))
+		decoder.flipMapKeyStatus()
 	case typeFalse:
 		checkCallback(decoder.callbacks.OnBool(false))
+		decoder.flipMapKeyStatus()
 	case typeFloat32:
 		checkCallback(decoder.callbacks.OnFloat(float64(buffer.readFloat32())))
+		decoder.flipMapKeyStatus()
 	case typeFloat64:
 		checkCallback(decoder.callbacks.OnFloat(buffer.readFloat64()))
+		decoder.flipMapKeyStatus()
 	case typePosInt8:
 		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive8())))
+		decoder.flipMapKeyStatus()
 	case typePosInt16:
 		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive16())))
+		decoder.flipMapKeyStatus()
 	case typePosInt32:
 		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive32())))
+		decoder.flipMapKeyStatus()
 	case typePosInt64:
 		checkCallback(decoder.callbacks.OnUint(buffer.readPrimitive64()))
+		decoder.flipMapKeyStatus()
 	case typeNegInt8:
 		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive8())))
+		decoder.flipMapKeyStatus()
 	case typeNegInt16:
 		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive16())))
+		decoder.flipMapKeyStatus()
 	case typeNegInt32:
 		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive32())))
+		decoder.flipMapKeyStatus()
 	case typeNegInt64:
 		checkCallback(decoder.callbacks.OnInt(buffer.readNegInt64()))
+		decoder.flipMapKeyStatus()
 	case typeSmalltime:
 		// TODO: Specify time zone?
 		checkCallback(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
+		decoder.flipMapKeyStatus()
 	case typeNanotime:
 		// TODO: Specify time zone?
 		checkCallback(decoder.callbacks.OnTime(buffer.readNanotime().AsTime()))
+		decoder.flipMapKeyStatus()
 	case typeNil:
+		decoder.assertNotExpectingMapKey("nil")
 		checkCallback(decoder.callbacks.OnNil())
+		decoder.flipMapKeyStatus()
 	case typePadding:
 		// Ignore
 	case typeList:
-		decoder.beginContainer(containerTypeList)
+		decoder.containerBegin(containerTypeList)
 		checkCallback(decoder.callbacks.OnListBegin())
 	case typeMap:
-		decoder.beginContainer(containerTypeMap)
+		decoder.containerBegin(containerTypeMap)
 		checkCallback(decoder.callbacks.OnMapBegin())
 	case typeEndContainer:
-		oldContainerType := decoder.endContainer()
+		oldContainerType := decoder.containerEnd()
 		switch oldContainerType {
 		case containerTypeList:
 			checkCallback(decoder.callbacks.OnListEnd())
 		case containerTypeMap:
 			checkCallback(decoder.callbacks.OnMapEnd())
 		}
+		decoder.flipMapKeyStatus()
 	case typeBytes:
-		decoder.beginArray(arrayTypeBytes)
+		decoder.arrayBegin(arrayTypeBytes)
 		decoder.decodeArrayLength(buffer)
 		decoder.decodeArrayData(buffer)
 	case typeComment:
-		decoder.beginArray(arrayTypeComment)
+		decoder.arrayBegin(arrayTypeComment)
 		decoder.decodeArrayLength(buffer)
 		decoder.decodeArrayData(buffer)
 	case typeString:
-		decoder.beginArray(arrayTypeString)
+		decoder.arrayBegin(arrayTypeString)
 		decoder.decodeArrayLength(buffer)
 		decoder.decodeArrayData(buffer)
 	case typeString0:
-		decoder.beginArray(arrayTypeString)
+		decoder.arrayBegin(arrayTypeString)
 		decoder.setArrayLength(0)
+		decoder.flipMapKeyStatus()
 	case typeString1:
 		decoder.decodeStringOfLength(buffer, 1)
 	case typeString2:
@@ -293,6 +344,7 @@ func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDec
 	decoder := new(CbeDecoder)
 	decoder.callbacks = callbacks
 	decoder.container.currentType = make([]containerType, maxContainerDepth)
+	decoder.container.hasProcessedMapKey = make([]bool, maxContainerDepth)
 	if commentCallbacks, ok := callbacks.(CbeDecoderCommentCallbacks); ok {
 		decoder.commentCallbacks = commentCallbacks
 	} else {
