@@ -13,6 +13,10 @@ import (
 	// "github.com/shabbyrobe/go-num"
 )
 
+// ------------
+// Array Length
+// ------------
+
 const (
 	maxValue6Bit  int64 = 0x3f
 	maxValue14Bit int64 = 0x3fff
@@ -51,6 +55,10 @@ func fitsInUint32(value uint64) bool {
 	return value <= math.MaxUint32
 }
 
+// -----------
+// CBE Encoder
+// -----------
+
 type CbeEncoder struct {
 	containerDepth       int
 	currentArrayType     arrayType
@@ -60,13 +68,9 @@ type CbeEncoder struct {
 	encoded              []byte
 }
 
-func NewCbeEncoder(maxContainerDepth int) *CbeEncoder {
-	encoder := new(CbeEncoder)
-	encoder.currentContainerType = make([]containerType, maxContainerDepth+1)
-	encoder.hasStoredMapKey = make([]bool, maxContainerDepth+1)
-	encoder.encoded = make([]byte, 0)
-	return encoder
-}
+// --------
+// Internal
+// --------
 
 func (encoder *CbeEncoder) encodeBytes(bytes []byte) {
 	encoder.encoded = append(encoder.encoded, bytes...)
@@ -151,6 +155,43 @@ func (encoder *CbeEncoder) assertNotExpectingMapKey(keyType string) error {
 		return fmt.Errorf("Cannot use type %v as a map key", keyType)
 	}
 	return nil
+}
+
+func (encoder *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) error {
+	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
+		return fmt.Errorf("Cannot start new array when already in an array")
+	}
+	encoder.currentArrayType = newArrayType
+	encoder.remainingArrayLength = int64(length)
+	return nil
+}
+
+func (encoder *CbeEncoder) arrayAddData(value []byte) error {
+	length := int64(len(value))
+	if length > encoder.remainingArrayLength {
+		return fmt.Errorf("Data length exceeds array length by %v bytes", length-encoder.remainingArrayLength)
+	}
+	encoder.encodeBytes(value)
+	encoder.remainingArrayLength -= length
+	if encoder.remainingArrayLength == 0 {
+		if encoder.currentArrayType != arrayTypeComment {
+			encoder.flipMapKeyStatus()
+		}
+		encoder.currentArrayType = arrayTypeNone
+	}
+	return nil
+}
+
+// ----------
+// Public API
+// ----------
+
+func NewCbeEncoder(maxContainerDepth int) *CbeEncoder {
+	encoder := new(CbeEncoder)
+	encoder.currentContainerType = make([]containerType, maxContainerDepth+1)
+	encoder.hasStoredMapKey = make([]bool, maxContainerDepth+1)
+	encoder.encoded = make([]byte, 0)
+	return encoder
 }
 
 func (encoder *CbeEncoder) Padding(byteCount int) error {
@@ -284,31 +325,6 @@ func (encoder *CbeEncoder) MapEnd() error {
 		return fmt.Errorf("Expecting map value for already stored key")
 	}
 	return encoder.containerEnd()
-}
-
-func (encoder *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) error {
-	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
-		return fmt.Errorf("Cannot start new array when already in an array")
-	}
-	encoder.currentArrayType = newArrayType
-	encoder.remainingArrayLength = int64(length)
-	return nil
-}
-
-func (encoder *CbeEncoder) arrayAddData(value []byte) error {
-	length := int64(len(value))
-	if length > encoder.remainingArrayLength {
-		return fmt.Errorf("Data length exceeds array length by %v bytes", length-encoder.remainingArrayLength)
-	}
-	encoder.encodeBytes(value)
-	encoder.remainingArrayLength -= length
-	if encoder.remainingArrayLength == 0 {
-		if encoder.currentArrayType != arrayTypeComment {
-			encoder.flipMapKeyStatus()
-		}
-		encoder.currentArrayType = arrayTypeNone
-	}
-	return nil
 }
 
 func (encoder *CbeEncoder) BytesBegin(length uint64) error {
