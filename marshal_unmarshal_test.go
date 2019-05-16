@@ -21,7 +21,7 @@ func generateString(length int) string {
 	return result.String()
 }
 
-func generateBinary(length int) []byte {
+func generateBytes(length int) []byte {
 	return []byte(generateString(length))
 }
 

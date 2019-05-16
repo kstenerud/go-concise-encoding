@@ -28,8 +28,8 @@ type CbeDecoderCallbacks interface {
 	OnMapEnd() error
 	OnStringBegin(byteCount uint64) error
 	OnStringData(bytes []byte) error
-	OnBinaryBegin(byteCount uint64) error
-	OnBinaryData(bytes []byte) error
+	OnBytesBegin(byteCount uint64) error
+	OnBytesData(bytes []byte) error
 }
 
 // This version of the callbacks allows you to capture comments as well.
@@ -46,8 +46,8 @@ type CbeDecoderCommentCallbacks interface {
 	OnMapEnd() error
 	OnStringBegin(byteCount uint64) error
 	OnStringData(bytes []byte) error
-	OnBinaryBegin(byteCount uint64) error
-	OnBinaryData(bytes []byte) error
+	OnBytesBegin(byteCount uint64) error
+	OnBytesData(bytes []byte) error
 	// Only these two are different
 	OnCommentBegin(byteCount uint64) error
 	OnCommentData(bytes []byte) error
@@ -94,9 +94,9 @@ func (decoder *CbeDecoder) leaveContainer() containerType {
 func (decoder *CbeDecoder) beginArray(newArrayType arrayType) {
 	decoder.array.currentType = newArrayType
 	switch newArrayType {
-	case arrayTypeBinary:
-		decoder.array.onBegin = decoder.callbacks.OnBinaryBegin
-		decoder.array.onData = decoder.callbacks.OnBinaryData
+	case arrayTypeBytes:
+		decoder.array.onBegin = decoder.callbacks.OnBytesBegin
+		decoder.array.onData = decoder.callbacks.OnBytesData
 	case arrayTypeComment:
 		decoder.array.onBegin = decoder.commentCallbacks.OnCommentBegin
 		decoder.array.onData = decoder.commentCallbacks.OnCommentData
@@ -220,8 +220,8 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 		case containerTypeMap:
 			checkCallback(decoder.callbacks.OnMapEnd())
 		}
-	case typeBinary:
-		decoder.beginArray(arrayTypeBinary)
+	case typeBytes:
+		decoder.beginArray(arrayTypeBytes)
 		decoder.decodeArrayLength(buffer)
 		decoder.decodeArrayData(buffer)
 	case typeComment:

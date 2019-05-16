@@ -42,7 +42,7 @@ const (
 	typeString14     typeField = 0x8e
 	typeString15     typeField = 0x8f
 	typeString       typeField = 0x90
-	typeBinary       typeField = 0x91
+	typeBytes        typeField = 0x91
 	typeComment      typeField = 0x92
 	typeList         typeField = 0x93
 	typeMap          typeField = 0x94
@@ -65,7 +65,7 @@ type arrayType int
 
 const (
 	arrayTypeNone arrayType = iota
-	arrayTypeBinary
+	arrayTypeBytes
 	arrayTypeString
 	arrayTypeComment
 )

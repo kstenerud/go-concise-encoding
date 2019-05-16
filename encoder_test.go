@@ -122,7 +122,7 @@ func TestMap(t *testing.T) {
 		[]byte{0x94, 0x81, 0x31, 0x01, 0x81, 0x32, 0x02, 0x95})
 }
 
-func TestBinary(t *testing.T) {
+func TestBytes(t *testing.T) {
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{}) }, []byte{0x91, 0x00})
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1}) }, []byte{0x91, 0x04, 0x01})
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2}) }, []byte{0x91, 0x08, 0x01, 0x02})
@@ -139,16 +139,16 @@ func TestString(t *testing.T) {
 	})
 }
 
-func TestBinaryTooLong(t *testing.T) {
+func TestBytesTooLong(t *testing.T) {
 	encoder := NewCbeEncoder(100)
-	assertSuccess(t, encoder.BinaryBegin(10))
-	assertFailure(t, encoder.BinaryData(make([]byte, 11)))
+	assertSuccess(t, encoder.BytesBegin(10))
+	assertFailure(t, encoder.BytesData(make([]byte, 11)))
 }
 
-func TestBinaryTooShort(t *testing.T) {
+func TestBytesTooShort(t *testing.T) {
 	encoder := NewCbeEncoder(100)
-	assertSuccess(t, encoder.BinaryBegin(10))
-	assertSuccess(t, encoder.BinaryData(make([]byte, 9)))
+	assertSuccess(t, encoder.BytesBegin(10))
+	assertSuccess(t, encoder.BytesData(make([]byte, 9)))
 	assertFailure(t, encoder.End())
 }
 
@@ -180,8 +180,8 @@ func TestCommentTooShort(t *testing.T) {
 
 func TestChangeArrayType(t *testing.T) {
 	encoder := NewCbeEncoder(100)
-	assertSuccess(t, encoder.BinaryBegin(10))
-	assertSuccess(t, encoder.BinaryData(make([]byte, 5)))
+	assertSuccess(t, encoder.BytesBegin(10))
+	assertSuccess(t, encoder.BytesData(make([]byte, 5)))
 	assertFailure(t, encoder.StringBegin(10))
 }
 

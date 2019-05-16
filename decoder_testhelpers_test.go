@@ -57,7 +57,7 @@ func (callbacks *testCallbacks) arrayBegin(newArrayType arrayType, length int) {
 	callbacks.currentArray = make([]byte, 0, length)
 	callbacks.currentArrayType = newArrayType
 	if length == 0 {
-		if callbacks.currentArrayType == arrayTypeBinary {
+		if callbacks.currentArrayType == arrayTypeBytes {
 			callbacks.storeValue(callbacks.currentArray)
 		} else {
 			callbacks.storeValue(string(callbacks.currentArray))
@@ -68,7 +68,7 @@ func (callbacks *testCallbacks) arrayBegin(newArrayType arrayType, length int) {
 func (callbacks *testCallbacks) arrayData(data []byte) {
 	callbacks.currentArray = append(callbacks.currentArray, data...)
 	if len(callbacks.currentArray) == cap(callbacks.currentArray) {
-		if callbacks.currentArrayType == arrayTypeBinary {
+		if callbacks.currentArrayType == arrayTypeBytes {
 			callbacks.storeValue(callbacks.currentArray)
 		} else {
 			callbacks.storeValue(string(callbacks.currentArray))
@@ -175,12 +175,12 @@ func (callbacks *testCallbacks) OnCommentData(bytes []byte) error {
 	return nil
 }
 
-func (callbacks *testCallbacks) OnBinaryBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeBinary, int(byteCount))
+func (callbacks *testCallbacks) OnBytesBegin(byteCount uint64) error {
+	callbacks.arrayBegin(arrayTypeBytes, int(byteCount))
 	return nil
 }
 
-func (callbacks *testCallbacks) OnBinaryData(bytes []byte) error {
+func (callbacks *testCallbacks) OnBytesData(bytes []byte) error {
 	callbacks.arrayData(bytes)
 	return nil
 }

@@ -118,36 +118,36 @@ func TestDecodeComment16384(t *testing.T) {
 	assertDecoded(t, encoded, value)
 }
 
-func TestDecodeBinary0(t *testing.T) {
-	value := generateBinary(0)
+func TestDecodeBytes0(t *testing.T) {
+	value := generateBytes(0)
 	encoded := []byte{0x91, 0 << 2}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, encoded, value)
 }
 
-func TestDecodeBinary1(t *testing.T) {
-	value := generateBinary(1)
+func TestDecodeBytes1(t *testing.T) {
+	value := generateBytes(1)
 	encoded := []byte{0x91, 1 << 2}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, encoded, value)
 }
 
-func TestDecodeBinary16(t *testing.T) {
-	value := generateBinary(16)
+func TestDecodeBytes16(t *testing.T) {
+	value := generateBytes(16)
 	encoded := []byte{0x91, 16 << 2}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, encoded, value)
 }
 
-func TestDecodeBinary64(t *testing.T) {
-	value := generateBinary(64)
+func TestDecodeBytes64(t *testing.T) {
+	value := generateBytes(64)
 	encoded := []byte{0x91, 0x01, 0x01}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, encoded, value)
 }
 
-func TestDecodeBinary16384(t *testing.T) {
-	value := generateBinary(16384)
+func TestDecodeBytes16384(t *testing.T) {
+	value := generateBytes(16384)
 	encoded := []byte{0x91, 0x02, 0x00, 0x01, 0x00}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, encoded, value)

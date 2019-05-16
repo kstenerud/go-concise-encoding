@@ -17,8 +17,8 @@ type PrimitiveDecoderCallbacks interface {
 	OnMapEnd() error
 	OnStringBegin(byteCount uint64) error
 	OnStringData(bytes []byte) error
-	OnBinaryBegin(byteCount uint64) error
-	OnBinaryData(bytes []byte) error
+	OnBytesBegin(byteCount uint64) error
+	OnBytesData(bytes []byte) error
 }
 
 type Unmarshaler struct {
@@ -84,7 +84,7 @@ func (this *Unmarshaler) arrayBegin(newArrayType arrayType, length int) {
 	this.currentArray = make([]byte, 0, length)
 	this.currentArrayType = newArrayType
 	if length == 0 {
-		if this.currentArrayType == arrayTypeBinary {
+		if this.currentArrayType == arrayTypeBytes {
 			this.storeValue(this.currentArray)
 		} else {
 			this.storeValue(string(this.currentArray))
@@ -95,7 +95,7 @@ func (this *Unmarshaler) arrayBegin(newArrayType arrayType, length int) {
 func (this *Unmarshaler) arrayData(data []byte) {
 	this.currentArray = append(this.currentArray, data...)
 	if len(this.currentArray) == cap(this.currentArray) {
-		if this.currentArrayType == arrayTypeBinary {
+		if this.currentArrayType == arrayTypeBytes {
 			this.storeValue(this.currentArray)
 		} else {
 			this.storeValue(string(this.currentArray))
@@ -188,12 +188,12 @@ func (this *Unmarshaler) OnCommentData(bytes []byte) error {
 	return nil
 }
 
-func (this *Unmarshaler) OnBinaryBegin(byteCount uint64) error {
-	this.arrayBegin(arrayTypeBinary, int(byteCount))
+func (this *Unmarshaler) OnBytesBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeBytes, int(byteCount))
 	return nil
 }
 
-func (this *Unmarshaler) OnBinaryData(bytes []byte) error {
+func (this *Unmarshaler) OnBytesData(bytes []byte) error {
 	this.arrayData(bytes)
 	return nil
 }

@@ -311,24 +311,24 @@ func (encoder *CbeEncoder) arrayAddData(value []byte) error {
 	return nil
 }
 
-func (encoder *CbeEncoder) BinaryBegin(length uint64) error {
-	if err := encoder.arrayBegin(arrayTypeBinary, length); err != nil {
+func (encoder *CbeEncoder) BytesBegin(length uint64) error {
+	if err := encoder.arrayBegin(arrayTypeBytes, length); err != nil {
 		return err
 	}
-	encoder.encodeTypeField(typeBinary)
+	encoder.encodeTypeField(typeBytes)
 	encoder.encodeArrayLengthField(int64(length))
 	return nil
 }
 
-func (encoder *CbeEncoder) BinaryData(value []byte) error {
+func (encoder *CbeEncoder) BytesData(value []byte) error {
 	return encoder.arrayAddData(value)
 }
 
 func (encoder *CbeEncoder) Bytes(value []byte) error {
-	if err := encoder.BinaryBegin(uint64(len(value))); err != nil {
+	if err := encoder.BytesBegin(uint64(len(value))); err != nil {
 		return err
 	}
-	return encoder.BinaryData(value)
+	return encoder.BytesData(value)
 }
 
 func (encoder *CbeEncoder) StringBegin(length uint64) error {
