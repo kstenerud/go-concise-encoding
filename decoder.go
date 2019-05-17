@@ -380,8 +380,8 @@ func (decoder *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
 				err = fmt.Errorf("cbe: offset %v: Decode error: %v", offset, r.(decoderError).err)
 			default:
+				// Unexpected panics are passed as-is
 				panic(r)
-				// err = fmt.Errorf("cbe: internal error: %v", r)
 			}
 		}
 		decoder.streamOffset += int64(decoder.buffer.pos)
