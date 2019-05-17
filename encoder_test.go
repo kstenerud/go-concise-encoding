@@ -5,8 +5,6 @@ import (
 )
 
 // TODO:
-// - Comment: invalid characters
-// - String: invalid characters
 // - Readme examples
 
 func TestEncodePadding(t *testing.T) {
@@ -97,6 +95,17 @@ func TestEncodeString(t *testing.T) {
 		0x90, 0x40, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
 		0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
 	})
+}
+
+func TestEncodeStringInvalid(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertFailure(t, encoder.String(string([]byte{0x40, 0x81, 0x42, 0x43, 0x44})))
+}
+
+func TestEncodeCommentInvalid(t *testing.T) {
+	encoder := NewCbeEncoder(100)
+	assertFailure(t, encoder.Comment(string([]byte{0x40, 0x81, 0x42, 0x43, 0x44})))
+	assertFailure(t, encoder.Comment("A comment\nwith a newline"))
 }
 
 func TestEncodeBytesTooLong(t *testing.T) {

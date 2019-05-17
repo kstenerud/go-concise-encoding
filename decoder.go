@@ -74,6 +74,7 @@ type CbeDecoder struct {
 	callbacks        CbeDecoderCallbacks
 	commentCallbacks CbeDecoderOptionalCallbacks
 	firstItemDecoded bool
+	charValidator    Utf8Validator
 }
 
 func panicOnCallbackError(err error) {
@@ -139,6 +140,7 @@ func (decoder *CbeDecoder) arrayBegin(newArrayType arrayType) {
 }
 
 func (decoder *CbeDecoder) setArrayLength(length int64) {
+	decoder.charValidator.Reset()
 	decoder.array.byteCountRemaining = length
 	if decoder.array.onBegin != nil {
 		panicOnCallbackError(decoder.array.onBegin(uint64(decoder.array.byteCountRemaining)))
@@ -173,6 +175,22 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 		decodeByteCount = int(decoder.array.byteCountRemaining)
 	}
 	bytes := buffer.readPrimitiveBytes(decodeByteCount)
+	if decoder.array.currentType == arrayTypeString || decoder.array.currentType == arrayTypeComment {
+		// if len(bytes) < 20 {
+		// 	fmt.Printf("### Validate [%v]\n", string(bytes))
+		// }
+		for _, ch := range bytes {
+			if err := decoder.charValidator.AddByte(int(ch)); err != nil {
+				panic(decoderError{err})
+			}
+			if decoder.charValidator.IsCompleteCharacter() && decoder.array.currentType == arrayTypeComment {
+				if err := ValidateCommentCharacter(decoder.charValidator.Character()); err != nil {
+					panic(decoderError{err})
+				}
+			}
+		}
+	}
+
 	decoder.array.byteCountRemaining -= int64(decodeByteCount)
 	if decoder.array.byteCountRemaining == 0 {
 		decoder.array.currentType = arrayTypeNone

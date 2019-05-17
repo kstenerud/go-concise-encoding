@@ -1,5 +1,7 @@
 package cbe
 
+import "fmt"
+
 type typeField uint8
 
 const (
@@ -77,3 +79,12 @@ const (
 	containerTypeList
 	containerTypeMap
 )
+
+func ValidateCommentCharacter(ch int) error {
+	if (ch >= 0x00 && ch <= 0x1f && ch != 0x09) ||
+		(ch >= 0x7f && ch <= 0x9f) ||
+		ch == 0x2028 || ch == 0x2029 {
+		return fmt.Errorf("0x%04x: Invalid comment character", ch)
+	}
+	return nil
+}

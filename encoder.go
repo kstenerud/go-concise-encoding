@@ -1,5 +1,3 @@
-/*
- */
 package cbe
 
 import (
@@ -66,6 +64,7 @@ type CbeEncoder struct {
 	currentContainerType []containerType
 	hasStoredMapKey      []bool
 	encoded              []byte
+	charValidator        Utf8Validator
 }
 
 // --------
@@ -161,6 +160,7 @@ func (encoder *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) err
 	if encoder.currentArrayType != arrayTypeNone && encoder.currentArrayType != newArrayType {
 		return fmt.Errorf("Cannot start new array when already in an array")
 	}
+	encoder.charValidator.Reset()
 	encoder.currentArrayType = newArrayType
 	encoder.remainingArrayLength = int64(length)
 	return nil
@@ -369,6 +369,11 @@ func (encoder *CbeEncoder) StringBegin(length uint64) error {
 }
 
 func (encoder *CbeEncoder) StringData(value []byte) error {
+	for _, ch := range value {
+		if err := encoder.charValidator.AddByte(int(ch)); err != nil {
+			return err
+		}
+	}
 	return encoder.arrayAddData(value)
 }
 
@@ -394,6 +399,16 @@ func (encoder *CbeEncoder) CommentBegin(length uint64) error {
 }
 
 func (encoder *CbeEncoder) CommentData(value []byte) error {
+	for _, ch := range value {
+		if err := encoder.charValidator.AddByte(int(ch)); err != nil {
+			return err
+		}
+		if encoder.charValidator.IsCompleteCharacter() {
+			if err := ValidateCommentCharacter(encoder.charValidator.Character()); err != nil {
+				return err
+			}
+		}
+	}
 	return encoder.arrayAddData(value)
 }
 

@@ -54,6 +54,10 @@ func TestMarshalUnmarshalLongString(t *testing.T) {
 	assertMarshalUnmarshal(t, "This is a longer string test that goes beyond 15 characters.")
 }
 
+func TestMarshalUnmarshalUtf8String(t *testing.T) {
+	assertMarshalUnmarshal(t, "Test ö覚𠜎")
+}
+
 func TestMarshalUnmarshalBytesSlice(t *testing.T) {
 	assertMarshalUnmarshal(t, []byte{1, 2, 3, 4, 5})
 }

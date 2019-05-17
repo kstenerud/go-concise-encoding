@@ -153,6 +153,14 @@ func TestDecodeBytes16384(t *testing.T) {
 	assertDecoded(t, encoded, value)
 }
 
+func TestDecodeStringInvalid(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x83, 0x40, 0x81, 0x41}))
+}
+
+func TestDecodeCommentInvalid(t *testing.T) {
+	assertFailure(t, tryDecode(9, []byte{0x92, 0x0c, 0x40, 0x01, 0x41}))
+}
+
 func TestDecodeBytesTooShort(t *testing.T) {
 	assertFailure(t, tryDecode(9, []byte{0x91, 0x08, 0x00}))
 }
