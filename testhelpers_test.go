@@ -275,7 +275,7 @@ func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
 func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
 	encoder := NewCbeEncoder(100)
 	function(encoder)
-	actual := encoder.Encoded()
+	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
 	}
@@ -286,7 +286,7 @@ func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
 func assertMarshaled(t *testing.T, value interface{}, expected []byte) {
 	encoder := NewCbeEncoder(100)
 	Marshal(encoder, value)
-	actual := encoder.Encoded()
+	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
 	}
@@ -302,7 +302,7 @@ func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected in
 		t.Errorf("Unexpected error while marshling: %v", err)
 		return
 	}
-	document := encoder.Encoded()
+	document := encoder.EncodedBytes()
 	unmarshaler := new(Unmarshaler)
 	decoder := NewCbeDecoder(100, unmarshaler)
 	if err := decoder.Decode(document); err != nil {

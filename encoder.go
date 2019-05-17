@@ -268,6 +268,7 @@ func (encoder *CbeEncoder) Int(value int64) error {
 
 func (encoder *CbeEncoder) Float(value float64) error {
 	asfloat32 := float32(value)
+	// TODO: Check if it fits in an int/uint
 	if float64(asfloat32) == value {
 		encoder.encodeTypeField(typeFloat32)
 		encoder.encodePrimitive32(math.Float32bits(asfloat32))
@@ -279,6 +280,7 @@ func (encoder *CbeEncoder) Float(value float64) error {
 	return nil
 }
 
+// Add a time value. Times are converted to their UTC equivalents before storage.
 func (encoder *CbeEncoder) Time(value time.Time) error {
 	if value.Nanosecond()%1000 == 0 {
 		encoder.encodeTypeField(typeSmalltime)
@@ -306,6 +308,8 @@ func (encoder *CbeEncoder) ListEnd() error {
 	return encoder.containerEnd()
 }
 
+// Begin a map. Any subsequent objects added are assumed to alternate between
+// key and value entries in the map, until MapEnd() is called.
 func (encoder *CbeEncoder) MapBegin() error {
 	if err := encoder.assertNotExpectingMapKey("map"); err != nil {
 		return err
@@ -324,6 +328,9 @@ func (encoder *CbeEncoder) MapEnd() error {
 	return encoder.containerEnd()
 }
 
+// Begin a byte array. Encoder expects subsequent calls to BytesData to provide
+// a total of exactly the length provided here.
+// Only lengths up to 0x3fffffffffffffff are supported.
 func (encoder *CbeEncoder) BytesBegin(length uint64) error {
 	if err := encoder.arrayBegin(arrayTypeBytes, length); err != nil {
 		return err
@@ -337,6 +344,7 @@ func (encoder *CbeEncoder) BytesData(value []byte) error {
 	return encoder.arrayAddData(value)
 }
 
+// Convenience function to completely fill a byte array in one call.
 func (encoder *CbeEncoder) Bytes(value []byte) error {
 	if err := encoder.BytesBegin(uint64(len(value))); err != nil {
 		return err
@@ -344,6 +352,9 @@ func (encoder *CbeEncoder) Bytes(value []byte) error {
 	return encoder.BytesData(value)
 }
 
+// Begin a string. Encoder expects subsequent calls to StringData to provide a
+// total of exactly the length provided here.
+// Only lengths up to 0x3fffffffffffffff are supported.
 func (encoder *CbeEncoder) StringBegin(length uint64) error {
 	if err := encoder.arrayBegin(arrayTypeString, length); err != nil {
 		return err
@@ -361,6 +372,7 @@ func (encoder *CbeEncoder) StringData(value []byte) error {
 	return encoder.arrayAddData(value)
 }
 
+// Convenience function to completely fill a string in one call.
 func (encoder *CbeEncoder) String(value string) error {
 	if err := encoder.StringBegin(uint64(len(value))); err != nil {
 		return err
@@ -369,6 +381,9 @@ func (encoder *CbeEncoder) String(value string) error {
 	return encoder.StringData([]byte(value))
 }
 
+// Begin a comment. Encoder expects subsequent calls to CommentData to provide a
+// total of exactly the length provided here.
+// Only lengths up to 0x3fffffffffffffff are supported.
 func (encoder *CbeEncoder) CommentBegin(length uint64) error {
 	if err := encoder.arrayBegin(arrayTypeComment, length); err != nil {
 		return err
@@ -382,6 +397,7 @@ func (encoder *CbeEncoder) CommentData(value []byte) error {
 	return encoder.arrayAddData(value)
 }
 
+// Convenience function to completely fill a comment in one call.
 func (encoder *CbeEncoder) Comment(value string) error {
 	if err := encoder.CommentBegin(uint64(len(value))); err != nil {
 		return err
@@ -399,6 +415,6 @@ func (encoder *CbeEncoder) End() error {
 	return nil
 }
 
-func (encoder *CbeEncoder) Encoded() []byte {
+func (encoder *CbeEncoder) EncodedBytes() []byte {
 	return encoder.encoded
 }

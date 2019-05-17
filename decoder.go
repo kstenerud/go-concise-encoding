@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Callback functions that must be present in the receiver object.
 type CbeDecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
@@ -22,10 +23,24 @@ type CbeDecoderCallbacks interface {
 	OnBytesData(bytes []byte) error
 }
 
-type CbeDecoderCommentCallbacks interface {
+// Callback functions that will be used if present in the receiver object.
+type CbeDecoderOptionalCallbacks interface {
 	OnCommentBegin(byteCount uint64) error
 	OnCommentData(bytes []byte) error
 }
+
+type ignoredOptionalCallbacksStruct struct {
+}
+
+func (callbacks *ignoredOptionalCallbacksStruct) OnCommentBegin(byteCount uint64) error {
+	return nil
+}
+
+func (callbacks *ignoredOptionalCallbacksStruct) OnCommentData(bytes []byte) error {
+	return nil
+}
+
+var ignoredOptionalCallbacks ignoredOptionalCallbacksStruct
 
 const maxPartialBufferSize = 16
 
@@ -50,19 +65,6 @@ type arrayData struct {
 	onData             func([]byte) error
 }
 
-type fakeDecoderCallbacksStruct struct {
-}
-
-var ignoredCommentCallbacks fakeDecoderCallbacksStruct
-
-func (callbacks *fakeDecoderCallbacksStruct) OnCommentBegin(byteCount uint64) error {
-	return nil
-}
-
-func (callbacks *fakeDecoderCallbacksStruct) OnCommentData(bytes []byte) error {
-	return nil
-}
-
 type CbeDecoder struct {
 	streamOffset     int64
 	buffer           decodeBuffer
@@ -70,11 +72,11 @@ type CbeDecoder struct {
 	container        containerData
 	array            arrayData
 	callbacks        CbeDecoderCallbacks
-	commentCallbacks CbeDecoderCommentCallbacks
+	commentCallbacks CbeDecoderOptionalCallbacks
 	firstItemDecoded bool
 }
 
-func checkCallback(err error) {
+func panicOnCallbackError(err error) {
 	if err != nil {
 		panic(callbackError{err})
 	}
@@ -90,7 +92,7 @@ func (decoder *CbeDecoder) isExpectingMapValue() bool {
 		decoder.container.hasProcessedMapKey[decoder.container.depth]
 }
 
-func (decoder *CbeDecoder) flipMapKeyStatus() {
+func (decoder *CbeDecoder) flipMapKeyValueState() {
 	decoder.container.hasProcessedMapKey[decoder.container.depth] = !decoder.container.hasProcessedMapKey[decoder.container.depth]
 }
 
@@ -139,7 +141,7 @@ func (decoder *CbeDecoder) arrayBegin(newArrayType arrayType) {
 func (decoder *CbeDecoder) setArrayLength(length int64) {
 	decoder.array.byteCountRemaining = length
 	if decoder.array.onBegin != nil {
-		checkCallback(decoder.array.onBegin(uint64(decoder.array.byteCountRemaining)))
+		panicOnCallbackError(decoder.array.onBegin(uint64(decoder.array.byteCountRemaining)))
 	}
 }
 
@@ -162,7 +164,7 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 	}
 	if decoder.array.byteCountRemaining == 0 {
 		decoder.array.currentType = arrayTypeNone
-		decoder.flipMapKeyStatus()
+		decoder.flipMapKeyValueState()
 		return
 	}
 
@@ -174,10 +176,10 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 	decoder.array.byteCountRemaining -= int64(decodeByteCount)
 	if decoder.array.byteCountRemaining == 0 {
 		decoder.array.currentType = arrayTypeNone
-		decoder.flipMapKeyStatus()
+		decoder.flipMapKeyValueState()
 	}
 	if decoder.array.onData != nil {
-		checkCallback(decoder.array.onData(bytes))
+		panicOnCallbackError(decoder.array.onData(bytes))
 	}
 	if decoder.array.byteCountRemaining > 0 {
 		// 0 because we don't want to reserve space in the partial buffer
@@ -194,82 +196,82 @@ func (decoder *CbeDecoder) decodeStringOfLength(buffer *decodeBuffer, length int
 func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
 		if int8(dataType) >= 0 {
-			checkCallback(decoder.callbacks.OnUint(uint64(dataType)))
+			panicOnCallbackError(decoder.callbacks.OnUint(uint64(dataType)))
 		} else {
-			checkCallback(decoder.callbacks.OnInt(int64(int8(dataType))))
+			panicOnCallbackError(decoder.callbacks.OnInt(int64(int8(dataType))))
 		}
-		decoder.flipMapKeyStatus()
+		decoder.flipMapKeyValueState()
 		return
 	}
 
 	switch dataType {
 	case typeTrue:
-		checkCallback(decoder.callbacks.OnBool(true))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnBool(true))
+		decoder.flipMapKeyValueState()
 	case typeFalse:
-		checkCallback(decoder.callbacks.OnBool(false))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnBool(false))
+		decoder.flipMapKeyValueState()
 	case typeFloat32:
-		checkCallback(decoder.callbacks.OnFloat(float64(buffer.readFloat32())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnFloat(float64(buffer.readFloat32())))
+		decoder.flipMapKeyValueState()
 	case typeFloat64:
-		checkCallback(decoder.callbacks.OnFloat(buffer.readFloat64()))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnFloat(buffer.readFloat64()))
+		decoder.flipMapKeyValueState()
 	case typePosInt8:
-		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive8())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnUint(uint64(buffer.readPrimitive8())))
+		decoder.flipMapKeyValueState()
 	case typePosInt16:
-		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive16())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnUint(uint64(buffer.readPrimitive16())))
+		decoder.flipMapKeyValueState()
 	case typePosInt32:
-		checkCallback(decoder.callbacks.OnUint(uint64(buffer.readPrimitive32())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnUint(uint64(buffer.readPrimitive32())))
+		decoder.flipMapKeyValueState()
 	case typePosInt64:
-		checkCallback(decoder.callbacks.OnUint(buffer.readPrimitive64()))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnUint(buffer.readPrimitive64()))
+		decoder.flipMapKeyValueState()
 	case typeNegInt8:
-		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive8())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnInt(-int64(buffer.readPrimitive8())))
+		decoder.flipMapKeyValueState()
 	case typeNegInt16:
-		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive16())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnInt(-int64(buffer.readPrimitive16())))
+		decoder.flipMapKeyValueState()
 	case typeNegInt32:
-		checkCallback(decoder.callbacks.OnInt(-int64(buffer.readPrimitive32())))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnInt(-int64(buffer.readPrimitive32())))
+		decoder.flipMapKeyValueState()
 	case typeNegInt64:
-		checkCallback(decoder.callbacks.OnInt(buffer.readNegInt64()))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnInt(buffer.readNegInt64()))
+		decoder.flipMapKeyValueState()
 	case typeSmalltime:
 		// TODO: Specify time zone?
-		checkCallback(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
+		decoder.flipMapKeyValueState()
 	case typeNanotime:
 		// TODO: Specify time zone?
-		checkCallback(decoder.callbacks.OnTime(buffer.readNanotime().AsTime()))
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnTime(buffer.readNanotime().AsTime()))
+		decoder.flipMapKeyValueState()
 	case typeNil:
 		decoder.assertNotExpectingMapKey("nil")
-		checkCallback(decoder.callbacks.OnNil())
-		decoder.flipMapKeyStatus()
+		panicOnCallbackError(decoder.callbacks.OnNil())
+		decoder.flipMapKeyValueState()
 	case typePadding:
 		// Ignore
 	case typeList:
 		decoder.assertNotExpectingMapKey("list")
 		decoder.containerBegin(containerTypeList)
-		checkCallback(decoder.callbacks.OnListBegin())
+		panicOnCallbackError(decoder.callbacks.OnListBegin())
 	case typeMap:
 		decoder.assertNotExpectingMapKey("map")
 		decoder.containerBegin(containerTypeMap)
-		checkCallback(decoder.callbacks.OnMapBegin())
+		panicOnCallbackError(decoder.callbacks.OnMapBegin())
 	case typeEndContainer:
 		oldContainerType := decoder.containerEnd()
 		switch oldContainerType {
 		case containerTypeList:
-			checkCallback(decoder.callbacks.OnListEnd())
+			panicOnCallbackError(decoder.callbacks.OnListEnd())
 		case containerTypeMap:
-			checkCallback(decoder.callbacks.OnMapEnd())
+			panicOnCallbackError(decoder.callbacks.OnMapEnd())
 		}
-		decoder.flipMapKeyStatus()
+		decoder.flipMapKeyValueState()
 	case typeBytes:
 		decoder.arrayBegin(arrayTypeBytes)
 		decoder.decodeArrayLength(buffer)
@@ -285,7 +287,7 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 	case typeString0:
 		decoder.arrayBegin(arrayTypeString)
 		decoder.setArrayLength(0)
-		decoder.flipMapKeyStatus()
+		decoder.flipMapKeyValueState()
 	case typeString1:
 		decoder.decodeStringOfLength(buffer, 1)
 	case typeString2:
@@ -353,15 +355,16 @@ func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDec
 	decoder.callbacks = callbacks
 	decoder.container.currentType = make([]containerType, maxContainerDepth)
 	decoder.container.hasProcessedMapKey = make([]bool, maxContainerDepth)
-	if commentCallbacks, ok := callbacks.(CbeDecoderCommentCallbacks); ok {
+	if commentCallbacks, ok := callbacks.(CbeDecoderOptionalCallbacks); ok {
 		decoder.commentCallbacks = commentCallbacks
 	} else {
-		decoder.commentCallbacks = &ignoredCommentCallbacks
+		decoder.commentCallbacks = &ignoredOptionalCallbacks
 	}
 	return decoder
 }
 
-func (decoder *CbeDecoder) Feed(data []byte) (err error) {
+// Feed bytes into the decoder to be decoded.
+func (decoder *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			switch r.(type) {
@@ -389,7 +392,7 @@ func (decoder *CbeDecoder) Feed(data []byte) (err error) {
 	// Also, need to fetch remainder of data!
 	// decoder.feedFromBuffer(&decoder.partialBuffer, panicHandler)
 
-	decoder.buffer.data = data
+	decoder.buffer.data = bytesToDecode
 	decoder.buffer.pos = 0
 
 	err = decoder.feedFromBuffer(&decoder.buffer)
@@ -397,6 +400,7 @@ func (decoder *CbeDecoder) Feed(data []byte) (err error) {
 	return err
 }
 
+// End the decoding process, doing some final structural tests to make sure it's valid.
 func (decoder *CbeDecoder) End() error {
 	if decoder.container.depth > 0 {
 		return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
@@ -407,6 +411,7 @@ func (decoder *CbeDecoder) End() error {
 	return nil
 }
 
+// Convenience function to decode an entire document in a single call.
 func (decoder *CbeDecoder) Decode(document []byte) error {
 	if err := decoder.Feed(document); err != nil {
 		return err
