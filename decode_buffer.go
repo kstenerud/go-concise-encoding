@@ -91,22 +91,6 @@ func (buffer *decodeBuffer) readPrimitiveBytes(byteCount int) []byte {
 	return bytes
 }
 
-func (buffer *decodeBuffer) readInt8() int8 {
-	return int8(buffer.readPrimitive8())
-}
-
-func (buffer *decodeBuffer) readInt16() int16 {
-	return int16(buffer.readPrimitive16())
-}
-
-func (buffer *decodeBuffer) readInt32() int32 {
-	return int32(buffer.readPrimitive32())
-}
-
-func (buffer *decodeBuffer) readInt64() int64 {
-	return int64(buffer.readPrimitive64())
-}
-
 func (buffer *decodeBuffer) readFloat32() float32 {
 	return math.Float32frombits(uint32(buffer.readPrimitive32()))
 }
