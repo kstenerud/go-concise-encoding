@@ -42,7 +42,7 @@ func (callbacks *ignoredOptionalCallbacksStruct) OnCommentData(bytes []byte) err
 
 var ignoredOptionalCallbacks ignoredOptionalCallbacksStruct
 
-const maxPartialBufferSize = 16
+const maxPartialBufferSize = 17
 
 type decoderError struct {
 	err error
@@ -68,7 +68,7 @@ type arrayData struct {
 type CbeDecoder struct {
 	streamOffset     int64
 	buffer           decodeBuffer
-	partialBuffer    decodeBuffer
+	underflowBuffer  decodeBuffer
 	container        containerData
 	array            arrayData
 	callbacks        CbeDecoderCallbacks
@@ -176,9 +176,6 @@ func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
 	}
 	bytes := buffer.readPrimitiveBytes(decodeByteCount)
 	if decoder.array.currentType == arrayTypeString || decoder.array.currentType == arrayTypeComment {
-		// if len(bytes) < 20 {
-		// 	fmt.Printf("### Validate [%v]\n", string(bytes))
-		// }
 		for _, ch := range bytes {
 			if err := decoder.charValidator.AddByte(int(ch)); err != nil {
 				panic(decoderError{err})
@@ -340,28 +337,17 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 	}
 }
 
-func (decoder *CbeDecoder) feedFromBuffer(buffer *decodeBuffer) error {
-	decoder.decodeArrayData(buffer)
-	for {
-		objectType := buffer.readType()
-		if decoder.container.depth == 0 && decoder.firstItemDecoded {
-			panic(decoderError{fmt.Errorf("Extra top level object detected")})
-		}
-		decoder.decodeObject(buffer, objectType)
-		decoder.firstItemDecoded = true
-	}
-	return nil
-}
-
-func (decoder *CbeDecoder) handleFailedByteReservation(reservedByteCount int) {
+func (decoder *CbeDecoder) handleFailedByteReservation(objectType typeField, reservedByteCount int) {
 	existingBytes := decoder.buffer.data[decoder.buffer.pos:len(decoder.buffer.data)]
-	if decoder.partialBuffer.data == nil {
-		decoder.partialBuffer.data = make([]byte, maxPartialBufferSize)
+	if decoder.underflowBuffer.data == nil {
+		decoder.underflowBuffer.data = make([]byte, maxPartialBufferSize)
 	}
-	decoder.partialBuffer.data = decoder.partialBuffer.data[:len(existingBytes)]
-	copy(existingBytes, decoder.partialBuffer.data)
-	decoder.partialBuffer.bytesToConsume = reservedByteCount
-	decoder.partialBuffer.pos = 0
+	decoder.underflowBuffer.data = decoder.underflowBuffer.data[:len(existingBytes)+1]
+	decoder.underflowBuffer.data[0] = byte(objectType)
+	dst := decoder.underflowBuffer.data[1:len(decoder.underflowBuffer.data)]
+	copy(dst, existingBytes)
+	decoder.underflowBuffer.bytesToConsume = reservedByteCount - len(existingBytes)
+	decoder.underflowBuffer.pos = 0
 }
 
 // ----------
@@ -381,15 +367,52 @@ func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDec
 	return decoder
 }
 
-// Feed bytes into the decoder to be decoded.
-func (decoder *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
+func (decoder *CbeDecoder) feedFromUnderflowBuffer() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			switch r.(type) {
 			case endOfData:
 				// Nothing to do
 			case failedByteCountReservation:
-				decoder.handleFailedByteReservation(int(r.(failedByteCountReservation)))
+				// This would be a bug
+				panic(r)
+			case callbackError:
+				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
+				err = fmt.Errorf("cbe: offset %v: Error from callback: %v", offset, r.(callbackError).err)
+			case decoderError:
+				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
+				err = fmt.Errorf("cbe: offset %v: Decode error: %v", offset, r.(decoderError).err)
+			default:
+				// Unexpected panics are passed as-is
+				panic(r)
+			}
+		}
+		decoder.streamOffset += int64(decoder.buffer.pos)
+	}()
+
+	objectType := decoder.underflowBuffer.readType()
+	if decoder.container.depth == 0 && decoder.firstItemDecoded {
+		panic(decoderError{fmt.Errorf("Extra top level object detected")})
+	}
+	decoder.decodeObject(&decoder.underflowBuffer, objectType)
+	decoder.firstItemDecoded = true
+
+	decoder.underflowBuffer.bytesToConsume = 0
+	decoder.underflowBuffer.pos = 0
+	// TODO: Offset gets screwed up here maybe?
+
+	return err
+}
+
+func (decoder *CbeDecoder) feedFromMainBuffer() (err error) {
+	var objectType typeField
+	defer func() {
+		if r := recover(); r != nil {
+			switch r.(type) {
+			case endOfData:
+				// Nothing to do
+			case failedByteCountReservation:
+				decoder.handleFailedByteReservation(objectType, int(r.(failedByteCountReservation)))
 				err = nil
 			case callbackError:
 				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
@@ -406,16 +429,45 @@ func (decoder *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 		decoder.buffer.data = nil
 	}()
 
-	// TODO: This needs to only check partial buffer for existing data, and decode 1 payload only.
-	// Also, need to fetch remainder of data!
-	// decoder.feedFromBuffer(&decoder.partialBuffer, panicHandler)
+	decoder.decodeArrayData(&decoder.buffer)
+
+	for {
+		objectType = decoder.buffer.readType()
+		if decoder.container.depth == 0 && decoder.firstItemDecoded {
+			panic(decoderError{fmt.Errorf("Extra top level object detected")})
+		}
+		decoder.decodeObject(&decoder.buffer, objectType)
+		decoder.firstItemDecoded = true
+	}
+
+	return err
+}
+
+// Feed bytes into the decoder to be decoded.
+func (decoder *CbeDecoder) Feed(bytesToDecode []byte) error {
+	if bytesToCopy := decoder.underflowBuffer.bytesToConsume; bytesToCopy > 0 {
+		if bytesAvailable := len(bytesToDecode); bytesAvailable < bytesToCopy {
+			bytesToCopy = bytesAvailable
+		}
+
+		decoder.underflowBuffer.data = append(decoder.underflowBuffer.data, bytesToDecode[0:bytesToCopy]...)
+		decoder.underflowBuffer.bytesToConsume -= bytesToCopy
+
+		if decoder.underflowBuffer.bytesToConsume > 0 {
+			return nil
+		}
+
+		if err := decoder.feedFromUnderflowBuffer(); err != nil {
+			return err
+		}
+
+		bytesToDecode = bytesToDecode[bytesToCopy:len(bytesToDecode)]
+	}
 
 	decoder.buffer.data = bytesToDecode
 	decoder.buffer.pos = 0
 
-	err = decoder.feedFromBuffer(&decoder.buffer)
-
-	return err
+	return decoder.feedFromMainBuffer()
 }
 
 // End the decoding process, doing some final structural tests to make sure it's valid.

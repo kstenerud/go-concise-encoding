@@ -220,3 +220,23 @@ func TestDecodeMapMissingValue(t *testing.T) {
 func TestDecodeContainerLimitExceeded(t *testing.T) {
 	assertFailure(t, tryDecode(4, []byte{0x93, 0x93, 0x94, 0x00, 0x93, 0x93, 0x95, 0x95, 0x95, 0x95, 0x95}))
 }
+
+func TestDecodePiecemeal(t *testing.T) {
+	value := []interface{}{
+		1,
+	}
+	encoded := []byte{0x93, 0x01, 0x95}
+	assertDecodedPiecemeal(t, encoded, 1, 3, value)
+}
+
+func TestDecodePiecemeal2(t *testing.T) {
+	value := []interface{}{256}
+	encoded := []byte{0x93, 0x6b, 0x00, 0x01, 0x95}
+	assertDecodedPiecemeal(t, encoded, 1, 5, value)
+}
+
+func TestDecodePiecemeal3(t *testing.T) {
+	value := []interface{}{1, 0x1234, 0x56789abc, uint64(0xfedcba9876543210)}
+	encoded := []byte{0x93, 0x01, 0x6b, 0x34, 0x12, 0x6c, 0xbc, 0x9a, 0x78, 0x56, 0x6d, 0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe, 0x95}
+	assertDecodedPiecemeal(t, encoded, 1, 20, value)
+}

@@ -4,9 +4,6 @@ import (
 	"testing"
 )
 
-// TODO:
-// - Readme examples
-
 func TestEncodePadding(t *testing.T) {
 	assertEncoded(t, func(e *CbeEncoder) { e.Padding(1) }, []byte{0x7f})
 	assertEncoded(t, func(e *CbeEncoder) { e.Padding(2) }, []byte{0x7f, 0x7f})

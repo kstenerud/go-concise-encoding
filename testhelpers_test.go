@@ -3,7 +3,6 @@ package cbe
 import (
 	"bytes"
 	"fmt"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -254,6 +253,25 @@ func decodeDocument(maxDepth int, encoded []byte) (result interface{}, err error
 	return result, err
 }
 
+func decodeWithBufferSize(maxDepth int, encoded []byte, bufferSize int) (result interface{}, err error) {
+	unmarshaler := new(Unmarshaler)
+	decoder := NewCbeDecoder(maxDepth, unmarshaler)
+	for offset := 0; offset < len(encoded); offset += bufferSize {
+		end := offset + bufferSize
+		if end > len(encoded) {
+			end = len(encoded)
+		}
+		if err := decoder.Feed(encoded[offset:end]); err != nil {
+			return nil, err
+		}
+	}
+	if err := decoder.End(); err != nil {
+		return nil, err
+	}
+	result = unmarshaler.Unmarshaled()
+	return result, err
+}
+
 func tryDecode(maxDepth int, encoded []byte) error {
 	_, err := decodeDocument(maxDepth, encoded)
 	return err
@@ -265,8 +283,21 @@ func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
 		t.Errorf("Error: %v", err)
 		return
 	}
-	if !reflect.DeepEqual(actual, expected) {
+	if !DeepEquivalence(actual, expected) {
 		t.Errorf("Expected [%v], actual [%v]", expected, actual)
+	}
+}
+
+func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, maxBufferSize int, expected interface{}) {
+	for i := minBufferSize; i < maxBufferSize; i++ {
+		actual, err := decodeWithBufferSize(100, encoded, i)
+		if err != nil {
+			t.Errorf("Error: %v", err)
+			return
+		}
+		if !DeepEquivalence(actual, expected) {
+			t.Errorf("Expected [%v], actual [%v]", expected, actual)
+		}
 	}
 }
 
