@@ -67,5 +67,3 @@ Output:
 Marshaled bytes: [148 107 132 3 121 240 85 214 182 13 178 88 49 133 97 32 107 101 121 114 0 0 32 64 149]
 Unmarshaled object: map[a key:2.5 900:2019-05-17 12:27:59.600037939 +0000 UTC]
 ```
-
-Note: This code is still work-in-progress!
