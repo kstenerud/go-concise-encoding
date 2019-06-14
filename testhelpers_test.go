@@ -79,10 +79,14 @@ func (callbacks *testCallbacks) setCurrentContainer() {
 		switch container.(type) {
 		case []interface{}:
 			callbacks.currentList = container.([]interface{})
+		case *[]interface{}:
+			callbacks.currentList = *(container.(*[]interface{}))
 		case map[interface{}]interface{}:
 			callbacks.currentMap = container.(map[interface{}]interface{})
 		case *map[interface{}]interface{}:
 			callbacks.currentMap = *(container.(*map[interface{}]interface{}))
+		default:
+			panic(fmt.Errorf("Unknown container type: %v", container))
 		}
 	}
 }
@@ -93,41 +97,53 @@ func (callbacks *testCallbacks) containerBegin(container interface{}) {
 }
 
 func (callbacks *testCallbacks) listBegin() {
-	callbacks.containerBegin(new([]interface{}))
+	callbacks.containerBegin(make([]interface{}, 0))
 }
 
 func (callbacks *testCallbacks) mapBegin() {
-	callbacks.containerBegin(new(map[interface{}]interface{}))
+	callbacks.containerBegin(make(map[interface{}]interface{}))
 }
 
 func (callbacks *testCallbacks) containerEnd() {
+	var item interface{}
+
+	if callbacks.currentList != nil {
+		item = callbacks.currentList
+		callbacks.currentList = nil
+	} else {
+		item = callbacks.currentMap
+		callbacks.currentMap = nil
+	}
 	length := len(callbacks.containerStack)
 	if length > 0 {
 		callbacks.containerStack = callbacks.containerStack[:length-1]
 		callbacks.setCurrentContainer()
 	}
+	callbacks.storeValue(item)
 }
 
 func (callbacks *testCallbacks) arrayBegin(newArrayType arrayType, length int) {
 	callbacks.currentArray = make([]byte, 0, length)
 	callbacks.currentArrayType = newArrayType
 	if length == 0 {
-		if callbacks.currentArrayType == arrayTypeBytes {
-			callbacks.storeValue(callbacks.currentArray)
-		} else {
-			callbacks.storeValue(string(callbacks.currentArray))
-		}
+		callbacks.arrayEnd()
 	}
 }
 
 func (callbacks *testCallbacks) arrayData(data []byte) {
 	callbacks.currentArray = append(callbacks.currentArray, data...)
 	if len(callbacks.currentArray) == cap(callbacks.currentArray) {
-		if callbacks.currentArrayType == arrayTypeBytes {
-			callbacks.storeValue(callbacks.currentArray)
-		} else {
-			callbacks.storeValue(string(callbacks.currentArray))
-		}
+		callbacks.arrayEnd()
+	}
+}
+
+func (callbacks *testCallbacks) arrayEnd() {
+	array := callbacks.currentArray
+	callbacks.currentArray = nil
+	if callbacks.currentArrayType == arrayTypeBytes {
+		callbacks.storeValue(array)
+	} else {
+		callbacks.storeValue(string(array))
 	}
 }
 
@@ -240,9 +256,9 @@ func (callbacks *testCallbacks) OnBytesData(bytes []byte) error {
 	return nil
 }
 
-func decodeDocument(maxDepth int, encoded []byte) (result interface{}, err error) {
+func decodeDocument(containerType ContainerType, maxDepth int, encoded []byte) (result interface{}, err error) {
 	callbacks := new(testCallbacks)
-	decoder := NewCbeDecoder(ContainerTypeNone, maxDepth, callbacks)
+	decoder := NewCbeDecoder(containerType, maxDepth, callbacks)
 	if err := decoder.Feed(encoded); err != nil {
 		return nil, err
 	}
@@ -273,12 +289,12 @@ func decodeWithBufferSize(maxDepth int, encoded []byte, bufferSize int) (result 
 }
 
 func tryDecode(maxDepth int, encoded []byte) error {
-	_, err := decodeDocument(maxDepth, encoded)
+	_, err := decodeDocument(ContainerTypeNone, maxDepth, encoded)
 	return err
 }
 
-func assertDecoded(t *testing.T, encoded []byte, expected interface{}) {
-	actual, err := decodeDocument(100, encoded)
+func assertDecoded(t *testing.T, containerType ContainerType, encoded []byte, expected interface{}) {
+	actual, err := decodeDocument(containerType, 100, encoded)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 		return
@@ -303,8 +319,8 @@ func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, max
 
 // Encoder
 
-func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+func assertEncoded(t *testing.T, containerType ContainerType, function func(*CbeEncoder), expected []byte) {
+	encoder := NewCbeEncoder(containerType, 100)
 	function(encoder)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {

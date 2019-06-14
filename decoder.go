@@ -53,10 +53,11 @@ type callbackError struct {
 }
 
 type containerData struct {
-	hasInlineContainer bool
-	depth              int
-	currentType        []ContainerType
-	hasProcessedMapKey []bool
+	inlineContainerType           ContainerType
+	hasInitializedInlineContainer bool
+	depth                         int
+	currentType                   []ContainerType
+	hasProcessedMapKey            []bool
 }
 
 type arrayData struct {
@@ -117,7 +118,7 @@ func (decoder *CbeDecoder) containerEnd() ContainerType {
 	if decoder.container.depth <= 0 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
-	if decoder.container.hasInlineContainer && decoder.container.depth <= 1 {
+	if decoder.container.inlineContainerType != ContainerTypeNone && decoder.container.depth <= 1 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
 	if decoder.isExpectingMapValue() {
@@ -360,9 +361,9 @@ func (decoder *CbeDecoder) handleFailedByteReservation(objectType typeField, res
 
 func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
 	decoder := new(CbeDecoder)
+	decoder.container.inlineContainerType = inlineContainerType
 	if inlineContainerType != ContainerTypeNone {
 		maxContainerDepth++
-		decoder.container.hasInlineContainer = true
 	}
 	decoder.callbacks = callbacks
 	decoder.container.currentType = make([]ContainerType, maxContainerDepth)
@@ -371,10 +372,6 @@ func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, cal
 		decoder.commentCallbacks = commentCallbacks
 	} else {
 		decoder.commentCallbacks = &ignoredOptionalCallbacks
-	}
-
-	if inlineContainerType != ContainerTypeNone {
-		decoder.containerBegin(inlineContainerType)
 	}
 	return decoder
 }
@@ -457,6 +454,16 @@ func (decoder *CbeDecoder) feedFromMainBuffer() (err error) {
 
 // Feed bytes into the decoder to be decoded.
 func (decoder *CbeDecoder) Feed(bytesToDecode []byte) error {
+	if decoder.container.inlineContainerType != ContainerTypeNone && !decoder.container.hasInitializedInlineContainer {
+		decoder.containerBegin(decoder.container.inlineContainerType)
+		switch decoder.container.inlineContainerType {
+		case ContainerTypeList:
+			panicOnCallbackError(decoder.callbacks.OnListBegin())
+		case ContainerTypeMap:
+			panicOnCallbackError(decoder.callbacks.OnMapBegin())
+		}
+		decoder.container.hasInitializedInlineContainer = true
+	}
 	if bytesToCopy := decoder.underflowBuffer.bytesToConsume; bytesToCopy > 0 {
 		if bytesAvailable := len(bytesToDecode); bytesAvailable < bytesToCopy {
 			bytesToCopy = bytesAvailable
@@ -484,10 +491,18 @@ func (decoder *CbeDecoder) Feed(bytesToDecode []byte) error {
 
 // End the decoding process, doing some final structural tests to make sure it's valid.
 func (decoder *CbeDecoder) End() error {
-	if decoder.container.depth > 0 {
-		if !(decoder.container.depth == 1 && decoder.container.hasInlineContainer) {
-			return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
+	if decoder.container.hasInitializedInlineContainer {
+		switch decoder.container.inlineContainerType {
+		case ContainerTypeList:
+			decoder.callbacks.OnListEnd()
+			decoder.container.depth--
+		case ContainerTypeMap:
+			decoder.callbacks.OnMapEnd()
+			decoder.container.depth--
 		}
+	}
+	if decoder.container.depth > 0 {
+		return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
 	}
 	if decoder.array.byteCountRemaining > 0 {
 		return fmt.Errorf("Array is still open, expecting %d more bytes", decoder.array.byteCountRemaining)
