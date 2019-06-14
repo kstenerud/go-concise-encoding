@@ -15,24 +15,6 @@ import (
 // Array Length
 // ------------
 
-const (
-	maxValue6Bit  int64 = 0x3f
-	maxValue14Bit int64 = 0x3fff
-	maxValue30Bit int64 = 0x3fffffff
-)
-
-func is6BitLength(value int64) bool {
-	return value <= maxValue6Bit
-}
-
-func is14BitLength(value int64) bool {
-	return value <= maxValue14Bit
-}
-
-func is30BitLength(value int64) bool {
-	return value <= maxValue30Bit
-}
-
 func intFitsInSmallint(value int64) bool {
 	return value >= smallIntMin && value <= smallIntMax
 }
