@@ -242,7 +242,7 @@ func (callbacks *testCallbacks) OnBytesData(bytes []byte) error {
 
 func decodeDocument(maxDepth int, encoded []byte) (result interface{}, err error) {
 	callbacks := new(testCallbacks)
-	decoder := NewCbeDecoder(maxDepth, callbacks)
+	decoder := NewCbeDecoder(ContainerTypeNone, maxDepth, callbacks)
 	if err := decoder.Feed(encoded); err != nil {
 		return nil, err
 	}
@@ -255,7 +255,7 @@ func decodeDocument(maxDepth int, encoded []byte) (result interface{}, err error
 
 func decodeWithBufferSize(maxDepth int, encoded []byte, bufferSize int) (result interface{}, err error) {
 	unmarshaler := new(Unmarshaler)
-	decoder := NewCbeDecoder(maxDepth, unmarshaler)
+	decoder := NewCbeDecoder(ContainerTypeNone, maxDepth, unmarshaler)
 	for offset := 0; offset < len(encoded); offset += bufferSize {
 		end := offset + bufferSize
 		if end > len(encoded) {
@@ -304,7 +304,7 @@ func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, max
 // Encoder
 
 func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
-	encoder := NewCbeEncoder(100)
+	encoder := NewCbeEncoder(ContainerTypeNone, 100)
 	function(encoder)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
@@ -315,7 +315,7 @@ func assertEncoded(t *testing.T, function func(*CbeEncoder), expected []byte) {
 // Marshal / Unmarshal
 
 func assertMarshaled(t *testing.T, value interface{}, expected []byte) {
-	encoder := NewCbeEncoder(100)
+	encoder := NewCbeEncoder(ContainerTypeNone, 100)
 	Marshal(encoder, value)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
@@ -328,14 +328,14 @@ func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 }
 
 func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected interface{}) {
-	encoder := NewCbeEncoder(100)
+	encoder := NewCbeEncoder(ContainerTypeNone, 100)
 	if err := Marshal(encoder, input); err != nil {
 		t.Errorf("Unexpected error while marshling: %v", err)
 		return
 	}
 	document := encoder.EncodedBytes()
 	unmarshaler := new(Unmarshaler)
-	decoder := NewCbeDecoder(100, unmarshaler)
+	decoder := NewCbeDecoder(ContainerTypeNone, 100, unmarshaler)
 	if err := decoder.Decode(document); err != nil {
 		t.Errorf("Unexpected error while decoding: %v", err)
 		return

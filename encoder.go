@@ -15,6 +15,24 @@ import (
 // Array Length
 // ------------
 
+const (
+	maxValue6Bit  int64 = 0x3f
+	maxValue14Bit int64 = 0x3fff
+	maxValue30Bit int64 = 0x3fffffff
+)
+
+func is6BitLength(value int64) bool {
+	return value <= maxValue6Bit
+}
+
+func is14BitLength(value int64) bool {
+	return value <= maxValue14Bit
+}
+
+func is30BitLength(value int64) bool {
+	return value <= maxValue30Bit
+}
+
 func intFitsInSmallint(value int64) bool {
 	return value >= smallIntMin && value <= smallIntMax
 }
@@ -40,10 +58,11 @@ func fitsInUint32(value uint64) bool {
 // -----------
 
 type CbeEncoder struct {
+	hasInlineContainer   bool
 	containerDepth       int
 	currentArrayType     arrayType
 	remainingArrayLength int64
-	currentContainerType []containerType
+	currentContainerType []ContainerType
 	hasStoredMapKey      []bool
 	encoded              []byte
 	charValidator        Utf8Validator
@@ -98,7 +117,7 @@ func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
 	}
 }
 
-func (encoder *CbeEncoder) containerBegin(newContainerType containerType) error {
+func (encoder *CbeEncoder) containerBegin(newContainerType ContainerType) error {
 	if encoder.containerDepth+1 >= len(encoder.currentContainerType) {
 		return fmt.Errorf("Max container depth exceeded")
 	}
@@ -112,6 +131,9 @@ func (encoder *CbeEncoder) containerEnd() error {
 	if encoder.containerDepth <= 0 {
 		return fmt.Errorf("No containers are open")
 	}
+	if encoder.hasInlineContainer && encoder.containerDepth <= 1 {
+		return fmt.Errorf("No containers are open")
+	}
 	encoder.containerDepth--
 	encoder.encodeTypeField(typeEndContainer)
 	encoder.flipMapKeyStatus()
@@ -119,12 +141,12 @@ func (encoder *CbeEncoder) containerEnd() error {
 }
 
 func (encoder *CbeEncoder) isExpectingMapKey() bool {
-	return encoder.currentContainerType[encoder.containerDepth] == containerTypeMap &&
+	return encoder.currentContainerType[encoder.containerDepth] == ContainerTypeMap &&
 		!encoder.hasStoredMapKey[encoder.containerDepth]
 }
 
 func (encoder *CbeEncoder) isExpectingMapValue() bool {
-	return encoder.currentContainerType[encoder.containerDepth] == containerTypeMap &&
+	return encoder.currentContainerType[encoder.containerDepth] == ContainerTypeMap &&
 		encoder.hasStoredMapKey[encoder.containerDepth]
 }
 
@@ -169,11 +191,18 @@ func (encoder *CbeEncoder) arrayAddData(value []byte) error {
 // Public API
 // ----------
 
-func NewCbeEncoder(maxContainerDepth int) *CbeEncoder {
+func NewCbeEncoder(inlineContainerType ContainerType, maxContainerDepth int) *CbeEncoder {
 	encoder := new(CbeEncoder)
-	encoder.currentContainerType = make([]containerType, maxContainerDepth+1)
+	if inlineContainerType != ContainerTypeNone {
+		maxContainerDepth++
+		encoder.hasInlineContainer = true
+	}
+	encoder.currentContainerType = make([]ContainerType, maxContainerDepth+1)
 	encoder.hasStoredMapKey = make([]bool, maxContainerDepth+1)
 	encoder.encoded = make([]byte, 0)
+	if inlineContainerType != ContainerTypeNone {
+		encoder.containerBegin(inlineContainerType)
+	}
 	return encoder
 }
 
@@ -280,7 +309,7 @@ func (encoder *CbeEncoder) ListBegin() error {
 	if err := encoder.assertNotExpectingMapKey("list"); err != nil {
 		return err
 	}
-	if err := encoder.containerBegin(containerTypeList); err != nil {
+	if err := encoder.containerBegin(ContainerTypeList); err != nil {
 		return err
 	}
 	encoder.encodeTypeField(typeList)
@@ -297,7 +326,7 @@ func (encoder *CbeEncoder) MapBegin() error {
 	if err := encoder.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
-	if err := encoder.containerBegin(containerTypeMap); err != nil {
+	if err := encoder.containerBegin(ContainerTypeMap); err != nil {
 		return err
 	}
 	encoder.encodeTypeField(typeMap)
@@ -408,7 +437,9 @@ func (encoder *CbeEncoder) End() error {
 		return fmt.Errorf("Incomplete encode: Current array is unfinished")
 	}
 	if encoder.containerDepth > 0 {
-		return fmt.Errorf("Not all containers have been closed")
+		if !(encoder.containerDepth == 1 && encoder.hasInlineContainer) {
+			return fmt.Errorf("Not all containers have been closed")
+		}
 	}
 	return nil
 }

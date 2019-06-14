@@ -56,13 +56,6 @@ const (
 	smallIntMax int64 = 105
 )
 
-const (
-	length6Bit  int64 = 0
-	length14Bit int64 = 1
-	length30Bit int64 = 2
-	length62Bit int64 = 3
-)
-
 type arrayType int
 
 const (
@@ -72,12 +65,12 @@ const (
 	arrayTypeComment
 )
 
-type containerType int
+type ContainerType int
 
 const (
-	containerTypeNone containerType = iota
-	containerTypeList
-	containerTypeMap
+	ContainerTypeNone ContainerType = iota
+	ContainerTypeList
+	ContainerTypeMap
 )
 
 func ValidateCommentCharacter(ch int) error {

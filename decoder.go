@@ -53,8 +53,9 @@ type callbackError struct {
 }
 
 type containerData struct {
+	hasInlineContainer bool
 	depth              int
-	currentType        []containerType
+	currentType        []ContainerType
 	hasProcessedMapKey []bool
 }
 
@@ -84,12 +85,12 @@ func panicOnCallbackError(err error) {
 }
 
 func (decoder *CbeDecoder) isExpectingMapKey() bool {
-	return decoder.container.currentType[decoder.container.depth] == containerTypeMap &&
+	return decoder.container.currentType[decoder.container.depth] == ContainerTypeMap &&
 		!decoder.container.hasProcessedMapKey[decoder.container.depth]
 }
 
 func (decoder *CbeDecoder) isExpectingMapValue() bool {
-	return decoder.container.currentType[decoder.container.depth] == containerTypeMap &&
+	return decoder.container.currentType[decoder.container.depth] == ContainerTypeMap &&
 		decoder.container.hasProcessedMapKey[decoder.container.depth]
 }
 
@@ -103,7 +104,7 @@ func (decoder *CbeDecoder) assertNotExpectingMapKey(keyType string) {
 	}
 }
 
-func (decoder *CbeDecoder) containerBegin(newContainerType containerType) {
+func (decoder *CbeDecoder) containerBegin(newContainerType ContainerType) {
 	if decoder.container.depth+1 >= len(decoder.container.currentType) {
 		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))})
 	}
@@ -112,8 +113,11 @@ func (decoder *CbeDecoder) containerBegin(newContainerType containerType) {
 	decoder.container.hasProcessedMapKey[decoder.container.depth] = false
 }
 
-func (decoder *CbeDecoder) containerEnd() containerType {
+func (decoder *CbeDecoder) containerEnd() ContainerType {
 	if decoder.container.depth <= 0 {
+		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
+	}
+	if decoder.container.hasInlineContainer && decoder.container.depth <= 1 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
 	if decoder.isExpectingMapValue() {
@@ -272,18 +276,18 @@ func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField
 		// Ignore
 	case typeList:
 		decoder.assertNotExpectingMapKey("list")
-		decoder.containerBegin(containerTypeList)
+		decoder.containerBegin(ContainerTypeList)
 		panicOnCallbackError(decoder.callbacks.OnListBegin())
 	case typeMap:
 		decoder.assertNotExpectingMapKey("map")
-		decoder.containerBegin(containerTypeMap)
+		decoder.containerBegin(ContainerTypeMap)
 		panicOnCallbackError(decoder.callbacks.OnMapBegin())
 	case typeEndContainer:
 		oldContainerType := decoder.containerEnd()
 		switch oldContainerType {
-		case containerTypeList:
+		case ContainerTypeList:
 			panicOnCallbackError(decoder.callbacks.OnListEnd())
-		case containerTypeMap:
+		case ContainerTypeMap:
 			panicOnCallbackError(decoder.callbacks.OnMapEnd())
 		}
 		decoder.flipMapKeyValueState()
@@ -354,15 +358,23 @@ func (decoder *CbeDecoder) handleFailedByteReservation(objectType typeField, res
 // Public API
 // ----------
 
-func NewCbeDecoder(maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
+func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
 	decoder := new(CbeDecoder)
+	if inlineContainerType != ContainerTypeNone {
+		maxContainerDepth++
+		decoder.container.hasInlineContainer = true
+	}
 	decoder.callbacks = callbacks
-	decoder.container.currentType = make([]containerType, maxContainerDepth)
+	decoder.container.currentType = make([]ContainerType, maxContainerDepth)
 	decoder.container.hasProcessedMapKey = make([]bool, maxContainerDepth)
 	if commentCallbacks, ok := callbacks.(CbeDecoderOptionalCallbacks); ok {
 		decoder.commentCallbacks = commentCallbacks
 	} else {
 		decoder.commentCallbacks = &ignoredOptionalCallbacks
+	}
+
+	if inlineContainerType != ContainerTypeNone {
+		decoder.containerBegin(inlineContainerType)
 	}
 	return decoder
 }
@@ -473,7 +485,9 @@ func (decoder *CbeDecoder) Feed(bytesToDecode []byte) error {
 // End the decoding process, doing some final structural tests to make sure it's valid.
 func (decoder *CbeDecoder) End() error {
 	if decoder.container.depth > 0 {
-		return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
+		if !(decoder.container.depth == 1 && decoder.container.hasInlineContainer) {
+			return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
+		}
 	}
 	if decoder.array.byteCountRemaining > 0 {
 		return fmt.Errorf("Array is still open, expecting %d more bytes", decoder.array.byteCountRemaining)
