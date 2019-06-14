@@ -103,15 +103,16 @@ func (encoder *CbeEncoder) encodeTypeField(typeValue typeField) {
 }
 
 func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
-	switch {
-	case is6BitLength(length):
-		encoder.encodePrimitive8(byte(length<<2 | length6Bit))
-	case is14BitLength(length):
-		encoder.encodePrimitive16(uint16(length<<2 | length14Bit))
-	case is30BitLength(length):
-		encoder.encodePrimitive32(uint32(length<<2 | length30Bit))
-	default:
-		encoder.encodePrimitive64(uint64(length<<2 | length62Bit))
+	if length == 0 {
+		encoder.encodePrimitive8(0)
+	}
+	for length > 0 {
+		b := byte(length & 0x7f)
+		length >>= 7
+		if length > 0 {
+			b |= 0x80
+		}
+		encoder.encodePrimitive8(b)
 	}
 }
 

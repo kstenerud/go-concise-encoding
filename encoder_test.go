@@ -79,9 +79,9 @@ func TestEncodeMap(t *testing.T) {
 
 func TestEncodeBytes(t *testing.T) {
 	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{}) }, []byte{0x91, 0x00})
-	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1}) }, []byte{0x91, 0x04, 0x01})
-	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2}) }, []byte{0x91, 0x08, 0x01, 0x02})
-	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2, 3}) }, []byte{0x91, 0x0c, 0x01, 0x02, 0x03})
+	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1}) }, []byte{0x91, 0x01, 0x01})
+	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2}) }, []byte{0x91, 0x02, 0x01, 0x02})
+	assertEncoded(t, func(e *CbeEncoder) { e.Bytes([]byte{1, 2, 3}) }, []byte{0x91, 0x03, 0x01, 0x02, 0x03})
 }
 
 func TestEncodeString(t *testing.T) {
@@ -89,7 +89,7 @@ func TestEncodeString(t *testing.T) {
 	assertEncoded(t, func(e *CbeEncoder) { e.String("0") }, []byte{0x81, 0x30})
 	assertEncoded(t, func(e *CbeEncoder) { e.String("01") }, []byte{0x82, 0x30, 0x31})
 	assertEncoded(t, func(e *CbeEncoder) { e.String("0123456789012345") }, []byte{
-		0x90, 0x40, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+		0x90, 0x10, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
 		0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
 	})
 }
