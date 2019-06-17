@@ -330,28 +330,28 @@ func assertEncoded(t *testing.T, containerType ContainerType, function func(*Cbe
 
 // Marshal / Unmarshal
 
-func assertMarshaled(t *testing.T, value interface{}, expected []byte) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
-	Marshal(encoder, value)
+func assertMarshaled(t *testing.T, containerType ContainerType, value interface{}, expected []byte) {
+	encoder := NewCbeEncoder(containerType, 100)
+	Marshal(encoder, containerType, value)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
 	}
 }
 
-func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
-	assertMarshalUnmarshalProduces(t, expected, expected)
+func assertMarshalUnmarshal(t *testing.T, containerType ContainerType, expected interface{}) {
+	assertMarshalUnmarshalProduces(t, containerType, expected, expected)
 }
 
-func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected interface{}) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
-	if err := Marshal(encoder, input); err != nil {
+func assertMarshalUnmarshalProduces(t *testing.T, containerType ContainerType, input interface{}, expected interface{}) {
+	encoder := NewCbeEncoder(containerType, 100)
+	if err := Marshal(encoder, containerType, input); err != nil {
 		t.Errorf("Unexpected error while marshling: %v", err)
 		return
 	}
 	document := encoder.EncodedBytes()
 	unmarshaler := new(Unmarshaler)
-	decoder := NewCbeDecoder(ContainerTypeNone, 100, unmarshaler)
+	decoder := NewCbeDecoder(containerType, 100, unmarshaler)
 	if err := decoder.Decode(document); err != nil {
 		t.Errorf("Unexpected error while decoding: %v", err)
 		return

@@ -28,12 +28,12 @@ func NewUnsupportedTypeError(unsupportedType reflect.Type) UnsupportedTypeError 
 	return UnsupportedTypeError(fmt.Errorf("Unsupported type: %v", unsupportedType))
 }
 
-func Marshal(encoder PrimitiveEncoder, object interface{}) error {
+func Marshal(encoder PrimitiveEncoder, inlineContainerType ContainerType, object interface{}) error {
 	rv := reflect.ValueOf(object)
-	return marshalReflectValue(encoder, &rv)
+	return marshalReflectValue(encoder, inlineContainerType, &rv)
 }
 
-func marshalReflectValue(encoder PrimitiveEncoder, rv *reflect.Value) error {
+func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType ContainerType, rv *reflect.Value) error {
 	if !rv.IsValid() {
 		return encoder.Nil()
 	}
@@ -55,16 +55,18 @@ func marshalReflectValue(encoder PrimitiveEncoder, rv *reflect.Value) error {
 		return encoder.String(rv.String())
 	case reflect.Interface:
 		v := rv.Elem()
-		return marshalReflectValue(encoder, &v)
+		return marshalReflectValue(encoder, inlineContainerType, &v)
 	case reflect.Struct:
 		rt := rv.Type()
 		if rt.Name() == "Time" && rt.PkgPath() == "time" {
 			realValue := rv.Interface().(time.Time)
 			return encoder.Time(realValue)
 		}
-		// TODO: anonymous structs?
-		if err := encoder.MapBegin(); err != nil {
-			return err
+		if inlineContainerType != ContainerTypeMap {
+			// TODO: anonymous structs?
+			if err := encoder.MapBegin(); err != nil {
+				return err
+			}
 		}
 		for i := 0; i < rt.NumField(); i++ {
 			field := rt.Field(i)
@@ -72,70 +74,88 @@ func marshalReflectValue(encoder PrimitiveEncoder, rv *reflect.Value) error {
 			k := field.Name
 			v := rv.Field(i)
 			if v.CanInterface() {
-				if err := Marshal(encoder, k); err != nil {
+				if err := Marshal(encoder, ContainerTypeNone, k); err != nil {
 					return err
 				}
-				if err := marshalReflectValue(encoder, &v); err != nil {
+				if err := marshalReflectValue(encoder, ContainerTypeNone, &v); err != nil {
 					return err
 				}
 			}
 		}
-		return encoder.MapEnd()
+		if inlineContainerType != ContainerTypeMap {
+			return encoder.MapEnd()
+		}
+		return nil
 	case reflect.Map:
-		if err := encoder.MapBegin(); err != nil {
-			return err
+		if inlineContainerType != ContainerTypeMap {
+			if err := encoder.MapBegin(); err != nil {
+				return err
+			}
 		}
 		for iter := rv.MapRange(); iter.Next(); {
 			k := iter.Key()
 			v := iter.Value()
-			if err := marshalReflectValue(encoder, &k); err != nil {
+			if err := marshalReflectValue(encoder, ContainerTypeNone, &k); err != nil {
 				return err
 			}
-			if err := marshalReflectValue(encoder, &v); err != nil {
+			if err := marshalReflectValue(encoder, ContainerTypeNone, &v); err != nil {
 				return err
 			}
 		}
-		return encoder.MapEnd()
+		if inlineContainerType != ContainerTypeMap {
+			return encoder.MapEnd()
+		}
+		return nil
 	case reflect.Array:
 		if rv.CanAddr() {
 			v := rv.Slice(0, rv.Len())
-			return marshalReflectValue(encoder, &v)
+			return marshalReflectValue(encoder, inlineContainerType, &v)
 		} else if rv.Type().Elem().Kind() == reflect.Uint8 {
 			// TODO: Is there a better way to do this?
 			tempSlice := make([]byte, rv.Len())
 			for i := 0; i < rv.Len(); i++ {
 				tempSlice[i] = rv.Index(i).Interface().(uint8)
 			}
-			return Marshal(encoder, tempSlice)
+			return Marshal(encoder, inlineContainerType, tempSlice)
 		} else {
-			if err := encoder.ListBegin(); err != nil {
-				return err
-			}
-			for i := 0; i < rv.Len(); i++ {
-				v := rv.Index(i)
-				if err := marshalReflectValue(encoder, &v); err != nil {
+			if inlineContainerType != ContainerTypeList {
+				if err := encoder.ListBegin(); err != nil {
 					return err
 				}
 			}
-			return encoder.ListEnd()
+			for i := 0; i < rv.Len(); i++ {
+				v := rv.Index(i)
+				if err := marshalReflectValue(encoder, ContainerTypeNone, &v); err != nil {
+					return err
+				}
+			}
+			if inlineContainerType != ContainerTypeList {
+				return encoder.ListEnd()
+			}
+			return nil
 		}
 	case reflect.Slice:
 		if rv.Type().Elem().Kind() == reflect.Uint8 {
 			return encoder.Bytes(rv.Bytes())
 		}
-		if err := encoder.ListBegin(); err != nil {
-			return err
-		}
-		for i := 0; i < rv.Len(); i++ {
-			v := rv.Index(i)
-			if err := marshalReflectValue(encoder, &v); err != nil {
+		if inlineContainerType != ContainerTypeList {
+			if err := encoder.ListBegin(); err != nil {
 				return err
 			}
 		}
-		return encoder.ListEnd()
+		for i := 0; i < rv.Len(); i++ {
+			v := rv.Index(i)
+			if err := marshalReflectValue(encoder, inlineContainerType, &v); err != nil {
+				return err
+			}
+		}
+		if inlineContainerType != ContainerTypeList {
+			return encoder.ListEnd()
+		}
+		return nil
 	case reflect.Ptr:
 		v := rv.Elem()
-		return marshalReflectValue(encoder, &v)
+		return marshalReflectValue(encoder, inlineContainerType, &v)
 	default:
 		return NewUnsupportedTypeError(rv.Type())
 	}

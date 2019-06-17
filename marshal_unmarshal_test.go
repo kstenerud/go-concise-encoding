@@ -6,65 +6,65 @@ import (
 )
 
 func TestMarshalUnmarshalNil(t *testing.T) {
-	assertMarshalUnmarshal(t, nil)
+	assertMarshalUnmarshal(t, ContainerTypeNone, nil)
 }
 
 func TestMarshalUnmarshalBool(t *testing.T) {
-	assertMarshalUnmarshal(t, false)
-	assertMarshalUnmarshal(t, true)
+	assertMarshalUnmarshal(t, ContainerTypeNone, false)
+	assertMarshalUnmarshal(t, ContainerTypeNone, true)
 }
 
 func TestMarshalUnmarshal0(t *testing.T) {
-	assertMarshalUnmarshal(t, 0)
+	assertMarshalUnmarshal(t, ContainerTypeNone, 0)
 }
 
 func TestMarshalUnmarshalN1(t *testing.T) {
-	assertMarshalUnmarshal(t, -1)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -1)
 }
 
 func TestMarshalUnmarshal200(t *testing.T) {
-	assertMarshalUnmarshal(t, 200)
+	assertMarshalUnmarshal(t, ContainerTypeNone, 200)
 }
 
 func TestMarshalUnmarshal2000(t *testing.T) {
-	assertMarshalUnmarshal(t, 2000)
+	assertMarshalUnmarshal(t, ContainerTypeNone, 2000)
 }
 
 func TestMarshalUnmarshal1_5(t *testing.T) {
-	assertMarshalUnmarshal(t, 1.5)
+	assertMarshalUnmarshal(t, ContainerTypeNone, 1.5)
 }
 
 func TestMarshalUnmarshal1_0123(t *testing.T) {
-	assertMarshalUnmarshal(t, 1.0123)
+	assertMarshalUnmarshal(t, ContainerTypeNone, 1.0123)
 }
 
 func TestMarshalUnmarshalTimeNow(t *testing.T) {
-	assertMarshalUnmarshal(t, time.Now().UTC())
+	assertMarshalUnmarshal(t, ContainerTypeNone, time.Now().UTC())
 }
 
 func TestMarshalUnmarshalEmptyString(t *testing.T) {
-	assertMarshalUnmarshal(t, "")
+	assertMarshalUnmarshal(t, ContainerTypeNone, "")
 }
 
 func TestMarshalUnmarshalShortString(t *testing.T) {
-	assertMarshalUnmarshal(t, "This is a test")
+	assertMarshalUnmarshal(t, ContainerTypeNone, "This is a test")
 }
 
 func TestMarshalUnmarshalLongString(t *testing.T) {
-	assertMarshalUnmarshal(t, "This is a longer string test that goes beyond 15 characters.")
+	assertMarshalUnmarshal(t, ContainerTypeNone, "This is a longer string test that goes beyond 15 characters.")
 }
 
 func TestMarshalUnmarshalUtf8String(t *testing.T) {
-	assertMarshalUnmarshal(t, "Test ö覚𠜎")
+	assertMarshalUnmarshal(t, ContainerTypeNone, "Test ö覚𠜎")
 }
 
 func TestMarshalUnmarshalBytesSlice(t *testing.T) {
-	assertMarshalUnmarshal(t, []byte{1, 2, 3, 4, 5})
+	assertMarshalUnmarshal(t, ContainerTypeNone, []byte{1, 2, 3, 4, 5})
 }
 
 func TestMarshalUnmarshalBytesArray(t *testing.T) {
 	array := [...]byte{1, 2}
-	assertMarshalUnmarshal(t, array)
+	assertMarshalUnmarshal(t, ContainerTypeNone, array)
 }
 
 func TestMarshalUnmarshalLongBytesArray(t *testing.T) {
@@ -77,16 +77,16 @@ func TestMarshalUnmarshalLongBytesArray(t *testing.T) {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	}
-	assertMarshalUnmarshal(t, array)
+	assertMarshalUnmarshal(t, ContainerTypeNone, array)
 }
 
 func TestMarshalUnmarshalLongerBytesArray(t *testing.T) {
 	array := make([]byte, 60000)
-	assertMarshalUnmarshal(t, array)
+	assertMarshalUnmarshal(t, ContainerTypeNone, array)
 }
 
 func TestMarshalUnmarshalAllBasicTypes(t *testing.T) {
-	assertMarshalUnmarshal(t, []interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, []interface{}{
 		1, 250, 1000, 100000, 10000000000,
 		-1, -250, -1000, -100000000000,
 		1.5, 1.9582384465,
@@ -97,32 +97,38 @@ func TestMarshalUnmarshalAllBasicTypes(t *testing.T) {
 }
 
 func TestMarshalUnmarshalList(t *testing.T) {
-	assertMarshalUnmarshal(t, []interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, []interface{}{
 		1, 2, "test", 4,
 	})
 }
 
 func TestMarshalUnmarshalListNil(t *testing.T) {
-	assertMarshalUnmarshal(t, []interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, []interface{}{
 		1, nil, "test", 4,
 	})
 }
 
+func TestMarshalUnmarshalInlineList(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeList, []interface{}{
+		1, 2, "test", 4,
+	})
+}
+
 func TestMarshalUnmarshalMap(t *testing.T) {
-	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, map[interface{}]interface{}{
 		"a": 1,
 		2:   "b",
 	})
 }
 
 func TestMarshalUnmarshalMapNil(t *testing.T) {
-	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, map[interface{}]interface{}{
 		"a": nil,
 	})
 }
 
 func TestMarshalUnmarshalMapMap(t *testing.T) {
-	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, map[interface{}]interface{}{
 		1: 2,
 		"deep-map": map[interface{}]interface{}{
 			3: 1000,
@@ -130,8 +136,15 @@ func TestMarshalUnmarshalMapMap(t *testing.T) {
 	})
 }
 
+func TestMarshalUnmarshalInlineMap(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeMap, map[interface{}]interface{}{
+		"a": 1,
+		2:   "b",
+	})
+}
+
 func TestMarshalUnmarshalListList(t *testing.T) {
-	assertMarshalUnmarshal(t, []interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, []interface{}{
 		1, []interface{}{
 			2, "test", 4,
 		},
@@ -139,7 +152,7 @@ func TestMarshalUnmarshalListList(t *testing.T) {
 }
 
 func TestMarshalUnmarshalListMap(t *testing.T) {
-	assertMarshalUnmarshal(t, []interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, []interface{}{
 		1, map[interface{}]interface{}{
 			2: 3, 4: "blah",
 		},
@@ -147,7 +160,7 @@ func TestMarshalUnmarshalListMap(t *testing.T) {
 }
 
 func TestMarshalUnmarshalMapList(t *testing.T) {
-	assertMarshalUnmarshal(t, map[interface{}]interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeNone, map[interface{}]interface{}{
 		1: 2,
 		"deep-list": []interface{}{
 			2, "some list entry",
@@ -164,7 +177,7 @@ type MyTestStruct struct {
 
 func TestMarshalUnmarshalStructZero(t *testing.T) {
 	structValue := new(MyTestStruct)
-	assertMarshalUnmarshalProduces(t, structValue, map[interface{}]interface{}{
+	assertMarshalUnmarshalProduces(t, ContainerTypeNone, structValue, map[interface{}]interface{}{
 		"IntValue":    structValue.IntValue,
 		"FloatValue":  structValue.FloatValue,
 		"StringValue": structValue.StringValue,
@@ -178,7 +191,7 @@ func TestMarshalUnmarshalStruct(t *testing.T) {
 	structValue.FloatValue = 2.5
 	structValue.StringValue = "test"
 	structValue.ByteValue = []byte{0x00, 0x01, 0x02}
-	assertMarshalUnmarshalProduces(t, structValue, map[interface{}]interface{}{
+	assertMarshalUnmarshalProduces(t, ContainerTypeNone, structValue, map[interface{}]interface{}{
 		"IntValue":    structValue.IntValue,
 		"FloatValue":  structValue.FloatValue,
 		"StringValue": structValue.StringValue,
