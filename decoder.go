@@ -32,11 +32,11 @@ type CbeDecoderOptionalCallbacks interface {
 type ignoredOptionalCallbacksStruct struct {
 }
 
-func (callbacks *ignoredOptionalCallbacksStruct) OnCommentBegin(byteCount uint64) error {
+func (this *ignoredOptionalCallbacksStruct) OnCommentBegin(byteCount uint64) error {
 	return nil
 }
 
-func (callbacks *ignoredOptionalCallbacksStruct) OnCommentData(bytes []byte) error {
+func (this *ignoredOptionalCallbacksStruct) OnCommentData(bytes []byte) error {
 	return nil
 }
 
@@ -85,79 +85,79 @@ func panicOnCallbackError(err error) {
 	}
 }
 
-func (decoder *CbeDecoder) isExpectingMapKey() bool {
-	return decoder.container.currentType[decoder.container.depth] == ContainerTypeMap &&
-		!decoder.container.hasProcessedMapKey[decoder.container.depth]
+func (this *CbeDecoder) isExpectingMapKey() bool {
+	return this.container.currentType[this.container.depth] == ContainerTypeMap &&
+		!this.container.hasProcessedMapKey[this.container.depth]
 }
 
-func (decoder *CbeDecoder) isExpectingMapValue() bool {
-	return decoder.container.currentType[decoder.container.depth] == ContainerTypeMap &&
-		decoder.container.hasProcessedMapKey[decoder.container.depth]
+func (this *CbeDecoder) isExpectingMapValue() bool {
+	return this.container.currentType[this.container.depth] == ContainerTypeMap &&
+		this.container.hasProcessedMapKey[this.container.depth]
 }
 
-func (decoder *CbeDecoder) flipMapKeyValueState() {
-	decoder.container.hasProcessedMapKey[decoder.container.depth] = !decoder.container.hasProcessedMapKey[decoder.container.depth]
+func (this *CbeDecoder) flipMapKeyValueState() {
+	this.container.hasProcessedMapKey[this.container.depth] = !this.container.hasProcessedMapKey[this.container.depth]
 }
 
-func (decoder *CbeDecoder) assertNotExpectingMapKey(keyType string) {
-	if decoder.isExpectingMapKey() {
+func (this *CbeDecoder) assertNotExpectingMapKey(keyType string) {
+	if this.isExpectingMapKey() {
 		panic(decoderError{fmt.Errorf("Cannot use type %v as a map key", keyType)})
 	}
 }
 
-func (decoder *CbeDecoder) containerBegin(newContainerType ContainerType) {
-	if decoder.container.depth+1 >= len(decoder.container.currentType) {
-		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(decoder.container.currentType))})
+func (this *CbeDecoder) containerBegin(newContainerType ContainerType) {
+	if this.container.depth+1 >= len(this.container.currentType) {
+		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(this.container.currentType))})
 	}
-	decoder.container.depth++
-	decoder.container.currentType[decoder.container.depth] = newContainerType
-	decoder.container.hasProcessedMapKey[decoder.container.depth] = false
+	this.container.depth++
+	this.container.currentType[this.container.depth] = newContainerType
+	this.container.hasProcessedMapKey[this.container.depth] = false
 }
 
-func (decoder *CbeDecoder) containerEnd() ContainerType {
-	if decoder.container.depth <= 0 {
+func (this *CbeDecoder) containerEnd() ContainerType {
+	if this.container.depth <= 0 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
-	if decoder.container.inlineContainerType != ContainerTypeNone && decoder.container.depth <= 1 {
+	if this.container.inlineContainerType != ContainerTypeNone && this.container.depth <= 1 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
-	if decoder.isExpectingMapValue() {
+	if this.isExpectingMapValue() {
 		panic(decoderError{fmt.Errorf("Expecting map value for already processed key")})
 	}
 
-	decoder.container.depth--
-	return decoder.container.currentType[decoder.container.depth+1]
+	this.container.depth--
+	return this.container.currentType[this.container.depth+1]
 }
 
-func (decoder *CbeDecoder) arrayBegin(newArrayType arrayType) {
-	decoder.array.currentType = newArrayType
+func (this *CbeDecoder) arrayBegin(newArrayType arrayType) {
+	this.array.currentType = newArrayType
 	switch newArrayType {
 	case arrayTypeBytes:
-		decoder.array.onBegin = decoder.callbacks.OnBytesBegin
-		decoder.array.onData = decoder.callbacks.OnBytesData
+		this.array.onBegin = this.callbacks.OnBytesBegin
+		this.array.onData = this.callbacks.OnBytesData
 	case arrayTypeComment:
-		decoder.array.onBegin = decoder.commentCallbacks.OnCommentBegin
-		decoder.array.onData = decoder.commentCallbacks.OnCommentData
+		this.array.onBegin = this.commentCallbacks.OnCommentBegin
+		this.array.onData = this.commentCallbacks.OnCommentData
 	case arrayTypeString:
-		decoder.array.onBegin = decoder.callbacks.OnStringBegin
-		decoder.array.onData = decoder.callbacks.OnStringData
+		this.array.onBegin = this.callbacks.OnStringBegin
+		this.array.onData = this.callbacks.OnStringData
 	}
 }
 
-func (decoder *CbeDecoder) setArrayLength(length int64) {
-	decoder.charValidator.Reset()
-	decoder.array.byteCountRemaining = length
-	if decoder.array.onBegin != nil {
-		panicOnCallbackError(decoder.array.onBegin(uint64(decoder.array.byteCountRemaining)))
+func (this *CbeDecoder) setArrayLength(length int64) {
+	this.charValidator.Reset()
+	this.array.byteCountRemaining = length
+	if this.array.onBegin != nil {
+		panicOnCallbackError(this.array.onBegin(uint64(this.array.byteCountRemaining)))
 	}
 }
 
-func (decoder *CbeDecoder) decodeArrayLength(buffer *decodeBuffer) {
-	decoder.setArrayLength(buffer.readArrayLength())
+func (this *CbeDecoder) decodeArrayLength(buffer *decodeBuffer) {
+	this.setArrayLength(buffer.readArrayLength())
 }
 
-func (decoder *CbeDecoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
-	decodeByteCount := decoder.array.byteCountRemaining
+func (this *CbeDecoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
+	decodeByteCount := this.array.byteCountRemaining
 	bytesRemaining := len(buffer.data) - buffer.pos
 	if int64(bytesRemaining) < decodeByteCount {
 		return bytesRemaining
@@ -165,194 +165,194 @@ func (decoder *CbeDecoder) getArrayDecodeByteCount(buffer *decodeBuffer) int {
 	return int(decodeByteCount)
 }
 
-func (decoder *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
-	if decoder.array.currentType == arrayTypeNone {
+func (this *CbeDecoder) decodeArrayData(buffer *decodeBuffer) {
+	if this.array.currentType == arrayTypeNone {
 		return
 	}
-	if decoder.array.byteCountRemaining == 0 {
-		decoder.array.currentType = arrayTypeNone
-		decoder.flipMapKeyValueState()
+	if this.array.byteCountRemaining == 0 {
+		this.array.currentType = arrayTypeNone
+		this.flipMapKeyValueState()
 		return
 	}
 
 	decodeByteCount := len(buffer.data) - buffer.pos
-	if int64(decodeByteCount) > decoder.array.byteCountRemaining {
-		decodeByteCount = int(decoder.array.byteCountRemaining)
+	if int64(decodeByteCount) > this.array.byteCountRemaining {
+		decodeByteCount = int(this.array.byteCountRemaining)
 	}
 	bytes := buffer.readPrimitiveBytes(decodeByteCount)
-	if decoder.array.currentType == arrayTypeString || decoder.array.currentType == arrayTypeComment {
+	if this.array.currentType == arrayTypeString || this.array.currentType == arrayTypeComment {
 		for _, ch := range bytes {
-			if err := decoder.charValidator.AddByte(int(ch)); err != nil {
+			if err := this.charValidator.AddByte(int(ch)); err != nil {
 				panic(decoderError{err})
 			}
-			if decoder.charValidator.IsCompleteCharacter() && decoder.array.currentType == arrayTypeComment {
-				if err := ValidateCommentCharacter(decoder.charValidator.Character()); err != nil {
+			if this.charValidator.IsCompleteCharacter() && this.array.currentType == arrayTypeComment {
+				if err := ValidateCommentCharacter(this.charValidator.Character()); err != nil {
 					panic(decoderError{err})
 				}
 			}
 		}
 	}
 
-	decoder.array.byteCountRemaining -= int64(decodeByteCount)
-	if decoder.array.byteCountRemaining == 0 {
-		decoder.array.currentType = arrayTypeNone
-		decoder.flipMapKeyValueState()
+	this.array.byteCountRemaining -= int64(decodeByteCount)
+	if this.array.byteCountRemaining == 0 {
+		this.array.currentType = arrayTypeNone
+		this.flipMapKeyValueState()
 	}
-	if decoder.array.onData != nil {
-		panicOnCallbackError(decoder.array.onData(bytes))
+	if this.array.onData != nil {
+		panicOnCallbackError(this.array.onData(bytes))
 	}
-	if decoder.array.byteCountRemaining > 0 {
+	if this.array.byteCountRemaining > 0 {
 		// 0 because we don't want to reserve space in the partial buffer
 		panic(failedByteCountReservation(0))
 	}
 }
 
-func (decoder *CbeDecoder) decodeStringOfLength(buffer *decodeBuffer, length int64) {
-	decoder.arrayBegin(arrayTypeString)
-	decoder.setArrayLength(length)
-	decoder.decodeArrayData(buffer)
+func (this *CbeDecoder) decodeStringOfLength(buffer *decodeBuffer, length int64) {
+	this.arrayBegin(arrayTypeString)
+	this.setArrayLength(length)
+	this.decodeArrayData(buffer)
 }
 
-func (decoder *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
+func (this *CbeDecoder) decodeObject(buffer *decodeBuffer, dataType typeField) {
 	if int64(int8(dataType)) >= smallIntMin && int64(int8(dataType)) <= smallIntMax {
 		if int8(dataType) >= 0 {
-			panicOnCallbackError(decoder.callbacks.OnUint(uint64(dataType)))
+			panicOnCallbackError(this.callbacks.OnUint(uint64(dataType)))
 		} else {
-			panicOnCallbackError(decoder.callbacks.OnInt(int64(int8(dataType))))
+			panicOnCallbackError(this.callbacks.OnInt(int64(int8(dataType))))
 		}
-		decoder.flipMapKeyValueState()
+		this.flipMapKeyValueState()
 		return
 	}
 
 	switch dataType {
 	case typeTrue:
-		panicOnCallbackError(decoder.callbacks.OnBool(true))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnBool(true))
+		this.flipMapKeyValueState()
 	case typeFalse:
-		panicOnCallbackError(decoder.callbacks.OnBool(false))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnBool(false))
+		this.flipMapKeyValueState()
 	case typeFloat32:
-		panicOnCallbackError(decoder.callbacks.OnFloat(float64(buffer.readFloat32())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnFloat(float64(buffer.readFloat32())))
+		this.flipMapKeyValueState()
 	case typeFloat64:
-		panicOnCallbackError(decoder.callbacks.OnFloat(buffer.readFloat64()))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnFloat(buffer.readFloat64()))
+		this.flipMapKeyValueState()
 	case typePosInt8:
-		panicOnCallbackError(decoder.callbacks.OnUint(uint64(buffer.readPrimitive8())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnUint(uint64(buffer.readPrimitive8())))
+		this.flipMapKeyValueState()
 	case typePosInt16:
-		panicOnCallbackError(decoder.callbacks.OnUint(uint64(buffer.readPrimitive16())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnUint(uint64(buffer.readPrimitive16())))
+		this.flipMapKeyValueState()
 	case typePosInt32:
-		panicOnCallbackError(decoder.callbacks.OnUint(uint64(buffer.readPrimitive32())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnUint(uint64(buffer.readPrimitive32())))
+		this.flipMapKeyValueState()
 	case typePosInt64:
-		panicOnCallbackError(decoder.callbacks.OnUint(buffer.readPrimitive64()))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnUint(buffer.readPrimitive64()))
+		this.flipMapKeyValueState()
 	case typeNegInt8:
-		panicOnCallbackError(decoder.callbacks.OnInt(-int64(buffer.readPrimitive8())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnInt(-int64(buffer.readPrimitive8())))
+		this.flipMapKeyValueState()
 	case typeNegInt16:
-		panicOnCallbackError(decoder.callbacks.OnInt(-int64(buffer.readPrimitive16())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnInt(-int64(buffer.readPrimitive16())))
+		this.flipMapKeyValueState()
 	case typeNegInt32:
-		panicOnCallbackError(decoder.callbacks.OnInt(-int64(buffer.readPrimitive32())))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnInt(-int64(buffer.readPrimitive32())))
+		this.flipMapKeyValueState()
 	case typeNegInt64:
-		panicOnCallbackError(decoder.callbacks.OnInt(buffer.readNegInt64()))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnInt(buffer.readNegInt64()))
+		this.flipMapKeyValueState()
 	case typeSmalltime:
 		// TODO: Specify time zone?
-		panicOnCallbackError(decoder.callbacks.OnTime(buffer.readSmalltime().AsTime()))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnTime(buffer.readSmalltime().AsTime()))
+		this.flipMapKeyValueState()
 	case typeNanotime:
 		// TODO: Specify time zone?
-		panicOnCallbackError(decoder.callbacks.OnTime(buffer.readNanotime().AsTime()))
-		decoder.flipMapKeyValueState()
+		panicOnCallbackError(this.callbacks.OnTime(buffer.readNanotime().AsTime()))
+		this.flipMapKeyValueState()
 	case typeNil:
-		decoder.assertNotExpectingMapKey("nil")
-		panicOnCallbackError(decoder.callbacks.OnNil())
-		decoder.flipMapKeyValueState()
+		this.assertNotExpectingMapKey("nil")
+		panicOnCallbackError(this.callbacks.OnNil())
+		this.flipMapKeyValueState()
 	case typePadding:
 		// Ignore
 	case typeList:
-		decoder.assertNotExpectingMapKey("list")
-		decoder.containerBegin(ContainerTypeList)
-		panicOnCallbackError(decoder.callbacks.OnListBegin())
+		this.assertNotExpectingMapKey("list")
+		this.containerBegin(ContainerTypeList)
+		panicOnCallbackError(this.callbacks.OnListBegin())
 	case typeMap:
-		decoder.assertNotExpectingMapKey("map")
-		decoder.containerBegin(ContainerTypeMap)
-		panicOnCallbackError(decoder.callbacks.OnMapBegin())
+		this.assertNotExpectingMapKey("map")
+		this.containerBegin(ContainerTypeMap)
+		panicOnCallbackError(this.callbacks.OnMapBegin())
 	case typeEndContainer:
-		oldContainerType := decoder.containerEnd()
+		oldContainerType := this.containerEnd()
 		switch oldContainerType {
 		case ContainerTypeList:
-			panicOnCallbackError(decoder.callbacks.OnListEnd())
+			panicOnCallbackError(this.callbacks.OnListEnd())
 		case ContainerTypeMap:
-			panicOnCallbackError(decoder.callbacks.OnMapEnd())
+			panicOnCallbackError(this.callbacks.OnMapEnd())
 		}
-		decoder.flipMapKeyValueState()
+		this.flipMapKeyValueState()
 	case typeBytes:
-		decoder.arrayBegin(arrayTypeBytes)
-		decoder.decodeArrayLength(buffer)
-		decoder.decodeArrayData(buffer)
+		this.arrayBegin(arrayTypeBytes)
+		this.decodeArrayLength(buffer)
+		this.decodeArrayData(buffer)
 	case typeComment:
-		decoder.arrayBegin(arrayTypeComment)
-		decoder.decodeArrayLength(buffer)
-		decoder.decodeArrayData(buffer)
+		this.arrayBegin(arrayTypeComment)
+		this.decodeArrayLength(buffer)
+		this.decodeArrayData(buffer)
 	case typeString:
-		decoder.arrayBegin(arrayTypeString)
-		decoder.decodeArrayLength(buffer)
-		decoder.decodeArrayData(buffer)
+		this.arrayBegin(arrayTypeString)
+		this.decodeArrayLength(buffer)
+		this.decodeArrayData(buffer)
 	case typeString0:
-		decoder.arrayBegin(arrayTypeString)
-		decoder.setArrayLength(0)
-		decoder.flipMapKeyValueState()
+		this.arrayBegin(arrayTypeString)
+		this.setArrayLength(0)
+		this.flipMapKeyValueState()
 	case typeString1:
-		decoder.decodeStringOfLength(buffer, 1)
+		this.decodeStringOfLength(buffer, 1)
 	case typeString2:
-		decoder.decodeStringOfLength(buffer, 2)
+		this.decodeStringOfLength(buffer, 2)
 	case typeString3:
-		decoder.decodeStringOfLength(buffer, 3)
+		this.decodeStringOfLength(buffer, 3)
 	case typeString4:
-		decoder.decodeStringOfLength(buffer, 4)
+		this.decodeStringOfLength(buffer, 4)
 	case typeString5:
-		decoder.decodeStringOfLength(buffer, 5)
+		this.decodeStringOfLength(buffer, 5)
 	case typeString6:
-		decoder.decodeStringOfLength(buffer, 6)
+		this.decodeStringOfLength(buffer, 6)
 	case typeString7:
-		decoder.decodeStringOfLength(buffer, 7)
+		this.decodeStringOfLength(buffer, 7)
 	case typeString8:
-		decoder.decodeStringOfLength(buffer, 8)
+		this.decodeStringOfLength(buffer, 8)
 	case typeString9:
-		decoder.decodeStringOfLength(buffer, 9)
+		this.decodeStringOfLength(buffer, 9)
 	case typeString10:
-		decoder.decodeStringOfLength(buffer, 10)
+		this.decodeStringOfLength(buffer, 10)
 	case typeString11:
-		decoder.decodeStringOfLength(buffer, 11)
+		this.decodeStringOfLength(buffer, 11)
 	case typeString12:
-		decoder.decodeStringOfLength(buffer, 12)
+		this.decodeStringOfLength(buffer, 12)
 	case typeString13:
-		decoder.decodeStringOfLength(buffer, 13)
+		this.decodeStringOfLength(buffer, 13)
 	case typeString14:
-		decoder.decodeStringOfLength(buffer, 14)
+		this.decodeStringOfLength(buffer, 14)
 	case typeString15:
-		decoder.decodeStringOfLength(buffer, 15)
+		this.decodeStringOfLength(buffer, 15)
 		// TODO: 128 bit and decimal
 	}
 }
 
-func (decoder *CbeDecoder) handleFailedByteReservation(objectType typeField, reservedByteCount int) {
-	existingBytes := decoder.buffer.data[decoder.buffer.pos:len(decoder.buffer.data)]
-	if decoder.underflowBuffer.data == nil {
-		decoder.underflowBuffer.data = make([]byte, maxPartialBufferSize)
+func (this *CbeDecoder) handleFailedByteReservation(objectType typeField, reservedByteCount int) {
+	existingBytes := this.buffer.data[this.buffer.pos:len(this.buffer.data)]
+	if this.underflowBuffer.data == nil {
+		this.underflowBuffer.data = make([]byte, maxPartialBufferSize)
 	}
-	decoder.underflowBuffer.data = decoder.underflowBuffer.data[:len(existingBytes)+1]
-	decoder.underflowBuffer.data[0] = byte(objectType)
-	dst := decoder.underflowBuffer.data[1:len(decoder.underflowBuffer.data)]
+	this.underflowBuffer.data = this.underflowBuffer.data[:len(existingBytes)+1]
+	this.underflowBuffer.data[0] = byte(objectType)
+	dst := this.underflowBuffer.data[1:len(this.underflowBuffer.data)]
 	copy(dst, existingBytes)
-	decoder.underflowBuffer.bytesToConsume = reservedByteCount - len(existingBytes)
-	decoder.underflowBuffer.pos = 0
+	this.underflowBuffer.bytesToConsume = reservedByteCount - len(existingBytes)
+	this.underflowBuffer.pos = 0
 }
 
 // ----------
@@ -360,23 +360,23 @@ func (decoder *CbeDecoder) handleFailedByteReservation(objectType typeField, res
 // ----------
 
 func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
-	decoder := new(CbeDecoder)
-	decoder.container.inlineContainerType = inlineContainerType
+	this := new(CbeDecoder)
+	this.container.inlineContainerType = inlineContainerType
 	if inlineContainerType != ContainerTypeNone {
 		maxContainerDepth++
 	}
-	decoder.callbacks = callbacks
-	decoder.container.currentType = make([]ContainerType, maxContainerDepth)
-	decoder.container.hasProcessedMapKey = make([]bool, maxContainerDepth)
+	this.callbacks = callbacks
+	this.container.currentType = make([]ContainerType, maxContainerDepth)
+	this.container.hasProcessedMapKey = make([]bool, maxContainerDepth)
 	if commentCallbacks, ok := callbacks.(CbeDecoderOptionalCallbacks); ok {
-		decoder.commentCallbacks = commentCallbacks
+		this.commentCallbacks = commentCallbacks
 	} else {
-		decoder.commentCallbacks = &ignoredOptionalCallbacks
+		this.commentCallbacks = &ignoredOptionalCallbacks
 	}
-	return decoder
+	return this
 }
 
-func (decoder *CbeDecoder) feedFromUnderflowBuffer() (err error) {
+func (this *CbeDecoder) feedFromUnderflowBuffer() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			switch r.(type) {
@@ -386,34 +386,34 @@ func (decoder *CbeDecoder) feedFromUnderflowBuffer() (err error) {
 				// This would be a bug
 				panic(r)
 			case callbackError:
-				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
+				offset := (this.streamOffset + int64(this.buffer.pos))
 				err = fmt.Errorf("cbe: offset %v: Error from callback: %v", offset, r.(callbackError).err)
 			case decoderError:
-				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
+				offset := (this.streamOffset + int64(this.buffer.pos))
 				err = fmt.Errorf("cbe: offset %v: Decode error: %v", offset, r.(decoderError).err)
 			default:
 				// Unexpected panics are passed as-is
 				panic(r)
 			}
 		}
-		decoder.streamOffset += int64(decoder.buffer.pos)
+		this.streamOffset += int64(this.buffer.pos)
 	}()
 
-	objectType := decoder.underflowBuffer.readType()
-	if decoder.container.depth == 0 && decoder.firstItemDecoded {
+	objectType := this.underflowBuffer.readType()
+	if this.container.depth == 0 && this.firstItemDecoded {
 		panic(decoderError{fmt.Errorf("Extra top level object detected")})
 	}
-	decoder.decodeObject(&decoder.underflowBuffer, objectType)
-	decoder.firstItemDecoded = true
+	this.decodeObject(&this.underflowBuffer, objectType)
+	this.firstItemDecoded = true
 
-	decoder.underflowBuffer.bytesToConsume = 0
-	decoder.underflowBuffer.pos = 0
+	this.underflowBuffer.bytesToConsume = 0
+	this.underflowBuffer.pos = 0
 	// TODO: Offset gets screwed up here maybe?
 
 	return err
 }
 
-func (decoder *CbeDecoder) feedFromMainBuffer() (err error) {
+func (this *CbeDecoder) feedFromMainBuffer() (err error) {
 	var objectType typeField
 	defer func() {
 		if r := recover(); r != nil {
@@ -421,99 +421,99 @@ func (decoder *CbeDecoder) feedFromMainBuffer() (err error) {
 			case endOfData:
 				// Nothing to do
 			case failedByteCountReservation:
-				decoder.handleFailedByteReservation(objectType, int(r.(failedByteCountReservation)))
+				this.handleFailedByteReservation(objectType, int(r.(failedByteCountReservation)))
 				err = nil
 			case callbackError:
-				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
+				offset := (this.streamOffset + int64(this.buffer.pos))
 				err = fmt.Errorf("cbe: offset %v: Error from callback: %v", offset, r.(callbackError).err)
 			case decoderError:
-				offset := (decoder.streamOffset + int64(decoder.buffer.pos))
+				offset := (this.streamOffset + int64(this.buffer.pos))
 				err = fmt.Errorf("cbe: offset %v: Decode error: %v", offset, r.(decoderError).err)
 			default:
 				// Unexpected panics are passed as-is
 				panic(r)
 			}
 		}
-		decoder.streamOffset += int64(decoder.buffer.pos)
-		decoder.buffer.data = nil
+		this.streamOffset += int64(this.buffer.pos)
+		this.buffer.data = nil
 	}()
 
-	decoder.decodeArrayData(&decoder.buffer)
+	this.decodeArrayData(&this.buffer)
 
 	for {
-		objectType = decoder.buffer.readType()
-		if decoder.container.depth == 0 && decoder.firstItemDecoded {
+		objectType = this.buffer.readType()
+		if this.container.depth == 0 && this.firstItemDecoded {
 			panic(decoderError{fmt.Errorf("Extra top level object detected")})
 		}
-		decoder.decodeObject(&decoder.buffer, objectType)
-		decoder.firstItemDecoded = true
+		this.decodeObject(&this.buffer, objectType)
+		this.firstItemDecoded = true
 	}
 
 	return err
 }
 
 // Feed bytes into the decoder to be decoded.
-func (decoder *CbeDecoder) Feed(bytesToDecode []byte) error {
-	if decoder.container.inlineContainerType != ContainerTypeNone && !decoder.container.hasInitializedInlineContainer {
-		decoder.containerBegin(decoder.container.inlineContainerType)
-		switch decoder.container.inlineContainerType {
+func (this *CbeDecoder) Feed(bytesToDecode []byte) error {
+	if this.container.inlineContainerType != ContainerTypeNone && !this.container.hasInitializedInlineContainer {
+		this.containerBegin(this.container.inlineContainerType)
+		switch this.container.inlineContainerType {
 		case ContainerTypeList:
-			panicOnCallbackError(decoder.callbacks.OnListBegin())
+			panicOnCallbackError(this.callbacks.OnListBegin())
 		case ContainerTypeMap:
-			panicOnCallbackError(decoder.callbacks.OnMapBegin())
+			panicOnCallbackError(this.callbacks.OnMapBegin())
 		}
-		decoder.container.hasInitializedInlineContainer = true
+		this.container.hasInitializedInlineContainer = true
 	}
-	if bytesToCopy := decoder.underflowBuffer.bytesToConsume; bytesToCopy > 0 {
+	if bytesToCopy := this.underflowBuffer.bytesToConsume; bytesToCopy > 0 {
 		if bytesAvailable := len(bytesToDecode); bytesAvailable < bytesToCopy {
 			bytesToCopy = bytesAvailable
 		}
 
-		decoder.underflowBuffer.data = append(decoder.underflowBuffer.data, bytesToDecode[0:bytesToCopy]...)
-		decoder.underflowBuffer.bytesToConsume -= bytesToCopy
+		this.underflowBuffer.data = append(this.underflowBuffer.data, bytesToDecode[0:bytesToCopy]...)
+		this.underflowBuffer.bytesToConsume -= bytesToCopy
 
-		if decoder.underflowBuffer.bytesToConsume > 0 {
+		if this.underflowBuffer.bytesToConsume > 0 {
 			return nil
 		}
 
-		if err := decoder.feedFromUnderflowBuffer(); err != nil {
+		if err := this.feedFromUnderflowBuffer(); err != nil {
 			return err
 		}
 
 		bytesToDecode = bytesToDecode[bytesToCopy:len(bytesToDecode)]
 	}
 
-	decoder.buffer.data = bytesToDecode
-	decoder.buffer.pos = 0
+	this.buffer.data = bytesToDecode
+	this.buffer.pos = 0
 
-	return decoder.feedFromMainBuffer()
+	return this.feedFromMainBuffer()
 }
 
 // End the decoding process, doing some final structural tests to make sure it's valid.
-func (decoder *CbeDecoder) End() error {
-	if decoder.container.hasInitializedInlineContainer {
-		switch decoder.container.inlineContainerType {
+func (this *CbeDecoder) End() error {
+	if this.container.hasInitializedInlineContainer {
+		switch this.container.inlineContainerType {
 		case ContainerTypeList:
-			decoder.callbacks.OnListEnd()
-			decoder.container.depth--
+			this.callbacks.OnListEnd()
+			this.container.depth--
 		case ContainerTypeMap:
-			decoder.callbacks.OnMapEnd()
-			decoder.container.depth--
+			this.callbacks.OnMapEnd()
+			this.container.depth--
 		}
 	}
-	if decoder.container.depth > 0 {
-		return fmt.Errorf("Document still has %v open container(s)", decoder.container.depth)
+	if this.container.depth > 0 {
+		return fmt.Errorf("Document still has %v open container(s)", this.container.depth)
 	}
-	if decoder.array.byteCountRemaining > 0 {
-		return fmt.Errorf("Array is still open, expecting %d more bytes", decoder.array.byteCountRemaining)
+	if this.array.byteCountRemaining > 0 {
+		return fmt.Errorf("Array is still open, expecting %d more bytes", this.array.byteCountRemaining)
 	}
 	return nil
 }
 
 // Convenience function to decode an entire document in a single call.
-func (decoder *CbeDecoder) Decode(document []byte) error {
-	if err := decoder.Feed(document); err != nil {
+func (this *CbeDecoder) Decode(document []byte) error {
+	if err := this.Feed(document); err != nil {
 		return err
 	}
-	return decoder.End()
+	return this.End()
 }

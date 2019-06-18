@@ -340,8 +340,7 @@ func assertMarshaled(t *testing.T, containerType ContainerType, value interface{
 }
 
 func assertMarshaledSize(t *testing.T, containerType ContainerType, value interface{}, expectedSize int) {
-	encoder := NewCbeEncoder(containerType, 100)
-	actualSize := MarshalSize(encoder, containerType, value)
+	actualSize := EncodedSize(containerType, value)
 	if actualSize != expectedSize {
 		t.Errorf("Expected size %v but got %v", expectedSize, actualSize)
 	}
