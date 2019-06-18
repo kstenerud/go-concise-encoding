@@ -15,24 +15,6 @@ import (
 // Array Length
 // ------------
 
-const (
-	maxValue6Bit  int64 = 0x3f
-	maxValue14Bit int64 = 0x3fff
-	maxValue30Bit int64 = 0x3fffffff
-)
-
-func is6BitLength(value int64) bool {
-	return value <= maxValue6Bit
-}
-
-func is14BitLength(value int64) bool {
-	return value <= maxValue14Bit
-}
-
-func is30BitLength(value int64) bool {
-	return value <= maxValue30Bit
-}
-
 func intFitsInSmallint(value int64) bool {
 	return value >= smallIntMin && value <= smallIntMax
 }
@@ -51,6 +33,11 @@ func fitsInUint16(value uint64) bool {
 
 func fitsInUint32(value uint64) bool {
 	return value <= math.MaxUint32
+}
+
+func fitsInFloat32(value float64) bool {
+	smaller := float32(value)
+	return float64(smaller) == value
 }
 
 // -----------
@@ -115,6 +102,16 @@ func (encoder *CbeEncoder) encodeArrayLengthField(length int64) {
 		}
 		encoder.encodePrimitive8(b)
 	}
+}
+
+func (encoder *CbeEncoder) arrayLengthFieldLength(length uint64) int {
+	size := 1
+	length >>= 7
+	for length > 0 {
+		length >>= 7
+		size++
+	}
+	return size
 }
 
 func (encoder *CbeEncoder) containerBegin(newContainerType ContainerType) error {
@@ -213,6 +210,10 @@ func (encoder *CbeEncoder) Padding(byteCount int) error {
 	return nil
 }
 
+func (encoder *CbeEncoder) PaddingSize(byteCount int) int {
+	return byteCount
+}
+
 func (encoder *CbeEncoder) Nil() error {
 	if err := encoder.assertNotExpectingMapKey("nil"); err != nil {
 		return err
@@ -220,6 +221,10 @@ func (encoder *CbeEncoder) Nil() error {
 	encoder.encodeTypeField(typeNil)
 	encoder.flipMapKeyStatus()
 	return nil
+}
+
+func (encoder *CbeEncoder) NilSize() int {
+	return 1
 }
 
 func (encoder *CbeEncoder) Bool(value bool) error {
@@ -230,6 +235,10 @@ func (encoder *CbeEncoder) Bool(value bool) error {
 	}
 	encoder.flipMapKeyStatus()
 	return nil
+}
+
+func (encoder *CbeEncoder) BoolSize(value bool) int {
+	return 1
 }
 
 func (encoder *CbeEncoder) Uint(value uint64) error {
@@ -251,6 +260,21 @@ func (encoder *CbeEncoder) Uint(value uint64) error {
 	}
 	encoder.flipMapKeyStatus()
 	return nil
+}
+
+func (encoder *CbeEncoder) UintSize(value uint64) int {
+	switch {
+	case uintFitsInSmallint(value):
+		return 1
+	case fitsInUint8(value):
+		return 2
+	case fitsInUint16(value):
+		return 3
+	case fitsInUint32(value):
+		return 5
+	default:
+		return 9
+	}
 }
 
 func (encoder *CbeEncoder) Int(value int64) error {
@@ -278,6 +302,25 @@ func (encoder *CbeEncoder) Int(value int64) error {
 	return nil
 }
 
+func (encoder *CbeEncoder) IntSize(value int64) int {
+	uvalue := uint64(-value)
+
+	switch {
+	case intFitsInSmallint(value):
+		return 1
+	case value >= 0:
+		return encoder.UintSize(uint64(value))
+	case fitsInUint8(uvalue):
+		return 2
+	case fitsInUint16(uvalue):
+		return 3
+	case fitsInUint32(uvalue):
+		return 5
+	default:
+		return 9
+	}
+}
+
 func (encoder *CbeEncoder) Float(value float64) error {
 	asfloat32 := float32(value)
 	// TODO: Check if it fits in an int/uint
@@ -290,6 +333,13 @@ func (encoder *CbeEncoder) Float(value float64) error {
 	}
 	encoder.flipMapKeyStatus()
 	return nil
+}
+
+func (encoder *CbeEncoder) FloatSize(value float64) int {
+	if fitsInFloat32(value) {
+		return 5
+	}
+	return 9
 }
 
 // Add a time value. Times are converted to their UTC equivalents before storage.
@@ -305,6 +355,10 @@ func (encoder *CbeEncoder) Time(value time.Time) error {
 	return nil
 }
 
+func (encoder *CbeEncoder) TimeSize(value time.Time) int {
+	return 9
+}
+
 func (encoder *CbeEncoder) ListBegin() error {
 	if err := encoder.assertNotExpectingMapKey("list"); err != nil {
 		return err
@@ -316,8 +370,16 @@ func (encoder *CbeEncoder) ListBegin() error {
 	return nil
 }
 
+func (encoder *CbeEncoder) ListBeginSize() int {
+	return 1
+}
+
 func (encoder *CbeEncoder) ListEnd() error {
 	return encoder.containerEnd()
+}
+
+func (encoder *CbeEncoder) ListEndSize() int {
+	return 1
 }
 
 // Begin a map. Any subsequent objects added are assumed to alternate between
@@ -333,11 +395,19 @@ func (encoder *CbeEncoder) MapBegin() error {
 	return nil
 }
 
+func (encoder *CbeEncoder) MapBeginSize() int {
+	return 1
+}
+
 func (encoder *CbeEncoder) MapEnd() error {
 	if encoder.isExpectingMapValue() {
 		return fmt.Errorf("Expecting map value for already stored key")
 	}
 	return encoder.containerEnd()
+}
+
+func (encoder *CbeEncoder) MapEndSize() int {
+	return 1
 }
 
 // Begin a byte array. Encoder expects subsequent calls to BytesData to provide
@@ -352,8 +422,16 @@ func (encoder *CbeEncoder) BytesBegin(length uint64) error {
 	return nil
 }
 
+func (encoder *CbeEncoder) BytesBeginSize(length uint64) int {
+	return 1 + encoder.arrayLengthFieldLength(length)
+}
+
 func (encoder *CbeEncoder) BytesData(value []byte) error {
 	return encoder.arrayAddData(value)
+}
+
+func (encoder *CbeEncoder) BytesDataSize(value []byte) int {
+	return len(value)
 }
 
 // Convenience function to completely fill a byte array in one call.
@@ -362,6 +440,10 @@ func (encoder *CbeEncoder) Bytes(value []byte) error {
 		return err
 	}
 	return encoder.BytesData(value)
+}
+
+func (encoder *CbeEncoder) BytesSize(value []byte) int {
+	return encoder.BytesBeginSize(uint64(len(value))) + encoder.BytesDataSize(value)
 }
 
 // Begin a string. Encoder expects subsequent calls to StringData to provide a
@@ -380,6 +462,13 @@ func (encoder *CbeEncoder) StringBegin(length uint64) error {
 	return nil
 }
 
+func (encoder *CbeEncoder) StringBeginSize(length uint64) int {
+	if length <= 15 {
+		return 1
+	}
+	return 1 + encoder.arrayLengthFieldLength(length)
+}
+
 func (encoder *CbeEncoder) StringData(value []byte) error {
 	for _, ch := range value {
 		if err := encoder.charValidator.AddByte(int(ch)); err != nil {
@@ -389,6 +478,10 @@ func (encoder *CbeEncoder) StringData(value []byte) error {
 	return encoder.arrayAddData(value)
 }
 
+func (encoder *CbeEncoder) StringDataSize(value []byte) int {
+	return len(value)
+}
+
 // Convenience function to completely fill a string in one call.
 func (encoder *CbeEncoder) String(value string) error {
 	if err := encoder.StringBegin(uint64(len(value))); err != nil {
@@ -396,6 +489,10 @@ func (encoder *CbeEncoder) String(value string) error {
 	}
 
 	return encoder.StringData([]byte(value))
+}
+
+func (encoder *CbeEncoder) StringSize(value string) int {
+	return encoder.StringBeginSize(uint64(len(value))) + encoder.StringDataSize([]byte(value))
 }
 
 // Begin a comment. Encoder expects subsequent calls to CommentData to provide a
@@ -408,6 +505,10 @@ func (encoder *CbeEncoder) CommentBegin(length uint64) error {
 	encoder.encodeTypeField(typeComment)
 	encoder.encodeArrayLengthField(int64(length))
 	return nil
+}
+
+func (encoder *CbeEncoder) CommentBeginSize(length uint64) int {
+	return 1 + encoder.arrayLengthFieldLength(length)
 }
 
 func (encoder *CbeEncoder) CommentData(value []byte) error {
@@ -424,12 +525,20 @@ func (encoder *CbeEncoder) CommentData(value []byte) error {
 	return encoder.arrayAddData(value)
 }
 
+func (encoder *CbeEncoder) CommentDataSize(value []byte) int {
+	return len(value)
+}
+
 // Convenience function to completely fill a comment in one call.
 func (encoder *CbeEncoder) Comment(value string) error {
 	if err := encoder.CommentBegin(uint64(len(value))); err != nil {
 		return err
 	}
 	return encoder.CommentData([]byte(value))
+}
+
+func (encoder *CbeEncoder) CommentSize(value []byte) int {
+	return encoder.CommentBeginSize(uint64(len(value))) + encoder.CommentDataSize([]byte(value))
 }
 
 func (encoder *CbeEncoder) End() error {
