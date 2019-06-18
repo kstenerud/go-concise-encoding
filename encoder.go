@@ -52,6 +52,7 @@ type CbeEncoder struct {
 	currentContainerType []ContainerType
 	hasStoredMapKey      []bool
 	encodedBuffer        []byte
+	isExternalBuffer     bool
 	charValidator        Utf8Validator
 }
 
@@ -60,11 +61,29 @@ type CbeEncoder struct {
 // --------
 
 func (this *CbeEncoder) encodeBytes(bytes []byte) {
-	this.encodedBuffer = append(this.encodedBuffer, bytes...)
+	if this.isExternalBuffer {
+		if len(bytes) > len(this.encodedBuffer) {
+			panic(fmt.Errorf("External buffer capacity exhausted. Tried to add %v bytes but only %v bytes free",
+				len(bytes),
+				len(this.encodedBuffer)))
+		}
+		bytesCopied := copy(this.encodedBuffer, bytes)
+		this.encodedBuffer = this.encodedBuffer[bytesCopied:]
+	} else {
+		this.encodedBuffer = append(this.encodedBuffer, bytes...)
+	}
 }
 
 func (this *CbeEncoder) encodePrimitive8(value byte) {
-	this.encodedBuffer = append(this.encodedBuffer, value)
+	if this.isExternalBuffer {
+		if len(this.encodedBuffer) == 0 {
+			panic(fmt.Errorf("External buffer capacity exhausted. Tried to add 1 byte but no bytes free"))
+		}
+		this.encodedBuffer[0] = value
+		this.encodedBuffer = this.encodedBuffer[1:]
+	} else {
+		this.encodedBuffer = append(this.encodedBuffer, value)
+	}
 }
 
 func (this *CbeEncoder) encodePrimitive16(value uint16) {
@@ -178,19 +197,30 @@ func (this *CbeEncoder) arrayAddData(value []byte) error {
 // Public API
 // ----------
 
-func NewCbeEncoder(inlineContainerType ContainerType, maxContainerDepth int) *CbeEncoder {
+// Create a new encoder. if buffer is nil, the encoder allocates its own buffer.
+func NewCbeEncoder(inlineContainerType ContainerType, buffer []byte, maxContainerDepth int) *CbeEncoder {
 	this := new(CbeEncoder)
+	this.Init(inlineContainerType, buffer, maxContainerDepth)
+	return this
+}
+
+func (this *CbeEncoder) Init(inlineContainerType ContainerType, buffer []byte, maxContainerDepth int) {
 	if inlineContainerType != ContainerTypeNone {
 		maxContainerDepth++
 		this.hasInlineContainer = true
 	}
+	if buffer != nil {
+		this.encodedBuffer = buffer
+		this.isExternalBuffer = true
+	} else {
+		this.encodedBuffer = make([]byte, 0)
+	}
 	this.currentContainerType = make([]ContainerType, maxContainerDepth+1)
 	this.hasStoredMapKey = make([]bool, maxContainerDepth+1)
-	this.encodedBuffer = make([]byte, 0)
+
 	if inlineContainerType != ContainerTypeNone {
 		this.containerBegin(inlineContainerType)
 	}
-	return this
 }
 
 func (this *CbeEncoder) Padding(byteCount int) error {
@@ -431,6 +461,10 @@ func (this *CbeEncoder) End() error {
 	return nil
 }
 
+// Returns the buffer being used by this encoder. If this encoder is using an
+// internal buffer (because it was created with buffer = nil), this will point
+// to the beginning of the buffer. Otherwise it will point to the remaining
+// unused bytes in the external buffer.
 func (this *CbeEncoder) EncodedBytes() []byte {
 	return this.encodedBuffer
 }

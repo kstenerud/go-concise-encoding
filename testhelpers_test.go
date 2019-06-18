@@ -28,20 +28,23 @@ func generateBytes(length int) []byte {
 	return []byte(generateString(length))
 }
 
-func testPanics(function func()) (didPanic bool) {
+func testPanicResult(function func()) (recovered interface{}) {
 	defer func() {
-		if r := recover(); r != nil {
-			didPanic = true
-		}
+		recovered = recover()
 	}()
-	didPanic = false
 	function()
-	return didPanic
+	return recovered
 }
 
 func assertPanics(t *testing.T, function func()) {
-	if !testPanics(function) {
+	if testPanicResult(function) == nil {
 		t.Errorf("Should have panicked but didn't")
+	}
+}
+
+func assertDoesNotPanic(t *testing.T, function func()) {
+	if result := testPanicResult(function); result != nil {
+		t.Errorf("Should not have panicked, but did: %v", result)
 	}
 }
 
@@ -320,7 +323,7 @@ func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, max
 // Encoder
 
 func assertEncoded(t *testing.T, containerType ContainerType, function func(*CbeEncoder), expected []byte) {
-	encoder := NewCbeEncoder(containerType, 100)
+	encoder := NewCbeEncoder(containerType, nil, 100)
 	function(encoder)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
@@ -331,12 +334,38 @@ func assertEncoded(t *testing.T, containerType ContainerType, function func(*Cbe
 // Marshal / Unmarshal
 
 func assertMarshaled(t *testing.T, containerType ContainerType, value interface{}, expected []byte) {
-	encoder := NewCbeEncoder(containerType, 100)
+	encoder := NewCbeEncoder(containerType, nil, 100)
 	Marshal(encoder, containerType, value)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
 	}
+}
+
+func assertEncodesToExternalBuffer(t *testing.T, containerType ContainerType, value interface{}, bufferSize int) {
+	buffer := make([]byte, bufferSize)
+	encoder := NewCbeEncoder(containerType, buffer, 100)
+	assertDoesNotPanic(t, func() {
+		Marshal(encoder, containerType, value)
+	})
+	if len(encoder.EncodedBytes()) != 0 {
+		t.Errorf("Expected 0 bytes left, but there are %v bytes", len(encoder.EncodedBytes()))
+	}
+
+	encoder2 := NewCbeEncoder(containerType, nil, 100)
+	Marshal(encoder2, containerType, value)
+	expected := encoder2.EncodedBytes()
+	if !bytes.Equal(buffer, expected) {
+		t.Errorf("Expected %v, actual %v", expected, buffer)
+	}
+}
+
+func assertFailsEncodingToExternalBuffer(t *testing.T, containerType ContainerType, value interface{}, bufferSize int) {
+	buffer := make([]byte, bufferSize)
+	encoder := NewCbeEncoder(containerType, buffer, 100)
+	assertPanics(t, func() {
+		Marshal(encoder, containerType, value)
+	})
 }
 
 func assertMarshaledSize(t *testing.T, containerType ContainerType, value interface{}, expectedSize int) {
@@ -351,7 +380,7 @@ func assertMarshalUnmarshal(t *testing.T, containerType ContainerType, expected 
 }
 
 func assertMarshalUnmarshalProduces(t *testing.T, containerType ContainerType, input interface{}, expected interface{}) {
-	encoder := NewCbeEncoder(containerType, 100)
+	encoder := NewCbeEncoder(containerType, nil, 100)
 	if err := Marshal(encoder, containerType, input); err != nil {
 		t.Errorf("Unexpected error while marshling: %v", err)
 		return

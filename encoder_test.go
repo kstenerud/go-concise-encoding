@@ -2,6 +2,7 @@ package cbe
 
 import (
 	"testing"
+	"time"
 )
 
 func TestEncodePadding(t *testing.T) {
@@ -110,114 +111,114 @@ func TestEncodeString(t *testing.T) {
 }
 
 func TestEncodeStringInvalid(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertFailure(t, encoder.String(string([]byte{0x40, 0x81, 0x42, 0x43, 0x44})))
 }
 
 func TestEncodeCommentInvalid(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertFailure(t, encoder.Comment(string([]byte{0x40, 0x81, 0x42, 0x43, 0x44})))
 	assertFailure(t, encoder.Comment("A comment\nwith a newline"))
 }
 
 func TestEncodeBytesTooLong(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.BytesBegin(10))
 	assertFailure(t, encoder.BytesData(make([]byte, 11)))
 }
 
 func TestEncodeBytesTooShort(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.BytesBegin(10))
 	assertSuccess(t, encoder.BytesData(make([]byte, 9)))
 	assertFailure(t, encoder.End())
 }
 
 func TestEncodeStringTooLong(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.StringBegin(6))
 	assertFailure(t, encoder.StringData([]byte("abcdefg")))
 }
 
 func TestEncodeStringTooShort(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.StringBegin(8))
 	assertSuccess(t, encoder.StringData([]byte("abcdefg")))
 	assertFailure(t, encoder.End())
 }
 
 func TestEncodeCommentTooLong(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.CommentBegin(6))
 	assertFailure(t, encoder.CommentData([]byte("abcdefg")))
 }
 
 func TestEncodeCommentTooShort(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.CommentBegin(8))
 	assertSuccess(t, encoder.CommentData([]byte("abcdefg")))
 	assertFailure(t, encoder.End())
 }
 
 func TestEncodeChangeArrayType(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.BytesBegin(10))
 	assertSuccess(t, encoder.BytesData(make([]byte, 5)))
 	assertFailure(t, encoder.StringBegin(10))
 }
 
 func TestEncodeUnbalancedContainers(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.ListBegin())
 	assertFailure(t, encoder.End())
 }
 
 func TestEncodeCloseListTooManyTimes(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.ListBegin())
 	assertSuccess(t, encoder.ListEnd())
 	assertFailure(t, encoder.ListEnd())
 }
 
 func TestEncodeCloseMapTooManyTimes(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.MapBegin())
 	assertSuccess(t, encoder.MapEnd())
 	assertFailure(t, encoder.MapEnd())
 }
 
 func TestEncodeCloseNoContainer(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertFailure(t, encoder.ListEnd())
 }
 
 func TestEncodeMapMissingValue(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.MapBegin())
 	assertSuccess(t, encoder.Int(1))
 	assertFailure(t, encoder.MapEnd())
 }
 
 func TestEncodeMapNilKey(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.MapBegin())
 	assertFailure(t, encoder.Nil())
 }
 
 func TestEncodeMapListKey(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.MapBegin())
 	assertFailure(t, encoder.ListBegin())
 }
 
 func TestEncodeMapMapKey(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.MapBegin())
 	assertFailure(t, encoder.MapBegin())
 }
 
 func TestEncodeMapBytesKey(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.MapBegin())
 	assertSuccess(t, encoder.Bytes([]byte{1, 2, 3}))
 	assertSuccess(t, encoder.Bytes([]byte{4, 5, 6}))
@@ -225,7 +226,7 @@ func TestEncodeMapBytesKey(t *testing.T) {
 }
 
 func TestEncodeMapWithComments(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.Comment("A comment before the map"))
 	assertSuccess(t, encoder.MapBegin())
 	assertSuccess(t, encoder.Comment("A comment"))
@@ -238,7 +239,7 @@ func TestEncodeMapWithComments(t *testing.T) {
 }
 
 func TestEncodeListWithComments(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 100)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 100)
 	assertSuccess(t, encoder.Comment("A comment before the list"))
 	assertSuccess(t, encoder.ListBegin())
 	assertSuccess(t, encoder.Comment("A comment"))
@@ -251,11 +252,27 @@ func TestEncodeListWithComments(t *testing.T) {
 }
 
 func TestEncodeContainerLimitExceeded(t *testing.T) {
-	encoder := NewCbeEncoder(ContainerTypeNone, 4)
+	encoder := NewCbeEncoder(ContainerTypeNone, nil, 4)
 	assertSuccess(t, encoder.ListBegin())
 	assertSuccess(t, encoder.ListBegin())
 	assertSuccess(t, encoder.MapBegin())
 	assertSuccess(t, encoder.Bool(true))
 	assertSuccess(t, encoder.ListBegin())
 	assertFailure(t, encoder.MapBegin())
+}
+
+func TestEncodeToExternalBuffer(t *testing.T) {
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, nil, 1)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, true, 1)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, false, 1)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, 0, 1)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, -150, 2)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, 1.1, 9)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, 1.5, 5)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, "test", 5)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, "a longer string to test with", 30)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, []byte{0x01}, 3)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, time.Now(), 9)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, map[interface{}]interface{}{"test": 1}, 8)
+	assertEncodesToExternalBuffer(t, ContainerTypeNone, []interface{}{"test", 1}, 8)
 }
