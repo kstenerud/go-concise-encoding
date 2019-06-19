@@ -12,7 +12,7 @@ func demonstrateMarshal() {
 		"a key": 2.5,
 		900:     time.Now(),
 	}
-	encoder := cbe.NewCbeEncoder(cbe.ContainerTypeNone, 100)
+	encoder := cbe.NewCbeEncoder(cbe.ContainerTypeNone, nil, 100)
 	cbe.Marshal(encoder, cbe.ContainerTypeNone, dict)
 	fmt.Printf("Marshaled bytes: %v\n", encoder.EncodedBytes())
 }
