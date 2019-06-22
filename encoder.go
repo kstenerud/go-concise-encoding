@@ -7,6 +7,7 @@ import (
 
 	// "github.com/ericlagergren/decimal"
 	"github.com/kstenerud/go-smalltime"
+	"github.com/kstenerud/go-vlq"
 	// "github.com/mewmew/float"
 	// "github.com/shabbyrobe/go-num"
 )
@@ -110,16 +111,14 @@ func (this *CbeEncoder) encodeTypeField(typeValue typeField) {
 }
 
 func (this *CbeEncoder) encodeArrayLengthField(length int64) {
-	if length == 0 {
-		this.encodePrimitive8(0)
+	value := vlq.Vlq(length)
+	var buffer [16]byte
+	byteCount, err := value.EncodeTo(buffer[:])
+	if err != nil {
+		panic(fmt.Errorf("Unexpected internal error: %v", err))
 	}
-	for length > 0 {
-		b := byte(length & 0x7f)
-		length >>= 7
-		if length > 0 {
-			b |= 0x80
-		}
-		this.encodePrimitive8(b)
+	for i := 0; i < byteCount; i++ {
+		this.encodePrimitive8(buffer[i])
 	}
 }
 

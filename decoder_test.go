@@ -71,14 +71,14 @@ func TestDecodeString16(t *testing.T) {
 
 func TestDecodeString128(t *testing.T) {
 	value := generateString(128)
-	encoded := []byte{0x90, 0x80, 0x01}
+	encoded := []byte{0x90, 0x81, 0x00}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, ContainerTypeNone, encoded, value)
 }
 
 func TestDecodeString10000(t *testing.T) {
 	value := generateString(10000)
-	encoded := []byte{0x90, 0x90, 0xce, 0x00}
+	encoded := []byte{0x90, 0xce, 0x10}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, ContainerTypeNone, encoded, value)
 }
@@ -106,14 +106,14 @@ func TestDecodeComment16(t *testing.T) {
 
 func TestDecodeComment128(t *testing.T) {
 	value := generateString(128)
-	encoded := []byte{0x92, 0x80, 0x01}
+	encoded := []byte{0x92, 0x81, 0x00}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, ContainerTypeNone, encoded, value)
 }
 
 func TestDecodeComment10000(t *testing.T) {
 	value := generateString(10000)
-	encoded := []byte{0x92, 0x90, 0xce, 0x00}
+	encoded := []byte{0x92, 0xce, 0x10}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, ContainerTypeNone, encoded, value)
 }
@@ -141,14 +141,14 @@ func TestDecodeBytes16(t *testing.T) {
 
 func TestDecodeBytes128(t *testing.T) {
 	value := generateString(128)
-	encoded := []byte{0x91, 0x80, 0x01}
+	encoded := []byte{0x91, 0x81, 0x00}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, ContainerTypeNone, encoded, value)
 }
 
 func TestDecodeBytes10000(t *testing.T) {
 	value := generateString(10000)
-	encoded := []byte{0x91, 0x90, 0xce, 0x00}
+	encoded := []byte{0x91, 0xce, 0x10}
 	encoded = append(encoded, []byte(value)...)
 	assertDecoded(t, ContainerTypeNone, encoded, value)
 }

@@ -112,12 +112,13 @@ func (this *decodeBuffer) readArrayLength() int64 {
 	lengthPos := 0
 	for {
 		next := this.peekPrimitive8(lengthPos)
-		arrayLength |= int64(next&0x7f) << uint(7*lengthPos)
+		arrayLength = (arrayLength << 7) | int64(next&0x7f)
 		lengthPos++
 		if next&0x80 == 0 {
 			break
 		}
 	}
+
 	this.pos += lengthPos
 	return arrayLength
 }

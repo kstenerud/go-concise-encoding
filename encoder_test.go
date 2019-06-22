@@ -100,6 +100,14 @@ func TestEncodeBytes(t *testing.T) {
 	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) { e.Bytes([]byte{1, 2, 3}) }, []byte{0x91, 0x03, 0x01, 0x02, 0x03})
 }
 
+func TestEncodeBytesLong(t *testing.T) {
+	bytesLength := 500
+	bytes := generateBytes(bytesLength)
+	encoded := append([]byte{0x91, 0x83, 0x74}, bytes...)
+
+	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) { e.Bytes(bytes) }, encoded)
+}
+
 func TestEncodeString(t *testing.T) {
 	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) { e.String("") }, []byte{0x80})
 	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) { e.String("0") }, []byte{0x81, 0x30})

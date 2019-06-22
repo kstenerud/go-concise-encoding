@@ -1,2 +1,4 @@
 github.com/kstenerud/go-smalltime v1.1.1 h1:sqeuGpTY1wqlm4AFK+H9pAk7Yfe1f8SGY8hHElM/8/s=
 github.com/kstenerud/go-smalltime v1.1.1/go.mod h1:Bvglsl8DUrosUmin3RCvZRRQUeH2R8PKvM92wLEPPyA=
+github.com/kstenerud/go-vlq v1.0.0 h1:0EffxgvlUwFav7M8/rlTfAI6ly1O6SqMIQlbIO3YEUU=
+github.com/kstenerud/go-vlq v1.0.0/go.mod h1:Me2T4y66gC/vf83AySQYahMhcS6WPe2ftpfMQDNMvoI=
