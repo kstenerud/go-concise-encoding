@@ -7,18 +7,22 @@ import (
 type PrimitiveDecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
-	OnInt(value int64) error
-	OnUint(value uint64) error
+	OnIntPositive(value uint64) error
+	OnIntNegative(value uint64) error
 	OnFloat(value float64) error
+	OnDate(value time.Time) error
 	OnTime(value time.Time) error
+	OnTimestamp(value time.Time) error
 	OnListBegin() error
-	OnListEnd() error
-	OnMapBegin() error
-	OnMapEnd() error
+	OnOrderedMapBegin() error
+	OnUnorderedMapBegin() error
+	OnMetadataMapBegin() error
+	OnContainerEnd() error
 	OnStringBegin(byteCount uint64) error
-	OnStringData(bytes []byte) error
+	OnCommentBegin(byteCount uint64) error
+	OnURIBegin(byteCount uint64) error
 	OnBytesBegin(byteCount uint64) error
-	OnBytesData(bytes []byte) error
+	OnArrayData(bytes []byte) error
 }
 
 type Unmarshaler struct {
@@ -128,17 +132,22 @@ func (this *Unmarshaler) OnBool(value bool) error {
 	return nil
 }
 
-func (this *Unmarshaler) OnInt(value int64) error {
+func (this *Unmarshaler) OnIntPositive(value uint64) error {
 	this.storeValue(value)
 	return nil
 }
 
-func (this *Unmarshaler) OnUint(value uint64) error {
-	this.storeValue(value)
+func (this *Unmarshaler) OnIntNegative(value uint64) error {
+	this.storeValue(-int64(value))
 	return nil
 }
 
 func (this *Unmarshaler) OnFloat(value float64) error {
+	this.storeValue(value)
+	return nil
+}
+
+func (this *Unmarshaler) OnDate(value time.Time) error {
 	this.storeValue(value)
 	return nil
 }
@@ -148,33 +157,33 @@ func (this *Unmarshaler) OnTime(value time.Time) error {
 	return nil
 }
 
+func (this *Unmarshaler) OnTimestamp(value time.Time) error {
+	this.storeValue(value)
+	return nil
+}
+
 func (this *Unmarshaler) OnListBegin() error {
 	this.listBegin()
 	return nil
 }
 
-func (this *Unmarshaler) OnListEnd() error {
-	this.containerEnd()
-	return nil
-}
-
-func (this *Unmarshaler) OnMapBegin() error {
+func (this *Unmarshaler) OnOrderedMapBegin() error {
 	this.mapBegin()
 	return nil
 }
 
-func (this *Unmarshaler) OnMapEnd() error {
+func (this *Unmarshaler) OnUnorderedMapBegin() error {
+	this.mapBegin()
+	return nil
+}
+
+func (this *Unmarshaler) OnMetadataMapBegin() error {
+	// Ignored
+	return nil
+}
+
+func (this *Unmarshaler) OnContainerEnd() error {
 	this.containerEnd()
-	return nil
-}
-
-func (this *Unmarshaler) OnStringBegin(byteCount uint64) error {
-	this.arrayBegin(arrayTypeString, int(byteCount))
-	return nil
-}
-
-func (this *Unmarshaler) OnStringData(bytes []byte) error {
-	this.arrayData(bytes)
 	return nil
 }
 
@@ -183,7 +192,22 @@ func (this *Unmarshaler) OnBytesBegin(byteCount uint64) error {
 	return nil
 }
 
-func (this *Unmarshaler) OnBytesData(bytes []byte) error {
+func (this *Unmarshaler) OnStringBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeString, int(byteCount))
+	return nil
+}
+
+func (this *Unmarshaler) OnCommentBegin(byteCount uint64) error {
+	// Ignored
+	return nil
+}
+
+func (this *Unmarshaler) OnURIBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeURI, int(byteCount))
+	return nil
+}
+
+func (this *Unmarshaler) OnArrayData(bytes []byte) error {
 	this.arrayData(bytes)
 	return nil
 }

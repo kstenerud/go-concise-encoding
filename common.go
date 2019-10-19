@@ -5,27 +5,28 @@ import "fmt"
 type typeField uint8
 
 const (
-	typePosInt8      typeField = 0x6a
-	typePosInt16     typeField = 0x6b
-	typePosInt32     typeField = 0x6c
-	typePosInt64     typeField = 0x6d
-	typePosInt128    typeField = 0x6e
-	typeNil          typeField = 0x6f
-	typeFalse        typeField = 0x70
-	typeTrue         typeField = 0x71
-	typeFloat32      typeField = 0x72
-	typeFloat64      typeField = 0x73
-	typeFloat128     typeField = 0x74
-	typeDecimal32    typeField = 0x75
-	typeDecimal64    typeField = 0x76
-	typeDecimal128   typeField = 0x77
-	typeSmalltime    typeField = 0x78
-	typeNanotime     typeField = 0x79
-	typeNegInt8      typeField = 0x7a
-	typeNegInt16     typeField = 0x7b
-	typeNegInt32     typeField = 0x7c
-	typeNegInt64     typeField = 0x7d
-	typeNegInt128    typeField = 0x7e
+	typeDecimal  typeField = 0x65
+	typePosInt   typeField = 0x66
+	typeNegInt   typeField = 0x67
+	typePosInt8  typeField = 0x68
+	typeNegInt8  typeField = 0x69
+	typePosInt16 typeField = 0x6a
+	typeNegInt16 typeField = 0x6b
+	typePosInt32 typeField = 0x6c
+	typeNegInt32 typeField = 0x6d
+	typePosInt64 typeField = 0x6e
+	typeNegInt64 typeField = 0x6f
+	typeFloat32  typeField = 0x70
+	typeFloat64  typeField = 0x71
+	// RESERVED 0x72 - 0x76
+	typeList         typeField = 0x77
+	typeMapUnordered typeField = 0x78
+	typeMapOrdered   typeField = 0x79
+	typeMapMetadata  typeField = 0x7a
+	typeEndContainer typeField = 0x7b
+	typeFalse        typeField = 0x7c
+	typeTrue         typeField = 0x7d
+	typeNil          typeField = 0x7e
 	typePadding      typeField = 0x7f
 	typeString0      typeField = 0x80
 	typeString1      typeField = 0x81
@@ -45,15 +46,17 @@ const (
 	typeString15     typeField = 0x8f
 	typeString       typeField = 0x90
 	typeBytes        typeField = 0x91
-	typeComment      typeField = 0x92
-	typeList         typeField = 0x93
-	typeMap          typeField = 0x94
-	typeEndContainer typeField = 0x95
+	typeURI          typeField = 0x92
+	typeComment      typeField = 0x93
+	// RESERVED 0x94 - 0x98
+	typeDate      typeField = 0x99
+	typeTime      typeField = 0x9a
+	typeTimestamp typeField = 0x9b
 )
 
 const (
-	smallIntMin int64 = -106
-	smallIntMax int64 = 105
+	smallIntMin int64 = -100
+	smallIntMax int64 = 100
 )
 
 type arrayType int
@@ -62,6 +65,7 @@ const (
 	arrayTypeNone arrayType = iota
 	arrayTypeBytes
 	arrayTypeString
+	arrayTypeURI
 	arrayTypeComment
 )
 
@@ -70,7 +74,9 @@ type ContainerType int
 const (
 	ContainerTypeNone ContainerType = iota
 	ContainerTypeList
-	ContainerTypeMap
+	ContainerTypeUnorderedMap
+	ContainerTypeOrderedMap
+	ContainerTypeMetadataMap
 )
 
 func ValidateCommentCharacter(ch int) error {

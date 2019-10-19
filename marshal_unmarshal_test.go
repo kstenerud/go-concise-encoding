@@ -137,7 +137,7 @@ func TestMarshalUnmarshalMapMap(t *testing.T) {
 }
 
 func TestMarshalUnmarshalInlineMap(t *testing.T) {
-	assertMarshalUnmarshal(t, ContainerTypeMap, map[interface{}]interface{}{
+	assertMarshalUnmarshal(t, ContainerTypeUnorderedMap, map[interface{}]interface{}{
 		"a": 1,
 		2:   "b",
 	})

@@ -73,189 +73,200 @@ type testCallbacks struct {
 	currentArrayType arrayType
 }
 
-func (callbacks *testCallbacks) setCurrentContainer() {
-	lastEntry := len(callbacks.containerStack) - 1
-	callbacks.currentList = nil
-	callbacks.currentMap = nil
+func (this *testCallbacks) setCurrentContainer() {
+	lastEntry := len(this.containerStack) - 1
+	this.currentList = nil
+	this.currentMap = nil
 	if lastEntry >= 0 {
-		container := callbacks.containerStack[lastEntry]
+		container := this.containerStack[lastEntry]
 		switch container.(type) {
 		case []interface{}:
-			callbacks.currentList = container.([]interface{})
+			this.currentList = container.([]interface{})
 		case *[]interface{}:
-			callbacks.currentList = *(container.(*[]interface{}))
+			this.currentList = *(container.(*[]interface{}))
 		case map[interface{}]interface{}:
-			callbacks.currentMap = container.(map[interface{}]interface{})
+			this.currentMap = container.(map[interface{}]interface{})
 		case *map[interface{}]interface{}:
-			callbacks.currentMap = *(container.(*map[interface{}]interface{}))
+			this.currentMap = *(container.(*map[interface{}]interface{}))
 		default:
 			panic(fmt.Errorf("Unknown container type: %v", container))
 		}
 	}
 }
 
-func (callbacks *testCallbacks) containerBegin(container interface{}) {
-	callbacks.containerStack = append(callbacks.containerStack, container)
-	callbacks.setCurrentContainer()
+func (this *testCallbacks) containerBegin(container interface{}) {
+	this.containerStack = append(this.containerStack, container)
+	this.setCurrentContainer()
 }
 
-func (callbacks *testCallbacks) listBegin() {
-	callbacks.containerBegin(make([]interface{}, 0))
+func (this *testCallbacks) listBegin() {
+	this.containerBegin(make([]interface{}, 0))
 }
 
-func (callbacks *testCallbacks) mapBegin() {
-	callbacks.containerBegin(make(map[interface{}]interface{}))
+func (this *testCallbacks) mapBegin() {
+	this.containerBegin(make(map[interface{}]interface{}))
 }
 
-func (callbacks *testCallbacks) containerEnd() {
+func (this *testCallbacks) containerEnd() {
 	var item interface{}
 
-	if callbacks.currentList != nil {
-		item = callbacks.currentList
-		callbacks.currentList = nil
+	if this.currentList != nil {
+		item = this.currentList
+		this.currentList = nil
 	} else {
-		item = callbacks.currentMap
-		callbacks.currentMap = nil
+		item = this.currentMap
+		this.currentMap = nil
 	}
-	length := len(callbacks.containerStack)
+	length := len(this.containerStack)
 	if length > 0 {
-		callbacks.containerStack = callbacks.containerStack[:length-1]
-		callbacks.setCurrentContainer()
+		this.containerStack = this.containerStack[:length-1]
+		this.setCurrentContainer()
 	}
-	callbacks.storeValue(item)
+	this.storeValue(item)
 }
 
-func (callbacks *testCallbacks) arrayBegin(newArrayType arrayType, length int) {
-	callbacks.currentArray = make([]byte, 0, length)
-	callbacks.currentArrayType = newArrayType
+func (this *testCallbacks) arrayBegin(newArrayType arrayType, length int) {
+	this.currentArray = make([]byte, 0, length)
+	// fmt.Printf("Make array cap %v: %v\n", length, cap(this.currentArray))
+	this.currentArrayType = newArrayType
 	if length == 0 {
-		callbacks.arrayEnd()
+		this.arrayEnd()
 	}
 }
 
-func (callbacks *testCallbacks) arrayData(data []byte) {
-	callbacks.currentArray = append(callbacks.currentArray, data...)
-	if len(callbacks.currentArray) == cap(callbacks.currentArray) {
-		callbacks.arrayEnd()
+func (this *testCallbacks) arrayData(data []byte) {
+	this.currentArray = append(this.currentArray, data...)
+	if len(this.currentArray) == cap(this.currentArray) {
+		this.arrayEnd()
 	}
 }
 
-func (callbacks *testCallbacks) arrayEnd() {
-	array := callbacks.currentArray
-	callbacks.currentArray = nil
-	if callbacks.currentArrayType == arrayTypeBytes {
-		callbacks.storeValue(array)
+func (this *testCallbacks) arrayEnd() {
+	array := this.currentArray
+	this.currentArray = nil
+	if this.currentArrayType == arrayTypeBytes {
+		this.storeValue(array)
 	} else {
-		callbacks.storeValue(string(array))
+		this.storeValue(string(array))
 	}
 }
 
-func (callbacks *testCallbacks) storeValue(value interface{}) {
-	if callbacks.currentList != nil {
-		callbacks.currentList = append(callbacks.currentList, value)
+func (this *testCallbacks) storeValue(value interface{}) {
+	if this.currentList != nil {
+		this.currentList = append(this.currentList, value)
 		return
 	}
 
-	if callbacks.currentMap != nil {
-		if callbacks.nextValue == nil {
-			callbacks.nextValue = value
+	if this.currentMap != nil {
+		if this.nextValue == nil {
+			this.nextValue = value
 		} else {
-			callbacks.currentMap[callbacks.nextValue] = value
-			callbacks.nextValue = nil
+			this.currentMap[this.nextValue] = value
+			this.nextValue = nil
 		}
 		return
 	}
 
-	if callbacks.nextValue != nil {
-		panic(fmt.Errorf("Top level object already exists: %v", callbacks.nextValue))
+	if this.nextValue != nil {
+		panic(fmt.Errorf("Top level object already exists: %v", this.nextValue))
 	}
-	callbacks.nextValue = value
+	this.nextValue = value
 }
 
-func (callbacks *testCallbacks) getValue() interface{} {
-	if len(callbacks.containerStack) != 0 {
-		return callbacks.containerStack[0]
+func (this *testCallbacks) getValue() interface{} {
+	if len(this.containerStack) != 0 {
+		return this.containerStack[0]
 	}
-	return callbacks.nextValue
+	return this.nextValue
 }
 
-func (callbacks *testCallbacks) OnNil() error {
-	callbacks.storeValue(new(Nil))
+func (this *testCallbacks) OnNil() error {
+	this.storeValue(new(Nil))
 	return nil
 }
 
-func (callbacks *testCallbacks) OnBool(value bool) error {
-	callbacks.storeValue(value)
+func (this *testCallbacks) OnBool(value bool) error {
+	this.storeValue(value)
 	return nil
 }
 
-func (callbacks *testCallbacks) OnInt(value int64) error {
-	callbacks.storeValue(value)
+func (this *testCallbacks) OnIntPositive(value uint64) error {
+	this.storeValue(value)
 	return nil
 }
 
-func (callbacks *testCallbacks) OnUint(value uint64) error {
-	callbacks.storeValue(value)
+func (this *testCallbacks) OnIntNegative(value uint64) error {
+	this.storeValue(-int64(value))
 	return nil
 }
 
-func (callbacks *testCallbacks) OnFloat(value float64) error {
-	callbacks.storeValue(value)
+func (this *testCallbacks) OnFloat(value float64) error {
+	this.storeValue(value)
 	return nil
 }
 
-func (callbacks *testCallbacks) OnTime(value time.Time) error {
-	callbacks.storeValue(value)
+func (this *testCallbacks) OnDate(value time.Time) error {
+	this.storeValue(value)
 	return nil
 }
 
-func (callbacks *testCallbacks) OnListBegin() error {
-	callbacks.listBegin()
+func (this *testCallbacks) OnTime(value time.Time) error {
+	this.storeValue(value)
 	return nil
 }
 
-func (callbacks *testCallbacks) OnListEnd() error {
-	callbacks.containerEnd()
+func (this *testCallbacks) OnTimestamp(value time.Time) error {
+	this.storeValue(value)
 	return nil
 }
 
-func (callbacks *testCallbacks) OnMapBegin() error {
-	callbacks.mapBegin()
+func (this *testCallbacks) OnListBegin() error {
+	this.listBegin()
 	return nil
 }
 
-func (callbacks *testCallbacks) OnMapEnd() error {
-	callbacks.containerEnd()
+func (this *testCallbacks) OnOrderedMapBegin() error {
+	this.mapBegin()
 	return nil
 }
 
-func (callbacks *testCallbacks) OnStringBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeString, int(byteCount))
+func (this *testCallbacks) OnUnorderedMapBegin() error {
+	this.mapBegin()
 	return nil
 }
 
-func (callbacks *testCallbacks) OnStringData(bytes []byte) error {
-	callbacks.arrayData(bytes)
+func (this *testCallbacks) OnMetadataMapBegin() error {
+	this.mapBegin()
 	return nil
 }
 
-func (callbacks *testCallbacks) OnCommentBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeComment, int(byteCount))
+func (this *testCallbacks) OnContainerEnd() error {
+	this.containerEnd()
 	return nil
 }
 
-func (callbacks *testCallbacks) OnCommentData(bytes []byte) error {
-	callbacks.arrayData(bytes)
+func (this *testCallbacks) OnStringBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeString, int(byteCount))
 	return nil
 }
 
-func (callbacks *testCallbacks) OnBytesBegin(byteCount uint64) error {
-	callbacks.arrayBegin(arrayTypeBytes, int(byteCount))
+func (this *testCallbacks) OnCommentBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeComment, int(byteCount))
 	return nil
 }
 
-func (callbacks *testCallbacks) OnBytesData(bytes []byte) error {
-	callbacks.arrayData(bytes)
+func (this *testCallbacks) OnURIBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeURI, int(byteCount))
+	return nil
+}
+
+func (this *testCallbacks) OnBytesBegin(byteCount uint64) error {
+	this.arrayBegin(arrayTypeBytes, int(byteCount))
+	return nil
+}
+
+func (this *testCallbacks) OnArrayData(bytes []byte) error {
+	this.arrayData(bytes)
 	return nil
 }
 
@@ -322,9 +333,12 @@ func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, max
 
 // Encoder
 
-func assertEncoded(t *testing.T, containerType ContainerType, function func(*CbeEncoder), expected []byte) {
+func assertEncoded(t *testing.T, containerType ContainerType, function func(*CbeEncoder) error, expected []byte) {
 	encoder := NewCbeEncoder(containerType, nil, 100)
-	function(encoder)
+	err := function(encoder)
+	if err != nil {
+		t.Fatal(err)
+	}
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
@@ -345,11 +359,9 @@ func assertMarshaled(t *testing.T, containerType ContainerType, value interface{
 func assertEncodesToExternalBuffer(t *testing.T, containerType ContainerType, value interface{}, bufferSize int) {
 	buffer := make([]byte, bufferSize)
 	encoder := NewCbeEncoder(containerType, buffer, 100)
-	assertDoesNotPanic(t, func() {
-		Marshal(encoder, containerType, value)
-	})
-	if len(encoder.EncodedBytes()) != 0 {
-		t.Errorf("Expected 0 bytes left, but there are %v bytes", len(encoder.EncodedBytes()))
+	if err := Marshal(encoder, containerType, value); err != nil {
+		t.Errorf("Unexpected error while marshling: %v", err)
+		return
 	}
 
 	encoder2 := NewCbeEncoder(containerType, nil, 100)
@@ -397,4 +409,13 @@ func assertMarshalUnmarshalProduces(t *testing.T, containerType ContainerType, i
 	if !DeepEquivalence(actual, expected) {
 		t.Errorf("Expected %t: <%v>, actual %t: <%v>", expected, expected, actual, actual)
 	}
+}
+
+func ShortCircuit(errors ...error) error {
+	for _, err := range errors {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

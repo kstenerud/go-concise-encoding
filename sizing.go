@@ -61,7 +61,8 @@ func intSize(value int64) int {
 }
 
 func floatSize(value float64) int {
-	if fitsInFloat32(value) {
+	asFloat32 := float64(float32(value))
+	if value == asFloat32 {
 		return 5
 	}
 	return 9
@@ -133,7 +134,7 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 			return timeSize()
 		}
 		var size int
-		if inlineContainerType != ContainerTypeMap {
+		if inlineContainerType != ContainerTypeUnorderedMap {
 			size += mapBeginSize()
 		}
 		for i := 0; i < rt.NumField(); i++ {
@@ -146,13 +147,13 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 				size += reflectValueSize(ContainerTypeNone, &v)
 			}
 		}
-		if inlineContainerType != ContainerTypeMap {
+		if inlineContainerType != ContainerTypeUnorderedMap {
 			size += mapEndSize()
 		}
 		return size
 	case reflect.Map:
 		var size int
-		if inlineContainerType != ContainerTypeMap {
+		if inlineContainerType != ContainerTypeUnorderedMap {
 			size += mapBeginSize()
 		}
 		for iter := rv.MapRange(); iter.Next(); {
@@ -161,7 +162,7 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 			size += reflectValueSize(ContainerTypeNone, &k)
 			size += reflectValueSize(ContainerTypeNone, &v)
 		}
-		if inlineContainerType != ContainerTypeMap {
+		if inlineContainerType != ContainerTypeUnorderedMap {
 			size += mapEndSize()
 		}
 		return size

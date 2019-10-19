@@ -12,13 +12,12 @@ type PrimitiveEncoder interface {
 	Uint(uint64) error
 	Int(int64) error
 	Float(float64) error
-	Time(time.Time) error
+	Timestamp(time.Time) error
 	String(string) error
 	Bytes([]byte) error
 	ListBegin() error
-	ListEnd() error
 	MapBegin() error
-	MapEnd() error
+	ContainerEnd() error
 }
 
 type UnsupportedTypeError error
@@ -59,9 +58,9 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 		rt := rv.Type()
 		if rt.Name() == "Time" && rt.PkgPath() == "time" {
 			realValue := rv.Interface().(time.Time)
-			return encoder.Time(realValue)
+			return encoder.Timestamp(realValue)
 		}
-		if inlineContainerType != ContainerTypeMap {
+		if inlineContainerType != ContainerTypeUnorderedMap {
 			// TODO: anonymous structs?
 			if err := encoder.MapBegin(); err != nil {
 				return err
@@ -81,12 +80,12 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 				}
 			}
 		}
-		if inlineContainerType != ContainerTypeMap {
-			return encoder.MapEnd()
+		if inlineContainerType != ContainerTypeUnorderedMap {
+			return encoder.ContainerEnd()
 		}
 		return nil
 	case reflect.Map:
-		if inlineContainerType != ContainerTypeMap {
+		if inlineContainerType != ContainerTypeUnorderedMap {
 			if err := encoder.MapBegin(); err != nil {
 				return err
 			}
@@ -101,8 +100,8 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 				return err
 			}
 		}
-		if inlineContainerType != ContainerTypeMap {
-			return encoder.MapEnd()
+		if inlineContainerType != ContainerTypeUnorderedMap {
+			return encoder.ContainerEnd()
 		}
 		return nil
 	case reflect.Array:
@@ -129,7 +128,7 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 				}
 			}
 			if inlineContainerType != ContainerTypeList {
-				return encoder.ListEnd()
+				return encoder.ContainerEnd()
 			}
 			return nil
 		}
@@ -149,7 +148,7 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 			}
 		}
 		if inlineContainerType != ContainerTypeList {
-			return encoder.ListEnd()
+			return encoder.ContainerEnd()
 		}
 		return nil
 	case reflect.Ptr:
