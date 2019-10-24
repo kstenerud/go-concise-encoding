@@ -16,7 +16,7 @@ type PrimitiveEncoder interface {
 	String(string) error
 	Bytes([]byte) error
 	ListBegin() error
-	MapBegin() error
+	UnorderedMapBegin() error
 	ContainerEnd() error
 }
 
@@ -62,7 +62,7 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 		}
 		if inlineContainerType != ContainerTypeUnorderedMap {
 			// TODO: anonymous structs?
-			if err := encoder.MapBegin(); err != nil {
+			if err := encoder.UnorderedMapBegin(); err != nil {
 				return err
 			}
 		}
@@ -86,7 +86,7 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 		return nil
 	case reflect.Map:
 		if inlineContainerType != ContainerTypeUnorderedMap {
-			if err := encoder.MapBegin(); err != nil {
+			if err := encoder.UnorderedMapBegin(); err != nil {
 				return err
 			}
 		}

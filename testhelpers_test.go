@@ -28,7 +28,7 @@ func generateBytes(length int) []byte {
 	return []byte(generateString(length))
 }
 
-func testPanicResult(function func()) (recovered interface{}) {
+func getPanicContents(function func()) (recovered interface{}) {
 	defer func() {
 		recovered = recover()
 	}()
@@ -37,13 +37,13 @@ func testPanicResult(function func()) (recovered interface{}) {
 }
 
 func assertPanics(t *testing.T, function func()) {
-	if testPanicResult(function) == nil {
+	if getPanicContents(function) == nil {
 		t.Errorf("Should have panicked but didn't")
 	}
 }
 
 func assertDoesNotPanic(t *testing.T, function func()) {
-	if result := testPanicResult(function); result != nil {
+	if result := getPanicContents(function); result != nil {
 		t.Errorf("Should not have panicked, but did: %v", result)
 	}
 }
@@ -190,12 +190,12 @@ func (this *testCallbacks) OnBool(value bool) error {
 	return nil
 }
 
-func (this *testCallbacks) OnIntPositive(value uint64) error {
+func (this *testCallbacks) OnPositiveInt(value uint64) error {
 	this.storeValue(value)
 	return nil
 }
 
-func (this *testCallbacks) OnIntNegative(value uint64) error {
+func (this *testCallbacks) OnNegativeInt(value uint64) error {
 	this.storeValue(-int64(value))
 	return nil
 }

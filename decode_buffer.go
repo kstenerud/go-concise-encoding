@@ -2,7 +2,6 @@
 package cbe
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -46,7 +45,7 @@ func (this *decodeBuffer) AddContents(data []byte) {
 	this.data = append(this.data, data...)
 }
 
-func (this *decodeBuffer) FillFromBuffer(buffer *decodeBuffer, fillToByteCount int) {
+func (this *decodeBuffer) FillFromBuffer(buffer *decodeBuffer, fillToByteCount int) int {
 	bytesToAppend := fillToByteCount - len(this.data)
 	if bytesToAppend > len(buffer.data) {
 		bytesToAppend = len(buffer.data)
@@ -54,6 +53,7 @@ func (this *decodeBuffer) FillFromBuffer(buffer *decodeBuffer, fillToByteCount i
 	if bytesToAppend > 0 {
 		this.data = append(this.data, buffer.data[:bytesToAppend]...)
 	}
+	return bytesToAppend
 }
 
 func (this *decodeBuffer) ReplaceBuffer(newBuffer []byte) {
@@ -84,6 +84,10 @@ func (this *decodeBuffer) RemainingByteCount() int {
 
 func (this *decodeBuffer) Commit() {
 	this.lastCommitPosition = this.position
+}
+
+func (this *decodeBuffer) Rollback() {
+	this.position = this.lastCommitPosition
 }
 
 func (this *decodeBuffer) GetUncommittedBytes() []byte {

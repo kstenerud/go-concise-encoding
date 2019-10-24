@@ -9,8 +9,8 @@ import (
 type CbeDecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
-	OnIntPositive(value uint64) error
-	OnIntNegative(value uint64) error
+	OnPositiveInt(value uint64) error
+	OnNegativeInt(value uint64) error
 	OnFloat(value float64) error
 	OnDate(value time.Time) error
 	OnTime(value time.Time) error
@@ -180,10 +180,11 @@ func (this *CbeDecoder) decodeObject(dataType typeField) {
 	asSmallInt := int8(dataType)
 	if int64(asSmallInt) >= smallIntMin && int64(asSmallInt) <= smallIntMax {
 		if asSmallInt >= 0 {
-			panicOnCallbackError(this.callbacks.OnIntPositive(uint64(asSmallInt)))
+			panicOnCallbackError(this.callbacks.OnPositiveInt(uint64(asSmallInt)))
 		} else {
-			panicOnCallbackError(this.callbacks.OnIntNegative(uint64(-asSmallInt)))
+			panicOnCallbackError(this.callbacks.OnNegativeInt(uint64(-asSmallInt)))
 		}
+		this.buffer.Commit()
 		this.flipMapKeyValueState()
 		return
 	}
@@ -210,43 +211,43 @@ func (this *CbeDecoder) decodeObject(dataType typeField) {
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typePosInt8:
-		panicOnCallbackError(this.callbacks.OnIntPositive(uint64(this.buffer.DecodeUint8())))
+		panicOnCallbackError(this.callbacks.OnPositiveInt(uint64(this.buffer.DecodeUint8())))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typePosInt16:
-		panicOnCallbackError(this.callbacks.OnIntPositive(uint64(this.buffer.DecodeUint16())))
+		panicOnCallbackError(this.callbacks.OnPositiveInt(uint64(this.buffer.DecodeUint16())))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typePosInt32:
-		panicOnCallbackError(this.callbacks.OnIntPositive(uint64(this.buffer.DecodeUint32())))
+		panicOnCallbackError(this.callbacks.OnPositiveInt(uint64(this.buffer.DecodeUint32())))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typePosInt64:
-		panicOnCallbackError(this.callbacks.OnIntPositive(this.buffer.DecodeUint64()))
+		panicOnCallbackError(this.callbacks.OnPositiveInt(this.buffer.DecodeUint64()))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typePosInt:
-		panicOnCallbackError(this.callbacks.OnIntPositive(this.buffer.DecodeUint()))
+		panicOnCallbackError(this.callbacks.OnPositiveInt(this.buffer.DecodeUint()))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typeNegInt8:
-		panicOnCallbackError(this.callbacks.OnIntNegative(uint64(this.buffer.DecodeUint8())))
+		panicOnCallbackError(this.callbacks.OnNegativeInt(uint64(this.buffer.DecodeUint8())))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typeNegInt16:
-		panicOnCallbackError(this.callbacks.OnIntNegative(uint64(this.buffer.DecodeUint16())))
+		panicOnCallbackError(this.callbacks.OnNegativeInt(uint64(this.buffer.DecodeUint16())))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typeNegInt32:
-		panicOnCallbackError(this.callbacks.OnIntNegative(uint64(this.buffer.DecodeUint32())))
+		panicOnCallbackError(this.callbacks.OnNegativeInt(uint64(this.buffer.DecodeUint32())))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typeNegInt64:
-		panicOnCallbackError(this.callbacks.OnIntNegative(this.buffer.DecodeUint64()))
+		panicOnCallbackError(this.callbacks.OnNegativeInt(this.buffer.DecodeUint64()))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typeNegInt:
-		panicOnCallbackError(this.callbacks.OnIntNegative(this.buffer.DecodeUint()))
+		panicOnCallbackError(this.callbacks.OnNegativeInt(this.buffer.DecodeUint()))
 		this.buffer.Commit()
 		this.flipMapKeyValueState()
 	case typeDate:
@@ -380,6 +381,7 @@ func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, cal
 		maxContainerDepth++
 	}
 	this.underflowBuffer = NewDecodeBuffer(make([]byte, maxPartialReadLength))
+	this.underflowBuffer.Clear()
 	this.mainBuffer = NewDecodeBuffer(make([]byte, 0))
 	this.buffer = this.mainBuffer
 	this.callbacks = callbacks
@@ -399,13 +401,9 @@ func (this *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 			case notEnoughBytesToDecodeArrayData:
 				// Return as if nothing's wrong
 			case notEnoughBytesToDecodeObject:
-				if this.buffer == this.mainBuffer {
-					this.underflowBuffer.Clear()
-					this.underflowBuffer.AddContents(this.mainBuffer.GetUncommittedBytes())
-					this.buffer = this.underflowBuffer
-				} else {
-					panic(r)
-				}
+				this.underflowBuffer.AddContents(this.mainBuffer.GetUncommittedBytes())
+				this.buffer = this.underflowBuffer
+				this.mainBuffer.Clear()
 			case callbackError:
 				err = fmt.Errorf("cbe: offset %v: Error from callback: %v", this.streamOffset, r.(callbackError).err)
 			case decoderError:
@@ -417,20 +415,26 @@ func (this *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 		}
 	}()
 
-	this.beginInlineContainer()
-
+	this.buffer.Rollback()
 	this.mainBuffer.ReplaceBuffer(bytesToDecode)
 
+	this.beginInlineContainer()
+
 	if this.buffer == this.underflowBuffer && this.buffer.RemainingByteCount() > 0 {
-		this.buffer.FillFromBuffer(this.mainBuffer, maxPartialReadLength)
+		underflowByteCount := len(this.underflowBuffer.data)
+		bytesFilled := this.buffer.FillFromBuffer(this.mainBuffer, maxPartialReadLength)
+		this.mainBuffer.lastCommitPosition += bytesFilled
+		this.mainBuffer.position = this.mainBuffer.lastCommitPosition
 		objectType := this.buffer.DecodeType()
 		this.assertOnlyOneTopLevelObject()
 		this.decodeObject(objectType)
 		this.firstItemDecoded = true
-		this.buffer = this.mainBuffer
+		mainBytesUsed := this.underflowBuffer.lastCommitPosition - underflowByteCount
+		this.mainBuffer.lastCommitPosition = mainBytesUsed
+		this.mainBuffer.position = this.mainBuffer.lastCommitPosition
 
-		// TODO: Fixup offset in main buffer
 		this.underflowBuffer.Clear()
+		this.buffer = this.mainBuffer
 	}
 
 	// TODO: Does this handle end of buffer?

@@ -39,6 +39,11 @@ func TestDecodeInt64(t *testing.T) {
 	assertDecoded(t, ContainerTypeNone, []byte{0x6f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80}, int64(-0x8000000000000000))
 }
 
+func TestDecodeInt(t *testing.T) {
+	assertDecoded(t, ContainerTypeNone, []byte{0x66, 0xff, 0xff, 0x7f}, uint64(0x1fffff))
+	assertDecoded(t, ContainerTypeNone, []byte{0x67, 0xff, 0xff, 0x7f}, int64(-0x1fffff))
+}
+
 func TestDecodeStringSmall(t *testing.T) {
 	for i := 0; i < 15; i++ {
 		value := generateString(i)
@@ -235,14 +240,14 @@ func TestDecodePiecemeal(t *testing.T) {
 	assertDecodedPiecemeal(t, encoded, 1, 3, value)
 }
 
-// func TestDecodePiecemeal2(t *testing.T) {
-// 	value := []interface{}{0x100}
-// 	encoded := []byte{0x77, 0x6a, 0x00, 0x01, 0x7b}
-// 	assertDecodedPiecemeal(t, encoded, 1, 5, value)
-// }
+func TestDecodePiecemeal2(t *testing.T) {
+	value := []interface{}{0x100}
+	encoded := []byte{0x77, 0x6a, 0x00, 0x01, 0x7b}
+	assertDecodedPiecemeal(t, encoded, 1, 5, value)
+}
 
-// func TestDecodePiecemeal3(t *testing.T) {
-// 	value := []interface{}{1, 0x1234, 0x56789abc, uint64(0xfedcba9876543210)}
-// 	encoded := []byte{0x77, 0x01, 0x6a, 0x34, 0x12, 0x6c, 0xbc, 0x9a, 0x78, 0x56, 0x6e, 0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe, 0x7b}
-// 	assertDecodedPiecemeal(t, encoded, 1, 20, value)
-// }
+func TestDecodePiecemeal3(t *testing.T) {
+	value := []interface{}{1, 0x1234, 0x56789abc, uint64(0xfedcba9876543210)}
+	encoded := []byte{0x77, 0x01, 0x6a, 0x34, 0x12, 0x6c, 0xbc, 0x9a, 0x78, 0x56, 0x6e, 0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe, 0x7b}
+	assertDecodedPiecemeal(t, encoded, 1, 20, value)
+}

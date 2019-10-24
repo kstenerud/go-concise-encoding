@@ -7,8 +7,8 @@ import (
 type PrimitiveDecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
-	OnIntPositive(value uint64) error
-	OnIntNegative(value uint64) error
+	OnPositiveInt(value uint64) error
+	OnNegativeInt(value uint64) error
 	OnFloat(value float64) error
 	OnDate(value time.Time) error
 	OnTime(value time.Time) error
@@ -132,12 +132,12 @@ func (this *Unmarshaler) OnBool(value bool) error {
 	return nil
 }
 
-func (this *Unmarshaler) OnIntPositive(value uint64) error {
+func (this *Unmarshaler) OnPositiveInt(value uint64) error {
 	this.storeValue(value)
 	return nil
 }
 
-func (this *Unmarshaler) OnIntNegative(value uint64) error {
+func (this *Unmarshaler) OnNegativeInt(value uint64) error {
 	this.storeValue(-int64(value))
 	return nil
 }

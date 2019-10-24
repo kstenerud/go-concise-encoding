@@ -3,12 +3,17 @@ package cbe
 import (
 	"fmt"
 	"math"
+	"net/url"
 	"time"
 )
 
 // ------------
 // Array Length
 // ------------
+
+func bitMask(bitCount uint) uint64 {
+	return (1 << bitCount) - 1
+}
 
 func intFitsInSmallint(value int64) bool {
 	return value >= smallIntMin && value <= smallIntMax
@@ -28,6 +33,14 @@ func fitsInUint16(value uint64) bool {
 
 func fitsInUint32(value uint64) bool {
 	return value <= math.MaxUint32
+}
+
+func fitsInUint21(value uint64) bool {
+	return value == (value & bitMask(21))
+}
+
+func fitsInUint49(value uint64) bool {
+	return value == (value & bitMask(49))
 }
 
 // -----------
@@ -211,8 +224,16 @@ func (this *CbeEncoder) Uint(value uint64) error {
 		if err := this.buffer.EncodeUint16(typePosInt16, uint16(value)); err != nil {
 			return err
 		}
+	case fitsInUint21(value):
+		if err := this.buffer.EncodeUint(typePosInt, value); err != nil {
+			return err
+		}
 	case fitsInUint32(value):
 		if err := this.buffer.EncodeUint32(typePosInt32, uint32(value)); err != nil {
+			return err
+		}
+	case fitsInUint49(value):
+		if err := this.buffer.EncodeUint(typePosInt, value); err != nil {
 			return err
 		}
 	default:
@@ -243,14 +264,35 @@ func (this *CbeEncoder) Int(value int64) error {
 		if err := this.buffer.EncodeUint16(typeNegInt16, uint16(uvalue)); err != nil {
 			return err
 		}
+	case fitsInUint21(uvalue):
+		if err := this.buffer.EncodeUint(typeNegInt, uvalue); err != nil {
+			return err
+		}
 	case fitsInUint32(uvalue):
 		if err := this.buffer.EncodeUint32(typeNegInt32, uint32(uvalue)); err != nil {
+			return err
+		}
+	case fitsInUint49(uvalue):
+		if err := this.buffer.EncodeUint(typeNegInt, uvalue); err != nil {
 			return err
 		}
 	default:
 		if err := this.buffer.EncodeUint64(typeNegInt64, uvalue); err != nil {
 			return err
 		}
+	}
+	this.buffer.Commit()
+	this.flipMapKeyStatus()
+	return nil
+}
+
+func (this *CbeEncoder) FloatRounded(value float64, significantDigits int) error {
+	if significantDigits < 1 || significantDigits > 15 {
+		return this.Float(value)
+	}
+
+	if err := this.buffer.EncodeFloat(value, significantDigits); err != nil {
+		return err
 	}
 	this.buffer.Commit()
 	this.flipMapKeyStatus()
@@ -312,7 +354,13 @@ func (this *CbeEncoder) ContainerEnd() error {
 	case typeList:
 		break
 	case typeMapMetadata:
+		if this.isExpectingMapValue() {
+			return fmt.Errorf("Expecting map value for already stored key")
+		}
 	case typeMapOrdered:
+		if this.isExpectingMapValue() {
+			return fmt.Errorf("Expecting map value for already stored key")
+		}
 	case typeMapUnordered:
 		if this.isExpectingMapValue() {
 			return fmt.Errorf("Expecting map value for already stored key")
@@ -342,9 +390,9 @@ func (this *CbeEncoder) ListBegin() error {
 	return nil
 }
 
-// Begin a map. Any subsequent objects added are assumed to alternate between
-// key and value entries in the map, until MapEnd() is called.
-func (this *CbeEncoder) MapBegin() error {
+// Begin an unordered map. Any subsequent objects added are assumed to alternate
+// between key and value entries in the map, until MapEnd() is called.
+func (this *CbeEncoder) UnorderedMapBegin() error {
 	if err := this.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
@@ -352,6 +400,40 @@ func (this *CbeEncoder) MapBegin() error {
 		return err
 	}
 	err := this.buffer.EncodeTypeField(typeMapUnordered)
+	if err != nil {
+		return err
+	}
+	this.buffer.Commit()
+	return nil
+}
+
+// Begin an ordered map. Any subsequent objects added are assumed to alternate
+// between key and value entries in the map, until MapEnd() is called.
+func (this *CbeEncoder) OrderedMapBegin() error {
+	if err := this.assertNotExpectingMapKey("map"); err != nil {
+		return err
+	}
+	if err := this.containerBegin(typeMapOrdered); err != nil {
+		return err
+	}
+	err := this.buffer.EncodeTypeField(typeMapOrdered)
+	if err != nil {
+		return err
+	}
+	this.buffer.Commit()
+	return nil
+}
+
+// Begin a metadata map. Any subsequent objects added are assumed to alternate
+// between key and value entries in the map, until MapEnd() is called.
+func (this *CbeEncoder) MetadataMapBegin() error {
+	if err := this.assertNotExpectingMapKey("map"); err != nil {
+		return err
+	}
+	if err := this.containerBegin(typeMapMetadata); err != nil {
+		return err
+	}
+	err := this.buffer.EncodeTypeField(typeMapMetadata)
 	if err != nil {
 		return err
 	}
@@ -470,6 +552,37 @@ func (this *CbeEncoder) String(value string) error {
 	return nil
 }
 
+// Begin a URI. Encoder expects subsequent calls to StringData to provide a
+// total of exactly the length provided here.
+// Only lengths up to 0x3fffffffffffffff are supported.
+func (this *CbeEncoder) URIBegin(length uint64) error {
+	if err := this.arrayBegin(arrayTypeURI, length); err != nil {
+		return err
+	}
+	return this.buffer.EncodeUint(typeURI, uint64(length))
+}
+
+// Convenience function to completely fill a string in one call.
+func (this *CbeEncoder) URI(value *url.URL) error {
+	asString := value.String()
+	bytesToEncode := len(asString)
+	if err := this.URIBegin(uint64(bytesToEncode)); err != nil {
+		return err
+	}
+	if err := this.validateArrayData([]byte(asString)); err != nil {
+		return err
+	}
+	bytesEncoded, err := this.arrayAddData([]byte(asString))
+	if err != nil {
+		return err
+	}
+	if bytesEncoded != bytesToEncode {
+		return fmt.Errorf("Not enough room to encode %v bytes of string data", len(asString))
+	}
+	this.buffer.Commit()
+	return nil
+}
+
 // Begin a comment. Encoder expects subsequent calls to CommentData to provide a
 // total of exactly the length provided here.
 // Only lengths up to 0x3fffffffffffffff are supported.
@@ -477,10 +590,7 @@ func (this *CbeEncoder) CommentBegin(length uint64) error {
 	if err := this.arrayBegin(arrayTypeComment, length); err != nil {
 		return err
 	}
-	if err := this.buffer.EncodeUint(typeComment, uint64(length)); err != nil {
-		return err
-	}
-	return nil
+	return this.buffer.EncodeUint(typeComment, uint64(length))
 }
 
 // Convenience function to completely fill a comment in one call.
