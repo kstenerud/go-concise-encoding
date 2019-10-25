@@ -64,6 +64,8 @@ func assertFailure(t *testing.T, err error) {
 
 type Nil int
 
+var NilValue Nil = Nil(-1234)
+
 type testCallbacks struct {
 	nextValue        interface{}
 	containerStack   []interface{}
@@ -181,7 +183,7 @@ func (this *testCallbacks) getValue() interface{} {
 }
 
 func (this *testCallbacks) OnNil() error {
-	this.storeValue(new(Nil))
+	this.storeValue(NilValue)
 	return nil
 }
 

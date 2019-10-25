@@ -1,29 +1,9 @@
 package cbe
 
 import (
+	"net/url"
 	"time"
 )
-
-type PrimitiveDecoderCallbacks interface {
-	OnNil() error
-	OnBool(value bool) error
-	OnPositiveInt(value uint64) error
-	OnNegativeInt(value uint64) error
-	OnFloat(value float64) error
-	OnDate(value time.Time) error
-	OnTime(value time.Time) error
-	OnTimestamp(value time.Time) error
-	OnListBegin() error
-	OnOrderedMapBegin() error
-	OnUnorderedMapBegin() error
-	OnMetadataMapBegin() error
-	OnContainerEnd() error
-	OnStringBegin(byteCount uint64) error
-	OnCommentBegin(byteCount uint64) error
-	OnURIBegin(byteCount uint64) error
-	OnBytesBegin(byteCount uint64) error
-	OnArrayData(bytes []byte) error
-}
 
 type Unmarshaler struct {
 	topObject        interface{}
@@ -96,15 +76,22 @@ func (this *Unmarshaler) arrayBegin(newArrayType arrayType, length int) {
 	}
 }
 
-func (this *Unmarshaler) arrayData(data []byte) {
+func (this *Unmarshaler) arrayData(data []byte) error {
 	this.currentArray = append(this.currentArray, data...)
 	if len(this.currentArray) == cap(this.currentArray) {
 		if this.currentArrayType == arrayTypeBytes {
 			this.storeValue(this.currentArray)
-		} else {
+		} else if this.currentArrayType == arrayTypeString {
 			this.storeValue(string(this.currentArray))
+		} else if this.currentArrayType == arrayTypeURI {
+			decodedURL, err := url.Parse(string(this.currentArray))
+			if err != nil {
+				return err
+			}
+			this.storeValue(decodedURL)
 		}
 	}
+	return nil
 }
 
 func (this *Unmarshaler) storeValue(value interface{}) {
@@ -208,8 +195,7 @@ func (this *Unmarshaler) OnURIBegin(byteCount uint64) error {
 }
 
 func (this *Unmarshaler) OnArrayData(bytes []byte) error {
-	this.arrayData(bytes)
-	return nil
+	return this.arrayData(bytes)
 }
 
 func (this *Unmarshaler) Unmarshaled() interface{} {

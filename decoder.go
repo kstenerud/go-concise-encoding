@@ -125,6 +125,8 @@ func (this *CbeDecoder) arrayBegin(newArrayType arrayType, length int64) {
 		panicOnCallbackError(this.callbacks.OnCommentBegin(uint64(length)))
 	case arrayTypeString:
 		panicOnCallbackError(this.callbacks.OnStringBegin(uint64(length)))
+	case arrayTypeURI:
+		panicOnCallbackError(this.callbacks.OnURIBegin(uint64(length)))
 	default:
 		panic(fmt.Errorf("BUG: Unhandled array type: %v", newArrayType))
 	}
@@ -426,9 +428,11 @@ func (this *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 		this.mainBuffer.lastCommitPosition += bytesFilled
 		this.mainBuffer.position = this.mainBuffer.lastCommitPosition
 		objectType := this.buffer.DecodeType()
-		this.assertOnlyOneTopLevelObject()
-		this.decodeObject(objectType)
-		this.firstItemDecoded = true
+		if objectType != typePadding {
+			this.assertOnlyOneTopLevelObject()
+			this.decodeObject(objectType)
+			this.firstItemDecoded = true
+		}
 		mainBytesUsed := this.underflowBuffer.lastCommitPosition - underflowByteCount
 		this.mainBuffer.lastCommitPosition = mainBytesUsed
 		this.mainBuffer.position = this.mainBuffer.lastCommitPosition
@@ -442,9 +446,11 @@ func (this *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 
 	for {
 		objectType := this.buffer.DecodeType()
-		this.assertOnlyOneTopLevelObject()
-		this.decodeObject(objectType)
-		this.firstItemDecoded = true
+		if objectType != typePadding {
+			this.assertOnlyOneTopLevelObject()
+			this.decodeObject(objectType)
+			this.firstItemDecoded = true
+		}
 	}
 
 	return err

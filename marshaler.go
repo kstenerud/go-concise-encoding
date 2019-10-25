@@ -2,6 +2,7 @@ package cbe
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"time"
 )
@@ -14,6 +15,7 @@ type PrimitiveEncoder interface {
 	Float(float64) error
 	Timestamp(time.Time) error
 	String(string) error
+	URI(*url.URL) error
 	Bytes([]byte) error
 	ListBegin() error
 	UnorderedMapBegin() error
@@ -59,6 +61,10 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 		if rt.Name() == "Time" && rt.PkgPath() == "time" {
 			realValue := rv.Interface().(time.Time)
 			return encoder.Timestamp(realValue)
+		}
+		if rt.Name() == "URL" && rt.PkgPath() == "net/url" {
+			realValue := rv.Interface().(url.URL)
+			return encoder.URI(&realValue)
 		}
 		if inlineContainerType != ContainerTypeUnorderedMap {
 			// TODO: anonymous structs?

@@ -1,6 +1,7 @@
 package cbe
 
 import (
+	"net/url"
 	"testing"
 	"time"
 )
@@ -18,16 +19,39 @@ func TestMarshalUnmarshal0(t *testing.T) {
 	assertMarshalUnmarshal(t, ContainerTypeNone, 0)
 }
 
-func TestMarshalUnmarshalN1(t *testing.T) {
+func TestMarshalUnmarshal1(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeNone, 1)
 	assertMarshalUnmarshal(t, ContainerTypeNone, -1)
 }
 
 func TestMarshalUnmarshal200(t *testing.T) {
 	assertMarshalUnmarshal(t, ContainerTypeNone, 200)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -200)
 }
 
 func TestMarshalUnmarshal2000(t *testing.T) {
 	assertMarshalUnmarshal(t, ContainerTypeNone, 2000)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -2000)
+}
+
+func TestMarshalUnmarshal10000(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeNone, 10000)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -10000)
+}
+
+func TestMarshalUnmarshal100000(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeNone, 100000)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -100000)
+}
+
+func TestMarshalUnmarshal10000000000(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeNone, 10000000000)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -10000000000)
+}
+
+func TestMarshalUnmarshal100000000000(t *testing.T) {
+	assertMarshalUnmarshal(t, ContainerTypeNone, 100000000000)
+	assertMarshalUnmarshal(t, ContainerTypeNone, -100000000000)
 }
 
 func TestMarshalUnmarshal1_5(t *testing.T) {
@@ -56,6 +80,14 @@ func TestMarshalUnmarshalLongString(t *testing.T) {
 
 func TestMarshalUnmarshalUtf8String(t *testing.T) {
 	assertMarshalUnmarshal(t, ContainerTypeNone, "Test ö覚𠜎")
+}
+
+func TestMarshalUnmarshalURI(t *testing.T) {
+	testURL, err := url.Parse("http://example.com/path?query=something")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertMarshalUnmarshal(t, ContainerTypeNone, testURL)
 }
 
 func TestMarshalUnmarshalBytesSlice(t *testing.T) {
