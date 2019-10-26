@@ -1,6 +1,7 @@
 package cbe
 
 import (
+	"net/url"
 	"testing"
 	"time"
 )
@@ -24,8 +25,12 @@ func TestSizeInt(t *testing.T) {
 	assertMarshaledSize(t, ContainerTypeNone, -0xffff, 3)
 	assertMarshaledSize(t, ContainerTypeNone, 0xffffffff, 5)
 	assertMarshaledSize(t, ContainerTypeNone, -0xffffffff, 5)
-	assertMarshaledSize(t, ContainerTypeNone, 0xffffffffff, 9)
-	assertMarshaledSize(t, ContainerTypeNone, -0xffffffffff, 9)
+	assertMarshaledSize(t, ContainerTypeNone, 0xffffffffff, 7)
+	assertMarshaledSize(t, ContainerTypeNone, -0xffffffffff, 7)
+	assertMarshaledSize(t, ContainerTypeNone, 0xffffffffffff, 8)
+	assertMarshaledSize(t, ContainerTypeNone, -0xffffffffffff, 8)
+	assertMarshaledSize(t, ContainerTypeNone, 0xfffffffffffff, 9)
+	assertMarshaledSize(t, ContainerTypeNone, -0xfffffffffffff, 9)
 }
 
 func TestSizeFloat(t *testing.T) {
@@ -38,7 +43,12 @@ func TestSizeFloat(t *testing.T) {
 }
 
 func TestSizeTime(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, time.Now(), 9)
+	location, err := time.LoadLocation("America/Vancouver")
+	if err != nil {
+		t.Fatal(err)
+	}
+	date := time.Date(2055, time.Month(2), 14, 8, 30, 0, 55, location)
+	assertMarshaledSize(t, ContainerTypeNone, date, 22)
 }
 
 func TestSizeString(t *testing.T) {
@@ -48,6 +58,14 @@ func TestSizeString(t *testing.T) {
 	assertMarshaledSize(t, ContainerTypeNone, "123456789abcdef", 16)
 	assertMarshaledSize(t, ContainerTypeNone, "123456789abcdefg", 18)
 	assertMarshaledSize(t, ContainerTypeNone, generateString(2000), 2003)
+}
+
+func TestSizeURI(t *testing.T) {
+	testURL, err := url.Parse("http://example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertMarshaledSize(t, ContainerTypeNone, testURL, 20)
 }
 
 func TestSizeBytes(t *testing.T) {

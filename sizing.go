@@ -1,17 +1,17 @@
 package cbe
 
 import (
+	"net/url"
 	"reflect"
+	"time"
+
+	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-vlq"
 )
 
 func arrayLengthFieldSize(length int) int {
-	size := 1
-	length >>= 7
-	for length > 0 {
-		length >>= 7
-		size++
-	}
-	return size
+	return vlq.Rvlq(length).EncodedSize()
 }
 
 func paddingSize(byteCount int) int {
@@ -34,8 +34,12 @@ func uintSize(value uint64) int {
 		return 2
 	case fitsInUint16(value):
 		return 3
+	case fitsInUint21(value):
+		return vlq.Rvlq(value).EncodedSize() + 1
 	case fitsInUint32(value):
 		return 5
+	case fitsInUint49(value):
+		return vlq.Rvlq(value).EncodedSize() + 1
 	default:
 		return 9
 	}
@@ -53,8 +57,12 @@ func intSize(value int64) int {
 		return 2
 	case fitsInUint16(uvalue):
 		return 3
+	case fitsInUint21(uvalue):
+		return vlq.Rvlq(uvalue).EncodedSize() + 1
 	case fitsInUint32(uvalue):
 		return 5
+	case fitsInUint49(uvalue):
+		return vlq.Rvlq(uvalue).EncodedSize() + 1
 	default:
 		return 9
 	}
@@ -68,8 +76,8 @@ func floatSize(value float64) int {
 	return 9
 }
 
-func timeSize() int {
-	return 9
+func timeSize(value time.Time) int {
+	return compact_time.TimestampEncodedSize(value) + 1
 }
 
 func listBeginSize() int {
@@ -99,6 +107,11 @@ func stringSize(value string) int {
 		fieldSize = 1 + arrayLengthFieldSize(valueLength)
 	}
 	return fieldSize + valueLength
+}
+
+func uriSize(value *url.URL) int {
+	asString := value.String()
+	return 1 + arrayLengthFieldSize(len(asString)) + len(asString)
 }
 
 func commentSize(value []byte) int {
@@ -131,7 +144,12 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 	case reflect.Struct:
 		rt := rv.Type()
 		if rt.Name() == "Time" && rt.PkgPath() == "time" {
-			return timeSize()
+			realValue := rv.Interface().(time.Time)
+			return timeSize(realValue)
+		}
+		if rt.Name() == "URL" && rt.PkgPath() == "net/url" {
+			realValue := rv.Interface().(url.URL)
+			return uriSize(&realValue)
 		}
 		var size int
 		if inlineContainerType != ContainerTypeUnorderedMap {
