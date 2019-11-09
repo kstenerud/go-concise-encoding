@@ -335,7 +335,7 @@ func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, max
 
 // Encoder
 
-func assertEncoded(t *testing.T, containerType ContainerType, function func(*CbeEncoder) error, expected []byte) {
+func assertEncoded(t *testing.T, containerType ContainerType, function func(*Encoder) error, expected []byte) {
 	encoder := NewCbeEncoder(containerType, nil, 100)
 	err := function(encoder)
 	if err != nil {

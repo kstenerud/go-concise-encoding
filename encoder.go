@@ -47,7 +47,7 @@ func fitsInUint49(value uint64) bool {
 // CBE Encoder
 // -----------
 
-type CbeEncoder struct {
+type Encoder struct {
 	hasInlineContainer   bool
 	containerDepth       int
 	currentArrayType     arrayType
@@ -71,7 +71,7 @@ var containerTypes = map[ContainerType]typeField{
 // Internal
 // --------
 
-func (this *CbeEncoder) containerBegin(newContainerType typeField) error {
+func (this *Encoder) containerBegin(newContainerType typeField) error {
 	if this.containerDepth+1 >= len(this.currentContainerType) {
 		return fmt.Errorf("Max container depth exceeded")
 	}
@@ -81,7 +81,7 @@ func (this *CbeEncoder) containerBegin(newContainerType typeField) error {
 	return nil
 }
 
-func (this *CbeEncoder) isInsideMap() bool {
+func (this *Encoder) isInsideMap() bool {
 	switch this.currentContainerType[this.containerDepth] {
 	case typeMapUnordered:
 		return true
@@ -93,26 +93,26 @@ func (this *CbeEncoder) isInsideMap() bool {
 	return false
 }
 
-func (this *CbeEncoder) isExpectingMapKey() bool {
+func (this *Encoder) isExpectingMapKey() bool {
 	return this.isInsideMap() && !this.hasStoredMapKey[this.containerDepth]
 }
 
-func (this *CbeEncoder) isExpectingMapValue() bool {
+func (this *Encoder) isExpectingMapValue() bool {
 	return this.isInsideMap() && this.hasStoredMapKey[this.containerDepth]
 }
 
-func (this *CbeEncoder) flipMapKeyStatus() {
+func (this *Encoder) flipMapKeyStatus() {
 	this.hasStoredMapKey[this.containerDepth] = !this.hasStoredMapKey[this.containerDepth]
 }
 
-func (this *CbeEncoder) assertNotExpectingMapKey(keyType string) error {
+func (this *Encoder) assertNotExpectingMapKey(keyType string) error {
 	if this.isExpectingMapKey() {
 		return fmt.Errorf("Cannot use type %v as a map key", keyType)
 	}
 	return nil
 }
 
-func (this *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) error {
+func (this *Encoder) arrayBegin(newArrayType arrayType, length uint64) error {
 	if this.currentArrayType != arrayTypeNone && this.currentArrayType != newArrayType {
 		return fmt.Errorf("Cannot start new array when already in an array")
 	}
@@ -122,7 +122,7 @@ func (this *CbeEncoder) arrayBegin(newArrayType arrayType, length uint64) error 
 	return nil
 }
 
-func (this *CbeEncoder) arrayAddData(value []byte) (bytesEncoded int, err error) {
+func (this *Encoder) arrayAddData(value []byte) (bytesEncoded int, err error) {
 	if int64(len(value)) > this.remainingArrayLength {
 		return 0, fmt.Errorf("Data length exceeds array length by %v bytes", int64(len(value))-this.remainingArrayLength)
 	}
@@ -153,13 +153,13 @@ func (this *CbeEncoder) arrayAddData(value []byte) (bytesEncoded int, err error)
 // ----------
 
 // Create a new encoder. if buffer is nil, the encoder allocates its own buffer.
-func NewCbeEncoder(inlineContainerType ContainerType, buffer []byte, maxContainerDepth int) *CbeEncoder {
-	this := new(CbeEncoder)
+func NewCbeEncoder(inlineContainerType ContainerType, buffer []byte, maxContainerDepth int) *Encoder {
+	this := new(Encoder)
 	this.Init(inlineContainerType, buffer, maxContainerDepth)
 	return this
 }
 
-func (this *CbeEncoder) Init(inlineContainerType ContainerType, externalBuffer []byte, maxContainerDepth int) {
+func (this *Encoder) Init(inlineContainerType ContainerType, externalBuffer []byte, maxContainerDepth int) {
 	if inlineContainerType != ContainerTypeNone {
 		maxContainerDepth++
 		this.hasInlineContainer = true
@@ -173,7 +173,7 @@ func (this *CbeEncoder) Init(inlineContainerType ContainerType, externalBuffer [
 	}
 }
 
-func (this *CbeEncoder) Padding(byteCount int) error {
+func (this *Encoder) Padding(byteCount int) error {
 	for i := 0; i < byteCount; i++ {
 		if err := this.buffer.EncodeTypeField(typePadding); err != nil {
 			return err
@@ -183,7 +183,7 @@ func (this *CbeEncoder) Padding(byteCount int) error {
 	return nil
 }
 
-func (this *CbeEncoder) Nil() error {
+func (this *Encoder) Nil() error {
 	if err := this.assertNotExpectingMapKey("nil"); err != nil {
 		return err
 	}
@@ -195,7 +195,7 @@ func (this *CbeEncoder) Nil() error {
 	return nil
 }
 
-func (this *CbeEncoder) Bool(value bool) error {
+func (this *Encoder) Bool(value bool) error {
 	typeValue := typeTrue
 	if !value {
 		typeValue = typeFalse
@@ -208,7 +208,7 @@ func (this *CbeEncoder) Bool(value bool) error {
 	return nil
 }
 
-func (this *CbeEncoder) Uint(value uint64) error {
+func (this *Encoder) Uint(value uint64) error {
 	switch {
 	// TODO: vlq int
 	// TODO: pos neg int
@@ -246,7 +246,7 @@ func (this *CbeEncoder) Uint(value uint64) error {
 	return nil
 }
 
-func (this *CbeEncoder) Int(value int64) error {
+func (this *Encoder) Int(value int64) error {
 	uvalue := uint64(-value)
 
 	switch {
@@ -286,7 +286,7 @@ func (this *CbeEncoder) Int(value int64) error {
 	return nil
 }
 
-func (this *CbeEncoder) FloatRounded(value float64, significantDigits int) error {
+func (this *Encoder) FloatRounded(value float64, significantDigits int) error {
 	if significantDigits < 1 || significantDigits > 15 {
 		return this.Float(value)
 	}
@@ -299,7 +299,7 @@ func (this *CbeEncoder) FloatRounded(value float64, significantDigits int) error
 	return nil
 }
 
-func (this *CbeEncoder) Float(value float64) error {
+func (this *Encoder) Float(value float64) error {
 	asfloat32 := float32(value)
 	// TODO: Check if it fits in an int/uint
 	if float64(asfloat32) == value {
@@ -316,7 +316,7 @@ func (this *CbeEncoder) Float(value float64) error {
 	return nil
 }
 
-func (this *CbeEncoder) Date(value time.Time) error {
+func (this *Encoder) Date(value time.Time) error {
 	if err := this.buffer.EncodeDate(value); err != nil {
 		return err
 	}
@@ -325,7 +325,7 @@ func (this *CbeEncoder) Date(value time.Time) error {
 	return nil
 }
 
-func (this *CbeEncoder) Time(value time.Time) error {
+func (this *Encoder) Time(value time.Time) error {
 	if err := this.buffer.EncodeTime(value); err != nil {
 		return err
 	}
@@ -334,7 +334,7 @@ func (this *CbeEncoder) Time(value time.Time) error {
 	return nil
 }
 
-func (this *CbeEncoder) Timestamp(value time.Time) error {
+func (this *Encoder) Timestamp(value time.Time) error {
 	if err := this.buffer.EncodeTimestamp(value); err != nil {
 		return err
 	}
@@ -343,7 +343,7 @@ func (this *CbeEncoder) Timestamp(value time.Time) error {
 	return nil
 }
 
-func (this *CbeEncoder) ContainerEnd() error {
+func (this *Encoder) ContainerEnd() error {
 	if this.containerDepth <= 0 {
 		return fmt.Errorf("No containers are open")
 	}
@@ -375,7 +375,7 @@ func (this *CbeEncoder) ContainerEnd() error {
 	return nil
 }
 
-func (this *CbeEncoder) ListBegin() error {
+func (this *Encoder) ListBegin() error {
 	if err := this.assertNotExpectingMapKey("list"); err != nil {
 		return err
 	}
@@ -392,7 +392,7 @@ func (this *CbeEncoder) ListBegin() error {
 
 // Begin an unordered map. Any subsequent objects added are assumed to alternate
 // between key and value entries in the map, until MapEnd() is called.
-func (this *CbeEncoder) UnorderedMapBegin() error {
+func (this *Encoder) UnorderedMapBegin() error {
 	if err := this.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
@@ -409,7 +409,7 @@ func (this *CbeEncoder) UnorderedMapBegin() error {
 
 // Begin an ordered map. Any subsequent objects added are assumed to alternate
 // between key and value entries in the map, until MapEnd() is called.
-func (this *CbeEncoder) OrderedMapBegin() error {
+func (this *Encoder) OrderedMapBegin() error {
 	if err := this.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
@@ -426,7 +426,7 @@ func (this *CbeEncoder) OrderedMapBegin() error {
 
 // Begin a metadata map. Any subsequent objects added are assumed to alternate
 // between key and value entries in the map, until MapEnd() is called.
-func (this *CbeEncoder) MetadataMapBegin() error {
+func (this *Encoder) MetadataMapBegin() error {
 	if err := this.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
@@ -444,7 +444,7 @@ func (this *CbeEncoder) MetadataMapBegin() error {
 // Begin a byte array. Encoder expects subsequent calls to BytesData to provide
 // a total of exactly the length provided here.
 // Only lengths up to 0x3fffffffffffffff are supported.
-func (this *CbeEncoder) BytesBegin(length uint64) error {
+func (this *Encoder) BytesBegin(length uint64) error {
 	if err := this.arrayBegin(arrayTypeBytes, length); err != nil {
 		return err
 	}
@@ -454,7 +454,7 @@ func (this *CbeEncoder) BytesBegin(length uint64) error {
 	return nil
 }
 
-func (this *CbeEncoder) validateArrayData(value []byte) error {
+func (this *Encoder) validateArrayData(value []byte) error {
 	switch this.currentArrayType {
 	case arrayTypeBytes:
 		return nil
@@ -482,7 +482,7 @@ func (this *CbeEncoder) validateArrayData(value []byte) error {
 	return nil
 }
 
-func (this *CbeEncoder) ArrayData(value []byte) (byteCount int, err error) {
+func (this *Encoder) ArrayData(value []byte) (byteCount int, err error) {
 	if err = this.validateArrayData(value); err != nil {
 		return 0, err
 	}
@@ -494,7 +494,7 @@ func (this *CbeEncoder) ArrayData(value []byte) (byteCount int, err error) {
 }
 
 // Convenience function to completely fill a byte array in one call.
-func (this *CbeEncoder) Bytes(value []byte) error {
+func (this *Encoder) Bytes(value []byte) error {
 	bytesToEncode := len(value)
 	if err := this.BytesBegin(uint64(bytesToEncode)); err != nil {
 		return err
@@ -516,7 +516,7 @@ func (this *CbeEncoder) Bytes(value []byte) error {
 // Begin a string. Encoder expects subsequent calls to StringData to provide a
 // total of exactly the length provided here.
 // Only lengths up to 0x3fffffffffffffff are supported.
-func (this *CbeEncoder) StringBegin(length uint64) error {
+func (this *Encoder) StringBegin(length uint64) error {
 	if err := this.arrayBegin(arrayTypeString, length); err != nil {
 		return err
 	}
@@ -533,7 +533,7 @@ func (this *CbeEncoder) StringBegin(length uint64) error {
 }
 
 // Convenience function to completely fill a string in one call.
-func (this *CbeEncoder) String(value string) error {
+func (this *Encoder) String(value string) error {
 	bytesToEncode := len(value)
 	if err := this.StringBegin(uint64(bytesToEncode)); err != nil {
 		return err
@@ -555,7 +555,7 @@ func (this *CbeEncoder) String(value string) error {
 // Begin a URI. Encoder expects subsequent calls to StringData to provide a
 // total of exactly the length provided here.
 // Only lengths up to 0x3fffffffffffffff are supported.
-func (this *CbeEncoder) URIBegin(length uint64) error {
+func (this *Encoder) URIBegin(length uint64) error {
 	if err := this.arrayBegin(arrayTypeURI, length); err != nil {
 		return err
 	}
@@ -563,7 +563,7 @@ func (this *CbeEncoder) URIBegin(length uint64) error {
 }
 
 // Convenience function to completely fill a string in one call.
-func (this *CbeEncoder) URI(value *url.URL) error {
+func (this *Encoder) URI(value *url.URL) error {
 	asString := value.String()
 	bytesToEncode := len(asString)
 	if err := this.URIBegin(uint64(bytesToEncode)); err != nil {
@@ -586,7 +586,7 @@ func (this *CbeEncoder) URI(value *url.URL) error {
 // Begin a comment. Encoder expects subsequent calls to CommentData to provide a
 // total of exactly the length provided here.
 // Only lengths up to 0x3fffffffffffffff are supported.
-func (this *CbeEncoder) CommentBegin(length uint64) error {
+func (this *Encoder) CommentBegin(length uint64) error {
 	if err := this.arrayBegin(arrayTypeComment, length); err != nil {
 		return err
 	}
@@ -594,7 +594,7 @@ func (this *CbeEncoder) CommentBegin(length uint64) error {
 }
 
 // Convenience function to completely fill a comment in one call.
-func (this *CbeEncoder) Comment(value string) error {
+func (this *Encoder) Comment(value string) error {
 	bytesToEncode := len(value)
 	if err := this.CommentBegin(uint64(bytesToEncode)); err != nil {
 		return err
@@ -613,7 +613,7 @@ func (this *CbeEncoder) Comment(value string) error {
 	return nil
 }
 
-func (this *CbeEncoder) End() error {
+func (this *Encoder) End() error {
 	if this.remainingArrayLength > 0 {
 		return fmt.Errorf("Incomplete encode: Current array is unfinished")
 	}
@@ -625,6 +625,6 @@ func (this *CbeEncoder) End() error {
 	return nil
 }
 
-func (this *CbeEncoder) EncodedBytes() []byte {
+func (this *Encoder) EncodedBytes() []byte {
 	return this.buffer.EncodedBytes()
 }

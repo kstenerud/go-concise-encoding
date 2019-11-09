@@ -6,7 +6,7 @@ import (
 )
 
 // Callback functions that must be present in the receiver object.
-type CbeDecoderCallbacks interface {
+type DecoderCallbacks interface {
 	OnNil() error
 	OnBool(value bool) error
 	OnPositiveInt(value uint64) error
@@ -51,14 +51,14 @@ type arrayData struct {
 	remainingByteCount int64
 }
 
-type CbeDecoder struct {
+type Decoder struct {
 	streamOffset     int64
 	buffer           *decodeBuffer
 	mainBuffer       *decodeBuffer
 	underflowBuffer  *decodeBuffer
 	container        containerData
 	array            arrayData
-	callbacks        CbeDecoderCallbacks
+	callbacks        DecoderCallbacks
 	firstItemDecoded bool
 	charValidator    Utf8Validator
 }
@@ -69,27 +69,27 @@ func panicOnCallbackError(err error) {
 	}
 }
 
-func (this *CbeDecoder) isExpectingMapKey() bool {
+func (this *Decoder) isExpectingMapKey() bool {
 	return this.container.currentType[this.container.depth] == ContainerTypeUnorderedMap &&
 		!this.container.hasProcessedMapKey[this.container.depth]
 }
 
-func (this *CbeDecoder) isExpectingMapValue() bool {
+func (this *Decoder) isExpectingMapValue() bool {
 	return this.container.currentType[this.container.depth] == ContainerTypeUnorderedMap &&
 		this.container.hasProcessedMapKey[this.container.depth]
 }
 
-func (this *CbeDecoder) flipMapKeyValueState() {
+func (this *Decoder) flipMapKeyValueState() {
 	this.container.hasProcessedMapKey[this.container.depth] = !this.container.hasProcessedMapKey[this.container.depth]
 }
 
-func (this *CbeDecoder) assertNotExpectingMapKey(keyType string) {
+func (this *Decoder) assertNotExpectingMapKey(keyType string) {
 	if this.isExpectingMapKey() {
 		panic(decoderError{fmt.Errorf("Cannot use type %v as a map key", keyType)})
 	}
 }
 
-func (this *CbeDecoder) containerBegin(newContainerType ContainerType) {
+func (this *Decoder) containerBegin(newContainerType ContainerType) {
 	if this.container.depth+1 >= len(this.container.currentType) {
 		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(this.container.currentType))})
 	}
@@ -98,7 +98,7 @@ func (this *CbeDecoder) containerBegin(newContainerType ContainerType) {
 	this.container.hasProcessedMapKey[this.container.depth] = false
 }
 
-func (this *CbeDecoder) containerEnd() ContainerType {
+func (this *Decoder) containerEnd() ContainerType {
 	if this.container.depth <= 0 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
@@ -113,7 +113,7 @@ func (this *CbeDecoder) containerEnd() ContainerType {
 	return this.container.currentType[this.container.depth+1]
 }
 
-func (this *CbeDecoder) arrayBegin(newArrayType arrayType, length int64) {
+func (this *Decoder) arrayBegin(newArrayType arrayType, length int64) {
 	this.array.currentType = newArrayType
 	this.charValidator.Reset()
 	this.array.remainingByteCount = length
@@ -132,11 +132,11 @@ func (this *CbeDecoder) arrayBegin(newArrayType arrayType, length int64) {
 	}
 }
 
-func (this *CbeDecoder) decodeArrayLength(buffer *decodeBuffer) {
+func (this *Decoder) decodeArrayLength(buffer *decodeBuffer) {
 	this.array.remainingByteCount = buffer.DecodeArrayLength()
 }
 
-func (this *CbeDecoder) decodeArrayData() {
+func (this *Decoder) decodeArrayData() {
 	if this.array.currentType == arrayTypeNone {
 		return
 	}
@@ -173,12 +173,12 @@ func (this *CbeDecoder) decodeArrayData() {
 	this.flipMapKeyValueState()
 }
 
-func (this *CbeDecoder) decodeStringOfLength(length int64) {
+func (this *Decoder) decodeStringOfLength(length int64) {
 	this.arrayBegin(arrayTypeString, length)
 	this.decodeArrayData()
 }
 
-func (this *CbeDecoder) decodeObject(dataType typeField) {
+func (this *Decoder) decodeObject(dataType typeField) {
 	asSmallInt := int8(dataType)
 	if int64(asSmallInt) >= smallIntMin && int64(asSmallInt) <= smallIntMax {
 		if asSmallInt >= 0 {
@@ -344,7 +344,7 @@ func (this *CbeDecoder) decodeObject(dataType typeField) {
 	// TODO: 128 bit and decimal
 }
 
-func (this *CbeDecoder) beginInlineContainer() {
+func (this *Decoder) beginInlineContainer() {
 	if this.container.inlineContainerType != ContainerTypeNone && !this.container.inlineContainerInitialized {
 		this.containerBegin(this.container.inlineContainerType)
 		switch this.container.inlineContainerType {
@@ -359,14 +359,14 @@ func (this *CbeDecoder) beginInlineContainer() {
 	}
 }
 
-func (this *CbeDecoder) endInlineContainer() {
+func (this *Decoder) endInlineContainer() {
 	if this.container.inlineContainerInitialized {
 		this.callbacks.OnContainerEnd()
 		this.container.depth--
 	}
 }
 
-func (this *CbeDecoder) assertOnlyOneTopLevelObject() {
+func (this *Decoder) assertOnlyOneTopLevelObject() {
 	if this.container.depth == 0 && this.firstItemDecoded {
 		panic(decoderError{fmt.Errorf("Extra top level object detected")})
 	}
@@ -376,8 +376,8 @@ func (this *CbeDecoder) assertOnlyOneTopLevelObject() {
 // Public API
 // ----------
 
-func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, callbacks CbeDecoderCallbacks) *CbeDecoder {
-	this := new(CbeDecoder)
+func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, callbacks DecoderCallbacks) *Decoder {
+	this := new(Decoder)
 	this.container.inlineContainerType = inlineContainerType
 	if inlineContainerType != ContainerTypeNone {
 		maxContainerDepth++
@@ -393,7 +393,7 @@ func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, cal
 }
 
 // Feed bytes into the decoder to be decoded.
-func (this *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
+func (this *Decoder) Feed(bytesToDecode []byte) (err error) {
 	defer func() {
 		this.streamOffset += int64(this.buffer.lastCommitPosition)
 		if r := recover(); r != nil {
@@ -457,7 +457,7 @@ func (this *CbeDecoder) Feed(bytesToDecode []byte) (err error) {
 }
 
 // End the decoding process, doing some final structural tests to make sure it's valid.
-func (this *CbeDecoder) End() error {
+func (this *Decoder) End() error {
 	this.endInlineContainer()
 
 	if this.container.depth > 0 {
@@ -473,7 +473,7 @@ func (this *CbeDecoder) End() error {
 }
 
 // Convenience function to decode an entire document in a single call.
-func (this *CbeDecoder) Decode(document []byte) error {
+func (this *Decoder) Decode(document []byte) error {
 	if err := this.Feed(document); err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-compact-float"
+	// "github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-vlq"
 )

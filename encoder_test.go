@@ -7,69 +7,69 @@ import (
 )
 
 func TestEncodePadding(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Padding(1) }, []byte{0x7f})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Padding(2) }, []byte{0x7f, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Padding(1) }, []byte{0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Padding(2) }, []byte{0x7f, 0x7f})
 }
 
 func TestEncodeNil(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Nil() }, []byte{0x7e})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Nil() }, []byte{0x7e})
 }
 
 func TestEncodeIntSmall(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0) }, []byte{0})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(1) }, []byte{1})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(99) }, []byte{99})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(100) }, []byte{100})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-1) }, []byte{255})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-99) }, []byte{157})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-100) }, []byte{156})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0) }, []byte{0})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(1) }, []byte{1})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(99) }, []byte{99})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(100) }, []byte{100})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-1) }, []byte{255})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-99) }, []byte{157})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-100) }, []byte{156})
 }
 
 func TestEncodeInt8(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(101) }, []byte{0x68, 0x65})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-101) }, []byte{0x69, 0x65})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(255) }, []byte{0x68, 0xff})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-255) }, []byte{0x69, 0xff})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(101) }, []byte{0x68, 0x65})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-101) }, []byte{0x69, 0x65})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(255) }, []byte{0x68, 0xff})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-255) }, []byte{0x69, 0xff})
 }
 
 func TestEncodeInt16(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0x100) }, []byte{0x6a, 0x00, 0x01})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0x7fff) }, []byte{0x6a, 0xff, 0x7f})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-0x7fff) }, []byte{0x6b, 0xff, 0x7f})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0xffff) }, []byte{0x6a, 0xff, 0xff})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-0xffff) }, []byte{0x6b, 0xff, 0xff})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0x100) }, []byte{0x6a, 0x00, 0x01})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0x7fff) }, []byte{0x6a, 0xff, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-0x7fff) }, []byte{0x6b, 0xff, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0xffff) }, []byte{0x6a, 0xff, 0xff})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-0xffff) }, []byte{0x6b, 0xff, 0xff})
 }
 
 func TestEncodeInt21(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0x10000) }, []byte{0x66, 0x84, 0x80, 0x00})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0x10000) }, []byte{0x66, 0x84, 0x80, 0x00})
 }
 
 func TestEncodeInt32(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0x7fffffff) }, []byte{0x6c, 0xff, 0xff, 0xff, 0x7f})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-0x7fffffff) }, []byte{0x6d, 0xff, 0xff, 0xff, 0x7f})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0xffffffff) }, []byte{0x6c, 0xff, 0xff, 0xff, 0xff})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-0xffffffff) }, []byte{0x6d, 0xff, 0xff, 0xff, 0xff})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0x7fffffff) }, []byte{0x6c, 0xff, 0xff, 0xff, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-0x7fffffff) }, []byte{0x6d, 0xff, 0xff, 0xff, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0xffffffff) }, []byte{0x6c, 0xff, 0xff, 0xff, 0xff})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-0xffffffff) }, []byte{0x6d, 0xff, 0xff, 0xff, 0xff})
 }
 
 func TestEncodeInt49(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0x100000000) }, []byte{0x66, 0x90, 0x80, 0x80, 0x80, 0})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0x100000000) }, []byte{0x66, 0x90, 0x80, 0x80, 0x80, 0})
 }
 
 func TestEncodeInt64(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(0x7fffffffffffffff) }, []byte{0x6e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Int(-0x7fffffffffffffff) }, []byte{0x6f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(0x7fffffffffffffff) }, []byte{0x6e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Int(-0x7fffffffffffffff) }, []byte{0x6f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f})
 }
 
 func TestEncodeFloat32(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Float(1.5) }, []byte{0x70, 0x00, 0x00, 0xc0, 0x3f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Float(1.5) }, []byte{0x70, 0x00, 0x00, 0xc0, 0x3f})
 }
 
 func TestEncodeFloat64(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Float(1.0123) }, []byte{0x71, 0x51, 0xda, 0x1b, 0x7c, 0x61, 0x32, 0xf0, 0x3f})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Float(1.0123) }, []byte{0x71, 0x51, 0xda, 0x1b, 0x7c, 0x61, 0x32, 0xf0, 0x3f})
 }
 
 func TestEncodeFloatRounded(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.FloatRounded(1.0123, 5) }, []byte{0x65, 0x12, 0xcf, 0x0b})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.FloatRounded(1.0123, 5) }, []byte{0x65, 0x12, 0xcf, 0x0b})
 }
 
 func newDate(year int, month int, day int) time.Time {
@@ -109,33 +109,33 @@ func newTimestamp(year int, month int, day int, hour int, minute int, second int
 }
 
 func TestEncodeDate(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Date(newDate(2000, 1, 1)) }, []byte{0x99, 0x21, 0x00, 0x00})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Date(newDate(2000, 1, 1)) }, []byte{0x99, 0x21, 0x00, 0x00})
 }
 
 func TestEncodeTime(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Time(newTime(10, 10, 10, 0, "Asia/Tokyo")) },
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Time(newTime(10, 10, 10, 0, "Asia/Tokyo")) },
 		[]byte{0x9a, 0x50, 0x8a, 0x02, 0x0e, 'S', '/', 'T', 'o', 'k', 'y', 'o'})
 }
 
 func TestEncodeTimestamp(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error {
 		return e.Timestamp(newTimestamp(2020, 8, 30, 15, 33, 14, 19577323, "Asia/Singapore"))
 	},
 		[]byte{0x9b, 0x3b, 0xe1, 0xf3, 0xb8, 0x9e, 0xab, 0x12, 0x00, 0x50, 0x16, 'S', '/', 'S', 'i', 'n', 'g', 'a', 'p', 'o', 'r', 'e'})
 }
 
 func TestEncodeList(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.ListBegin() }, []byte{0x77})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return ShortCircuit(e.ListBegin(), e.ContainerEnd()) }, []byte{0x77, 0x7b})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.ListBegin() }, []byte{0x77})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return ShortCircuit(e.ListBegin(), e.ContainerEnd()) }, []byte{0x77, 0x7b})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error {
 		return ShortCircuit(e.ListBegin(), e.Int(1), e.String("a"), e.ContainerEnd())
 	}, []byte{0x77, 0x01, 0x81, 0x61, 0x7b})
 }
 
 func TestEncodeUnorderedMap(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.UnorderedMapBegin() }, []byte{0x78})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return ShortCircuit(e.UnorderedMapBegin(), e.ContainerEnd()) }, []byte{0x78, 0x7b})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.UnorderedMapBegin() }, []byte{0x78})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return ShortCircuit(e.UnorderedMapBegin(), e.ContainerEnd()) }, []byte{0x78, 0x7b})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error {
 		return ShortCircuit(
 			e.UnorderedMapBegin(),
 			e.String("1"),
@@ -148,9 +148,9 @@ func TestEncodeUnorderedMap(t *testing.T) {
 }
 
 func TestEncodeOrderedMap(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.OrderedMapBegin() }, []byte{0x79})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return ShortCircuit(e.OrderedMapBegin(), e.ContainerEnd()) }, []byte{0x79, 0x7b})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.OrderedMapBegin() }, []byte{0x79})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return ShortCircuit(e.OrderedMapBegin(), e.ContainerEnd()) }, []byte{0x79, 0x7b})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error {
 		return ShortCircuit(
 			e.OrderedMapBegin(),
 			e.String("1"),
@@ -163,9 +163,9 @@ func TestEncodeOrderedMap(t *testing.T) {
 }
 
 func TestEncodeMetadataMap(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.MetadataMapBegin() }, []byte{0x7a})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return ShortCircuit(e.MetadataMapBegin(), e.ContainerEnd()) }, []byte{0x7a, 0x7b})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.MetadataMapBegin() }, []byte{0x7a})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return ShortCircuit(e.MetadataMapBegin(), e.ContainerEnd()) }, []byte{0x7a, 0x7b})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error {
 		return ShortCircuit(
 			e.MetadataMapBegin(),
 			e.String("1"),
@@ -178,7 +178,7 @@ func TestEncodeMetadataMap(t *testing.T) {
 }
 
 func TestEncodeInlineList(t *testing.T) {
-	assertEncoded(t, ContainerTypeList, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeList, func(e *Encoder) error {
 		return ShortCircuit(
 			e.Nil(),
 			e.Int(5),
@@ -187,7 +187,7 @@ func TestEncodeInlineList(t *testing.T) {
 }
 
 func TestEncodeInlineUnorderedMap(t *testing.T) {
-	assertEncoded(t, ContainerTypeUnorderedMap, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeUnorderedMap, func(e *Encoder) error {
 		return ShortCircuit(
 			e.Int(1),
 			e.String(""))
@@ -195,7 +195,7 @@ func TestEncodeInlineUnorderedMap(t *testing.T) {
 }
 
 func TestEncodeInlineOrderedMap(t *testing.T) {
-	assertEncoded(t, ContainerTypeOrderedMap, func(e *CbeEncoder) error {
+	assertEncoded(t, ContainerTypeOrderedMap, func(e *Encoder) error {
 		return ShortCircuit(
 			e.Int(1),
 			e.String(""))
@@ -203,10 +203,10 @@ func TestEncodeInlineOrderedMap(t *testing.T) {
 }
 
 func TestEncodeBytes(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Bytes([]byte{}) }, []byte{0x91, 0x00})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Bytes([]byte{1}) }, []byte{0x91, 0x01, 0x01})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Bytes([]byte{1, 2}) }, []byte{0x91, 0x02, 0x01, 0x02})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Bytes([]byte{1, 2, 3}) }, []byte{0x91, 0x03, 0x01, 0x02, 0x03})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Bytes([]byte{}) }, []byte{0x91, 0x00})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Bytes([]byte{1}) }, []byte{0x91, 0x01, 0x01})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Bytes([]byte{1, 2}) }, []byte{0x91, 0x02, 0x01, 0x02})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Bytes([]byte{1, 2, 3}) }, []byte{0x91, 0x03, 0x01, 0x02, 0x03})
 }
 
 func TestEncodeBytesLong(t *testing.T) {
@@ -214,24 +214,24 @@ func TestEncodeBytesLong(t *testing.T) {
 	bytes := generateBytes(bytesLength)
 	encoded := append([]byte{0x91, 0x83, 0x74}, bytes...)
 
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Bytes(bytes) }, encoded)
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Bytes(bytes) }, encoded)
 }
 
 func TestEncodeString(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.String("") }, []byte{0x80})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.String("0") }, []byte{0x81, 0x30})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.String("01") }, []byte{0x82, 0x30, 0x31})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.String("0123456789012345") }, []byte{
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.String("") }, []byte{0x80})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.String("0") }, []byte{0x81, 0x30})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.String("01") }, []byte{0x82, 0x30, 0x31})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.String("0123456789012345") }, []byte{
 		0x90, 0x10, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
 		0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
 	})
 }
 
 func TestEncodeComment(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Comment("") }, []byte{0x93, 0x00})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Comment("0") }, []byte{0x93, 0x01, 0x30})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Comment("01") }, []byte{0x93, 0x02, 0x30, 0x31})
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.Comment("0123456789012345") }, []byte{
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Comment("") }, []byte{0x93, 0x00})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Comment("0") }, []byte{0x93, 0x01, 0x30})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Comment("01") }, []byte{0x93, 0x02, 0x30, 0x31})
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.Comment("0123456789012345") }, []byte{
 		0x93, 0x10, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
 		0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
 	})
@@ -246,7 +246,7 @@ func newURL(urlStr string) *url.URL {
 }
 
 func TestEncodeURI(t *testing.T) {
-	assertEncoded(t, ContainerTypeNone, func(e *CbeEncoder) error { return e.URI(newURL("http://test.org")) }, []byte{
+	assertEncoded(t, ContainerTypeNone, func(e *Encoder) error { return e.URI(newURL("http://test.org")) }, []byte{
 		0x92, 0x0f, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x2e, 0x6f, 0x72, 0x67,
 	})
 }
