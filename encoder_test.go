@@ -139,9 +139,9 @@ func TestEncodeUnorderedMap(t *testing.T) {
 		return ShortCircuit(
 			e.UnorderedMapBegin(),
 			e.String("1"),
-			e.Uint(1),
+			e.PositiveInt(1),
 			e.String("2"),
-			e.Uint(2),
+			e.PositiveInt(2),
 			e.ContainerEnd())
 	},
 		[]byte{0x78, 0x81, 0x31, 0x01, 0x81, 0x32, 0x02, 0x7b})
@@ -154,9 +154,9 @@ func TestEncodeOrderedMap(t *testing.T) {
 		return ShortCircuit(
 			e.OrderedMapBegin(),
 			e.String("1"),
-			e.Uint(1),
+			e.PositiveInt(1),
 			e.String("2"),
-			e.Uint(2),
+			e.PositiveInt(2),
 			e.ContainerEnd())
 	},
 		[]byte{0x79, 0x81, 0x31, 0x01, 0x81, 0x32, 0x02, 0x7b})
@@ -169,9 +169,9 @@ func TestEncodeMetadataMap(t *testing.T) {
 		return ShortCircuit(
 			e.MetadataMapBegin(),
 			e.String("1"),
-			e.Uint(1),
+			e.PositiveInt(1),
 			e.String("2"),
-			e.Uint(2),
+			e.PositiveInt(2),
 			e.ContainerEnd())
 	},
 		[]byte{0x7a, 0x81, 0x31, 0x01, 0x81, 0x32, 0x02, 0x7b})

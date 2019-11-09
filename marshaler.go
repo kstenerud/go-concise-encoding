@@ -10,8 +10,8 @@ import (
 type PrimitiveEncoder interface {
 	Nil() error
 	Bool(bool) error
-	Uint(uint64) error
-	Int(int64) error
+	PositiveInt(uint64) error
+	NegativeInt(uint64) error
 	Float(float64) error
 	Timestamp(time.Time) error
 	String(string) error
@@ -46,9 +46,13 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 	case reflect.Bool:
 		return encoder.Bool(rv.Bool())
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return encoder.Int(rv.Int())
+		asInt := rv.Int()
+		if asInt >= 0 {
+			return encoder.PositiveInt(uint64(asInt))
+		}
+		return encoder.NegativeInt(uint64(-asInt))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return encoder.Uint(rv.Uint())
+		return encoder.PositiveInt(rv.Uint())
 	case reflect.Float32, reflect.Float64:
 		return encoder.Float(rv.Float())
 	case reflect.String:

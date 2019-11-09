@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// TODO: Some ints would store better as float, and vice versa
+
 // ------------
 // Array Length
 // ------------
@@ -122,9 +124,41 @@ func (this *Encoder) arrayBegin(newArrayType arrayType, length uint64) error {
 	return nil
 }
 
+func (this *Encoder) arrayValidateData(value []byte) error {
+	switch this.currentArrayType {
+	case arrayTypeBytes:
+		return nil
+	case arrayTypeComment:
+		for _, ch := range value {
+			if err := this.charValidator.AddByte(int(ch)); err != nil {
+				return err
+			}
+			if this.charValidator.IsCompleteCharacter() {
+				if err := ValidateCommentCharacter(this.charValidator.Character()); err != nil {
+					return err
+				}
+			}
+		}
+	case arrayTypeString:
+		for _, ch := range value {
+			if err := this.charValidator.AddByte(int(ch)); err != nil {
+				return err
+			}
+		}
+	case arrayTypeURI:
+		// TODO: URI validation
+		return nil
+	}
+	return nil
+}
+
 func (this *Encoder) arrayAddData(value []byte) (bytesEncoded int, err error) {
 	if int64(len(value)) > this.remainingArrayLength {
 		return 0, fmt.Errorf("Data length exceeds array length by %v bytes", int64(len(value))-this.remainingArrayLength)
+	}
+
+	if err = this.arrayValidateData(value); err != nil {
+		return 0, err
 	}
 
 	if len(value) > this.buffer.RemainingSpace() && this.buffer.isExternalBuffer {
@@ -208,10 +242,8 @@ func (this *Encoder) Bool(value bool) error {
 	return nil
 }
 
-func (this *Encoder) Uint(value uint64) error {
+func (this *Encoder) PositiveInt(value uint64) error {
 	switch {
-	// TODO: vlq int
-	// TODO: pos neg int
 	case uintFitsInSmallint(value):
 		if err := this.buffer.EncodeTypeField(typeField(value)); err != nil {
 			return err
@@ -246,44 +278,47 @@ func (this *Encoder) Uint(value uint64) error {
 	return nil
 }
 
-func (this *Encoder) Int(value int64) error {
-	uvalue := uint64(-value)
-
+func (this *Encoder) NegativeInt(value uint64) error {
 	switch {
-	case intFitsInSmallint(value):
-		if err := this.buffer.EncodeTypeField(typeField(value)); err != nil {
+	case intFitsInSmallint(-int64(value)):
+		if err := this.buffer.EncodeTypeField(typeField(-int64(value))); err != nil {
 			return err
 		}
-	case value >= 0:
-		return this.Uint(uint64(value))
-	case fitsInUint8(uvalue):
-		if err := this.buffer.EncodeUint8(typeNegInt8, uint8(uvalue)); err != nil {
+	case fitsInUint8(value):
+		if err := this.buffer.EncodeUint8(typeNegInt8, uint8(value)); err != nil {
 			return err
 		}
-	case fitsInUint16(uvalue):
-		if err := this.buffer.EncodeUint16(typeNegInt16, uint16(uvalue)); err != nil {
+	case fitsInUint16(value):
+		if err := this.buffer.EncodeUint16(typeNegInt16, uint16(value)); err != nil {
 			return err
 		}
-	case fitsInUint21(uvalue):
-		if err := this.buffer.EncodeUint(typeNegInt, uvalue); err != nil {
+	case fitsInUint21(value):
+		if err := this.buffer.EncodeUint(typeNegInt, value); err != nil {
 			return err
 		}
-	case fitsInUint32(uvalue):
-		if err := this.buffer.EncodeUint32(typeNegInt32, uint32(uvalue)); err != nil {
+	case fitsInUint32(value):
+		if err := this.buffer.EncodeUint32(typeNegInt32, uint32(value)); err != nil {
 			return err
 		}
-	case fitsInUint49(uvalue):
-		if err := this.buffer.EncodeUint(typeNegInt, uvalue); err != nil {
+	case fitsInUint49(value):
+		if err := this.buffer.EncodeUint(typeNegInt, value); err != nil {
 			return err
 		}
 	default:
-		if err := this.buffer.EncodeUint64(typeNegInt64, uvalue); err != nil {
+		if err := this.buffer.EncodeUint64(typeNegInt64, value); err != nil {
 			return err
 		}
 	}
 	this.buffer.Commit()
 	this.flipMapKeyStatus()
 	return nil
+}
+
+func (this *Encoder) Int(value int64) error {
+	if value >= 0 {
+		return this.PositiveInt(uint64(value))
+	}
+	return this.NegativeInt(uint64(-value))
 }
 
 func (this *Encoder) FloatRounded(value float64, significantDigits int) error {
@@ -301,7 +336,6 @@ func (this *Encoder) FloatRounded(value float64, significantDigits int) error {
 
 func (this *Encoder) Float(value float64) error {
 	asfloat32 := float32(value)
-	// TODO: Check if it fits in an int/uint
 	if float64(asfloat32) == value {
 		if err := this.buffer.EncodeUint32(typeFloat32, math.Float32bits(asfloat32)); err != nil {
 			return err
@@ -454,38 +488,7 @@ func (this *Encoder) BytesBegin(length uint64) error {
 	return nil
 }
 
-func (this *Encoder) validateArrayData(value []byte) error {
-	switch this.currentArrayType {
-	case arrayTypeBytes:
-		return nil
-	case arrayTypeComment:
-		for _, ch := range value {
-			if err := this.charValidator.AddByte(int(ch)); err != nil {
-				return err
-			}
-			if this.charValidator.IsCompleteCharacter() {
-				if err := ValidateCommentCharacter(this.charValidator.Character()); err != nil {
-					return err
-				}
-			}
-		}
-	case arrayTypeString:
-		for _, ch := range value {
-			if err := this.charValidator.AddByte(int(ch)); err != nil {
-				return err
-			}
-		}
-	case arrayTypeURI:
-		// TODO: URI validation
-		return nil
-	}
-	return nil
-}
-
 func (this *Encoder) ArrayData(value []byte) (byteCount int, err error) {
-	if err = this.validateArrayData(value); err != nil {
-		return 0, err
-	}
 	byteCount, err = this.arrayAddData(value)
 	if err == nil {
 		this.buffer.Commit()
@@ -497,9 +500,6 @@ func (this *Encoder) ArrayData(value []byte) (byteCount int, err error) {
 func (this *Encoder) Bytes(value []byte) error {
 	bytesToEncode := len(value)
 	if err := this.BytesBegin(uint64(bytesToEncode)); err != nil {
-		return err
-	}
-	if err := this.validateArrayData(value); err != nil {
 		return err
 	}
 	bytesEncoded, err := this.arrayAddData(value)
@@ -538,9 +538,6 @@ func (this *Encoder) String(value string) error {
 	if err := this.StringBegin(uint64(bytesToEncode)); err != nil {
 		return err
 	}
-	if err := this.validateArrayData([]byte(value)); err != nil {
-		return err
-	}
 	bytesEncoded, err := this.arrayAddData([]byte(value))
 	if err != nil {
 		return err
@@ -569,9 +566,6 @@ func (this *Encoder) URI(value *url.URL) error {
 	if err := this.URIBegin(uint64(bytesToEncode)); err != nil {
 		return err
 	}
-	if err := this.validateArrayData([]byte(asString)); err != nil {
-		return err
-	}
 	bytesEncoded, err := this.arrayAddData([]byte(asString))
 	if err != nil {
 		return err
@@ -597,9 +591,6 @@ func (this *Encoder) CommentBegin(length uint64) error {
 func (this *Encoder) Comment(value string) error {
 	bytesToEncode := len(value)
 	if err := this.CommentBegin(uint64(bytesToEncode)); err != nil {
-		return err
-	}
-	if err := this.validateArrayData([]byte(value)); err != nil {
 		return err
 	}
 	bytesEncoded, err := this.arrayAddData([]byte(value))
