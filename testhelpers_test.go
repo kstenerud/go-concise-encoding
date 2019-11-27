@@ -227,17 +227,12 @@ func (this *testCallbacks) OnListBegin() error {
 	return nil
 }
 
-func (this *testCallbacks) OnOrderedMapBegin() error {
+func (this *testCallbacks) OnMapBegin() error {
 	this.mapBegin()
 	return nil
 }
 
-func (this *testCallbacks) OnUnorderedMapBegin() error {
-	this.mapBegin()
-	return nil
-}
-
-func (this *testCallbacks) OnMetadataMapBegin() error {
+func (this *testCallbacks) OnMetadataBegin() error {
 	this.mapBegin()
 	return nil
 }
@@ -272,9 +267,9 @@ func (this *testCallbacks) OnArrayData(bytes []byte) error {
 	return nil
 }
 
-func decodeDocument(containerType ContainerType, maxDepth int, encoded []byte) (result interface{}, err error) {
+func decodeDocument(inlineContainerType InlineContainerType, maxDepth int, encoded []byte) (result interface{}, err error) {
 	callbacks := new(testCallbacks)
-	decoder := NewCbeDecoder(containerType, maxDepth, callbacks)
+	decoder := NewCbeDecoder(inlineContainerType, maxDepth, callbacks)
 	if err := decoder.Feed(encoded); err != nil {
 		return nil, err
 	}
@@ -287,7 +282,7 @@ func decodeDocument(containerType ContainerType, maxDepth int, encoded []byte) (
 
 func decodeWithBufferSize(maxDepth int, encoded []byte, bufferSize int) (result interface{}, err error) {
 	unmarshaler := new(Unmarshaler)
-	decoder := NewCbeDecoder(ContainerTypeNone, maxDepth, unmarshaler)
+	decoder := NewCbeDecoder(InlineContainerTypeNone, maxDepth, unmarshaler)
 	for offset := 0; offset < len(encoded); offset += bufferSize {
 		end := offset + bufferSize
 		if end > len(encoded) {
@@ -305,12 +300,12 @@ func decodeWithBufferSize(maxDepth int, encoded []byte, bufferSize int) (result 
 }
 
 func tryDecode(maxDepth int, encoded []byte) error {
-	_, err := decodeDocument(ContainerTypeNone, maxDepth, encoded)
+	_, err := decodeDocument(InlineContainerTypeNone, maxDepth, encoded)
 	return err
 }
 
-func assertDecoded(t *testing.T, containerType ContainerType, encoded []byte, expected interface{}) {
-	actual, err := decodeDocument(containerType, 100, encoded)
+func assertDecoded(t *testing.T, inlineContainerType InlineContainerType, encoded []byte, expected interface{}) {
+	actual, err := decodeDocument(inlineContainerType, 100, encoded)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 		return
@@ -335,8 +330,8 @@ func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, max
 
 // Encoder
 
-func assertEncoded(t *testing.T, containerType ContainerType, function func(*Encoder) error, expected []byte) {
-	encoder := NewCbeEncoder(containerType, nil, 100)
+func assertEncoded(t *testing.T, inlineContainerType InlineContainerType, function func(*Encoder) error, expected []byte) {
+	encoder := NewCbeEncoder(inlineContainerType, nil, 100)
 	err := function(encoder)
 	if err != nil {
 		t.Fatal(err)
@@ -349,59 +344,59 @@ func assertEncoded(t *testing.T, containerType ContainerType, function func(*Enc
 
 // Marshal / Unmarshal
 
-func assertMarshaled(t *testing.T, containerType ContainerType, value interface{}, expected []byte) {
-	encoder := NewCbeEncoder(containerType, nil, 100)
-	Marshal(encoder, containerType, value)
+func assertMarshaled(t *testing.T, inlineContainerType InlineContainerType, value interface{}, expected []byte) {
+	encoder := NewCbeEncoder(inlineContainerType, nil, 100)
+	Marshal(encoder, inlineContainerType, value)
 	actual := encoder.EncodedBytes()
 	if !bytes.Equal(actual, expected) {
 		t.Errorf("Expected %v, actual %v", expected, actual)
 	}
 }
 
-func assertEncodesToExternalBuffer(t *testing.T, containerType ContainerType, value interface{}, bufferSize int) {
+func assertEncodesToExternalBuffer(t *testing.T, inlineContainerType InlineContainerType, value interface{}, bufferSize int) {
 	buffer := make([]byte, bufferSize)
-	encoder := NewCbeEncoder(containerType, buffer, 100)
-	if err := Marshal(encoder, containerType, value); err != nil {
+	encoder := NewCbeEncoder(inlineContainerType, buffer, 100)
+	if err := Marshal(encoder, inlineContainerType, value); err != nil {
 		t.Errorf("Unexpected error while marshling: %v", err)
 		return
 	}
 
-	encoder2 := NewCbeEncoder(containerType, nil, 100)
-	Marshal(encoder2, containerType, value)
+	encoder2 := NewCbeEncoder(inlineContainerType, nil, 100)
+	Marshal(encoder2, inlineContainerType, value)
 	expected := encoder2.EncodedBytes()
 	if !bytes.Equal(buffer, expected) {
 		t.Errorf("Expected %v, actual %v", expected, buffer)
 	}
 }
 
-func assertFailsEncodingToExternalBuffer(t *testing.T, containerType ContainerType, value interface{}, bufferSize int) {
+func assertFailsEncodingToExternalBuffer(t *testing.T, inlineContainerType InlineContainerType, value interface{}, bufferSize int) {
 	buffer := make([]byte, bufferSize)
-	encoder := NewCbeEncoder(containerType, buffer, 100)
+	encoder := NewCbeEncoder(inlineContainerType, buffer, 100)
 	assertPanics(t, func() {
-		Marshal(encoder, containerType, value)
+		Marshal(encoder, inlineContainerType, value)
 	})
 }
 
-func assertMarshaledSize(t *testing.T, containerType ContainerType, value interface{}, expectedSize int) {
-	actualSize := EncodedSize(containerType, value)
+func assertMarshaledSize(t *testing.T, inlineContainerType InlineContainerType, value interface{}, expectedSize int) {
+	actualSize := EncodedSize(inlineContainerType, value)
 	if actualSize != expectedSize {
 		t.Errorf("Expected size %v but got %v", expectedSize, actualSize)
 	}
 }
 
-func assertMarshalUnmarshal(t *testing.T, containerType ContainerType, expected interface{}) {
-	assertMarshalUnmarshalProduces(t, containerType, expected, expected)
+func assertMarshalUnmarshal(t *testing.T, inlineContainerType InlineContainerType, expected interface{}) {
+	assertMarshalUnmarshalProduces(t, inlineContainerType, expected, expected)
 }
 
-func assertMarshalUnmarshalProduces(t *testing.T, containerType ContainerType, input interface{}, expected interface{}) {
-	encoder := NewCbeEncoder(containerType, nil, 100)
-	if err := Marshal(encoder, containerType, input); err != nil {
+func assertMarshalUnmarshalProduces(t *testing.T, inlineContainerType InlineContainerType, input interface{}, expected interface{}) {
+	encoder := NewCbeEncoder(inlineContainerType, nil, 100)
+	if err := Marshal(encoder, inlineContainerType, input); err != nil {
 		t.Errorf("Unexpected error while marshling: %v", err)
 		return
 	}
 	document := encoder.EncodedBytes()
 	unmarshaler := new(Unmarshaler)
-	decoder := NewCbeDecoder(containerType, 100, unmarshaler)
+	decoder := NewCbeDecoder(inlineContainerType, 100, unmarshaler)
 	if err := decoder.Decode(document); err != nil {
 		t.Errorf("Unexpected error while decoding: %v", err)
 		return

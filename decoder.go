@@ -16,9 +16,8 @@ type DecoderCallbacks interface {
 	OnTime(value time.Time) error
 	OnTimestamp(value time.Time) error
 	OnListBegin() error
-	OnOrderedMapBegin() error
-	OnUnorderedMapBegin() error
-	OnMetadataMapBegin() error
+	OnMapBegin() error
+	OnMetadataBegin() error
 	OnContainerEnd() error
 	OnBytesBegin(byteCount uint64) error
 	OnStringBegin(byteCount uint64) error
@@ -39,10 +38,10 @@ type callbackError struct {
 }
 
 type containerData struct {
-	inlineContainerType        ContainerType
+	inlineContainerPhase        containerPhase
 	inlineContainerInitialized bool
 	depth                      int
-	currentType                []ContainerType
+	currentPhase                []containerPhase
 	hasProcessedMapKey         []bool
 }
 
@@ -70,12 +69,12 @@ func panicOnCallbackError(err error) {
 }
 
 func (this *Decoder) isExpectingMapKey() bool {
-	return this.container.currentType[this.container.depth] == ContainerTypeUnorderedMap &&
+	return this.container.currentPhase[this.container.depth] == containerPhaseMap &&
 		!this.container.hasProcessedMapKey[this.container.depth]
 }
 
 func (this *Decoder) isExpectingMapValue() bool {
-	return this.container.currentType[this.container.depth] == ContainerTypeUnorderedMap &&
+	return this.container.currentPhase[this.container.depth] == containerPhaseMap &&
 		this.container.hasProcessedMapKey[this.container.depth]
 }
 
@@ -89,20 +88,20 @@ func (this *Decoder) assertNotExpectingMapKey(keyType string) {
 	}
 }
 
-func (this *Decoder) containerBegin(newContainerType ContainerType) {
-	if this.container.depth+1 >= len(this.container.currentType) {
-		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(this.container.currentType))})
+func (this *Decoder) containerBegin(nextPhase containerPhase) {
+	if this.container.depth+1 >= len(this.container.currentPhase) {
+		panic(decoderError{fmt.Errorf("Exceeded max container depth of %v", len(this.container.currentPhase))})
 	}
 	this.container.depth++
-	this.container.currentType[this.container.depth] = newContainerType
+	this.container.currentPhase[this.container.depth] = nextPhase
 	this.container.hasProcessedMapKey[this.container.depth] = false
 }
 
-func (this *Decoder) containerEnd() ContainerType {
+func (this *Decoder) containerEnd() containerPhase {
 	if this.container.depth <= 0 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
-	if this.container.inlineContainerType != ContainerTypeNone && this.container.depth <= 1 {
+	if this.container.inlineContainerPhase != containerPhaseNone && this.container.depth <= 1 {
 		panic(decoderError{fmt.Errorf("Got container end but not in a container")})
 	}
 	if this.isExpectingMapValue() {
@@ -110,7 +109,7 @@ func (this *Decoder) containerEnd() ContainerType {
 	}
 
 	this.container.depth--
-	return this.container.currentType[this.container.depth+1]
+	return this.container.currentPhase[this.container.depth+1]
 }
 
 func (this *Decoder) arrayBegin(newArrayType arrayType, length int64) {
@@ -273,23 +272,18 @@ func (this *Decoder) decodeObject(dataType typeField) {
 		// Ignore
 	case typeList:
 		this.assertNotExpectingMapKey("list")
-		this.containerBegin(ContainerTypeList)
+		this.containerBegin(containerPhaseList)
 		panicOnCallbackError(this.callbacks.OnListBegin())
 		this.buffer.Commit()
-	case typeMapOrdered:
+	case typeMap:
 		this.assertNotExpectingMapKey("map")
-		this.containerBegin(ContainerTypeOrderedMap)
-		panicOnCallbackError(this.callbacks.OnOrderedMapBegin())
+		this.containerBegin(containerPhaseMap)
+		panicOnCallbackError(this.callbacks.OnMapBegin())
 		this.buffer.Commit()
-	case typeMapUnordered:
-		this.assertNotExpectingMapKey("map")
-		this.containerBegin(ContainerTypeUnorderedMap)
-		panicOnCallbackError(this.callbacks.OnUnorderedMapBegin())
-		this.buffer.Commit()
-	case typeMapMetadata:
-		this.assertNotExpectingMapKey("map")
-		this.containerBegin(ContainerTypeMetadataMap)
-		panicOnCallbackError(this.callbacks.OnMetadataMapBegin())
+	case typeMetadata:
+		this.assertNotExpectingMapKey("metadata")
+		this.containerBegin(containerPhaseMetadata)
+		panicOnCallbackError(this.callbacks.OnMetadataBegin())
 		this.buffer.Commit()
 	case typeEndContainer:
 		this.containerEnd()
@@ -345,15 +339,13 @@ func (this *Decoder) decodeObject(dataType typeField) {
 }
 
 func (this *Decoder) beginInlineContainer() {
-	if this.container.inlineContainerType != ContainerTypeNone && !this.container.inlineContainerInitialized {
-		this.containerBegin(this.container.inlineContainerType)
-		switch this.container.inlineContainerType {
-		case ContainerTypeList:
+	if this.container.inlineContainerPhase != containerPhaseNone && !this.container.inlineContainerInitialized {
+		this.containerBegin(this.container.inlineContainerPhase)
+		switch this.container.inlineContainerPhase {
+		case containerPhaseList:
 			panicOnCallbackError(this.callbacks.OnListBegin())
-		case ContainerTypeOrderedMap:
-			panicOnCallbackError(this.callbacks.OnOrderedMapBegin())
-		case ContainerTypeUnorderedMap:
-			panicOnCallbackError(this.callbacks.OnUnorderedMapBegin())
+		case containerPhaseMap:
+			panicOnCallbackError(this.callbacks.OnMapBegin())
 		}
 		this.container.inlineContainerInitialized = true
 	}
@@ -376,18 +368,28 @@ func (this *Decoder) assertOnlyOneTopLevelObject() {
 // Public API
 // ----------
 
-func NewCbeDecoder(inlineContainerType ContainerType, maxContainerDepth int, callbacks DecoderCallbacks) *Decoder {
+func NewCbeDecoder(inlineContainerType InlineContainerType, maxContainerDepth int, callbacks DecoderCallbacks) *Decoder {
 	this := new(Decoder)
-	this.container.inlineContainerType = inlineContainerType
-	if inlineContainerType != ContainerTypeNone {
+
+	switch inlineContainerType {
+	case InlineContainerTypeList:
+		this.container.inlineContainerPhase = containerPhaseList
 		maxContainerDepth++
+	case InlineContainerTypeMap:
+		this.container.inlineContainerPhase = containerPhaseMap
+		maxContainerDepth++
+	case InlineContainerTypeNone:
+	// Nothing to do
+	default:
+		panic(fmt.Errorf("Unhandled container type: %v", inlineContainerType))
 	}
+
 	this.underflowBuffer = NewDecodeBuffer(make([]byte, maxPartialReadLength))
 	this.underflowBuffer.Clear()
 	this.mainBuffer = NewDecodeBuffer(make([]byte, 0))
 	this.buffer = this.mainBuffer
 	this.callbacks = callbacks
-	this.container.currentType = make([]ContainerType, maxContainerDepth)
+	this.container.currentPhase = make([]containerPhase, maxContainerDepth)
 	this.container.hasProcessedMapKey = make([]bool, maxContainerDepth)
 	return this
 }

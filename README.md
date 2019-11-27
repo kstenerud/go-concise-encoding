@@ -38,8 +38,8 @@ func demonstrateMarshal() {
 		"a key": 2.5,
 		900:     time.Now(),
 	}
-	encoder := cbe.NewCbeEncoder(cbe.ContainerTypeNone, nil, 100)
-	cbe.Marshal(encoder, cbe.ContainerTypeNone, dict)
+	encoder := cbe.NewCbeEncoder(cbe.InlineContainerTypeNone, nil, 100)
+	cbe.Marshal(encoder, cbe.InlineContainerTypeNone, dict)
 	fmt.Printf("Marshaled bytes: %v\n", encoder.EncodedBytes())
 }
 
@@ -48,7 +48,7 @@ func demonstrateUnmarshal() {
 		0xbe, 0xb1, 0x58, 0x31, 0x85, 0x61, 0x20, 0x6b, 0x65, 0x79, 0x72, 0x0,
 		0x0, 0x20, 0x40, 0x95}
 	unmarshaler := new(cbe.Unmarshaler)
-	decoder := cbe.NewCbeDecoder(cbe.ContainerTypeNone, 100, unmarshaler)
+	decoder := cbe.NewCbeDecoder(cbe.InlineContainerTypeNone, 100, unmarshaler)
 	if err := decoder.Decode(document); err != nil {
 		panic(fmt.Errorf("Unexpected error while decoding: %v", err))
 	}

@@ -7,39 +7,39 @@ import (
 )
 
 func TestSizeNil(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, nil, 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, nil, 1)
 }
 
 func TestSizeBool(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, true, 1)
-	assertMarshaledSize(t, ContainerTypeNone, false, 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, true, 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, false, 1)
 }
 
 func TestSizeInt(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, 0, 1)
-	assertMarshaledSize(t, ContainerTypeNone, 1, 1)
-	assertMarshaledSize(t, ContainerTypeNone, -1, 1)
-	assertMarshaledSize(t, ContainerTypeNone, 0xff, 2)
-	assertMarshaledSize(t, ContainerTypeNone, -0xff, 2)
-	assertMarshaledSize(t, ContainerTypeNone, 0xffff, 3)
-	assertMarshaledSize(t, ContainerTypeNone, -0xffff, 3)
-	assertMarshaledSize(t, ContainerTypeNone, 0xffffffff, 5)
-	assertMarshaledSize(t, ContainerTypeNone, -0xffffffff, 5)
-	assertMarshaledSize(t, ContainerTypeNone, 0xffffffffff, 7)
-	assertMarshaledSize(t, ContainerTypeNone, -0xffffffffff, 7)
-	assertMarshaledSize(t, ContainerTypeNone, 0xffffffffffff, 8)
-	assertMarshaledSize(t, ContainerTypeNone, -0xffffffffffff, 8)
-	assertMarshaledSize(t, ContainerTypeNone, 0xfffffffffffff, 9)
-	assertMarshaledSize(t, ContainerTypeNone, -0xfffffffffffff, 9)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0, 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, 1, 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, -1, 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0xff, 2)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0xff, 2)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0xffff, 3)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0xffff, 3)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0xffffffff, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0xffffffff, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0xffffffffff, 7)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0xffffffffff, 7)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0xffffffffffff, 8)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0xffffffffffff, 8)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0xfffffffffffff, 9)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0xfffffffffffff, 9)
 }
 
 func TestSizeFloat(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, 0.0, 5)
-	assertMarshaledSize(t, ContainerTypeNone, -0.0, 5)
-	assertMarshaledSize(t, ContainerTypeNone, 0.1, 9)
-	assertMarshaledSize(t, ContainerTypeNone, -0.1, 9)
-	assertMarshaledSize(t, ContainerTypeNone, 0.25, 5)
-	assertMarshaledSize(t, ContainerTypeNone, -0.25, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0.0, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0.0, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0.1, 9)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0.1, 9)
+	assertMarshaledSize(t, InlineContainerTypeNone, 0.25, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, -0.25, 5)
 }
 
 func TestSizeTime(t *testing.T) {
@@ -48,16 +48,16 @@ func TestSizeTime(t *testing.T) {
 		t.Fatal(err)
 	}
 	date := time.Date(2055, time.Month(2), 14, 8, 30, 0, 55, location)
-	assertMarshaledSize(t, ContainerTypeNone, date, 22)
+	assertMarshaledSize(t, InlineContainerTypeNone, date, 22)
 }
 
 func TestSizeString(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, "", 1)
-	assertMarshaledSize(t, ContainerTypeNone, "1", 2)
-	assertMarshaledSize(t, ContainerTypeNone, "12", 3)
-	assertMarshaledSize(t, ContainerTypeNone, "123456789abcdef", 16)
-	assertMarshaledSize(t, ContainerTypeNone, "123456789abcdefg", 18)
-	assertMarshaledSize(t, ContainerTypeNone, generateString(2000), 2003)
+	assertMarshaledSize(t, InlineContainerTypeNone, "", 1)
+	assertMarshaledSize(t, InlineContainerTypeNone, "1", 2)
+	assertMarshaledSize(t, InlineContainerTypeNone, "12", 3)
+	assertMarshaledSize(t, InlineContainerTypeNone, "123456789abcdef", 16)
+	assertMarshaledSize(t, InlineContainerTypeNone, "123456789abcdefg", 18)
+	assertMarshaledSize(t, InlineContainerTypeNone, generateString(2000), 2003)
 }
 
 func TestSizeURI(t *testing.T) {
@@ -65,20 +65,20 @@ func TestSizeURI(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assertMarshaledSize(t, ContainerTypeNone, testURL, 20)
+	assertMarshaledSize(t, InlineContainerTypeNone, testURL, 20)
 }
 
 func TestSizeBytes(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, make([]byte, 0), 2)
-	assertMarshaledSize(t, ContainerTypeNone, make([]byte, 1), 3)
-	assertMarshaledSize(t, ContainerTypeNone, make([]byte, 2000), 2003)
+	assertMarshaledSize(t, InlineContainerTypeNone, make([]byte, 0), 2)
+	assertMarshaledSize(t, InlineContainerTypeNone, make([]byte, 1), 3)
+	assertMarshaledSize(t, InlineContainerTypeNone, make([]byte, 2000), 2003)
 }
 
 func TestSizeList(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, make([]int, 0), 2)
-	assertMarshaledSize(t, ContainerTypeNone, []interface{}{0, 1000}, 6)
+	assertMarshaledSize(t, InlineContainerTypeNone, make([]int, 0), 2)
+	assertMarshaledSize(t, InlineContainerTypeNone, []interface{}{0, 1000}, 6)
 }
 
 func TestSizeMap(t *testing.T) {
-	assertMarshaledSize(t, ContainerTypeNone, map[interface{}]interface{}{0: "1"}, 5)
+	assertMarshaledSize(t, InlineContainerTypeNone, map[interface{}]interface{}{0: "1"}, 5)
 }

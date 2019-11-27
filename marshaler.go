@@ -18,7 +18,7 @@ type PrimitiveEncoder interface {
 	URI(*url.URL) error
 	Bytes([]byte) error
 	ListBegin() error
-	UnorderedMapBegin() error
+	MapBegin() error
 	ContainerEnd() error
 }
 
@@ -28,12 +28,12 @@ func NewUnsupportedTypeError(unsupportedType reflect.Type) UnsupportedTypeError 
 	return UnsupportedTypeError(fmt.Errorf("Unsupported type: %v", unsupportedType))
 }
 
-func Marshal(encoder PrimitiveEncoder, inlineContainerType ContainerType, object interface{}) error {
+func Marshal(encoder PrimitiveEncoder, inlineContainerType InlineContainerType, object interface{}) error {
 	rv := reflect.ValueOf(object)
 	return marshalReflectValue(encoder, inlineContainerType, &rv)
 }
 
-func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType ContainerType, rv *reflect.Value) error {
+func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType InlineContainerType, rv *reflect.Value) error {
 	if !rv.IsValid() {
 		return encoder.Nil()
 	}
@@ -70,9 +70,9 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 			realValue := rv.Interface().(url.URL)
 			return encoder.URI(&realValue)
 		}
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			// TODO: anonymous structs?
-			if err := encoder.UnorderedMapBegin(); err != nil {
+			if err := encoder.MapBegin(); err != nil {
 				return err
 			}
 		}
@@ -82,35 +82,35 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 			k := field.Name
 			v := rv.Field(i)
 			if v.CanInterface() {
-				if err := Marshal(encoder, ContainerTypeNone, k); err != nil {
+				if err := Marshal(encoder, InlineContainerTypeNone, k); err != nil {
 					return err
 				}
-				if err := marshalReflectValue(encoder, ContainerTypeNone, &v); err != nil {
+				if err := marshalReflectValue(encoder, InlineContainerTypeNone, &v); err != nil {
 					return err
 				}
 			}
 		}
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			return encoder.ContainerEnd()
 		}
 		return nil
 	case reflect.Map:
-		if inlineContainerType != ContainerTypeUnorderedMap {
-			if err := encoder.UnorderedMapBegin(); err != nil {
+		if inlineContainerType != InlineContainerTypeMap {
+			if err := encoder.MapBegin(); err != nil {
 				return err
 			}
 		}
 		for iter := rv.MapRange(); iter.Next(); {
 			k := iter.Key()
 			v := iter.Value()
-			if err := marshalReflectValue(encoder, ContainerTypeNone, &k); err != nil {
+			if err := marshalReflectValue(encoder, InlineContainerTypeNone, &k); err != nil {
 				return err
 			}
-			if err := marshalReflectValue(encoder, ContainerTypeNone, &v); err != nil {
+			if err := marshalReflectValue(encoder, InlineContainerTypeNone, &v); err != nil {
 				return err
 			}
 		}
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			return encoder.ContainerEnd()
 		}
 		return nil
@@ -126,18 +126,18 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 			}
 			return Marshal(encoder, inlineContainerType, tempSlice)
 		} else {
-			if inlineContainerType != ContainerTypeList {
+			if inlineContainerType != InlineContainerTypeList {
 				if err := encoder.ListBegin(); err != nil {
 					return err
 				}
 			}
 			for i := 0; i < rv.Len(); i++ {
 				v := rv.Index(i)
-				if err := marshalReflectValue(encoder, ContainerTypeNone, &v); err != nil {
+				if err := marshalReflectValue(encoder, InlineContainerTypeNone, &v); err != nil {
 					return err
 				}
 			}
-			if inlineContainerType != ContainerTypeList {
+			if inlineContainerType != InlineContainerTypeList {
 				return encoder.ContainerEnd()
 			}
 			return nil
@@ -146,7 +146,7 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 		if rv.Type().Elem().Kind() == reflect.Uint8 {
 			return encoder.Bytes(rv.Bytes())
 		}
-		if inlineContainerType != ContainerTypeList {
+		if inlineContainerType != InlineContainerTypeList {
 			if err := encoder.ListBegin(); err != nil {
 				return err
 			}
@@ -157,7 +157,7 @@ func marshalReflectValue(encoder PrimitiveEncoder, inlineContainerType Container
 				return err
 			}
 		}
-		if inlineContainerType != ContainerTypeList {
+		if inlineContainerType != InlineContainerTypeList {
 			return encoder.ContainerEnd()
 		}
 		return nil

@@ -154,17 +154,12 @@ func (this *Unmarshaler) OnListBegin() error {
 	return nil
 }
 
-func (this *Unmarshaler) OnOrderedMapBegin() error {
+func (this *Unmarshaler) OnMapBegin() error {
 	this.mapBegin()
 	return nil
 }
 
-func (this *Unmarshaler) OnUnorderedMapBegin() error {
-	this.mapBegin()
-	return nil
-}
-
-func (this *Unmarshaler) OnMetadataMapBegin() error {
+func (this *Unmarshaler) OnMetadataBegin() error {
 	// Ignored
 	return nil
 }

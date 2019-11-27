@@ -24,11 +24,14 @@ func (this *Utf8Validator) AddByte(byteValue int) error {
 		return nil
 	}
 
-	const initiatorMask = 0x80
-	const initiatorMatch = 0x80
-	if byteValue&initiatorMask != initiatorMatch {
+	const initiator1ByteMask = 0x80
+	const initiator1ByteMatch = 0x80
+	if byteValue&initiator1ByteMask != initiator1ByteMatch {
 		this.bytesRemaining = 0
 		this.accumulator = byteValue
+		if byteValue == 0 {
+			return fmt.Errorf("UTF-8 encoding: NUL byte is not allowed")
+		}
 		return nil
 	}
 

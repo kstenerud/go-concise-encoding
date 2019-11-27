@@ -50,49 +50,43 @@ func fitsInUint49(value uint64) bool {
 // -----------
 
 type Encoder struct {
-	hasInlineContainer   bool
-	containerDepth       int
-	currentArrayType     arrayType
-	remainingArrayLength int64
-	currentContainerType []typeField
-	hasStoredMapKey      []bool
-	charValidator        Utf8Validator
-	buffer               encodeBuffer
+	hasInlineContainer    bool
+	containerDepth        int
+	currentArrayType      arrayType
+	remainingArrayLength  int64
+	currentContainerPhase []containerPhase
+	hasStoredMapKey       []bool
+	charValidator         Utf8Validator
+	buffer                encodeBuffer
 }
 
 const defaultBufferSize = 1024
-
-var containerTypes = map[ContainerType]typeField{
-	ContainerTypeList:         typeList,
-	ContainerTypeOrderedMap:   typeMapOrdered,
-	ContainerTypeUnorderedMap: typeMapUnordered,
-	ContainerTypeMetadataMap:  typeMapMetadata,
-}
 
 // --------
 // Internal
 // --------
 
-func (this *Encoder) containerBegin(newContainerType typeField) error {
-	if this.containerDepth+1 >= len(this.currentContainerType) {
+func (this *Encoder) containerBegin(nextPhase containerPhase) error {
+	if this.containerDepth+1 >= len(this.currentContainerPhase) {
 		return fmt.Errorf("Max container depth exceeded")
 	}
 	this.containerDepth++
-	this.currentContainerType[this.containerDepth] = newContainerType
+	this.currentContainerPhase[this.containerDepth] = nextPhase
 	this.hasStoredMapKey[this.containerDepth] = false
 	return nil
 }
 
 func (this *Encoder) isInsideMap() bool {
-	switch this.currentContainerType[this.containerDepth] {
-	case typeMapUnordered:
+	switch this.currentContainerPhase[this.containerDepth] {
+	case containerPhaseMap:
 		return true
-	case typeMapOrdered:
+	case containerPhaseMetadata:
 		return true
-	case typeMapMetadata:
+	case containerPhaseMarkupAttributes:
 		return true
+	default:
+		return false
 	}
-	return false
 }
 
 func (this *Encoder) isExpectingMapKey() bool {
@@ -187,23 +181,30 @@ func (this *Encoder) arrayAddData(value []byte) (bytesEncoded int, err error) {
 // ----------
 
 // Create a new encoder. if buffer is nil, the encoder allocates its own buffer.
-func NewCbeEncoder(inlineContainerType ContainerType, buffer []byte, maxContainerDepth int) *Encoder {
+func NewCbeEncoder(inlineContainerType InlineContainerType, buffer []byte, maxContainerDepth int) *Encoder {
 	this := new(Encoder)
 	this.Init(inlineContainerType, buffer, maxContainerDepth)
 	return this
 }
 
-func (this *Encoder) Init(inlineContainerType ContainerType, externalBuffer []byte, maxContainerDepth int) {
-	if inlineContainerType != ContainerTypeNone {
+func (this *Encoder) Init(inlineContainerType InlineContainerType, externalBuffer []byte, maxContainerDepth int) {
+	if inlineContainerType != InlineContainerTypeNone {
 		maxContainerDepth++
 		this.hasInlineContainer = true
 	}
 	this.buffer.Init(externalBuffer)
-	this.currentContainerType = make([]typeField, maxContainerDepth+1)
+	this.currentContainerPhase = make([]containerPhase, maxContainerDepth+1)
 	this.hasStoredMapKey = make([]bool, maxContainerDepth+1)
 
-	if inlineContainerType != ContainerTypeNone {
-		this.containerBegin(containerTypes[inlineContainerType])
+	switch inlineContainerType {
+	case InlineContainerTypeList:
+		this.containerBegin(containerPhaseList)
+	case InlineContainerTypeMap:
+		this.containerBegin(containerPhaseMap)
+	case InlineContainerTypeNone:
+	// Nothing to do
+	default:
+		panic(fmt.Errorf("Unhandled container type: %v", inlineContainerType))
 	}
 }
 
@@ -384,18 +385,14 @@ func (this *Encoder) ContainerEnd() error {
 	if this.hasInlineContainer && this.containerDepth <= 1 {
 		return fmt.Errorf("No containers are open")
 	}
-	switch this.currentContainerType[this.containerDepth] {
-	case typeList:
+	switch this.currentContainerPhase[this.containerDepth] {
+	case containerPhaseList:
 		break
-	case typeMapMetadata:
+	case containerPhaseMetadata:
 		if this.isExpectingMapValue() {
 			return fmt.Errorf("Expecting map value for already stored key")
 		}
-	case typeMapOrdered:
-		if this.isExpectingMapValue() {
-			return fmt.Errorf("Expecting map value for already stored key")
-		}
-	case typeMapUnordered:
+	case containerPhaseMap:
 		if this.isExpectingMapValue() {
 			return fmt.Errorf("Expecting map value for already stored key")
 		}
@@ -413,7 +410,7 @@ func (this *Encoder) ListBegin() error {
 	if err := this.assertNotExpectingMapKey("list"); err != nil {
 		return err
 	}
-	if err := this.containerBegin(typeList); err != nil {
+	if err := this.containerBegin(containerPhaseList); err != nil {
 		return err
 	}
 	err := this.buffer.EncodeTypeField(typeList)
@@ -424,33 +421,16 @@ func (this *Encoder) ListBegin() error {
 	return nil
 }
 
-// Begin an unordered map. Any subsequent objects added are assumed to alternate
+// Begin a map. Any subsequent objects added are assumed to alternate
 // between key and value entries in the map, until MapEnd() is called.
-func (this *Encoder) UnorderedMapBegin() error {
+func (this *Encoder) MapBegin() error {
 	if err := this.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
-	if err := this.containerBegin(typeMapUnordered); err != nil {
+	if err := this.containerBegin(containerPhaseMap); err != nil {
 		return err
 	}
-	err := this.buffer.EncodeTypeField(typeMapUnordered)
-	if err != nil {
-		return err
-	}
-	this.buffer.Commit()
-	return nil
-}
-
-// Begin an ordered map. Any subsequent objects added are assumed to alternate
-// between key and value entries in the map, until MapEnd() is called.
-func (this *Encoder) OrderedMapBegin() error {
-	if err := this.assertNotExpectingMapKey("map"); err != nil {
-		return err
-	}
-	if err := this.containerBegin(typeMapOrdered); err != nil {
-		return err
-	}
-	err := this.buffer.EncodeTypeField(typeMapOrdered)
+	err := this.buffer.EncodeTypeField(typeMap)
 	if err != nil {
 		return err
 	}
@@ -460,14 +440,14 @@ func (this *Encoder) OrderedMapBegin() error {
 
 // Begin a metadata map. Any subsequent objects added are assumed to alternate
 // between key and value entries in the map, until MapEnd() is called.
-func (this *Encoder) MetadataMapBegin() error {
+func (this *Encoder) MetadataBegin() error {
 	if err := this.assertNotExpectingMapKey("map"); err != nil {
 		return err
 	}
-	if err := this.containerBegin(typeMapMetadata); err != nil {
+	if err := this.containerBegin(containerPhaseMetadata); err != nil {
 		return err
 	}
-	err := this.buffer.EncodeTypeField(typeMapMetadata)
+	err := this.buffer.EncodeTypeField(typeMetadata)
 	if err != nil {
 		return err
 	}

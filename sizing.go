@@ -118,7 +118,7 @@ func commentSize(value []byte) int {
 	return 1 + arrayLengthFieldSize(len(value)) + len(value)
 }
 
-func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int {
+func reflectValueSize(inlineContainerType InlineContainerType, rv *reflect.Value) int {
 	if !rv.IsValid() {
 		return nilSize()
 	}
@@ -152,7 +152,7 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 			return uriSize(&realValue)
 		}
 		var size int
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			size += mapBeginSize()
 		}
 		for i := 0; i < rt.NumField(); i++ {
@@ -161,26 +161,26 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 			k := field.Name
 			v := rv.Field(i)
 			if v.CanInterface() {
-				size += EncodedSize(ContainerTypeNone, k)
-				size += reflectValueSize(ContainerTypeNone, &v)
+				size += EncodedSize(InlineContainerTypeNone, k)
+				size += reflectValueSize(InlineContainerTypeNone, &v)
 			}
 		}
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			size += mapEndSize()
 		}
 		return size
 	case reflect.Map:
 		var size int
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			size += mapBeginSize()
 		}
 		for iter := rv.MapRange(); iter.Next(); {
 			k := iter.Key()
 			v := iter.Value()
-			size += reflectValueSize(ContainerTypeNone, &k)
-			size += reflectValueSize(ContainerTypeNone, &v)
+			size += reflectValueSize(InlineContainerTypeNone, &k)
+			size += reflectValueSize(InlineContainerTypeNone, &v)
 		}
-		if inlineContainerType != ContainerTypeUnorderedMap {
+		if inlineContainerType != InlineContainerTypeMap {
 			size += mapEndSize()
 		}
 		return size
@@ -197,14 +197,14 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 			return EncodedSize(inlineContainerType, tempSlice)
 		} else {
 			var size int
-			if inlineContainerType != ContainerTypeList {
+			if inlineContainerType != InlineContainerTypeList {
 				size += listBeginSize()
 			}
 			for i := 0; i < rv.Len(); i++ {
 				v := rv.Index(i)
-				size += reflectValueSize(ContainerTypeNone, &v)
+				size += reflectValueSize(InlineContainerTypeNone, &v)
 			}
-			if inlineContainerType != ContainerTypeList {
+			if inlineContainerType != InlineContainerTypeList {
 				size += listEndSize()
 			}
 			return size
@@ -214,14 +214,14 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 			return bytesSize(rv.Bytes())
 		}
 		var size int
-		if inlineContainerType != ContainerTypeList {
+		if inlineContainerType != InlineContainerTypeList {
 			size += listBeginSize()
 		}
 		for i := 0; i < rv.Len(); i++ {
 			v := rv.Index(i)
 			size += reflectValueSize(inlineContainerType, &v)
 		}
-		if inlineContainerType != ContainerTypeList {
+		if inlineContainerType != InlineContainerTypeList {
 			size += listEndSize()
 		}
 		return size
@@ -234,7 +234,7 @@ func reflectValueSize(inlineContainerType ContainerType, rv *reflect.Value) int 
 	return 0
 }
 
-func EncodedSize(inlineContainerType ContainerType, object interface{}) int {
+func EncodedSize(inlineContainerType InlineContainerType, object interface{}) int {
 	rv := reflect.ValueOf(object)
 	return reflectValueSize(inlineContainerType, &rv)
 }
