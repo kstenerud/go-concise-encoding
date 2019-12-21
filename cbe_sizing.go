@@ -76,8 +76,8 @@ func floatSize(value float64) int {
 	return 9
 }
 
-func timeSize(value time.Time) int {
-	return compact_time.TimestampEncodedSize(value) + 1
+func timeSize(value *compact_time.Time) int {
+	return compact_time.EncodedSize(value) + 1
 }
 
 func listBeginSize() int {
@@ -144,8 +144,7 @@ func reflectValueSize(inlineContainerType InlineContainerType, rv *reflect.Value
 	case reflect.Struct:
 		rt := rv.Type()
 		if rt.Name() == "Time" && rt.PkgPath() == "time" {
-			realValue := rv.Interface().(time.Time)
-			return timeSize(realValue)
+			return timeSize(compact_time.AsCompactTime(rv.Interface().(time.Time)))
 		}
 		if rt.Name() == "URL" && rt.PkgPath() == "net/url" {
 			realValue := rv.Interface().(url.URL)
@@ -161,7 +160,7 @@ func reflectValueSize(inlineContainerType InlineContainerType, rv *reflect.Value
 			k := field.Name
 			v := rv.Field(i)
 			if v.CanInterface() {
-				size += EncodedSize(InlineContainerTypeNone, k)
+				size += CBEEncodedSize(InlineContainerTypeNone, k)
 				size += reflectValueSize(InlineContainerTypeNone, &v)
 			}
 		}
@@ -194,7 +193,7 @@ func reflectValueSize(inlineContainerType InlineContainerType, rv *reflect.Value
 			for i := 0; i < rv.Len(); i++ {
 				tempSlice[i] = rv.Index(i).Interface().(uint8)
 			}
-			return EncodedSize(inlineContainerType, tempSlice)
+			return CBEEncodedSize(inlineContainerType, tempSlice)
 		} else {
 			var size int
 			if inlineContainerType != InlineContainerTypeList {
@@ -234,7 +233,7 @@ func reflectValueSize(inlineContainerType InlineContainerType, rv *reflect.Value
 	return 0
 }
 
-func EncodedSize(inlineContainerType InlineContainerType, object interface{}) int {
+func CBEEncodedSize(inlineContainerType InlineContainerType, object interface{}) int {
 	rv := reflect.ValueOf(object)
 	return reflectValueSize(inlineContainerType, &rv)
 }

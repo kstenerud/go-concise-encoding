@@ -10,14 +10,14 @@ import (
 	"github.com/kstenerud/go-vlq"
 )
 
-type encodeBuffer struct {
+type cbeEncodeBuffer struct {
 	data               []byte
 	lastCommitPosition int
 	position           int
 	isExternalBuffer   bool
 }
 
-func (this *encodeBuffer) Init(externalBuffer []byte) {
+func (this *cbeEncodeBuffer) Init(externalBuffer []byte) {
 	if externalBuffer != nil {
 		this.data = externalBuffer
 		this.isExternalBuffer = true
@@ -27,7 +27,7 @@ func (this *encodeBuffer) Init(externalBuffer []byte) {
 	}
 }
 
-func (this *encodeBuffer) extend(byteCount int) error {
+func (this *cbeEncodeBuffer) extend(byteCount int) error {
 	targetLength := this.position + byteCount
 	updatedLength := len(this.data)
 	if updatedLength >= targetLength {
@@ -51,7 +51,7 @@ func (this *encodeBuffer) extend(byteCount int) error {
 	return nil
 }
 
-func (this *encodeBuffer) reserve(byteCount int) (buffer []byte, err error) {
+func (this *cbeEncodeBuffer) reserve(byteCount int) (buffer []byte, err error) {
 	err = this.extend(byteCount)
 	if err != nil {
 		return nil, err
@@ -61,19 +61,38 @@ func (this *encodeBuffer) reserve(byteCount int) (buffer []byte, err error) {
 	return this.data[lastPosition:this.position], nil
 }
 
-func (this *encodeBuffer) RemainingSpace() int {
+func (this *cbeEncodeBuffer) RemainingSpace() int {
 	return len(this.data) - this.position
 }
 
-func (this *encodeBuffer) Commit() {
+func (this *cbeEncodeBuffer) Commit() {
 	this.lastCommitPosition = this.position
 }
 
-func (this *encodeBuffer) EncodedBytes() []byte {
+func (this *cbeEncodeBuffer) Rollback() {
+	this.position = this.lastCommitPosition
+}
+
+func (this *cbeEncodeBuffer) encodeRVLQ(valueIn uint64) error {
+	value := vlq.Rvlq(valueIn)
+	byteCount, ok := value.EncodeTo(this.data[this.position:])
+	if !ok {
+		this.extend(byteCount)
+		byteCount, ok = value.EncodeTo(this.data[this.position:])
+		if !ok {
+			return fmt.Errorf("BUG: Failed encoding vlq value %v to buffer length %v from position %v",
+				value, len(this.data), this.position)
+		}
+	}
+	this.position += byteCount
+	return nil
+}
+
+func (this *cbeEncodeBuffer) EncodedBytes() []byte {
 	return this.data[:this.lastCommitPosition]
 }
 
-func (this *encodeBuffer) EncodeBytes(bytes []byte) error {
+func (this *cbeEncodeBuffer) EncodeBytes(bytes []byte) error {
 	dst, err := this.reserve(len(bytes))
 	if err != nil {
 		return err
@@ -84,7 +103,7 @@ func (this *encodeBuffer) EncodeBytes(bytes []byte) error {
 
 // Encode the maximum number of bytes possible.
 // Return value will be less than len(bytes) if there wasn't enough room.
-func (this *encodeBuffer) EncodeMaxBytes(bytes []byte) (byteCount int) {
+func (this *cbeEncodeBuffer) EncodeMaxBytes(bytes []byte) (byteCount int) {
 	dst := this.data[this.position:]
 	dstCount := len(dst)
 	byteCount = len(bytes)
@@ -97,7 +116,11 @@ func (this *encodeBuffer) EncodeMaxBytes(bytes []byte) (byteCount int) {
 	return byteCount
 }
 
-func (this *encodeBuffer) EncodeTypeField(value typeField) error {
+func (this *cbeEncodeBuffer) EncodeVersion(version uint64) error {
+	return this.encodeRVLQ(version)
+}
+
+func (this *cbeEncodeBuffer) EncodeTypeField(value typeField) error {
 	dst, err := this.reserve(1)
 	if err != nil {
 		return err
@@ -106,7 +129,7 @@ func (this *encodeBuffer) EncodeTypeField(value typeField) error {
 	return nil
 }
 
-func (this *encodeBuffer) EncodeUint8(typeValue typeField, value byte) error {
+func (this *cbeEncodeBuffer) EncodeUint8(typeValue typeField, value byte) error {
 	dst, err := this.reserve(2)
 	if err != nil {
 		return err
@@ -116,7 +139,7 @@ func (this *encodeBuffer) EncodeUint8(typeValue typeField, value byte) error {
 	return nil
 }
 
-func (this *encodeBuffer) EncodeUint16(typeValue typeField, value uint16) error {
+func (this *cbeEncodeBuffer) EncodeUint16(typeValue typeField, value uint16) error {
 	dst, err := this.reserve(3)
 	if err != nil {
 		return err
@@ -127,7 +150,7 @@ func (this *encodeBuffer) EncodeUint16(typeValue typeField, value uint16) error 
 	return nil
 }
 
-func (this *encodeBuffer) EncodeUint32(typeValue typeField, value uint32) error {
+func (this *cbeEncodeBuffer) EncodeUint32(typeValue typeField, value uint32) error {
 	dst, err := this.reserve(5)
 	if err != nil {
 		return err
@@ -140,7 +163,7 @@ func (this *encodeBuffer) EncodeUint32(typeValue typeField, value uint32) error 
 	return nil
 }
 
-func (this *encodeBuffer) EncodeUint64(typeValue typeField, value uint64) error {
+func (this *cbeEncodeBuffer) EncodeUint64(typeValue typeField, value uint64) error {
 	dst, err := this.reserve(9)
 	if err != nil {
 		return err
@@ -157,31 +180,22 @@ func (this *encodeBuffer) EncodeUint64(typeValue typeField, value uint64) error 
 	return nil
 }
 
-func (this *encodeBuffer) EncodeFloat32(value float32) error {
+func (this *cbeEncodeBuffer) EncodeFloat32(value float32) error {
 	return this.EncodeUint32(typeFloat32, math.Float32bits(value))
 }
 
-func (this *encodeBuffer) EncodeFloat64(value float64) error {
+func (this *cbeEncodeBuffer) EncodeFloat64(value float64) error {
 	return this.EncodeUint64(typeFloat64, math.Float64bits(value))
 }
 
-func (this *encodeBuffer) EncodeUint(typeValue typeField, valueIn uint64) error {
-	this.EncodeTypeField(typeValue)
-	value := vlq.Rvlq(valueIn)
-	byteCount, ok := value.EncodeTo(this.data[this.position:])
-	if !ok {
-		this.extend(byteCount)
-		byteCount, ok = value.EncodeTo(this.data[this.position:])
-		if !ok {
-			return fmt.Errorf("BUG: Failed encoding vlq value %v to buffer length %v from position %v",
-				value, len(this.data), this.position)
-		}
+func (this *cbeEncodeBuffer) EncodeUint(typeValue typeField, value uint64) error {
+	if err := this.EncodeTypeField(typeValue); err != nil {
+		return err
 	}
-	this.position += byteCount
-	return nil
+	return this.encodeRVLQ(value)
 }
 
-func (this *encodeBuffer) EncodeFloat(value float64, significantDigits int) error {
+func (this *cbeEncodeBuffer) EncodeFloat(value float64, significantDigits int) error {
 	this.EncodeTypeField(typeDecimal)
 	byteCount, ok := compact_float.Encode(value, significantDigits, this.data[this.position:])
 	if !ok {
@@ -196,11 +210,24 @@ func (this *encodeBuffer) EncodeFloat(value float64, significantDigits int) erro
 	return nil
 }
 
-func (this *encodeBuffer) EncodeDate(value time.Time) (err error) {
-	this.EncodeTypeField(typeDate)
+func (this *cbeEncodeBuffer) EncodeTime(value time.Time) (err error) {
+	return this.EncodeCompactTime(compact_time.AsCompactTime(value))
+}
+
+func (this *cbeEncodeBuffer) EncodeCompactTime(value *compact_time.Time) (err error) {
+	var timeType typeField
+	switch value.TimeIs {
+	case compact_time.TypeDate:
+		timeType = typeDate
+	case compact_time.TypeTime:
+		timeType = typeTime
+	case compact_time.TypeTimestamp:
+		timeType = typeTimestamp
+	}
+	this.EncodeTypeField(timeType)
 	var byteCount int
 	var ok bool
-	byteCount, ok = compact_time.EncodeDate(value, this.data[this.position:])
+	byteCount, ok, err = compact_time.Encode(value, this.data[this.position:])
 	if err != nil {
 		return err
 	}
@@ -208,7 +235,10 @@ func (this *encodeBuffer) EncodeDate(value time.Time) (err error) {
 		if err := this.extend(byteCount); err != nil {
 			return err
 		}
-		byteCount, ok = compact_time.EncodeDate(value, this.data[this.position:])
+		byteCount, ok, err = compact_time.Encode(value, this.data[this.position:])
+		if err != nil {
+			return err
+		}
 		if !ok {
 			return fmt.Errorf("BUG: Failed encoding time value %v to buffer length %v from position %v",
 				value, len(this.data), this.position)
@@ -218,46 +248,10 @@ func (this *encodeBuffer) EncodeDate(value time.Time) (err error) {
 	return nil
 }
 
-func (this *encodeBuffer) EncodeTime(value time.Time) (err error) {
-	this.EncodeTypeField(typeTime)
-	var byteCount int
-	var ok bool
-	byteCount, ok, err = compact_time.EncodeTime(value, this.data[this.position:])
-	if err != nil {
-		return err
+func (this *cbeEncodeBuffer) EncodeArrayChunkHeader(length uint64, isFinalChunk bool) error {
+	length <<= 1
+	if !isFinalChunk {
+		length |= 1
 	}
-	if !ok {
-		if err := this.extend(byteCount); err != nil {
-			return err
-		}
-		byteCount, ok, err = compact_time.EncodeTime(value, this.data[this.position:])
-		if !ok {
-			return fmt.Errorf("BUG: Failed encoding time value %v to buffer length %v from position %v",
-				value, len(this.data), this.position)
-		}
-	}
-	this.position += byteCount
-	return nil
-}
-
-func (this *encodeBuffer) EncodeTimestamp(value time.Time) (err error) {
-	this.EncodeTypeField(typeTimestamp)
-	var byteCount int
-	var ok bool
-	byteCount, ok, err = compact_time.EncodeTimestamp(value, this.data[this.position:])
-	if err != nil {
-		return err
-	}
-	if !ok {
-		if err := this.extend(byteCount); err != nil {
-			return err
-		}
-		byteCount, ok, err = compact_time.EncodeTimestamp(value, this.data[this.position:])
-		if !ok {
-			return fmt.Errorf("BUG: Failed encoding time value %v to buffer length %v from position %v",
-				value, len(this.data), this.position)
-		}
-	}
-	this.position += byteCount
-	return nil
+	return this.encodeRVLQ(length)
 }

@@ -1,4 +1,4 @@
-package cbe
+package rules
 
 import "fmt"
 

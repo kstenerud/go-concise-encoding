@@ -1,6 +1,12 @@
 github.com/kstenerud/go-compact-float v1.0.0 h1:0nlbfJsEW2KvkjnqPIjV4tHn54apoyG+W3OxBroqrDU=
 github.com/kstenerud/go-compact-float v1.0.0/go.mod h1:V7Xe82Cm6+1WWqhke4pmEVuWIkYour00qTrOdCEto+A=
-github.com/kstenerud/go-compact-time v1.0.0 h1:gTbHbD4n0tExLltQZpJj2iVXJmM83ZX6CKiWIYZyM+Y=
-github.com/kstenerud/go-compact-time v1.0.0/go.mod h1:6nDH3+LtXymiUHlh9Y/tox5T+SIucxaVdO+KrubBaQY=
+github.com/kstenerud/go-compact-time v1.1.0 h1:QeZPE/yEuTtLNH7dY4jn/B2YCA2WGYkkQVRcHahn5E8=
+github.com/kstenerud/go-compact-time v1.1.0/go.mod h1:6nDH3+LtXymiUHlh9Y/tox5T+SIucxaVdO+KrubBaQY=
+github.com/kstenerud/go-describe v1.0.1 h1:1gEqs81uO8dnhTWwNe48AlWpADWNa6mY7XwHS2nS23E=
+github.com/kstenerud/go-describe v1.0.1/go.mod h1:f8QWjevRHAYCP/TUGRTiuYEXO28F0g1HK1bP00hhShk=
+github.com/kstenerud/go-equivalence v1.0.0 h1:WueMnZ6VeAtqtC+5isZB4H4GkVXKqL2CyDGGiC/x/t0=
+github.com/kstenerud/go-equivalence v1.0.0/go.mod h1:D1g2Fd4We5VfwqO0JECg5IdTONKkZDSoakgAzKorsr4=
+github.com/kstenerud/go-reconstruct v1.0.2 h1:3a/7ciXuA7mIgPItTt7kPRnCa9gAOTCzZh7FTgVtxB8=
+github.com/kstenerud/go-reconstruct v1.0.2/go.mod h1:YpavxAFDoWrPrQifyyIPh3Wu78l04e3dvQVuEPlSN18=
 github.com/kstenerud/go-vlq v1.0.0 h1:M0dx7SiHNLxZ5poISP+mgkPqCykSmjwsX7e88UlAtZM=
 github.com/kstenerud/go-vlq v1.0.0/go.mod h1:Me2T4y66gC/vf83AySQYahMhcS6WPe2ftpfMQDNMvoI=
