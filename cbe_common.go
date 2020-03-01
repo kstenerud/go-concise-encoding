@@ -1,68 +1,126 @@
-package cbe
+package concise_encoding
+
+import (
+	"fmt"
+	"net/url"
+	"reflect"
+	"time"
+	"unicode"
+	"unicode/utf8"
+)
+
+var (
+	timeType  = reflect.TypeOf(time.Time{})
+	urlType   = reflect.TypeOf(url.URL{})
+	pURLType  = reflect.TypeOf((*url.URL)(nil))
+	bytesType = reflect.TypeOf([]uint8{})
+)
+
+func isFieldExported(name string) bool {
+	rune, _ := utf8.DecodeRuneInString(name)
+	return unicode.IsUpper(rune)
+}
 
 const cbeCodecVersion = 1
 
-type typeField uint8
+type cbeTypeField uint8
 
 const (
-	typeDecimal      typeField = 0x65
-	typePosInt       typeField = 0x66
-	typeNegInt       typeField = 0x67
-	typePosInt8      typeField = 0x68
-	typeNegInt8      typeField = 0x69
-	typePosInt16     typeField = 0x6a
-	typeNegInt16     typeField = 0x6b
-	typePosInt32     typeField = 0x6c
-	typeNegInt32     typeField = 0x6d
-	typePosInt64     typeField = 0x6e
-	typeNegInt64     typeField = 0x6f
-	typeFloat32      typeField = 0x70
-	typeFloat64      typeField = 0x71
-	typeReserved72   typeField = 0x72
-	typeReserved73   typeField = 0x73
-	typeReserved74   typeField = 0x74
-	typeReserved75   typeField = 0x75
-	typeComment      typeField = 0x76
-	typeMetadata     typeField = 0x77
-	typeMarkup       typeField = 0x78
-	typeMap          typeField = 0x79
-	typeList         typeField = 0x7a
-	typeEndContainer typeField = 0x7b
-	typeFalse        typeField = 0x7c
-	typeTrue         typeField = 0x7d
-	typeNil          typeField = 0x7e
-	typePadding      typeField = 0x7f
-	typeString0      typeField = 0x80
-	typeString1      typeField = 0x81
-	typeString2      typeField = 0x82
-	typeString3      typeField = 0x83
-	typeString4      typeField = 0x84
-	typeString5      typeField = 0x85
-	typeString6      typeField = 0x86
-	typeString7      typeField = 0x87
-	typeString8      typeField = 0x88
-	typeString9      typeField = 0x89
-	typeString10     typeField = 0x8a
-	typeString11     typeField = 0x8b
-	typeString12     typeField = 0x8c
-	typeString13     typeField = 0x8d
-	typeString14     typeField = 0x8e
-	typeString15     typeField = 0x8f
-	typeString       typeField = 0x90
-	typeBytes        typeField = 0x91
-	typeURI          typeField = 0x92
-	typeReserved93   typeField = 0x93
-	typeReserved94   typeField = 0x94
-	typeReserved95   typeField = 0x95
-	typeReserved96   typeField = 0x96
-	typeMarker       typeField = 0x97
-	typeReference    typeField = 0x98
-	typeDate         typeField = 0x99
-	typeTime         typeField = 0x9a
-	typeTimestamp    typeField = 0x9b
+	cbeTypeDecimal      cbeTypeField = 0x65
+	cbeTypePosInt       cbeTypeField = 0x66
+	cbeTypeNegInt       cbeTypeField = 0x67
+	cbeTypePosInt8      cbeTypeField = 0x68
+	cbeTypeNegInt8      cbeTypeField = 0x69
+	cbeTypePosInt16     cbeTypeField = 0x6a
+	cbeTypeNegInt16     cbeTypeField = 0x6b
+	cbeTypePosInt32     cbeTypeField = 0x6c
+	cbeTypeNegInt32     cbeTypeField = 0x6d
+	cbeTypePosInt64     cbeTypeField = 0x6e
+	cbeTypeNegInt64     cbeTypeField = 0x6f
+	cbeTypeFloat32      cbeTypeField = 0x70
+	cbeTypeFloat64      cbeTypeField = 0x71
+	cbeTypeUUID         cbeTypeField = 0x72
+	cbeTypeReserved73   cbeTypeField = 0x73
+	cbeTypeReserved74   cbeTypeField = 0x74
+	cbeTypeReserved75   cbeTypeField = 0x75
+	cbeTypeComment      cbeTypeField = 0x76
+	cbeTypeMetadata     cbeTypeField = 0x77
+	cbeTypeMarkup       cbeTypeField = 0x78
+	cbeTypeMap          cbeTypeField = 0x79
+	cbeTypeList         cbeTypeField = 0x7a
+	cbeTypeEndContainer cbeTypeField = 0x7b
+	cbeTypeFalse        cbeTypeField = 0x7c
+	cbeTypeTrue         cbeTypeField = 0x7d
+	cbeTypeNil          cbeTypeField = 0x7e
+	cbeTypePadding      cbeTypeField = 0x7f
+	cbeTypeString0      cbeTypeField = 0x80
+	cbeTypeString1      cbeTypeField = 0x81
+	cbeTypeString2      cbeTypeField = 0x82
+	cbeTypeString3      cbeTypeField = 0x83
+	cbeTypeString4      cbeTypeField = 0x84
+	cbeTypeString5      cbeTypeField = 0x85
+	cbeTypeString6      cbeTypeField = 0x86
+	cbeTypeString7      cbeTypeField = 0x87
+	cbeTypeString8      cbeTypeField = 0x88
+	cbeTypeString9      cbeTypeField = 0x89
+	cbeTypeString10     cbeTypeField = 0x8a
+	cbeTypeString11     cbeTypeField = 0x8b
+	cbeTypeString12     cbeTypeField = 0x8c
+	cbeTypeString13     cbeTypeField = 0x8d
+	cbeTypeString14     cbeTypeField = 0x8e
+	cbeTypeString15     cbeTypeField = 0x8f
+	cbeTypeString       cbeTypeField = 0x90
+	cbeTypeBytes        cbeTypeField = 0x91
+	cbeTypeURI          cbeTypeField = 0x92
+	cbeTypeCustom       cbeTypeField = 0x93
+	cbeTypeReserved94   cbeTypeField = 0x94
+	cbeTypeReserved95   cbeTypeField = 0x95
+	cbeTypeReserved96   cbeTypeField = 0x96
+	cbeTypeMarker       cbeTypeField = 0x97
+	cbeTypeReference    cbeTypeField = 0x98
+	cbeTypeDate         cbeTypeField = 0x99
+	cbeTypeTime         cbeTypeField = 0x9a
+	cbeTypeTimestamp    cbeTypeField = 0x9b
 )
 
 const (
-	smallIntMin int64 = -100
-	smallIntMax int64 = 100
+	cbeSmallIntMin int64 = -100
+	cbeSmallIntMax int64 = 100
 )
+
+func MarshalCBE(object interface{}, useReferences bool) (document []byte, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			var ok bool
+			err, ok = e.(error)
+			if !ok {
+				err = fmt.Errorf("%v", e)
+			}
+		}
+	}()
+
+	encoder := NewCBEEncoder()
+	iterator := NewRootObjectIterator(useReferences, encoder)
+	iterator.Iterate(object)
+	document = encoder.Document()
+	return
+}
+
+func UnmarshalCBE(document []byte, template interface{}, shouldZeroCopy bool) (decoded interface{}, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			var ok bool
+			err, ok = e.(error)
+			if !ok {
+				err = fmt.Errorf("%v", e)
+			}
+		}
+	}()
+
+	builder := NewBuilderFor(template)
+	rules := NewRules(cbeCodecVersion, DefaultLimits(), builder)
+	decoder := NewCBEDecoder(document, rules, shouldZeroCopy)
+	decoder.Decode()
+	decoded = builder.GetBuiltObject()
+	return
+}

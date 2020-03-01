@@ -1,4 +1,4 @@
-package rules
+package concise_encoding
 
 import "fmt"
 
@@ -12,16 +12,16 @@ func (this *Utf8Validator) Reset() {
 	this.accumulator = 0
 }
 
-func (this *Utf8Validator) AddByte(byteValue int) error {
+func (this *Utf8Validator) AddByte(byteValue int) {
 	const continuationMask = 0xc0
 	const continuationMatch = 0x80
 	if this.bytesRemaining > 0 {
 		if byteValue&continuationMask != continuationMatch {
-			return fmt.Errorf("UTF-8 encoding: expected continuation bit (0x80) in byte [0x%02x]", byteValue)
+			panic(fmt.Errorf("UTF-8 encoding: expected continuation bit (0x80) in byte [0x%02x]", byteValue))
 		}
 		this.bytesRemaining--
 		this.accumulator = (this.accumulator << 6) | (byteValue & ^continuationMask)
-		return nil
+		return
 	}
 
 	const initiator1ByteMask = 0x80
@@ -30,9 +30,9 @@ func (this *Utf8Validator) AddByte(byteValue int) error {
 		this.bytesRemaining = 0
 		this.accumulator = byteValue
 		if byteValue == 0 {
-			return fmt.Errorf("UTF-8 encoding: NUL byte is not allowed")
+			panic(fmt.Errorf("UTF-8 encoding: NUL byte is not allowed"))
 		}
-		return nil
+		return
 	}
 
 	const initiator2ByteMask = 0xe0
@@ -41,7 +41,7 @@ func (this *Utf8Validator) AddByte(byteValue int) error {
 	if (byteValue & initiator2ByteMask) == initiator2ByteMatch {
 		this.bytesRemaining = 1
 		this.accumulator = byteValue & firstByte2ByteMask
-		return nil
+		return
 	}
 
 	const initiator3ByteMask = 0xf0
@@ -50,7 +50,7 @@ func (this *Utf8Validator) AddByte(byteValue int) error {
 	if (byteValue & initiator3ByteMask) == initiator3ByteMatch {
 		this.bytesRemaining = 2
 		this.accumulator = byteValue & firstByte3ByteMask
-		return nil
+		return
 	}
 
 	const initiator4ByteMask = 0xf8
@@ -59,10 +59,10 @@ func (this *Utf8Validator) AddByte(byteValue int) error {
 	if (byteValue & initiator4ByteMask) == initiator4ByteMatch {
 		this.bytesRemaining = 3
 		this.accumulator = byteValue & firstByte4ByteMask
-		return nil
+		return
 	}
 
-	return fmt.Errorf("UTF-8 encoding: Invalid byte [0x%02x]", byteValue)
+	panic(fmt.Errorf("UTF-8 encoding: Invalid byte [0x%02x]", byteValue))
 }
 
 func (this *Utf8Validator) IsCompleteCharacter() bool {

@@ -1,59 +1,84 @@
-package cbe
+package concise_encoding
 
 import (
-	"errors"
+	"time"
+
+	"github.com/kstenerud/go-compact-time"
 )
 
-var BufferExhaustedError = errors.New("Buffer exhausted")
-
-type InlineContainerType int
-
-const (
-	InlineContainerTypeNone InlineContainerType = iota
-	InlineContainerTypeList
-	InlineContainerTypeMap
-)
-
-var digitsMax = [...]uint64{
-	0,
-	9,
-	99,
-	999,
-	9999,
-	99999,
-	999999,
-	9999999,
-	99999999,
-	999999999,
-	9999999999,
-	99999999999,
-	999999999999,
-	9999999999999,
-	99999999999999,
-	999999999999999,
-	9999999999999999,
-	99999999999999999,
-	999999999999999999,
-	9999999999999999999, // 19 digits
-	// Max digits for uint64 is 20
+type ConciseEncodingEventHandler interface {
+	OnVersion(version uint64)
+	OnPadding(count int)
+	OnNil()
+	OnBool(value bool)
+	OnTrue()
+	OnFalse()
+	OnPositiveInt(value uint64)
+	OnNegativeInt(value uint64)
+	OnInt(value int64)
+	OnFloat(value float64)
+	OnComplex(value complex128)
+	OnNan()
+	OnUUID(value []byte)
+	OnTime(value time.Time)
+	OnCompactTime(value *compact_time.Time)
+	OnBytes(value []byte)
+	OnString(value string)
+	OnURI(value string)
+	OnCustom(value []byte)
+	OnBytesBegin()
+	OnStringBegin()
+	OnURIBegin()
+	OnCustomBegin()
+	OnArrayChunk(length uint64, isFinalChunk bool)
+	OnArrayData(data []byte)
+	OnList()
+	OnMap()
+	OnMarkup()
+	OnMetadata()
+	OnComment()
+	OnEnd()
+	OnMarker()
+	OnReference()
+	OnEndDocument()
 }
 
-func CountDigits(value uint64) int {
-	// This is MUCH faster than the string method, and 4x faster than int(math.Log10(float64(value))) + 1
-	// Subdividing any further yields no performance gains.
-	if value <= digitsMax[10] {
-		for i := 1; i < 10; i++ {
-			if value <= digitsMax[i] {
-				return i
-			}
-		}
-		return 10
-	}
+type NullEventHandler struct{}
 
-	for i := 11; i < 20; i++ {
-		if value <= digitsMax[i] {
-			return i
-		}
-	}
-	return 20
+func NewNullEventHandler() *NullEventHandler {
+	return &NullEventHandler{}
 }
+func (this *NullEventHandler) OnVersion(version uint64)                      {}
+func (this *NullEventHandler) OnPadding(count int)                           {}
+func (this *NullEventHandler) OnNil()                                        {}
+func (this *NullEventHandler) OnBool(value bool)                             {}
+func (this *NullEventHandler) OnTrue()                                       {}
+func (this *NullEventHandler) OnFalse()                                      {}
+func (this *NullEventHandler) OnPositiveInt(value uint64)                    {}
+func (this *NullEventHandler) OnNegativeInt(value uint64)                    {}
+func (this *NullEventHandler) OnInt(value int64)                             {}
+func (this *NullEventHandler) OnFloat(value float64)                         {}
+func (this *NullEventHandler) OnComplex(value complex128)                    {}
+func (this *NullEventHandler) OnNan()                                        {}
+func (this *NullEventHandler) OnUUID(value []byte)                           {}
+func (this *NullEventHandler) OnTime(value time.Time)                        {}
+func (this *NullEventHandler) OnCompactTime(value *compact_time.Time)        {}
+func (this *NullEventHandler) OnBytes(value []byte)                          {}
+func (this *NullEventHandler) OnString(value string)                         {}
+func (this *NullEventHandler) OnURI(value string)                            {}
+func (this *NullEventHandler) OnCustom(value []byte)                         {}
+func (this *NullEventHandler) OnBytesBegin()                                 {}
+func (this *NullEventHandler) OnStringBegin()                                {}
+func (this *NullEventHandler) OnURIBegin()                                   {}
+func (this *NullEventHandler) OnCustomBegin()                                {}
+func (this *NullEventHandler) OnArrayChunk(length uint64, isFinalChunk bool) {}
+func (this *NullEventHandler) OnArrayData(data []byte)                       {}
+func (this *NullEventHandler) OnList()                                       {}
+func (this *NullEventHandler) OnMap()                                        {}
+func (this *NullEventHandler) OnMarkup()                                     {}
+func (this *NullEventHandler) OnMetadata()                                   {}
+func (this *NullEventHandler) OnComment()                                    {}
+func (this *NullEventHandler) OnEnd()                                        {}
+func (this *NullEventHandler) OnMarker()                                     {}
+func (this *NullEventHandler) OnReference()                                  {}
+func (this *NullEventHandler) OnEndDocument()                                {}

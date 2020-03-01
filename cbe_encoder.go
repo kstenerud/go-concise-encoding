@@ -1,30 +1,252 @@
-package cbe
+package concise_encoding
 
 import (
-	"fmt"
 	"math"
-	"net/url"
 	"time"
 
-	"github.com/kstenerud/go-cbe/rules"
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-vlq"
 )
 
-// TODO: Some ints would store better as float, and vice versa
-
-// ---------
-// Utilities
-// ---------
-
-const bitMask21 = uint64((1 << 21) - 1)
-const bitMask49 = uint64((1 << 49) - 1)
-
-func intFitsInSmallint(value int64) bool {
-	return value >= smallIntMin && value <= smallIntMax
+type CBEEncoder struct {
+	buff buffer
 }
 
-func uintFitsInSmallint(value uint64) bool {
-	return value <= uint64(smallIntMax)
+func NewCBEEncoder() *CBEEncoder {
+	return &CBEEncoder{}
+}
+
+func (this *CBEEncoder) Document() []byte {
+	return this.buff.bytes
+}
+
+func (this *CBEEncoder) OnPadding(count int) {
+	dst := this.buff.Allocate(count)
+	for i := 0; i < count; i++ {
+		dst[i] = byte(cbeTypePadding)
+	}
+}
+
+func (this *CBEEncoder) OnVersion(version uint64) {
+	this.encodeRVLQ(version)
+}
+
+func (this *CBEEncoder) OnNil() {
+	this.encodeTypeOnly(cbeTypeNil)
+}
+
+func (this *CBEEncoder) OnBool(value bool) {
+	if value {
+		this.OnTrue()
+	} else {
+		this.OnFalse()
+	}
+}
+
+func (this *CBEEncoder) OnTrue() {
+	this.encodeTypeOnly(cbeTypeTrue)
+}
+
+func (this *CBEEncoder) OnFalse() {
+	this.encodeTypeOnly(cbeTypeFalse)
+}
+
+func (this *CBEEncoder) OnInt(value int64) {
+	if value >= 0 {
+		this.OnPositiveInt(uint64(value))
+	} else {
+		this.OnNegativeInt(uint64(-value))
+	}
+}
+
+func (this *CBEEncoder) OnPositiveInt(value uint64) {
+	switch {
+	case fitsInSmallint(value):
+		this.encodeTypeOnly(cbeTypeField(value))
+	case fitsInUint8(value):
+		this.encodeTyped8Bits(cbeTypePosInt8, uint8(value))
+	case fitsInUint16(value):
+		this.encodeTyped16Bits(cbeTypePosInt16, uint16(value))
+	case fitsInUint21(value):
+		this.encodeUint(cbeTypePosInt, value)
+	case fitsInUint32(value):
+		this.encodeTyped32Bits(cbeTypePosInt32, uint32(value))
+	case fitsInUint49(value):
+		this.encodeUint(cbeTypePosInt, value)
+	default:
+		this.encodeTyped64Bits(cbeTypePosInt64, value)
+	}
+}
+
+func (this *CBEEncoder) OnNegativeInt(value uint64) {
+	switch {
+	case fitsInSmallint(value):
+		// Note: Must encode smallint using signed value
+		this.encodeTypeOnly(cbeTypeField(-int64(value)))
+	case fitsInUint8(value):
+		this.encodeTyped8Bits(cbeTypeNegInt8, uint8(value))
+	case fitsInUint16(value):
+		this.encodeTyped16Bits(cbeTypeNegInt16, uint16(value))
+	case fitsInUint21(value):
+		this.encodeUint(cbeTypeNegInt, value)
+	case fitsInUint32(value):
+		this.encodeTyped32Bits(cbeTypeNegInt32, uint32(value))
+	case fitsInUint49(value):
+		this.encodeUint(cbeTypeNegInt, value)
+	default:
+		this.encodeTyped64Bits(cbeTypeNegInt64, value)
+	}
+}
+
+func (this *CBEEncoder) OnFloat(value float64) {
+	asfloat32 := float32(value)
+	if float64(asfloat32) == value {
+		this.encodeTyped32Bits(cbeTypeFloat32, math.Float32bits(asfloat32))
+		// this.encodeFloat32(asfloat32)
+	} else {
+		this.encodeTyped64Bits(cbeTypeFloat64, math.Float64bits(value))
+		// this.encodeFloat64(value)
+	}
+}
+
+func (this *CBEEncoder) OnNan() {
+	this.encodeDecimalFloat(math.NaN(), 0)
+}
+
+func (this *CBEEncoder) OnUUID(value []byte) {
+	dst := this.buff.Allocate(17)
+	dst[0] = byte(cbeTypeUUID)
+	dst = dst[1:]
+	copy(dst, value[:])
+}
+
+func (this *CBEEncoder) OnComplex(value complex128) {
+	panic("TODO: complex. Requires custom type")
+}
+
+func (this *CBEEncoder) OnTime(value time.Time) {
+	this.OnCompactTime(compact_time.AsCompactTime(value))
+}
+
+func (this *CBEEncoder) OnCompactTime(value *compact_time.Time) {
+	var timeType cbeTypeField
+	switch value.TimeIs {
+	case compact_time.TypeDate:
+		timeType = cbeTypeDate
+	case compact_time.TypeTime:
+		timeType = cbeTypeTime
+	case compact_time.TypeTimestamp:
+		timeType = cbeTypeTimestamp
+	}
+	dst := this.buff.Allocate(compact_time.MaxEncodeLength + 1)
+	dst[0] = byte(timeType)
+	dst = dst[1:]
+	byteCount, _ := compact_time.Encode(value, dst)
+	this.buff.TrimUnused(byteCount + 1)
+}
+
+func (this *CBEEncoder) OnBytes(value []byte) {
+	this.encodeTypedBytes(cbeTypeBytes, value)
+}
+
+func (this *CBEEncoder) OnURI(value string) {
+	this.encodeTypedBytes(cbeTypeURI, []byte(value))
+}
+
+func (this *CBEEncoder) OnString(value string) {
+	bytes := []byte(value)
+	stringLength := len(bytes)
+
+	if stringLength > maxSmallStringLength {
+		this.encodeTypedBytes(cbeTypeString, bytes)
+		return
+	}
+
+	dst := this.buff.Allocate(stringLength + 1)
+	dst[0] = byte(cbeTypeString0 + cbeTypeField(stringLength))
+	dst = dst[1:]
+	copy(dst, bytes)
+}
+
+func (this *CBEEncoder) OnCustom(value []byte) {
+	this.encodeTypedBytes(cbeTypeCustom, value)
+}
+
+func (this *CBEEncoder) OnBytesBegin() {
+	this.encodeTypeOnly(cbeTypeBytes)
+}
+
+func (this *CBEEncoder) OnStringBegin() {
+	this.encodeTypeOnly(cbeTypeString)
+}
+
+func (this *CBEEncoder) OnURIBegin() {
+	this.encodeTypeOnly(cbeTypeURI)
+}
+
+func (this *CBEEncoder) OnCustomBegin() {
+	this.encodeTypeOnly(cbeTypeCustom)
+}
+
+func (this *CBEEncoder) OnArrayChunk(length uint64, isFinalChunk bool) {
+	continuationBit := uint64(0)
+	if isFinalChunk {
+		continuationBit = 1
+	}
+	this.encodeRVLQ((uint64(length) << 1) | continuationBit)
+}
+
+func (this *CBEEncoder) OnArrayData(data []byte) {
+	dst := this.buff.Allocate(len(data))
+	copy(dst, data)
+}
+
+func (this *CBEEncoder) OnList() {
+	this.encodeTypeOnly(cbeTypeList)
+}
+
+func (this *CBEEncoder) OnMap() {
+	this.encodeTypeOnly(cbeTypeMap)
+}
+
+func (this *CBEEncoder) OnMarkup() {
+	this.encodeTypeOnly(cbeTypeMarkup)
+}
+
+func (this *CBEEncoder) OnMetadata() {
+	this.encodeTypeOnly(cbeTypeMetadata)
+}
+
+func (this *CBEEncoder) OnComment() {
+	this.encodeTypeOnly(cbeTypeComment)
+}
+
+func (this *CBEEncoder) OnEnd() {
+	this.encodeTypeOnly(cbeTypeEndContainer)
+}
+
+func (this *CBEEncoder) OnMarker() {
+	this.encodeTypeOnly(cbeTypeMarker)
+}
+
+func (this *CBEEncoder) OnReference() {
+	this.encodeTypeOnly(cbeTypeReference)
+}
+
+func (this *CBEEncoder) OnEndDocument() {
+}
+
+const (
+	minBufferCap         = 64
+	maxSmallStringLength = 15
+
+	bitMask21 = uint64((1 << 21) - 1)
+	bitMask49 = uint64((1 << 49) - 1)
+)
+
+func fitsInSmallint(value uint64) bool {
+	return value <= uint64(cbeSmallIntMax)
 }
 
 func fitsInUint8(value uint64) bool {
@@ -35,608 +257,106 @@ func fitsInUint16(value uint64) bool {
 	return value <= math.MaxUint16
 }
 
-func fitsInUint32(value uint64) bool {
-	return value <= math.MaxUint32
-}
-
 func fitsInUint21(value uint64) bool {
 	return value == (value & bitMask21)
+}
+
+func fitsInUint32(value uint64) bool {
+	return value <= math.MaxUint32
 }
 
 func fitsInUint49(value uint64) bool {
 	return value == (value & bitMask49)
 }
 
-// -----------
-// CBE Encoder
-// -----------
-
-type CBEEncoder struct {
-	buffer              cbeEncodeBuffer
-	rules               rules.Rules
-	inlineContainerType InlineContainerType
-	context             fmt.Stringer // TODO
+func (this *CBEEncoder) encodeVersion(version uint64) {
+	this.encodeRVLQ(version)
 }
 
-const defaultBufferSize = 1024
-
-// ---------
-// Utilities
-// ---------
-
-func (this *CBEEncoder) beginBytes() (err error) {
-	return this.buffer.EncodeTypeField(typeBytes)
+func (this *CBEEncoder) encodeTypeOnly(value cbeTypeField) {
+	this.buff.Allocate(1)[0] = byte(value)
 }
 
-func (this *CBEEncoder) beginString() (err error) {
-	return this.buffer.EncodeTypeField(typeString)
+func (this *CBEEncoder) encodeRVLQ(valueIn uint64) {
+	dst := this.buff.Allocate(vlq.MaxEncodeLength)
+	value := vlq.Rvlq(valueIn)
+	byteCount, _ := value.EncodeTo(dst)
+	this.buff.TrimUnused(byteCount)
 }
 
-func (this *CBEEncoder) beginURI() (err error) {
-	return this.buffer.EncodeTypeField(typeURI)
+func (this *CBEEncoder) encodeTypedRVLQ(cbeType cbeTypeField, valueIn uint64) {
+	dst := this.buff.Allocate(vlq.MaxEncodeLength + 1)
+	dst[0] = byte(cbeType)
+	dst = dst[1:]
+	value := vlq.Rvlq(valueIn)
+	byteCount, _ := value.EncodeTo(dst)
+	this.buff.TrimUnused(byteCount + 1)
 }
 
-func (this *CBEEncoder) beginChunk(length uint64, isFinalChunk bool) (err error) {
-	return this.buffer.EncodeArrayChunkHeader(length, isFinalChunk)
+func (this *CBEEncoder) encodeTypedBytes(cbeType cbeTypeField, bytes []byte) {
+	bytesLength := len(bytes)
+	dst := this.buff.Allocate(vlq.MaxEncodeLength + bytesLength + 1)
+	dst[0] = byte(cbeType)
+	dst = dst[1:]
+	lengthField := vlq.Rvlq((bytesLength << 1) | 1)
+	byteCount, _ := lengthField.EncodeTo(dst)
+	dst = dst[byteCount:]
+	copy(dst, bytes)
+	this.buff.TrimUnused(byteCount + bytesLength + 1)
 }
 
-func (this *CBEEncoder) arrayData(value []byte) (bytesEncoded int, err error) {
-	if len(value) > this.buffer.RemainingSpace() && this.buffer.isExternalBuffer {
-		bytesEncoded = this.buffer.EncodeMaxBytes(value)
-	} else {
-		if err = this.buffer.EncodeBytes(value); err != nil {
-			return
-		}
-		bytesEncoded = len(value)
-	}
-	return
+func (this *CBEEncoder) encodeTyped8Bits(typeValue cbeTypeField, value byte) {
+	dst := this.buff.Allocate(2)
+	dst[0] = byte(typeValue)
+	dst[1] = value
 }
 
-func (this *CBEEncoder) arrayEntireData(value []byte) (err error) {
-	bytesToEncode := len(value)
-	if err = this.beginChunk(uint64(bytesToEncode), true); err != nil {
-		return
-	}
-	bytesEncoded := 0
-	bytesEncoded, err = this.arrayData(value)
-	if err != nil {
-		return
-	}
-	if bytesEncoded != bytesToEncode {
-		return fmt.Errorf("Not enough room to encode %v bytes of binary data", len(value))
-	}
-	return
+func (this *CBEEncoder) encodeTyped16Bits(typeValue cbeTypeField, value uint16) {
+	dst := this.buff.Allocate(3)
+	dst[0] = byte(typeValue)
+	dst[1] = byte(value)
+	dst[2] = byte(value >> 8)
 }
 
-func (this *CBEEncoder) smallEntireString(value string) (err error) {
-	byteCount := len(value)
-	if err = this.buffer.EncodeTypeField(typeString0 + typeField(byteCount)); err != nil {
-		return
-	}
-	bytesEncoded := 0
-	bytesEncoded, err = this.arrayData([]byte(value))
-	if err != nil {
-		return
-	}
-	if bytesEncoded != byteCount {
-		return fmt.Errorf("Not enough room to encode %v bytes of binary data", len(value))
-	}
-	return
+func (this *CBEEncoder) encodeTyped32Bits(typeValue cbeTypeField, value uint32) {
+	dst := this.buff.Allocate(5)
+	dst[0] = byte(typeValue)
+	dst[1] = byte(value)
+	dst[2] = byte(value >> 8)
+	dst[3] = byte(value >> 16)
+	dst[4] = byte(value >> 24)
 }
 
-func (this *CBEEncoder) largeEntireString(value string) (err error) {
-	if err = this.beginString(); err != nil {
-		return
-	}
-	return this.arrayEntireData([]byte(value))
+func (this *CBEEncoder) encodeTyped64Bits(typeValue cbeTypeField, value uint64) {
+	dst := this.buff.Allocate(9)
+	dst[0] = byte(typeValue)
+	dst[1] = byte(value)
+	dst[2] = byte(value >> 8)
+	dst[3] = byte(value >> 16)
+	dst[4] = byte(value >> 24)
+	dst[5] = byte(value >> 32)
+	dst[6] = byte(value >> 40)
+	dst[7] = byte(value >> 48)
+	dst[8] = byte(value >> 56)
 }
 
-// ----------
-// Public API
-// ----------
-
-// Create a new encoder. if buffer is nil, the encoder allocates its own buffer.
-func NewCBEEncoder(inlineContainerType InlineContainerType, buffer []byte, limits *rules.Limits) *CBEEncoder {
-	this := new(CBEEncoder)
-	this.Init(inlineContainerType, buffer, limits)
-	return this
+func (this *CBEEncoder) encodeUint(typeValue cbeTypeField, value uint64) {
+	this.encodeTypedRVLQ(typeValue, value)
 }
 
-func (this *CBEEncoder) Init(inlineContainerType InlineContainerType, externalBuffer []byte, limits *rules.Limits) {
-	this.rules.Init(cbeCodecVersion, limits)
-	this.inlineContainerType = inlineContainerType
-	switch inlineContainerType {
-	case InlineContainerTypeList:
-		if err := this.rules.BeginList(); err != nil {
-			panic(fmt.Errorf("BUG: This should never happen: %v", err))
-		}
-	case InlineContainerTypeMap:
-		if err := this.rules.BeginMap(); err != nil {
-			panic(fmt.Errorf("BUG: This should never happen: %v", err))
-		}
-	}
+// TODO
+// func (this *CBEEncoder) encodeFloat32(value float32) {
+// 	this.encodeTyped32Bits(cbeTypeFloat32, math.Float32bits(value))
+// }
 
-	this.buffer.Init(externalBuffer)
+// func (this *CBEEncoder) encodeFloat64(value float64) {
+// 	this.encodeTyped64Bits(cbeTypeFloat64, math.Float64bits(value))
+// }
 
-	// TODO: Init context
-
-	if err := this.buffer.EncodeVersion(cbeCodecVersion); err != nil {
-		panic(fmt.Errorf("BUG: This should never happen: %v", err))
-	}
-	if err := this.rules.AddVersion(cbeCodecVersion); err != nil {
-		panic(fmt.Errorf("BUG: This should never happen: %v", err))
-	}
-	this.buffer.Commit()
-}
-
-func (this *CBEEncoder) Padding(byteCount int) (err error) {
-	for i := 0; i < byteCount; i++ {
-		if err = this.buffer.EncodeTypeField(typePadding); err != nil {
-			return
-		}
-	}
-	if err = this.rules.AddPadding(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return nil
-}
-
-func (this *CBEEncoder) Nil() (err error) {
-	if err = this.buffer.EncodeTypeField(typeNil); err != nil {
-		return
-	}
-	if err = this.rules.AddNil(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return nil
-}
-
-func (this *CBEEncoder) Bool(value bool) (err error) {
-	typeValue := typeTrue
-	if !value {
-		typeValue = typeFalse
-	}
-	if err = this.buffer.EncodeTypeField(typeValue); err != nil {
-		return
-	}
-	if err = this.rules.AddBool(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) PositiveInt(value uint64) (err error) {
-	switch {
-	case uintFitsInSmallint(value):
-		if err = this.buffer.EncodeTypeField(typeField(value)); err != nil {
-			return
-		}
-	case fitsInUint8(value):
-		if err = this.buffer.EncodeUint8(typePosInt8, uint8(value)); err != nil {
-			return
-		}
-	case fitsInUint16(value):
-		if err = this.buffer.EncodeUint16(typePosInt16, uint16(value)); err != nil {
-			return
-		}
-	case fitsInUint21(value):
-		if err = this.buffer.EncodeUint(typePosInt, value); err != nil {
-			return
-		}
-	case fitsInUint32(value):
-		if err = this.buffer.EncodeUint32(typePosInt32, uint32(value)); err != nil {
-			return
-		}
-	case fitsInUint49(value):
-		if err = this.buffer.EncodeUint(typePosInt, value); err != nil {
-			return
-		}
-	default:
-		if err = this.buffer.EncodeUint64(typePosInt64, value); err != nil {
-			return
-		}
-	}
-	if err = this.rules.AddPositiveInt(value); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) NegativeInt(value uint64) (err error) {
-	switch {
-	case intFitsInSmallint(-int64(value)):
-		if err = this.buffer.EncodeTypeField(typeField(-int64(value))); err != nil {
-			return
-		}
-	case fitsInUint8(value):
-		if err = this.buffer.EncodeUint8(typeNegInt8, uint8(value)); err != nil {
-			return
-		}
-	case fitsInUint16(value):
-		if err = this.buffer.EncodeUint16(typeNegInt16, uint16(value)); err != nil {
-			return
-		}
-	case fitsInUint21(value):
-		if err = this.buffer.EncodeUint(typeNegInt, value); err != nil {
-			return
-		}
-	case fitsInUint32(value):
-		if err = this.buffer.EncodeUint32(typeNegInt32, uint32(value)); err != nil {
-			return
-		}
-	case fitsInUint49(value):
-		if err = this.buffer.EncodeUint(typeNegInt, value); err != nil {
-			return
-		}
-	default:
-		if err = this.buffer.EncodeUint64(typeNegInt64, value); err != nil {
-			return
-		}
-	}
-	if err = this.rules.AddNegativeInt(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) Int(value int64) error {
-	if value >= 0 {
-		return this.PositiveInt(uint64(value))
-	}
-	return this.NegativeInt(uint64(-value))
-}
-
-func (this *CBEEncoder) FloatRounded(value float64, significantDigits int) (err error) {
-	if significantDigits < 1 || significantDigits > 15 {
-		return this.Float(value)
-	}
-
-	if err = this.buffer.EncodeFloat(value, significantDigits); err != nil {
-		return
-	}
-	if err = this.rules.AddFloat(value); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) Float(value float64) (err error) {
-	asfloat32 := float32(value)
-	if float64(asfloat32) == value {
-		if err = this.buffer.EncodeFloat32(asfloat32); err != nil {
-			return
-		}
-	} else {
-		if err = this.buffer.EncodeFloat64(value); err != nil {
-			return
-		}
-	}
-	if err = this.rules.AddFloat(value); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) CompactTime(value *compact_time.Time) (err error) {
-	if err = this.buffer.EncodeCompactTime(value); err != nil {
-		return
-	}
-	if err = this.rules.AddTime(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) Time(value time.Time) (err error) {
-	if err = this.buffer.EncodeTime(value); err != nil {
-		return
-	}
-	if err = this.rules.AddTime(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) BeginMarker() (err error) {
-	if err = this.buffer.EncodeTypeField(typeMarker); err != nil {
-		return
-	}
-	if err = this.rules.BeginMarker(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) BeginReference() (err error) {
-	if err = this.buffer.EncodeTypeField(typeReference); err != nil {
-		return
-	}
-	if err = this.rules.BeginReference(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) EndContainer() (err error) {
-	if err = this.buffer.EncodeTypeField(typeEndContainer); err != nil {
-		return
-	}
-	if err = this.rules.EndContainer(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) BeginList() (err error) {
-	if err = this.buffer.EncodeTypeField(typeList); err != nil {
-		return
-	}
-	if err = this.rules.BeginList(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Begin a map. Any subsequent objects added are assumed to alternate
-// between key and value entries in the map, until EndContainer() is called.
-func (this *CBEEncoder) BeginMap() (err error) {
-	if err = this.buffer.EncodeTypeField(typeMap); err != nil {
-		return
-	}
-	if err = this.rules.BeginMap(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) BeginMarkup() (err error) {
-	if err = this.buffer.EncodeTypeField(typeMarkup); err != nil {
-		return
-	}
-	if err = this.rules.BeginMarkup(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Begin a metadata map. Any subsequent objects added are assumed to alternate
-// between key and value entries in the map, until EndContainer() is called.
-func (this *CBEEncoder) BeginMetadata() (err error) {
-	if err = this.buffer.EncodeTypeField(typeMetadata); err != nil {
-		return
-	}
-	if err = this.rules.BeginMetadata(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-func (this *CBEEncoder) BeginComment() (err error) {
-	if err = this.buffer.EncodeTypeField(typeComment); err != nil {
-		return
-	}
-	if err = this.rules.BeginComment(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Begin an array chunk. Encoder expects subsequent calls to ArrayData to
-// provide a total of exactly the length provided here.
-func (this *CBEEncoder) BeginChunk(length uint64, isFinalChunk bool) (err error) {
-	if err = this.beginChunk(length, isFinalChunk); err != nil {
-		return
-	}
-	if err = this.rules.BeginArrayChunk(length, isFinalChunk); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Add binary data to fill in the currently open array chunk.
-func (this *CBEEncoder) ArrayData(value []byte) (bytesEncoded int, err error) {
-	if bytesEncoded, err = this.arrayData(value); err != nil {
-		return
-	}
-	if err = this.rules.AddArrayData(value); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Begin a byte array. Encoder expects subsequent calls to BeginChunk.
-func (this *CBEEncoder) BeginBytes() (err error) {
-	if err = this.beginBytes(); err != nil {
-		return
-	}
-	if err = this.rules.BeginBytes(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Convenience function to completely fill a byte array in one call.
-// This will fail if there's not enough room in the buffer to completely encode
-// the byte array.
-func (this *CBEEncoder) Bytes(value []byte) (err error) {
-	length := len(value)
-	isFinalChunk := true
-
-	if err = this.beginBytes(); err != nil {
-		return
-	}
-	if err = this.arrayEntireData(value); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if err = this.rules.BeginBytes(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if err = this.rules.BeginArrayChunk(uint64(length), isFinalChunk); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if length > 0 {
-		if err = this.rules.AddArrayData(value); err != nil {
-			this.buffer.Rollback()
-			return
-		}
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Begin a string. Encoder expects subsequent calls to BeginChunk.
-func (this *CBEEncoder) BeginString() (err error) {
-	if err = this.beginString(); err != nil {
-		return
-	}
-	if err = this.rules.BeginString(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Convenience function to completely fill a string in one call.
-// This will fail if there's not enough room in the buffer to completely encode
-// the string.
-func (this *CBEEncoder) String(value string) (err error) {
-	asBytes := []byte(value)
-	length := len(asBytes)
-	isFinalChunk := true
-
-	if length <= 15 {
-		if err = this.smallEntireString(value); err != nil {
-			this.buffer.Rollback()
-			return
-		}
-	} else {
-		if err = this.largeEntireString(value); err != nil {
-			this.buffer.Rollback()
-			return
-		}
-	}
-	if err = this.rules.BeginString(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if err = this.rules.BeginArrayChunk(uint64(length), isFinalChunk); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if length > 0 {
-		if err = this.rules.AddArrayData(asBytes); err != nil {
-			this.buffer.Rollback()
-			return
-		}
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Begin a URI. Encoder expects subsequent calls to BeginChunk.
-func (this *CBEEncoder) BeginURI() (err error) {
-	if err = this.beginURI(); err != nil {
-		return
-	}
-	if err = this.rules.BeginURI(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// Convenience function to completely fill a string in one call.
-// This will fail if there's not enough room in the buffer to completely encode
-// the URI.
-func (this *CBEEncoder) URI(value *url.URL) (err error) {
-	asBytes := []byte(value.String())
-	length := len(asBytes)
-	isFinalChunk := true
-
-	if err = this.beginURI(); err != nil {
-		return
-	}
-	if err = this.arrayEntireData(asBytes); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if err = this.rules.BeginURI(); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if err = this.rules.BeginArrayChunk(uint64(length), isFinalChunk); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	if err = this.rules.AddArrayData(asBytes); err != nil {
-		this.buffer.Rollback()
-		return
-	}
-	this.buffer.Commit()
-	return
-}
-
-// End the current document.
-// Normally, the document will automatically end, except in two cases:
-// - You're using inline containers
-// - You're creating an empty document
-// In these cases, you should manually call End() to make sure there are no errors.
-// Note: This method is idempotent, so you can safely call it even if you don't
-// need to.
-func (this *CBEEncoder) End() (err error) {
-	if this.inlineContainerType != InlineContainerTypeNone {
-		if err = this.rules.EndContainer(); err != nil {
-			return
-		}
-	}
-	return this.rules.EndDocument()
-}
-
-func (this *CBEEncoder) EncodedBytes() []byte {
-	return this.buffer.EncodedBytes()
+func (this *CBEEncoder) encodeDecimalFloat(value float64, significantDigits int) {
+	dst := this.buff.Allocate(compact_float.MaxEncodeLength + 1)
+	dst[0] = byte(cbeTypeDecimal)
+	dst = dst[1:]
+	byteCount, _ := compact_float.Encode(value, significantDigits, dst)
+	this.buff.TrimUnused(byteCount + 1)
 }

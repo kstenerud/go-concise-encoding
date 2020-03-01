@@ -1,762 +1,390 @@
-package cbe
+package concise_encoding
 
 import (
-	"bytes"
 	"fmt"
+	"math"
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
-	"github.com/kstenerud/go-cbe/rules"
 	"github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-describe"
-	"github.com/kstenerud/go-equivalence"
 )
 
-// ============================================================================
-// Types
-// ============================================================================
-
-const (
-	IDNil uint32 = 1000 + iota
-	IDList
-	IDEList
-	IDMap
-	IDEMap
-	IDCmt
-	IDECmt
-	IDMeta
-	IDEMeta
-	IDMarkup
-	IDEMattr
-	IDEMarkup
-	IDEnd
-	IDMarker
-	IDRef
-	IDPad
-	IDBytes
-	IDStr
-	IDURI
-	IDEArr
-)
-
-type CBEToken interface {
-	EncodeCBE(encoder *CBEEncoder) error
-}
-
-type NilToken int
-
-func (this NilToken) String() string { return "Nil" }
-
-func (this NilToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.Nil() }
-
-func Nil() NilToken { return NilToken(IDNil) }
-
-// ------------------------------------
-
-type ListToken int
-
-func (this ListToken) String() string { return "List" }
-
-func (this ListToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginList() }
-
-func list() ListToken { return ListToken(IDList) }
-
-// ------------------------------------
-
-type EListToken int
-
-func (this EListToken) String() string { return "EList" }
-
-func (this EListToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func elist() EListToken { return EListToken(IDEList) }
-
-// ------------------------------------
-
-type MapToken int
-
-func (this MapToken) String() string { return "Map" }
-
-func (this MapToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginMap() }
-
-func Map() MapToken { return MapToken(IDMap) }
-
-// ------------------------------------
-
-type EMapToken int
-
-func (this EMapToken) String() string { return "EMap" }
-
-func (this EMapToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func emap() EMapToken { return EMapToken(IDEMap) }
-
-// ------------------------------------
-
-type CmtToken int
-
-func (this CmtToken) String() string { return "Cmt" }
-
-func (this CmtToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginComment() }
-
-func cmt() CmtToken { return CmtToken(IDCmt) }
-
-// ------------------------------------
-
-type ECmtToken int
-
-func (this ECmtToken) String() string { return "ECmt" }
-
-func (this ECmtToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func ecmt() ECmtToken { return ECmtToken(IDECmt) }
-
-// ------------------------------------
-
-type MetaToken int
-
-func (this MetaToken) String() string { return "Meta" }
-
-func (this MetaToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginMetadata() }
-
-func meta() MetaToken { return MetaToken(IDMeta) }
-
-// ------------------------------------
-
-type EMetaToken int
-
-func (this EMetaToken) String() string { return "EMeta" }
-
-func (this EMetaToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func emeta() EMetaToken { return EMetaToken(IDEMeta) }
-
-// ------------------------------------
-
-type MarkupToken int
-
-func (this MarkupToken) String() string { return "Markup" }
-
-func (this MarkupToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginMarkup() }
-
-func markup() MarkupToken { return MarkupToken(IDMarkup) }
-
-// ------------------------------------
-
-type EMattrToken int
-
-func (this EMattrToken) String() string { return "EMattr" }
-
-func (this EMattrToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func emattr() EMattrToken { return EMattrToken(IDEMattr) }
-
-// ------------------------------------
-
-type EMarkupToken int
-
-func (this EMarkupToken) String() string { return "EMarkup" }
-
-func (this EMarkupToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func emarkup() EMarkupToken { return EMarkupToken(IDEMarkup) }
-
-// ------------------------------------
-
-type EndToken int
-
-func (this EndToken) String() string { return "End" }
-
-func (this EndToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.EndContainer() }
-
-func end() EndToken { return EndToken(IDEnd) }
-
-// ------------------------------------
-
-type MarkerToken int
-
-func (this MarkerToken) String() string { return "Marker" }
-
-func (this MarkerToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginMarker() }
-
-func marker() MarkerToken { return MarkerToken(IDMarker) }
-
-// ------------------------------------
-
-type RefToken int
-
-func (this RefToken) String() string { return "Ref" }
-
-func (this RefToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginReference() }
-
-func ref() RefToken { return RefToken(IDRef) }
-
-// ------------------------------------
-
-type PadToken int
-
-func (this PadToken) String() string { return "Pad" }
-
-func (this PadToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.Padding(1) }
-
-func pad() PadToken { return PadToken(IDPad) }
-
-// ------------------------------------
-
-type BytesToken int
-
-func (this BytesToken) String() string { return "Bytes" }
-
-func (this BytesToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginBytes() }
-
-func bin() BytesToken { return BytesToken(IDBytes) }
-
-// ------------------------------------
-
-type StrToken int
-
-func (this StrToken) String() string { return "Str" }
-
-func (this StrToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginString() }
-
-func str() StrToken { return StrToken(IDStr) }
-
-// ------------------------------------
-
-type URIToken int
-
-func (this URIToken) String() string { return "URI" }
-
-func (this URIToken) EncodeCBE(encoder *CBEEncoder) error { return encoder.BeginURI() }
-
-func uri() URIToken { return URIToken(IDURI) }
-
-// ------------------------------------
-
-type NIntType uint64
-
-func (this NIntType) String() string { return fmt.Sprintf("-%v", uint64(this)) }
-
-func (this NIntType) EncodeCBE(encoder *CBEEncoder) error { return encoder.NegativeInt(uint64(this)) }
-
-func neg(value uint64) NIntType { return NIntType(value) }
-
-// ------------------------------------
-
-type ChunkType uint64
-
-var flagFinalChunk ChunkType = 0x1000000000000000
-
-func (this ChunkType) String() string {
-	isFinalChunk := this&flagFinalChunk != 0
-	length := uint64(this & ^flagFinalChunk)
-	return fmt.Sprintf("Chunk(%v, %v)", length, isFinalChunk)
-}
-
-func (this ChunkType) EncodeCBE(encoder *CBEEncoder) error {
-	isFinalChunk := this&flagFinalChunk != 0
-	length := uint64(this & ^flagFinalChunk)
-
-	return encoder.BeginChunk(length, isFinalChunk)
-}
-
-func chunk(size uint64, isFinalChunk bool) ChunkType {
-	result := ChunkType(size)
-	if isFinalChunk {
-		result |= flagFinalChunk
-	}
-	return result
-}
-
-// ------------------------------------
-
-type EArrToken int
-
-func (this EArrToken) String() string { return "EArr" }
-
-func earr() EArrToken { return EArrToken(IDEArr) }
-
-// ------------------------------------
-
-func binBytes(values ...byte) []byte {
-	return values
-}
-
-func strBytes(str string) []byte {
-	return []byte(str)
-}
-
-func uriBytes(str string) []byte {
-	_, err := url.Parse(str)
+func newURI(uriString string) *url.URL {
+	uri, err := url.Parse(uriString)
 	if err != nil {
-		_, err = url.Parse("http://parse.error")
+		fmt.Printf("ERROR ERROR ERROR BUG: Bad URL (%v): %v", uriString, err)
+		panic(err)
 	}
-	return []byte(str)
+	return uri
 }
 
-func Date(year int, month int, day int) *compact_time.Time {
-	return compact_time.NewDate(year, month, day)
-}
-
-func Time(hour int, minute int, second int, nanosecond int, areaLocation string) *compact_time.Time {
-	return compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
-}
-
-func TimeLoc(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
-	return compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
-}
-
-func TS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
-	return compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
-}
-
-func TSLoc(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
-	return compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
-}
-
-// ------------------------------------
-
-var stringGeneratorChars = [...]byte{
-	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-	'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-}
-
-func genString(length int) string {
-	var result strings.Builder
-	for i := 0; i < length; i++ {
-		result.WriteByte(stringGeneratorChars[i%len(stringGeneratorChars)])
-	}
-	return result.String()
-}
-
-func genBytes(length int) []byte {
-	return []byte(genString(length))
-}
-
-func getPanicContents(function func()) (recovered interface{}) {
+func reportPanic(function func()) (err error) {
 	defer func() {
-		recovered = recover()
+		if e := recover(); e != nil {
+			var ok bool
+			err, ok = e.(error)
+			if !ok {
+				err = fmt.Errorf("%v", e)
+			}
+		}
 	}()
+
 	function()
-	return recovered
-}
-
-func ShortCircuit(errors ...error) error {
-	for _, err := range errors {
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func Tokens(tokens ...interface{}) []interface{} {
-	return tokens
-}
-
-// ============================================================================
-// Decoder
-// ============================================================================
-
-type TokenDecoder struct {
-	Tokens []interface{}
-}
-
-func NewTokenDecoder() *TokenDecoder {
-	return new(TokenDecoder)
-}
-
-func (this *TokenDecoder) OnNil() error {
-	this.Tokens = append(this.Tokens, Nil())
-	return nil
-}
-func (this *TokenDecoder) OnBool(value bool) error {
-	this.Tokens = append(this.Tokens, value)
-	return nil
-}
-func (this *TokenDecoder) OnPositiveInt(value uint64) error {
-	this.Tokens = append(this.Tokens, value)
-	return nil
-}
-func (this *TokenDecoder) OnNegativeInt(value uint64) error {
-	this.Tokens = append(this.Tokens, neg(value))
-	return nil
-}
-func (this *TokenDecoder) OnFloat(value float64) error {
-	this.Tokens = append(this.Tokens, value)
-	return nil
-}
-func (this *TokenDecoder) OnTime(value *compact_time.Time) error {
-	this.Tokens = append(this.Tokens, value)
-	return nil
-}
-func (this *TokenDecoder) OnListBegin() error {
-	this.Tokens = append(this.Tokens, list())
-	return nil
-}
-func (this *TokenDecoder) OnMapBegin() error {
-	this.Tokens = append(this.Tokens, Map())
-	return nil
-}
-func (this *TokenDecoder) OnMarkupBegin() error {
-	this.Tokens = append(this.Tokens, markup())
-	return nil
-}
-func (this *TokenDecoder) OnMetadataBegin() error {
-	this.Tokens = append(this.Tokens, meta())
-	return nil
-}
-func (this *TokenDecoder) OnCommentBegin() error {
-	this.Tokens = append(this.Tokens, cmt())
-	return nil
-}
-func (this *TokenDecoder) OnContainerEnd() error {
-	this.Tokens = append(this.Tokens, end())
-	return nil
-}
-func (this *TokenDecoder) OnMarkerBegin() error {
-	this.Tokens = append(this.Tokens, marker())
-	return nil
-}
-func (this *TokenDecoder) OnReferenceBegin() error {
-	this.Tokens = append(this.Tokens, ref())
-	return nil
-}
-func (this *TokenDecoder) OnBytesBegin() error {
-	this.Tokens = append(this.Tokens, bin())
-	return nil
-}
-func (this *TokenDecoder) OnStringBegin() error {
-	this.Tokens = append(this.Tokens, str())
-	return nil
-}
-func (this *TokenDecoder) OnURIBegin() error {
-	this.Tokens = append(this.Tokens, uri())
-	return nil
-}
-func (this *TokenDecoder) OnArrayChunkBegin(byteCount uint64, isFinalChunk bool) error {
-	this.Tokens = append(this.Tokens, chunk(byteCount, isFinalChunk))
-	return nil
-}
-func (this *TokenDecoder) OnArrayData(bytes []byte) error {
-	this.Tokens = append(this.Tokens, bytes)
-	return nil
-}
-func (this *TokenDecoder) OnDocumentEnd() error {
-	// Nothing to do
-	return nil
-}
-
-// ===========================================
-
-func decodeDocumentCommon(inlineContainerType InlineContainerType, autoEnd bool, limits *rules.Limits, encoded []byte) (tokens []interface{}, err error) {
-	tokenDecoder := NewTokenDecoder()
-	decoder := NewDecoder(inlineContainerType, limits, tokenDecoder)
-	var isComplete bool
-	if isComplete, err = decoder.Feed(encoded); err != nil {
-		return
-	}
-	if !autoEnd && !isComplete {
-		err = fmt.Errorf("Document incomplete")
-		return
-	}
-
-	if err = decoder.EndDocument(); err != nil {
-		return
-	}
-
-	tokens = tokenDecoder.Tokens
 	return
 }
 
-func decodeDocumentWithAutoEnd(encoded []byte) (result []interface{}, err error) {
-	return decodeDocumentCommon(InlineContainerTypeNone, true, rules.DefaultLimits(), encoded)
-}
-
-func decodeDocument(encoded []byte) (result []interface{}, err error) {
-	return decodeDocumentCommon(InlineContainerTypeNone, false, rules.DefaultLimits(), encoded)
-}
-
-func decodeWithBufferSizeCommon(limits *rules.Limits, encoded []byte, bufferSize int) (tokens []interface{}, err error) {
-	tokenDecoder := NewTokenDecoder()
-	decoder := NewDecoder(InlineContainerTypeNone, limits, tokenDecoder)
-	var isComplete bool
-	for offset := 0; offset < len(encoded); offset += bufferSize {
-		end := offset + bufferSize
-		if end > len(encoded) {
-			end = len(encoded)
-		}
-		if isComplete, err = decoder.Feed(encoded[offset:end]); err != nil {
-			return
-		}
-		if isComplete && end != len(encoded) {
-			err = fmt.Errorf("Unexpected end of document")
-		}
-	}
-	if !isComplete {
-		err = fmt.Errorf("Document incomplete")
-	}
-	// TODO: Check that all data was consumed
-	tokens = tokenDecoder.Tokens
-	return
-}
-
-func decodeWithBufferSize(encoded []byte, bufferSize int) (result []interface{}, err error) {
-	return decodeWithBufferSizeCommon(rules.DefaultLimits(), encoded, bufferSize)
-}
-
-func tryDecode(encoded []byte) error {
-	_, err := decodeDocument(encoded)
-	return err
-}
-
-func encodeToken(encoder *CBEEncoder, value interface{}) error {
-	switch v := value.(type) {
-	case CBEToken:
-		return v.EncodeCBE(encoder)
-	case bool:
-		return encoder.Bool(v)
-	case uint:
-		return encoder.PositiveInt(uint64(v))
-	case uint8:
-		return encoder.PositiveInt(uint64(v))
-	case uint16:
-		return encoder.PositiveInt(uint64(v))
-	case uint32:
-		return encoder.PositiveInt(uint64(v))
-	case uint64:
-		return encoder.PositiveInt(uint64(v))
-	case int:
-		if v < 0 {
-			return encoder.NegativeInt(uint64(-v))
-		}
-		return encoder.PositiveInt(uint64(v))
-	case int8:
-		if v < 0 {
-			return encoder.NegativeInt(uint64(-v))
-		}
-		return encoder.PositiveInt(uint64(v))
-	case int16:
-		if v < 0 {
-			return encoder.NegativeInt(uint64(-v))
-		}
-		return encoder.PositiveInt(uint64(v))
-	case int32:
-		if v < 0 {
-			return encoder.NegativeInt(uint64(-v))
-		}
-		return encoder.PositiveInt(uint64(v))
-	case int64:
-		if v < 0 {
-			return encoder.NegativeInt(uint64(-v))
-		}
-		return encoder.PositiveInt(uint64(v))
-	case float32:
-		return encoder.Float(float64(v))
-	case float64:
-		return encoder.Float(float64(v))
-	case *compact_time.Time:
-		return encoder.CompactTime(v)
-	case []byte:
-		_, err := encoder.ArrayData(v)
-		return err
-	}
-	return fmt.Errorf("%v has unhandled type", value)
-}
-
-func encode(src []interface{}) (encoded []byte, err error) {
-	buffer := make([]byte, 10000)
-	encoder := NewCBEEncoder(InlineContainerTypeNone, buffer, rules.DefaultLimits())
-	for _, token := range src {
-		if err = encodeToken(encoder, token); err != nil {
-			return
-		}
-	}
-	if err = encoder.End(); err != nil {
-		return
-	}
-	encoded = encoder.EncodedBytes()
-	return
-}
-
-// ============================================================================
-// Assertions
-// ============================================================================
-
-func assertPanics(t *testing.T, function func()) {
-	if getPanicContents(function) == nil {
-		t.Errorf("Should have panicked but didn't")
-	}
-}
-
-func assertDoesNotPanic(t *testing.T, function func()) {
-	if result := getPanicContents(function); result != nil {
-		t.Errorf("Should not have panicked, but did: %v", result)
-	}
-}
-
-func assertSuccess(t *testing.T, err error) {
-	if err != nil {
+func assertNoPanic(t *testing.T, function func()) {
+	if err := reportPanic(function); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 }
 
-func assertFailure(t *testing.T, err error) {
-	if err == nil {
-		t.Errorf("Unexpected success")
+func assertPanics(t *testing.T, function func()) {
+	if err := reportPanic(function); err == nil {
+		t.Errorf("Expected an error")
 	}
 }
 
-func assertDecodedEncoded(t *testing.T, expectedEncoded []byte, expectedDecoded []interface{}) {
-	actualDecoded, err := decodeDocument(expectedEncoded)
-	if err != nil {
-		t.Fatalf("Decode Error: %v", err)
-		return
+func generateString(charCount int, startIndex int) string {
+	charRange := int('z' - 'a')
+	var object strings.Builder
+	for i := 0; i < charCount; i++ {
+		ch := 'a' + (i+charCount+startIndex)%charRange
+		object.WriteByte(byte(ch))
 	}
-	if !equivalence.IsEquivalent(actualDecoded, expectedDecoded) {
-		t.Fatalf("Expected decoded %v, actual %v", describe.Describe(expectedDecoded), describe.Describe(actualDecoded))
-	}
+	return object.String()
+}
 
-	actualEncoded, err := encode(actualDecoded)
-	if err != nil {
-		t.Fatalf("Encode Error: %v", err)
-		return
-	}
-	if !equivalence.IsEquivalent(actualEncoded, expectedEncoded) {
-		t.Fatalf("Expected encoded %v, actual %v", describe.Describe(expectedEncoded), describe.Describe(actualEncoded))
+func generateBytes(length int, startIndex int) []byte {
+	return []byte(generateString(length, startIndex))
+}
+
+func invokeEvents(handler ConciseEncodingEventHandler, events ...*tevent) {
+	for _, event := range events {
+		event.Invoke(handler)
 	}
 }
 
-func assertDecoded(t *testing.T, encoded []byte, expected []interface{}) {
-	actual, err := decodeDocument(encoded)
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-		return
-	}
-	if !equivalence.IsEquivalent(actual, expected) {
-		t.Fatalf("Expected %v, actual %v", describe.Describe(expected), describe.Describe(actual))
-	}
+func cbeDecode(document []byte) (events []*tevent, err error) {
+	handler := NewTEH()
+	shouldZeroCopy := false
+	err = CBEDecode(document, handler, shouldZeroCopy)
+	events = handler.Events
+	return
 }
 
-func assertDecodedWithAutoEnd(t *testing.T, encoded []byte, expected []interface{}) {
-	actual, err := decodeDocumentWithAutoEnd(encoded)
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-		return
-	}
-	if !equivalence.IsEquivalent(actual, expected) {
-		t.Fatalf("Expected %v, actual %v", describe.Describe(expected), describe.Describe(actual))
-	}
-}
-
-func assertDecodedPiecemeal(t *testing.T, encoded []byte, minBufferSize int, maxBufferSize int, expected []interface{}) {
-	for i := minBufferSize; i < maxBufferSize; i++ {
-		actual, err := decodeWithBufferSize(encoded, i)
-		if err != nil {
-			t.Fatalf("Error: %v", err)
-			return
+func cbeEncodeDecode(expected ...*tevent) (events []*tevent, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
 		}
-		if !equivalence.IsEquivalent(actual, expected) {
-			t.Fatalf("Expected %v, actual %v", describe.Describe(expected), describe.Describe(actual))
+	}()
+
+	encoder := NewCBEEncoder()
+	invokeEvents(encoder, expected...)
+	document := encoder.Document()
+
+	return cbeDecode(document)
+}
+
+func cteDecode(document []byte) (events []*tevent, err error) {
+	handler := NewTEH()
+	err = CTEDecode(document, handler)
+	events = handler.Events
+	return
+}
+
+func cteEncode(events ...*tevent) []byte {
+	encoder := NewCTEEncoder()
+	invokeEvents(encoder, events...)
+	return encoder.Document()
+}
+
+func cteEncodeDecode(events ...*tevent) (decodedEvents []*tevent, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
 		}
+	}()
+
+	return cteDecode(cteEncode(events...))
+}
+
+type teventType int
+
+const (
+	teventVersion teventType = iota
+	teventPadding
+	teventNil
+	teventBool
+	teventTrue
+	teventFalse
+	teventPInt
+	teventNInt
+	teventInt
+	teventFloat
+	teventComplex
+	teventNan
+	teventUUID
+	teventTime
+	teventCompactTime
+	teventBytes
+	teventString
+	teventURI
+	teventCustom
+	teventBytesBegin
+	teventStringBegin
+	teventURIBegin
+	teventCustomBegin
+	teventArrayChunk
+	teventArrayData
+	teventList
+	teventMap
+	teventMarkup
+	teventMetadata
+	teventComment
+	teventEnd
+	teventMarker
+	teventReference
+	teventEndDocument
+)
+
+var teventNames = []string{
+	"v",
+	"pad",
+	"n",
+	"b",
+	"tt",
+	"ff",
+	"pi",
+	"ni",
+	"i",
+	"f",
+	"cmpl",
+	"nan",
+	"uuid",
+	"gt",
+	"ct",
+	"bin",
+	"s",
+	"uri",
+	"cust",
+	"bb",
+	"sb",
+	"ub",
+	"cb",
+	"ac",
+	"ad",
+	"l",
+	"m",
+	"mup",
+	"meta",
+	"cmt",
+	"e",
+	"mark",
+	"ref",
+	"ed",
+}
+
+func (this teventType) String() string {
+	return teventNames[this]
+}
+
+type tevent struct {
+	Type teventType
+	V1   interface{}
+	V2   interface{}
+}
+
+func newTEvent(eventType teventType, v1 interface{}, v2 interface{}) *tevent {
+	return &tevent{
+		Type: eventType,
+		V1:   v1,
+		V2:   v2,
 	}
 }
 
-// ============================================================================
-// Encoder
-// ============================================================================
-
-func assertEncoded(t *testing.T, function func(*CBEEncoder) error, expected []byte) {
-	encoder := NewCBEEncoder(InlineContainerTypeNone, nil, rules.DefaultLimits())
-	err := function(encoder)
-	if err != nil {
-		t.Fatal(err)
+func (this *tevent) String() string {
+	str := this.Type.String()
+	if this.V1 != nil {
+		if this.V2 != nil {
+			return fmt.Sprintf("%v(%v,%v)", str, this.V1, this.V2)
+		}
+		return fmt.Sprintf("%v(%v)", str, this.V1)
 	}
-	actual := encoder.EncodedBytes()
-	if !bytes.Equal(actual, expected) {
-		t.Errorf("Expected bytes %v, actual %v", describe.Describe(expected), describe.Describe(actual))
+	return str
+}
+
+func (this *tevent) Invoke(handler ConciseEncodingEventHandler) {
+	switch this.Type {
+	case teventVersion:
+		handler.OnVersion(this.V1.(uint64))
+	case teventPadding:
+		handler.OnPadding(this.V1.(int))
+	case teventNil:
+		handler.OnNil()
+	case teventBool:
+		handler.OnBool(this.V1.(bool))
+	case teventTrue:
+		handler.OnBool(true)
+	case teventFalse:
+		handler.OnBool(false)
+	case teventPInt:
+		handler.OnPositiveInt(this.V1.(uint64))
+	case teventNInt:
+		handler.OnNegativeInt(this.V1.(uint64))
+	case teventInt:
+		v := this.V1.(int64)
+		if v >= 0 {
+			handler.OnPositiveInt(uint64(v))
+		} else {
+			handler.OnNegativeInt(uint64(-v))
+		}
+	case teventFloat:
+		handler.OnFloat(this.V1.(float64))
+	case teventComplex:
+		handler.OnComplex(this.V1.(complex128))
+	case teventNan:
+		handler.OnNan()
+	case teventUUID:
+		handler.OnUUID(this.V1.([]byte))
+	case teventTime:
+		handler.OnTime(this.V1.(time.Time))
+	case teventCompactTime:
+		handler.OnCompactTime(this.V1.(*compact_time.Time))
+	case teventBytes:
+		handler.OnBytes(this.V1.([]byte))
+	case teventString:
+		handler.OnString(this.V1.(string))
+	case teventURI:
+		handler.OnURI(this.V1.(string))
+	case teventCustom:
+		handler.OnCustom(this.V1.([]byte))
+	case teventBytesBegin:
+		handler.OnBytesBegin()
+	case teventStringBegin:
+		handler.OnStringBegin()
+	case teventURIBegin:
+		handler.OnURIBegin()
+	case teventCustomBegin:
+		handler.OnCustomBegin()
+	case teventArrayChunk:
+		handler.OnArrayChunk(this.V1.(uint64), this.V2.(bool))
+	case teventArrayData:
+		handler.OnArrayData(this.V1.([]byte))
+	case teventList:
+		handler.OnList()
+	case teventMap:
+		handler.OnMap()
+	case teventMarkup:
+		handler.OnMarkup()
+	case teventMetadata:
+		handler.OnMetadata()
+	case teventComment:
+		handler.OnComment()
+	case teventEnd:
+		handler.OnEnd()
+	case teventMarker:
+		handler.OnMarker()
+	case teventReference:
+		handler.OnReference()
+	case teventEndDocument:
+		handler.OnEndDocument()
+	default:
+		panic(fmt.Errorf("%v: Unhandled event type", this.Type))
 	}
 }
 
-// ============================================================================
-// Marshal / Unmarshal
-// ============================================================================
-
-// func assertMarshaled(t *testing.T, value interface{}, expected []byte) {
-// 	encoder := NewCBEEncoder(InlineContainerTypeNone, nil, rules.DefaultLimits())
-// 	Marshal(encoder, InlineContainerTypeNone, value)
-// 	actual := encoder.EncodedBytes()
-// 	if !bytes.Equal(actual, expected) {
-// 		t.Errorf("Expected %v, actual %v", hex.EncodeToString(expected), hex.EncodeToString(actual))
-// 	}
-// }
-
-// func assertEncodesToExternalBuffer(t *testing.T, value interface{}, bufferSize int) {
-// 	buffer := make([]byte, bufferSize)
-// 	encoder := NewCBEEncoder(InlineContainerTypeNone, buffer, rules.DefaultLimits())
-// 	if err := Marshal(encoder, InlineContainerTypeNone, value); err != nil {
-// 		t.Errorf("Unexpected error while marshling: %v", err)
-// 		return
-// 	}
-
-// 	encoder2 := NewCBEEncoder(InlineContainerTypeNone, nil, rules.DefaultLimits())
-// 	Marshal(encoder2, InlineContainerTypeNone, value)
-// 	expected := encoder2.EncodedBytes()
-// 	if !bytes.Equal(buffer, expected) {
-// 		t.Errorf("Expected %v, actual %v", expected, buffer)
-// 	}
-// }
-
-// func assertFailsEncodingToExternalBuffer(t *testing.T, value interface{}, bufferSize int) {
-// 	buffer := make([]byte, bufferSize)
-// 	encoder := NewCBEEncoder(InlineContainerTypeNone, buffer, rules.DefaultLimits())
-// 	assertPanics(t, func() {
-// 		Marshal(encoder, InlineContainerTypeNone, value)
-// 	})
-// }
-
-func assertMarshaledSize(t *testing.T, value interface{}, expectedSize int) {
-	actualSize := CBEEncodedSize(InlineContainerTypeNone, value)
-	if actualSize != expectedSize {
-		t.Errorf("Expected size %v but got %v", expectedSize, actualSize)
+func tt() *tevent { return newTEvent(teventBool, true, nil) }
+func ff() *tevent { return newTEvent(teventBool, false, nil) }
+func i(v int64) *tevent {
+	if v >= 0 {
+		return pi(uint64(v))
+	} else {
+		return ni(uint64(-v))
 	}
 }
-
-func assertMarshalUnmarshal(t *testing.T, expected interface{}, output interface{}) {
-	document, err := MarshalCBE(expected)
-	if err != nil {
-		t.Error(err)
-		return
+func f(v float64) *tevent {
+	if math.IsNaN(v) {
+		return nan()
 	}
-	err = UnmarshalCBE(document, output)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !equivalence.IsEquivalent(output, expected) {
-		t.Errorf("Expected %v, actual %v", describe.Describe(expected), describe.Describe(output))
-	}
+	return newTEvent(teventFloat, v, nil)
 }
 
-// func assertMarshalUnmarshalProduces(t *testing.T, input interface{}, expected interface{}) {
-// 	document, err := MarshalCBE(input)
-// 	if err != nil {
-// 		t.Error(err)
-// 		return
-// 	}
-// 	var actual interface{}
-// 	actual, err = UnmarshalCBE(document)
-// 	if err != nil {
-// 		t.Error(err)
-// 		return
-// 	}
+func v(v uint64) *tevent              { return newTEvent(teventVersion, v, nil) }
+func n() *tevent                      { return newTEvent(teventNil, nil, nil) }
+func pad(v int) *tevent               { return newTEvent(teventPadding, v, nil) }
+func b(v bool) *tevent                { return newTEvent(teventBool, v, nil) }
+func pi(v uint64) *tevent             { return newTEvent(teventPInt, v, nil) }
+func ni(v uint64) *tevent             { return newTEvent(teventNInt, v, nil) }
+func cmpl(v complex128) *tevent       { return newTEvent(teventComplex, v, nil) }
+func nan() *tevent                    { return newTEvent(teventNan, nil, nil) }
+func uuid(v []byte) *tevent           { return newTEvent(teventUUID, v, nil) }
+func gt(v time.Time) *tevent          { return newTEvent(teventTime, v, nil) }
+func ct(v *compact_time.Time) *tevent { return newTEvent(teventCompactTime, v, nil) }
+func bin(v []byte) *tevent            { return newTEvent(teventBytes, v, nil) }
+func s(v string) *tevent              { return newTEvent(teventString, v, nil) }
+func uri(v string) *tevent            { return newTEvent(teventURI, v, nil) }
+func cust(v []byte) *tevent           { return newTEvent(teventCustom, v, nil) }
+func bb() *tevent                     { return newTEvent(teventBytesBegin, nil, nil) }
+func sb() *tevent                     { return newTEvent(teventStringBegin, nil, nil) }
+func ub() *tevent                     { return newTEvent(teventURIBegin, nil, nil) }
+func cb() *tevent                     { return newTEvent(teventCustomBegin, nil, nil) }
+func ac(l uint64, term bool) *tevent  { return newTEvent(teventArrayChunk, l, term) }
+func ad(v []byte) *tevent             { return newTEvent(teventArrayData, v, nil) }
+func l() *tevent                      { return newTEvent(teventList, nil, nil) }
+func m() *tevent                      { return newTEvent(teventMap, nil, nil) }
+func mup() *tevent                    { return newTEvent(teventMarkup, nil, nil) }
+func meta() *tevent                   { return newTEvent(teventMetadata, nil, nil) }
+func cmt() *tevent                    { return newTEvent(teventComment, nil, nil) }
+func e() *tevent                      { return newTEvent(teventEnd, nil, nil) }
+func mark() *tevent                   { return newTEvent(teventMarker, nil, nil) }
+func ref() *tevent                    { return newTEvent(teventReference, nil, nil) }
+func ed() *tevent                     { return newTEvent(teventEndDocument, nil, nil) }
 
-// 	fmt.Printf("### set %v from %v\n", actual, input)
+type TEH struct {
+	Events []*tevent
+}
 
-// 	if !DeepEquivalence(actual, expected) {
-// 		t.Errorf("Expected %t: <%v>, actual %t: <%v>", expected, expected, actual, actual)
-// 	}
-// }
+func NewTEH() *TEH {
+	return &TEH{}
+}
+func (h *TEH) add(event *tevent) {
+	h.Events = append(h.Events, event)
+}
+func (h *TEH) OnVersion(version uint64)               { h.add(v(version)) }
+func (h *TEH) OnPadding(count int)                    { h.add(pad(count)) }
+func (h *TEH) OnNil()                                 { h.add(n()) }
+func (h *TEH) OnBool(value bool)                      { h.add(b(value)) }
+func (h *TEH) OnTrue()                                { h.add(tt()) }
+func (h *TEH) OnFalse()                               { h.add(ff()) }
+func (h *TEH) OnPositiveInt(value uint64)             { h.add(pi(value)) }
+func (h *TEH) OnNegativeInt(value uint64)             { h.add(ni(value)) }
+func (h *TEH) OnInt(value int64)                      { h.add(i(value)) }
+func (h *TEH) OnFloat(value float64)                  { h.add(f(value)) }
+func (h *TEH) OnComplex(value complex128)             { h.add(cmpl(value)) }
+func (h *TEH) OnNan()                                 { h.add(nan()) }
+func (h *TEH) OnUUID(value []byte)                    { h.add(uuid(value)) }
+func (h *TEH) OnTime(value time.Time)                 { h.add(gt(value)) }
+func (h *TEH) OnCompactTime(value *compact_time.Time) { h.add(ct(value)) }
+func (h *TEH) OnBytes(value []byte)                   { h.add(bin(value)) }
+func (h *TEH) OnString(value string)                  { h.add(s(value)) }
+func (h *TEH) OnURI(value string)                     { h.add(uri((value))) }
+func (h *TEH) OnCustom(value []byte)                  { h.add(cust(value)) }
+func (h *TEH) OnBytesBegin()                          { h.add(bb()) }
+func (h *TEH) OnStringBegin()                         { h.add(sb()) }
+func (h *TEH) OnURIBegin()                            { h.add(ub()) }
+func (h *TEH) OnCustomBegin()                         { h.add(cb()) }
+func (h *TEH) OnArrayChunk(l uint64, final bool)      { h.add(ac(l, final)) }
+func (h *TEH) OnArrayData(data []byte)                { h.add(ad(data)) }
+func (h *TEH) OnList()                                { h.add(l()) }
+func (h *TEH) OnMap()                                 { h.add(m()) }
+func (h *TEH) OnMarkup()                              { h.add(mup()) }
+func (h *TEH) OnMetadata()                            { h.add(meta()) }
+func (h *TEH) OnComment()                             { h.add(cmt()) }
+func (h *TEH) OnEnd()                                 { h.add(e()) }
+func (h *TEH) OnMarker()                              { h.add(mark()) }
+func (h *TEH) OnReference()                           { h.add(ref()) }
+func (h *TEH) OnEndDocument()                         { h.add(ed()) }
