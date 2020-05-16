@@ -1,19 +1,37 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"fmt"
-	"net/url"
 	"reflect"
 	"sync"
-	"time"
 )
 
-// Iterate over an object (recursively), calling the eventHandler as data is
+// Iterate over an object (recursively), calling the eventReceiver as data is
 // encountered. If useReferences is true, it will also look for duplicate
 // pointers to data, generating marker and reference events rather than walking
 // the object again. This is useful for cyclic or recursive data structures.
-func IterateObject(value interface{}, useReferences bool, eventHandler ConciseEncodingEventHandler) {
-	iter := NewRootObjectIterator(useReferences, eventHandler)
+func IterateObject(value interface{}, useReferences bool, eventReceiver DataEventReceiver) {
+	iter := NewRootObjectIterator(useReferences, eventReceiver)
 	iter.Iterate(value)
 }
 
@@ -34,34 +52,20 @@ type ObjectIterator interface {
 var iterators sync.Map
 
 func init() {
-	types := []reflect.Type{
-		reflect.TypeOf((*bool)(nil)).Elem(),
-		reflect.TypeOf((*int)(nil)).Elem(),
-		reflect.TypeOf((*int8)(nil)).Elem(),
-		reflect.TypeOf((*int16)(nil)).Elem(),
-		reflect.TypeOf((*int32)(nil)).Elem(),
-		reflect.TypeOf((*int64)(nil)).Elem(),
-		reflect.TypeOf((*uint)(nil)).Elem(),
-		reflect.TypeOf((*uint8)(nil)).Elem(),
-		reflect.TypeOf((*uint16)(nil)).Elem(),
-		reflect.TypeOf((*uint32)(nil)).Elem(),
-		reflect.TypeOf((*uint64)(nil)).Elem(),
-		reflect.TypeOf((*float32)(nil)).Elem(),
-		reflect.TypeOf((*float64)(nil)).Elem(),
-		reflect.TypeOf((*string)(nil)).Elem(),
-		reflect.TypeOf((*url.URL)(nil)).Elem(),
-		reflect.TypeOf((*time.Time)(nil)).Elem(),
-		reflect.TypeOf((*interface{})(nil)).Elem(),
-	}
-
 	// Pre-cache the most common iterators
-	for _, t := range types {
+	for _, t := range keyableTypes {
 		getIteratorForType(t)
 		getIteratorForType(reflect.PtrTo(t))
 		getIteratorForType(reflect.SliceOf(t))
-		for _, u := range types {
+		for _, u := range keyableTypes {
 			getIteratorForType(reflect.MapOf(t, u))
 		}
+	}
+
+	for _, t := range nonKeyableTypes {
+		getIteratorForType(t)
+		getIteratorForType(reflect.PtrTo(t))
+		getIteratorForType(reflect.SliceOf(t))
 	}
 }
 
@@ -95,17 +99,27 @@ func generateIteratorForType(t reflect.Type) ObjectIterator {
 		return newMapIterator(t)
 	case reflect.Struct:
 		switch t {
-		case timeType:
+		case typeTime:
 			return newTimeIterator()
-		case urlType:
+		case typeDFloat:
+			return newDFloatIterator()
+		case typeURL:
 			return newURLIterator()
+		case typeBigInt:
+			return newBigIntIterator()
+		case typeBigFloat:
+			return newBigDecimalFloatIterator()
 		default:
 			return newStructIterator(t)
 		}
 	case reflect.Ptr:
 		switch t {
-		case pURLType:
+		case typePURL:
 			return newPURLIterator()
+		case typePBigInt:
+			return newPBigIntIterator()
+		case typePBigFloat:
+			return newPBigDecimalFloatIterator()
 		default:
 			return newPointerIterator(t)
 		}

@@ -1,11 +1,35 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"net/url"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
@@ -73,16 +97,16 @@ type Rules struct {
 	objectCount       uint64
 	unassignedIDs     []interface{}
 	assignedIDs       map[interface{}]ruleEvent
-	nextHandler       ConciseEncodingEventHandler
+	nextReceiver      DataEventReceiver
 }
 
-func NewRules(version uint64, limits *Limits, nextHandler ConciseEncodingEventHandler) *Rules {
+func NewRules(version uint64, limits *Limits, nextReceiver DataEventReceiver) *Rules {
 	this := new(Rules)
-	this.Init(version, limits, nextHandler)
+	this.Init(version, limits, nextReceiver)
 	return this
 }
 
-func (this *Rules) Init(version uint64, limits *Limits, nextHandler ConciseEncodingEventHandler) {
+func (this *Rules) Init(version uint64, limits *Limits, nextReceiver DataEventReceiver) {
 	this.version = version
 	if limits == nil {
 		this.limits = DefaultLimits()
@@ -94,7 +118,7 @@ func (this *Rules) Init(version uint64, limits *Limits, nextHandler ConciseEncod
 	validate(this.limits)
 	this.limits.MaxContainerDepth += rulesMaxDepthAdjust
 	this.stateStack = make([]ruleState, 0, this.limits.MaxContainerDepth)
-	this.nextHandler = nextHandler
+	this.nextReceiver = nextReceiver
 
 	this.Reset()
 }
@@ -121,42 +145,42 @@ func (this *Rules) OnVersion(version uint64) {
 		panic(fmt.Errorf("Expected version %v but got version %v", this.version, version))
 	}
 	this.changeState(stateAwaitingTLO)
-	this.nextHandler.OnVersion(version)
+	this.nextReceiver.OnVersion(version)
 }
 
 func (this *Rules) OnPadding(count int) {
 	this.assertCurrentStateAllowsType(eventTypePadding)
-	this.nextHandler.OnPadding(count)
+	this.nextReceiver.OnPadding(count)
 }
 
 func (this *Rules) OnNil() {
 	this.addScalar(eventTypeNil)
-	this.nextHandler.OnNil()
+	this.nextReceiver.OnNil()
 }
 
 func (this *Rules) OnBool(value bool) {
 	this.addScalar(eventTypeBool)
-	this.nextHandler.OnBool(value)
+	this.nextReceiver.OnBool(value)
 }
 
 func (this *Rules) OnTrue() {
 	this.addScalar(eventTypeBool)
-	this.nextHandler.OnTrue()
+	this.nextReceiver.OnTrue()
 }
 
 func (this *Rules) OnFalse() {
 	this.addScalar(eventTypeBool)
-	this.nextHandler.OnFalse()
+	this.nextReceiver.OnFalse()
 }
 
 func (this *Rules) OnPositiveInt(value uint64) {
 	this.onPositiveInt(value)
-	this.nextHandler.OnPositiveInt(value)
+	this.nextReceiver.OnPositiveInt(value)
 }
 
 func (this *Rules) OnNegativeInt(value uint64) {
 	this.onNegativeInt()
-	this.nextHandler.OnNegativeInt(value)
+	this.nextReceiver.OnNegativeInt(value)
 }
 
 func (this *Rules) OnInt(value int64) {
@@ -165,41 +189,90 @@ func (this *Rules) OnInt(value int64) {
 	} else {
 		this.onNegativeInt()
 	}
-	this.nextHandler.OnInt(value)
+	this.nextReceiver.OnInt(value)
 }
 
-func (this *Rules) OnFloat(value float64) {
+func (this *Rules) OnBigInt(value *big.Int) {
+	if value.IsInt64() {
+		this.OnInt(value.Int64())
+		return
+	}
+
+	zero := &big.Int{}
+	if value.Cmp(zero) < 0 {
+		this.onNegativeInt()
+	} else {
+		if this.isAwaitingID() {
+			panic(fmt.Errorf("ID values must not be larger than 64 bits"))
+		}
+		// If we're not waiting for an ID, then the argument to onPositiveInt
+		// isn't used.
+		unusedValue := uint64(0)
+		this.onPositiveInt(unusedValue)
+	}
+	this.nextReceiver.OnBigInt(value)
+}
+
+func (this *Rules) OnBinaryFloat(value float64) {
 	if math.IsNaN(value) {
-		this.OnNan()
+		this.OnNan(isSignalingNan(value))
 		return
 	}
 	this.addScalar(eventTypeFloat)
-	this.nextHandler.OnFloat(value)
+	this.nextReceiver.OnBinaryFloat(value)
+}
+
+func (this *Rules) OnDecimalFloat(value compact_float.DFloat) {
+	if value.IsNan() {
+		if value.IsSignalingNan() {
+			this.OnNan(true)
+			return
+		}
+		this.OnNan(false)
+		return
+	}
+
+	this.addScalar(eventTypeFloat)
+	this.nextReceiver.OnDecimalFloat(value)
+}
+
+func (this *Rules) OnBigDecimalFloat(value *apd.Decimal) {
+	switch value.Form {
+	case apd.NaN:
+		this.OnNan(false)
+		return
+	case apd.NaNSignaling:
+		this.OnNan(true)
+		return
+	}
+
+	this.addScalar(eventTypeFloat)
+	this.nextReceiver.OnBigDecimalFloat(value)
 }
 
 func (this *Rules) OnComplex(value complex128) {
 	this.addScalar(eventTypeCustom)
-	this.nextHandler.OnComplex(value)
+	this.nextReceiver.OnComplex(value)
 }
 
-func (this *Rules) OnNan() {
+func (this *Rules) OnNan(signaling bool) {
 	this.addScalar(eventTypeNan)
-	this.nextHandler.OnNan()
+	this.nextReceiver.OnNan(signaling)
 }
 
 func (this *Rules) OnUUID(value []byte) {
 	this.addScalar(eventTypeUUID)
-	this.nextHandler.OnUUID(value)
+	this.nextReceiver.OnUUID(value)
 }
 
 func (this *Rules) OnTime(value time.Time) {
 	this.addScalar(eventTypeTime)
-	this.nextHandler.OnTime(value)
+	this.nextReceiver.OnTime(value)
 }
 
 func (this *Rules) OnCompactTime(value *compact_time.Time) {
 	this.addScalar(eventTypeTime)
-	this.nextHandler.OnCompactTime(value)
+	this.nextReceiver.OnCompactTime(value)
 }
 
 func (this *Rules) OnBytes(value []byte) {
@@ -208,7 +281,7 @@ func (this *Rules) OnBytes(value []byte) {
 	if len(value) > 0 {
 		this.onArrayData([]byte(value))
 	}
-	this.nextHandler.OnBytes(value)
+	this.nextReceiver.OnBytes(value)
 }
 
 func (this *Rules) OnString(value string) {
@@ -217,7 +290,7 @@ func (this *Rules) OnString(value string) {
 	if len(value) > 0 {
 		this.onArrayData([]byte(value))
 	}
-	this.nextHandler.OnString(value)
+	this.nextReceiver.OnString(value)
 }
 
 func (this *Rules) OnURI(value string) {
@@ -226,7 +299,7 @@ func (this *Rules) OnURI(value string) {
 	if len(value) > 0 {
 		this.onArrayData([]byte(value))
 	}
-	this.nextHandler.OnURI(value)
+	this.nextReceiver.OnURI(value)
 }
 
 func (this *Rules) OnCustom(value []byte) {
@@ -235,62 +308,62 @@ func (this *Rules) OnCustom(value []byte) {
 	if len(value) > 0 {
 		this.onArrayData([]byte(value))
 	}
-	this.nextHandler.OnCustom(value)
+	this.nextReceiver.OnCustom(value)
 }
 
 func (this *Rules) OnBytesBegin() {
 	this.onBytesBegin()
-	this.nextHandler.OnBytesBegin()
+	this.nextReceiver.OnBytesBegin()
 }
 
 func (this *Rules) OnStringBegin() {
 	this.onStringBegin()
-	this.nextHandler.OnStringBegin()
+	this.nextReceiver.OnStringBegin()
 }
 
 func (this *Rules) OnURIBegin() {
 	this.onURIBegin()
-	this.nextHandler.OnURIBegin()
+	this.nextReceiver.OnURIBegin()
 }
 
 func (this *Rules) OnCustomBegin() {
 	this.onCustomBegin()
-	this.nextHandler.OnCustomBegin()
+	this.nextReceiver.OnCustomBegin()
 }
 
 func (this *Rules) OnArrayChunk(length uint64, isFinalChunk bool) {
 	this.onArrayChunk(length, isFinalChunk)
-	this.nextHandler.OnArrayChunk(length, isFinalChunk)
+	this.nextReceiver.OnArrayChunk(length, isFinalChunk)
 }
 
 func (this *Rules) OnArrayData(data []byte) {
 	this.onArrayData(data)
-	this.nextHandler.OnArrayData(data)
+	this.nextReceiver.OnArrayData(data)
 }
 
 func (this *Rules) OnList() {
 	this.beginContainer(eventTypeList, stateAwaitingListItem)
-	this.nextHandler.OnList()
+	this.nextReceiver.OnList()
 }
 
 func (this *Rules) OnMap() {
 	this.beginContainer(eventTypeMap, stateAwaitingMapKey)
-	this.nextHandler.OnMap()
+	this.nextReceiver.OnMap()
 }
 
 func (this *Rules) OnMarkup() {
 	this.beginContainer(eventTypeMarkup, stateAwaitingMarkupName)
-	this.nextHandler.OnMarkup()
+	this.nextReceiver.OnMarkup()
 }
 
 func (this *Rules) OnMetadata() {
 	this.beginContainer(eventTypeMetadata, stateAwaitingMetadataKey)
-	this.nextHandler.OnMetadata()
+	this.nextReceiver.OnMetadata()
 }
 
 func (this *Rules) OnComment() {
 	this.beginContainer(eventTypeComment, stateAwaitingCommentItem)
-	this.nextHandler.OnComment()
+	this.nextReceiver.OnComment()
 }
 
 func (this *Rules) OnEnd() {
@@ -318,7 +391,7 @@ func (this *Rules) OnEnd() {
 	default:
 		panic(fmt.Errorf("BUG: EndContainer() in state %x (%v) failed to trigger", this.getCurrentState(), this.getCurrentState()))
 	}
-	this.nextHandler.OnEnd()
+	this.nextReceiver.OnEnd()
 }
 
 func (this *Rules) OnMarker() {
@@ -326,17 +399,17 @@ func (this *Rules) OnMarker() {
 		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", this.limits.MaxReferenceCount))
 	}
 	this.beginContainer(eventTypeMarker, stateAwaitingMarkerID)
-	this.nextHandler.OnMarker()
+	this.nextReceiver.OnMarker()
 }
 
 func (this *Rules) OnReference() {
 	this.beginContainer(eventTypeReference, stateAwaitingReferenceID)
-	this.nextHandler.OnReference()
+	this.nextReceiver.OnReference()
 }
 
 func (this *Rules) OnEndDocument() {
 	this.assertCurrentStateAllowsType(eventTypeEndDocument)
-	this.nextHandler.OnEndDocument()
+	this.nextReceiver.OnEndDocument()
 }
 
 func (this *Rules) onPositiveInt(value uint64) {

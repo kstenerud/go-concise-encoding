@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 type ptrBuilder struct {
@@ -42,76 +66,94 @@ func (this *ptrBuilder) newElem() reflect.Value {
 	return reflect.New(this.dstType.Elem())
 }
 
-func (this *ptrBuilder) Nil(dst reflect.Value) {
+func (this *ptrBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.Zero(this.dstType))
 }
 
-func (this *ptrBuilder) Bool(value bool, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.Bool(value, ptr.Elem())
+	this.elemBuilder.BuildFromBool(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) Int(value int64, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.Int(value, ptr.Elem())
+	this.elemBuilder.BuildFromInt(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) Uint(value uint64, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.Uint(value, ptr.Elem())
+	this.elemBuilder.BuildFromUint(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) Float(value float64, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.Float(value, ptr.Elem())
+	this.elemBuilder.BuildFromBigInt(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) String(value string, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.String(value, ptr.Elem())
+	this.elemBuilder.BuildFromFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) Bytes(value []byte, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.Bytes(value, ptr.Elem())
+	this.elemBuilder.BuildFromDecimalFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) URI(value *url.URL, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.URI(value, ptr.Elem())
+	this.elemBuilder.BuildFromBigDecimalFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) Time(value time.Time, dst reflect.Value) {
+func (this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
 	ptr := this.newElem()
-	this.elemBuilder.Time(value, ptr.Elem())
+	this.elemBuilder.BuildFromString(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) List() {
+func (this *ptrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	ptr := this.newElem()
+	this.elemBuilder.BuildFromBytes(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
+func (this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	ptr := this.newElem()
+	this.elemBuilder.BuildFromURI(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
+func (this *ptrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	ptr := this.newElem()
+	this.elemBuilder.BuildFromTime(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
+func (this *ptrBuilder) BuildBeginList() {
 	builderPanicBadEvent(this, this.dstType, "List")
 }
 
-func (this *ptrBuilder) Map() {
+func (this *ptrBuilder) BuildBeginMap() {
 	builderPanicBadEvent(this, this.dstType, "Map")
 }
 
-func (this *ptrBuilder) End() {
+func (this *ptrBuilder) BuildEndContainer() {
 	builderPanicBadEvent(this, this.dstType, "ContainerEnd")
 }
 
-func (this *ptrBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *ptrBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: ptrBuilder.Marker")
 }
 
-func (this *ptrBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *ptrBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: ptrBuilder.Reference")
 }
 
 func (this *ptrBuilder) PrepareForListContents() {

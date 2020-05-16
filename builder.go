@@ -1,11 +1,35 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"fmt"
+	"math/big"
 	"net/url"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 // NewBuilderFor creates a new builder that builds objects of the same type as
@@ -21,20 +45,23 @@ func NewBuilderFor(template interface{}) *RootBuilder {
 // ObjectBuilder responds to external events to progressively build an object.
 type ObjectBuilder interface {
 	// External data and structure events
-	Nil(dst reflect.Value)
-	Bool(value bool, dst reflect.Value)
-	Int(value int64, dst reflect.Value)
-	Uint(value uint64, dst reflect.Value)
-	Float(value float64, dst reflect.Value)
-	String(value string, dst reflect.Value)
-	Bytes(value []byte, dst reflect.Value)
-	URI(value *url.URL, dst reflect.Value)
-	Time(value time.Time, dst reflect.Value)
-	List()
-	Map()
-	End()
-	Marker(id interface{})
-	Reference(id interface{})
+	BuildFromNil(dst reflect.Value)
+	BuildFromBool(value bool, dst reflect.Value)
+	BuildFromInt(value int64, dst reflect.Value)
+	BuildFromUint(value uint64, dst reflect.Value)
+	BuildFromBigInt(value *big.Int, dst reflect.Value)
+	BuildFromFloat(value float64, dst reflect.Value)
+	BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
+	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
+	BuildFromString(value string, dst reflect.Value)
+	BuildFromBytes(value []byte, dst reflect.Value)
+	BuildFromURI(value *url.URL, dst reflect.Value)
+	BuildFromTime(value time.Time, dst reflect.Value)
+	BuildBeginList()
+	BuildBeginMap()
+	BuildEndContainer()
+	BuildFromMarker(id interface{})
+	BuildFromReference(id interface{})
 
 	// Prepare this builder for storing list contents, ultimately followed by End()
 	PrepareForListContents()
@@ -53,52 +80,49 @@ type ObjectBuilder interface {
 	CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder
 }
 
+// ============================================================================
+
 var builders sync.Map
 
 func init() {
-	types := []reflect.Type{
-		reflect.TypeOf((*bool)(nil)).Elem(),
-		reflect.TypeOf((*int)(nil)).Elem(),
-		reflect.TypeOf((*int8)(nil)).Elem(),
-		reflect.TypeOf((*int16)(nil)).Elem(),
-		reflect.TypeOf((*int32)(nil)).Elem(),
-		reflect.TypeOf((*int64)(nil)).Elem(),
-		reflect.TypeOf((*uint)(nil)).Elem(),
-		reflect.TypeOf((*uint8)(nil)).Elem(),
-		reflect.TypeOf((*uint16)(nil)).Elem(),
-		reflect.TypeOf((*uint32)(nil)).Elem(),
-		reflect.TypeOf((*uint64)(nil)).Elem(),
-		reflect.TypeOf((*float32)(nil)).Elem(),
-		reflect.TypeOf((*float64)(nil)).Elem(),
-		reflect.TypeOf((*string)(nil)).Elem(),
-		reflect.TypeOf((*url.URL)(nil)).Elem(),
-		reflect.TypeOf((*time.Time)(nil)).Elem(),
-		reflect.TypeOf((*interface{})(nil)).Elem(),
-	}
-
 	// Pre-cache the most common builders
-	for _, t := range types {
+	for _, t := range keyableTypes {
 		getBuilderForType(t)
 		getBuilderForType(reflect.PtrTo(t))
 		getBuilderForType(reflect.SliceOf(t))
-		for _, u := range types {
+		for _, u := range keyableTypes {
 			getBuilderForType(reflect.MapOf(t, u))
 		}
+		for _, u := range nonKeyableTypes {
+			getBuilderForType(reflect.MapOf(t, u))
+		}
+	}
+
+	for _, t := range nonKeyableTypes {
+		getBuilderForType(t)
+		getBuilderForType(reflect.PtrTo(t))
+		getBuilderForType(reflect.SliceOf(t))
 	}
 }
 
 func builderPanicBadEvent(builder ObjectBuilder, dstType reflect.Type, containerMsg string) {
-	panic(fmt.Sprintf(`%v with type %v cannot respond to event "%v"`, reflect.TypeOf(builder), dstType, containerMsg))
+	panic(fmt.Errorf(`BUG: %v with type %v cannot respond to event "%v"`, reflect.TypeOf(builder), dstType, containerMsg))
 }
 
 func builderPanicCannotConvert(value interface{}, dstType reflect.Type) {
-	panic(fmt.Errorf("[%v] cannot be safely converted to %v", value, dstType))
+	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", value, reflect.TypeOf(value), dstType))
+}
+
+func builderPanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", value, reflect.TypeOf(value), dstType, err))
 }
 
 func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 	switch dstType.Kind() {
-	case reflect.Bool, reflect.String:
-		return newBasicBuilder(dstType)
+	case reflect.Bool:
+		return newDirectBuilder(dstType)
+	case reflect.String:
+		return newStringBuilder()
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return newIntBuilder(dstType)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
@@ -112,7 +136,7 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 	case reflect.Slice:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
-			return newBytesBuilder()
+			return newDirectPtrBuilder(dstType)
 		case reflect.Interface:
 			return newIntfSliceBuilder()
 		default:
@@ -124,18 +148,31 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 		}
 		return newMapBuilder(dstType)
 	case reflect.Struct:
-		if dstType == timeType {
-			return newBasicBuilder(dstType)
+		switch dstType {
+		case typeTime:
+			return newDirectBuilder(dstType)
+		case typeURL:
+			return newDirectBuilder(dstType)
+		case typeDFloat:
+			return newDFloatBuilder()
+		case typeBigInt:
+			return newBigIntBuilder()
+		case typeBigFloat:
+			return newBigFloatBuilder()
+		default:
+			return newStructBuilder(dstType)
 		}
-		if dstType == urlType {
-			return newURLBuilder()
-		}
-		return newStructBuilder(dstType)
 	case reflect.Ptr:
-		if dstType == pURLType {
-			return newPURLBuilder()
+		switch dstType {
+		case typePURL:
+			return newDirectPtrBuilder(dstType)
+		case typePBigInt:
+			return newpBigIntBuilder()
+		case typePBigFloat:
+			return newPBigFloatBuilder()
+		default:
+			return newPtrBuilder(dstType)
 		}
-		return newPtrBuilder(dstType)
 	default:
 		panic(fmt.Errorf("BUG: Unhandled type %v", dstType))
 	}
@@ -163,9 +200,9 @@ func getTopLevelBuilderForType(dstType reflect.Type) ObjectBuilder {
 		return newTLContainerBuilder(dstType)
 	case reflect.Struct:
 		switch dstType {
-		case timeType:
+		case typeTime:
 			return getBuilderForType(dstType)
-		case urlType:
+		case typeURL:
 			return getBuilderForType(dstType)
 		default:
 			return newTLContainerBuilder(dstType)

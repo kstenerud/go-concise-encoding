@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 type tlContainerBuilder struct {
@@ -39,55 +63,67 @@ func (this *tlContainerBuilder) CloneFromTemplate(root *RootBuilder, parent Obje
 	return that
 }
 
-func (this *tlContainerBuilder) Nil(ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromNil(ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Nil")
 }
 
-func (this *tlContainerBuilder) Bool(value bool, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Bool")
 }
 
-func (this *tlContainerBuilder) Int(value int64, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Int")
 }
 
-func (this *tlContainerBuilder) Uint(value uint64, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Uint")
 }
 
-func (this *tlContainerBuilder) Float(value float64, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "BigInt")
+}
+
+func (this *tlContainerBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Float")
 }
 
-func (this *tlContainerBuilder) String(value string, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "DecimalFloat")
+}
+
+func (this *tlContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "BigDecimalFloat")
+}
+
+func (this *tlContainerBuilder) BuildFromString(value string, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "String")
 }
 
-func (this *tlContainerBuilder) Bytes(value []byte, dst reflect.Value) {
+func (this *tlContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	// TODO: Is this the right way to do this?
 	this.root.setCurrentBuilder(this.builder)
-	this.builder.Bytes(value, dst)
+	this.builder.BuildFromBytes(value, dst)
 }
 
-func (this *tlContainerBuilder) URI(value *url.URL, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "URI")
 }
 
-func (this *tlContainerBuilder) Time(value time.Time, ignored reflect.Value) {
+func (this *tlContainerBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Time")
 }
 
-func (this *tlContainerBuilder) List() {
+func (this *tlContainerBuilder) BuildBeginList() {
 	this.root.setCurrentBuilder(this.builder)
 	this.builder.PrepareForListContents()
 }
 
-func (this *tlContainerBuilder) Map() {
+func (this *tlContainerBuilder) BuildBeginMap() {
 	this.root.setCurrentBuilder(this.builder)
 	this.builder.PrepareForMapContents()
 }
 
-func (this *tlContainerBuilder) End() {
+func (this *tlContainerBuilder) BuildEndContainer() {
 	builderPanicBadEvent(this, this.dstType, "End")
 }
 
@@ -103,10 +139,10 @@ func (this *tlContainerBuilder) NotifyChildContainerFinished(value reflect.Value
 	builderPanicBadEvent(this, this.dstType, "NotifyChildContainerFinished")
 }
 
-func (this *tlContainerBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *tlContainerBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: tlContainerBuilder.Marker")
 }
 
-func (this *tlContainerBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *tlContainerBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: tlContainerBuilder.Reference")
 }

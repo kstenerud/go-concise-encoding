@@ -1,12 +1,34 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"math"
+	"math/big"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-vlq"
+	"github.com/kstenerud/go-uleb128"
 )
 
 type CBEEncoder struct {
@@ -29,7 +51,7 @@ func (this *CBEEncoder) OnPadding(count int) {
 }
 
 func (this *CBEEncoder) OnVersion(version uint64) {
-	this.encodeRVLQ(version)
+	this.encodeULEB(version)
 }
 
 func (this *CBEEncoder) OnNil() {
@@ -99,19 +121,53 @@ func (this *CBEEncoder) OnNegativeInt(value uint64) {
 	}
 }
 
-func (this *CBEEncoder) OnFloat(value float64) {
-	asfloat32 := float32(value)
-	if float64(asfloat32) == value {
-		this.encodeTyped32Bits(cbeTypeFloat32, math.Float32bits(asfloat32))
-		// this.encodeFloat32(asfloat32)
-	} else {
-		this.encodeTyped64Bits(cbeTypeFloat64, math.Float64bits(value))
-		// this.encodeFloat64(value)
-	}
+func (this *CBEEncoder) OnBigInt(value *big.Int) {
+	panic("TODO: CBEEncoder.OnBigInt")
 }
 
-func (this *CBEEncoder) OnNan() {
-	this.encodeDecimalFloat(math.NaN(), 0)
+func (this *CBEEncoder) OnBinaryFloat(value float64) {
+	if math.IsInf(value, 0) {
+		sign := 1
+		if value < 0 {
+			sign = -1
+		}
+		this.encodeInfinity(sign)
+		return
+	}
+
+	if math.IsNaN(value) {
+		this.encodeNaN(isSignalingNan(value))
+		return
+	}
+
+	if value == 0 {
+		sign := 1
+		if math.Float64bits(value) == 0x8000000000000000 {
+			sign = -1
+		}
+		this.encodeZero(sign)
+		return
+	}
+
+	asfloat32 := float32(value)
+	if float64(asfloat32) == value {
+		this.encodeFloat32(asfloat32)
+		return
+	}
+
+	this.encodeFloat64(value)
+}
+
+func (this *CBEEncoder) OnDecimalFloat(value compact_float.DFloat) {
+	this.encodeDecimalFloat(value)
+}
+
+func (this *CBEEncoder) OnBigDecimalFloat(value *apd.Decimal) {
+	this.encodeBigDecimalFloat(value)
+}
+
+func (this *CBEEncoder) OnNan(signaling bool) {
+	this.encodeNaN(signaling)
 }
 
 func (this *CBEEncoder) OnUUID(value []byte) {
@@ -122,7 +178,7 @@ func (this *CBEEncoder) OnUUID(value []byte) {
 }
 
 func (this *CBEEncoder) OnComplex(value complex128) {
-	panic("TODO: complex. Requires custom type")
+	panic("TODO: CBEEncoder.OnComplex")
 }
 
 func (this *CBEEncoder) OnTime(value time.Time) {
@@ -143,7 +199,7 @@ func (this *CBEEncoder) OnCompactTime(value *compact_time.Time) {
 	dst[0] = byte(timeType)
 	dst = dst[1:]
 	byteCount, _ := compact_time.Encode(value, dst)
-	this.buff.TrimUnused(byteCount + 1)
+	this.buff.CorrectAllocation(byteCount + 1)
 }
 
 func (this *CBEEncoder) OnBytes(value []byte) {
@@ -194,7 +250,7 @@ func (this *CBEEncoder) OnArrayChunk(length uint64, isFinalChunk bool) {
 	if isFinalChunk {
 		continuationBit = 1
 	}
-	this.encodeRVLQ((uint64(length) << 1) | continuationBit)
+	this.encodeULEB((uint64(length) << 1) | continuationBit)
 }
 
 func (this *CBEEncoder) OnArrayData(data []byte) {
@@ -237,6 +293,8 @@ func (this *CBEEncoder) OnReference() {
 func (this *CBEEncoder) OnEndDocument() {
 }
 
+// ============================================================================
+
 const (
 	minBufferCap         = 64
 	maxSmallStringLength = 15
@@ -270,39 +328,37 @@ func fitsInUint49(value uint64) bool {
 }
 
 func (this *CBEEncoder) encodeVersion(version uint64) {
-	this.encodeRVLQ(version)
+	this.encodeULEB(version)
 }
 
 func (this *CBEEncoder) encodeTypeOnly(value cbeTypeField) {
 	this.buff.Allocate(1)[0] = byte(value)
 }
 
-func (this *CBEEncoder) encodeRVLQ(valueIn uint64) {
-	dst := this.buff.Allocate(vlq.MaxEncodeLength)
-	value := vlq.Rvlq(valueIn)
-	byteCount, _ := value.EncodeTo(dst)
-	this.buff.TrimUnused(byteCount)
+func (this *CBEEncoder) encodeULEB(value uint64) {
+	dst := this.buff.Allocate(uleb128.EncodedSizeUint64(value))
+	byteCount, _ := uleb128.EncodeUint64(value, dst)
+	this.buff.CorrectAllocation(byteCount)
 }
 
-func (this *CBEEncoder) encodeTypedRVLQ(cbeType cbeTypeField, valueIn uint64) {
-	dst := this.buff.Allocate(vlq.MaxEncodeLength + 1)
+func (this *CBEEncoder) encodeTypedULEB(cbeType cbeTypeField, value uint64) {
+	dst := this.buff.Allocate(uleb128.EncodedSizeUint64(value) + 1)
 	dst[0] = byte(cbeType)
 	dst = dst[1:]
-	value := vlq.Rvlq(valueIn)
-	byteCount, _ := value.EncodeTo(dst)
-	this.buff.TrimUnused(byteCount + 1)
+	byteCount, _ := uleb128.EncodeUint64(value, dst)
+	this.buff.CorrectAllocation(byteCount + 1)
 }
 
 func (this *CBEEncoder) encodeTypedBytes(cbeType cbeTypeField, bytes []byte) {
 	bytesLength := len(bytes)
-	dst := this.buff.Allocate(vlq.MaxEncodeLength + bytesLength + 1)
+	lengthField := uint64(bytesLength<<1) | 1
+	dst := this.buff.Allocate(uleb128.EncodedSizeUint64(lengthField) + bytesLength + 1)
 	dst[0] = byte(cbeType)
 	dst = dst[1:]
-	lengthField := vlq.Rvlq((bytesLength << 1) | 1)
-	byteCount, _ := lengthField.EncodeTo(dst)
+	byteCount, _ := uleb128.EncodeUint64(lengthField, dst)
 	dst = dst[byteCount:]
 	copy(dst, bytes)
-	this.buff.TrimUnused(byteCount + bytesLength + 1)
+	this.buff.CorrectAllocation(byteCount + bytesLength + 1)
 }
 
 func (this *CBEEncoder) encodeTyped8Bits(typeValue cbeTypeField, value byte) {
@@ -341,22 +397,71 @@ func (this *CBEEncoder) encodeTyped64Bits(typeValue cbeTypeField, value uint64) 
 }
 
 func (this *CBEEncoder) encodeUint(typeValue cbeTypeField, value uint64) {
-	this.encodeTypedRVLQ(typeValue, value)
+	this.encodeTypedULEB(typeValue, value)
 }
 
-// TODO
-// func (this *CBEEncoder) encodeFloat32(value float32) {
-// 	this.encodeTyped32Bits(cbeTypeFloat32, math.Float32bits(value))
-// }
+func (this *CBEEncoder) encodeFloat32(value float32) {
+	this.encodeTyped32Bits(cbeTypeFloat32, math.Float32bits(value))
+}
 
-// func (this *CBEEncoder) encodeFloat64(value float64) {
-// 	this.encodeTyped64Bits(cbeTypeFloat64, math.Float64bits(value))
-// }
+func (this *CBEEncoder) encodeFloat64(value float64) {
+	this.encodeTyped64Bits(cbeTypeFloat64, math.Float64bits(value))
+}
 
-func (this *CBEEncoder) encodeDecimalFloat(value float64, significantDigits int) {
-	dst := this.buff.Allocate(compact_float.MaxEncodeLength + 1)
+func (this *CBEEncoder) encodeDecimalFloat(value compact_float.DFloat) {
+	dst := this.buff.Allocate(compact_float.MaxEncodeLength() + 1)
 	dst[0] = byte(cbeTypeDecimal)
 	dst = dst[1:]
-	byteCount, _ := compact_float.Encode(value, significantDigits, dst)
-	this.buff.TrimUnused(byteCount + 1)
+	byteCount, _ := compact_float.Encode(value, dst)
+	this.buff.CorrectAllocation(byteCount + 1)
+}
+
+func (this *CBEEncoder) encodeBigDecimalFloat(value *apd.Decimal) {
+	dst := this.buff.Allocate(compact_float.MaxEncodeLengthBig(value) + 1)
+	dst[0] = byte(cbeTypeDecimal)
+	dst = dst[1:]
+	byteCount, _ := compact_float.EncodeBig(value, dst)
+	this.buff.CorrectAllocation(byteCount + 1)
+}
+
+func (this *CBEEncoder) encodeZero(sign int) {
+	maxEncodedLength := 2
+	dst := this.buff.Allocate(maxEncodedLength + 1)
+	dst[0] = byte(cbeTypeDecimal)
+	dst = dst[1:]
+	byteCount := 0
+	if sign < 0 {
+		byteCount, _ = compact_float.EncodeNegativeZero(dst)
+	} else {
+		byteCount, _ = compact_float.EncodeZero(dst)
+	}
+	this.buff.CorrectAllocation(byteCount + 1)
+}
+
+func (this *CBEEncoder) encodeInfinity(sign int) {
+	maxEncodedLength := 2
+	dst := this.buff.Allocate(maxEncodedLength + 1)
+	dst[0] = byte(cbeTypeDecimal)
+	dst = dst[1:]
+	byteCount := 0
+	if sign < 0 {
+		byteCount, _ = compact_float.EncodeNegativeInfinity(dst)
+	} else {
+		byteCount, _ = compact_float.EncodeInfinity(dst)
+	}
+	this.buff.CorrectAllocation(byteCount + 1)
+}
+
+func (this *CBEEncoder) encodeNaN(signaling bool) {
+	maxEncodedLength := 2
+	dst := this.buff.Allocate(maxEncodedLength + 1)
+	dst[0] = byte(cbeTypeDecimal)
+	dst = dst[1:]
+	byteCount := 0
+	if signaling {
+		byteCount, _ = compact_float.EncodeSignalingNan(dst)
+	} else {
+		byteCount, _ = compact_float.EncodeQuietNan(dst)
+	}
+	this.buff.CorrectAllocation(byteCount + 1)
 }

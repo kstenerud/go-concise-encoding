@@ -1,3 +1,23 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
@@ -17,7 +37,7 @@ func assertCTEDecode(t *testing.T, document string, expectDecoded ...*tevent) {
 		return
 	}
 	if !reflect.DeepEqual(expectDecoded, actualDecoded) {
-		t.Errorf("Expected %v but got %v", expectDecoded, actualDecoded)
+		t.Errorf("Expected decode to %v but got %v", expectDecoded, actualDecoded)
 	}
 }
 
@@ -28,13 +48,13 @@ func assertCTEEncodeDecode(t *testing.T, document string, expectDecoded ...*teve
 		return
 	}
 	if !reflect.DeepEqual(expectDecoded, actualDecoded) {
-		t.Errorf("Expected %v but got %v", expectDecoded, actualDecoded)
+		t.Errorf("Expected decode to %v but got %v", expectDecoded, actualDecoded)
 	}
 
 	expectEncoded := document
 	actualEncoded := string(cteEncode(expectDecoded...))
 	if actualEncoded != expectEncoded {
-		t.Errorf("Expected [%v] but got [%v]", expectEncoded, actualEncoded)
+		t.Errorf("Expected encode to [%v] but got [%v]", expectEncoded, actualEncoded)
 	}
 }
 
@@ -138,59 +158,58 @@ func TestCTEHexInt(t *testing.T) {
 }
 
 func TestCTEFloat(t *testing.T) {
-	// Can't encode/decode because both devolve to 0
-	assertCTEDecode(t, "c1 0.0", v(1), f(0.0), ed())
-	assertCTEDecode(t, "c1 -0.0", v(1), f(-0.0), ed())
+	assertCTEDecode(t, "c1 0.0", v(1), df("0"), ed())
+	assertCTEDecode(t, "c1 -0.0", v(1), df("-0"), ed())
 
-	assertCTEEncodeDecode(t, "c1 1.5", v(1), f(1.5), ed())
-	assertCTEEncodeDecode(t, "c1 1.125", v(1), f(1.125), ed())
-	assertCTEEncodeDecode(t, "c1 1.125e+10", v(1), f(1.125e+10), ed())
-	assertCTEEncodeDecode(t, "c1 1.125e-10", v(1), f(1.125e-10), ed())
-	assertCTEDecode(t, "c1 1.125e10", v(1), f(1.125e10), ed())
+	assertCTEEncodeDecode(t, "c1 1.5", v(1), df("1.5"), ed())
+	assertCTEEncodeDecode(t, "c1 1.125", v(1), df("1.125"), ed())
+	assertCTEEncodeDecode(t, "c1 1.125e+10", v(1), df("1.125e+10"), ed())
+	assertCTEEncodeDecode(t, "c1 1.125e-10", v(1), df("1.125e-10"), ed())
+	assertCTEDecode(t, "c1 1.125e10", v(1), df("1.125e+10"), ed())
 
-	assertCTEEncodeDecode(t, "c1 -1.5", v(1), f(-1.5), ed())
-	assertCTEEncodeDecode(t, "c1 -1.125", v(1), f(-1.125), ed())
-	assertCTEEncodeDecode(t, "c1 -1.125e+10", v(1), f(-1.125e+10), ed())
-	assertCTEEncodeDecode(t, "c1 -1.125e-10", v(1), f(-1.125e-10), ed())
-	assertCTEDecode(t, "c1 -1.125e10", v(1), f(-1.125e10), ed())
+	assertCTEEncodeDecode(t, "c1 -1.5", v(1), df("-1.5"), ed())
+	assertCTEEncodeDecode(t, "c1 -1.125", v(1), df("-1.125"), ed())
+	assertCTEEncodeDecode(t, "c1 -1.125e+10", v(1), df("-1.125e+10"), ed())
+	assertCTEEncodeDecode(t, "c1 -1.125e-10", v(1), df("-1.125e-10"), ed())
+	assertCTEDecode(t, "c1 -1.125e10", v(1), df("-1.125e10"), ed())
 
-	assertCTEEncodeDecode(t, "c1 0.5", v(1), f(0.5), ed())
-	assertCTEEncodeDecode(t, "c1 0.125", v(1), f(0.125), ed())
-	assertCTEDecode(t, "c1 0.125e+10", v(1), f(0.125e+10), ed())
-	assertCTEDecode(t, "c1 0.125e-10", v(1), f(0.125e-10), ed())
-	assertCTEDecode(t, "c1 0.125e10", v(1), f(0.125e10), ed())
+	assertCTEEncodeDecode(t, "c1 0.5", v(1), df("0.5"), ed())
+	assertCTEEncodeDecode(t, "c1 0.125", v(1), df("0.125"), ed())
+	assertCTEDecode(t, "c1 0.125e+10", v(1), df("0.125e+10"), ed())
+	assertCTEDecode(t, "c1 0.125e-10", v(1), df("0.125e-10"), ed())
+	assertCTEDecode(t, "c1 0.125e10", v(1), df("0.125e10"), ed())
 
-	assertCTEDecode(t, "c1 -0.5", v(1), f(-0.5), ed())
-	assertCTEDecode(t, "c1 -0.125", v(1), f(-0.125), ed())
-	assertCTEDecode(t, "c1 -0.125e+10", v(1), f(-0.125e+10), ed())
-	assertCTEDecode(t, "c1 -0.125e-10", v(1), f(-0.125e-10), ed())
-	assertCTEDecode(t, "c1 -0.125e10", v(1), f(-0.125e10), ed())
+	assertCTEDecode(t, "c1 -0.5", v(1), df("-0.5"), ed())
+	assertCTEDecode(t, "c1 -0.125", v(1), df("-0.125"), ed())
+	assertCTEDecode(t, "c1 -0.125e+10", v(1), df("-0.125e+10"), ed())
+	assertCTEDecode(t, "c1 -0.125e-10", v(1), df("-0.125e-10"), ed())
+	assertCTEDecode(t, "c1 -0.125e10", v(1), df("-0.125e10"), ed())
 }
 
 func TestCTEHexFloat(t *testing.T) {
-	assertCTEDecode(t, "c1 0x0.0", v(1), f(0x0.0p0), ed())
-	assertCTEDecode(t, "c1 0x0.1", v(1), f(0x0.1p0), ed())
-	assertCTEDecode(t, "c1 0x0.1p+10", v(1), f(0x0.1p+10), ed())
-	assertCTEDecode(t, "c1 0x0.1p-10", v(1), f(0x0.1p-10), ed())
-	assertCTEDecode(t, "c1 0x0.1p10", v(1), f(0x0.1p10), ed())
+	assertCTEDecode(t, "c1 0x0.0", v(1), bf(0x0.0p0), ed())
+	assertCTEDecode(t, "c1 0x0.1", v(1), bf(0x0.1p0), ed())
+	assertCTEDecode(t, "c1 0x0.1p+10", v(1), bf(0x0.1p+10), ed())
+	assertCTEDecode(t, "c1 0x0.1p-10", v(1), bf(0x0.1p-10), ed())
+	assertCTEDecode(t, "c1 0x0.1p10", v(1), bf(0x0.1p10), ed())
 
-	assertCTEDecode(t, "c1 0x1.0", v(1), f(0x1.0p0), ed())
-	assertCTEDecode(t, "c1 0x1.1", v(1), f(0x1.1p0), ed())
-	assertCTEDecode(t, "c1 0xf.1p+10", v(1), f(0xf.1p+10), ed())
-	assertCTEDecode(t, "c1 0xf.1p-10", v(1), f(0xf.1p-10), ed())
-	assertCTEDecode(t, "c1 0xf.1p10", v(1), f(0xf.1p10), ed())
+	assertCTEDecode(t, "c1 0x1.0", v(1), bf(0x1.0p0), ed())
+	assertCTEDecode(t, "c1 0x1.1", v(1), bf(0x1.1p0), ed())
+	assertCTEDecode(t, "c1 0xf.1p+10", v(1), bf(0xf.1p+10), ed())
+	assertCTEDecode(t, "c1 0xf.1p-10", v(1), bf(0xf.1p-10), ed())
+	assertCTEDecode(t, "c1 0xf.1p10", v(1), bf(0xf.1p10), ed())
 
-	assertCTEDecode(t, "c1 -0x1.0", v(1), f(-0x1.0p0), ed())
-	assertCTEDecode(t, "c1 -0x1.1", v(1), f(-0x1.1p0), ed())
-	assertCTEDecode(t, "c1 -0xf.1p+10", v(1), f(-0xf.1p+10), ed())
-	assertCTEDecode(t, "c1 -0xf.1p-10", v(1), f(-0xf.1p-10), ed())
-	assertCTEDecode(t, "c1 -0xf.1p10", v(1), f(-0xf.1p10), ed())
+	assertCTEDecode(t, "c1 -0x1.0", v(1), bf(-0x1.0p0), ed())
+	assertCTEDecode(t, "c1 -0x1.1", v(1), bf(-0x1.1p0), ed())
+	assertCTEDecode(t, "c1 -0xf.1p+10", v(1), bf(-0xf.1p+10), ed())
+	assertCTEDecode(t, "c1 -0xf.1p-10", v(1), bf(-0xf.1p-10), ed())
+	assertCTEDecode(t, "c1 -0xf.1p10", v(1), bf(-0xf.1p10), ed())
 
-	assertCTEDecode(t, "c1 -0x0.0", v(1), f(-0x0.0p0), ed())
-	assertCTEDecode(t, "c1 -0x0.1", v(1), f(-0x0.1p0), ed())
-	assertCTEDecode(t, "c1 -0x0.1p+10", v(1), f(-0x0.1p+10), ed())
-	assertCTEDecode(t, "c1 -0x0.1p-10", v(1), f(-0x0.1p-10), ed())
-	assertCTEDecode(t, "c1 -0x0.1p10", v(1), f(-0x0.1p10), ed())
+	assertCTEDecode(t, "c1 -0x0.0", v(1), bf(-0x0.0p0), ed())
+	assertCTEDecode(t, "c1 -0x0.1", v(1), bf(-0x0.1p0), ed())
+	assertCTEDecode(t, "c1 -0x0.1p+10", v(1), bf(-0x0.1p+10), ed())
+	assertCTEDecode(t, "c1 -0x0.1p-10", v(1), bf(-0x0.1p-10), ed())
+	assertCTEDecode(t, "c1 -0x0.1p10", v(1), bf(-0x0.1p10), ed())
 }
 
 func TestCTEDate(t *testing.T) {
@@ -323,8 +342,8 @@ func TestCTECustom(t *testing.T) {
 func TestCTENamed(t *testing.T) {
 	assertCTEEncodeDecode(t, `c1 @nil`, v(1), n(), ed())
 	assertCTEEncodeDecode(t, `c1 @nan`, v(1), nan(), ed())
-	assertCTEEncodeDecode(t, `c1 @inf`, v(1), f(math.Inf(1)), ed())
-	assertCTEEncodeDecode(t, `c1 -@inf`, v(1), f(math.Inf(-1)), ed())
+	assertCTEEncodeDecode(t, `c1 @inf`, v(1), bf(math.Inf(1)), ed())
+	assertCTEEncodeDecode(t, `c1 -@inf`, v(1), bf(math.Inf(-1)), ed())
 	assertCTEEncodeDecode(t, `c1 @false`, v(1), ff(), ed())
 	assertCTEEncodeDecode(t, `c1 @true`, v(1), tt(), ed())
 }

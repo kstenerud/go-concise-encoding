@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 var (
@@ -36,60 +60,72 @@ func (this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuild
 	}
 }
 
-func (this *intfBuilder) Nil(dst reflect.Value) {
+func (this *intfBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.Zero(builderIntfType))
 }
 
-func (this *intfBuilder) Bool(value bool, dst reflect.Value) {
+func (this *intfBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) Int(value int64, dst reflect.Value) {
+func (this *intfBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) Uint(value uint64, dst reflect.Value) {
+func (this *intfBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) Float(value float64, dst reflect.Value) {
+func (this *intfBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) String(value string, dst reflect.Value) {
+func (this *intfBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) Bytes(value []byte, dst reflect.Value) {
+func (this *intfBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) URI(value *url.URL, dst reflect.Value) {
+func (this *intfBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) Time(value time.Time, dst reflect.Value) {
+func (this *intfBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *intfBuilder) List() {
+func (this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+func (this *intfBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+func (this *intfBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+func (this *intfBuilder) BuildBeginList() {
 	builderPanicBadEvent(this, builderIntfType, "List")
 }
 
-func (this *intfBuilder) Map() {
+func (this *intfBuilder) BuildBeginMap() {
 	builderPanicBadEvent(this, builderIntfType, "Map")
 }
 
-func (this *intfBuilder) End() {
+func (this *intfBuilder) BuildEndContainer() {
 	builderPanicBadEvent(this, builderIntfType, "ContainerEnd")
 }
 
-func (this *intfBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *intfBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: intfBuilder.Marker")
 }
 
-func (this *intfBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *intfBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: intfBuilder.Reference")
 }
 
 func (this *intfBuilder) PrepareForListContents() {
@@ -147,64 +183,76 @@ func (this *intfSliceBuilder) storeValue(value interface{}) {
 	this.storeRValue(reflect.ValueOf(value))
 }
 
-func (this *intfSliceBuilder) Nil(ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromNil(ignored reflect.Value) {
 	this.storeRValue(reflect.New(builderIntfSliceType).Elem())
 }
 
-func (this *intfSliceBuilder) Bool(value bool, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) Int(value int64, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) Uint(value uint64, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) Float(value float64, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) String(value string, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) Bytes(value []byte, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) URI(value *url.URL, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) Time(value time.Time, ignored reflect.Value) {
+func (this *intfSliceBuilder) BuildFromString(value string, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
-func (this *intfSliceBuilder) List() {
+func (this *intfSliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	this.storeValue(value)
+}
+
+func (this *intfSliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	this.storeValue(value)
+}
+
+func (this *intfSliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	this.storeValue(value)
+}
+
+func (this *intfSliceBuilder) BuildBeginList() {
 	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this)
 	builder.PrepareForListContents()
 }
 
-func (this *intfSliceBuilder) Map() {
+func (this *intfSliceBuilder) BuildBeginMap() {
 	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this)
 	builder.PrepareForMapContents()
 }
 
-func (this *intfSliceBuilder) End() {
+func (this *intfSliceBuilder) BuildEndContainer() {
 	object := this.container
 	this.reset()
 	this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *intfSliceBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *intfSliceBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: intfSliceBuilder.Marker")
 }
 
-func (this *intfSliceBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *intfSliceBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: intfSliceBuilder.Reference")
 }
 
 func (this *intfSliceBuilder) PrepareForListContents() {
@@ -266,64 +314,76 @@ func (this *intfIntfMapBuilder) storeValue(value reflect.Value) {
 	this.nextIsKey = !this.nextIsKey
 }
 
-func (this *intfIntfMapBuilder) Nil(ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromNil(ignored reflect.Value) {
 	this.storeValue(reflect.Zero(builderIntfType))
 }
 
-func (this *intfIntfMapBuilder) Bool(value bool, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) Int(value int64, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) Uint(value uint64, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) Float(value float64, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) String(value string, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) Bytes(value []byte, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) URI(value *url.URL, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) Time(value time.Time, ignored reflect.Value) {
+func (this *intfIntfMapBuilder) BuildFromString(value string, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *intfIntfMapBuilder) List() {
+func (this *intfIntfMapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *intfIntfMapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *intfIntfMapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *intfIntfMapBuilder) BuildBeginList() {
 	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this)
 	builder.PrepareForListContents()
 }
 
-func (this *intfIntfMapBuilder) Map() {
+func (this *intfIntfMapBuilder) BuildBeginMap() {
 	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this)
 	builder.PrepareForMapContents()
 }
 
-func (this *intfIntfMapBuilder) End() {
+func (this *intfIntfMapBuilder) BuildEndContainer() {
 	object := this.container
 	this.reset()
 	this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *intfIntfMapBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *intfIntfMapBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: intfIntfMapBuilder.Marker")
 }
 
-func (this *intfIntfMapBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *intfIntfMapBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: intfIntfMapBuilder.Reference")
 }
 
 func (this *intfIntfMapBuilder) PrepareForListContents() {

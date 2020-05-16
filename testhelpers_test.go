@@ -1,13 +1,36 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"net/url"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
@@ -61,17 +84,17 @@ func generateBytes(length int, startIndex int) []byte {
 	return []byte(generateString(length, startIndex))
 }
 
-func invokeEvents(handler ConciseEncodingEventHandler, events ...*tevent) {
+func invokeEvents(receiver DataEventReceiver, events ...*tevent) {
 	for _, event := range events {
-		event.Invoke(handler)
+		event.Invoke(receiver)
 	}
 }
 
 func cbeDecode(document []byte) (events []*tevent, err error) {
-	handler := NewTEH()
+	receiver := NewTER()
 	shouldZeroCopy := false
-	err = CBEDecode(document, handler, shouldZeroCopy)
-	events = handler.Events
+	err = CBEDecode(document, receiver, shouldZeroCopy)
+	events = receiver.Events
 	return
 }
 
@@ -90,9 +113,9 @@ func cbeEncodeDecode(expected ...*tevent) (events []*tevent, err error) {
 }
 
 func cteDecode(document []byte) (events []*tevent, err error) {
-	handler := NewTEH()
-	err = CTEDecode(document, handler)
-	events = handler.Events
+	receiver := NewTER()
+	err = CTEDecode(document, receiver)
+	events = receiver.Events
 	return
 }
 
@@ -124,9 +147,13 @@ const (
 	teventPInt
 	teventNInt
 	teventInt
-	teventFloat
+	teventBigInt
+	teventBinaryFloat
+	teventDecimalFloat
+	teventBigDecimalFloat
 	teventComplex
 	teventNan
+	teventSNan
 	teventUUID
 	teventTime
 	teventCompactTime
@@ -161,9 +188,13 @@ var teventNames = []string{
 	"pi",
 	"ni",
 	"i",
-	"f",
+	"bi",
+	"bf",
+	"df",
+	"bdf",
 	"cmpl",
 	"nan",
+	"snan",
 	"uuid",
 	"gt",
 	"ct",
@@ -217,81 +248,89 @@ func (this *tevent) String() string {
 	return str
 }
 
-func (this *tevent) Invoke(handler ConciseEncodingEventHandler) {
+func (this *tevent) Invoke(receiver DataEventReceiver) {
 	switch this.Type {
 	case teventVersion:
-		handler.OnVersion(this.V1.(uint64))
+		receiver.OnVersion(this.V1.(uint64))
 	case teventPadding:
-		handler.OnPadding(this.V1.(int))
+		receiver.OnPadding(this.V1.(int))
 	case teventNil:
-		handler.OnNil()
+		receiver.OnNil()
 	case teventBool:
-		handler.OnBool(this.V1.(bool))
+		receiver.OnBool(this.V1.(bool))
 	case teventTrue:
-		handler.OnBool(true)
+		receiver.OnBool(true)
 	case teventFalse:
-		handler.OnBool(false)
+		receiver.OnBool(false)
 	case teventPInt:
-		handler.OnPositiveInt(this.V1.(uint64))
+		receiver.OnPositiveInt(this.V1.(uint64))
 	case teventNInt:
-		handler.OnNegativeInt(this.V1.(uint64))
+		receiver.OnNegativeInt(this.V1.(uint64))
 	case teventInt:
 		v := this.V1.(int64)
 		if v >= 0 {
-			handler.OnPositiveInt(uint64(v))
+			receiver.OnPositiveInt(uint64(v))
 		} else {
-			handler.OnNegativeInt(uint64(-v))
+			receiver.OnNegativeInt(uint64(-v))
 		}
-	case teventFloat:
-		handler.OnFloat(this.V1.(float64))
+	case teventBigInt:
+		receiver.OnBigInt(this.V1.(*big.Int))
+	case teventBinaryFloat:
+		receiver.OnBinaryFloat(this.V1.(float64))
+	case teventDecimalFloat:
+		receiver.OnDecimalFloat(this.V1.(compact_float.DFloat))
+	case teventBigDecimalFloat:
+		receiver.OnBigDecimalFloat(this.V1.(*apd.Decimal))
 	case teventComplex:
-		handler.OnComplex(this.V1.(complex128))
+		receiver.OnComplex(this.V1.(complex128))
 	case teventNan:
-		handler.OnNan()
+		receiver.OnNan(false)
+	case teventSNan:
+		receiver.OnNan(true)
 	case teventUUID:
-		handler.OnUUID(this.V1.([]byte))
+		receiver.OnUUID(this.V1.([]byte))
 	case teventTime:
-		handler.OnTime(this.V1.(time.Time))
+		receiver.OnTime(this.V1.(time.Time))
 	case teventCompactTime:
-		handler.OnCompactTime(this.V1.(*compact_time.Time))
+		receiver.OnCompactTime(this.V1.(*compact_time.Time))
 	case teventBytes:
-		handler.OnBytes(this.V1.([]byte))
+		receiver.OnBytes(this.V1.([]byte))
 	case teventString:
-		handler.OnString(this.V1.(string))
+		receiver.OnString(this.V1.(string))
 	case teventURI:
-		handler.OnURI(this.V1.(string))
+		receiver.OnURI(this.V1.(string))
 	case teventCustom:
-		handler.OnCustom(this.V1.([]byte))
+		receiver.OnCustom(this.V1.([]byte))
 	case teventBytesBegin:
-		handler.OnBytesBegin()
+		receiver.OnBytesBegin()
 	case teventStringBegin:
-		handler.OnStringBegin()
+		receiver.OnStringBegin()
 	case teventURIBegin:
-		handler.OnURIBegin()
+		receiver.OnURIBegin()
 	case teventCustomBegin:
-		handler.OnCustomBegin()
+		receiver.OnCustomBegin()
 	case teventArrayChunk:
-		handler.OnArrayChunk(this.V1.(uint64), this.V2.(bool))
+		receiver.OnArrayChunk(this.V1.(uint64), this.V2.(bool))
 	case teventArrayData:
-		handler.OnArrayData(this.V1.([]byte))
+		receiver.OnArrayData(this.V1.([]byte))
 	case teventList:
-		handler.OnList()
+		receiver.OnList()
 	case teventMap:
-		handler.OnMap()
+		receiver.OnMap()
 	case teventMarkup:
-		handler.OnMarkup()
+		receiver.OnMarkup()
 	case teventMetadata:
-		handler.OnMetadata()
+		receiver.OnMetadata()
 	case teventComment:
-		handler.OnComment()
+		receiver.OnComment()
 	case teventEnd:
-		handler.OnEnd()
+		receiver.OnEnd()
 	case teventMarker:
-		handler.OnMarker()
+		receiver.OnMarker()
 	case teventReference:
-		handler.OnReference()
+		receiver.OnReference()
 	case teventEndDocument:
-		handler.OnEndDocument()
+		receiver.OnEndDocument()
 	default:
 		panic(fmt.Errorf("%v: Unhandled event type", this.Type))
 	}
@@ -306,11 +345,29 @@ func i(v int64) *tevent {
 		return ni(uint64(-v))
 	}
 }
-func f(v float64) *tevent {
+func bf(v float64) *tevent {
 	if math.IsNaN(v) {
+		if isSignalingNan(v) {
+			return snan()
+		}
 		return nan()
 	}
-	return newTEvent(teventFloat, v, nil)
+	return newTEvent(teventBinaryFloat, v, nil)
+}
+func df(v string) *tevent {
+	decimal, err := compact_float.DFloatFromString(v)
+	if err != nil {
+		panic(err)
+	}
+	return newTEvent(teventDecimalFloat, decimal, nil)
+}
+
+func bdf(v string) *tevent {
+	decimal, _, err := apd.NewFromString(v)
+	if err != nil {
+		panic(err)
+	}
+	return newTEvent(teventBigDecimalFloat, decimal, nil)
 }
 
 func v(v uint64) *tevent              { return newTEvent(teventVersion, v, nil) }
@@ -319,8 +376,10 @@ func pad(v int) *tevent               { return newTEvent(teventPadding, v, nil) 
 func b(v bool) *tevent                { return newTEvent(teventBool, v, nil) }
 func pi(v uint64) *tevent             { return newTEvent(teventPInt, v, nil) }
 func ni(v uint64) *tevent             { return newTEvent(teventNInt, v, nil) }
+func bi(v *big.Int) *tevent           { return newTEvent(teventBigInt, v, nil) }
 func cmpl(v complex128) *tevent       { return newTEvent(teventComplex, v, nil) }
 func nan() *tevent                    { return newTEvent(teventNan, nil, nil) }
+func snan() *tevent                   { return newTEvent(teventSNan, nil, nil) }
 func uuid(v []byte) *tevent           { return newTEvent(teventUUID, v, nil) }
 func gt(v time.Time) *tevent          { return newTEvent(teventTime, v, nil) }
 func ct(v *compact_time.Time) *tevent { return newTEvent(teventCompactTime, v, nil) }
@@ -344,47 +403,85 @@ func mark() *tevent                   { return newTEvent(teventMarker, nil, nil)
 func ref() *tevent                    { return newTEvent(teventReference, nil, nil) }
 func ed() *tevent                     { return newTEvent(teventEndDocument, nil, nil) }
 
-type TEH struct {
+type TER struct {
 	Events []*tevent
 }
 
-func NewTEH() *TEH {
-	return &TEH{}
+func NewTER() *TER {
+	return &TER{}
 }
-func (h *TEH) add(event *tevent) {
+func (h *TER) add(event *tevent) {
 	h.Events = append(h.Events, event)
 }
-func (h *TEH) OnVersion(version uint64)               { h.add(v(version)) }
-func (h *TEH) OnPadding(count int)                    { h.add(pad(count)) }
-func (h *TEH) OnNil()                                 { h.add(n()) }
-func (h *TEH) OnBool(value bool)                      { h.add(b(value)) }
-func (h *TEH) OnTrue()                                { h.add(tt()) }
-func (h *TEH) OnFalse()                               { h.add(ff()) }
-func (h *TEH) OnPositiveInt(value uint64)             { h.add(pi(value)) }
-func (h *TEH) OnNegativeInt(value uint64)             { h.add(ni(value)) }
-func (h *TEH) OnInt(value int64)                      { h.add(i(value)) }
-func (h *TEH) OnFloat(value float64)                  { h.add(f(value)) }
-func (h *TEH) OnComplex(value complex128)             { h.add(cmpl(value)) }
-func (h *TEH) OnNan()                                 { h.add(nan()) }
-func (h *TEH) OnUUID(value []byte)                    { h.add(uuid(value)) }
-func (h *TEH) OnTime(value time.Time)                 { h.add(gt(value)) }
-func (h *TEH) OnCompactTime(value *compact_time.Time) { h.add(ct(value)) }
-func (h *TEH) OnBytes(value []byte)                   { h.add(bin(value)) }
-func (h *TEH) OnString(value string)                  { h.add(s(value)) }
-func (h *TEH) OnURI(value string)                     { h.add(uri((value))) }
-func (h *TEH) OnCustom(value []byte)                  { h.add(cust(value)) }
-func (h *TEH) OnBytesBegin()                          { h.add(bb()) }
-func (h *TEH) OnStringBegin()                         { h.add(sb()) }
-func (h *TEH) OnURIBegin()                            { h.add(ub()) }
-func (h *TEH) OnCustomBegin()                         { h.add(cb()) }
-func (h *TEH) OnArrayChunk(l uint64, final bool)      { h.add(ac(l, final)) }
-func (h *TEH) OnArrayData(data []byte)                { h.add(ad(data)) }
-func (h *TEH) OnList()                                { h.add(l()) }
-func (h *TEH) OnMap()                                 { h.add(m()) }
-func (h *TEH) OnMarkup()                              { h.add(mup()) }
-func (h *TEH) OnMetadata()                            { h.add(meta()) }
-func (h *TEH) OnComment()                             { h.add(cmt()) }
-func (h *TEH) OnEnd()                                 { h.add(e()) }
-func (h *TEH) OnMarker()                              { h.add(mark()) }
-func (h *TEH) OnReference()                           { h.add(ref()) }
-func (h *TEH) OnEndDocument()                         { h.add(ed()) }
+func (h *TER) OnVersion(version uint64)   { h.add(v(version)) }
+func (h *TER) OnPadding(count int)        { h.add(pad(count)) }
+func (h *TER) OnNil()                     { h.add(n()) }
+func (h *TER) OnBool(value bool)          { h.add(b(value)) }
+func (h *TER) OnTrue()                    { h.add(tt()) }
+func (h *TER) OnFalse()                   { h.add(ff()) }
+func (h *TER) OnPositiveInt(value uint64) { h.add(pi(value)) }
+func (h *TER) OnNegativeInt(value uint64) { h.add(ni(value)) }
+func (h *TER) OnInt(value int64)          { h.add(i(value)) }
+func (h *TER) OnBigInt(value *big.Int)    { h.add(bi(value)) }
+func (h *TER) OnBinaryFloat(value float64) {
+	if math.IsNaN(value) {
+		if isSignalingNan(value) {
+			h.add(snan())
+		} else {
+			h.add(nan())
+		}
+	} else {
+		h.add(bf(value))
+	}
+}
+func (h *TER) OnDecimalFloat(value compact_float.DFloat) {
+	if value.IsNan() {
+		if value.IsSignalingNan() {
+			h.add(snan())
+		} else {
+			h.add(nan())
+		}
+	} else {
+		h.add(df(value.String()))
+	}
+}
+func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
+	switch value.Form {
+	case apd.NaN:
+		h.add(nan())
+	case apd.NaNSignaling:
+		h.add(snan())
+	default:
+		h.add(bdf(value.String()))
+	}
+}
+func (h *TER) OnComplex(value complex128)             { h.add(cmpl(value)) }
+func (h *TER) OnUUID(value []byte)                    { h.add(uuid(value)) }
+func (h *TER) OnTime(value time.Time)                 { h.add(gt(value)) }
+func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(ct(value)) }
+func (h *TER) OnBytes(value []byte)                   { h.add(bin(value)) }
+func (h *TER) OnString(value string)                  { h.add(s(value)) }
+func (h *TER) OnURI(value string)                     { h.add(uri((value))) }
+func (h *TER) OnCustom(value []byte)                  { h.add(cust(value)) }
+func (h *TER) OnBytesBegin()                          { h.add(bb()) }
+func (h *TER) OnStringBegin()                         { h.add(sb()) }
+func (h *TER) OnURIBegin()                            { h.add(ub()) }
+func (h *TER) OnCustomBegin()                         { h.add(cb()) }
+func (h *TER) OnArrayChunk(l uint64, final bool)      { h.add(ac(l, final)) }
+func (h *TER) OnArrayData(data []byte)                { h.add(ad(data)) }
+func (h *TER) OnList()                                { h.add(l()) }
+func (h *TER) OnMap()                                 { h.add(m()) }
+func (h *TER) OnMarkup()                              { h.add(mup()) }
+func (h *TER) OnMetadata()                            { h.add(meta()) }
+func (h *TER) OnComment()                             { h.add(cmt()) }
+func (h *TER) OnEnd()                                 { h.add(e()) }
+func (h *TER) OnMarker()                              { h.add(mark()) }
+func (h *TER) OnReference()                           { h.add(ref()) }
+func (h *TER) OnEndDocument()                         { h.add(ed()) }
+func (h *TER) OnNan(signaling bool) {
+	if signaling {
+		h.add(snan())
+	} else {
+		h.add(nan())
+	}
+}

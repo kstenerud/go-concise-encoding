@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 const defaultSliceCap = 4
@@ -56,80 +80,98 @@ func (this *sliceBuilder) storeValue(value reflect.Value) {
 	this.container = reflect.Append(this.container, value)
 }
 
-func (this *sliceBuilder) Nil(ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromNil(ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Nil(object)
+	this.elemBuilder.BuildFromNil(object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) Bool(value bool, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Bool(value, object)
+	this.elemBuilder.BuildFromBool(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) Int(value int64, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Int(value, object)
+	this.elemBuilder.BuildFromInt(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) Uint(value uint64, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Uint(value, object)
+	this.elemBuilder.BuildFromUint(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) Float(value float64, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Float(value, object)
+	this.elemBuilder.BuildFromBigInt(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) String(value string, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.String(value, object)
+	this.elemBuilder.BuildFromFloat(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) Bytes(value []byte, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Bytes(value, object)
+	this.elemBuilder.BuildFromDecimalFloat(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) URI(value *url.URL, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.URI(value, object)
+	this.elemBuilder.BuildFromBigDecimalFloat(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) Time(value time.Time, ignored reflect.Value) {
+func (this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) {
 	object := this.newElem()
-	this.elemBuilder.Time(value, object)
+	this.elemBuilder.BuildFromString(value, object)
 	this.storeValue(object)
 }
 
-func (this *sliceBuilder) List() {
+func (this *sliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	object := this.newElem()
+	this.elemBuilder.BuildFromBytes(value, object)
+	this.storeValue(object)
+}
+
+func (this *sliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	object := this.newElem()
+	this.elemBuilder.BuildFromURI(value, object)
+	this.storeValue(object)
+}
+
+func (this *sliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	object := this.newElem()
+	this.elemBuilder.BuildFromTime(value, object)
+	this.storeValue(object)
+}
+
+func (this *sliceBuilder) BuildBeginList() {
 	this.elemBuilder.PrepareForListContents()
 }
 
-func (this *sliceBuilder) Map() {
+func (this *sliceBuilder) BuildBeginMap() {
 	this.elemBuilder.PrepareForMapContents()
 }
 
-func (this *sliceBuilder) End() {
+func (this *sliceBuilder) BuildEndContainer() {
 	object := this.container
 	this.reset()
 	this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *sliceBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *sliceBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: sliceBuilder.Marker")
 }
 
-func (this *sliceBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *sliceBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: sliceBuilder.Reference")
 }
 
 func (this *sliceBuilder) PrepareForListContents() {

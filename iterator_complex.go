@@ -1,3 +1,23 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
@@ -27,7 +47,7 @@ func (this *interfaceIterator) CloneFromTemplate(root *RootObjectIterator) Objec
 
 func (this *interfaceIterator) Iterate(v reflect.Value) {
 	if v.IsNil() {
-		this.root.eventHandler.OnNil()
+		this.root.eventReceiver.OnNil()
 	} else {
 		elem := v.Elem()
 		iter := getIteratorForType(elem.Type()).CloneFromTemplate(this.root)
@@ -63,7 +83,7 @@ func (this *pointerIterator) CloneFromTemplate(root *RootObjectIterator) ObjectI
 
 func (this *pointerIterator) Iterate(v reflect.Value) {
 	if v.IsNil() {
-		this.root.eventHandler.OnNil()
+		this.root.eventReceiver.OnNil()
 		return
 	}
 	if this.root.addReference(v) {
@@ -93,14 +113,14 @@ func (this *uint8ArrayIterator) CloneFromTemplate(root *RootObjectIterator) Obje
 
 func (this *uint8ArrayIterator) Iterate(v reflect.Value) {
 	if v.CanAddr() {
-		this.root.eventHandler.OnBytes(v.Slice(0, v.Len()).Bytes())
+		this.root.eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
 	} else {
 		tempSlice := make([]byte, v.Len())
 		tempLen := v.Len()
 		for i := 0; i < tempLen; i++ {
 			tempSlice[i] = v.Index(i).Interface().(uint8)
 		}
-		this.root.eventHandler.OnBytes(tempSlice)
+		this.root.eventReceiver.OnBytes(tempSlice)
 	}
 }
 
@@ -124,7 +144,7 @@ func (this *complexIterator) CloneFromTemplate(root *RootObjectIterator) ObjectI
 }
 
 func (this *complexIterator) Iterate(v reflect.Value) {
-	this.root.eventHandler.OnComplex(v.Complex())
+	this.root.eventReceiver.OnComplex(v.Complex())
 }
 
 // -----
@@ -157,19 +177,19 @@ func (this *sliceIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIte
 
 func (this *sliceIterator) Iterate(v reflect.Value) {
 	if v.IsNil() {
-		this.root.eventHandler.OnNil()
+		this.root.eventReceiver.OnNil()
 		return
 	}
 	if this.root.addReference(v) {
 		return
 	}
 
-	this.root.eventHandler.OnList()
+	this.root.eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
 		this.elemIter.Iterate(v.Index(i))
 	}
-	this.root.eventHandler.OnEnd()
+	this.root.eventReceiver.OnEnd()
 }
 
 // -----
@@ -201,12 +221,12 @@ func (this *arrayIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIte
 }
 
 func (this *arrayIterator) Iterate(v reflect.Value) {
-	this.root.eventHandler.OnList()
+	this.root.eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
 		this.elemIter.Iterate(v.Index(i))
 	}
-	this.root.eventHandler.OnEnd()
+	this.root.eventReceiver.OnEnd()
 }
 
 // ---
@@ -242,14 +262,14 @@ func (this *mapIterator) CloneFromTemplate(root *RootObjectIterator) ObjectItera
 
 func (this *mapIterator) Iterate(v reflect.Value) {
 	if v.IsNil() {
-		this.root.eventHandler.OnNil()
+		this.root.eventReceiver.OnNil()
 		return
 	}
 	if this.root.addReference(v) {
 		return
 	}
 
-	this.root.eventHandler.OnMap()
+	this.root.eventReceiver.OnMap()
 
 	iter := mapRange(v)
 	for iter.Next() {
@@ -257,7 +277,7 @@ func (this *mapIterator) Iterate(v reflect.Value) {
 		this.valueIter.Iterate(iter.Value())
 	}
 
-	this.root.eventHandler.OnEnd()
+	this.root.eventReceiver.OnEnd()
 }
 
 // ------
@@ -317,12 +337,12 @@ func (this *structIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIt
 }
 
 func (this *structIterator) Iterate(v reflect.Value) {
-	this.root.eventHandler.OnMap()
+	this.root.eventReceiver.OnMap()
 
 	for _, iter := range this.fieldIterators {
-		this.root.eventHandler.OnString(iter.Name)
+		this.root.eventReceiver.OnString(iter.Name)
 		iter.Iterator.Iterate(v.Field(iter.Index))
 	}
 
-	this.root.eventHandler.OnEnd()
+	this.root.eventReceiver.OnEnd()
 }

@@ -1,10 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
@@ -16,40 +39,6 @@ type CTEEncoder struct {
 
 func NewCTEEncoder() *CTEEncoder {
 	return &CTEEncoder{}
-}
-
-func (this *CTEEncoder) stackState(newState cteEncoderState, prefix string) {
-	this.containerState = append(this.containerState, this.currentState)
-	this.currentState = newState
-	this.addString(prefix)
-}
-
-func (this *CTEEncoder) unstackState() {
-	this.addString(cteEncoderTerminators[this.currentState])
-	this.currentState = this.containerState[len(this.containerState)-1]
-	this.containerState = this.containerState[:len(this.containerState)-1]
-}
-
-func (this *CTEEncoder) transitionState() {
-	this.currentState = cteEncoderStateTransitions[this.currentState]
-}
-
-func (this *CTEEncoder) addPrefix() {
-	cteEncoderPrefixHandlers[this.currentState](this)
-}
-
-func (this *CTEEncoder) addSuffix() {
-	cteEncoderSuffixHandlers[this.currentState](this)
-}
-
-func (this *CTEEncoder) addString(str string) {
-	dst := this.buff.Allocate(len(str))
-	copy(dst, str)
-}
-
-func (this *CTEEncoder) addFmt(format string, args ...interface{}) {
-	// TODO: Make something more efficient
-	this.addString(fmt.Sprintf(format, args...))
 }
 
 func (this *CTEEncoder) Document() []byte {
@@ -101,6 +90,10 @@ func (this *CTEEncoder) OnInt(value int64) {
 	}
 }
 
+func (this *CTEEncoder) OnBigInt(value *big.Int) {
+	this.addFmt("%v", value)
+}
+
 func (this *CTEEncoder) OnPositiveInt(value uint64) {
 	this.addPrefix()
 	this.addFmt("%d", value)
@@ -115,9 +108,9 @@ func (this *CTEEncoder) OnNegativeInt(value uint64) {
 	this.transitionState()
 }
 
-func (this *CTEEncoder) OnFloat(value float64) {
+func (this *CTEEncoder) OnBinaryFloat(value float64) {
 	if math.IsNaN(value) {
-		this.OnNan()
+		this.OnNan(isSignalingNan(value))
 		return
 	}
 	this.addPrefix()
@@ -129,15 +122,27 @@ func (this *CTEEncoder) OnFloat(value float64) {
 		}
 		return
 	}
+	// TODO: Hex float?
 	this.addFmt("%g", value)
 	this.addSuffix()
 	this.transitionState()
 }
 
-// TODO: Add signaling nan?
-func (this *CTEEncoder) OnNan() {
+func (this *CTEEncoder) OnDecimalFloat(value compact_float.DFloat) {
+	this.addString(value.Text('g'))
+}
+
+func (this *CTEEncoder) OnBigDecimalFloat(value *apd.Decimal) {
+	this.addString(value.Text('g'))
+}
+
+func (this *CTEEncoder) OnNan(signaling bool) {
 	this.addPrefix()
-	this.addString("@nan")
+	if signaling {
+		this.addString("@snan")
+	} else {
+		this.addString("@nan")
+	}
 	this.addSuffix()
 	this.transitionState()
 }
@@ -155,7 +160,7 @@ func (this *CTEEncoder) OnUUID(v []byte) {
 
 func (this *CTEEncoder) OnComplex(value complex128) {
 	this.addPrefix()
-	panic(fmt.Errorf("TODO: OnComplex"))
+	panic("TODO: CTEEncoder.OnComplex")
 	this.addSuffix()
 	this.transitionState()
 }
@@ -202,23 +207,6 @@ func (this *CTEEncoder) OnCompactTime(value *compact_time.Time) {
 	}
 	this.addSuffix()
 	this.transitionState()
-}
-
-var hexToChar = [16]byte{
-	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
-}
-
-func (this *CTEEncoder) encodeHex(prefix byte, value []byte) {
-	dst := this.buff.Allocate(len(value)*2 + 3)
-	dst[0] = prefix
-	dst[1] = '"'
-	dst[len(dst)-1] = '"'
-	dst = dst[2 : len(dst)-1]
-	for i := 0; i < len(value); i++ {
-		b := value[i]
-		dst[i*2] = hexToChar[b>>4]
-		dst[i*2+1] = hexToChar[b&15]
-	}
 }
 
 func (this *CTEEncoder) OnBytes(value []byte) {
@@ -278,11 +266,11 @@ func (this *CTEEncoder) OnCustomBegin() {
 }
 
 func (this *CTEEncoder) OnArrayChunk(length uint64, isFinalChunk bool) {
-	panic(fmt.Errorf("TODO: OnArrayChunk"))
+	panic("TODO: CTEEncoder.OnArrayChunk")
 }
 
 func (this *CTEEncoder) OnArrayData(data []byte) {
-	panic(fmt.Errorf("TODO: OnArrayData"))
+	panic("TODO: CTEEncoder.OnArrayData")
 	dst := this.buff.Allocate(len(data))
 	copy(dst, data)
 }
@@ -328,17 +316,70 @@ func (this *CTEEncoder) OnEnd() {
 
 func (this *CTEEncoder) OnMarker() {
 	this.addPrefix()
-	panic(fmt.Errorf("TODO: OnMarker"))
+	panic("TODO: CTEEncoder.OnMarker")
 	this.addSuffix()
 }
 
 func (this *CTEEncoder) OnReference() {
 	this.addPrefix()
-	panic(fmt.Errorf("TODO: OnReference"))
+	panic("TODO: CTEEncoder.OnReference")
 	this.addSuffix()
 }
 
 func (this *CTEEncoder) OnEndDocument() {
+}
+
+// ============================================================================
+
+func (this *CTEEncoder) stackState(newState cteEncoderState, prefix string) {
+	this.containerState = append(this.containerState, this.currentState)
+	this.currentState = newState
+	this.addString(prefix)
+}
+
+func (this *CTEEncoder) unstackState() {
+	this.addString(cteEncoderTerminators[this.currentState])
+	this.currentState = this.containerState[len(this.containerState)-1]
+	this.containerState = this.containerState[:len(this.containerState)-1]
+}
+
+func (this *CTEEncoder) transitionState() {
+	this.currentState = cteEncoderStateTransitions[this.currentState]
+}
+
+func (this *CTEEncoder) addPrefix() {
+	cteEncoderPrefixHandlers[this.currentState](this)
+}
+
+func (this *CTEEncoder) addSuffix() {
+	cteEncoderSuffixHandlers[this.currentState](this)
+}
+
+func (this *CTEEncoder) addString(str string) {
+	dst := this.buff.Allocate(len(str))
+	copy(dst, str)
+}
+
+func (this *CTEEncoder) addFmt(format string, args ...interface{}) {
+	// TODO: Make something more efficient
+	this.addString(fmt.Sprintf(format, args...))
+}
+
+var hexToChar = [16]byte{
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+}
+
+func (this *CTEEncoder) encodeHex(prefix byte, value []byte) {
+	dst := this.buff.Allocate(len(value)*2 + 3)
+	dst[0] = prefix
+	dst[1] = '"'
+	dst[len(dst)-1] = '"'
+	dst = dst[2 : len(dst)-1]
+	for i := 0; i < len(value); i++ {
+		b := value[i]
+		dst[i*2] = hexToChar[b>>4]
+		dst[i*2+1] = hexToChar[b&15]
+	}
 }
 
 func (this *CTEEncoder) suffixNone() {

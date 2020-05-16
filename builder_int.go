@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 type intBuilder struct {
@@ -24,72 +48,72 @@ func (this *intBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilde
 	return this
 }
 
-func (this *intBuilder) Nil(dst reflect.Value) {
+func (this *intBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Nil")
 }
 
-func (this *intBuilder) Bool(value bool, dst reflect.Value) {
+func (this *intBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Bool")
 }
 
-func (this *intBuilder) Int(value int64, dst reflect.Value) {
-	dst.SetInt(value)
-	if dst.Int() != value {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+func (this *intBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	setIntFromInt(value, dst)
 }
 
-func (this *intBuilder) Uint(value uint64, dst reflect.Value) {
-	if value > 0x7fffffffffffffff {
-		builderPanicCannotConvert(value, dst.Type())
-	}
-	dst.SetInt(int64(value))
-	if uint64(dst.Int()) != value {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+func (this *intBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	setIntFromUint(value, dst)
 }
 
-func (this *intBuilder) Float(value float64, dst reflect.Value) {
-	dst.SetInt(int64(value))
-	if float64(dst.Int()) != value {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+func (this *intBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	setIntFromBigInt(value, dst)
 }
 
-func (this *intBuilder) String(value string, dst reflect.Value) {
+func (this *intBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	setIntFromFloat(value, dst)
+}
+
+func (this *intBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	setIntFromDecimalFloat(value, dst)
+}
+
+func (this *intBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	setIntFromBigDecimalFloat(value, dst)
+}
+
+func (this *intBuilder) BuildFromString(value string, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "String")
 }
 
-func (this *intBuilder) Bytes(value []byte, dst reflect.Value) {
+func (this *intBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Bytes")
 }
 
-func (this *intBuilder) URI(value *url.URL, dst reflect.Value) {
+func (this *intBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "URI")
 }
 
-func (this *intBuilder) Time(value time.Time, dst reflect.Value) {
+func (this *intBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Time")
 }
 
-func (this *intBuilder) List() {
+func (this *intBuilder) BuildBeginList() {
 	builderPanicBadEvent(this, this.dstType, "List")
 }
 
-func (this *intBuilder) Map() {
+func (this *intBuilder) BuildBeginMap() {
 	builderPanicBadEvent(this, this.dstType, "Map")
 }
 
-func (this *intBuilder) End() {
+func (this *intBuilder) BuildEndContainer() {
 	builderPanicBadEvent(this, this.dstType, "ContainerEnd")
 }
 
-func (this *intBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *intBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: intBuilder.Marker")
 }
 
-func (this *intBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *intBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: intBuilder.Reference")
 }
 
 func (this *intBuilder) PrepareForListContents() {

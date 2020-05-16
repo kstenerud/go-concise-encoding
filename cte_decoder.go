@@ -1,28 +1,51 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"bytes"
 	"fmt"
 	"math"
+	"math/big"
 	"strings"
 
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
-func CTEDecode(document []byte, eventHandler ConciseEncodingEventHandler) (err error) {
+func CTEDecode(document []byte, eventReceiver DataEventReceiver) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
 		}
 	}()
 
-	decoder := NewCTEDecoder([]byte(document), eventHandler)
+	decoder := NewCTEDecoder([]byte(document), eventReceiver)
 	decoder.Decode()
 	return
 }
 
 type CTEDecoder struct {
-	eventHandler   ConciseEncodingEventHandler
+	eventReceiver   DataEventReceiver
 	document       []byte
 	tokenStart     int
 	tokenPos       int
@@ -31,15 +54,15 @@ type CTEDecoder struct {
 	currentState   cteDecoderState
 }
 
-func NewCTEDecoder(document []byte, eventHandler ConciseEncodingEventHandler) *CTEDecoder {
+func NewCTEDecoder(document []byte, eventReceiver DataEventReceiver) *CTEDecoder {
 	this := &CTEDecoder{}
-	this.Init(document, eventHandler)
+	this.Init(document, eventReceiver)
 	return this
 }
 
-func (this *CTEDecoder) Init(document []byte, eventHandler ConciseEncodingEventHandler) {
+func (this *CTEDecoder) Init(document []byte, eventReceiver DataEventReceiver) {
 	this.document = document
-	this.eventHandler = eventHandler
+	this.eventReceiver = eventReceiver
 	this.endPos = len(document) - 1
 }
 
@@ -55,9 +78,11 @@ func (this *CTEDecoder) Decode() (err error) {
 	for !this.isEndOfDocument() {
 		this.handleNextState()
 	}
-	this.eventHandler.OnEndDocument()
+	this.eventReceiver.OnEndDocument()
 	return
 }
+
+// ============================================================================
 
 // Bytes
 
@@ -186,7 +211,7 @@ func (this *CTEDecoder) assertAtObjectEnd(decoding string) {
 }
 
 func (this *CTEDecoder) unexpectedEOD() {
-	this.errorF("Unexpected end of document")
+	this.errorf("Unexpected end of document")
 }
 
 func (this *CTEDecoder) errorAt(index int, format string, args ...interface{}) {
@@ -209,10 +234,10 @@ func (this *CTEDecoder) errorAt(index int, format string, args ...interface{}) {
 
 	msg := fmt.Sprintf(format, args...)
 	panic(fmt.Errorf("Offset %v (line %v, col %v): %v", index, lineNumber, colNumber, msg))
-	this.errorF(format, args...)
+	this.errorf(format, args...)
 }
 
-func (this *CTEDecoder) errorF(format string, args ...interface{}) {
+func (this *CTEDecoder) errorf(format string, args ...interface{}) {
 	this.errorAt(this.tokenPos, format, args...)
 }
 
@@ -274,7 +299,7 @@ func (this *CTEDecoder) decodeBinary() (value uint64) {
 		oldValue := value
 		value = value<<1 + uint64(b-'0')
 		if value < oldValue {
-			this.errorF("Overflow reading binary integer")
+			this.errorf("Overflow reading binary integer")
 		}
 	}
 	this.tokenPos = i
@@ -292,33 +317,47 @@ func (this *CTEDecoder) decodeOctal() (value uint64) {
 		oldValue := value
 		value = value<<3 + uint64(b-'0')
 		if value < oldValue {
-			this.errorF("Overflow reading octal value")
+			this.errorf("Overflow reading octal value")
 		}
 	}
 	this.tokenPos = i
 	return
 }
 
-func (this *CTEDecoder) decodeDecimal(startValue uint64) (value uint64, digitCount int) {
-	value = startValue
+// startValue is only used if bigStartValue is nil
+// bigValue will be nil unless the value was too big for a uint64
+func (this *CTEDecoder) decodeDecimal(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
 	endPos := this.endPos
 	i := this.tokenPos
-	for ; i <= endPos; i++ {
-		b := this.document[i]
-		if !hasProperty(b, cteProperty09) {
-			break
-		}
-		oldValue := value
-		value = value*10 + uint64(b-'0')
-		if value < oldValue {
-			this.errorF("Overflow reading decimal value")
+
+	if bigStartValue == nil {
+		value = startValue
+		for ; i <= endPos; i++ {
+			b := this.document[i]
+			if !hasProperty(b, cteProperty09) {
+				break
+			}
+			oldValue := value
+			value = value*10 + uint64(b-'0')
+			if value < oldValue {
+				bigStartValue = new(big.Int).SetUint64(oldValue)
+				break
+			}
 		}
 	}
+
+	if bigStartValue != nil {
+		bigValue = bigStartValue
+		for ; i <= endPos; i++ {
+			b := this.document[i]
+			if !hasProperty(b, cteProperty09) {
+				break
+			}
+			bigValue = bigValue.Mul(bigValue, big.NewInt(10+int64(b-'0')))
+		}
+	}
+
 	digitCount = i - this.tokenPos
-	// TODO: Can this really happen?
-	if digitCount == 0 {
-		this.unexpectedCharAt(i, "integer")
-	}
 	this.tokenPos = i
 	return
 }
@@ -343,7 +382,7 @@ Loop:
 			break Loop
 		}
 		if value < oldValue {
-			this.errorF("Overflow reading hex value")
+			this.errorf("Overflow reading hex value")
 		}
 	}
 	digitCount = i - this.tokenPos
@@ -352,7 +391,7 @@ Loop:
 }
 
 func (this *CTEDecoder) decodeQuotedStringWithEscapes(startPos, firstEscape int) string {
-	this.errorF("TODO: Escape sequences")
+	this.errorf("TODO: CTEDecoder: Escape sequences")
 	return ""
 }
 
@@ -460,9 +499,9 @@ Loop:
 }
 
 func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
-	month, digitCount := this.decodeDecimal(0)
+	month, _, digitCount := this.decodeDecimal(0, nil)
 	if digitCount > 2 {
-		this.errorF("Month field is too long")
+		this.errorf("Month field is too long")
 	}
 	if this.peekByte() != '-' {
 		this.unexpectedChar("month")
@@ -470,12 +509,12 @@ func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
 	this.advanceByte()
 
 	var day uint64
-	day, digitCount = this.decodeDecimal(0)
+	day, _, digitCount = this.decodeDecimal(0, nil)
 	if digitCount == 0 {
 		this.unexpectedChar("day")
 	}
 	if digitCount > 2 {
-		this.errorF("Day field is too long")
+		this.errorf("Day field is too long")
 	}
 	if this.peekByte() != '/' {
 		return compact_time.NewDate(int(year), int(month), int(day))
@@ -483,12 +522,12 @@ func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
 
 	this.advanceByte()
 	var hour uint64
-	hour, digitCount = this.decodeDecimal(0)
+	hour, _, digitCount = this.decodeDecimal(0, nil)
 	if digitCount == 0 {
 		this.unexpectedChar("hour")
 	}
 	if digitCount > 2 {
-		this.errorF("Hour field is too long")
+		this.errorf("Hour field is too long")
 	}
 	if this.readByte() != ':' {
 		this.ungetByte()
@@ -506,29 +545,29 @@ func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
 }
 
 func (this *CTEDecoder) decodeTime(hour int) *compact_time.Time {
-	minute, digitCount := this.decodeDecimal(0)
+	minute, _, digitCount := this.decodeDecimal(0, nil)
 	if digitCount > 2 {
-		this.errorF("Minute field is too long")
+		this.errorf("Minute field is too long")
 	}
 	if this.peekByte() != ':' {
 		this.unexpectedChar("minute")
 	}
 	this.advanceByte()
 	var second uint64
-	second, digitCount = this.decodeDecimal(0)
+	second, _, digitCount = this.decodeDecimal(0, nil)
 	if digitCount > 2 {
-		this.errorF("Second field is too long")
+		this.errorf("Second field is too long")
 	}
 	var nanosecond int
 
 	if this.peekByte() == '.' {
 		this.advanceByte()
-		v, digitCount := this.decodeDecimal(0)
+		v, _, digitCount := this.decodeDecimal(0, nil)
 		if digitCount == 0 {
 			this.unexpectedChar("nanosecond")
 		}
 		if digitCount > 9 {
-			this.errorF("Nanosecond field is too long")
+			this.errorf("Nanosecond field is too long")
 		}
 		nanosecond = int(v)
 		nanosecond *= subsecondMagnitudes[digitCount]
@@ -560,21 +599,21 @@ func (this *CTEDecoder) decodeTime(hour int) *compact_time.Time {
 }
 
 func (this *CTEDecoder) decodeLatLongPortion(name string) (value int) {
-	whole, digitCount := this.decodeDecimal(0)
+	whole, _, digitCount := this.decodeDecimal(0, nil)
 	switch digitCount {
 	case 1, 2, 3:
 	// Nothing to do
 	case 0:
 		this.unexpectedChar(name)
 	default:
-		this.errorF("Too many digits decoding %v", name)
+		this.errorf("Too many digits decoding %v", name)
 	}
 
 	var fractional uint64
 	b := this.peekByte()
 	if b == '.' {
 		this.advanceByte()
-		fractional, digitCount = this.decodeDecimal(0)
+		fractional, _, digitCount = this.decodeDecimal(0, nil)
 		switch digitCount {
 		case 1:
 			fractional *= 10
@@ -583,7 +622,7 @@ func (this *CTEDecoder) decodeLatLongPortion(name string) (value int) {
 		case 0:
 			this.unexpectedChar(name)
 		default:
-			this.errorF("Too many digits decoding %v", name)
+			this.errorf("Too many digits decoding %v", name)
 		}
 	}
 	return int(whole*100 + fractional)
@@ -602,18 +641,17 @@ func (this *CTEDecoder) decodeLatLong() (latitudeHundredths, longitudeHundredths
 	return
 }
 
-func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, coefficientDigitCount int) float64 {
-	// TODO: use cockroach/apd
-	exponent := 0
+func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal) {
+	exponent := int32(0)
 	fractionalDigitCount := 0
-	coefficient, fractionalDigitCount = this.decodeDecimal(coefficient)
+	coefficient, bigCoefficient, fractionalDigitCount = this.decodeDecimal(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
 		this.unexpectedChar("float fractional")
 	}
 
 	if this.peekByte() == 'e' {
 		this.advanceByte()
-		exponentSign := 1
+		exponentSign := int32(1)
 		switch this.peekByte() {
 		case '+':
 			this.advanceByte()
@@ -621,24 +659,43 @@ func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, coeff
 			exponentSign = -1
 			this.advanceByte()
 		}
-		exp, digitCount := this.decodeDecimal(0)
+		exp, bigExp, digitCount := this.decodeDecimal(0, nil)
 		if digitCount == 0 {
 			this.unexpectedChar("float exponent")
 		}
-		exponent = int(exp) * exponentSign
+		if bigExp != nil || exp > 0x7fffffff {
+			this.errorf("Exponent too big")
+		}
+		exponent = int32(exp) * exponentSign
 	}
 
-	exponent -= fractionalDigitCount
+	exponent -= int32(fractionalDigitCount)
 
-	// TODO: Pass along float with sig digits
-	if exponent < -323 {
-		this.errorF("Exponent %v too low for float64", exponent)
-	}
-	if exponent > 308 {
-		this.errorF("Exponent %v too high for float64", exponent)
+	if coefficient == 0 {
+		if sign < 0 {
+			value = compact_float.NegativeZero()
+		}
+		return
 	}
 
-	return float64(sign) * float64(coefficient) * math.Pow10(exponent)
+	if bigCoefficient != nil {
+		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		if sign < 0 {
+			bigValue.Negative = true
+		}
+		return
+	}
+	if coefficient > 0x7fffffffffffffff {
+		bigCoefficient = new(big.Int).SetUint64(coefficient)
+		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		if sign < 0 {
+			bigValue.Negative = true
+		}
+		return
+	}
+
+	value = compact_float.DFloatValue(int32(exponent), int64(coefficient)*int64(sign))
+	return
 }
 
 func (this *CTEDecoder) decodeHexFloat(sign int64, coefficient uint64, coefficientDigitCount int) float64 {
@@ -659,9 +716,12 @@ func (this *CTEDecoder) decodeHexFloat(sign int64, coefficient uint64, coefficie
 			exponentSign = -1
 			this.advanceByte()
 		}
-		exp, digitCount := this.decodeDecimal(0)
+		exp, bigExp, digitCount := this.decodeDecimal(0, nil)
 		if digitCount == 0 {
 			this.unexpectedChar("float exponent")
+		}
+		if bigExp != nil {
+			this.errorf("Exponent too big")
 		}
 		exponent = int(exp) * exponentSign
 	}
@@ -700,18 +760,18 @@ func (this *CTEDecoder) handleObject() {
 }
 
 func (this *CTEDecoder) handleInvalidChar() {
-	this.errorF("Unexpected [%v]", this.describeCurrentChar())
+	this.errorf("Unexpected [%v]", this.describeCurrentChar())
 }
 
 func (this *CTEDecoder) handleInvalidState() {
-	this.errorF("BUG: Invalid state: %v", this.currentState)
+	this.errorf("BUG: Invalid state: %v", this.currentState)
 }
 
 func (this *CTEDecoder) handleKVSeparator() {
 	this.decodeWhitespace()
 	b := this.peekByte()
 	if b != '=' {
-		this.errorF("Expected map separator (=) but got [%v]", this.describeCurrentChar())
+		this.errorf("Expected map separator (=) but got [%v]", this.describeCurrentChar())
 	}
 	this.advanceByte()
 	this.decodeWhitespace()
@@ -725,13 +785,16 @@ func (this *CTEDecoder) handleWhitespace() {
 
 func (this *CTEDecoder) handleVersion() {
 	if b := this.peekByte(); b != 'c' && b != 'C' {
-		this.errorF(`Expected document to begin with "c" but got [%v]`, this.describeCurrentChar())
+		this.errorf(`Expected document to begin with "c" but got [%v]`, this.describeCurrentChar())
 	}
 	this.advanceByte()
 
-	version, digitCount := this.decodeDecimal(0)
+	version, bigVersion, digitCount := this.decodeDecimal(0, nil)
 	if digitCount == 0 {
 		this.unexpectedChar("version number")
+	}
+	if bigVersion != nil {
+		this.errorf("Version too big")
 	}
 
 	if !this.peekByte().HasProperty(ctePropertyWhitespace) {
@@ -739,7 +802,7 @@ func (this *CTEDecoder) handleVersion() {
 	}
 	this.advanceByte()
 
-	this.eventHandler.OnVersion(version)
+	this.eventReceiver.OnVersion(version)
 	this.endToken()
 }
 
@@ -759,7 +822,7 @@ func (this *CTEDecoder) handleStringish() {
 	if hasProperty(b, ctePropertyObjectEnd) || i > endPos {
 		bytes := this.document[startPos:i]
 		this.tokenPos = i
-		this.eventHandler.OnString(string(bytes))
+		this.eventReceiver.OnString(string(bytes))
 		this.endObject()
 		return
 	}
@@ -770,17 +833,17 @@ func (this *CTEDecoder) handleStringish() {
 		switch initiator {
 		case 'b':
 			this.tokenPos = i + 1
-			this.eventHandler.OnBytes(this.decodeHexBytes())
+			this.eventReceiver.OnBytes(this.decodeHexBytes())
 			this.endObject()
 			return
 		case 'c':
 			this.tokenPos = i + 1
-			this.eventHandler.OnCustom(this.decodeHexBytes())
+			this.eventReceiver.OnCustom(this.decodeHexBytes())
 			this.endObject()
 			return
 		case 'u':
 			this.tokenPos = i + 1
-			this.eventHandler.OnURI(this.decodeQuotedString())
+			this.eventReceiver.OnURI(this.decodeQuotedString())
 			this.endObject()
 			return
 		default:
@@ -793,23 +856,20 @@ func (this *CTEDecoder) handleStringish() {
 
 func (this *CTEDecoder) handleQuotedString() {
 	this.advanceByte()
-	this.eventHandler.OnString(this.decodeQuotedString())
+	this.eventReceiver.OnString(this.decodeQuotedString())
 	this.endObject()
 }
 
 func (this *CTEDecoder) handlePositiveNumeric() {
-	// TODO: big.Int support
-	coefficient, digitCount := this.decodeDecimal(0)
-	if digitCount > 19 {
-		if digitCount > 20 {
-			this.errorF("Numeric value is too long")
-		}
-		// TODO: Handle edge of 18446744073709551615
-	}
+	coefficient, bigCoefficient, digitCount := this.decodeDecimal(0, nil)
 
 	// Integer
 	if this.peekByte().HasProperty(ctePropertyObjectEnd) {
-		this.eventHandler.OnPositiveInt(coefficient)
+		if bigCoefficient != nil {
+			this.eventReceiver.OnBigInt(bigCoefficient)
+		} else {
+			this.eventReceiver.OnPositiveInt(coefficient)
+		}
 		this.endObject()
 		return
 	}
@@ -819,19 +879,23 @@ func (this *CTEDecoder) handlePositiveNumeric() {
 		this.advanceByte()
 		v := this.decodeDate(int64(coefficient))
 		this.assertAtObjectEnd("date")
-		this.eventHandler.OnCompactTime(v)
+		this.eventReceiver.OnCompactTime(v)
 		this.endObject()
 	case ':':
 		this.advanceByte()
 		v := this.decodeTime(int(coefficient))
 		this.assertAtObjectEnd("time")
-		this.eventHandler.OnCompactTime(v)
+		this.eventReceiver.OnCompactTime(v)
 		this.endObject()
 	case '.':
 		this.advanceByte()
-		v := this.decodeDecimalFloat(1, coefficient, digitCount)
+		value, bigValue := this.decodeDecimalFloat(1, coefficient, bigCoefficient, digitCount)
 		this.assertAtObjectEnd("float")
-		this.eventHandler.OnFloat(v)
+		if bigValue != nil {
+			this.eventReceiver.OnBigDecimalFloat(bigValue)
+		} else {
+			this.eventReceiver.OnDecimalFloat(value)
+		}
 		this.endObject()
 	default:
 		this.unexpectedChar("numeric")
@@ -850,23 +914,22 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 		this.readWhileProperty(ctePropertyAZ)
 		token := strings.ToLower(string(this.document[nameStart:this.tokenPos]))
 		if token != "inf" {
-			this.errorF("Unknown named value: %v", token)
+			this.errorf("Unknown named value: %v", token)
 		}
-		this.eventHandler.OnFloat(math.Inf(-1))
+		this.eventReceiver.OnBinaryFloat(math.Inf(-1))
 		return
 	}
 
-	coefficient, digitCount := this.decodeDecimal(0)
-	if digitCount > 19 {
-		if digitCount > 20 {
-			this.errorF("Numeric value is too long")
-		}
-		// TODO: Handle edge of 18446744073709551615
-	}
+	coefficient, bigCoefficient, digitCount := this.decodeDecimal(0, nil)
 
 	// Integer
 	if this.peekByte().HasProperty(ctePropertyObjectEnd) {
-		this.eventHandler.OnNegativeInt(coefficient)
+		if bigCoefficient != nil {
+			// TODO: More efficient way to negate?
+			bigCoefficient = bigCoefficient.Mul(bigCoefficient, big.NewInt(-1))
+			this.eventReceiver.OnBigInt(bigCoefficient)
+		}
+		this.eventReceiver.OnNegativeInt(coefficient)
 		this.endObject()
 		return
 	}
@@ -876,13 +939,17 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 		this.advanceByte()
 		v := this.decodeDate(-int64(coefficient))
 		this.assertAtObjectEnd("time")
-		this.eventHandler.OnCompactTime(v)
+		this.eventReceiver.OnCompactTime(v)
 		this.endObject()
 	case '.':
 		this.advanceByte()
-		v := this.decodeDecimalFloat(-1, coefficient, digitCount)
+		value, bigValue := this.decodeDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
 		this.assertAtObjectEnd("float")
-		this.eventHandler.OnFloat(v)
+		if bigValue != nil {
+			this.eventReceiver.OnBigDecimalFloat(bigValue)
+		} else {
+			this.eventReceiver.OnDecimalFloat(value)
+		}
 		this.endObject()
 	default:
 		this.unexpectedChar("numeric")
@@ -894,7 +961,7 @@ func (this *CTEDecoder) handleOtherBasePositive() {
 	b := this.readByte()
 
 	if b.HasProperty(ctePropertyObjectEnd) {
-		this.eventHandler.OnPositiveInt(0)
+		this.eventReceiver.OnPositiveInt(0)
 		this.endObject()
 		return
 	}
@@ -903,12 +970,12 @@ func (this *CTEDecoder) handleOtherBasePositive() {
 	case 'b':
 		v := this.decodeBinary()
 		this.assertAtObjectEnd("binary integer")
-		this.eventHandler.OnPositiveInt(v)
+		this.eventReceiver.OnPositiveInt(v)
 		this.endObject()
 	case 'o':
 		v := this.decodeOctal()
 		this.assertAtObjectEnd("octal integer")
-		this.eventHandler.OnPositiveInt(v)
+		this.eventReceiver.OnPositiveInt(v)
 		this.endObject()
 	case 'x':
 		v, digitCount := this.decodeHex(0)
@@ -916,24 +983,28 @@ func (this *CTEDecoder) handleOtherBasePositive() {
 			this.advanceByte()
 			fv := this.decodeHexFloat(1, v, digitCount)
 			this.assertAtObjectEnd("hex float")
-			this.eventHandler.OnFloat(fv)
+			this.eventReceiver.OnBinaryFloat(fv)
 			this.endObject()
 		} else {
 			this.assertAtObjectEnd("hex integer")
-			this.eventHandler.OnPositiveInt(v)
+			this.eventReceiver.OnPositiveInt(v)
 			this.endObject()
 		}
 	case '.':
-		v := this.decodeDecimalFloat(1, 0, 0)
+		value, bigValue := this.decodeDecimalFloat(1, 0, nil, 0)
 		this.assertAtObjectEnd("float")
-		this.eventHandler.OnFloat(v)
+		if bigValue != nil {
+			this.eventReceiver.OnBigDecimalFloat(bigValue)
+		} else {
+			this.eventReceiver.OnDecimalFloat(value)
+		}
 		this.endObject()
 	default:
 		if b.HasProperty(cteProperty09) && this.peekByte() == ':' {
 			this.advanceByte()
 			v := this.decodeTime(int(b - '0'))
 			this.assertAtObjectEnd("time")
-			this.eventHandler.OnCompactTime(v)
+			this.eventReceiver.OnCompactTime(v)
 			this.endObject()
 			return
 		}
@@ -949,12 +1020,12 @@ func (this *CTEDecoder) handleOtherBaseNegative() {
 	case 'b':
 		v := this.decodeBinary()
 		this.assertAtObjectEnd("binary integer")
-		this.eventHandler.OnNegativeInt(v)
+		this.eventReceiver.OnNegativeInt(v)
 		this.endObject()
 	case 'o':
 		v := this.decodeOctal()
 		this.assertAtObjectEnd("octal integer")
-		this.eventHandler.OnNegativeInt(v)
+		this.eventReceiver.OnNegativeInt(v)
 		this.endObject()
 	case 'x':
 		v, digitCount := this.decodeHex(0)
@@ -962,17 +1033,21 @@ func (this *CTEDecoder) handleOtherBaseNegative() {
 			this.advanceByte()
 			fv := this.decodeHexFloat(-1, v, digitCount)
 			this.assertAtObjectEnd("hex float")
-			this.eventHandler.OnFloat(fv)
+			this.eventReceiver.OnBinaryFloat(fv)
 			this.endObject()
 		} else {
 			this.assertAtObjectEnd("hex integer")
-			this.eventHandler.OnNegativeInt(v)
+			this.eventReceiver.OnNegativeInt(v)
 			this.endObject()
 		}
 	case '.':
-		v := this.decodeDecimalFloat(-1, 0, 0)
+		value, bigValue := this.decodeDecimalFloat(-1, 0, nil, 0)
 		this.assertAtObjectEnd("float")
-		this.eventHandler.OnFloat(v)
+		if bigValue != nil {
+			this.eventReceiver.OnBigDecimalFloat(bigValue)
+		} else {
+			this.eventReceiver.OnDecimalFloat(value)
+		}
 		this.endObject()
 	default:
 		this.ungetByte()
@@ -982,42 +1057,42 @@ func (this *CTEDecoder) handleOtherBaseNegative() {
 
 func (this *CTEDecoder) handleListBegin() {
 	this.advanceByte()
-	this.eventHandler.OnList()
+	this.eventReceiver.OnList()
 	this.stackContainer(cteDecoderStateAwaitListItem)
 	this.endToken()
 }
 
 func (this *CTEDecoder) handleListEnd() {
 	this.advanceByte()
-	this.eventHandler.OnEnd()
+	this.eventReceiver.OnEnd()
 	this.unstackContainer()
 	this.endObject()
 }
 
 func (this *CTEDecoder) handleMapBegin() {
 	this.advanceByte()
-	this.eventHandler.OnMap()
+	this.eventReceiver.OnMap()
 	this.stackContainer(cteDecoderStateAwaitMapKey)
 	this.endToken()
 }
 
 func (this *CTEDecoder) handleMapEnd() {
 	this.advanceByte()
-	this.eventHandler.OnEnd()
+	this.eventReceiver.OnEnd()
 	this.unstackContainer()
 	this.endObject()
 }
 
 func (this *CTEDecoder) handleMetadataBegin() {
 	this.advanceByte()
-	this.eventHandler.OnMetadata()
+	this.eventReceiver.OnMetadata()
 	this.stackContainer(cteDecoderStateAwaitMetaKey)
 	this.endToken()
 }
 
 func (this *CTEDecoder) handleMetadataEnd() {
 	this.advanceByte()
-	this.eventHandler.OnEnd()
+	this.eventReceiver.OnEnd()
 	this.unstackContainer()
 	this.endToken()
 	// Don't transition state because metadata is a pseudo-object
@@ -1027,16 +1102,16 @@ func (this *CTEDecoder) handleComment() {
 	this.readByte()
 	switch this.readByte() {
 	case '/':
-		this.eventHandler.OnComment()
+		this.eventReceiver.OnComment()
 		contents := this.decodeSingleLineComment()
 		if len(contents) > 0 {
-			this.eventHandler.OnString(contents)
+			this.eventReceiver.OnString(contents)
 		}
-		this.eventHandler.OnEnd()
+		this.eventReceiver.OnEnd()
 		this.endToken()
 		// Don't transition state because a comment is a pseudo-object
 	case '*':
-		this.eventHandler.OnComment()
+		this.eventReceiver.OnComment()
 		this.stackContainer(cteDecoderStateAwaitCommentItem)
 		this.endToken()
 	default:
@@ -1061,10 +1136,10 @@ func (this *CTEDecoder) handleCommentContent() {
 			endOffset := i - 1
 			if endOffset > startPos {
 				str := string(this.document[startPos:endOffset])
-				this.eventHandler.OnString(str)
+				this.eventReceiver.OnString(str)
 			}
 			this.tokenPos = i + 1
-			this.eventHandler.OnEnd()
+			this.eventReceiver.OnEnd()
 			this.unstackContainer()
 			this.endToken()
 			return
@@ -1074,10 +1149,10 @@ func (this *CTEDecoder) handleCommentContent() {
 			endOffset := i - 1
 			if endOffset > this.tokenStart {
 				str := string(this.document[startPos:endOffset])
-				this.eventHandler.OnString(str)
+				this.eventReceiver.OnString(str)
 			}
 			this.tokenPos = i + 1
-			this.eventHandler.OnComment()
+			this.eventReceiver.OnComment()
 			this.stackContainer(cteDecoderStateAwaitCommentItem)
 			this.endToken()
 			return
@@ -1089,20 +1164,20 @@ func (this *CTEDecoder) handleCommentContent() {
 
 func (this *CTEDecoder) handleMarkupBegin() {
 	this.advanceByte()
-	this.eventHandler.OnMarkup()
+	this.eventReceiver.OnMarkup()
 	this.stackContainer(cteDecoderStateAwaitMarkupValue)
 	this.endToken()
 }
 
 func (this *CTEDecoder) handleMarkupContentBegin() {
 	this.advanceByte()
-	this.eventHandler.OnEnd()
+	this.eventReceiver.OnEnd()
 	this.changeState(cteDecoderStateAwaitMarkupItem)
 	this.endToken()
 }
 
 func (this *CTEDecoder) handleMarkupWithEscapes(startPos, firstEscape int) string {
-	this.errorF("TODO: Markup with escape sequences, entity refs")
+	this.errorf("TODO: CTEDecoder: Markup with escape sequences, entity refs")
 	return ""
 }
 
@@ -1116,25 +1191,25 @@ func (this *CTEDecoder) handleMarkupContent() {
 			switch this.getByteAt(i + 1) {
 			case '/':
 				if i > startPos {
-					this.eventHandler.OnString(string(this.document[startPos:i]))
+					this.eventReceiver.OnString(string(this.document[startPos:i]))
 				}
 				this.tokenPos = i + 2
-				this.eventHandler.OnComment()
+				this.eventReceiver.OnComment()
 				contents := this.decodeSingleLineComment()
 				if len(contents) > 0 {
-					this.eventHandler.OnString(contents)
+					this.eventReceiver.OnString(contents)
 				}
 				this.advanceByte()
-				this.eventHandler.OnEnd()
+				this.eventReceiver.OnEnd()
 				this.endToken()
 				// Don't transition state because a comment is a pseudo-object
 				return
 			case '*':
 				if i > startPos {
-					this.eventHandler.OnString(string(this.document[startPos:i]))
+					this.eventReceiver.OnString(string(this.document[startPos:i]))
 				}
 				this.tokenPos = i + 2
-				this.eventHandler.OnComment()
+				this.eventReceiver.OnComment()
 				this.stackContainer(cteDecoderStateAwaitCommentItem)
 				this.endToken()
 				return
@@ -1143,7 +1218,7 @@ func (this *CTEDecoder) handleMarkupContent() {
 			str := string(this.document[startPos:i])
 			this.tokenPos = i + 1
 			if len(str) > 0 {
-				this.eventHandler.OnString(str)
+				this.eventReceiver.OnString(str)
 			}
 
 			this.tokenPos = i
@@ -1153,9 +1228,9 @@ func (this *CTEDecoder) handleMarkupContent() {
 			str := string(this.document[startPos:i])
 			this.tokenPos = i + 1
 			if len(str) > 0 {
-				this.eventHandler.OnString(str)
+				this.eventReceiver.OnString(str)
 			}
-			this.eventHandler.OnEnd()
+			this.eventReceiver.OnEnd()
 			this.unstackContainer()
 			this.endObject()
 			return
@@ -1169,8 +1244,8 @@ func (this *CTEDecoder) handleMarkupContent() {
 
 func (this *CTEDecoder) handleMarkupEnd() {
 	this.advanceByte()
-	this.eventHandler.OnEnd()
-	this.eventHandler.OnEnd()
+	this.eventReceiver.OnEnd()
+	this.eventReceiver.OnEnd()
 	this.unstackContainer()
 	this.endObject()
 }
@@ -1182,30 +1257,34 @@ func (this *CTEDecoder) handleNamedValue() {
 	token := strings.ToLower(string(this.document[nameStart:this.tokenPos]))
 	switch token {
 	case "nil":
-		this.eventHandler.OnNil()
+		this.eventReceiver.OnNil()
 		this.endObject()
 		return
 	case "nan":
-		this.eventHandler.OnNan()
+		this.eventReceiver.OnNan(false)
+		this.endObject()
+		return
+	case "snan":
+		this.eventReceiver.OnNan(true)
 		this.endObject()
 		return
 	case "inf":
-		this.eventHandler.OnFloat(math.Inf(1))
+		this.eventReceiver.OnBinaryFloat(math.Inf(1))
 		this.endObject()
 		return
 	case "false":
-		this.eventHandler.OnFalse()
+		this.eventReceiver.OnFalse()
 		this.endObject()
 		return
 	case "true":
-		this.eventHandler.OnTrue()
+		this.eventReceiver.OnTrue()
 		this.endObject()
 		return
 	}
 
 	this.ungetAll()
 	this.advanceByte()
-	this.eventHandler.OnUUID(this.decodeUUID())
+	this.eventReceiver.OnUUID(this.decodeUUID())
 	this.endObject()
 }
 
@@ -1225,29 +1304,29 @@ func (this *CTEDecoder) handleVerbatimString() {
 	searchSpace := this.document[this.tokenPos:]
 	index := bytes.Index(searchSpace, sentinel)
 	if index < 0 {
-		this.errorF("Verbatim sentinel sequence [%v] not found in document", string(sentinel))
+		this.errorf("Verbatim sentinel sequence [%v] not found in document", string(sentinel))
 	}
 	str := string(searchSpace[:index])
 	this.tokenPos += index + len(sentinel)
 	this.assertAtObjectEnd("verbatim string")
-	this.eventHandler.OnString(str)
+	this.eventReceiver.OnString(str)
 	this.endObject()
 }
 
 func (this *CTEDecoder) handleReference() {
 	this.advanceByte()
-	this.eventHandler.OnReference()
+	this.eventReceiver.OnReference()
 	if this.peekByte().HasProperty(ctePropertyWhitespace) {
-		this.errorF("Whitespace not allowed between reference and tag name")
+		this.errorf("Whitespace not allowed between reference and tag name")
 	}
 	this.endToken()
 }
 
 func (this *CTEDecoder) handleMarker() {
 	this.advanceByte()
-	this.eventHandler.OnMarker()
+	this.eventReceiver.OnMarker()
 	if this.peekByte().HasProperty(ctePropertyWhitespace) {
-		this.errorF("Whitespace not allowed between marker and tag name")
+		this.errorf("Whitespace not allowed between marker and tag name")
 	}
 	this.endToken()
 }

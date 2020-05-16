@@ -1,3 +1,23 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
@@ -6,15 +26,15 @@ import (
 	"github.com/kstenerud/go-duplicates"
 )
 
-func NewRootObjectIterator(useReferences bool, eventHandler ConciseEncodingEventHandler) *RootObjectIterator {
+func NewRootObjectIterator(useReferences bool, eventReceiver DataEventReceiver) *RootObjectIterator {
 	this := new(RootObjectIterator)
-	this.Init(useReferences, eventHandler)
+	this.Init(useReferences, eventReceiver)
 	return this
 }
 
-func (this *RootObjectIterator) Init(useReferences bool, eventHandler ConciseEncodingEventHandler) {
+func (this *RootObjectIterator) Init(useReferences bool, eventReceiver DataEventReceiver) {
 	this.useReferences = useReferences
-	this.eventHandler = eventHandler
+	this.eventReceiver = eventReceiver
 }
 
 func (this *RootObjectIterator) Iterate(value interface{}) {
@@ -23,9 +43,9 @@ func (this *RootObjectIterator) Iterate(value interface{}) {
 	iterator := getIteratorForType(rv.Type())
 	iterator = iterator.CloneFromTemplate(this)
 	// TODO: Move this somewhere else
-	this.eventHandler.OnVersion(cbeCodecVersion)
+	this.eventReceiver.OnVersion(cbeCodecVersion)
 	iterator.Iterate(rv)
-	this.eventHandler.OnEndDocument()
+	this.eventReceiver.OnEndDocument()
 }
 
 // Iterates depth-first recursively through an object, notifying callbacks as it
@@ -34,7 +54,7 @@ type RootObjectIterator struct {
 	foundReferences map[duplicates.TypedPointer]bool
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
-	eventHandler    ConciseEncodingEventHandler
+	eventReceiver    DataEventReceiver
 	useReferences   bool
 }
 
@@ -55,12 +75,12 @@ func (this *RootObjectIterator) addReference(v reflect.Value) (didAddReferenceOb
 				name = this.nextMarkerName
 				this.nextMarkerName++
 				this.namedReferences[ptr] = name
-				this.eventHandler.OnMarker()
-				this.eventHandler.OnPositiveInt(uint64(name))
+				this.eventReceiver.OnMarker()
+				this.eventReceiver.OnPositiveInt(uint64(name))
 				return false
 			} else {
-				this.eventHandler.OnReference()
-				this.eventHandler.OnPositiveInt(uint64(name))
+				this.eventReceiver.OnReference()
+				this.eventReceiver.OnPositiveInt(uint64(name))
 				return true
 			}
 		}

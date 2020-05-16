@@ -1,84 +1,90 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math"
+	"math/big"
+	"net/url"
+	"reflect"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
-	"github.com/kstenerud/go-compact-time"
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
-type ConciseEncodingEventHandler interface {
-	OnVersion(version uint64)
-	OnPadding(count int)
-	OnNil()
-	OnBool(value bool)
-	OnTrue()
-	OnFalse()
-	OnPositiveInt(value uint64)
-	OnNegativeInt(value uint64)
-	OnInt(value int64)
-	OnFloat(value float64)
-	OnComplex(value complex128)
-	OnNan()
-	OnUUID(value []byte)
-	OnTime(value time.Time)
-	OnCompactTime(value *compact_time.Time)
-	OnBytes(value []byte)
-	OnString(value string)
-	OnURI(value string)
-	OnCustom(value []byte)
-	OnBytesBegin()
-	OnStringBegin()
-	OnURIBegin()
-	OnCustomBegin()
-	OnArrayChunk(length uint64, isFinalChunk bool)
-	OnArrayData(data []byte)
-	OnList()
-	OnMap()
-	OnMarkup()
-	OnMetadata()
-	OnComment()
-	OnEnd()
-	OnMarker()
-	OnReference()
-	OnEndDocument()
+var (
+	typeString = reflect.TypeOf("")
+	typeBytes  = reflect.TypeOf([]uint8{})
+	typeTime   = reflect.TypeOf(time.Time{})
+	typeDFloat = reflect.TypeOf(compact_float.DFloat{})
+
+	typeBigInt  = reflect.TypeOf(big.Int{})
+	typePBigInt = reflect.TypeOf((*big.Int)(nil))
+
+	typeBigFloat  = reflect.TypeOf(apd.Decimal{})
+	typePBigFloat = reflect.TypeOf((*apd.Decimal)(nil))
+
+	typeURL  = reflect.TypeOf(url.URL{})
+	typePURL = reflect.TypeOf((*url.URL)(nil))
+)
+
+var keyableTypes = []reflect.Type{
+	reflect.TypeOf((*bool)(nil)).Elem(),
+	reflect.TypeOf((*int)(nil)).Elem(),
+	reflect.TypeOf((*int8)(nil)).Elem(),
+	reflect.TypeOf((*int16)(nil)).Elem(),
+	reflect.TypeOf((*int32)(nil)).Elem(),
+	reflect.TypeOf((*int64)(nil)).Elem(),
+	reflect.TypeOf((*uint)(nil)).Elem(),
+	reflect.TypeOf((*uint8)(nil)).Elem(),
+	reflect.TypeOf((*uint16)(nil)).Elem(),
+	reflect.TypeOf((*uint32)(nil)).Elem(),
+	reflect.TypeOf((*uint64)(nil)).Elem(),
+	reflect.TypeOf((*float32)(nil)).Elem(),
+	reflect.TypeOf((*float64)(nil)).Elem(),
+	reflect.TypeOf((*string)(nil)).Elem(),
+	reflect.TypeOf((*url.URL)(nil)).Elem(),
+	reflect.TypeOf((*time.Time)(nil)).Elem(),
+	reflect.TypeOf((*compact_float.DFloat)(nil)).Elem(),
+	reflect.TypeOf((*interface{})(nil)).Elem(),
 }
 
-type NullEventHandler struct{}
-
-func NewNullEventHandler() *NullEventHandler {
-	return &NullEventHandler{}
+var nonKeyableTypes = []reflect.Type{
+	reflect.TypeOf((*big.Int)(nil)).Elem(),
+	reflect.TypeOf((*apd.Decimal)(nil)).Elem(),
 }
-func (this *NullEventHandler) OnVersion(version uint64)                      {}
-func (this *NullEventHandler) OnPadding(count int)                           {}
-func (this *NullEventHandler) OnNil()                                        {}
-func (this *NullEventHandler) OnBool(value bool)                             {}
-func (this *NullEventHandler) OnTrue()                                       {}
-func (this *NullEventHandler) OnFalse()                                      {}
-func (this *NullEventHandler) OnPositiveInt(value uint64)                    {}
-func (this *NullEventHandler) OnNegativeInt(value uint64)                    {}
-func (this *NullEventHandler) OnInt(value int64)                             {}
-func (this *NullEventHandler) OnFloat(value float64)                         {}
-func (this *NullEventHandler) OnComplex(value complex128)                    {}
-func (this *NullEventHandler) OnNan()                                        {}
-func (this *NullEventHandler) OnUUID(value []byte)                           {}
-func (this *NullEventHandler) OnTime(value time.Time)                        {}
-func (this *NullEventHandler) OnCompactTime(value *compact_time.Time)        {}
-func (this *NullEventHandler) OnBytes(value []byte)                          {}
-func (this *NullEventHandler) OnString(value string)                         {}
-func (this *NullEventHandler) OnURI(value string)                            {}
-func (this *NullEventHandler) OnCustom(value []byte)                         {}
-func (this *NullEventHandler) OnBytesBegin()                                 {}
-func (this *NullEventHandler) OnStringBegin()                                {}
-func (this *NullEventHandler) OnURIBegin()                                   {}
-func (this *NullEventHandler) OnCustomBegin()                                {}
-func (this *NullEventHandler) OnArrayChunk(length uint64, isFinalChunk bool) {}
-func (this *NullEventHandler) OnArrayData(data []byte)                       {}
-func (this *NullEventHandler) OnList()                                       {}
-func (this *NullEventHandler) OnMap()                                        {}
-func (this *NullEventHandler) OnMarkup()                                     {}
-func (this *NullEventHandler) OnMetadata()                                   {}
-func (this *NullEventHandler) OnComment()                                    {}
-func (this *NullEventHandler) OnEnd()                                        {}
-func (this *NullEventHandler) OnMarker()                                     {}
-func (this *NullEventHandler) OnReference()                                  {}
-func (this *NullEventHandler) OnEndDocument()                                {}
+
+func isFieldExported(name string) bool {
+	rune, _ := utf8.DecodeRuneInString(name)
+	return unicode.IsUpper(rune)
+}
+
+const quietNanBit = uint64(1 << 50)
+
+var signalingNan = math.Float64frombits(math.Float64bits(math.NaN()) & ^quietNanBit)
+var quietNan = math.Float64frombits(math.Float64bits(math.NaN()) | quietNanBit)
+
+func isSignalingNan(value float64) bool {
+	return math.Float64bits(value)&quietNanBit == 0
+}

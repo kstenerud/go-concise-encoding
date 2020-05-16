@@ -1,17 +1,37 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
 	"fmt"
 )
 
-func CBEDecode(document []byte, eventHandler ConciseEncodingEventHandler, shouldZeroCopy bool) (err error) {
+func CBEDecode(document []byte, eventReceiver DataEventReceiver, shouldZeroCopy bool) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
 		}
 	}()
 
-	decoder := NewCBEDecoder([]byte(document), eventHandler, shouldZeroCopy)
+	decoder := NewCBEDecoder([]byte(document), eventReceiver, shouldZeroCopy)
 	decoder.Decode()
 	return
 }
@@ -19,112 +39,129 @@ func CBEDecode(document []byte, eventHandler ConciseEncodingEventHandler, should
 type CBEDecoder struct {
 	buffer         cbeDecodeBuffer
 	shouldZeroCopy bool
-	nextHandler    ConciseEncodingEventHandler
+	nextReceiver   DataEventReceiver
 }
 
-func NewCBEDecoder(document []byte, nextHandler ConciseEncodingEventHandler, shouldZeroCopy bool) *CBEDecoder {
+func NewCBEDecoder(document []byte, nextReceiver DataEventReceiver, shouldZeroCopy bool) *CBEDecoder {
 	this := &CBEDecoder{}
-	this.Init(document, nextHandler, shouldZeroCopy)
+	this.Init(document, nextReceiver, shouldZeroCopy)
 	return this
 }
 
-func (this *CBEDecoder) Init(document []byte, nextHandler ConciseEncodingEventHandler, shouldZeroCopy bool) {
+func (this *CBEDecoder) Init(document []byte, nextReceiver DataEventReceiver, shouldZeroCopy bool) {
 	this.buffer.Init(document)
 	this.shouldZeroCopy = shouldZeroCopy
-	this.nextHandler = nextHandler
+	this.nextReceiver = nextReceiver
 }
 
 func (this *CBEDecoder) Decode() {
-	this.nextHandler.OnVersion(this.buffer.DecodeVersion())
+	this.nextReceiver.OnVersion(this.buffer.DecodeVersion())
 
 	for this.buffer.HasUnreadData() {
 		cbeType := this.buffer.DecodeType()
 		switch cbeType {
 		case cbeTypeDecimal:
-			this.nextHandler.OnFloat(this.buffer.DecodeFloat())
+			value, bigValue := this.buffer.DecodeDecimalFloat()
+			if bigValue != nil {
+				this.nextReceiver.OnBigDecimalFloat(bigValue)
+			} else {
+				this.nextReceiver.OnDecimalFloat(value)
+			}
 		case cbeTypePosInt:
-			this.nextHandler.OnPositiveInt(this.buffer.DecodeUint())
+			asUint, asBig := this.buffer.DecodeUint()
+			if asBig != nil {
+				this.nextReceiver.OnBigInt(asBig)
+			} else {
+				this.nextReceiver.OnPositiveInt(asUint)
+			}
 		case cbeTypeNegInt:
-			this.nextHandler.OnNegativeInt(this.buffer.DecodeUint())
+			asUint, asBig := this.buffer.DecodeUint()
+			if asBig != nil {
+				this.nextReceiver.OnBigInt(asBig.Neg(asBig))
+			} else {
+				this.nextReceiver.OnNegativeInt(asUint)
+			}
 		case cbeTypePosInt8:
-			this.nextHandler.OnPositiveInt(uint64(this.buffer.DecodeUint8()))
+			this.nextReceiver.OnPositiveInt(uint64(this.buffer.DecodeUint8()))
 		case cbeTypeNegInt8:
-			this.nextHandler.OnNegativeInt(uint64(this.buffer.DecodeUint8()))
+			this.nextReceiver.OnNegativeInt(uint64(this.buffer.DecodeUint8()))
 		case cbeTypePosInt16:
-			this.nextHandler.OnPositiveInt(uint64(this.buffer.DecodeUint16()))
+			this.nextReceiver.OnPositiveInt(uint64(this.buffer.DecodeUint16()))
 		case cbeTypeNegInt16:
-			this.nextHandler.OnNegativeInt(uint64(this.buffer.DecodeUint16()))
+			this.nextReceiver.OnNegativeInt(uint64(this.buffer.DecodeUint16()))
 		case cbeTypePosInt32:
-			this.nextHandler.OnPositiveInt(uint64(this.buffer.DecodeUint32()))
+			this.nextReceiver.OnPositiveInt(uint64(this.buffer.DecodeUint32()))
 		case cbeTypeNegInt32:
-			this.nextHandler.OnNegativeInt(uint64(this.buffer.DecodeUint32()))
+			this.nextReceiver.OnNegativeInt(uint64(this.buffer.DecodeUint32()))
 		case cbeTypePosInt64:
-			this.nextHandler.OnPositiveInt(this.buffer.DecodeUint64())
+			this.nextReceiver.OnPositiveInt(this.buffer.DecodeUint64())
 		case cbeTypeNegInt64:
-			this.nextHandler.OnNegativeInt(this.buffer.DecodeUint64())
+			this.nextReceiver.OnNegativeInt(this.buffer.DecodeUint64())
 		case cbeTypeFloat32:
-			this.nextHandler.OnFloat(float64(this.buffer.DecodeFloat32()))
+			this.nextReceiver.OnBinaryFloat(float64(this.buffer.DecodeFloat32()))
 		case cbeTypeFloat64:
-			this.nextHandler.OnFloat(this.buffer.DecodeFloat64())
+			this.nextReceiver.OnBinaryFloat(this.buffer.DecodeFloat64())
 		case cbeTypeUUID:
-			this.nextHandler.OnUUID(this.buffer.DecodeBytes(16))
+			this.nextReceiver.OnUUID(this.buffer.DecodeBytes(16))
 		case cbeTypeComment:
-			this.nextHandler.OnComment()
+			this.nextReceiver.OnComment()
 		case cbeTypeMetadata:
-			this.nextHandler.OnMetadata()
+			this.nextReceiver.OnMetadata()
 		case cbeTypeMarkup:
-			this.nextHandler.OnMarkup()
+			this.nextReceiver.OnMarkup()
 		case cbeTypeMap:
-			this.nextHandler.OnMap()
+			this.nextReceiver.OnMap()
 		case cbeTypeList:
-			this.nextHandler.OnList()
+			this.nextReceiver.OnList()
 		case cbeTypeEndContainer:
-			this.nextHandler.OnEnd()
+			this.nextReceiver.OnEnd()
 		case cbeTypeFalse:
-			this.nextHandler.OnFalse()
+			this.nextReceiver.OnFalse()
 		case cbeTypeTrue:
-			this.nextHandler.OnTrue()
+			this.nextReceiver.OnTrue()
 		case cbeTypeNil:
-			this.nextHandler.OnNil()
+			this.nextReceiver.OnNil()
 		case cbeTypePadding:
-			this.nextHandler.OnPadding(1)
+			this.nextReceiver.OnPadding(1)
 		case cbeTypeString0:
-			this.nextHandler.OnString("")
+			this.nextReceiver.OnString("")
 		case cbeTypeString1, cbeTypeString2, cbeTypeString3, cbeTypeString4,
 			cbeTypeString5, cbeTypeString6, cbeTypeString7, cbeTypeString8,
 			cbeTypeString9, cbeTypeString10, cbeTypeString11, cbeTypeString12,
 			cbeTypeString13, cbeTypeString14, cbeTypeString15:
-			this.nextHandler.OnString(this.decodeSmallString(int(cbeType - cbeTypeString0)))
+			this.nextReceiver.OnString(this.decodeSmallString(int(cbeType - cbeTypeString0)))
 		case cbeTypeString:
-			this.nextHandler.OnString(string(this.decodeArray()))
+			this.nextReceiver.OnString(string(this.decodeArray()))
 		case cbeTypeBytes:
-			this.nextHandler.OnBytes(this.decodeArray())
+			this.nextReceiver.OnBytes(this.decodeArray())
 		case cbeTypeCustom:
-			this.nextHandler.OnCustom(this.decodeArray())
+			this.nextReceiver.OnCustom(this.decodeArray())
 		case cbeTypeURI:
-			this.nextHandler.OnURI(string(this.decodeArray()))
+			this.nextReceiver.OnURI(string(this.decodeArray()))
 		case cbeTypeMarker:
-			this.nextHandler.OnMarker()
+			this.nextReceiver.OnMarker()
 		case cbeTypeReference:
-			this.nextHandler.OnReference()
+			this.nextReceiver.OnReference()
 		case cbeTypeDate:
-			this.nextHandler.OnCompactTime(this.buffer.DecodeDate())
+			this.nextReceiver.OnCompactTime(this.buffer.DecodeDate())
 		case cbeTypeTime:
-			this.nextHandler.OnCompactTime(this.buffer.DecodeTime())
+			this.nextReceiver.OnCompactTime(this.buffer.DecodeTime())
 		case cbeTypeTimestamp:
-			this.nextHandler.OnCompactTime(this.buffer.DecodeTimestamp())
+			this.nextReceiver.OnCompactTime(this.buffer.DecodeTimestamp())
 		default:
 			asSmallInt := int64(int8(cbeType))
 			if asSmallInt < cbeSmallIntMin || asSmallInt > cbeSmallIntMax {
 				panic(fmt.Errorf("Unknown type code 0x%02x", cbeType))
 			}
-			this.nextHandler.OnInt(asSmallInt)
+			this.nextReceiver.OnInt(asSmallInt)
 		}
 	}
 
-	this.nextHandler.OnEndDocument()
+	this.nextReceiver.OnEndDocument()
 	return
 }
+
+// ============================================================================
 
 func (this *CBEDecoder) possiblyZeroCopy(bytes []byte) []byte {
 	if this.shouldZeroCopy {
@@ -150,12 +187,12 @@ func validateLength(length uint64) {
 func (this *CBEDecoder) decodeUnichunkArray(length uint64) []byte {
 	validateLength(length)
 	// TODO:
-	// this.nextHandler.OnArrayChunk(length, true)
+	// this.nextReceiver.OnArrayChunk(length, true)
 	if length == 0 {
 		return []byte{}
 	}
 	bytes := this.possiblyZeroCopy(this.buffer.DecodeBytes(int(length)))
-	// this.nextHandler.OnArrayData(bytes)
+	// this.nextReceiver.OnArrayData(bytes)
 	return bytes
 }
 
@@ -166,9 +203,9 @@ func (this *CBEDecoder) decodeMultichunkArray(initialLength uint64) []byte {
 	for {
 		validateLength(length)
 		// TODO:
-		// this.nextHandler.OnArrayChunk(length, isFinalChunk)
+		// this.nextReceiver.OnArrayChunk(length, isFinalChunk)
 		nextBytes := this.buffer.DecodeBytes(int(length))
-		// this.nextHandler.OnArrayData(nextBytes)
+		// this.nextReceiver.OnArrayData(nextBytes)
 		bytes = append(bytes, nextBytes...)
 		if isFinalChunk {
 			return bytes

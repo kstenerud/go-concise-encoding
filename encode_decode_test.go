@@ -1,3 +1,23 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
@@ -7,7 +27,7 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-func assertCBEEncodeDecode(t *testing.T, expected ...*tevent) {
+func assertEncodeDecodeCBE(t *testing.T, expected ...*tevent) {
 	actual, err := cbeEncodeDecode(expected...)
 	if err != nil {
 		t.Error(err)
@@ -19,7 +39,7 @@ func assertCBEEncodeDecode(t *testing.T, expected ...*tevent) {
 	}
 }
 
-func assertCTEEncodeDecodeCycle(t *testing.T, expected ...*tevent) {
+func assertEncodeDecodeCTE(t *testing.T, expected ...*tevent) {
 	actual, err := cteEncodeDecode(expected...)
 	if err != nil {
 		t.Error(err)
@@ -32,8 +52,8 @@ func assertCTEEncodeDecodeCycle(t *testing.T, expected ...*tevent) {
 }
 
 func assertEncodeDecode(t *testing.T, expected ...*tevent) {
-	assertCBEEncodeDecode(t, expected...)
-	assertCTEEncodeDecodeCycle(t, expected...)
+	assertEncodeDecodeCBE(t, expected...)
+	assertEncodeDecodeCTE(t, expected...)
 }
 
 func TestEncodeDecodeVersion(t *testing.T) {
@@ -69,13 +89,17 @@ func TestEncodeDecodeNegativeInt(t *testing.T) {
 	assertEncodeDecode(t, v(1), ni(7234859234423), ed())
 }
 
-func TestEncodeDecodeDecimalFloat(t *testing.T) {
-	assertEncodeDecode(t, v(1), f(1.5), ed())
-	assertEncodeDecode(t, v(1), f(-51.455e-16), ed())
+func TestEncodeDecodeFloat(t *testing.T) {
+	// CTE will convert to decimal float
+	assertEncodeDecodeCBE(t, v(1), bf(1.5), ed())
+	assertEncodeDecode(t, v(1), df("1.5"), ed())
+	assertEncodeDecodeCBE(t, v(1), bf(-51.455e-16), ed())
+	assertEncodeDecode(t, v(1), df("-51.455e-16"), ed())
 }
 
 func TestEncodeDecodeNan(t *testing.T) {
 	assertEncodeDecode(t, v(1), nan(), ed())
+	assertEncodeDecode(t, v(1), snan(), ed())
 }
 
 func TestEncodeDecodeUUID(t *testing.T) {
@@ -122,5 +146,5 @@ func TestEncodeDecodeList(t *testing.T) {
 
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, v(1), m(), e(), ed())
-	// assertEncodeDecode(t, v(1), m(), s("a"), ni(1), e(), ed())
+	assertEncodeDecode(t, v(1), m(), s("a"), ni(1), e(), ed())
 }

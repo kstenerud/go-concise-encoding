@@ -1,3 +1,23 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
@@ -57,7 +77,7 @@ func assertRulesNotInArray(t *testing.T, rules *Rules) {
 }
 
 func newRulesAfterVersion(limits *Limits) *Rules {
-	rules := NewRules(rulesCodecVersion, limits, NewNullEventHandler())
+	rules := NewRules(rulesCodecVersion, limits, NewNullEventReceiver())
 	rules.OnVersion(rulesCodecVersion)
 	return rules
 }
@@ -73,7 +93,7 @@ func newRulesWithMaxDepth(maxDepth int) *Rules {
 // ===========
 
 func TestRulesVersion(t *testing.T) {
-	rules := NewRules(1, DefaultLimits(), NewNullEventHandler())
+	rules := NewRules(1, DefaultLimits(), NewNullEventReceiver())
 	assertPanics(t, func() { rules.OnVersion(2) })
 	assertNoPanic(t, func() { rules.OnVersion(1) })
 	assertPanics(t, func() { rules.OnVersion(1) })
@@ -87,13 +107,17 @@ func TestRulesNil(t *testing.T) {
 
 func TestRulesNan(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(false) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+
+	rules = newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnNan(true) })
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesNan2(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	assertNoPanic(t, func() { rules.OnFloat(math.NaN()) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(math.NaN()) })
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -117,7 +141,7 @@ func TestRulesNegativeInt(t *testing.T) {
 
 func TestRulesFloat(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -138,7 +162,7 @@ func TestRulesMarker(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertRulesOnString(t, rules, "a")
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(100) })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
@@ -151,7 +175,7 @@ func TestRulesReference(t *testing.T) {
 
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertRulesOnString(t, rules, "a")
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(100) })
@@ -474,9 +498,9 @@ func TestRulesListFilled(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnNil() })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(false) })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
@@ -490,8 +514,8 @@ func TestRulesMapFilled(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
 	assertNoPanic(t, func() { rules.OnNil() })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnNan(true) })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
@@ -505,8 +529,8 @@ func TestRulesMetadataFilled(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
 	assertNoPanic(t, func() { rules.OnNil() })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnNan(false) })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
@@ -624,7 +648,7 @@ func TestRulesAllowedTypesTLO(t *testing.T) {
 	rules = newRulesWithMaxDepth(1)
 	assertNoPanic(t, func() { rules.OnNil() })
 	rules = newRulesWithMaxDepth(1)
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(true) })
 	rules = newRulesWithMaxDepth(1)
 	assertNoPanic(t, func() { rules.OnBool(true) })
 	rules = newRulesWithMaxDepth(1)
@@ -632,7 +656,7 @@ func TestRulesAllowedTypesTLO(t *testing.T) {
 	rules = newRulesWithMaxDepth(1)
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
 	rules = newRulesWithMaxDepth(1)
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(1)
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
 	rules = newRulesWithMaxDepth(1)
@@ -671,11 +695,11 @@ func TestRulesAllowedTypesList(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnNil() })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(false) })
 	assertNoPanic(t, func() { rules.OnBool(true) })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnEnd() })
@@ -712,7 +736,7 @@ func TestRulesAllowedTypesMapKey(t *testing.T) {
 	assertPanics(t, func() { rules.OnNil() })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
@@ -724,7 +748,7 @@ func TestRulesAllowedTypesMapKey(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
@@ -783,7 +807,7 @@ func TestRulesAllowedTypesMapValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(false) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
@@ -799,7 +823,7 @@ func TestRulesAllowedTypesMapValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
@@ -872,7 +896,7 @@ func TestRulesAllowedTypesMetadataKey(t *testing.T) {
 	assertPanics(t, func() { rules.OnNil() })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
@@ -884,7 +908,7 @@ func TestRulesAllowedTypesMetadataKey(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnNegativeInt(1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
@@ -943,7 +967,7 @@ func TestRulesAllowedTypesMetadataValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(false) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
@@ -959,7 +983,7 @@ func TestRulesAllowedTypesMetadataValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
@@ -1030,11 +1054,11 @@ func TestRulesAllowedTypesComment(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnComment() })
 	assertPanics(t, func() { rules.OnNil() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	assertPanics(t, func() { rules.OnBool(true) })
 	assertPanics(t, func() { rules.OnPositiveInt(1) })
 	assertPanics(t, func() { rules.OnNegativeInt(1) })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	assertPanics(t, func() { rules.OnTime(time.Now()) })
 	assertPanics(t, func() { rules.OnList() })
 	assertPanics(t, func() { rules.OnMap() })
@@ -1060,7 +1084,7 @@ func TestRulesAllowedTypesMarkupName(t *testing.T) {
 	assertPanics(t, func() { rules.OnNil() })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(false) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertPanics(t, func() { rules.OnBool(true) })
@@ -1072,7 +1096,7 @@ func TestRulesAllowedTypesMarkupName(t *testing.T) {
 	assertPanics(t, func() { rules.OnNegativeInt(1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertPanics(t, func() { rules.OnTime(time.Now()) })
@@ -1131,7 +1155,7 @@ func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1147,7 +1171,7 @@ func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1224,7 +1248,7 @@ func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(false) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1244,7 +1268,7 @@ func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnBool(true) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1337,7 +1361,7 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnEnd() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1357,7 +1381,7 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnEnd() })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1444,11 +1468,11 @@ func TestRulesAllowedTypesArray(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnBytesBegin() })
 	assertPanics(t, func() { rules.OnNil() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(false) })
 	assertPanics(t, func() { rules.OnBool(true) })
 	assertPanics(t, func() { rules.OnPositiveInt(1) })
 	assertPanics(t, func() { rules.OnNegativeInt(1) })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	assertPanics(t, func() { rules.OnTime(time.Now()) })
 	assertPanics(t, func() { rules.OnList() })
 	assertPanics(t, func() { rules.OnMap() })
@@ -1467,11 +1491,11 @@ func TestRulesAllowedTypesArray(t *testing.T) {
 
 	assertNoPanic(t, func() { rules.OnArrayChunk(1, true) })
 	assertPanics(t, func() { rules.OnNil() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	assertPanics(t, func() { rules.OnBool(true) })
 	assertPanics(t, func() { rules.OnPositiveInt(1) })
 	assertPanics(t, func() { rules.OnNegativeInt(1) })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	assertPanics(t, func() { rules.OnTime(time.Now()) })
 	assertPanics(t, func() { rules.OnList() })
 	assertPanics(t, func() { rules.OnMap() })
@@ -1497,7 +1521,7 @@ func TestRulesAllowedTypesMarkerID(t *testing.T) {
 	assertPanics(t, func() { rules.OnNil() })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(false) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertPanics(t, func() { rules.OnBool(true) })
@@ -1509,7 +1533,7 @@ func TestRulesAllowedTypesMarkerID(t *testing.T) {
 	assertPanics(t, func() { rules.OnNegativeInt(1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertPanics(t, func() { rules.OnTime(time.Now()) })
@@ -1568,7 +1592,7 @@ func TestRulesAllowedTypesMarkerValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	assertNoPanic(t, func() { rules.OnNan() })
+	assertNoPanic(t, func() { rules.OnNan(true) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1584,7 +1608,7 @@ func TestRulesAllowedTypesMarkerValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1657,7 +1681,7 @@ func TestRulesAllowedTypesReferenceID(t *testing.T) {
 	assertPanics(t, func() { rules.OnNil() })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnReference() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(false) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertPanics(t, func() { rules.OnBool(true) })
@@ -1665,7 +1689,7 @@ func TestRulesAllowedTypesReferenceID(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnBinaryFloat(0.1) })
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	assertNoPanic(t, func() { rules.OnEnd() })
@@ -1674,7 +1698,7 @@ func TestRulesAllowedTypesReferenceID(t *testing.T) {
 	assertPanics(t, func() { rules.OnNegativeInt(1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnReference() })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertPanics(t, func() { rules.OnTime(time.Now()) })
@@ -1926,7 +1950,7 @@ func TestRulesErrorInvalidMapKey(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMap() })
 	assertPanics(t, func() { rules.OnArrayData(generateBytes(4, 0)) })
 	assertPanics(t, func() { rules.OnNil() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	assertPanics(t, func() { rules.OnList() })
 	assertPanics(t, func() { rules.OnMap() })
 	assertPanics(t, func() { rules.OnMarkup() })
@@ -1935,7 +1959,7 @@ func TestRulesErrorInvalidMapKey(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnMetadata() })
 	assertPanics(t, func() { rules.OnArrayData(generateBytes(4, 0)) })
 	assertPanics(t, func() { rules.OnNil() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(false) })
 	assertPanics(t, func() { rules.OnList() })
 	assertPanics(t, func() { rules.OnMap() })
 	assertPanics(t, func() { rules.OnMarkup() })
@@ -1947,7 +1971,7 @@ func TestRulesErrorInvalidMapKey(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnArrayData([]byte(generateString(1, 0))) })
 	assertPanics(t, func() { rules.OnArrayData(generateBytes(4, 0)) })
 	assertPanics(t, func() { rules.OnNil() })
-	assertPanics(t, func() { rules.OnNan() })
+	assertPanics(t, func() { rules.OnNan(true) })
 	assertPanics(t, func() { rules.OnList() })
 	assertPanics(t, func() { rules.OnMap() })
 	assertPanics(t, func() { rules.OnMarkup() })
@@ -2023,7 +2047,7 @@ func TestRulesErrorDuplicateMarkerID(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(4, true) })
 	assertNoPanic(t, func() { rules.OnArrayData([]byte("test")) })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 
 	rules = newRulesWithMaxDepth(10)
 	assertNoPanic(t, func() { rules.OnList() })
@@ -2032,7 +2056,7 @@ func TestRulesErrorDuplicateMarkerID(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnBool(true) })
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(100) })
-	assertPanics(t, func() { rules.OnFloat(0.1) })
+	assertPanics(t, func() { rules.OnBinaryFloat(0.1) })
 }
 
 // ======

@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 type structBuilderDesc struct {
@@ -85,32 +109,47 @@ func (this *structBuilder) swapKeyValue() {
 	this.nextIsKey = !this.nextIsKey
 }
 
-func (this *structBuilder) Nil(ignored reflect.Value) {
-	this.nextBuilder.Nil(this.nextValue)
+func (this *structBuilder) BuildFromNil(ignored reflect.Value) {
+	this.nextBuilder.BuildFromNil(this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) Bool(value bool, ignored reflect.Value) {
-	this.nextBuilder.Bool(value, this.nextValue)
+func (this *structBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	this.nextBuilder.BuildFromBool(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) Int(value int64, ignored reflect.Value) {
-	this.nextBuilder.Int(value, this.nextValue)
+func (this *structBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	this.nextBuilder.BuildFromInt(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) Uint(value uint64, ignored reflect.Value) {
-	this.nextBuilder.Uint(value, this.nextValue)
+func (this *structBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	this.nextBuilder.BuildFromUint(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) Float(value float64, ignored reflect.Value) {
-	this.nextBuilder.Float(value, this.nextValue)
+func (this *structBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	this.nextBuilder.BuildFromBigInt(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) String(value string, ignored reflect.Value) {
+func (this *structBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	this.nextBuilder.BuildFromFloat(value, this.nextValue)
+	this.swapKeyValue()
+}
+
+func (this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	this.nextBuilder.BuildFromDecimalFloat(value, this.nextValue)
+	this.swapKeyValue()
+}
+
+func (this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	this.nextBuilder.BuildFromBigDecimalFloat(value, this.nextValue)
+	this.swapKeyValue()
+}
+
+func (this *structBuilder) BuildFromString(value string, ignored reflect.Value) {
 	if this.nextIsKey {
 		if builderDesc, ok := this.builderDescs[value]; ok {
 			this.nextBuilder = builderDesc.builder
@@ -122,47 +161,47 @@ func (this *structBuilder) String(value string, ignored reflect.Value) {
 			return
 		}
 	} else {
-		this.nextBuilder.String(value, this.nextValue)
+		this.nextBuilder.BuildFromString(value, this.nextValue)
 	}
 
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) Bytes(value []byte, ignored reflect.Value) {
-	this.nextBuilder.Bytes(value, this.nextValue)
+func (this *structBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	this.nextBuilder.BuildFromBytes(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) URI(value *url.URL, ignored reflect.Value) {
-	this.nextBuilder.URI(value, this.nextValue)
+func (this *structBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	this.nextBuilder.BuildFromURI(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) Time(value time.Time, ignored reflect.Value) {
-	this.nextBuilder.Time(value, this.nextValue)
+func (this *structBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	this.nextBuilder.BuildFromTime(value, this.nextValue)
 	this.swapKeyValue()
 }
 
-func (this *structBuilder) List() {
+func (this *structBuilder) BuildBeginList() {
 	this.nextBuilder.PrepareForListContents()
 }
 
-func (this *structBuilder) Map() {
+func (this *structBuilder) BuildBeginMap() {
 	this.nextBuilder.PrepareForMapContents()
 }
 
-func (this *structBuilder) End() {
+func (this *structBuilder) BuildEndContainer() {
 	object := this.container
 	this.reset()
 	this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *structBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *structBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: structBuilder.Marker")
 }
 
-func (this *structBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *structBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: structBuilder.Reference")
 }
 
 func (this *structBuilder) PrepareForListContents() {

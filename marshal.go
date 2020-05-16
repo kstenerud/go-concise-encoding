@@ -18,14 +18,45 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// +build go1.12
-
 package concise_encoding
 
 import (
-	"reflect"
+	"fmt"
 )
 
-func mapRange(v reflect.Value) *reflect.MapIter {
-	return v.MapRange()
+func MarshalCBE(object interface{}, useReferences bool) (document []byte, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			var ok bool
+			err, ok = e.(error)
+			if !ok {
+				err = fmt.Errorf("%v", e)
+			}
+		}
+	}()
+
+	encoder := NewCBEEncoder()
+	iterator := NewRootObjectIterator(useReferences, encoder)
+	iterator.Iterate(object)
+	document = encoder.Document()
+	return
+}
+
+func UnmarshalCBE(document []byte, template interface{}, shouldZeroCopy bool) (decoded interface{}, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			var ok bool
+			err, ok = e.(error)
+			if !ok {
+				err = fmt.Errorf("%v", e)
+			}
+		}
+	}()
+
+	builder := NewBuilderFor(template)
+	rules := NewRules(cbeCodecVersion, DefaultLimits(), builder)
+	decoder := NewCBEDecoder(document, rules, shouldZeroCopy)
+	decoder.Decode()
+	decoded = builder.GetBuiltObject()
+	return
 }

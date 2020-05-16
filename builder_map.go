@@ -1,9 +1,33 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
 package concise_encoding
 
 import (
+	"math/big"
 	"net/url"
 	"reflect"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 const (
@@ -77,76 +101,94 @@ func (this *mapBuilder) newElem() reflect.Value {
 	return reflect.New(this.kvTypes[this.builderIndex]).Elem()
 }
 
-func (this *mapBuilder) Nil(ignored reflect.Value) {
+func (this *mapBuilder) BuildFromNil(ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().Nil(object)
+	this.getBuilder().BuildFromNil(object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) Bool(value bool, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().Bool(value, object)
+	this.getBuilder().BuildFromBool(value, object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) Int(value int64, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().Int(value, object)
+	this.getBuilder().BuildFromInt(value, object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) Uint(value uint64, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().Uint(value, object)
+	this.getBuilder().BuildFromUint(value, object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) Float(value float64, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().Float(value, object)
+	this.getBuilder().BuildFromBigInt(value, object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) String(value string, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().String(value, object)
+	this.getBuilder().BuildFromFloat(value, object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) Bytes(value []byte, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	object := this.newElem()
-	this.getBuilder().Bytes(value, object)
+	this.getBuilder().BuildFromDecimalFloat(value, object)
 	this.storeValue(object)
 }
 
-func (this *mapBuilder) URI(value *url.URL, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	object := this.newElem()
+	this.getBuilder().BuildFromBigDecimalFloat(value, object)
+	this.storeValue(object)
+}
+
+func (this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
+	object := this.newElem()
+	this.getBuilder().BuildFromString(value, object)
+	this.storeValue(object)
+}
+
+func (this *mapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	object := this.newElem()
+	this.getBuilder().BuildFromBytes(value, object)
+	this.storeValue(object)
+}
+
+func (this *mapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *mapBuilder) Time(value time.Time, ignored reflect.Value) {
+func (this *mapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *mapBuilder) List() {
+func (this *mapBuilder) BuildBeginList() {
 	this.getBuilder().PrepareForListContents()
 }
 
-func (this *mapBuilder) Map() {
+func (this *mapBuilder) BuildBeginMap() {
 	this.getBuilder().PrepareForMapContents()
 }
 
-func (this *mapBuilder) End() {
+func (this *mapBuilder) BuildEndContainer() {
 	object := this.container
 	this.reset()
 	this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *mapBuilder) Marker(id interface{}) {
-	panic("TODO")
+func (this *mapBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: mapBuilder.Marker")
 }
 
-func (this *mapBuilder) Reference(id interface{}) {
-	panic("TODO")
+func (this *mapBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: mapBuilder.Reference")
 }
 
 func (this *mapBuilder) PrepareForListContents() {
