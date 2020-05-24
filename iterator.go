@@ -69,6 +69,12 @@ func init() {
 	}
 }
 
+// Register a specific iterator for a type.
+// If an iterator has already been registered for this type, it will be replaced.
+func RegisterIteratorForType(t reflect.Type, iterator ObjectIterator) {
+	iterators.Store(t, iterator)
+}
+
 func generateIteratorForType(t reflect.Type) ObjectIterator {
 	switch t.Kind() {
 	case reflect.Bool:

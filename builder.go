@@ -179,6 +179,12 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+// Register a specific builder for a type.
+// If a builder has already been registered for this type, it will be replaced.
+func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
+	builders.Store(dstType, builder)
+}
+
 func getBuilderForType(dstType reflect.Type) ObjectBuilder {
 	if builder, ok := builders.Load(dstType); ok {
 		return builder.(ObjectBuilder)
