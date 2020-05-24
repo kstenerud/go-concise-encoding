@@ -76,6 +76,10 @@ func (this *bigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst refl
 	setBigIntFromBigDecimalFloat(value, dst)
 }
 
+func (this *bigIntBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(this, typeBigInt, "UUID")
+}
+
 func (this *bigIntBuilder) BuildFromString(value string, dst reflect.Value) {
 	builderPanicBadEvent(this, typeBigInt, "String")
 }
@@ -166,6 +170,10 @@ func (this *pBigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ds
 
 func (this *pBigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	setPBigIntFromBigDecimalFloat(value, dst)
+}
+
+func (this *pBigIntBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(this, typePBigInt, "UUID")
 }
 
 func (this *pBigIntBuilder) BuildFromString(value string, dst reflect.Value) {

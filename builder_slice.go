@@ -128,6 +128,12 @@ func (this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored r
 	this.storeValue(object)
 }
 
+func (this *sliceBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	object := this.newElem()
+	this.elemBuilder.BuildFromUUID(value, object)
+	this.storeValue(object)
+}
+
 func (this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) {
 	object := this.newElem()
 	this.elemBuilder.BuildFromString(value, object)

@@ -92,6 +92,10 @@ func (this *intfBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflec
 	dst.Set(reflect.ValueOf(value))
 }
 
+func (this *intfBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
 func (this *intfBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
@@ -212,6 +216,10 @@ func (this *intfSliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, 
 }
 
 func (this *intfSliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	this.storeValue(value)
+}
+
+func (this *intfSliceBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
@@ -343,6 +351,10 @@ func (this *intfIntfMapBuilder) BuildFromDecimalFloat(value compact_float.DFloat
 }
 
 func (this *intfIntfMapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *intfIntfMapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 

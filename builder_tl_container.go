@@ -95,6 +95,10 @@ func (this *tlContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ign
 	builderPanicBadEvent(this, this.dstType, "BigDecimalFloat")
 }
 
+func (this *tlContainerBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "UUID")
+}
+
 func (this *tlContainerBuilder) BuildFromString(value string, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "String")
 }

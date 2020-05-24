@@ -80,6 +80,10 @@ func (this *intBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect
 	setIntFromBigDecimalFloat(value, dst)
 }
 
+func (this *intBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "UUID")
+}
+
 func (this *intBuilder) BuildFromString(value string, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "String")
 }

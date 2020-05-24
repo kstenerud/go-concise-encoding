@@ -84,6 +84,10 @@ func (this *ignoreBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst refl
 	this.root.setCurrentBuilder(this.parent)
 }
 
+func (this *ignoreBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	this.root.setCurrentBuilder(this.parent)
+}
+
 func (this *ignoreBuilder) BuildFromString(value string, dst reflect.Value) {
 	this.root.setCurrentBuilder(this.parent)
 }
@@ -182,6 +186,9 @@ func (this *ignoreContainerBuilder) BuildFromDecimalFloat(value compact_float.DF
 }
 
 func (this *ignoreContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+}
+
+func (this *ignoreContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 }
 
 func (this *ignoreContainerBuilder) BuildFromString(value string, dst reflect.Value) {

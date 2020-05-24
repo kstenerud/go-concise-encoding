@@ -149,6 +149,12 @@ func (this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored ref
 	this.storeValue(object)
 }
 
+func (this *mapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	object := this.newElem()
+	this.getBuilder().BuildFromUUID(value, object)
+	this.storeValue(object)
+}
+
 func (this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
 	object := this.newElem()
 	this.getBuilder().BuildFromString(value, object)

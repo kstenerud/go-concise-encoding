@@ -110,6 +110,9 @@ func (this *RootBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst r
 func (this *RootBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	this.currentBuilder.BuildFromBigDecimalFloat(value, dst)
 }
+func (this *RootBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	this.currentBuilder.BuildFromUUID(value, dst)
+}
 func (this *RootBuilder) BuildFromString(value string, dst reflect.Value) {
 	this.currentBuilder.BuildFromString(value, dst)
 }
@@ -198,7 +201,7 @@ func (this *RootBuilder) OnComplex(value complex128) {
 	panic("TODO: RootBuilder.OnComplex")
 }
 func (this *RootBuilder) OnUUID(value []byte) {
-	panic("TODO: RootBuilder.OnUUID")
+	this.BuildFromUUID(value, this.object)
 }
 func (this *RootBuilder) OnTime(value time.Time) {
 	this.BuildFromTime(value, this.object)

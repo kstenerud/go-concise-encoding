@@ -82,6 +82,10 @@ func (this *directBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst refl
 	builderPanicBadEvent(this, this.dstType, "BigDecimalFloat")
 }
 
+func (this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
 func (this *directBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.SetString(value)
 }
@@ -180,6 +184,10 @@ func (this *directPtrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, 
 
 func (this *directPtrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "BigDecimalFloat")
+}
+
+func (this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	dst.SetBytes(value)
 }
 
 func (this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) {

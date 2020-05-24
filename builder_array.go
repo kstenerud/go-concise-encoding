@@ -116,6 +116,11 @@ func (this *arrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored r
 	this.index++
 }
 
+func (this *arrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	this.elemBuilder.BuildFromUUID(value, this.currentElem())
+	this.index++
+}
+
 func (this *arrayBuilder) BuildFromString(value string, ignored reflect.Value) {
 	this.elemBuilder.BuildFromString(value, this.currentElem())
 	this.index++

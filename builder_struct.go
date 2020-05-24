@@ -149,6 +149,11 @@ func (this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored 
 	this.swapKeyValue()
 }
 
+func (this *structBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	this.nextBuilder.BuildFromUUID(value, this.nextValue)
+	this.swapKeyValue()
+}
+
 func (this *structBuilder) BuildFromString(value string, ignored reflect.Value) {
 	if this.nextIsKey {
 		if builderDesc, ok := this.builderDescs[value]; ok {

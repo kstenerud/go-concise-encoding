@@ -53,6 +53,7 @@ type ObjectBuilder interface {
 	BuildFromFloat(value float64, dst reflect.Value)
 	BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
 	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
+	BuildFromUUID(value []byte, dst reflect.Value)
 	BuildFromString(value string, dst reflect.Value)
 	BuildFromBytes(value []byte, dst reflect.Value)
 	BuildFromURI(value *url.URL, dst reflect.Value)

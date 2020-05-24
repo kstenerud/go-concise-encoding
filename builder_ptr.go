@@ -112,6 +112,12 @@ func (this *ptrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect
 	dst.Set(ptr)
 }
 
+func (this *ptrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	ptr := this.newElem()
+	this.elemBuilder.BuildFromUUID(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
 func (this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
 	ptr := this.newElem()
 	this.elemBuilder.BuildFromString(value, ptr.Elem())
