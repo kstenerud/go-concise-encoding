@@ -45,7 +45,7 @@ func CTEDecode(document []byte, eventReceiver DataEventReceiver) (err error) {
 }
 
 type CTEDecoder struct {
-	eventReceiver   DataEventReceiver
+	eventReceiver  DataEventReceiver
 	document       []byte
 	tokenStart     int
 	tokenPos       int
@@ -288,7 +288,7 @@ func (this *CTEDecoder) decodeWhitespace() {
 	this.endToken()
 }
 
-func (this *CTEDecoder) decodeBinary() (value uint64) {
+func (this *CTEDecoder) decodeBinaryInteger() (value uint64) {
 	endPos := this.endPos
 	i := this.tokenPos
 	for ; i <= endPos; i++ {
@@ -306,7 +306,7 @@ func (this *CTEDecoder) decodeBinary() (value uint64) {
 	return
 }
 
-func (this *CTEDecoder) decodeOctal() (value uint64) {
+func (this *CTEDecoder) decodeOctalInteger() (value uint64) {
 	endPos := this.endPos
 	i := this.tokenPos
 	for ; i <= endPos; i++ {
@@ -326,7 +326,7 @@ func (this *CTEDecoder) decodeOctal() (value uint64) {
 
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
-func (this *CTEDecoder) decodeDecimal(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+func (this *CTEDecoder) decodeDecimalInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
 	endPos := this.endPos
 	i := this.tokenPos
 
@@ -362,7 +362,7 @@ func (this *CTEDecoder) decodeDecimal(startValue uint64, bigStartValue *big.Int)
 	return
 }
 
-func (this *CTEDecoder) decodeHex(startValue uint64) (value uint64, digitCount int) {
+func (this *CTEDecoder) decodeHexInteger(startValue uint64) (value uint64, digitCount int) {
 	value = startValue
 	endPos := this.endPos
 	i := this.tokenPos
@@ -499,7 +499,7 @@ Loop:
 }
 
 func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
-	month, _, digitCount := this.decodeDecimal(0, nil)
+	month, _, digitCount := this.decodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		this.errorf("Month field is too long")
 	}
@@ -509,7 +509,7 @@ func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
 	this.advanceByte()
 
 	var day uint64
-	day, _, digitCount = this.decodeDecimal(0, nil)
+	day, _, digitCount = this.decodeDecimalInteger(0, nil)
 	if digitCount == 0 {
 		this.unexpectedChar("day")
 	}
@@ -522,7 +522,7 @@ func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
 
 	this.advanceByte()
 	var hour uint64
-	hour, _, digitCount = this.decodeDecimal(0, nil)
+	hour, _, digitCount = this.decodeDecimalInteger(0, nil)
 	if digitCount == 0 {
 		this.unexpectedChar("hour")
 	}
@@ -545,7 +545,7 @@ func (this *CTEDecoder) decodeDate(year int64) *compact_time.Time {
 }
 
 func (this *CTEDecoder) decodeTime(hour int) *compact_time.Time {
-	minute, _, digitCount := this.decodeDecimal(0, nil)
+	minute, _, digitCount := this.decodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		this.errorf("Minute field is too long")
 	}
@@ -554,7 +554,7 @@ func (this *CTEDecoder) decodeTime(hour int) *compact_time.Time {
 	}
 	this.advanceByte()
 	var second uint64
-	second, _, digitCount = this.decodeDecimal(0, nil)
+	second, _, digitCount = this.decodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		this.errorf("Second field is too long")
 	}
@@ -562,7 +562,7 @@ func (this *CTEDecoder) decodeTime(hour int) *compact_time.Time {
 
 	if this.peekByte() == '.' {
 		this.advanceByte()
-		v, _, digitCount := this.decodeDecimal(0, nil)
+		v, _, digitCount := this.decodeDecimalInteger(0, nil)
 		if digitCount == 0 {
 			this.unexpectedChar("nanosecond")
 		}
@@ -599,7 +599,7 @@ func (this *CTEDecoder) decodeTime(hour int) *compact_time.Time {
 }
 
 func (this *CTEDecoder) decodeLatLongPortion(name string) (value int) {
-	whole, _, digitCount := this.decodeDecimal(0, nil)
+	whole, _, digitCount := this.decodeDecimalInteger(0, nil)
 	switch digitCount {
 	case 1, 2, 3:
 	// Nothing to do
@@ -613,7 +613,7 @@ func (this *CTEDecoder) decodeLatLongPortion(name string) (value int) {
 	b := this.peekByte()
 	if b == '.' {
 		this.advanceByte()
-		fractional, _, digitCount = this.decodeDecimal(0, nil)
+		fractional, _, digitCount = this.decodeDecimalInteger(0, nil)
 		switch digitCount {
 		case 1:
 			fractional *= 10
@@ -644,7 +644,7 @@ func (this *CTEDecoder) decodeLatLong() (latitudeHundredths, longitudeHundredths
 func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal) {
 	exponent := int32(0)
 	fractionalDigitCount := 0
-	coefficient, bigCoefficient, fractionalDigitCount = this.decodeDecimal(coefficient, bigCoefficient)
+	coefficient, bigCoefficient, fractionalDigitCount = this.decodeDecimalInteger(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
 		this.unexpectedChar("float fractional")
 	}
@@ -659,7 +659,7 @@ func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, bigCo
 			exponentSign = -1
 			this.advanceByte()
 		}
-		exp, bigExp, digitCount := this.decodeDecimal(0, nil)
+		exp, bigExp, digitCount := this.decodeDecimalInteger(0, nil)
 		if digitCount == 0 {
 			this.unexpectedChar("float exponent")
 		}
@@ -701,7 +701,7 @@ func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, bigCo
 func (this *CTEDecoder) decodeHexFloat(sign int64, coefficient uint64, coefficientDigitCount int) float64 {
 	exponent := 0
 	fractionalDigitCount := 0
-	coefficient, fractionalDigitCount = this.decodeHex(coefficient)
+	coefficient, fractionalDigitCount = this.decodeHexInteger(coefficient)
 	if fractionalDigitCount == 0 {
 		this.unexpectedChar("float fractional")
 	}
@@ -716,7 +716,7 @@ func (this *CTEDecoder) decodeHexFloat(sign int64, coefficient uint64, coefficie
 			exponentSign = -1
 			this.advanceByte()
 		}
-		exp, bigExp, digitCount := this.decodeDecimal(0, nil)
+		exp, bigExp, digitCount := this.decodeDecimalInteger(0, nil)
 		if digitCount == 0 {
 			this.unexpectedChar("float exponent")
 		}
@@ -789,7 +789,7 @@ func (this *CTEDecoder) handleVersion() {
 	}
 	this.advanceByte()
 
-	version, bigVersion, digitCount := this.decodeDecimal(0, nil)
+	version, bigVersion, digitCount := this.decodeDecimalInteger(0, nil)
 	if digitCount == 0 {
 		this.unexpectedChar("version number")
 	}
@@ -861,7 +861,7 @@ func (this *CTEDecoder) handleQuotedString() {
 }
 
 func (this *CTEDecoder) handlePositiveNumeric() {
-	coefficient, bigCoefficient, digitCount := this.decodeDecimal(0, nil)
+	coefficient, bigCoefficient, digitCount := this.decodeDecimalInteger(0, nil)
 
 	// Integer
 	if this.peekByte().HasProperty(ctePropertyObjectEnd) {
@@ -920,7 +920,7 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 		return
 	}
 
-	coefficient, bigCoefficient, digitCount := this.decodeDecimal(0, nil)
+	coefficient, bigCoefficient, digitCount := this.decodeDecimalInteger(0, nil)
 
 	// Integer
 	if this.peekByte().HasProperty(ctePropertyObjectEnd) {
@@ -958,27 +958,28 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 
 func (this *CTEDecoder) handleOtherBasePositive() {
 	this.advanceByte()
-	b := this.readByte()
+	b := this.peekByte()
 
 	if b.HasProperty(ctePropertyObjectEnd) {
 		this.eventReceiver.OnPositiveInt(0)
 		this.endObject()
 		return
 	}
+	this.advanceByte()
 
 	switch b {
 	case 'b':
-		v := this.decodeBinary()
+		v := this.decodeBinaryInteger()
 		this.assertAtObjectEnd("binary integer")
 		this.eventReceiver.OnPositiveInt(v)
 		this.endObject()
 	case 'o':
-		v := this.decodeOctal()
+		v := this.decodeOctalInteger()
 		this.assertAtObjectEnd("octal integer")
 		this.eventReceiver.OnPositiveInt(v)
 		this.endObject()
 	case 'x':
-		v, digitCount := this.decodeHex(0)
+		v, digitCount := this.decodeHexInteger(0)
 		if this.peekByte() == '.' {
 			this.advanceByte()
 			fv := this.decodeHexFloat(1, v, digitCount)
@@ -1018,17 +1019,17 @@ func (this *CTEDecoder) handleOtherBaseNegative() {
 	b := this.readByte()
 	switch b {
 	case 'b':
-		v := this.decodeBinary()
+		v := this.decodeBinaryInteger()
 		this.assertAtObjectEnd("binary integer")
 		this.eventReceiver.OnNegativeInt(v)
 		this.endObject()
 	case 'o':
-		v := this.decodeOctal()
+		v := this.decodeOctalInteger()
 		this.assertAtObjectEnd("octal integer")
 		this.eventReceiver.OnNegativeInt(v)
 		this.endObject()
 	case 'x':
-		v, digitCount := this.decodeHex(0)
+		v, digitCount := this.decodeHexInteger(0)
 		if this.peekByte() == '.' {
 			this.advanceByte()
 			fv := this.decodeHexFloat(-1, v, digitCount)

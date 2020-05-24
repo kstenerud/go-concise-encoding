@@ -50,6 +50,31 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	}
 }
 
+func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
+	useReferences := true
+	document, err := MarshalCTE(expected, useReferences)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	var actual interface{}
+	actual, err = UnmarshalCTE(document, expected)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
+	}
+}
+
+func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
+	assertCBEMarshalUnmarshal(t, expected)
+	assertCTEMarshalUnmarshal(t, expected)
+}
+
 type MarshalInnerStruct struct {
 	Inner int
 }
@@ -128,7 +153,7 @@ func (this *MarshalTester) Init(baseValue int) {
 }
 
 func TestMarshalUnmarshal(t *testing.T) {
-	assertCBEMarshalUnmarshal(t, 101)
-	assertCBEMarshalUnmarshal(t, *newMarshalTestStruct(1))
-	assertCBEMarshalUnmarshal(t, *new(MarshalTester))
+	assertMarshalUnmarshal(t, 101)
+	assertMarshalUnmarshal(t, *newMarshalTestStruct(1))
+	assertMarshalUnmarshal(t, *new(MarshalTester))
 }

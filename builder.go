@@ -207,9 +207,7 @@ func getTopLevelBuilderForType(dstType reflect.Type) ObjectBuilder {
 		return newTLContainerBuilder(dstType)
 	case reflect.Struct:
 		switch dstType {
-		case typeTime:
-			return getBuilderForType(dstType)
-		case typeURL:
+		case typeTime, typeURL, typeDFloat:
 			return getBuilderForType(dstType)
 		default:
 			return newTLContainerBuilder(dstType)

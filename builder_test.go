@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -122,8 +123,6 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, float64(1), m())
 	assertBuildPanics(t, float64(1), e())
 
-	// TODO: What should allow nil?
-	// assertBuildPanics(t, "", n())
 	assertBuildPanics(t, "", b(true))
 	assertBuildPanics(t, "", i(1))
 	assertBuildPanics(t, "", pi(1))
@@ -135,8 +134,6 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, "", m())
 	assertBuildPanics(t, "", e())
 
-	// TODO: What should allow nil?
-	// assertBuildPanics(t, []byte{}, n())
 	assertBuildPanics(t, []byte{}, b(true))
 	assertBuildPanics(t, []byte{}, i(1))
 	assertBuildPanics(t, []byte{}, pi(1))
@@ -148,8 +145,6 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, []byte{}, m())
 	assertBuildPanics(t, []byte{}, e())
 
-	// TODO: What should allow nil?
-	// assertBuildPanics(t, newURI("x://x"), n())
 	assertBuildPanics(t, newURI("x://x"), b(true))
 	assertBuildPanics(t, newURI("x://x"), i(1))
 	assertBuildPanics(t, newURI("x://x"), pi(1))
@@ -185,8 +180,6 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, []int{}, m())
 	assertBuildPanics(t, []int{}, e())
 
-	// TODO: Check if this is correct behavior to not panic
-	// assertBuildPanics(t, map[int]int{}, n())
 	assertBuildPanics(t, map[int]int{}, i(1))
 	assertBuildPanics(t, map[int]int{}, pi(1))
 	assertBuildPanics(t, map[int]int{}, bf(1))
@@ -205,6 +198,7 @@ func TestBuilderNumericConversion(t *testing.T) {
 	assertBuild(t, uint64(50), bf(50))
 	assertBuild(t, float32(50), i(50))
 	assertBuild(t, float64(50), pi(50))
+	assertBuild(t, compact_float.DFloatValue(0, 50), pi(50))
 }
 
 func TestBuilderNumericConversionFail(t *testing.T) {

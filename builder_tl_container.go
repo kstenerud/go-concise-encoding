@@ -30,6 +30,7 @@ import (
 	"github.com/kstenerud/go-compact-float"
 )
 
+// This builder is used if the top-level object is a container or struct.
 type tlContainerBuilder struct {
 	// Const data
 	dstType reflect.Type
