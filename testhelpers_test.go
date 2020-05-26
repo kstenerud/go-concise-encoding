@@ -120,7 +120,7 @@ func cteDecode(document []byte) (events []*tevent, err error) {
 }
 
 func cteEncode(events ...*tevent) []byte {
-	encoder := NewCTEEncoder()
+	encoder := NewCTEEncoder(nil)
 	invokeEvents(encoder, events...)
 	return encoder.Document()
 }

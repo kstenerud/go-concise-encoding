@@ -31,14 +31,41 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+type IndentType int
+
+const (
+	IndentTypeSpace = iota
+	IndentTypeTab
+)
+
+type BracePosition int
+
+const (
+	BracePositionAdjacent = iota
+	BracePositionNextLine
+)
+
+// TODO: Actually use these options
+type CTEEncoderOptions struct {
+	IndentCount   int
+	IndentType    IndentType
+	BracePosition BracePosition
+}
+
 type CTEEncoder struct {
 	buff           buffer
 	containerState []cteEncoderState
 	currentState   cteEncoderState
+	options        *CTEEncoderOptions
 }
 
-func NewCTEEncoder() *CTEEncoder {
-	return &CTEEncoder{}
+func NewCTEEncoder(options *CTEEncoderOptions) *CTEEncoder {
+	if options == nil {
+		options = &CTEEncoderOptions{}
+	}
+	return &CTEEncoder{
+		options: options,
+	}
 }
 
 func (this *CTEEncoder) Document() []byte {

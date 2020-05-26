@@ -24,7 +24,23 @@ import (
 	"fmt"
 )
 
-func MarshalCTE(object interface{}, useReferences bool) (document []byte, err error) {
+// TODO: DecoderOptions
+// type DecoderOptions struct {
+// 	// TODO: implied version
+// 	// TODO: implied tl container
+// 	// TODO: Maximums?
+// 	// TODO: Zero copy
+// }
+
+type CTEMarshalerOptions struct {
+	EncoderOptions  CTEEncoderOptions
+	IteratorOptions IteratorOptions
+}
+
+func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []byte, err error) {
+	if options == nil {
+		options = &CTEMarshalerOptions{}
+	}
 	defer func() {
 		if e := recover(); e != nil {
 			var ok bool
@@ -35,8 +51,8 @@ func MarshalCTE(object interface{}, useReferences bool) (document []byte, err er
 		}
 	}()
 
-	encoder := NewCTEEncoder()
-	iterator := NewRootObjectIterator(useReferences, encoder)
+	encoder := NewCTEEncoder(&options.EncoderOptions)
+	iterator := NewRootObjectIterator(encoder, &options.IteratorOptions)
 	iterator.Iterate(object)
 	document = encoder.Document()
 	return

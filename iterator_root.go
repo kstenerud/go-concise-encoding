@@ -26,14 +26,17 @@ import (
 	"github.com/kstenerud/go-duplicates"
 )
 
-func NewRootObjectIterator(useReferences bool, eventReceiver DataEventReceiver) *RootObjectIterator {
+func NewRootObjectIterator(eventReceiver DataEventReceiver, options *IteratorOptions) *RootObjectIterator {
 	this := new(RootObjectIterator)
-	this.Init(useReferences, eventReceiver)
+	this.Init(eventReceiver, options)
 	return this
 }
 
-func (this *RootObjectIterator) Init(useReferences bool, eventReceiver DataEventReceiver) {
-	this.useReferences = useReferences
+func (this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *IteratorOptions) {
+	if options == nil {
+		options = &IteratorOptions{}
+	}
+	this.options = options
 	this.eventReceiver = eventReceiver
 }
 
@@ -54,19 +57,19 @@ type RootObjectIterator struct {
 	foundReferences map[duplicates.TypedPointer]bool
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
-	eventReceiver    DataEventReceiver
-	useReferences   bool
+	eventReceiver   DataEventReceiver
+	options         *IteratorOptions
 }
 
 func (this *RootObjectIterator) findReferences(value interface{}) {
-	if this.useReferences {
+	if this.options.UseReferences {
 		this.foundReferences = duplicates.FindDuplicatePointers(value)
 		this.namedReferences = make(map[duplicates.TypedPointer]uint32)
 	}
 }
 
 func (this *RootObjectIterator) addReference(v reflect.Value) (didAddReferenceObject bool) {
-	if this.useReferences {
+	if this.options.UseReferences {
 		ptr := duplicates.TypedPointerOfRV(v)
 		if this.foundReferences[ptr] {
 			var name uint32

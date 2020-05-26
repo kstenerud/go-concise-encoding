@@ -32,6 +32,18 @@ import (
 	"github.com/kstenerud/go-compact-float"
 )
 
+// TODO: BuilderOptions
+// type BuilderOptions struct {
+// 	// TODO: Something for lossy conversions?
+// 	// TODO: Something for decimal floats?
+// }
+
+// Register a specific builder for a type.
+// If a builder has already been registered for this type, it will be replaced.
+func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
+	builders.Store(dstType, builder)
+}
+
 // NewBuilderFor creates a new builder that builds objects of the same type as
 // the template object.
 func NewBuilderFor(template interface{}) *RootBuilder {
@@ -177,12 +189,6 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 	default:
 		panic(fmt.Errorf("BUG: Unhandled type %v", dstType))
 	}
-}
-
-// Register a specific builder for a type.
-// If a builder has already been registered for this type, it will be replaced.
-func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
-	builders.Store(dstType, builder)
 }
 
 func getBuilderForType(dstType reflect.Type) ObjectBuilder {

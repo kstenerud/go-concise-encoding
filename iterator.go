@@ -26,12 +26,18 @@ import (
 	"sync"
 )
 
+type IteratorOptions struct {
+	// If useReferences is true, the iterator will also look for duplicate
+	// pointers to data, generating marker and reference events rather than
+	// walking the object again. This is useful for cyclic or recursive data
+	// structures.
+	UseReferences bool
+}
+
 // Iterate over an object (recursively), calling the eventReceiver as data is
-// encountered. If useReferences is true, it will also look for duplicate
-// pointers to data, generating marker and reference events rather than walking
-// the object again. This is useful for cyclic or recursive data structures.
-func IterateObject(value interface{}, useReferences bool, eventReceiver DataEventReceiver) {
-	iter := NewRootObjectIterator(useReferences, eventReceiver)
+// encountered. If options is nil, a zero value will be provided.
+func IterateObject(value interface{}, eventReceiver DataEventReceiver, options *IteratorOptions) {
+	iter := NewRootObjectIterator(eventReceiver, options)
 	iter.Iterate(value)
 }
 

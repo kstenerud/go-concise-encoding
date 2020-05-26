@@ -25,14 +25,19 @@ import (
 	"net/url"
 	"testing"
 	"time"
+	"unsafe"
 
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	useReferences := true
-	document, err := MarshalCBE(expected, useReferences)
+	options := &CBEMarshalerOptions{
+		IteratorOptions: IteratorOptions{
+			UseReferences: true,
+		},
+	}
+	document, err := MarshalCBE(expected, options)
 	if err != nil {
 		t.Error(err)
 		return
@@ -51,8 +56,12 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 }
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	useReferences := true
-	document, err := MarshalCTE(expected, useReferences)
+	options := &CTEMarshalerOptions{
+		IteratorOptions: IteratorOptions{
+			UseReferences: true,
+		},
+	}
+	document, err := MarshalCTE(expected, options)
 	if err != nil {
 		t.Error(err)
 		return
@@ -117,23 +126,23 @@ func newMarshalTestStruct(baseValue int) *MarshalTester {
 
 func (this *MarshalTester) Init(baseValue int) {
 	this.Bo = baseValue&1 == 1
-	this.By = byte(baseValue + 1)
-	this.I = baseValue + 2
-	this.I8 = int8(baseValue + 3)
-	this.I16 = int16(baseValue + 4)
-	this.I32 = int32(baseValue + 5)
-	this.I64 = int64(baseValue + 6)
-	this.U = uint(baseValue + 7)
-	this.U8 = uint8(baseValue + 8)
-	this.U16 = uint16(baseValue + 9)
-	this.U32 = uint32(baseValue + 10)
-	this.U64 = uint64(baseValue + 11)
-	this.F32 = float32(baseValue) + 20.5
-	this.F64 = float64(baseValue) + 21.5
-	this.Ar[0] = byte(baseValue + 30)
-	this.Ar[1] = byte(baseValue + 31)
-	this.Ar[2] = byte(baseValue + 32)
-	this.Ar[3] = byte(baseValue + 33)
+	this.By = byte(baseValue + int(unsafe.Offsetof(this.By)))
+	this.I = baseValue + int(unsafe.Offsetof(this.I))
+	this.I8 = int8(baseValue + int(unsafe.Offsetof(this.I8)))
+	this.I16 = int16(baseValue + int(unsafe.Offsetof(this.I16)))
+	this.I32 = int32(baseValue + int(unsafe.Offsetof(this.I32)))
+	this.I64 = int64(baseValue + int(unsafe.Offsetof(this.I64)))
+	this.U = uint(baseValue + int(unsafe.Offsetof(this.U)))
+	this.U8 = uint8(baseValue + int(unsafe.Offsetof(this.U8)))
+	this.U16 = uint16(baseValue + int(unsafe.Offsetof(this.U16)))
+	this.U32 = uint32(baseValue + int(unsafe.Offsetof(this.U32)))
+	this.U64 = uint64(baseValue + int(unsafe.Offsetof(this.U64)))
+	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
+	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
+	this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(this.Ar)))
+	this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+1))
+	this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+2))
+	this.Ar[3] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+3))
 	this.St = generateString(baseValue+5, baseValue)
 	this.Ba = generateBytes(baseValue+1, baseValue)
 	this.M = make(map[interface{}]interface{})

@@ -24,7 +24,14 @@ import (
 	"fmt"
 )
 
-func MarshalCBE(object interface{}, useReferences bool) (document []byte, err error) {
+type CBEMarshalerOptions struct {
+	IteratorOptions IteratorOptions
+}
+
+func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []byte, err error) {
+	if options == nil {
+		options = &CBEMarshalerOptions{}
+	}
 	defer func() {
 		if e := recover(); e != nil {
 			var ok bool
@@ -36,7 +43,7 @@ func MarshalCBE(object interface{}, useReferences bool) (document []byte, err er
 	}()
 
 	encoder := NewCBEEncoder()
-	iterator := NewRootObjectIterator(useReferences, encoder)
+	iterator := NewRootObjectIterator(encoder, &options.IteratorOptions)
 	iterator.Iterate(object)
 	document = encoder.Document()
 	return
