@@ -157,10 +157,14 @@ func (this *CTEEncoder) OnBinaryFloat(value float64) {
 
 func (this *CTEEncoder) OnDecimalFloat(value compact_float.DFloat) {
 	this.addString(value.Text('g'))
+	this.addSuffix()
+	this.transitionState()
 }
 
 func (this *CTEEncoder) OnBigDecimalFloat(value *apd.Decimal) {
 	this.addString(value.Text('g'))
+	this.addSuffix()
+	this.transitionState()
 }
 
 func (this *CTEEncoder) OnNan(signaling bool) {

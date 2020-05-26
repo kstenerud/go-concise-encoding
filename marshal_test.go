@@ -27,6 +27,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -70,6 +71,7 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	var actual interface{}
 	actual, err = UnmarshalCTE(document, expected)
 	if err != nil {
+		fmt.Printf("While unmarshaling %v\n", string(document))
 		t.Error(err)
 		return
 	}
@@ -103,6 +105,7 @@ type MarshalTester struct {
 	U64  uint64
 	F32  float32
 	F64  float64
+	DF   compact_float.DFloat
 	Ar   [4]byte
 	St   string
 	Ba   []byte
@@ -139,6 +142,10 @@ func (this *MarshalTester) Init(baseValue int) {
 	this.U64 = uint64(baseValue + int(unsafe.Offsetof(this.U64)))
 	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
 	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
+	this.DF = compact_float.DFloat{
+		Exponent:    -int32(baseValue),
+		Coefficient: int64(baseValue + int(unsafe.Offsetof(this.DF))),
+	}
 	this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(this.Ar)))
 	this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+1))
 	this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+2))
