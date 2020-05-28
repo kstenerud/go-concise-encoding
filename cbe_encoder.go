@@ -122,7 +122,11 @@ func (this *CBEEncoder) OnNegativeInt(value uint64) {
 }
 
 func (this *CBEEncoder) OnBigInt(value *big.Int) {
-	panic("TODO: CBEEncoder.OnBigInt")
+	if isBigIntNegative(value) {
+		this.encodeTypedBigInt(cbeTypeNegInt, value)
+	} else {
+		this.encodeTypedBigInt(cbeTypePosInt, value)
+	}
 }
 
 func (this *CBEEncoder) OnBinaryFloat(value float64) {
@@ -346,6 +350,18 @@ func (this *CBEEncoder) encodeTypedULEB(cbeType cbeTypeField, value uint64) {
 	dst[0] = byte(cbeType)
 	dst = dst[1:]
 	byteCount, _ := uleb128.EncodeUint64(value, dst)
+	this.buff.CorrectAllocation(byteCount + 1)
+}
+
+func (this *CBEEncoder) encodeTypedBigInt(cbeType cbeTypeField, value *big.Int) {
+	if value == nil {
+		this.encodeTypeOnly(cbeTypeNil)
+		return
+	}
+	dst := this.buff.Allocate(uleb128.EncodedSize(value) + 1)
+	dst[0] = byte(cbeType)
+	dst = dst[1:]
+	byteCount, _ := uleb128.Encode(value, dst)
 	this.buff.CorrectAllocation(byteCount + 1)
 }
 

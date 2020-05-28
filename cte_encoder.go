@@ -119,6 +119,8 @@ func (this *CTEEncoder) OnInt(value int64) {
 
 func (this *CTEEncoder) OnBigInt(value *big.Int) {
 	this.addFmt("%v", value)
+	this.addSuffix()
+	this.transitionState()
 }
 
 func (this *CTEEncoder) OnPositiveInt(value uint64) {

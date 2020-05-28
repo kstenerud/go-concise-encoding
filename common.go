@@ -88,3 +88,11 @@ var quietNan = math.Float64frombits(math.Float64bits(math.NaN()) | quietNanBit)
 func isSignalingNan(value float64) bool {
 	return math.Float64bits(value)&quietNanBit == 0
 }
+
+var bigInt0 = big.NewInt(0)
+var bigInt10 = big.NewInt(10)
+var bigIntN1 = big.NewInt(-1)
+
+func isBigIntNegative(value *big.Int) bool {
+	return value.Cmp(bigInt0) < 0
+}

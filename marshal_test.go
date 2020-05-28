@@ -22,6 +22,7 @@ package concise_encoding
 
 import (
 	"fmt"
+	"math/big"
 	"net/url"
 	"testing"
 	"time"
@@ -40,19 +41,19 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	}
 	document, err := MarshalCBE(expected, options)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("CBE Marshal error: %v", err)
 		return
 	}
 
 	var actual interface{}
 	actual, err = UnmarshalCBE(document, expected, false)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("CBE Unmarshal error: %v\n- While unmarshaling %v", err, describe.D(document))
 		return
 	}
 
 	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
+		t.Errorf("CBE Unmarshal: Expected %v but got %v", describe.D(expected), describe.D(actual))
 	}
 }
 
@@ -64,20 +65,19 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	}
 	document, err := MarshalCTE(expected, options)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("CTE Marshal error: %v", err)
 		return
 	}
 
 	var actual interface{}
 	actual, err = UnmarshalCTE(document, expected)
 	if err != nil {
-		fmt.Printf("While unmarshaling %v\n", string(document))
-		t.Error(err)
+		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(document))
 		return
 	}
 
 	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
+		t.Errorf("CTE Unmarshal: Expected %v but got %v\n- While unmarshaling %v", describe.D(expected), describe.D(actual), string(document))
 	}
 }
 
@@ -103,6 +103,7 @@ type MarshalTester struct {
 	U16  uint16
 	U32  uint32
 	U64  uint64
+	BI   *big.Int
 	F32  float32
 	F64  float64
 	DF   compact_float.DFloat
@@ -140,6 +141,8 @@ func (this *MarshalTester) Init(baseValue int) {
 	this.U16 = uint16(baseValue + int(unsafe.Offsetof(this.U16)))
 	this.U32 = uint32(baseValue + int(unsafe.Offsetof(this.U32)))
 	this.U64 = uint64(baseValue + int(unsafe.Offsetof(this.U64)))
+	this.BI = big.NewInt(int64(baseValue) + int64(unsafe.Offsetof(this.BI)+10))
+	this.BI = this.BI.Exp(this.BI, big.NewInt(20), nil)
 	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
 	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
 	this.DF = compact_float.DFloat{

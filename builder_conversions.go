@@ -246,9 +246,8 @@ func floatToPBigInt(value float64) *big.Int {
 }
 
 func bigFloatToPBigInt(value *apd.Decimal) *big.Int {
-	ten := big.NewInt(10)
 	exp := big.NewInt(int64(value.Exponent))
-	exp.Exp(ten, exp, nil)
+	exp.Exp(bigInt10, exp, nil)
 	return exp.Mul(exp, &value.Coeff)
 }
 

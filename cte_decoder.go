@@ -339,7 +339,7 @@ func (this *CTEDecoder) decodeDecimalInteger(startValue uint64, bigStartValue *b
 			}
 			oldValue := value
 			value = value*10 + uint64(b-'0')
-			if value < oldValue {
+			if value/10 != oldValue {
 				bigStartValue = new(big.Int).SetUint64(oldValue)
 				break
 			}
@@ -353,7 +353,8 @@ func (this *CTEDecoder) decodeDecimalInteger(startValue uint64, bigStartValue *b
 			if !hasProperty(b, cteProperty09) {
 				break
 			}
-			bigValue = bigValue.Mul(bigValue, big.NewInt(10+int64(b-'0')))
+			bigValue = bigValue.Mul(bigValue, bigInt10)
+			bigValue = bigValue.Add(bigValue, big.NewInt(int64(b-'0')))
 		}
 	}
 
@@ -926,7 +927,7 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 	if this.peekByte().HasProperty(ctePropertyObjectEnd) {
 		if bigCoefficient != nil {
 			// TODO: More efficient way to negate?
-			bigCoefficient = bigCoefficient.Mul(bigCoefficient, big.NewInt(-1))
+			bigCoefficient = bigCoefficient.Mul(bigCoefficient, bigIntN1)
 			this.eventReceiver.OnBigInt(bigCoefficient)
 		}
 		this.eventReceiver.OnNegativeInt(coefficient)

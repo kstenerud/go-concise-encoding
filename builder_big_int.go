@@ -141,7 +141,7 @@ func (this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 }
 
 func (this *pBigIntBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigInt, "Nil")
+	dst.Set(reflect.ValueOf((*big.Int)(nil)))
 }
 
 func (this *pBigIntBuilder) BuildFromBool(value bool, dst reflect.Value) {
