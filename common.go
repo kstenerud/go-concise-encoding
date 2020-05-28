@@ -42,8 +42,8 @@ var (
 	typeBigInt  = reflect.TypeOf(big.Int{})
 	typePBigInt = reflect.TypeOf((*big.Int)(nil))
 
-	typeBigFloat  = reflect.TypeOf(apd.Decimal{})
-	typePBigFloat = reflect.TypeOf((*apd.Decimal)(nil))
+	typeBigDecimalFloat  = reflect.TypeOf(apd.Decimal{})
+	typePBigDecimalFloat = reflect.TypeOf((*apd.Decimal)(nil))
 
 	typeURL  = reflect.TypeOf(url.URL{})
 	typePURL = reflect.TypeOf((*url.URL)(nil))

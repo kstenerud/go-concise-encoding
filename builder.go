@@ -170,8 +170,8 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 			return newDFloatBuilder()
 		case typeBigInt:
 			return newBigIntBuilder()
-		case typeBigFloat:
-			return newBigFloatBuilder()
+		case typeBigDecimalFloat:
+			return newBigDecimalFloatBuilder()
 		default:
 			return newStructBuilder(dstType)
 		}
@@ -181,8 +181,8 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 			return newDirectPtrBuilder(dstType)
 		case typePBigInt:
 			return newpBigIntBuilder()
-		case typePBigFloat:
-			return newPBigFloatBuilder()
+		case typePBigDecimalFloat:
+			return newPBigDecimalFloatBuilder()
 		default:
 			return newPtrBuilder(dstType)
 		}

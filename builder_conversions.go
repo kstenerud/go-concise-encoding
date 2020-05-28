@@ -202,7 +202,7 @@ func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 }
 
 func setBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(*bigFloatToPBigInt(value)))
+	dst.Set(reflect.ValueOf(*bigDecimalFloatToPBigInt(value)))
 }
 
 // pBigInt
@@ -228,7 +228,7 @@ func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 }
 
 func setPBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(bigFloatToPBigInt(value)))
+	dst.Set(reflect.ValueOf(bigDecimalFloatToPBigInt(value)))
 }
 
 func uintToPBigInt(value uint64) *big.Int {
@@ -245,39 +245,39 @@ func floatToPBigInt(value float64) *big.Int {
 	return bi
 }
 
-func bigFloatToPBigInt(value *apd.Decimal) *big.Int {
+func bigDecimalFloatToPBigInt(value *apd.Decimal) *big.Int {
 	exp := big.NewInt(int64(value.Exponent))
 	exp.Exp(bigInt10, exp, nil)
 	return exp.Mul(exp, &value.Coeff)
 }
 
-// BigFloat
+// BigDecimalFloat
 
-func setBigFloatFromInt(value int64, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(intToBigFloat(value)))
+func setBigDecimalFloatFromInt(value int64, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(intToBigDecimalFloat(value)))
 }
 
-func setBigFloatFromUint(value uint64, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(uintToBigFloat(value)))
+func setBigDecimalFloatFromUint(value uint64, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(uintToBigDecimalFloat(value)))
 }
 
-func setBigFloatFromBigInt(value *big.Int, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(pBigIntToBigFloat(value)))
+func setBigDecimalFloatFromBigInt(value *big.Int, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(pBigIntToBigDecimalFloat(value)))
 }
 
-func setBigFloatFromFloat(value float64, dst reflect.Value) {
-	v, err := floatToBigFloat(value)
+func setBigDecimalFloatFromFloat(value float64, dst reflect.Value) {
+	v, err := floatToBigDecimalFloat(value)
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(v))
 }
 
-func setBigFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func setBigDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(*value.APD()))
 }
 
-func intToBigFloat(value int64) apd.Decimal {
+func intToBigDecimalFloat(value int64) apd.Decimal {
 	if value < 0 {
 		return apd.Decimal{
 			Negative: true,
@@ -289,51 +289,51 @@ func intToBigFloat(value int64) apd.Decimal {
 	}
 }
 
-func uintToBigFloat(value uint64) apd.Decimal {
+func uintToBigDecimalFloat(value uint64) apd.Decimal {
 	return apd.Decimal{
 		Coeff: *uintToPBigInt(value),
 	}
 }
 
-func floatToBigFloat(value float64) (apd.Decimal, error) {
+func floatToBigDecimalFloat(value float64) (apd.Decimal, error) {
 	var d apd.Decimal
 	_, _, err := apd.BaseContext.SetString(&d, strconv.FormatFloat(value, 'g', -1, 64))
 	return d, err
 }
 
-func pBigIntToBigFloat(value *big.Int) apd.Decimal {
+func pBigIntToBigDecimalFloat(value *big.Int) apd.Decimal {
 	return apd.Decimal{
 		Coeff: *value,
 	}
 }
 
-// PBigFloat
+// PBigDecimalFloat
 
-func setPBigFloatFromInt(value int64, dst reflect.Value) {
+func setPBigDecimalFloatFromInt(value int64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(apd.NewWithBigInt(big.NewInt(value), 0)))
 }
 
-func setPBigFloatFromUint(value uint64, dst reflect.Value) {
+func setPBigDecimalFloatFromUint(value uint64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(apd.NewWithBigInt(uintToPBigInt(value), 0)))
 }
 
-func setPBigFloatFromBigInt(value *big.Int, dst reflect.Value) {
+func setPBigDecimalFloatFromBigInt(value *big.Int, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(apd.NewWithBigInt(value, 0)))
 }
 
-func setPBigFloatFromFloat(value float64, dst reflect.Value) {
-	v, err := floatToPBigFloat(value)
+func setPBigDecimalFloatFromFloat(value float64, dst reflect.Value) {
+	v, err := floatToPBigDecimalFloat(value)
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(v))
 }
 
-func setPBigFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func setPBigDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(*value.APD()))
 }
 
-func floatToPBigFloat(value float64) (*apd.Decimal, error) {
+func floatToPBigDecimalFloat(value float64) (*apd.Decimal, error) {
 	d, _, err := apd.NewFromString(strconv.FormatFloat(value, 'g', -1, 64))
 	return d, err
 }
