@@ -129,7 +129,7 @@ func (this *CBEEncoder) OnBigInt(value *big.Int) {
 	}
 }
 
-func (this *CBEEncoder) OnBinaryFloat(value float64) {
+func (this *CBEEncoder) OnFloat(value float64) {
 	if math.IsInf(value, 0) {
 		sign := 1
 		if value < 0 {

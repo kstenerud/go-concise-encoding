@@ -341,7 +341,7 @@ func (this *floatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIte
 }
 
 func (this *floatIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnBinaryFloat(v.Float())
+	this.root.eventReceiver.OnFloat(v.Float())
 }
 
 // ------

@@ -213,13 +213,13 @@ func (this *Rules) OnBigInt(value *big.Int) {
 	this.nextReceiver.OnBigInt(value)
 }
 
-func (this *Rules) OnBinaryFloat(value float64) {
+func (this *Rules) OnFloat(value float64) {
 	if math.IsNaN(value) {
 		this.OnNan(isSignalingNan(value))
 		return
 	}
 	this.addScalar(eventTypeFloat)
-	this.nextReceiver.OnBinaryFloat(value)
+	this.nextReceiver.OnFloat(value)
 }
 
 func (this *Rules) OnDecimalFloat(value compact_float.DFloat) {

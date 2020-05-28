@@ -917,7 +917,7 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 		if token != "inf" {
 			this.errorf("Unknown named value: %v", token)
 		}
-		this.eventReceiver.OnBinaryFloat(math.Inf(-1))
+		this.eventReceiver.OnFloat(math.Inf(-1))
 		return
 	}
 
@@ -985,7 +985,7 @@ func (this *CTEDecoder) handleOtherBasePositive() {
 			this.advanceByte()
 			fv := this.decodeHexFloat(1, v, digitCount)
 			this.assertAtObjectEnd("hex float")
-			this.eventReceiver.OnBinaryFloat(fv)
+			this.eventReceiver.OnFloat(fv)
 			this.endObject()
 		} else {
 			this.assertAtObjectEnd("hex integer")
@@ -1035,7 +1035,7 @@ func (this *CTEDecoder) handleOtherBaseNegative() {
 			this.advanceByte()
 			fv := this.decodeHexFloat(-1, v, digitCount)
 			this.assertAtObjectEnd("hex float")
-			this.eventReceiver.OnBinaryFloat(fv)
+			this.eventReceiver.OnFloat(fv)
 			this.endObject()
 		} else {
 			this.assertAtObjectEnd("hex integer")
@@ -1271,7 +1271,7 @@ func (this *CTEDecoder) handleNamedValue() {
 		this.endObject()
 		return
 	case "inf":
-		this.eventReceiver.OnBinaryFloat(math.Inf(1))
+		this.eventReceiver.OnFloat(math.Inf(1))
 		this.endObject()
 		return
 	case "false":

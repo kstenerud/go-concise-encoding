@@ -181,7 +181,7 @@ func (this *RootBuilder) OnInt(value int64) {
 func (this *RootBuilder) OnBigInt(value *big.Int) {
 	this.BuildFromBigInt(value, this.object)
 }
-func (this *RootBuilder) OnBinaryFloat(value float64) {
+func (this *RootBuilder) OnFloat(value float64) {
 	this.BuildFromFloat(value, this.object)
 }
 func (this *RootBuilder) OnDecimalFloat(value compact_float.DFloat) {

@@ -98,9 +98,9 @@ func (this *CBEDecoder) Decode() {
 		case cbeTypeNegInt64:
 			this.nextReceiver.OnNegativeInt(this.buffer.DecodeUint64())
 		case cbeTypeFloat32:
-			this.nextReceiver.OnBinaryFloat(float64(this.buffer.DecodeFloat32()))
+			this.nextReceiver.OnFloat(float64(this.buffer.DecodeFloat32()))
 		case cbeTypeFloat64:
-			this.nextReceiver.OnBinaryFloat(this.buffer.DecodeFloat64())
+			this.nextReceiver.OnFloat(this.buffer.DecodeFloat64())
 		case cbeTypeUUID:
 			this.nextReceiver.OnUUID(this.buffer.DecodeBytes(16))
 		case cbeTypeComment:

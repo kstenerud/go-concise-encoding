@@ -276,7 +276,7 @@ func (this *tevent) Invoke(receiver DataEventReceiver) {
 	case teventBigInt:
 		receiver.OnBigInt(this.V1.(*big.Int))
 	case teventBinaryFloat:
-		receiver.OnBinaryFloat(this.V1.(float64))
+		receiver.OnFloat(this.V1.(float64))
 	case teventDecimalFloat:
 		receiver.OnDecimalFloat(this.V1.(compact_float.DFloat))
 	case teventBigDecimalFloat:
@@ -423,7 +423,7 @@ func (h *TER) OnPositiveInt(value uint64) { h.add(pi(value)) }
 func (h *TER) OnNegativeInt(value uint64) { h.add(ni(value)) }
 func (h *TER) OnInt(value int64)          { h.add(i(value)) }
 func (h *TER) OnBigInt(value *big.Int)    { h.add(bi(value)) }
-func (h *TER) OnBinaryFloat(value float64) {
+func (h *TER) OnFloat(value float64) {
 	if math.IsNaN(value) {
 		if isSignalingNan(value) {
 			h.add(snan())

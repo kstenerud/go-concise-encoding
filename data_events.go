@@ -23,7 +23,7 @@ type DataEventReceiver interface {
 	OnNegativeInt(value uint64)
 	OnInt(value int64)
 	OnBigInt(value *big.Int)
-	OnBinaryFloat(value float64)
+	OnFloat(value float64)
 	OnDecimalFloat(value compact_float.DFloat)
 	OnBigDecimalFloat(value *apd.Decimal)
 	OnComplex(value complex128)
@@ -68,7 +68,7 @@ func (this *NullEventReceiver) OnPositiveInt(value uint64)                    {}
 func (this *NullEventReceiver) OnNegativeInt(value uint64)                    {}
 func (this *NullEventReceiver) OnInt(value int64)                             {}
 func (this *NullEventReceiver) OnBigInt(value *big.Int)                       {}
-func (this *NullEventReceiver) OnBinaryFloat(value float64)                   {}
+func (this *NullEventReceiver) OnFloat(value float64)                         {}
 func (this *NullEventReceiver) OnDecimalFloat(value compact_float.DFloat)     {}
 func (this *NullEventReceiver) OnBigDecimalFloat(value *apd.Decimal)          {}
 func (this *NullEventReceiver) OnComplex(value complex128)                    {}

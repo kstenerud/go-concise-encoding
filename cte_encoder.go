@@ -137,7 +137,7 @@ func (this *CTEEncoder) OnNegativeInt(value uint64) {
 	this.transitionState()
 }
 
-func (this *CTEEncoder) OnBinaryFloat(value float64) {
+func (this *CTEEncoder) OnFloat(value float64) {
 	if math.IsNaN(value) {
 		this.OnNan(isSignalingNan(value))
 		return
