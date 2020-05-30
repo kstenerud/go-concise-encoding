@@ -137,6 +137,12 @@ func (this *mapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	this.storeValue(object)
 }
 
+func (this *mapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	object := this.newElem()
+	this.getBuilder().BuildFromBigFloat(value, object)
+	this.storeValue(object)
+}
+
 func (this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	object := this.newElem()
 	this.getBuilder().BuildFromDecimalFloat(value, object)

@@ -116,6 +116,12 @@ func (this *sliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	this.storeValue(object)
 }
 
+func (this *sliceBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	object := this.newElem()
+	this.elemBuilder.BuildFromBigFloat(value, object)
+	this.storeValue(object)
+}
+
 func (this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	object := this.newElem()
 	this.elemBuilder.BuildFromDecimalFloat(value, object)

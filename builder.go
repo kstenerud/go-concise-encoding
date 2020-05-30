@@ -63,6 +63,7 @@ type ObjectBuilder interface {
 	BuildFromUint(value uint64, dst reflect.Value)
 	BuildFromBigInt(value *big.Int, dst reflect.Value)
 	BuildFromFloat(value float64, dst reflect.Value)
+	BuildFromBigFloat(value *big.Float, dst reflect.Value)
 	BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
 	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
 	BuildFromUUID(value []byte, dst reflect.Value)
@@ -170,6 +171,8 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 			return newDFloatBuilder()
 		case typeBigInt:
 			return newBigIntBuilder()
+		case typeBigFloat:
+			return newBigFloatBuilder()
 		case typeBigDecimalFloat:
 			return newBigDecimalFloatBuilder()
 		default:
@@ -180,7 +183,9 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 		case typePURL:
 			return newDirectPtrBuilder(dstType)
 		case typePBigInt:
-			return newpBigIntBuilder()
+			return newPBigIntBuilder()
+		case typePBigFloat:
+			return newPBigFloatBuilder()
 		case typePBigDecimalFloat:
 			return newPBigDecimalFloatBuilder()
 		default:

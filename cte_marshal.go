@@ -42,11 +42,13 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 		options = &CTEMarshalerOptions{}
 	}
 	defer func() {
-		if e := recover(); e != nil {
-			var ok bool
-			err, ok = e.(error)
-			if !ok {
-				err = fmt.Errorf("%v", e)
+		if DebugPassThroughPanics {
+			if r := recover(); r != nil {
+				var ok bool
+				err, ok = r.(error)
+				if !ok {
+					err = fmt.Errorf("%v", r)
+				}
 			}
 		}
 	}()
@@ -60,11 +62,13 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 
 func UnmarshalCTE(document []byte, template interface{}) (decoded interface{}, err error) {
 	defer func() {
-		if e := recover(); e != nil {
-			var ok bool
-			err, ok = e.(error)
-			if !ok {
-				err = fmt.Errorf("%v", e)
+		if DebugPassThroughPanics {
+			if r := recover(); r != nil {
+				var ok bool
+				err, ok = r.(error)
+				if !ok {
+					err = fmt.Errorf("%v", r)
+				}
 			}
 		}
 	}()

@@ -33,11 +33,13 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 		options = &CBEMarshalerOptions{}
 	}
 	defer func() {
-		if e := recover(); e != nil {
-			var ok bool
-			err, ok = e.(error)
-			if !ok {
-				err = fmt.Errorf("%v", e)
+		if DebugPassThroughPanics {
+			if r := recover(); r != nil {
+				var ok bool
+				err, ok = r.(error)
+				if !ok {
+					err = fmt.Errorf("%v", r)
+				}
 			}
 		}
 	}()
@@ -51,11 +53,13 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 
 func UnmarshalCBE(document []byte, template interface{}, shouldZeroCopy bool) (decoded interface{}, err error) {
 	defer func() {
-		if e := recover(); e != nil {
-			var ok bool
-			err, ok = e.(error)
-			if !ok {
-				err = fmt.Errorf("%v", e)
+		if DebugPassThroughPanics {
+			if r := recover(); r != nil {
+				var ok bool
+				err, ok = r.(error)
+				if !ok {
+					err = fmt.Errorf("%v", r)
+				}
 			}
 		}
 	}()

@@ -88,6 +88,10 @@ func (this *tlContainerBuilder) BuildFromFloat(value float64, ignored reflect.Va
 	builderPanicBadEvent(this, this.dstType, "Float")
 }
 
+func (this *tlContainerBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "BigFloat")
+}
+
 func (this *tlContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "DecimalFloat")
 }

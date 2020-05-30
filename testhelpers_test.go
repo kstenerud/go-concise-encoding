@@ -45,11 +45,11 @@ func newURI(uriString string) *url.URL {
 
 func reportPanic(function func()) (err error) {
 	defer func() {
-		if e := recover(); e != nil {
+		if r := recover(); r != nil {
 			var ok bool
-			err, ok = e.(error)
+			err, ok = r.(error)
 			if !ok {
-				err = fmt.Errorf("%v", e)
+				err = fmt.Errorf("%v", r)
 			}
 		}
 	}()
@@ -148,7 +148,8 @@ const (
 	teventNInt
 	teventInt
 	teventBigInt
-	teventBinaryFloat
+	teventFloat
+	teventBigFloat
 	teventDecimalFloat
 	teventBigDecimalFloat
 	teventComplex
@@ -189,6 +190,7 @@ var teventNames = []string{
 	"ni",
 	"i",
 	"bi",
+	"f",
 	"bf",
 	"df",
 	"bdf",
@@ -275,7 +277,7 @@ func (this *tevent) Invoke(receiver DataEventReceiver) {
 		}
 	case teventBigInt:
 		receiver.OnBigInt(this.V1.(*big.Int))
-	case teventBinaryFloat:
+	case teventFloat:
 		receiver.OnFloat(this.V1.(float64))
 	case teventDecimalFloat:
 		receiver.OnDecimalFloat(this.V1.(compact_float.DFloat))
@@ -345,15 +347,23 @@ func i(v int64) *tevent {
 		return ni(uint64(-v))
 	}
 }
-func bf(v float64) *tevent {
+func f(v float64) *tevent {
 	if math.IsNaN(v) {
 		if isSignalingNan(v) {
 			return snan()
 		}
 		return nan()
 	}
-	return newTEvent(teventBinaryFloat, v, nil)
+	return newTEvent(teventFloat, v, nil)
 }
+func bf(v string, significantDigits int) *tevent {
+	bf, err := stringToBigFloat(v, significantDigits)
+	if err != nil {
+		panic(err)
+	}
+	return newTEvent(teventBigDecimalFloat, bf, nil)
+}
+
 func df(v string) *tevent {
 	decimal, err := compact_float.DFloatFromString(v)
 	if err != nil {
@@ -431,9 +441,10 @@ func (h *TER) OnFloat(value float64) {
 			h.add(nan())
 		}
 	} else {
-		h.add(bf(value))
+		h.add(f(value))
 	}
 }
+func (h *TER) OnBigFloat(value *big.Float) { h.add(newTEvent(teventBigFloat, value, nil)) }
 func (h *TER) OnDecimalFloat(value compact_float.DFloat) {
 	if value.IsNan() {
 		if value.IsSignalingNan() {

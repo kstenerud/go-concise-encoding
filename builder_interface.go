@@ -84,6 +84,10 @@ func (this *intfBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
+func (this *intfBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
 func (this *intfBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
@@ -208,6 +212,10 @@ func (this *intfSliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Va
 }
 
 func (this *intfSliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	this.storeValue(value)
+}
+
+func (this *intfSliceBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
@@ -343,6 +351,10 @@ func (this *intfIntfMapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.
 }
 
 func (this *intfIntfMapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *intfIntfMapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 

@@ -28,6 +28,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
@@ -106,7 +107,9 @@ type MarshalTester struct {
 	BI   *big.Int
 	F32  float32
 	F64  float64
+	BF   *big.Float
 	DF   compact_float.DFloat
+	BDF  *apd.Decimal
 	Ar   [4]byte
 	St   string
 	Ba   []byte
@@ -145,10 +148,18 @@ func (this *MarshalTester) Init(baseValue int) {
 	this.BI = this.BI.Exp(this.BI, big.NewInt(20), nil)
 	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
 	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
+	this.BF = big.NewFloat(1234567890)
+	this.BF.SetPrec(70)
+	this.BF = this.BF.Add(this.BF, big.NewFloat(0.12345678901))
 	this.DF = compact_float.DFloat{
 		Exponent:    -int32(baseValue),
 		Coefficient: int64(baseValue + int(unsafe.Offsetof(this.DF))),
 	}
+	bdf, _, err := apd.NewFromString("-1.234567890123456789e-10000")
+	if err != nil {
+		panic(err)
+	}
+	this.BDF = bdf
 	this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(this.Ar)))
 	this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+1))
 	this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+2))
@@ -165,7 +176,6 @@ func (this *MarshalTester) Init(baseValue int) {
 	this.IS.Inner = baseValue + 15
 	this.ISP = new(MarshalInnerStruct)
 	this.ISP.Inner = baseValue + 16
-
 	testTime := time.Date(2000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
 	this.PTime = &testTime
 	this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))

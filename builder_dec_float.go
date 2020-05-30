@@ -68,6 +68,10 @@ func (this *dfloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatFromFloat64(value, 0)))
 }
 
+func (this *dfloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigFloat(value)))
+}
+
 func (this *dfloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }

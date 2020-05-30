@@ -187,29 +187,29 @@ func TestCTEFloat(t *testing.T) {
 }
 
 func TestCTEHexFloat(t *testing.T) {
-	assertCTEDecode(t, "c1 0x0.0", v(1), bf(0x0.0p0), ed())
-	assertCTEDecode(t, "c1 0x0.1", v(1), bf(0x0.1p0), ed())
-	assertCTEDecode(t, "c1 0x0.1p+10", v(1), bf(0x0.1p+10), ed())
-	assertCTEDecode(t, "c1 0x0.1p-10", v(1), bf(0x0.1p-10), ed())
-	assertCTEDecode(t, "c1 0x0.1p10", v(1), bf(0x0.1p10), ed())
+	assertCTEDecode(t, "c1 0x0.0", v(1), f(0x0.0p0), ed())
+	assertCTEDecode(t, "c1 0x0.1", v(1), f(0x0.1p0), ed())
+	assertCTEDecode(t, "c1 0x0.1p+10", v(1), f(0x0.1p+10), ed())
+	assertCTEDecode(t, "c1 0x0.1p-10", v(1), f(0x0.1p-10), ed())
+	assertCTEDecode(t, "c1 0x0.1p10", v(1), f(0x0.1p10), ed())
 
-	assertCTEDecode(t, "c1 0x1.0", v(1), bf(0x1.0p0), ed())
-	assertCTEDecode(t, "c1 0x1.1", v(1), bf(0x1.1p0), ed())
-	assertCTEDecode(t, "c1 0xf.1p+10", v(1), bf(0xf.1p+10), ed())
-	assertCTEDecode(t, "c1 0xf.1p-10", v(1), bf(0xf.1p-10), ed())
-	assertCTEDecode(t, "c1 0xf.1p10", v(1), bf(0xf.1p10), ed())
+	assertCTEDecode(t, "c1 0x1.0", v(1), f(0x1.0p0), ed())
+	assertCTEDecode(t, "c1 0x1.1", v(1), f(0x1.1p0), ed())
+	assertCTEDecode(t, "c1 0xf.1p+10", v(1), f(0xf.1p+10), ed())
+	assertCTEDecode(t, "c1 0xf.1p-10", v(1), f(0xf.1p-10), ed())
+	assertCTEDecode(t, "c1 0xf.1p10", v(1), f(0xf.1p10), ed())
 
-	assertCTEDecode(t, "c1 -0x1.0", v(1), bf(-0x1.0p0), ed())
-	assertCTEDecode(t, "c1 -0x1.1", v(1), bf(-0x1.1p0), ed())
-	assertCTEDecode(t, "c1 -0xf.1p+10", v(1), bf(-0xf.1p+10), ed())
-	assertCTEDecode(t, "c1 -0xf.1p-10", v(1), bf(-0xf.1p-10), ed())
-	assertCTEDecode(t, "c1 -0xf.1p10", v(1), bf(-0xf.1p10), ed())
+	assertCTEDecode(t, "c1 -0x1.0", v(1), f(-0x1.0p0), ed())
+	assertCTEDecode(t, "c1 -0x1.1", v(1), f(-0x1.1p0), ed())
+	assertCTEDecode(t, "c1 -0xf.1p+10", v(1), f(-0xf.1p+10), ed())
+	assertCTEDecode(t, "c1 -0xf.1p-10", v(1), f(-0xf.1p-10), ed())
+	assertCTEDecode(t, "c1 -0xf.1p10", v(1), f(-0xf.1p10), ed())
 
-	assertCTEDecode(t, "c1 -0x0.0", v(1), bf(-0x0.0p0), ed())
-	assertCTEDecode(t, "c1 -0x0.1", v(1), bf(-0x0.1p0), ed())
-	assertCTEDecode(t, "c1 -0x0.1p+10", v(1), bf(-0x0.1p+10), ed())
-	assertCTEDecode(t, "c1 -0x0.1p-10", v(1), bf(-0x0.1p-10), ed())
-	assertCTEDecode(t, "c1 -0x0.1p10", v(1), bf(-0x0.1p10), ed())
+	assertCTEDecode(t, "c1 -0x0.0", v(1), f(-0x0.0p0), ed())
+	assertCTEDecode(t, "c1 -0x0.1", v(1), f(-0x0.1p0), ed())
+	assertCTEDecode(t, "c1 -0x0.1p+10", v(1), f(-0x0.1p+10), ed())
+	assertCTEDecode(t, "c1 -0x0.1p-10", v(1), f(-0x0.1p-10), ed())
+	assertCTEDecode(t, "c1 -0x0.1p10", v(1), f(-0x0.1p10), ed())
 }
 
 func TestCTEDate(t *testing.T) {
@@ -342,8 +342,8 @@ func TestCTECustom(t *testing.T) {
 func TestCTENamed(t *testing.T) {
 	assertCTEEncodeDecode(t, `c1 @nil`, v(1), n(), ed())
 	assertCTEEncodeDecode(t, `c1 @nan`, v(1), nan(), ed())
-	assertCTEEncodeDecode(t, `c1 @inf`, v(1), bf(math.Inf(1)), ed())
-	assertCTEEncodeDecode(t, `c1 -@inf`, v(1), bf(math.Inf(-1)), ed())
+	assertCTEEncodeDecode(t, `c1 @inf`, v(1), f(math.Inf(1)), ed())
+	assertCTEEncodeDecode(t, `c1 -@inf`, v(1), f(math.Inf(-1)), ed())
 	assertCTEEncodeDecode(t, `c1 @false`, v(1), ff(), ed())
 	assertCTEEncodeDecode(t, `c1 @true`, v(1), tt(), ed())
 }

@@ -26,8 +26,10 @@ import (
 
 func CBEDecode(document []byte, eventReceiver DataEventReceiver, shouldZeroCopy bool) (err error) {
 	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
+		if DebugPassThroughPanics {
+			if r := recover(); r != nil {
+				err = r.(error)
+			}
 		}
 	}()
 

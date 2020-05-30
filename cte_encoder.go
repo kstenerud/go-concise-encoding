@@ -157,6 +157,12 @@ func (this *CTEEncoder) OnFloat(value float64) {
 	this.transitionState()
 }
 
+func (this *CTEEncoder) OnBigFloat(value *big.Float) {
+	this.addString(bigFloatToString(value))
+	this.addSuffix()
+	this.transitionState()
+}
+
 func (this *CTEEncoder) OnDecimalFloat(value compact_float.DFloat) {
 	this.addString(value.Text('g'))
 	this.addSuffix()

@@ -71,6 +71,10 @@ func (this *stringBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	builderPanicBadEvent(this, typeString, "Float")
 }
 
+func (this *stringBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(this, typeString, "BigFloat")
+}
+
 func (this *stringBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	builderPanicBadEvent(this, typeString, "DecimalFloat")
 }

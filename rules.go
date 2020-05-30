@@ -222,6 +222,11 @@ func (this *Rules) OnFloat(value float64) {
 	this.nextReceiver.OnFloat(value)
 }
 
+func (this *Rules) OnBigFloat(value *big.Float) {
+	this.addScalar(eventTypeFloat)
+	this.nextReceiver.OnBigFloat(value)
+}
+
 func (this *Rules) OnDecimalFloat(value compact_float.DFloat) {
 	if value.IsNan() {
 		if value.IsSignalingNan() {

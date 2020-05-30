@@ -74,6 +74,10 @@ func (this *directBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Float")
 }
 
+func (this *directBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "BigFloat")
+}
+
 func (this *directBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "DecimalFloat")
 }
@@ -176,6 +180,10 @@ func (this *directPtrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value)
 
 func (this *directPtrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	builderPanicBadEvent(this, this.dstType, "Float")
+}
+
+func (this *directPtrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(this, this.dstType, "BigFloat")
 }
 
 func (this *directPtrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {

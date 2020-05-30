@@ -100,6 +100,12 @@ func (this *ptrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.Set(ptr)
 }
 
+func (this *ptrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	ptr := this.newElem()
+	this.elemBuilder.BuildFromBigFloat(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
 func (this *ptrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	ptr := this.newElem()
 	this.elemBuilder.BuildFromDecimalFloat(value, ptr.Elem())

@@ -76,6 +76,10 @@ func (this *ignoreBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	this.root.setCurrentBuilder(this.parent)
 }
 
+func (this *ignoreBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	this.root.setCurrentBuilder(this.parent)
+}
+
 func (this *ignoreBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	this.root.setCurrentBuilder(this.parent)
 }
@@ -180,6 +184,9 @@ func (this *ignoreContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.
 }
 
 func (this *ignoreContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+}
+
+func (this *ignoreContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 }
 
 func (this *ignoreContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {

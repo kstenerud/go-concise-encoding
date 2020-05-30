@@ -72,6 +72,10 @@ func (this *floatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.SetFloat(value)
 }
 
+func (this *floatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	setFloatFromBigFloat(value, dst)
+}
+
 func (this *floatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.SetFloat(value.Float())
 }

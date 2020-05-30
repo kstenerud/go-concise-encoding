@@ -33,6 +33,10 @@ import (
 	"github.com/kstenerud/go-compact-float"
 )
 
+// Debug: Setting this to true will cause all panics to bubble up rather than
+//        being handled in the library.
+var DebugPassThroughPanics = false
+
 var (
 	typeString = reflect.TypeOf("")
 	typeBytes  = reflect.TypeOf([]uint8{})
@@ -41,6 +45,9 @@ var (
 
 	typeBigInt  = reflect.TypeOf(big.Int{})
 	typePBigInt = reflect.TypeOf((*big.Int)(nil))
+
+	typeBigFloat  = reflect.TypeOf(big.Float{})
+	typePBigFloat = reflect.TypeOf((*big.Float)(nil))
 
 	typeBigDecimalFloat  = reflect.TypeOf(apd.Decimal{})
 	typePBigDecimalFloat = reflect.TypeOf((*apd.Decimal)(nil))

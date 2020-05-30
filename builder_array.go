@@ -106,6 +106,11 @@ func (this *arrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	this.index++
 }
 
+func (this *arrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	this.elemBuilder.BuildFromBigFloat(value, this.currentElem())
+	this.index++
+}
+
 func (this *arrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	this.elemBuilder.BuildFromDecimalFloat(value, this.currentElem())
 	this.index++

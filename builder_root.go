@@ -104,6 +104,9 @@ func (this *RootBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 func (this *RootBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	this.currentBuilder.BuildFromFloat(value, dst)
 }
+func (this *RootBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	this.currentBuilder.BuildFromBigFloat(value, dst)
+}
 func (this *RootBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	this.currentBuilder.BuildFromDecimalFloat(value, dst)
 }
@@ -183,6 +186,9 @@ func (this *RootBuilder) OnBigInt(value *big.Int) {
 }
 func (this *RootBuilder) OnFloat(value float64) {
 	this.BuildFromFloat(value, this.object)
+}
+func (this *RootBuilder) OnBigFloat(value *big.Float) {
+	this.BuildFromBigFloat(value, this.object)
 }
 func (this *RootBuilder) OnDecimalFloat(value compact_float.DFloat) {
 	this.BuildFromDecimalFloat(value, this.object)

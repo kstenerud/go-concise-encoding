@@ -21,6 +21,7 @@
 package concise_encoding
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"time"
@@ -160,6 +161,14 @@ func (this *CBEEncoder) OnFloat(value float64) {
 	}
 
 	this.encodeFloat64(value)
+}
+
+func (this *CBEEncoder) OnBigFloat(value *big.Float) {
+	v, _, err := apd.NewFromString(bigFloatToString(value))
+	if err != nil {
+		panic(fmt.Errorf("Could not convert %v to apd.Decimal", value))
+	}
+	this.OnBigDecimalFloat(v)
 }
 
 func (this *CBEEncoder) OnDecimalFloat(value compact_float.DFloat) {

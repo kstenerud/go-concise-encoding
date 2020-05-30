@@ -68,6 +68,10 @@ func (this *bigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Va
 	setBigDecimalFloatFromFloat(value, dst)
 }
 
+func (this *bigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	setBigDecimalFloatFromBigFloat(value, dst)
+}
+
 func (this *bigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	setBigDecimalFloatFromDecimalFloat(value, dst)
 }
@@ -141,7 +145,7 @@ func (this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent
 }
 
 func (this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "Nil")
+	dst.Set(reflect.ValueOf((*apd.Decimal)(nil)))
 }
 
 func (this *pBigDecimalFloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
@@ -162,6 +166,10 @@ func (this *pBigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect
 
 func (this *pBigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	setPBigDecimalFloatFromFloat(value, dst)
+}
+
+func (this *pBigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	setPBigDecimalFloatFromBigFloat(value, dst)
 }
 
 func (this *pBigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {

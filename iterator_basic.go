@@ -178,6 +178,57 @@ func (this *bigIntIterator) Iterate(v reflect.Value) {
 	this.root.eventReceiver.OnBigInt((&vCopy))
 }
 
+// ----------
+// *big.Float
+// ----------
+
+type pBigFloatIterator struct {
+	root *RootObjectIterator
+}
+
+func newPBigFloatIterator() ObjectIterator {
+	return &pBigFloatIterator{}
+}
+
+func (this *pBigFloatIterator) PostCacheInitIterator() {
+}
+
+func (this *pBigFloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
+	return &pBigFloatIterator{root: root}
+}
+
+func (this *pBigFloatIterator) Iterate(v reflect.Value) {
+	if v.IsNil() {
+		this.root.eventReceiver.OnNil()
+	} else {
+		this.root.eventReceiver.OnBigFloat(v.Interface().(*big.Float))
+	}
+}
+
+// ---------
+// big.Float
+// ---------
+
+type bigFloatIterator struct {
+	root *RootObjectIterator
+}
+
+func newBigFloatIterator() ObjectIterator {
+	return &bigFloatIterator{}
+}
+
+func (this *bigFloatIterator) PostCacheInitIterator() {
+}
+
+func (this *bigFloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
+	return &bigFloatIterator{root: root}
+}
+
+func (this *bigFloatIterator) Iterate(v reflect.Value) {
+	vCopy := v.Interface().(big.Float)
+	this.root.eventReceiver.OnBigFloat((&vCopy))
+}
+
 // ------------
 // *apd.Decimal
 // ------------

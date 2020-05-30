@@ -119,6 +119,8 @@ func generateIteratorForType(t reflect.Type) ObjectIterator {
 			return newURLIterator()
 		case typeBigInt:
 			return newBigIntIterator()
+		case typeBigFloat:
+			return newBigFloatIterator()
 		case typeBigDecimalFloat:
 			return newBigDecimalFloatIterator()
 		default:
@@ -130,6 +132,8 @@ func generateIteratorForType(t reflect.Type) ObjectIterator {
 			return newPURLIterator()
 		case typePBigInt:
 			return newPBigIntIterator()
+		case typePBigFloat:
+			return newPBigFloatIterator()
 		case typePBigDecimalFloat:
 			return newPBigDecimalFloatIterator()
 		default:

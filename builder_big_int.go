@@ -68,6 +68,10 @@ func (this *bigIntBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	setBigIntFromFloat(value, dst)
 }
 
+func (this *bigIntBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	setBigIntFromBigFloat(value, dst)
+}
+
 func (this *bigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	setBigIntFromDecimalFloat(value, dst)
 }
@@ -129,7 +133,7 @@ func (this *bigIntBuilder) NotifyChildContainerFinished(value reflect.Value) {
 type pBigIntBuilder struct {
 }
 
-func newpBigIntBuilder() ObjectBuilder {
+func newPBigIntBuilder() ObjectBuilder {
 	return &pBigIntBuilder{}
 }
 
@@ -162,6 +166,10 @@ func (this *pBigIntBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 
 func (this *pBigIntBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	setPBigIntFromFloat(value, dst)
+}
+
+func (this *pBigIntBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	setPBigIntFromBigFloat(value, dst)
 }
 
 func (this *pBigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {

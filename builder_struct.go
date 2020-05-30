@@ -139,6 +139,11 @@ func (this *structBuilder) BuildFromFloat(value float64, ignored reflect.Value) 
 	this.swapKeyValue()
 }
 
+func (this *structBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	this.nextBuilder.BuildFromBigFloat(value, this.nextValue)
+	this.swapKeyValue()
+}
+
 func (this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	this.nextBuilder.BuildFromDecimalFloat(value, this.nextValue)
 	this.swapKeyValue()

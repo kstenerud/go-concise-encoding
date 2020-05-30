@@ -63,8 +63,8 @@ func TestBuilderBasic(t *testing.T) {
 	assertBuild(t, uint16(1), pi(1))
 	assertBuild(t, uint32(1), pi(1))
 	assertBuild(t, uint64(1), pi(1))
-	assertBuild(t, float32(1.1), bf(1.1))
-	assertBuild(t, float64(1.1), bf(1.1))
+	assertBuild(t, float32(1.1), f(1.1))
+	assertBuild(t, float64(1.1), f(1.1))
 	assertBuild(t, "testing", s("testing"))
 	assertBuild(t, []byte{1, 2, 3}, bin([]byte{1, 2, 3}))
 	assertBuild(t, interface{}(1234), i(1234))
@@ -84,7 +84,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, true, n())
 	assertBuildPanics(t, true, i(1))
 	assertBuildPanics(t, true, pi(1))
-	assertBuildPanics(t, true, bf(1))
+	assertBuildPanics(t, true, f(1))
 	assertBuildPanics(t, true, s("1"))
 	assertBuildPanics(t, true, bin([]byte{1}))
 	assertBuildPanics(t, true, uri("x://x"))
@@ -126,7 +126,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, "", b(true))
 	assertBuildPanics(t, "", i(1))
 	assertBuildPanics(t, "", pi(1))
-	assertBuildPanics(t, "", bf(1))
+	assertBuildPanics(t, "", f(1))
 	assertBuildPanics(t, "", bin([]byte{1}))
 	assertBuildPanics(t, "", uri("x://x"))
 	assertBuildPanics(t, "", gt(time.Now()))
@@ -137,7 +137,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, []byte{}, b(true))
 	assertBuildPanics(t, []byte{}, i(1))
 	assertBuildPanics(t, []byte{}, pi(1))
-	assertBuildPanics(t, []byte{}, bf(1))
+	assertBuildPanics(t, []byte{}, f(1))
 	assertBuildPanics(t, []byte{}, s("1"))
 	assertBuildPanics(t, []byte{}, uri("x://x"))
 	assertBuildPanics(t, []byte{}, gt(time.Now()))
@@ -148,7 +148,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, newURI("x://x"), b(true))
 	assertBuildPanics(t, newURI("x://x"), i(1))
 	assertBuildPanics(t, newURI("x://x"), pi(1))
-	assertBuildPanics(t, newURI("x://x"), bf(1))
+	assertBuildPanics(t, newURI("x://x"), f(1))
 	assertBuildPanics(t, newURI("x://x"), s("1"))
 	assertBuildPanics(t, newURI("x://x"), bin([]byte{1}))
 	assertBuildPanics(t, newURI("x://x"), gt(time.Now()))
@@ -160,7 +160,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, time.Now(), b(true))
 	assertBuildPanics(t, time.Now(), i(1))
 	assertBuildPanics(t, time.Now(), pi(1))
-	assertBuildPanics(t, time.Now(), bf(1))
+	assertBuildPanics(t, time.Now(), f(1))
 	assertBuildPanics(t, time.Now(), s("1"))
 	assertBuildPanics(t, time.Now(), bin([]byte{1}))
 	assertBuildPanics(t, time.Now(), uri("x://x"))
@@ -172,7 +172,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 	assertBuildPanics(t, []int{}, b(true))
 	assertBuildPanics(t, []int{}, i(1))
 	assertBuildPanics(t, []int{}, pi(1))
-	assertBuildPanics(t, []int{}, bf(1))
+	assertBuildPanics(t, []int{}, f(1))
 	assertBuildPanics(t, []int{}, s("1"))
 	assertBuildPanics(t, []int{}, bin([]byte{1}))
 	assertBuildPanics(t, []int{}, uri("x://x"))
@@ -182,7 +182,7 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 
 	assertBuildPanics(t, map[int]int{}, i(1))
 	assertBuildPanics(t, map[int]int{}, pi(1))
-	assertBuildPanics(t, map[int]int{}, bf(1))
+	assertBuildPanics(t, map[int]int{}, f(1))
 	assertBuildPanics(t, map[int]int{}, s("1"))
 	assertBuildPanics(t, map[int]int{}, bin([]byte{1}))
 	assertBuildPanics(t, map[int]int{}, uri("x://x"))
@@ -193,9 +193,9 @@ func TestBuilderBasicTypeFail(t *testing.T) {
 
 func TestBuilderNumericConversion(t *testing.T) {
 	assertBuild(t, int8(50), pi(50))
-	assertBuild(t, int16(50), bf(50))
+	assertBuild(t, int16(50), f(50))
 	assertBuild(t, uint32(50), i(50))
-	assertBuild(t, uint64(50), bf(50))
+	assertBuild(t, uint64(50), f(50))
 	assertBuild(t, float32(50), i(50))
 	assertBuild(t, float64(50), pi(50))
 	assertBuild(t, compact_float.DFloatValue(0, 50), pi(50))
@@ -203,22 +203,22 @@ func TestBuilderNumericConversion(t *testing.T) {
 
 func TestBuilderNumericConversionFail(t *testing.T) {
 	assertBuildPanics(t, int8(0), i(300))
-	assertBuildPanics(t, int(0), bf(3.5))
+	assertBuildPanics(t, int(0), f(3.5))
 	assertBuildPanics(t, uint(0), i(-1))
-	assertBuildPanics(t, uint(0), bf(3.5))
+	assertBuildPanics(t, uint(0), f(3.5))
 	assertBuildPanics(t, float32(0), i(0x7fffffffffffffff))
 	assertBuildPanics(t, float64(0), pi(0xffffffffffffffff))
 }
 
 func TestBuilderSlice(t *testing.T) {
 	assertBuild(t, []bool{false, true}, l(), b(false), b(true), e())
-	assertBuild(t, []int8{1, 2, 3}, l(), i(1), pi(2), bf(3), e())
+	assertBuild(t, []int8{1, 2, 3}, l(), i(1), pi(2), f(3), e())
 	assertBuild(t, []interface{}{false, 1, "test"}, l(), b(false), i(1), s("test"), e())
 }
 
 func TestBuilderArray(t *testing.T) {
 	assertBuild(t, [2]bool{false, true}, l(), b(false), b(true), e())
-	assertBuild(t, [3]int8{1, 2, 3}, l(), i(1), pi(2), bf(3), e())
+	assertBuild(t, [3]int8{1, 2, 3}, l(), i(1), pi(2), f(3), e())
 	assertBuild(t, [3]interface{}{false, 1, "test"}, l(), b(false), i(1), s("test"), e())
 }
 
@@ -412,8 +412,8 @@ func TestBuilderPtr(t *testing.T) {
 		s("AUint16"), pi(8),
 		s("AUint32"), pi(9),
 		s("AUint64"), pi(10),
-		s("AFloat32"), bf(11.5),
-		s("AFloat64"), bf(12.5),
+		s("AFloat32"), f(11.5),
+		s("AFloat64"), f(12.5),
 		s("AString"), s("test"),
 		s("AnInterface"), i(100),
 		e())
