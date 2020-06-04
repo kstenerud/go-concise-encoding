@@ -93,23 +93,39 @@ type MarshalInnerStruct struct {
 
 type MarshalTester struct {
 	Bo   bool
+	PBo  *bool
 	By   byte
+	PBy  *byte
 	I    int
+	PI   *int
 	I8   int8
+	PI8  *int8
 	I16  int16
+	PI16 *int16
 	I32  int32
+	PI32 *int32
 	I64  int64
+	PI64 *int64
 	U    uint
+	PU   *uint
 	U8   uint8
+	PU8  *uint8
 	U16  uint16
+	PU16 *uint16
 	U32  uint32
+	PU32 *uint32
 	U64  uint64
-	BI   *big.Int
+	PU64 *uint64
+	BI   big.Int
+	PBI  *big.Int
 	F32  float32
+	PF32 *float32
 	F64  float64
-	BF   *big.Float
+	PF64 *float64
+	BF   big.Float
+	PBF  *big.Float
 	DF   compact_float.DFloat
-	BDF  *apd.Decimal
+	PBDF *apd.Decimal
 	Ar   [4]byte
 	St   string
 	Ba   []byte
@@ -117,7 +133,7 @@ type MarshalTester struct {
 	M    map[interface{}]interface{}
 	Pi   *int
 	IS   MarshalInnerStruct
-	ISP  *MarshalInnerStruct
+	PIS  *MarshalInnerStruct
 	Time time.Time
 	// TODO: URL must have at least 2 chars... what to do here?
 	// URL   url.URL
@@ -133,24 +149,43 @@ func newMarshalTestStruct(baseValue int) *MarshalTester {
 
 func (this *MarshalTester) Init(baseValue int) {
 	this.Bo = baseValue&1 == 1
+	this.PBo = &this.Bo
 	this.By = byte(baseValue + int(unsafe.Offsetof(this.By)))
+	this.PBy = &this.By
 	this.I = baseValue + int(unsafe.Offsetof(this.I))
+	this.PI = &this.I
 	this.I8 = int8(baseValue + int(unsafe.Offsetof(this.I8)))
+	this.PI8 = &this.I8
 	this.I16 = int16(baseValue + int(unsafe.Offsetof(this.I16)))
+	this.PI16 = &this.I16
 	this.I32 = int32(baseValue + int(unsafe.Offsetof(this.I32)))
+	this.PI32 = &this.I32
 	this.I64 = int64(baseValue + int(unsafe.Offsetof(this.I64)))
+	this.PI64 = &this.I64
 	this.U = uint(baseValue + int(unsafe.Offsetof(this.U)))
+	this.PU = &this.U
 	this.U8 = uint8(baseValue + int(unsafe.Offsetof(this.U8)))
+	this.PU8 = &this.U8
 	this.U16 = uint16(baseValue + int(unsafe.Offsetof(this.U16)))
+	this.PU16 = &this.U16
 	this.U32 = uint32(baseValue + int(unsafe.Offsetof(this.U32)))
+	this.PU32 = &this.U32
 	this.U64 = uint64(baseValue + int(unsafe.Offsetof(this.U64)))
-	this.BI = big.NewInt(int64(baseValue) + int64(unsafe.Offsetof(this.BI)+10))
-	this.BI = this.BI.Exp(this.BI, big.NewInt(20), nil)
+	this.PU64 = &this.U64
+	this.BI = big.Int{}
+	this.BI.Add(&this.BI, big.NewInt(int64(baseValue)+int64(unsafe.Offsetof(this.PBI)+10)))
+	this.BI.Exp(&this.BI, big.NewInt(20), nil)
+	this.BI.Add(&this.BI, big.NewInt(12345678))
+	this.PBI = big.NewInt(int64(baseValue) + int64(unsafe.Offsetof(this.PBI)+10))
+	this.PBI = this.PBI.Exp(this.PBI, big.NewInt(20), nil)
 	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
+	this.PF32 = &this.F32
 	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
-	this.BF = big.NewFloat(1234567890)
-	this.BF.SetPrec(70)
-	this.BF = this.BF.Add(this.BF, big.NewFloat(0.12345678901))
+	this.PF64 = &this.F64
+	this.PBF = big.NewFloat(1234567890)
+	this.PBF.SetPrec(70)
+	this.BF = *this.PBF
+	this.PBF = this.PBF.Add(this.PBF, big.NewFloat(0.12345678901))
 	this.DF = compact_float.DFloat{
 		Exponent:    -int32(baseValue),
 		Coefficient: int64(baseValue + int(unsafe.Offsetof(this.DF))),
@@ -159,7 +194,7 @@ func (this *MarshalTester) Init(baseValue int) {
 	if err != nil {
 		panic(err)
 	}
-	this.BDF = bdf
+	this.PBDF = bdf
 	this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(this.Ar)))
 	this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+1))
 	this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+2))
@@ -174,8 +209,8 @@ func (this *MarshalTester) Init(baseValue int) {
 	v := baseValue
 	this.Pi = &v
 	this.IS.Inner = baseValue + 15
-	this.ISP = new(MarshalInnerStruct)
-	this.ISP.Inner = baseValue + 16
+	this.PIS = new(MarshalInnerStruct)
+	this.PIS.Inner = baseValue + 16
 	testTime := time.Date(2000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
 	this.PTime = &testTime
 	this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
