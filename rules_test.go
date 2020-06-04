@@ -22,8 +22,13 @@ package concise_encoding
 
 import (
 	"math"
+	"math/big"
 	"testing"
 	"time"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 const rulesCodecVersion = 1
@@ -93,7 +98,7 @@ func newRulesWithMaxDepth(maxDepth int) *Rules {
 // ===========
 
 func TestRulesVersion(t *testing.T) {
-	rules := NewRules(1, DefaultLimits(), NewNullEventReceiver())
+	rules := NewRules(1, nil, NewNullEventReceiver())
 	assertPanics(t, func() { rules.OnVersion(2) })
 	assertNoPanic(t, func() { rules.OnVersion(1) })
 	assertPanics(t, func() { rules.OnVersion(1) })
@@ -122,8 +127,18 @@ func TestRulesNan2(t *testing.T) {
 }
 
 func TestRulesBool(t *testing.T) {
-	rules := newRulesWithMaxDepth(1)
+	rules := newRulesWithMaxDepth(10)
+	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnBool(true) })
+	assertNoPanic(t, func() { rules.OnTrue() })
+	assertNoPanic(t, func() { rules.OnFalse() })
+	assertNoPanic(t, func() { rules.OnEnd() })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesInt(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnInt(-1) })
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -139,9 +154,95 @@ func TestRulesNegativeInt(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
+func TestRulesBigInt(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnBigInt(big.NewInt(-1)) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+
+	rules = newRulesWithMaxDepth(1)
+	bi := big.NewInt(0x7fffffffffffffff)
+	bi = bi.Mul(bi, big.NewInt(10000000))
+	assertNoPanic(t, func() { rules.OnBigInt(bi) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+
+	rules = newRulesWithMaxDepth(1)
+	bi = big.NewInt(-0x7fffffffffffffff)
+	bi = bi.Mul(bi, big.NewInt(10000000))
+	assertNoPanic(t, func() { rules.OnBigInt(bi) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesBigIntAsID(t *testing.T) {
+	rules := newRulesWithMaxDepth(10)
+	assertNoPanic(t, func() { rules.OnList() })
+	assertNoPanic(t, func() { rules.OnMarker() })
+	assertNoPanic(t, func() { rules.OnBigInt(big.NewInt(10)) })
+	assertNoPanic(t, func() { rules.OnInt(0) })
+	assertNoPanic(t, func() { rules.OnReference() })
+	assertNoPanic(t, func() { rules.OnInt(10) })
+	assertNoPanic(t, func() { rules.OnEnd() })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+
+	rules = newRulesWithMaxDepth(10)
+	assertNoPanic(t, func() { rules.OnMarker() })
+	bi := big.NewInt(0x7fffffffffffffff)
+	bi = bi.Mul(bi, big.NewInt(10000000))
+	assertPanics(t, func() { rules.OnBigInt(bi) })
+}
+
 func TestRulesFloat(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
 	assertNoPanic(t, func() { rules.OnFloat(0.1) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+
+	rules = newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnFloat(math.NaN()) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesBigFloat(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnBigFloat(big.NewFloat(1.1)) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesDecimalFloat(t *testing.T) {
+	rules := newRulesWithMaxDepth(10)
+	assertNoPanic(t, func() { rules.OnList() })
+	assertNoPanic(t, func() { rules.OnDecimalFloat(compact_float.DFloatValue(2, 1000)) })
+	assertNoPanic(t, func() { rules.OnDecimalFloat(compact_float.QuietNaN()) })
+	assertNoPanic(t, func() { rules.OnDecimalFloat(compact_float.SignalingNaN()) })
+	assertNoPanic(t, func() { rules.OnDecimalFloat(compact_float.Infinity()) })
+	assertNoPanic(t, func() { rules.OnDecimalFloat(compact_float.NegativeInfinity()) })
+	assertNoPanic(t, func() { rules.OnEnd() })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesBigDecimalFloat(t *testing.T) {
+	rules := newRulesWithMaxDepth(10)
+
+	assertAPD := func(str string) {
+		v, _, err := apd.NewFromString(str)
+		if err != nil {
+			panic(err)
+		}
+		assertNoPanic(t, func() { rules.OnBigDecimalFloat(v) })
+	}
+
+	assertNoPanic(t, func() { rules.OnList() })
+	assertAPD("1.5")
+	assertAPD("-10.544e10000")
+	assertAPD("nan")
+	assertAPD("snan")
+	assertAPD("infinity")
+	assertAPD("-infinity")
+	assertNoPanic(t, func() { rules.OnEnd() })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesComplex(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnComplex(1 + 4i) })
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -154,6 +255,30 @@ func TestRulesUUID(t *testing.T) {
 func TestRulesTime(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
 	assertNoPanic(t, func() { rules.OnTime(time.Now()) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesCompactTime(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnCompactTime(compact_time.AsCompactTime(time.Now())) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesBytesOneshot(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnBytes([]byte{1, 2, 3, 4}) })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesURIOneshot(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnURI("http://example.com") })
+	assertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesCustomOneshot(t *testing.T) {
+	rules := newRulesWithMaxDepth(1)
+	assertNoPanic(t, func() { rules.OnCustom([]byte{1, 2, 3, 4}) })
 	assertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -183,6 +308,9 @@ func TestRulesReference(t *testing.T) {
 
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertRulesOnString(t, rules, "a")
+
+	assertNoPanic(t, func() { rules.OnReference() })
+	assertNoPanic(t, func() { rules.OnURI("http://example.com") })
 
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertNoPanic(t, func() { rules.OnPositiveInt(100) })

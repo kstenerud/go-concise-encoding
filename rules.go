@@ -387,7 +387,6 @@ func (this *Rules) OnEnd() {
 		this.unstackState()
 		this.onChildEnded(eventTypeMarkup)
 	case stateIdAwaitingMetadataKey:
-		// TODO: Shouldn't this unstack as well?
 		this.changeState(stateAwaitingMetadataObject)
 		this.incrementObjectCount()
 	case stateIdAwaitingCommentItem:
@@ -487,7 +486,10 @@ func (this *Rules) onArrayData(data []byte) {
 		if this.arrayBytesWritten+dataLength > this.limits.MaxURILength {
 			panic(fmt.Errorf("Max URI length (%v) exceeded", this.limits.MaxURILength))
 		}
-		// TODO: URI validation
+		if this.isAwaitingID() {
+			this.arrayData = append(this.arrayData, data...)
+		}
+		// Note: URI validation happens when the array is complete
 	}
 
 	this.arrayBytesWritten += dataLength
@@ -681,11 +683,12 @@ func (this *Rules) onChildEnded(childType ruleEvent) {
 		container := this.getFirstRealContainer()
 		markerID := this.unstackId()
 
-		_, ok := markerID.(url.URL)
+		_, ok := markerID.(*url.URL)
 		if ok {
 			// We have no way to verify what the URL points to, so call it "anything".
 			this.unstackState()
 			this.onChildEnded(eventTypeAny)
+			return
 		}
 
 		referencedType, ok := this.assignedIDs[markerID]
