@@ -31,6 +31,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 // Debug: Setting this to true will cause all panics to bubble up rather than
@@ -38,10 +39,12 @@ import (
 var DebugPassThroughPanics = false
 
 var (
-	typeString = reflect.TypeOf("")
-	typeBytes  = reflect.TypeOf([]uint8{})
-	typeTime   = reflect.TypeOf(time.Time{})
-	typeDFloat = reflect.TypeOf(compact_float.DFloat{})
+	typeString       = reflect.TypeOf("")
+	typeBytes        = reflect.TypeOf([]uint8{})
+	typeTime         = reflect.TypeOf(time.Time{})
+	typeCompactTime  = reflect.TypeOf(compact_time.Time{})
+	typePCompactTime = reflect.TypeOf((*compact_time.Time)(nil))
+	typeDFloat       = reflect.TypeOf(compact_float.DFloat{})
 
 	typeBigInt  = reflect.TypeOf(big.Int{})
 	typePBigInt = reflect.TypeOf((*big.Int)(nil))

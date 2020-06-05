@@ -41,6 +41,12 @@ func (this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *I
 }
 
 func (this *RootObjectIterator) Iterate(value interface{}) {
+	if value == nil {
+		this.eventReceiver.OnVersion(cbeCodecVersion)
+		this.eventReceiver.OnNil()
+		this.eventReceiver.OnEndDocument()
+		return
+	}
 	this.findReferences(value)
 	rv := reflect.ValueOf(value)
 	iterator := getIteratorForType(rv.Type())

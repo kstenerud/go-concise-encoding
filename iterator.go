@@ -113,6 +113,8 @@ func generateIteratorForType(t reflect.Type) ObjectIterator {
 		switch t {
 		case typeTime:
 			return newTimeIterator()
+		case typeCompactTime:
+			return newCompactTimeIterator()
 		case typeDFloat:
 			return newDFloatIterator()
 		case typeURL:
@@ -128,6 +130,8 @@ func generateIteratorForType(t reflect.Type) ObjectIterator {
 		}
 	case reflect.Ptr:
 		switch t {
+		case typePCompactTime:
+			return newPCompactTimeIterator()
 		case typePURL:
 			return newPURLIterator()
 		case typePBigInt:

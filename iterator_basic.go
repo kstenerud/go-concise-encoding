@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 // -------
@@ -74,6 +75,49 @@ func (this *timeIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIter
 
 func (this *timeIterator) Iterate(v reflect.Value) {
 	this.root.eventReceiver.OnTime(v.Interface().(time.Time))
+}
+
+// ------------
+// Compact Time
+// ------------
+
+type compactTimeIterator struct {
+	root *RootObjectIterator
+}
+
+func newCompactTimeIterator() ObjectIterator {
+	return &compactTimeIterator{}
+}
+
+func (this *compactTimeIterator) PostCacheInitIterator() {
+}
+
+func (this *compactTimeIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
+	return &compactTimeIterator{root: root}
+}
+
+func (this *compactTimeIterator) Iterate(v reflect.Value) {
+	ct := v.Interface().(compact_time.Time)
+	this.root.eventReceiver.OnCompactTime(&ct)
+}
+
+type pCompactTimeIterator struct {
+	root *RootObjectIterator
+}
+
+func newPCompactTimeIterator() ObjectIterator {
+	return &pCompactTimeIterator{}
+}
+
+func (this *pCompactTimeIterator) PostCacheInitIterator() {
+}
+
+func (this *pCompactTimeIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
+	return &pCompactTimeIterator{root: root}
+}
+
+func (this *pCompactTimeIterator) Iterate(v reflect.Value) {
+	this.root.eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
 }
 
 // ----

@@ -34,6 +34,39 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+func newBigInt(str string) *big.Int {
+	bi := new(big.Int)
+	_, success := bi.SetString(str, 10)
+	if !success {
+		panic(fmt.Errorf("Cannot convert %v to big.Int", str))
+	}
+	return bi
+}
+
+func newBigFloat(str string, significantDigits int) *big.Float {
+	f, _, err := big.ParseFloat(str, 10, uint(decimalDigitsToBits(significantDigits)), big.ToNearestEven)
+	if err != nil {
+		panic(err)
+	}
+	return f
+}
+
+func newBDF(str string) *apd.Decimal {
+	v, _, err := apd.NewFromString(str)
+	if err != nil {
+		panic(err)
+	}
+	return v
+}
+
+func newURL(str string) *url.URL {
+	v, err := url.Parse(str)
+	if err != nil {
+		panic(err)
+	}
+	return v
+}
+
 func newURI(uriString string) *url.URL {
 	uri, err := url.Parse(uriString)
 	if err != nil {
@@ -194,7 +227,7 @@ var teventNames = []string{
 	"bf",
 	"df",
 	"bdf",
-	"cmpl",
+	"cplx",
 	"nan",
 	"snan",
 	"uuid",
@@ -361,7 +394,7 @@ func bf(v string, significantDigits int) *tevent {
 	if err != nil {
 		panic(err)
 	}
-	return newTEvent(teventBigDecimalFloat, bf, nil)
+	return newTEvent(teventBigFloat, bf, nil)
 }
 
 func df(v string) *tevent {
@@ -387,7 +420,7 @@ func b(v bool) *tevent                { return newTEvent(teventBool, v, nil) }
 func pi(v uint64) *tevent             { return newTEvent(teventPInt, v, nil) }
 func ni(v uint64) *tevent             { return newTEvent(teventNInt, v, nil) }
 func bi(v *big.Int) *tevent           { return newTEvent(teventBigInt, v, nil) }
-func cmpl(v complex128) *tevent       { return newTEvent(teventComplex, v, nil) }
+func cplx(v complex128) *tevent       { return newTEvent(teventComplex, v, nil) }
 func nan() *tevent                    { return newTEvent(teventNan, nil, nil) }
 func snan() *tevent                   { return newTEvent(teventSNan, nil, nil) }
 func uuid(v []byte) *tevent           { return newTEvent(teventUUID, v, nil) }
@@ -466,7 +499,7 @@ func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
 		h.add(bdf(value.String()))
 	}
 }
-func (h *TER) OnComplex(value complex128)             { h.add(cmpl(value)) }
+func (h *TER) OnComplex(value complex128)             { h.add(cplx(value)) }
 func (h *TER) OnUUID(value []byte)                    { h.add(uuid(value)) }
 func (h *TER) OnTime(value time.Time)                 { h.add(gt(value)) }
 func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(ct(value)) }
