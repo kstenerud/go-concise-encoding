@@ -40,7 +40,8 @@ func (this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *I
 	this.eventReceiver = eventReceiver
 }
 
-func (this *RootObjectIterator) Iterate(value interface{}) {
+// The *RootObjectIterator field is ignored by the root iterator. It can be nil.
+func (this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator) {
 	if value == nil {
 		this.eventReceiver.OnVersion(cbeCodecVersion)
 		this.eventReceiver.OnNil()
@@ -50,10 +51,9 @@ func (this *RootObjectIterator) Iterate(value interface{}) {
 	this.findReferences(value)
 	rv := reflect.ValueOf(value)
 	iterator := getIteratorForType(rv.Type())
-	iterator = iterator.CloneFromTemplate(this)
 	// TODO: Move this somewhere else
 	this.eventReceiver.OnVersion(cbeCodecVersion)
-	iterator.Iterate(rv)
+	iterator.Iterate(rv, this)
 	this.eventReceiver.OnEndDocument()
 }
 

@@ -54,8 +54,7 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 	}()
 
 	encoder := NewCTEEncoder(&options.EncoderOptions)
-	iterator := NewRootObjectIterator(encoder, &options.IteratorOptions)
-	iterator.Iterate(object)
+	IterateObject(object, encoder, &options.IteratorOptions)
 	document = encoder.Document()
 	return
 }

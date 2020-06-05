@@ -164,22 +164,20 @@ type RecursiveStructTestIterate struct {
 	R *RecursiveStructTestIterate
 }
 
-// TODO: Iterator's CloneFromTemplate() needs to also take a list of already seen
-// iterator pointers to stop it from looping.
-// func TestIterateRecurse(t *testing.T) {
-// 	obj := &RecursiveStructTestIterate{
-// 		I: 50,
-// 	}
-// 	obj.R = obj
+func TestIterateRecurse(t *testing.T) {
+	obj := &RecursiveStructTestIterate{
+		I: 50,
+	}
+	obj.R = obj
 
-// 	expected := []*tevent{v(1), m(), s("I"), i(50), s("R"), mark(), i(1), ed()}
-// 	options := IteratorOptions{
-// 		UseReferences: true,
-// 	}
-// 	receiver := NewTER()
-// 	IterateObject(obj, receiver, &options)
+	expected := []*tevent{v(1), mark(), i(0), m(), s("I"), i(50), s("R"), ref(), i(0), e(), ed()}
+	options := IteratorOptions{
+		UseReferences: true,
+	}
+	receiver := NewTER()
+	IterateObject(obj, receiver, &options)
 
-// 	if !equivalence.IsEquivalent(expected, receiver.Events) {
-// 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
-// 	}
-// }
+	if !equivalence.IsEquivalent(expected, receiver.Events) {
+		t.Errorf("Expected %v but got %v", expected, receiver.Events)
+	}
+}

@@ -45,8 +45,7 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 	}()
 
 	encoder := NewCBEEncoder()
-	iterator := NewRootObjectIterator(encoder, &options.IteratorOptions)
-	iterator.Iterate(object)
+	IterateObject(object, encoder, &options.IteratorOptions)
 	document = encoder.Document()
 	return
 }

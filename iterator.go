@@ -38,21 +38,18 @@ type IteratorOptions struct {
 // encountered. If options is nil, a zero value will be provided.
 func IterateObject(value interface{}, eventReceiver DataEventReceiver, options *IteratorOptions) {
 	iter := NewRootObjectIterator(eventReceiver, options)
-	iter.Iterate(value)
+	iter.Iterate(value, nil)
 }
 
 // ObjectIterator iterates through a value, calling callback methods as it goes.
 type ObjectIterator interface {
 	// Iterate iterates over a value, potentially calling other iterators as
 	// it goes.
-	Iterate(v reflect.Value)
+	Iterate(v reflect.Value, root *RootObjectIterator)
 
 	// PostCacheInitIterator is called after the iterator template is saved to
 	// cache but before use, so that lookups succeed on cyclic type references.
 	PostCacheInitIterator()
-
-	// CloneFromTemplate clones from this iterator as a template, adding contextual data.
-	CloneFromTemplate(root *RootObjectIterator) ObjectIterator
 }
 
 var iterators sync.Map

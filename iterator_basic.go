@@ -36,7 +36,6 @@ import (
 // -------
 
 type uint8SliceIterator struct {
-	root *RootObjectIterator
 }
 
 func newUInt8SliceIterator() ObjectIterator {
@@ -46,12 +45,8 @@ func newUInt8SliceIterator() ObjectIterator {
 func (this *uint8SliceIterator) PostCacheInitIterator() {
 }
 
-func (this *uint8SliceIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &uint8SliceIterator{root: root}
-}
-
-func (this *uint8SliceIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnBytes(v.Bytes())
+func (this *uint8SliceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnBytes(v.Bytes())
 }
 
 // ----
@@ -59,7 +54,6 @@ func (this *uint8SliceIterator) Iterate(v reflect.Value) {
 // ----
 
 type timeIterator struct {
-	root *RootObjectIterator
 }
 
 func newTimeIterator() ObjectIterator {
@@ -69,12 +63,8 @@ func newTimeIterator() ObjectIterator {
 func (this *timeIterator) PostCacheInitIterator() {
 }
 
-func (this *timeIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &timeIterator{root: root}
-}
-
-func (this *timeIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnTime(v.Interface().(time.Time))
+func (this *timeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnTime(v.Interface().(time.Time))
 }
 
 // ------------
@@ -82,7 +72,6 @@ func (this *timeIterator) Iterate(v reflect.Value) {
 // ------------
 
 type compactTimeIterator struct {
-	root *RootObjectIterator
 }
 
 func newCompactTimeIterator() ObjectIterator {
@@ -92,17 +81,12 @@ func newCompactTimeIterator() ObjectIterator {
 func (this *compactTimeIterator) PostCacheInitIterator() {
 }
 
-func (this *compactTimeIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &compactTimeIterator{root: root}
-}
-
-func (this *compactTimeIterator) Iterate(v reflect.Value) {
+func (this *compactTimeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	ct := v.Interface().(compact_time.Time)
-	this.root.eventReceiver.OnCompactTime(&ct)
+	root.eventReceiver.OnCompactTime(&ct)
 }
 
 type pCompactTimeIterator struct {
-	root *RootObjectIterator
 }
 
 func newPCompactTimeIterator() ObjectIterator {
@@ -112,12 +96,8 @@ func newPCompactTimeIterator() ObjectIterator {
 func (this *pCompactTimeIterator) PostCacheInitIterator() {
 }
 
-func (this *pCompactTimeIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &pCompactTimeIterator{root: root}
-}
-
-func (this *pCompactTimeIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
+func (this *pCompactTimeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
 }
 
 // ----
@@ -125,7 +105,6 @@ func (this *pCompactTimeIterator) Iterate(v reflect.Value) {
 // ----
 
 type pURLIterator struct {
-	root *RootObjectIterator
 }
 
 func newPURLIterator() ObjectIterator {
@@ -135,15 +114,11 @@ func newPURLIterator() ObjectIterator {
 func (this *pURLIterator) PostCacheInitIterator() {
 }
 
-func (this *pURLIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &pURLIterator{root: root}
-}
-
-func (this *pURLIterator) Iterate(v reflect.Value) {
+func (this *pURLIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
-		this.root.eventReceiver.OnNil()
+		root.eventReceiver.OnNil()
 	} else {
-		this.root.eventReceiver.OnURI(v.Interface().(*url.URL).String())
+		root.eventReceiver.OnURI(v.Interface().(*url.URL).String())
 	}
 }
 
@@ -152,7 +127,6 @@ func (this *pURLIterator) Iterate(v reflect.Value) {
 // ---
 
 type urlIterator struct {
-	root *RootObjectIterator
 }
 
 func newURLIterator() ObjectIterator {
@@ -162,13 +136,9 @@ func newURLIterator() ObjectIterator {
 func (this *urlIterator) PostCacheInitIterator() {
 }
 
-func (this *urlIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &urlIterator{root: root}
-}
-
-func (this *urlIterator) Iterate(v reflect.Value) {
+func (this *urlIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	vCopy := v.Interface().(url.URL)
-	this.root.eventReceiver.OnURI((&vCopy).String())
+	root.eventReceiver.OnURI((&vCopy).String())
 }
 
 // --------
@@ -176,7 +146,6 @@ func (this *urlIterator) Iterate(v reflect.Value) {
 // --------
 
 type pBigIntIterator struct {
-	root *RootObjectIterator
 }
 
 func newPBigIntIterator() ObjectIterator {
@@ -186,15 +155,11 @@ func newPBigIntIterator() ObjectIterator {
 func (this *pBigIntIterator) PostCacheInitIterator() {
 }
 
-func (this *pBigIntIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &pBigIntIterator{root: root}
-}
-
-func (this *pBigIntIterator) Iterate(v reflect.Value) {
+func (this *pBigIntIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
-		this.root.eventReceiver.OnNil()
+		root.eventReceiver.OnNil()
 	} else {
-		this.root.eventReceiver.OnBigInt(v.Interface().(*big.Int))
+		root.eventReceiver.OnBigInt(v.Interface().(*big.Int))
 	}
 }
 
@@ -203,7 +168,6 @@ func (this *pBigIntIterator) Iterate(v reflect.Value) {
 // -------
 
 type bigIntIterator struct {
-	root *RootObjectIterator
 }
 
 func newBigIntIterator() ObjectIterator {
@@ -213,13 +177,9 @@ func newBigIntIterator() ObjectIterator {
 func (this *bigIntIterator) PostCacheInitIterator() {
 }
 
-func (this *bigIntIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &bigIntIterator{root: root}
-}
-
-func (this *bigIntIterator) Iterate(v reflect.Value) {
+func (this *bigIntIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	vCopy := v.Interface().(big.Int)
-	this.root.eventReceiver.OnBigInt((&vCopy))
+	root.eventReceiver.OnBigInt((&vCopy))
 }
 
 // ----------
@@ -227,7 +187,6 @@ func (this *bigIntIterator) Iterate(v reflect.Value) {
 // ----------
 
 type pBigFloatIterator struct {
-	root *RootObjectIterator
 }
 
 func newPBigFloatIterator() ObjectIterator {
@@ -237,15 +196,11 @@ func newPBigFloatIterator() ObjectIterator {
 func (this *pBigFloatIterator) PostCacheInitIterator() {
 }
 
-func (this *pBigFloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &pBigFloatIterator{root: root}
-}
-
-func (this *pBigFloatIterator) Iterate(v reflect.Value) {
+func (this *pBigFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
-		this.root.eventReceiver.OnNil()
+		root.eventReceiver.OnNil()
 	} else {
-		this.root.eventReceiver.OnBigFloat(v.Interface().(*big.Float))
+		root.eventReceiver.OnBigFloat(v.Interface().(*big.Float))
 	}
 }
 
@@ -254,7 +209,6 @@ func (this *pBigFloatIterator) Iterate(v reflect.Value) {
 // ---------
 
 type bigFloatIterator struct {
-	root *RootObjectIterator
 }
 
 func newBigFloatIterator() ObjectIterator {
@@ -264,13 +218,9 @@ func newBigFloatIterator() ObjectIterator {
 func (this *bigFloatIterator) PostCacheInitIterator() {
 }
 
-func (this *bigFloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &bigFloatIterator{root: root}
-}
-
-func (this *bigFloatIterator) Iterate(v reflect.Value) {
+func (this *bigFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	vCopy := v.Interface().(big.Float)
-	this.root.eventReceiver.OnBigFloat((&vCopy))
+	root.eventReceiver.OnBigFloat((&vCopy))
 }
 
 // ------------
@@ -278,7 +228,6 @@ func (this *bigFloatIterator) Iterate(v reflect.Value) {
 // ------------
 
 type pBigDecimalFloatIterator struct {
-	root *RootObjectIterator
 }
 
 func newPBigDecimalFloatIterator() ObjectIterator {
@@ -288,15 +237,11 @@ func newPBigDecimalFloatIterator() ObjectIterator {
 func (this *pBigDecimalFloatIterator) PostCacheInitIterator() {
 }
 
-func (this *pBigDecimalFloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &pBigDecimalFloatIterator{root: root}
-}
-
-func (this *pBigDecimalFloatIterator) Iterate(v reflect.Value) {
+func (this *pBigDecimalFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
-		this.root.eventReceiver.OnNil()
+		root.eventReceiver.OnNil()
 	} else {
-		this.root.eventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
+		root.eventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
 	}
 }
 
@@ -305,7 +250,6 @@ func (this *pBigDecimalFloatIterator) Iterate(v reflect.Value) {
 // -----------
 
 type bigDecimalFloatIterator struct {
-	root *RootObjectIterator
 }
 
 func newBigDecimalFloatIterator() ObjectIterator {
@@ -315,13 +259,9 @@ func newBigDecimalFloatIterator() ObjectIterator {
 func (this *bigDecimalFloatIterator) PostCacheInitIterator() {
 }
 
-func (this *bigDecimalFloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &bigDecimalFloatIterator{root: root}
-}
-
-func (this *bigDecimalFloatIterator) Iterate(v reflect.Value) {
+func (this *bigDecimalFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	vCopy := v.Interface().(apd.Decimal)
-	this.root.eventReceiver.OnBigDecimalFloat((&vCopy))
+	root.eventReceiver.OnBigDecimalFloat((&vCopy))
 }
 
 // ------
@@ -329,7 +269,6 @@ func (this *bigDecimalFloatIterator) Iterate(v reflect.Value) {
 // ------
 
 type dfloatIterator struct {
-	root *RootObjectIterator
 }
 
 func newDFloatIterator() ObjectIterator {
@@ -339,12 +278,8 @@ func newDFloatIterator() ObjectIterator {
 func (this *dfloatIterator) PostCacheInitIterator() {
 }
 
-func (this *dfloatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &dfloatIterator{root: root}
-}
-
-func (this *dfloatIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnDecimalFloat(v.Interface().(compact_float.DFloat))
+func (this *dfloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnDecimalFloat(v.Interface().(compact_float.DFloat))
 }
 
 // ----
@@ -352,7 +287,6 @@ func (this *dfloatIterator) Iterate(v reflect.Value) {
 // ----
 
 type boolIterator struct {
-	root *RootObjectIterator
 }
 
 func newBoolIterator() ObjectIterator {
@@ -362,12 +296,8 @@ func newBoolIterator() ObjectIterator {
 func (this *boolIterator) PostCacheInitIterator() {
 }
 
-func (this *boolIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &boolIterator{root: root}
-}
-
-func (this *boolIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnBool(v.Bool())
+func (this *boolIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnBool(v.Bool())
 }
 
 // ---
@@ -375,7 +305,6 @@ func (this *boolIterator) Iterate(v reflect.Value) {
 // ---
 
 type intIterator struct {
-	root *RootObjectIterator
 }
 
 func newIntIterator() ObjectIterator {
@@ -385,12 +314,8 @@ func newIntIterator() ObjectIterator {
 func (this *intIterator) PostCacheInitIterator() {
 }
 
-func (this *intIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &intIterator{root: root}
-}
-
-func (this *intIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnInt(v.Int())
+func (this *intIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnInt(v.Int())
 }
 
 // ----
@@ -398,7 +323,6 @@ func (this *intIterator) Iterate(v reflect.Value) {
 // ----
 
 type uintIterator struct {
-	root *RootObjectIterator
 }
 
 func newUintIterator() ObjectIterator {
@@ -408,12 +332,8 @@ func newUintIterator() ObjectIterator {
 func (this *uintIterator) PostCacheInitIterator() {
 }
 
-func (this *uintIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &uintIterator{root: root}
-}
-
-func (this *uintIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnPositiveInt(v.Uint())
+func (this *uintIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnPositiveInt(v.Uint())
 }
 
 // -----
@@ -421,7 +341,6 @@ func (this *uintIterator) Iterate(v reflect.Value) {
 // -----
 
 type floatIterator struct {
-	root *RootObjectIterator
 }
 
 func newFloatIterator() ObjectIterator {
@@ -431,12 +350,8 @@ func newFloatIterator() ObjectIterator {
 func (this *floatIterator) PostCacheInitIterator() {
 }
 
-func (this *floatIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &floatIterator{root: root}
-}
-
-func (this *floatIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnFloat(v.Float())
+func (this *floatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnFloat(v.Float())
 }
 
 // ------
@@ -444,7 +359,6 @@ func (this *floatIterator) Iterate(v reflect.Value) {
 // ------
 
 type stringIterator struct {
-	root *RootObjectIterator
 }
 
 func newStringIterator() ObjectIterator {
@@ -454,10 +368,6 @@ func newStringIterator() ObjectIterator {
 func (this *stringIterator) PostCacheInitIterator() {
 }
 
-func (this *stringIterator) CloneFromTemplate(root *RootObjectIterator) ObjectIterator {
-	return &stringIterator{root: root}
-}
-
-func (this *stringIterator) Iterate(v reflect.Value) {
-	this.root.eventReceiver.OnString(v.String())
+func (this *stringIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+	root.eventReceiver.OnString(v.String())
 }
