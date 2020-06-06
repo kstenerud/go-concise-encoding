@@ -38,7 +38,6 @@ type ptrBuilder struct {
 	elemBuilder ObjectBuilder
 
 	// Clone inserted data
-	root   *RootBuilder
 	parent ObjectBuilder
 }
 
@@ -56,7 +55,6 @@ func (this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilde
 	that := &ptrBuilder{
 		dstType: this.dstType,
 		parent:  parent,
-		root:    root,
 	}
 	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that)
 	return that

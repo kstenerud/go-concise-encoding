@@ -109,7 +109,6 @@ func (this *tlContainerBuilder) BuildFromString(value string, ignored reflect.Va
 }
 
 func (this *tlContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	// TODO: Is this the right way to do this?
 	this.root.setCurrentBuilder(this.builder)
 	this.builder.BuildFromBytes(value, dst)
 }
