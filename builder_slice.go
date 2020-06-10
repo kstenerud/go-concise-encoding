@@ -53,6 +53,10 @@ func newSliceBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *sliceBuilder) IsContainerOnly() bool {
+	return true
+}
+
 func (this *sliceBuilder) PostCacheInitBuilder() {
 	this.elemBuilder = getBuilderForType(this.dstType.Elem())
 }

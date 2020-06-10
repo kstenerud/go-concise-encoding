@@ -37,6 +37,10 @@ func newBigDecimalFloatBuilder() ObjectBuilder {
 	return &bigDecimalFloatBuilder{}
 }
 
+func (this *bigDecimalFloatBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *bigDecimalFloatBuilder) PostCacheInitBuilder() {
 }
 
@@ -121,9 +125,11 @@ func (this *bigDecimalFloatBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *bigDecimalFloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typeBigDecimalFloat, "PrepareForListContents")
 }
 
 func (this *bigDecimalFloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typeBigDecimalFloat, "PrepareForMapContents")
 }
 
 func (this *bigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -135,6 +141,10 @@ type pBigDecimalFloatBuilder struct {
 
 func newPBigDecimalFloatBuilder() ObjectBuilder {
 	return &pBigDecimalFloatBuilder{}
+}
+
+func (this *pBigDecimalFloatBuilder) IsContainerOnly() bool {
+	return false
 }
 
 func (this *pBigDecimalFloatBuilder) PostCacheInitBuilder() {
@@ -221,9 +231,11 @@ func (this *pBigDecimalFloatBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *pBigDecimalFloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typePBigDecimalFloat, "PrepareForListContents")
 }
 
 func (this *pBigDecimalFloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typePBigDecimalFloat, "PrepareForMapContents")
 }
 
 func (this *pBigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {

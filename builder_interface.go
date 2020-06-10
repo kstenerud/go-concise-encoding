@@ -50,6 +50,10 @@ func newInterfaceBuilder() ObjectBuilder {
 	return globalIntfBuilder
 }
 
+func (this *intfBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *intfBuilder) PostCacheInitBuilder() {
 }
 
@@ -165,6 +169,10 @@ type intfSliceBuilder struct {
 
 func newIntfSliceBuilder() ObjectBuilder {
 	return globalIntfSliceBuilder
+}
+
+func (this *intfSliceBuilder) IsContainerOnly() bool {
+	return true
 }
 
 func (this *intfSliceBuilder) PostCacheInitBuilder() {
@@ -301,6 +309,10 @@ type intfIntfMapBuilder struct {
 
 func newIntfIntfMapBuilder() ObjectBuilder {
 	return globalIntfIntfMapBuilder
+}
+
+func (this *intfIntfMapBuilder) IsContainerOnly() bool {
+	return true
 }
 
 func (this *intfIntfMapBuilder) PostCacheInitBuilder() {

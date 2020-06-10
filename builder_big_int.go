@@ -37,6 +37,10 @@ func newBigIntBuilder() ObjectBuilder {
 	return &bigIntBuilder{}
 }
 
+func (this *bigIntBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *bigIntBuilder) PostCacheInitBuilder() {
 }
 
@@ -121,9 +125,11 @@ func (this *bigIntBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *bigIntBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typeBigInt, "PrepareForListContents")
 }
 
 func (this *bigIntBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typeBigInt, "PrepareForMapContents")
 }
 
 func (this *bigIntBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -135,6 +141,10 @@ type pBigIntBuilder struct {
 
 func newPBigIntBuilder() ObjectBuilder {
 	return &pBigIntBuilder{}
+}
+
+func (this *pBigIntBuilder) IsContainerOnly() bool {
+	return false
 }
 
 func (this *pBigIntBuilder) PostCacheInitBuilder() {
@@ -221,9 +231,11 @@ func (this *pBigIntBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *pBigIntBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typePBigInt, "PrepareForListContents")
 }
 
 func (this *pBigIntBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typePBigInt, "PrepareForMapContents")
 }
 
 func (this *pBigIntBuilder) NotifyChildContainerFinished(value reflect.Value) {

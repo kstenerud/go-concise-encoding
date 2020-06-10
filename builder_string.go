@@ -39,6 +39,10 @@ func newStringBuilder() ObjectBuilder {
 	return globalStringBuilder
 }
 
+func (this *stringBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *stringBuilder) PostCacheInitBuilder() {
 }
 

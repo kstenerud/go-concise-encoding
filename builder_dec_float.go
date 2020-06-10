@@ -37,6 +37,10 @@ func newDFloatBuilder() ObjectBuilder {
 	return &dfloatBuilder{}
 }
 
+func (this *dfloatBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *dfloatBuilder) PostCacheInitBuilder() {
 }
 
@@ -121,9 +125,11 @@ func (this *dfloatBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *dfloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typeDFloat, "PrepareForListContents")
 }
 
 func (this *dfloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typeDFloat, "PrepareForMapContents")
 }
 
 func (this *dfloatBuilder) NotifyChildContainerFinished(value reflect.Value) {

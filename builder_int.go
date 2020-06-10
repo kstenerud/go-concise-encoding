@@ -41,6 +41,10 @@ func newIntBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *intBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *intBuilder) PostCacheInitBuilder() {
 }
 
@@ -125,9 +129,11 @@ func (this *intBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *intBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, this.dstType, "PrepareForListContents")
 }
 
 func (this *intBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, this.dstType, "PrepareForMapContents")
 }
 
 func (this *intBuilder) NotifyChildContainerFinished(value reflect.Value) {

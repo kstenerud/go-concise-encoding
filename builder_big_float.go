@@ -37,6 +37,10 @@ func newBigFloatBuilder() ObjectBuilder {
 	return &bigFloatBuilder{}
 }
 
+func (this *bigFloatBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *bigFloatBuilder) PostCacheInitBuilder() {
 }
 
@@ -121,9 +125,11 @@ func (this *bigFloatBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *bigFloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typeBigFloat, "PrepareForListContents")
 }
 
 func (this *bigFloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typeBigFloat, "PrepareForMapContents")
 }
 
 func (this *bigFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -135,6 +141,10 @@ type pBigFloatBuilder struct {
 
 func newPBigFloatBuilder() ObjectBuilder {
 	return &pBigFloatBuilder{}
+}
+
+func (this *pBigFloatBuilder) IsContainerOnly() bool {
+	return false
 }
 
 func (this *pBigFloatBuilder) PostCacheInitBuilder() {
@@ -221,9 +231,11 @@ func (this *pBigFloatBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *pBigFloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(this, typePBigFloat, "PrepareForListContents")
 }
 
 func (this *pBigFloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typePBigFloat, "PrepareForMapContents")
 }
 
 func (this *pBigFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {

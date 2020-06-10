@@ -52,6 +52,10 @@ func newArrayBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *arrayBuilder) IsContainerOnly() bool {
+	return true
+}
+
 func (this *arrayBuilder) PostCacheInitBuilder() {
 	this.elemBuilder = getBuilderForType(this.dstType.Elem())
 }
@@ -132,11 +136,7 @@ func (this *arrayBuilder) BuildFromString(value string, ignored reflect.Value) {
 }
 
 func (this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	// TODO: Is this the right way to do this?
-	for i := 0; i < len(value); i++ {
-		elem := dst.Index(i + this.index)
-		elem.SetUint(uint64(value[i]))
-	}
+	builderPanicBadEvent(this, this.dstType, "BuildFromBytes")
 }
 
 func (this *arrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
@@ -183,4 +183,124 @@ func (this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	this.root.setCurrentBuilder(this)
 	this.currentElem().Set(value)
 	this.index++
+}
+
+// Bytes array
+
+type bytesArrayBuilder struct {
+	// Clone inserted data
+	root   *RootBuilder
+	parent ObjectBuilder
+}
+
+var globalBytesArrayBuilder bytesArrayBuilder
+
+func newBytesArrayBuilder() ObjectBuilder {
+	return &globalBytesArrayBuilder
+}
+
+func (this *bytesArrayBuilder) IsContainerOnly() bool {
+	return false
+}
+
+func (this *bytesArrayBuilder) PostCacheInitBuilder() {
+}
+
+func (this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+	return &bytesArrayBuilder{
+		parent: parent,
+		root:   root,
+	}
+}
+
+func (this *bytesArrayBuilder) BuildFromNil(ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromNil")
+}
+
+func (this *bytesArrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromBool")
+}
+
+func (this *bytesArrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromInt")
+}
+
+func (this *bytesArrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromUint")
+}
+
+func (this *bytesArrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromBigInt")
+}
+
+func (this *bytesArrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromFloat")
+}
+
+func (this *bytesArrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromBigFloat")
+}
+
+func (this *bytesArrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromDecimalFloat")
+}
+
+func (this *bytesArrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromBigDecimalFloat")
+}
+
+func (this *bytesArrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromUUID")
+}
+
+func (this *bytesArrayBuilder) BuildFromString(value string, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromString")
+}
+
+func (this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	// TODO: Is there a more efficient way?
+	for i := 0; i < len(value); i++ {
+		elem := dst.Index(i)
+		elem.SetUint(uint64(value[i]))
+	}
+}
+
+func (this *bytesArrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromURI")
+}
+
+func (this *bytesArrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromTime")
+}
+
+func (this *bytesArrayBuilder) BuildBeginList() {
+	builderPanicBadEvent(this, typeBytes, "BuildBeginList")
+}
+
+func (this *bytesArrayBuilder) BuildBeginMap() {
+	builderPanicBadEvent(this, typeBytes, "BuildBeginMap")
+}
+
+func (this *bytesArrayBuilder) BuildEndContainer() {
+	builderPanicBadEvent(this, typeBytes, "BuildEndContainer")
+}
+
+func (this *bytesArrayBuilder) BuildFromMarker(id interface{}) {
+	panic("TODO: bytesArrayBuilder.BuildFromMarker")
+}
+
+func (this *bytesArrayBuilder) BuildFromReference(id interface{}) {
+	panic("TODO: bytesArrayBuilder.BuildFromReference")
+}
+
+func (this *bytesArrayBuilder) PrepareForListContents() {
+	this.root.setCurrentBuilder(this)
+}
+
+func (this *bytesArrayBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(this, typeBytes, "PrepareForMapContents")
+}
+
+func (this *bytesArrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "NotifyChildContainerFinished")
 }

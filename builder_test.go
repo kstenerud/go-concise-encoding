@@ -51,6 +51,8 @@ func assertBuildPanics(t *testing.T, template interface{}, events ...*tevent) {
 	})
 }
 
+// ============================================================================
+
 func TestBuilderBasic(t *testing.T) {
 	assertBuild(t, true, b(true))
 	assertBuild(t, int(1), i(1))
@@ -63,6 +65,7 @@ func TestBuilderBasic(t *testing.T) {
 	assertBuild(t, uint16(1), pi(1))
 	assertBuild(t, uint32(1), pi(1))
 	assertBuild(t, uint64(1), pi(1))
+	assertBuild(t, newBigInt("10000000000000000000000"), bi(newBigInt("10000000000000000000000")))
 	assertBuild(t, float32(1.1), f(1.1))
 	assertBuild(t, float64(1.1), f(1.1))
 	assertBuild(t, "testing", s("testing"))

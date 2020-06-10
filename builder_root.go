@@ -68,8 +68,11 @@ func newRootBuilder(dstType reflect.Type) *RootBuilder {
 		object:  reflect.New(dstType).Elem(),
 	}
 
-	builder := getTopLevelBuilderForType(dstType)
-	this.currentBuilder = builder.CloneFromTemplate(this, this)
+	builder := getBuilderForType(dstType).CloneFromTemplate(this, this)
+	if builder.IsContainerOnly() {
+		builder = newTopLevelContainerBuilder(this, builder)
+	}
+	this.currentBuilder = builder
 
 	return this
 }
@@ -81,6 +84,10 @@ func (this *RootBuilder) setCurrentBuilder(builder ObjectBuilder) {
 // -------------
 // ObjectBuilder
 // -------------
+
+func (this *RootBuilder) IsContainerOnly() bool {
+	panic(fmt.Errorf("BUG: This method should never be called"))
+}
 
 func (this *RootBuilder) PostCacheInitBuilder() {
 	panic(fmt.Errorf("BUG: This method should never be called"))
@@ -177,8 +184,13 @@ func (this *RootBuilder) OnPositiveInt(value uint64) {
 	this.currentBuilder.BuildFromUint(value, this.object)
 }
 func (this *RootBuilder) OnNegativeInt(value uint64) {
-	// TODO: big int when too big
-	this.currentBuilder.BuildFromInt(-int64(value), this.object)
+	if value <= 0x7fffffffffffffff {
+		this.currentBuilder.BuildFromInt(-(int64(value)), this.object)
+		return
+	}
+	bi := &big.Int{}
+	bi.SetUint64(value)
+	this.currentBuilder.BuildFromBigInt(bi.Neg(bi), this.object)
 }
 func (this *RootBuilder) OnInt(value int64) {
 	this.currentBuilder.BuildFromInt(value, this.object)

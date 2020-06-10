@@ -41,6 +41,10 @@ func newUintBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *uintBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *uintBuilder) PostCacheInitBuilder() {
 }
 

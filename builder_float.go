@@ -41,6 +41,10 @@ func newFloatBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *floatBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *floatBuilder) PostCacheInitBuilder() {
 }
 

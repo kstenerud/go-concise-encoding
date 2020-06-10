@@ -42,6 +42,10 @@ func newIgnoreBuilder() ObjectBuilder {
 	return globalIgnoreBuilder
 }
 
+func (this *ignoreBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *ignoreBuilder) PostCacheInitBuilder() {
 }
 
@@ -156,6 +160,10 @@ var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
 
 func newIgnoreContainerBuilder() ObjectBuilder {
 	return globalIgnoreContainerBuilder
+}
+
+func (this *ignoreContainerBuilder) IsContainerOnly() bool {
+	return true
 }
 
 func (this *ignoreContainerBuilder) PostCacheInitBuilder() {

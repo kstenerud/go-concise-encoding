@@ -77,6 +77,8 @@ type ObjectBuilder interface {
 	BuildFromMarker(id interface{})
 	BuildFromReference(id interface{})
 
+	IsContainerOnly() bool
+
 	// Prepare this builder for storing list contents, ultimately followed by End()
 	PrepareForListContents()
 
@@ -146,7 +148,12 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 	case reflect.Interface:
 		return newInterfaceBuilder()
 	case reflect.Array:
-		return newArrayBuilder(dstType)
+		switch dstType.Elem().Kind() {
+		case reflect.Uint8:
+			return newBytesArrayBuilder()
+		default:
+			return newArrayBuilder(dstType)
+		}
 	case reflect.Slice:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
@@ -204,26 +211,4 @@ func getBuilderForType(dstType reflect.Type) ObjectBuilder {
 	builder, _ := builders.LoadOrStore(dstType, generateBuilderForType(dstType))
 	builder.(ObjectBuilder).PostCacheInitBuilder()
 	return builder.(ObjectBuilder)
-}
-
-func getTopLevelBuilderForType(dstType reflect.Type) ObjectBuilder {
-	switch dstType.Kind() {
-	case reflect.Slice:
-		if dstType.Elem().Kind() == reflect.Uint8 {
-			return getBuilderForType(dstType)
-		} else {
-			return newTLContainerBuilder(dstType)
-		}
-	case reflect.Array, reflect.Map:
-		return newTLContainerBuilder(dstType)
-	case reflect.Struct:
-		switch dstType {
-		case typeTime, typeURL, typeDFloat:
-			return getBuilderForType(dstType)
-		default:
-			return newTLContainerBuilder(dstType)
-		}
-	default:
-		return getBuilderForType(dstType)
-	}
 }

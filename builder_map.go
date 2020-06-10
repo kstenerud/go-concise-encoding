@@ -60,6 +60,10 @@ func newMapBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *mapBuilder) IsContainerOnly() bool {
+	return true
+}
+
 func (this *mapBuilder) PostCacheInitBuilder() {
 	this.kvBuilders[kvBuilderKey] = getBuilderForType(this.dstType.Key())
 	this.kvBuilders[kvBuilderValue] = getBuilderForType(this.dstType.Elem())

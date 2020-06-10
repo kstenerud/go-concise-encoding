@@ -47,6 +47,10 @@ func newPtrBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *ptrBuilder) IsContainerOnly() bool {
+	return this.elemBuilder.IsContainerOnly()
+}
+
 func (this *ptrBuilder) PostCacheInitBuilder() {
 	this.elemBuilder = getBuilderForType(this.dstType.Elem())
 }

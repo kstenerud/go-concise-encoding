@@ -62,6 +62,10 @@ func newStructBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *structBuilder) IsContainerOnly() bool {
+	return true
+}
+
 func (this *structBuilder) PostCacheInitBuilder() {
 	this.nameBuilder = getBuilderForType(reflect.TypeOf(""))
 	this.builderDescs = make(map[string]*structBuilderDesc)

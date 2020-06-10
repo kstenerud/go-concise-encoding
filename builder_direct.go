@@ -43,6 +43,10 @@ func newDirectBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
+func (this *directBuilder) IsContainerOnly() bool {
+	return false
+}
+
 func (this *directBuilder) PostCacheInitBuilder() {
 }
 
@@ -149,6 +153,10 @@ func newDirectPtrBuilder(dstType reflect.Type) ObjectBuilder {
 	return &directPtrBuilder{
 		dstType: dstType,
 	}
+}
+
+func (this *directPtrBuilder) IsContainerOnly() bool {
+	return false
 }
 
 func (this *directPtrBuilder) PostCacheInitBuilder() {
