@@ -188,9 +188,6 @@ func (this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
 // Bytes array
 
 type bytesArrayBuilder struct {
-	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
 }
 
 var globalBytesArrayBuilder bytesArrayBuilder
@@ -207,10 +204,7 @@ func (this *bytesArrayBuilder) PostCacheInitBuilder() {
 }
 
 func (this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
-	return &bytesArrayBuilder{
-		parent: parent,
-		root:   root,
-	}
+	return this
 }
 
 func (this *bytesArrayBuilder) BuildFromNil(ignored reflect.Value) {
@@ -294,7 +288,7 @@ func (this *bytesArrayBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *bytesArrayBuilder) PrepareForListContents() {
-	this.root.setCurrentBuilder(this)
+	builderPanicBadEvent(this, typeBytes, "PrepareForListContents")
 }
 
 func (this *bytesArrayBuilder) PrepareForMapContents() {
