@@ -86,77 +86,77 @@ func (this *RootBuilder) setCurrentBuilder(builder ObjectBuilder) {
 // -------------
 
 func (this *RootBuilder) IsContainerOnly() bool {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: IsContainerOnly should never be called on RootBuilder"))
 }
 
 func (this *RootBuilder) PostCacheInitBuilder() {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: PostCacheInitBuilder should never be called on RootBuilder"))
 }
 func (this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder) ObjectBuilder {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromNil(_ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromNil should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromBool should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromInt should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromUint should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromBigInt should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromFloat should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromBigFloat should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromDecimalFloat should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromBigDecimalFloat should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromUUID should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromString(_ string, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromString should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromBytes should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromURI should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromTime should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildBeginList() {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildBeginList should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildBeginMap() {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildBeginMap should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildEndContainer() {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildEndContainer should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromMarker(_ interface{}) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromMarker should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromReference(_ interface{}) {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: BuildFromReference should never be called on RootBuilder"))
 }
 func (this *RootBuilder) PrepareForListContents() {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: PrepareForListContents should never be called on RootBuilder"))
 }
 func (this *RootBuilder) PrepareForMapContents() {
-	panic(fmt.Errorf("BUG: This method should never be called"))
+	panic(fmt.Errorf("BUG: PrepareForMapContents should never be called on RootBuilder"))
 }
 func (this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	this.object = value
