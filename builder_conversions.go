@@ -49,11 +49,14 @@ func setIntFromFloat(value float64, dst reflect.Value) {
 }
 
 func setIntFromBigFloat(value *big.Float, dst reflect.Value) {
-	i, accuracy := value.Int64()
-	if accuracy != big.Exact {
-		builderPanicCannotConvert(value, dst.Type())
+	i, err := bigFloatToInt(value)
+	if err != nil {
+		builderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetInt(i)
+	if dst.Int() != i {
+		builderPanicCannotConvert(value, dst.Type())
+	}
 }
 
 func setIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
@@ -85,10 +88,7 @@ func setUintFromInt(value int64, dst reflect.Value) {
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
-	dst.SetUint(u)
-	if int64(dst.Uint()) != value {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+	setUintFromUint(u, dst)
 }
 
 func setUintFromUint(value uint64, dst reflect.Value) {
@@ -103,29 +103,23 @@ func setUintFromBigInt(value *big.Int, dst reflect.Value) {
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
-	dst.SetUint(u)
-	if dst.Uint() != u {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+	setUintFromUint(u, dst)
 }
 
 func setUintFromFloat(value float64, dst reflect.Value) {
-	u, err := floatToUint(value)
-	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
-	}
-	dst.SetUint(u)
-	if float64(dst.Uint()) != value {
+	u := uint64(value)
+	if float64(u) != value {
 		builderPanicCannotConvert(value, dst.Type())
 	}
+	setUintFromUint(u, dst)
 }
 
 func setUintFromBigFloat(value *big.Float, dst reflect.Value) {
-	u, accuracy := value.Uint64()
-	if accuracy != big.Exact {
-		builderPanicCannotConvert(value, dst.Type())
+	u, err := bigFloatToUint(value)
+	if err != nil {
+		builderPanicErrorConverting(value, dst.Type(), err)
 	}
-	dst.SetUint(u)
+	setUintFromUint(u, dst)
 }
 
 func setUintFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
@@ -133,10 +127,7 @@ func setUintFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
-	dst.SetUint(u)
-	if dst.Uint() != u {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+	setUintFromUint(u, dst)
 }
 
 func setUintFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
@@ -144,13 +135,12 @@ func setUintFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
-	dst.SetUint(u)
-	if dst.Uint() != u {
-		builderPanicCannotConvert(value, dst.Type())
-	}
+	setUintFromUint(u, dst)
 }
 
 // Float
+
+// TODO: When to allow lossy conversions?
 
 func setFloatFromInt(value int64, dst reflect.Value) {
 	dst.SetFloat(float64(value))

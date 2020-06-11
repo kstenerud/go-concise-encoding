@@ -54,7 +54,7 @@ func assertBuildPanics(t *testing.T, template interface{}, events ...*tevent) {
 
 // ============================================================================
 
-func TestBuilderBasic(t *testing.T) {
+func TestBuilderBasicTypes(t *testing.T) {
 	pBigIntP := newBigInt("12345678901234567890123456789")
 	pBigIntN := newBigInt("-999999999999999999999999999999")
 	pBigFloat := newBigFloat("1.2345678901234567890123456789e10000", 29)
@@ -132,7 +132,7 @@ func TestBuilderConvertToBDF(t *testing.T) {
 	assertBuild(t, *pv, bdf(newBDF("1")))
 }
 
-func TestBuilderBDFFail(t *testing.T) {
+func TestBuilderConvertToBDFFail(t *testing.T) {
 	v := newBDF("1")
 	assertBuildPanics(t, v, b(true))
 	assertBuildPanics(t, v, s("1"))
@@ -178,7 +178,7 @@ func TestBuilderConvertToBF(t *testing.T) {
 	assertBuild(t, *pv, bdf(newBDF("1")))
 }
 
-func TestBuilderBFFail(t *testing.T) {
+func TestBuilderConvertToBFFail(t *testing.T) {
 	v := newBigFloat("1", 1)
 	assertBuildPanics(t, v, b(true))
 	assertBuildPanics(t, v, s("1"))
@@ -208,6 +208,7 @@ func TestBuilderConvertToBI(t *testing.T) {
 	pv := newBigInt("1")
 	nv := newBigInt("-1")
 	assertBuild(t, pv, pi(1))
+	assertBuild(t, newBigInt("9223372036854775808"), pi(9223372036854775808))
 	assertBuild(t, nv, ni(1))
 	assertBuild(t, pv, bi(newBigInt("1")))
 	assertBuild(t, pv, f(1))
@@ -224,13 +225,20 @@ func TestBuilderConvertToBI(t *testing.T) {
 	assertBuild(t, *pv, bdf(newBDF("1")))
 }
 
-func TestBuilderBIFail(t *testing.T) {
+func TestBuilderConvertToBIFail(t *testing.T) {
 	v := newBigInt("1")
 	assertBuildPanics(t, v, b(true))
 	assertBuildPanics(t, v, f(1.1))
 	assertBuildPanics(t, v, bf(newBigFloat("1.1", 1)))
+	assertBuildPanics(t, v, bf(newBigFloat("1.0e100000", 1)))
 	assertBuildPanics(t, v, df(newDFloat("1.1")))
+	assertBuildPanics(t, v, df(newDFloat("1.0e100000")))
 	assertBuildPanics(t, v, bdf(newBDF("1.1")))
+	assertBuildPanics(t, v, bdf(newBDF("1.0e100000")))
+	assertBuildPanics(t, v, bdf(newBDF("nan")))
+	assertBuildPanics(t, v, bdf(newBDF("snan")))
+	assertBuildPanics(t, v, bdf(newBDF("inf")))
+	assertBuildPanics(t, v, bdf(newBDF("-inf")))
 	assertBuildPanics(t, v, s("1"))
 	assertBuildPanics(t, v, bin([]byte{1}))
 	assertBuildPanics(t, v, uri("x://x"))
@@ -242,7 +250,18 @@ func TestBuilderBIFail(t *testing.T) {
 	assertBuildPanics(t, v, e())
 
 	assertBuildPanics(t, *v, n())
+	assertBuildPanics(t, *v, f(1.1))
 	assertBuildPanics(t, *v, b(true))
+	assertBuildPanics(t, *v, bf(newBigFloat("1.1", 1)))
+	assertBuildPanics(t, *v, bf(newBigFloat("1.0e100000", 1)))
+	assertBuildPanics(t, *v, df(newDFloat("1.1")))
+	assertBuildPanics(t, *v, df(newDFloat("1.0e100000")))
+	assertBuildPanics(t, *v, bdf(newBDF("1.1")))
+	assertBuildPanics(t, *v, bdf(newBDF("1.0e100000")))
+	assertBuildPanics(t, *v, bdf(newBDF("nan")))
+	assertBuildPanics(t, *v, bdf(newBDF("snan")))
+	assertBuildPanics(t, *v, bdf(newBDF("inf")))
+	assertBuildPanics(t, *v, bdf(newBDF("-inf")))
 	assertBuildPanics(t, *v, s("1"))
 	assertBuildPanics(t, *v, bin([]byte{1}))
 	assertBuildPanics(t, *v, uri("x://x"))
@@ -281,6 +300,39 @@ func TestBuilderDecimalFloatFail(t *testing.T) {
 	assertBuildPanics(t, v, e())
 }
 
+func TestBuilderConvertToFloat(t *testing.T) {
+	pv := 1.0
+	nv := -1.0
+	assertBuild(t, pv, pi(1))
+	assertBuild(t, nv, ni(1))
+	assertBuild(t, pv, bi(newBigInt("1")))
+	assertBuild(t, pv, f(1))
+	assertBuild(t, pv, bf(newBigFloat("1", 1)))
+	assertBuild(t, pv, df(newDFloat("1")))
+	assertBuild(t, pv, bdf(newBDF("1")))
+}
+
+func TestBuilderConvertToFloatFail(t *testing.T) {
+	// TODO: How to define required conversion accuracy?
+	v := 1.0
+	assertBuildPanics(t, v, b(true))
+	assertBuildPanics(t, v, pi(0xffffffffffffffff))
+	assertBuildPanics(t, v, i(-0x7fffffffffffffff))
+	assertBuildPanics(t, v, bf(newBigFloat("1.0e309", 1)))
+	assertBuildPanics(t, v, bf(newBigFloat("1.0e-311", 1)))
+	// TODO: apd.Decimal and compact_float.DFloat don't handle float overflow
+	assertBuildPanics(t, v, bi(newBigInt("1234567890123456789012345")))
+	assertBuildPanics(t, v, s("1"))
+	assertBuildPanics(t, v, bin([]byte{1}))
+	assertBuildPanics(t, v, uri("x://x"))
+	assertBuildPanics(t, v, uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, v, ct(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, v, gt(time.Now()))
+	assertBuildPanics(t, v, l())
+	assertBuildPanics(t, v, m())
+	assertBuildPanics(t, v, e())
+}
+
 func TestBuilderConvertToInt(t *testing.T) {
 	assertBuild(t, 1, pi(1))
 	assertBuild(t, -1, ni(1))
@@ -291,9 +343,22 @@ func TestBuilderConvertToInt(t *testing.T) {
 	assertBuild(t, 1, bdf(newBDF("1")))
 }
 
-func TestBuilderIntFail(t *testing.T) {
+func TestBuilderConvertToIntFail(t *testing.T) {
 	assertBuildPanics(t, int(1), n())
 	assertBuildPanics(t, int(1), b(true))
+	assertBuildPanics(t, int(1), pi(0x8000000000000000))
+	assertBuildPanics(t, int(1), f(1.1))
+	assertBuildPanics(t, int(1), bf(newBigFloat("1.1", 1)))
+	assertBuildPanics(t, int(1), df(newDFloat("1.1")))
+	assertBuildPanics(t, int(1), bdf(newBDF("1.1")))
+	assertBuildPanics(t, int(1), bf(newBigFloat("1e20", 1)))
+	assertBuildPanics(t, int(1), df(newDFloat("1e20")))
+	assertBuildPanics(t, int(1), bdf(newBDF("1e20")))
+	assertBuildPanics(t, int(1), bf(newBigFloat("-1e20", 1)))
+	assertBuildPanics(t, int(1), df(newDFloat("-1e20")))
+	assertBuildPanics(t, int(1), bdf(newBDF("-1e20")))
+	assertBuildPanics(t, int(1), bi(newBigInt("100000000000000000000")))
+	assertBuildPanics(t, int(1), bi(newBigInt("-100000000000000000000")))
 	assertBuildPanics(t, int(1), s("1"))
 	assertBuildPanics(t, int(1), bin([]byte{1}))
 	assertBuildPanics(t, int(1), uri("x://x"))
@@ -303,6 +368,90 @@ func TestBuilderIntFail(t *testing.T) {
 	assertBuildPanics(t, int(1), l())
 	assertBuildPanics(t, int(1), m())
 	assertBuildPanics(t, int(1), e())
+
+	assertBuildPanics(t, int8(1), pi(1000))
+	assertBuildPanics(t, int8(1), ni(1000))
+	assertBuildPanics(t, int8(1), i(1000))
+	assertBuildPanics(t, int8(1), bi(newBigInt("1000")))
+	assertBuildPanics(t, int8(1), f(1000))
+	assertBuildPanics(t, int8(1), bf(newBigFloat("1000", 4)))
+	assertBuildPanics(t, int8(1), df(newDFloat("1000")))
+	assertBuildPanics(t, int8(1), bdf(newBDF("1000")))
+
+	assertBuildPanics(t, int16(1), pi(100000))
+	assertBuildPanics(t, int16(1), ni(100000))
+	assertBuildPanics(t, int16(1), i(100000))
+	assertBuildPanics(t, int16(1), bi(newBigInt("100000")))
+	assertBuildPanics(t, int16(1), f(100000))
+	assertBuildPanics(t, int16(1), bf(newBigFloat("100000", 6)))
+	assertBuildPanics(t, int16(1), df(newDFloat("100000")))
+	assertBuildPanics(t, int16(1), bdf(newBDF("100000")))
+
+	assertBuildPanics(t, int32(1), pi(10000000000))
+	assertBuildPanics(t, int32(1), ni(10000000000))
+	assertBuildPanics(t, int32(1), i(10000000000))
+	assertBuildPanics(t, int32(1), bi(newBigInt("10000000000")))
+	assertBuildPanics(t, int32(1), f(10000000000))
+	assertBuildPanics(t, int32(1), bf(newBigFloat("10000000000", 11)))
+	assertBuildPanics(t, int32(1), df(newDFloat("10000000000")))
+	assertBuildPanics(t, int32(1), bdf(newBDF("10000000000")))
+}
+
+func TestBuilderConvertToUint(t *testing.T) {
+	assertBuild(t, uint(1), pi(1))
+	assertBuild(t, uint(1), i(1))
+	assertBuild(t, uint(1), bi(newBigInt("1")))
+	assertBuild(t, uint(1), f(1))
+	assertBuild(t, uint(1), bf(newBigFloat("1", 1)))
+	assertBuild(t, uint(1), df(newDFloat("1")))
+	assertBuild(t, uint(1), bdf(newBDF("1")))
+}
+
+func TestBuilderConvertToUintFail(t *testing.T) {
+	assertBuildPanics(t, uint(1), n())
+	assertBuildPanics(t, uint(1), b(true))
+	assertBuildPanics(t, uint(1), ni(1))
+	assertBuildPanics(t, uint(1), f(1.1))
+	assertBuildPanics(t, uint(1), bf(newBigFloat("1.1", 2)))
+	assertBuildPanics(t, uint(1), df(newDFloat("1.1")))
+	assertBuildPanics(t, uint(1), bdf(newBDF("1.1")))
+	assertBuildPanics(t, uint(1), bf(newBigFloat("1e20", 2)))
+	assertBuildPanics(t, uint(1), df(newDFloat("1e20")))
+	assertBuildPanics(t, uint(1), bdf(newBDF("1e20")))
+	assertBuildPanics(t, uint8(1), bi(newBigInt("100000000000000000000")))
+	assertBuildPanics(t, uint(1), s("1"))
+	assertBuildPanics(t, uint(1), bin([]byte{1}))
+	assertBuildPanics(t, uint(1), uri("x://x"))
+	assertBuildPanics(t, uint(1), uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, uint(1), ct(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, uint(1), gt(time.Now()))
+	assertBuildPanics(t, uint(1), l())
+	assertBuildPanics(t, uint(1), m())
+	assertBuildPanics(t, uint(1), e())
+
+	assertBuildPanics(t, uint8(1), pi(1000))
+	assertBuildPanics(t, uint8(1), i(1000))
+	assertBuildPanics(t, uint8(1), bi(newBigInt("1000")))
+	assertBuildPanics(t, uint8(1), f(1000))
+	assertBuildPanics(t, uint8(1), bf(newBigFloat("1000", 4)))
+	assertBuildPanics(t, uint8(1), df(newDFloat("1000")))
+	assertBuildPanics(t, uint8(1), bdf(newBDF("1000")))
+
+	assertBuildPanics(t, uint16(1), pi(100000))
+	assertBuildPanics(t, uint16(1), i(100000))
+	assertBuildPanics(t, uint16(1), bi(newBigInt("100000")))
+	assertBuildPanics(t, uint16(1), f(100000))
+	assertBuildPanics(t, uint16(1), bf(newBigFloat("100000", 6)))
+	assertBuildPanics(t, uint16(1), df(newDFloat("100000")))
+	assertBuildPanics(t, uint16(1), bdf(newBDF("100000")))
+
+	assertBuildPanics(t, uint32(1), pi(10000000000))
+	assertBuildPanics(t, uint32(1), i(10000000000))
+	assertBuildPanics(t, uint32(1), bi(newBigInt("10000000000")))
+	assertBuildPanics(t, uint32(1), f(10000000000))
+	assertBuildPanics(t, uint32(1), bf(newBigFloat("10000000000", 11)))
+	assertBuildPanics(t, uint32(1), df(newDFloat("10000000000")))
+	assertBuildPanics(t, uint32(1), bdf(newBDF("10000000000")))
 }
 
 //

@@ -45,11 +45,7 @@ func bigDecimalFloatToUint(value *apd.Decimal) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	u, accuracy := bf.Uint64()
-	if accuracy != big.Exact {
-		return 0, fmt.Errorf("%v cannot fit into a uint64", value)
-	}
-	return u, nil
+	return bigFloatToUint(bf)
 }
 
 // big.Float to other
@@ -71,6 +67,13 @@ func bigFloatToBigInt(value *big.Float) (*big.Int, error) {
 }
 
 func bigFloatToFloat(value *big.Float) (float64, error) {
+	exp := value.MantExp(nil)
+	if exp < -1029 {
+		return 0, fmt.Errorf("%v is too small to fit into a float64", value)
+	}
+	if exp > 1024 {
+		return 0, fmt.Errorf("%v is too big to fit into a float64", value)
+	}
 	f, accuracy := value.Float64()
 	if accuracy != big.Exact {
 		if f == 0 {
@@ -81,6 +84,28 @@ func bigFloatToFloat(value *big.Float) (float64, error) {
 	}
 
 	return f, nil
+}
+
+func bigFloatToInt(value *big.Float) (int64, error) {
+	i, accuracy := value.Int64()
+	if accuracy != big.Exact {
+		return 0, fmt.Errorf("Cannot convert %v to int", value)
+	}
+	if big.NewFloat(float64(i)).Cmp(value) != 0 {
+		return 0, fmt.Errorf("Cannot convert %v to int", value)
+	}
+	return i, nil
+}
+
+func bigFloatToUint(value *big.Float) (uint64, error) {
+	u, accuracy := value.Uint64()
+	if accuracy != big.Exact {
+		return 0, fmt.Errorf("Cannot convert %v to uint", value)
+	}
+	if big.NewFloat(float64(u)).Cmp(value) != 0 {
+		return 0, fmt.Errorf("Cannot convert %v to uint", value)
+	}
+	return u, nil
 }
 
 func bigFloatToString(value *big.Float) string {
@@ -112,7 +137,19 @@ func bigIntToInt(value *big.Int) (int64, error) {
 }
 
 func bigIntToFloat(value *big.Int) (float64, error) {
-	return stringToFloat(value.Text(10))
+	asText := value.Text(10)
+	f, err := strconv.ParseFloat(asText, 64)
+	if err != nil {
+		return 0, err
+	}
+	asBigInt, accuracy := big.NewFloat(f).Int(nil)
+	if accuracy != big.Exact {
+		return 0, fmt.Errorf("Cannot convert %v to float", value)
+	}
+	if asBigInt.Cmp(value) != 0 {
+		return 0, fmt.Errorf("Cannot convert %v to float", value)
+	}
+	return f, nil
 }
 
 func bigIntToUint(value *big.Int) (uint64, error) {
@@ -141,13 +178,6 @@ func floatToBigInt(value float64) (*big.Int, error) {
 
 func floatToString(value float64) string {
 	return strconv.FormatFloat(value, 'g', -1, 64)
-}
-
-func floatToUint(value float64) (uint64, error) {
-	if value < 0 {
-		return 0, fmt.Errorf("%v is negative, and cannot be represented as an unsigned int", value)
-	}
-	return uint64(value), nil
 }
 
 // int to other
@@ -200,10 +230,6 @@ func uintToInt(value uint64) (int64, error) {
 func stringToBigFloat(value string, significantDigits int) (*big.Float, error) {
 	f, _, err := big.ParseFloat(value, 10, uint(decimalDigitsToBits(significantDigits)), big.ToNearestEven)
 	return f, err
-}
-
-func stringToFloat(value string) (float64, error) {
-	return strconv.ParseFloat(value, 64)
 }
 
 // Bits to digits
