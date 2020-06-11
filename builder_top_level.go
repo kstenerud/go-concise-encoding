@@ -29,6 +29,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
@@ -111,6 +112,10 @@ func (this *topLevelContainerBuilder) BuildFromURI(value *url.URL, dst reflect.V
 
 func (this *topLevelContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	panic(fmt.Errorf("BUG: BuildFromTime should never be called on topLevelContainerBuilder"))
+}
+
+func (this *topLevelContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	panic(fmt.Errorf("BUG: topLevelContainerBuilder should never be called on topLevelContainerBuilder"))
 }
 
 func (this *topLevelContainerBuilder) BuildBeginList() {

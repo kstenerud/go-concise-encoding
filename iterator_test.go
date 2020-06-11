@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -50,6 +49,7 @@ func TestIterateBasic(t *testing.T) {
 	pBigIntP := newBigInt("12345678901234567890123456789")
 	pBigIntN := newBigInt("-999999999999999999999999999999")
 	pBigFloat := newBigFloat("5.377345e-10000", 7)
+	dfloat := newDFloat("1.23456e1000")
 	pBigDFloat := newBDF("4.509e10000")
 	gTimeNow := time.Now()
 	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
@@ -77,12 +77,12 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, (*big.Int)(nil), n())
 	assertIterate(t, float32(-1.25), f(-1.25))
 	assertIterate(t, float64(-9.5e50), f(-9.5e50))
-	assertIterate(t, pBigFloat, bf("5.377345e-10000", 7))
-	assertIterate(t, *pBigFloat, bf("5.377345e-10000", 7))
+	assertIterate(t, pBigFloat, bf(pBigFloat))
+	assertIterate(t, *pBigFloat, bf(pBigFloat))
 	assertIterate(t, (*big.Float)(nil), n())
-	assertIterate(t, compact_float.DFloatValue(-2, 105), df("1.05"))
-	assertIterate(t, pBigDFloat, bdf("4.509e10000"))
-	assertIterate(t, *pBigDFloat, bdf("4.509e10000"))
+	assertIterate(t, dfloat, df(dfloat))
+	assertIterate(t, pBigDFloat, bdf(pBigDFloat))
+	assertIterate(t, *pBigDFloat, bdf(pBigDFloat))
 	assertIterate(t, (*apd.Decimal)(nil), n())
 	assertIterate(t, complex64(-1+5i), cplx(-1+5i))
 	assertIterate(t, complex128(-1+5i), cplx(-1+5i))

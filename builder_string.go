@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 type stringBuilder struct {
@@ -105,6 +106,10 @@ func (this *stringBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 
 func (this *stringBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	builderPanicBadEvent(this, typeString, "Time")
+}
+
+func (this *stringBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(this, typeString, "CompactTime")
 }
 
 func (this *stringBuilder) BuildBeginList() {

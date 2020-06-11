@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 type ignoreBuilder struct {
@@ -109,6 +110,10 @@ func (this *ignoreBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 }
 
 func (this *ignoreBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	this.root.setCurrentBuilder(this.parent)
+}
+
+func (this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	this.root.setCurrentBuilder(this.parent)
 }
 
@@ -216,6 +221,10 @@ func (this *ignoreContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Val
 }
 
 func (this *ignoreContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	// TODO: Should these panic?
+}
+
+func (this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 }
 
 func (this *ignoreContainerBuilder) BuildBeginList() {

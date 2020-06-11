@@ -205,7 +205,11 @@ func setBigIntFromUint(value uint64, dst reflect.Value) {
 }
 
 func setBigIntFromFloat(value float64, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(*floatToBigInt(value)))
+	bi, err := floatToBigInt(value)
+	if err != nil {
+		builderPanicErrorConverting(value, dst.Type(), err)
+	}
+	dst.Set(reflect.ValueOf(*bi))
 }
 
 func setBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
@@ -217,7 +221,7 @@ func setBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
 }
 
 func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	bi, err := value.BigInt()
+	bi, err := decimalFloatToBigInt(value)
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
@@ -225,7 +229,11 @@ func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 }
 
 func setBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(*bigDecimalFloatToBigInt(value)))
+	bi, err := bigDecimalFloatToBigInt(value)
+	if err != nil {
+		builderPanicErrorConverting(value, dst.Type(), err)
+	}
+	dst.Set(reflect.ValueOf(*bi))
 }
 
 // pBigInt
@@ -239,7 +247,11 @@ func setPBigIntFromUint(value uint64, dst reflect.Value) {
 }
 
 func setPBigIntFromFloat(value float64, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(floatToBigInt(value)))
+	bi, err := floatToBigInt(value)
+	if err != nil {
+		builderPanicErrorConverting(value, dst.Type(), err)
+	}
+	dst.Set(reflect.ValueOf(bi))
 }
 
 func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
@@ -251,7 +263,7 @@ func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
 }
 
 func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	bi, err := value.BigInt()
+	bi, err := decimalFloatToBigInt(value)
 	if err != nil {
 		builderPanicErrorConverting(value, dst.Type(), err)
 	}
@@ -259,7 +271,11 @@ func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 }
 
 func setPBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(bigDecimalFloatToBigInt(value)))
+	bi, err := bigDecimalFloatToBigInt(value)
+	if err != nil {
+		builderPanicErrorConverting(value, dst.Type(), err)
+	}
+	dst.Set(reflect.ValueOf(bi))
 }
 
 // BigFloat

@@ -158,32 +158,32 @@ func TestCTEHexInt(t *testing.T) {
 }
 
 func TestCTEFloat(t *testing.T) {
-	assertCTEDecode(t, "c1 0.0", v(1), df("0"), ed())
-	assertCTEDecode(t, "c1 -0.0", v(1), df("-0"), ed())
+	assertCTEDecode(t, "c1 0.0", v(1), df(newDFloat("0")), ed())
+	assertCTEDecode(t, "c1 -0.0", v(1), df(newDFloat("-0")), ed())
 
-	assertCTEEncodeDecode(t, "c1 1.5", v(1), df("1.5"), ed())
-	assertCTEEncodeDecode(t, "c1 1.125", v(1), df("1.125"), ed())
-	assertCTEEncodeDecode(t, "c1 1.125e+10", v(1), df("1.125e+10"), ed())
-	assertCTEEncodeDecode(t, "c1 1.125e-10", v(1), df("1.125e-10"), ed())
-	assertCTEDecode(t, "c1 1.125e10", v(1), df("1.125e+10"), ed())
+	assertCTEEncodeDecode(t, "c1 1.5", v(1), df(newDFloat("1.5")), ed())
+	assertCTEEncodeDecode(t, "c1 1.125", v(1), df(newDFloat("1.125")), ed())
+	assertCTEEncodeDecode(t, "c1 1.125e+10", v(1), df(newDFloat("1.125e+10")), ed())
+	assertCTEEncodeDecode(t, "c1 1.125e-10", v(1), df(newDFloat("1.125e-10")), ed())
+	assertCTEDecode(t, "c1 1.125e10", v(1), df(newDFloat("1.125e+10")), ed())
 
-	assertCTEEncodeDecode(t, "c1 -1.5", v(1), df("-1.5"), ed())
-	assertCTEEncodeDecode(t, "c1 -1.125", v(1), df("-1.125"), ed())
-	assertCTEEncodeDecode(t, "c1 -1.125e+10", v(1), df("-1.125e+10"), ed())
-	assertCTEEncodeDecode(t, "c1 -1.125e-10", v(1), df("-1.125e-10"), ed())
-	assertCTEDecode(t, "c1 -1.125e10", v(1), df("-1.125e10"), ed())
+	assertCTEEncodeDecode(t, "c1 -1.5", v(1), df(newDFloat("-1.5")), ed())
+	assertCTEEncodeDecode(t, "c1 -1.125", v(1), df(newDFloat("-1.125")), ed())
+	assertCTEEncodeDecode(t, "c1 -1.125e+10", v(1), df(newDFloat("-1.125e+10")), ed())
+	assertCTEEncodeDecode(t, "c1 -1.125e-10", v(1), df(newDFloat("-1.125e-10")), ed())
+	assertCTEDecode(t, "c1 -1.125e10", v(1), df(newDFloat("-1.125e10")), ed())
 
-	assertCTEEncodeDecode(t, "c1 0.5", v(1), df("0.5"), ed())
-	assertCTEEncodeDecode(t, "c1 0.125", v(1), df("0.125"), ed())
-	assertCTEDecode(t, "c1 0.125e+10", v(1), df("0.125e+10"), ed())
-	assertCTEDecode(t, "c1 0.125e-10", v(1), df("0.125e-10"), ed())
-	assertCTEDecode(t, "c1 0.125e10", v(1), df("0.125e10"), ed())
+	assertCTEEncodeDecode(t, "c1 0.5", v(1), df(newDFloat("0.5")), ed())
+	assertCTEEncodeDecode(t, "c1 0.125", v(1), df(newDFloat("0.125")), ed())
+	assertCTEDecode(t, "c1 0.125e+10", v(1), df(newDFloat("0.125e+10")), ed())
+	assertCTEDecode(t, "c1 0.125e-10", v(1), df(newDFloat("0.125e-10")), ed())
+	assertCTEDecode(t, "c1 0.125e10", v(1), df(newDFloat("0.125e10")), ed())
 
-	assertCTEDecode(t, "c1 -0.5", v(1), df("-0.5"), ed())
-	assertCTEDecode(t, "c1 -0.125", v(1), df("-0.125"), ed())
-	assertCTEDecode(t, "c1 -0.125e+10", v(1), df("-0.125e+10"), ed())
-	assertCTEDecode(t, "c1 -0.125e-10", v(1), df("-0.125e-10"), ed())
-	assertCTEDecode(t, "c1 -0.125e10", v(1), df("-0.125e10"), ed())
+	assertCTEDecode(t, "c1 -0.5", v(1), df(newDFloat("-0.5")), ed())
+	assertCTEDecode(t, "c1 -0.125", v(1), df(newDFloat("-0.125")), ed())
+	assertCTEDecode(t, "c1 -0.125e+10", v(1), df(newDFloat("-0.125e+10")), ed())
+	assertCTEDecode(t, "c1 -0.125e-10", v(1), df(newDFloat("-0.125e-10")), ed())
+	assertCTEDecode(t, "c1 -0.125e10", v(1), df(newDFloat("-0.125e10")), ed())
 }
 
 func TestCTEHexFloat(t *testing.T) {

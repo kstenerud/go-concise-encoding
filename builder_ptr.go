@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 type ptrBuilder struct {
@@ -147,6 +148,12 @@ func (this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 func (this *ptrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	ptr := this.newElem()
 	this.elemBuilder.BuildFromTime(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
+func (this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	ptr := this.newElem()
+	this.elemBuilder.BuildFromCompactTime(value, ptr.Elem())
 	dst.Set(ptr)
 }
 

@@ -137,6 +137,9 @@ func (this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 func (this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	panic(fmt.Errorf("BUG: BuildFromTime should never be called on RootBuilder"))
 }
+func (this *RootBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
+	panic(fmt.Errorf("BUG: BuildFromCompactTime should never be called on RootBuilder"))
+}
 func (this *RootBuilder) BuildBeginList() {
 	panic(fmt.Errorf("BUG: BuildBeginList should never be called on RootBuilder"))
 }
@@ -227,11 +230,7 @@ func (this *RootBuilder) OnTime(value time.Time) {
 	this.currentBuilder.BuildFromTime(value, this.object)
 }
 func (this *RootBuilder) OnCompactTime(value *compact_time.Time) {
-	t, err := value.AsGoTime()
-	if err != nil {
-		panic(err)
-	}
-	this.currentBuilder.BuildFromTime(t, this.object)
+	this.currentBuilder.BuildFromCompactTime(value, this.object)
 }
 func (this *RootBuilder) OnBytes(value []byte) {
 	this.currentBuilder.BuildFromBytes(value, this.object)

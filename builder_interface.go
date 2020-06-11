@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 var (
@@ -117,6 +118,10 @@ func (this *intfBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 }
 
 func (this *intfBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+func (this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
@@ -252,6 +257,10 @@ func (this *intfSliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value
 }
 
 func (this *intfSliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	this.storeValue(value)
+}
+
+func (this *intfSliceBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
 	this.storeValue(value)
 }
 
@@ -395,6 +404,10 @@ func (this *intfIntfMapBuilder) BuildFromURI(value *url.URL, ignored reflect.Val
 }
 
 func (this *intfIntfMapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *intfIntfMapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 

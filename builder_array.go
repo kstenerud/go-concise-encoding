@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 type arrayBuilder struct {
@@ -149,6 +150,11 @@ func (this *arrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) 
 	this.index++
 }
 
+func (this *arrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	this.elemBuilder.BuildFromCompactTime(value, this.currentElem())
+	this.index++
+}
+
 func (this *arrayBuilder) BuildBeginList() {
 	this.elemBuilder.PrepareForListContents()
 }
@@ -265,6 +271,10 @@ func (this *bytesArrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Valu
 
 func (this *bytesArrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
 	builderPanicBadEvent(this, typeBytes, "BuildFromTime")
+}
+
+func (this *bytesArrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	builderPanicBadEvent(this, typeBytes, "BuildFromCompactTime")
 }
 
 func (this *bytesArrayBuilder) BuildBeginList() {

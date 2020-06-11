@@ -92,9 +92,9 @@ func TestEncodeDecodeNegativeInt(t *testing.T) {
 func TestEncodeDecodeFloat(t *testing.T) {
 	// CTE will convert to decimal float
 	assertEncodeDecodeCBE(t, v(1), f(1.5), ed())
-	assertEncodeDecode(t, v(1), df("1.5"), ed())
+	assertEncodeDecode(t, v(1), df(newDFloat("1.5")), ed())
 	assertEncodeDecodeCBE(t, v(1), f(-51.455e-16), ed())
-	assertEncodeDecode(t, v(1), df("-51.455e-16"), ed())
+	assertEncodeDecode(t, v(1), df(newDFloat("-51.455e-16")), ed())
 }
 
 func TestEncodeDecodeNan(t *testing.T) {

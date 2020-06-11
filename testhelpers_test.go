@@ -51,6 +51,14 @@ func newBigFloat(str string, significantDigits int) *big.Float {
 	return f
 }
 
+func newDFloat(str string) compact_float.DFloat {
+	df, err := compact_float.DFloatFromString(str)
+	if err != nil {
+		panic(err)
+	}
+	return df
+}
+
 func newBDF(str string) *apd.Decimal {
 	v, _, err := apd.NewFromString(str)
 	if err != nil {
@@ -312,6 +320,8 @@ func (this *tevent) Invoke(receiver DataEventReceiver) {
 		receiver.OnBigInt(this.V1.(*big.Int))
 	case teventFloat:
 		receiver.OnFloat(this.V1.(float64))
+	case teventBigFloat:
+		receiver.OnBigFloat(this.V1.(*big.Float))
 	case teventDecimalFloat:
 		receiver.OnDecimalFloat(this.V1.(compact_float.DFloat))
 	case teventBigDecimalFloat:
@@ -381,6 +391,7 @@ func i(v int64) *tevent {
 	}
 }
 func f(v float64) *tevent {
+	// TODO: Do I need to check for this? Doesn't the library handle it?
 	if math.IsNaN(v) {
 		if isSignalingNan(v) {
 			return snan()
@@ -389,62 +400,41 @@ func f(v float64) *tevent {
 	}
 	return newTEvent(teventFloat, v, nil)
 }
-func bf(v string, significantDigits int) *tevent {
-	bf, err := stringToBigFloat(v, significantDigits)
-	if err != nil {
-		panic(err)
-	}
-	return newTEvent(teventBigFloat, bf, nil)
-}
-
-func df(v string) *tevent {
-	decimal, err := compact_float.DFloatFromString(v)
-	if err != nil {
-		panic(err)
-	}
-	return newTEvent(teventDecimalFloat, decimal, nil)
-}
-
-func bdf(v string) *tevent {
-	decimal, _, err := apd.NewFromString(v)
-	if err != nil {
-		panic(err)
-	}
-	return newTEvent(teventBigDecimalFloat, decimal, nil)
-}
-
-func v(v uint64) *tevent              { return newTEvent(teventVersion, v, nil) }
-func n() *tevent                      { return newTEvent(teventNil, nil, nil) }
-func pad(v int) *tevent               { return newTEvent(teventPadding, v, nil) }
-func b(v bool) *tevent                { return newTEvent(teventBool, v, nil) }
-func pi(v uint64) *tevent             { return newTEvent(teventPInt, v, nil) }
-func ni(v uint64) *tevent             { return newTEvent(teventNInt, v, nil) }
-func bi(v *big.Int) *tevent           { return newTEvent(teventBigInt, v, nil) }
-func cplx(v complex128) *tevent       { return newTEvent(teventComplex, v, nil) }
-func nan() *tevent                    { return newTEvent(teventNan, nil, nil) }
-func snan() *tevent                   { return newTEvent(teventSNan, nil, nil) }
-func uuid(v []byte) *tevent           { return newTEvent(teventUUID, v, nil) }
-func gt(v time.Time) *tevent          { return newTEvent(teventTime, v, nil) }
-func ct(v *compact_time.Time) *tevent { return newTEvent(teventCompactTime, v, nil) }
-func bin(v []byte) *tevent            { return newTEvent(teventBytes, v, nil) }
-func s(v string) *tevent              { return newTEvent(teventString, v, nil) }
-func uri(v string) *tevent            { return newTEvent(teventURI, v, nil) }
-func cust(v []byte) *tevent           { return newTEvent(teventCustom, v, nil) }
-func bb() *tevent                     { return newTEvent(teventBytesBegin, nil, nil) }
-func sb() *tevent                     { return newTEvent(teventStringBegin, nil, nil) }
-func ub() *tevent                     { return newTEvent(teventURIBegin, nil, nil) }
-func cb() *tevent                     { return newTEvent(teventCustomBegin, nil, nil) }
-func ac(l uint64, term bool) *tevent  { return newTEvent(teventArrayChunk, l, term) }
-func ad(v []byte) *tevent             { return newTEvent(teventArrayData, v, nil) }
-func l() *tevent                      { return newTEvent(teventList, nil, nil) }
-func m() *tevent                      { return newTEvent(teventMap, nil, nil) }
-func mup() *tevent                    { return newTEvent(teventMarkup, nil, nil) }
-func meta() *tevent                   { return newTEvent(teventMetadata, nil, nil) }
-func cmt() *tevent                    { return newTEvent(teventComment, nil, nil) }
-func e() *tevent                      { return newTEvent(teventEnd, nil, nil) }
-func mark() *tevent                   { return newTEvent(teventMarker, nil, nil) }
-func ref() *tevent                    { return newTEvent(teventReference, nil, nil) }
-func ed() *tevent                     { return newTEvent(teventEndDocument, nil, nil) }
+func bf(v *big.Float) *tevent           { return newTEvent(teventBigFloat, v, nil) }
+func df(v compact_float.DFloat) *tevent { return newTEvent(teventDecimalFloat, v, nil) }
+func bdf(v *apd.Decimal) *tevent        { return newTEvent(teventBigDecimalFloat, v, nil) }
+func v(v uint64) *tevent                { return newTEvent(teventVersion, v, nil) }
+func n() *tevent                        { return newTEvent(teventNil, nil, nil) }
+func pad(v int) *tevent                 { return newTEvent(teventPadding, v, nil) }
+func b(v bool) *tevent                  { return newTEvent(teventBool, v, nil) }
+func pi(v uint64) *tevent               { return newTEvent(teventPInt, v, nil) }
+func ni(v uint64) *tevent               { return newTEvent(teventNInt, v, nil) }
+func bi(v *big.Int) *tevent             { return newTEvent(teventBigInt, v, nil) }
+func cplx(v complex128) *tevent         { return newTEvent(teventComplex, v, nil) }
+func nan() *tevent                      { return newTEvent(teventNan, nil, nil) }
+func snan() *tevent                     { return newTEvent(teventSNan, nil, nil) }
+func uuid(v []byte) *tevent             { return newTEvent(teventUUID, v, nil) }
+func gt(v time.Time) *tevent            { return newTEvent(teventTime, v, nil) }
+func ct(v *compact_time.Time) *tevent   { return newTEvent(teventCompactTime, v, nil) }
+func bin(v []byte) *tevent              { return newTEvent(teventBytes, v, nil) }
+func s(v string) *tevent                { return newTEvent(teventString, v, nil) }
+func uri(v string) *tevent              { return newTEvent(teventURI, v, nil) }
+func cust(v []byte) *tevent             { return newTEvent(teventCustom, v, nil) }
+func bb() *tevent                       { return newTEvent(teventBytesBegin, nil, nil) }
+func sb() *tevent                       { return newTEvent(teventStringBegin, nil, nil) }
+func ub() *tevent                       { return newTEvent(teventURIBegin, nil, nil) }
+func cb() *tevent                       { return newTEvent(teventCustomBegin, nil, nil) }
+func ac(l uint64, term bool) *tevent    { return newTEvent(teventArrayChunk, l, term) }
+func ad(v []byte) *tevent               { return newTEvent(teventArrayData, v, nil) }
+func l() *tevent                        { return newTEvent(teventList, nil, nil) }
+func m() *tevent                        { return newTEvent(teventMap, nil, nil) }
+func mup() *tevent                      { return newTEvent(teventMarkup, nil, nil) }
+func meta() *tevent                     { return newTEvent(teventMetadata, nil, nil) }
+func cmt() *tevent                      { return newTEvent(teventComment, nil, nil) }
+func e() *tevent                        { return newTEvent(teventEnd, nil, nil) }
+func mark() *tevent                     { return newTEvent(teventMarker, nil, nil) }
+func ref() *tevent                      { return newTEvent(teventReference, nil, nil) }
+func ed() *tevent                       { return newTEvent(teventEndDocument, nil, nil) }
 
 type TER struct {
 	Events []*tevent
@@ -486,7 +476,7 @@ func (h *TER) OnDecimalFloat(value compact_float.DFloat) {
 			h.add(nan())
 		}
 	} else {
-		h.add(df(value.String()))
+		h.add(df(value))
 	}
 }
 func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
@@ -496,7 +486,7 @@ func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
 	case apd.NaNSignaling:
 		h.add(snan())
 	default:
-		h.add(bdf(value.String()))
+		h.add(bdf(value))
 	}
 }
 func (h *TER) OnComplex(value complex128)             { h.add(cplx(value)) }

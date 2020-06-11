@@ -7,7 +7,12 @@ import (
 	"strconv"
 
 	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
+
+// TODO: Handle this in BuilderOptions instead
+const bigIntMaxBase10Exponent = 300
+const bigIntMaxBase2Exponent = bigIntMaxBase10Exponent * 10 / 3
 
 // apd.Decimal to other
 
@@ -15,11 +20,20 @@ func bigDecimalFloatToBigFloat(value *apd.Decimal) (*big.Float, error) {
 	return stringToBigFloat(value.Text('g'), int(value.NumDigits()))
 }
 
-func bigDecimalFloatToBigInt(value *apd.Decimal) *big.Int {
-	// TODO: Check for DOSable values
+func bigDecimalFloatToBigInt(value *apd.Decimal) (*big.Int, error) {
+	switch value.Form {
+	case apd.NaN, apd.NaNSignaling, apd.Infinite:
+		return nil, fmt.Errorf("%v cannot fit into a big.Int", value)
+	}
+	if value.Exponent < 0 {
+		return nil, fmt.Errorf("%v cannot fit into a big.Int", value)
+	}
+	if value.Exponent > bigIntMaxBase10Exponent {
+		return nil, fmt.Errorf("%v has an exponential component that is too large", value)
+	}
 	exp := big.NewInt(int64(value.Exponent))
 	exp.Exp(bigInt10, exp, nil)
-	return exp.Mul(exp, &value.Coeff)
+	return exp.Mul(exp, &value.Coeff), nil
 }
 
 func bigDecimalFloatToUint(value *apd.Decimal) (uint64, error) {
@@ -46,7 +60,9 @@ func bigFloatToPBigDecimalFloat(value *big.Float) (*apd.Decimal, error) {
 }
 
 func bigFloatToBigInt(value *big.Float) (*big.Int, error) {
-	// TODO: Check for DOSable values
+	if value.MantExp(nil) > bigIntMaxBase2Exponent {
+		return nil, fmt.Errorf("%v has an exponential component that is too large", value)
+	}
 	bi, accuracy := value.Int(new(big.Int))
 	if accuracy != big.Exact {
 		return nil, fmt.Errorf("%v cannot fit into a big.Int", value)
@@ -69,6 +85,15 @@ func bigFloatToFloat(value *big.Float) (float64, error) {
 
 func bigFloatToString(value *big.Float) string {
 	return value.Text('g', bitsToDecimalDigits(int(value.Prec())))
+}
+
+// Decimal float to other
+
+func decimalFloatToBigInt(value compact_float.DFloat) (*big.Int, error) {
+	if value.Exponent > bigIntMaxBase10Exponent {
+		return nil, fmt.Errorf("%v has an exponential component that is too large", value)
+	}
+	return value.BigInt()
 }
 
 // big.Int to other
@@ -110,9 +135,8 @@ func floatToPBigDecimalFloat(value float64) (*apd.Decimal, error) {
 	return d, err
 }
 
-func floatToBigInt(value float64) *big.Int {
-	bi, _ := big.NewFloat(value).Int(nil)
-	return bi
+func floatToBigInt(value float64) (*big.Int, error) {
+	return bigFloatToBigInt(big.NewFloat(value))
 }
 
 func floatToString(value float64) string {
@@ -121,7 +145,7 @@ func floatToString(value float64) string {
 
 func floatToUint(value float64) (uint64, error) {
 	if value < 0 {
-		return 0, fmt.Errorf("%v is negative, and cannot be represented by an unsigned int", value)
+		return 0, fmt.Errorf("%v is negative, and cannot be represented as an unsigned int", value)
 	}
 	return uint64(value), nil
 }

@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 const (
@@ -182,6 +183,10 @@ func (this *mapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
 }
 
 func (this *mapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	this.storeValue(reflect.ValueOf(value))
+}
+
+func (this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
 	this.storeValue(reflect.ValueOf(value))
 }
 

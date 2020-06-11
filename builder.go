@@ -30,13 +30,16 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 // TODO: BuilderOptions
-// type BuilderOptions struct {
-// 	// TODO: Something for lossy conversions?
-// 	// TODO: Something for decimal floats?
-// }
+type BuilderOptions struct {
+	// TODO: Currently handled in bigIntMaxBase10Exponent in conversions.go
+	FloatToBigIntMaxExponent int
+	// TODO: Something for lossy conversions?
+	// TODO: Something for decimal floats?
+}
 
 // Register a specific builder for a type.
 // If a builder has already been registered for this type, it will be replaced.
@@ -48,9 +51,10 @@ func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
 // the template object.
 func NewBuilderFor(template interface{}) *RootBuilder {
 	rv := reflect.ValueOf(template)
-	for rv.Kind() == reflect.Ptr {
-		rv = rv.Elem()
+	if !rv.IsValid() {
+		panic(fmt.Errorf("Cannot generate builder for zero Value"))
 	}
+
 	return newRootBuilder(rv.Type())
 }
 
@@ -71,6 +75,7 @@ type ObjectBuilder interface {
 	BuildFromBytes(value []byte, dst reflect.Value)
 	BuildFromURI(value *url.URL, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
+	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
 	BuildBeginList()
 	BuildBeginMap()
 	BuildEndContainer()
@@ -171,7 +176,9 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 	case reflect.Struct:
 		switch dstType {
 		case typeTime:
-			return newDirectBuilder(dstType)
+			return newTimeBuilder()
+		case typeCompactTime:
+			return newCompactTimeBuilder()
 		case typeURL:
 			return newDirectBuilder(dstType)
 		case typeDFloat:
@@ -195,6 +202,8 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 			return newPBigFloatBuilder()
 		case typePBigDecimalFloat:
 			return newPBigDecimalFloatBuilder()
+		case typePCompactTime:
+			return newPCompactTimeBuilder()
 		default:
 			return newPtrBuilder(dstType)
 		}

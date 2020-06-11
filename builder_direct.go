@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 // The direct builder has an unambiguous direct mapping from build event to
@@ -107,6 +108,10 @@ func (this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 }
 
 func (this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+func (this *directBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
@@ -221,6 +226,11 @@ func (this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 }
 
 func (this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	// TODO: Should non-pointer stuff be here?
+	dst.Set(reflect.ValueOf(value))
+}
+
+func (this *directPtrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 

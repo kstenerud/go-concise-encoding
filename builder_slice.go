@@ -28,6 +28,7 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
 
 const defaultSliceCap = 4
@@ -165,6 +166,12 @@ func (this *sliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
 func (this *sliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
 	object := this.newElem()
 	this.elemBuilder.BuildFromTime(value, object)
+	this.storeValue(object)
+}
+
+func (this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	object := this.newElem()
+	this.elemBuilder.BuildFromCompactTime(value, object)
 	this.storeValue(object)
 }
 
