@@ -810,49 +810,37 @@ func (this *TestingOuterStruct) Init(baseValue int) {
 	this.PBo = &this.Bo
 	this.By = byte(baseValue + int(unsafe.Offsetof(this.By)))
 	this.PBy = &this.By
-	this.I = baseValue + int(unsafe.Offsetof(this.I))
+	this.I = 100000 + baseValue + int(unsafe.Offsetof(this.I))
 	this.PI = &this.I
 	this.I8 = int8(baseValue + int(unsafe.Offsetof(this.I8)))
 	this.PI8 = &this.I8
-	this.I16 = int16(-baseValue - int(unsafe.Offsetof(this.I16)))
+	this.I16 = int16(-1000 - baseValue - int(unsafe.Offsetof(this.I16)))
 	this.PI16 = &this.I16
-	this.I32 = int32(baseValue + int(unsafe.Offsetof(this.I32)))
+	this.I32 = int32(1000000000 + baseValue + int(unsafe.Offsetof(this.I32)))
 	this.PI32 = &this.I32
-	this.I64 = int64(baseValue + int(unsafe.Offsetof(this.I64)))
+	this.I64 = int64(1000000000000000 + baseValue + int(unsafe.Offsetof(this.I64)))
 	this.PI64 = &this.I64
-	this.U = uint(baseValue + int(unsafe.Offsetof(this.U)))
+	this.U = uint(1000000 + baseValue + int(unsafe.Offsetof(this.U)))
 	this.PU = &this.U
 	this.U8 = uint8(baseValue + int(unsafe.Offsetof(this.U8)))
 	this.PU8 = &this.U8
-	this.U16 = uint16(baseValue + int(unsafe.Offsetof(this.U16)))
+	this.U16 = uint16(10000 + baseValue + int(unsafe.Offsetof(this.U16)))
 	this.PU16 = &this.U16
-	this.U32 = uint32(baseValue + int(unsafe.Offsetof(this.U32)))
+	this.U32 = uint32(100000000 + baseValue + int(unsafe.Offsetof(this.U32)))
 	this.PU32 = &this.U32
-	this.U64 = uint64(baseValue + int(unsafe.Offsetof(this.U64)))
+	this.U64 = uint64(1000000000000 + baseValue + int(unsafe.Offsetof(this.U64)))
 	this.PU64 = &this.U64
-	this.BI = big.Int{}
-	this.BI.Add(&this.BI, big.NewInt(int64(baseValue)+int64(unsafe.Offsetof(this.PBI)+10)))
-	this.BI.Exp(&this.BI, big.NewInt(20), nil)
-	this.BI.Add(&this.BI, big.NewInt(12345678))
-	this.PBI = big.NewInt(int64(baseValue) + int64(unsafe.Offsetof(this.PBI)+10))
-	this.PBI = this.PBI.Exp(this.PBI, big.NewInt(20), nil)
-	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
+	this.PBI = newBigInt(fmt.Sprintf("-10000000000000000000000000000000000000%v", unsafe.Offsetof(this.PBI)))
+	this.BI = *this.PBI
+	this.F32 = float32(1000000+baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
 	this.PF32 = &this.F32
-	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
+	this.F64 = float64(1000000000000+baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
 	this.PF64 = &this.F64
-	this.PBF = big.NewFloat(1234567890)
-	this.PBF.SetPrec(70)
+	this.PBF = newBigFloat("12345678901234567890123.1234567", 30)
 	this.BF = *this.PBF
-	this.PBF = this.PBF.Add(this.PBF, big.NewFloat(0.12345678901))
-	this.DF = compact_float.DFloat{
-		Exponent:    -int32(baseValue),
-		Coefficient: int64(baseValue + int(unsafe.Offsetof(this.DF))),
-	}
-	bdf, _, err := apd.NewFromString("-1.234567890123456789e-10000")
-	if err != nil {
-		panic(err)
-	}
-	this.PBDF = bdf
+	this.DF = newDFloat(fmt.Sprintf("-100000000000000%ve-1000000", unsafe.Offsetof(this.DF)))
+	this.PBDF = newBDF("-1.234567890123456789777777777777777777771234e-10000")
+	this.BDF = *this.PBDF
 	this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(this.Ar)))
 	this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+1))
 	this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+2))
@@ -867,9 +855,9 @@ func (this *TestingOuterStruct) Init(baseValue int) {
 	this.IS.Inner = baseValue + 15
 	this.PIS = new(TestingInnerStruct)
 	this.PIS.Inner = baseValue + 16
-	testTime := time.Date(2000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
+	testTime := time.Date(30000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
 	this.PTime = &testTime
-	this.PCTime = compact_time.NewTimestamp(2000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
+	this.PCTime = compact_time.NewTimestamp(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
 	this.CTime = *this.PCTime
 	this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
 }

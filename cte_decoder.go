@@ -672,7 +672,7 @@ func (this *CTEDecoder) decodeDecimalFloat(sign int64, coefficient uint64, bigCo
 
 	exponent -= int32(fractionalDigitCount)
 
-	if coefficient == 0 {
+	if coefficient == 0 && bigCoefficient == nil {
 		if sign < 0 {
 			value = compact_float.NegativeZero()
 		}
@@ -929,8 +929,9 @@ func (this *CTEDecoder) handleNegativeNumeric() {
 			// TODO: More efficient way to negate?
 			bigCoefficient = bigCoefficient.Mul(bigCoefficient, bigIntN1)
 			this.eventReceiver.OnBigInt(bigCoefficient)
+		} else {
+			this.eventReceiver.OnNegativeInt(coefficient)
 		}
-		this.eventReceiver.OnNegativeInt(coefficient)
 		this.endObject()
 		return
 	}
