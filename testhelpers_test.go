@@ -649,7 +649,7 @@ type TestingOuterStruct struct {
 	CTime  compact_time.Time
 	PCTime *compact_time.Time
 	PURL   *url.URL
-	// TODO: URL must have at least 2 chars... what to do here?
+	// TODO: If URI is relative, doesn't need scheme. Can be 0 length...
 	// URL   url.URL
 }
 
