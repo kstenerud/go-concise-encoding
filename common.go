@@ -44,6 +44,7 @@ type DebugOptionsStruct struct {
 var DebugOptions DebugOptionsStruct
 
 var (
+	typeInterface    = reflect.TypeOf([]interface{}{}).Elem()
 	typeString       = reflect.TypeOf("")
 	typeBytes        = reflect.TypeOf([]uint8{})
 	typeTime         = reflect.TypeOf(time.Time{})

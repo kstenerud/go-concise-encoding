@@ -32,8 +32,8 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
-func runBuild(expected interface{}, events ...*tevent) interface{} {
-	builder := NewBuilderFor(expected, nil)
+func runBuild(template interface{}, events ...*tevent) interface{} {
+	builder := NewBuilderFor(template, nil)
 	invokeEvents(builder, events...)
 	return builder.GetBuiltObject()
 }
@@ -53,6 +53,15 @@ func assertBuildPanics(t *testing.T, template interface{}, events ...*tevent) {
 
 // ============================================================================
 
+func TestBuildUnknown(t *testing.T) {
+	expected := []interface{}{1}
+	actual := runBuild(nil, l(), i(1), e())
+
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
+	}
+}
+
 func TestBuilderBasicTypes(t *testing.T) {
 	pBigIntP := newBigInt("12345678901234567890123456789")
 	pBigIntN := newBigInt("-999999999999999999999999999999")
@@ -64,7 +73,6 @@ func TestBuilderBasicTypes(t *testing.T) {
 	pCTime := compact_time.NewTimeLatLong(10, 5, 59, 100, 506, 107)
 	pURL := newURL("http://x.com")
 
-	assertBuildPanics(t, nil, n())
 	assertBuild(t, true, b(true))
 	assertBuild(t, false, b(false))
 	assertBuild(t, int(10), i(10))

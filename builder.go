@@ -51,11 +51,14 @@ func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
 // the template object.
 func NewBuilderFor(template interface{}, options *BuilderOptions) *RootBuilder {
 	rv := reflect.ValueOf(template)
-	if !rv.IsValid() {
-		panic(fmt.Errorf("Cannot generate builder for zero Value"))
+	var t reflect.Type
+	if rv.IsValid() {
+		t = rv.Type()
+	} else {
+		t = typeInterface
 	}
 
-	return NewRootBuilder(rv.Type(), options)
+	return NewRootBuilder(t, options)
 }
 
 // ObjectBuilder responds to external events to progressively build an object.

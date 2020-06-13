@@ -128,11 +128,13 @@ func (this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst refl
 }
 
 func (this *intfBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, builderIntfType, "List")
+	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this.parent, this.options)
+	builder.PrepareForListContents()
 }
 
 func (this *intfBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, builderIntfType, "Map")
+	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this.parent, this.options)
+	builder.PrepareForMapContents()
 }
 
 func (this *intfBuilder) BuildEndContainer() {
