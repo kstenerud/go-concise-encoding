@@ -286,7 +286,7 @@ func (this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent Obj
 }
 
 func (this *pCompactTimeBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, typePCompactTime, "Nil")
+	dst.Set(reflect.ValueOf((*compact_time.Time)(nil)))
 }
 
 func (this *pCompactTimeBuilder) BuildFromBool(value bool, dst reflect.Value) {

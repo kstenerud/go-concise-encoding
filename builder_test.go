@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
@@ -315,6 +314,7 @@ func TestBuilderConvertToFloat(t *testing.T) {
 func TestBuilderConvertToFloatFail(t *testing.T) {
 	// TODO: How to define required conversion accuracy?
 	v := 1.0
+	assertBuildPanics(t, v, n())
 	assertBuildPanics(t, v, b(true))
 	assertBuildPanics(t, v, pi(0xffffffffffffffff))
 	assertBuildPanics(t, v, i(-0x7fffffffffffffff))
@@ -454,170 +454,363 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 	assertBuildPanics(t, uint32(1), bdf(newBDF("10000000000")))
 }
 
-//
-
-func TestBuilderTime(t *testing.T) {
-	testTime := time.Now()
-	assertBuild(t, testTime, gt(testTime))
+func TestBuilderString(t *testing.T) {
+	assertBuild(t, "", n())
+	assertBuild(t, "test", s("test"))
 }
 
-func TestBuilderURI(t *testing.T) {
-	testURI := "https://x.com"
-	assertBuild(t, newURI(testURI), uri(testURI))
-}
-
-func TestBuilderBasicTypeFail(t *testing.T) {
-	assertBuildPanics(t, true, n())
-	assertBuildPanics(t, true, i(1))
-	assertBuildPanics(t, true, pi(1))
-	assertBuildPanics(t, true, f(1))
-	assertBuildPanics(t, true, s("1"))
-	assertBuildPanics(t, true, bin([]byte{1}))
-	assertBuildPanics(t, true, uri("x://x"))
-	assertBuildPanics(t, true, gt(time.Now()))
-	assertBuildPanics(t, true, l())
-	assertBuildPanics(t, true, m())
-	assertBuildPanics(t, true, e())
-
-	assertBuildPanics(t, uint(1), n())
-	assertBuildPanics(t, uint(1), b(true))
-	assertBuildPanics(t, uint(1), s("1"))
-	assertBuildPanics(t, uint(1), bin([]byte{1}))
-	assertBuildPanics(t, uint(1), uri("x://x"))
-	assertBuildPanics(t, uint(1), gt(time.Now()))
-	assertBuildPanics(t, uint(1), l())
-	assertBuildPanics(t, uint(1), m())
-	assertBuildPanics(t, uint(1), e())
-
-	assertBuildPanics(t, float64(1), n())
-	assertBuildPanics(t, float64(1), b(true))
-	assertBuildPanics(t, float64(1), s("1"))
-	assertBuildPanics(t, float64(1), bin([]byte{1}))
-	assertBuildPanics(t, float64(1), uri("x://x"))
-	assertBuildPanics(t, float64(1), gt(time.Now()))
-	assertBuildPanics(t, float64(1), l())
-	assertBuildPanics(t, float64(1), m())
-	assertBuildPanics(t, float64(1), e())
-
-	assertBuildPanics(t, "", b(true))
-	assertBuildPanics(t, "", i(1))
+func TestBuilderStringFail(t *testing.T) {
+	assertBuildPanics(t, "", b(false))
 	assertBuildPanics(t, "", pi(1))
-	assertBuildPanics(t, "", f(1))
+	assertBuildPanics(t, "", ni(1))
+	assertBuildPanics(t, "", f(1.1))
+	assertBuildPanics(t, "", bf(newBigFloat("1.1", 2)))
+	assertBuildPanics(t, "", df(newDFloat("1.1")))
+	assertBuildPanics(t, "", bdf(newBDF("1.1")))
+	assertBuildPanics(t, "", bf(newBigFloat("1e20", 2)))
+	assertBuildPanics(t, "", df(newDFloat("1e20")))
+	assertBuildPanics(t, "", bdf(newBDF("1e20")))
+	assertBuildPanics(t, "", bi(newBigInt("100000000000000000000")))
 	assertBuildPanics(t, "", bin([]byte{1}))
 	assertBuildPanics(t, "", uri("x://x"))
+	assertBuildPanics(t, "", uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, "", ct(compact_time.AsCompactTime(time.Now())))
 	assertBuildPanics(t, "", gt(time.Now()))
 	assertBuildPanics(t, "", l())
 	assertBuildPanics(t, "", m())
 	assertBuildPanics(t, "", e())
-
-	assertBuildPanics(t, []byte{}, b(true))
-	assertBuildPanics(t, []byte{}, i(1))
-	assertBuildPanics(t, []byte{}, pi(1))
-	assertBuildPanics(t, []byte{}, f(1))
-	assertBuildPanics(t, []byte{}, s("1"))
-	assertBuildPanics(t, []byte{}, uri("x://x"))
-	assertBuildPanics(t, []byte{}, gt(time.Now()))
-	assertBuildPanics(t, []byte{}, l())
-	assertBuildPanics(t, []byte{}, m())
-	assertBuildPanics(t, []byte{}, e())
-
-	assertBuildPanics(t, newURI("x://x"), b(true))
-	assertBuildPanics(t, newURI("x://x"), i(1))
-	assertBuildPanics(t, newURI("x://x"), pi(1))
-	assertBuildPanics(t, newURI("x://x"), f(1))
-	assertBuildPanics(t, newURI("x://x"), s("1"))
-	assertBuildPanics(t, newURI("x://x"), bin([]byte{1}))
-	assertBuildPanics(t, newURI("x://x"), gt(time.Now()))
-	assertBuildPanics(t, newURI("x://x"), l())
-	assertBuildPanics(t, newURI("x://x"), m())
-	assertBuildPanics(t, newURI("x://x"), e())
-
-	assertBuildPanics(t, time.Now(), n())
-	assertBuildPanics(t, time.Now(), b(true))
-	assertBuildPanics(t, time.Now(), i(1))
-	assertBuildPanics(t, time.Now(), pi(1))
-	assertBuildPanics(t, time.Now(), f(1))
-	assertBuildPanics(t, time.Now(), s("1"))
-	assertBuildPanics(t, time.Now(), bin([]byte{1}))
-	assertBuildPanics(t, time.Now(), uri("x://x"))
-	assertBuildPanics(t, time.Now(), l())
-	assertBuildPanics(t, time.Now(), m())
-	assertBuildPanics(t, time.Now(), e())
-
-	assertBuildPanics(t, []int{}, n())
-	assertBuildPanics(t, []int{}, b(true))
-	assertBuildPanics(t, []int{}, i(1))
-	assertBuildPanics(t, []int{}, pi(1))
-	assertBuildPanics(t, []int{}, f(1))
-	assertBuildPanics(t, []int{}, s("1"))
-	assertBuildPanics(t, []int{}, bin([]byte{1}))
-	assertBuildPanics(t, []int{}, uri("x://x"))
-	assertBuildPanics(t, []int{}, gt(time.Now()))
-	assertBuildPanics(t, []int{}, m())
-	assertBuildPanics(t, []int{}, e())
-
-	assertBuildPanics(t, map[int]int{}, i(1))
-	assertBuildPanics(t, map[int]int{}, pi(1))
-	assertBuildPanics(t, map[int]int{}, f(1))
-	assertBuildPanics(t, map[int]int{}, s("1"))
-	assertBuildPanics(t, map[int]int{}, bin([]byte{1}))
-	assertBuildPanics(t, map[int]int{}, uri("x://x"))
-	assertBuildPanics(t, map[int]int{}, gt(time.Now()))
-	assertBuildPanics(t, map[int]int{}, l())
-	assertBuildPanics(t, map[int]int{}, e())
 }
 
-func TestBuilderNumericConversion(t *testing.T) {
-	assertBuild(t, int8(50), pi(50))
-	assertBuild(t, int16(50), f(50))
-	assertBuild(t, uint32(50), i(50))
-	assertBuild(t, uint64(50), f(50))
-	assertBuild(t, float32(50), i(50))
-	assertBuild(t, float64(50), pi(50))
-	assertBuild(t, compact_float.DFloatValue(0, 50), pi(50))
+func TestBuilderGoTime(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
+	assertBuild(t, gtime, gt(gtime))
+	assertBuild(t, gtime, ct(ctime))
 }
 
-func TestBuilderNumericConversionFail(t *testing.T) {
-	assertBuildPanics(t, int8(0), i(300))
-	assertBuildPanics(t, int(0), f(3.5))
-	assertBuildPanics(t, uint(0), i(-1))
-	assertBuildPanics(t, uint(0), f(3.5))
-	assertBuildPanics(t, float32(0), i(0x7fffffffffffffff))
-	assertBuildPanics(t, float64(0), pi(0xffffffffffffffff))
+func TestBuilderGoTimeFail(t *testing.T) {
+	gtime := time.Time{}
+	ctime := compact_time.NewTimeLatLong(1, 1, 1, 1, 100, 0)
+	assertBuildPanics(t, gtime, n())
+	assertBuildPanics(t, gtime, b(true))
+	assertBuildPanics(t, gtime, pi(1))
+	assertBuildPanics(t, gtime, ni(1))
+	assertBuildPanics(t, gtime, f(1.1))
+	assertBuildPanics(t, gtime, bf(newBigFloat("1.1", 2)))
+	assertBuildPanics(t, gtime, df(newDFloat("1.1")))
+	assertBuildPanics(t, gtime, bdf(newBDF("1.1")))
+	assertBuildPanics(t, gtime, bf(newBigFloat("1e20", 2)))
+	assertBuildPanics(t, gtime, df(newDFloat("1e20")))
+	assertBuildPanics(t, gtime, bdf(newBDF("1e20")))
+	assertBuildPanics(t, gtime, bi(newBigInt("100000000000000000000")))
+	assertBuildPanics(t, gtime, s("1"))
+	assertBuildPanics(t, gtime, bin([]byte{1}))
+	assertBuildPanics(t, gtime, uri("x://x"))
+	assertBuildPanics(t, gtime, uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, gtime, ct(ctime))
+	assertBuildPanics(t, gtime, l())
+	assertBuildPanics(t, gtime, m())
+	assertBuildPanics(t, gtime, e())
+}
+
+func TestBuilderCompactTime(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
+	assertBuild(t, (*compact_time.Time)(nil), n())
+	assertBuild(t, ctime, gt(gtime))
+	assertBuild(t, ctime, ct(ctime))
+
+	assertBuild(t, *ctime, gt(gtime))
+	assertBuild(t, *ctime, ct(ctime))
+}
+
+func TestBuilderCompactTimeFail(t *testing.T) {
+	ctime := compact_time.NewTimeLatLong(1, 1, 1, 1, 100, 0)
+	assertBuildPanics(t, ctime, b(true))
+	assertBuildPanics(t, ctime, pi(1))
+	assertBuildPanics(t, ctime, ni(1))
+	assertBuildPanics(t, ctime, f(1.1))
+	assertBuildPanics(t, ctime, bf(newBigFloat("1.1", 2)))
+	assertBuildPanics(t, ctime, df(newDFloat("1.1")))
+	assertBuildPanics(t, ctime, bdf(newBDF("1.1")))
+	assertBuildPanics(t, ctime, bf(newBigFloat("1e20", 2)))
+	assertBuildPanics(t, ctime, df(newDFloat("1e20")))
+	assertBuildPanics(t, ctime, bdf(newBDF("1e20")))
+	assertBuildPanics(t, ctime, bi(newBigInt("100000000000000000000")))
+	assertBuildPanics(t, ctime, s("1"))
+	assertBuildPanics(t, ctime, bin([]byte{1}))
+	assertBuildPanics(t, ctime, uri("x://x"))
+	assertBuildPanics(t, ctime, uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, ctime, l())
+	assertBuildPanics(t, ctime, m())
+	assertBuildPanics(t, ctime, e())
+
+	assertBuildPanics(t, *ctime, n())
+	assertBuildPanics(t, *ctime, b(true))
+	assertBuildPanics(t, *ctime, pi(1))
+	assertBuildPanics(t, *ctime, ni(1))
+	assertBuildPanics(t, *ctime, f(1.1))
+	assertBuildPanics(t, *ctime, bf(newBigFloat("1.1", 2)))
+	assertBuildPanics(t, *ctime, df(newDFloat("1.1")))
+	assertBuildPanics(t, *ctime, bdf(newBDF("1.1")))
+	assertBuildPanics(t, *ctime, bf(newBigFloat("1e20", 2)))
+	assertBuildPanics(t, *ctime, df(newDFloat("1e20")))
+	assertBuildPanics(t, *ctime, bdf(newBDF("1e20")))
+	assertBuildPanics(t, *ctime, bi(newBigInt("100000000000000000000")))
+	assertBuildPanics(t, *ctime, s("1"))
+	assertBuildPanics(t, *ctime, bin([]byte{1}))
+	assertBuildPanics(t, *ctime, uri("x://x"))
+	assertBuildPanics(t, *ctime, uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, *ctime, l())
+	assertBuildPanics(t, *ctime, m())
+	assertBuildPanics(t, *ctime, e())
 }
 
 func TestBuilderSlice(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
 	assertBuild(t, []bool{false, true}, l(), b(false), b(true), e())
-	assertBuild(t, []int8{1, 2, 3}, l(), i(1), pi(2), f(3), e())
-	assertBuild(t, []interface{}{false, 1, "test"}, l(), b(false), i(1), s("test"), e())
+	assertBuild(t, []int8{-1, 2, 3, 4, 5, 6, 7}, l(), i(-1), pi(2), f(3),
+		bi(newBigInt("4")), bf(newBigFloat("5", 1)), df(newDFloat("6")),
+		bdf(newBDF("7")), e())
+	assertBuild(t, []*int{nil}, l(), n(), e())
+	assertBuild(t, [][]byte{[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, l(), uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}), e())
+	assertBuild(t, []string{"test"}, l(), s("test"), e())
+	assertBuild(t, [][]byte{[]byte{1}}, l(), bin([]byte{1}), e())
+	assertBuild(t, []*url.URL{newURI("http://example.com")}, l(), uri("http://example.com"), e())
+	assertBuild(t, []time.Time{gtime}, l(), gt(gtime), e())
+	assertBuild(t, []*compact_time.Time{ctime}, l(), ct(ctime), e())
+	assertBuild(t, [][]int{[]int{1}}, l(), l(), i(1), e(), e())
+	assertBuild(t, []map[int]int{map[int]int{1: 2}}, l(), m(), i(1), i(2), e(), e())
+}
+
+func TestBuilderSliceFail(t *testing.T) {
+	assertBuildPanics(t, []int{}, n())
+	assertBuildPanics(t, []int{}, m())
+	assertBuildPanics(t, [][]int{}, l(), m())
 }
 
 func TestBuilderArray(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
 	assertBuild(t, [2]bool{false, true}, l(), b(false), b(true), e())
-	assertBuild(t, [3]int8{1, 2, 3}, l(), i(1), pi(2), f(3), e())
-	assertBuild(t, [3]interface{}{false, 1, "test"}, l(), b(false), i(1), s("test"), e())
+	assertBuild(t, [7]int8{-1, 2, 3, 4, 5, 6, 7}, l(), i(-1), pi(2), f(3),
+		bi(newBigInt("4")), bf(newBigFloat("5", 1)), df(newDFloat("6")),
+		bdf(newBDF("7")), e())
+	assertBuild(t, [1]*int{nil}, l(), n(), e())
+	assertBuild(t, [1][]byte{[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, l(), uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}), e())
+	assertBuild(t, [1]string{"test"}, l(), s("test"), e())
+	assertBuild(t, [1][]byte{[]byte{1}}, l(), bin([]byte{1}), e())
+	assertBuild(t, [1]*url.URL{newURI("http://example.com")}, l(), uri("http://example.com"), e())
+	assertBuild(t, [1]time.Time{gtime}, l(), gt(gtime), e())
+	assertBuild(t, [1]*compact_time.Time{ctime}, l(), ct(ctime), e())
+	assertBuild(t, [1][]int{[]int{1}}, l(), l(), i(1), e(), e())
+	assertBuild(t, [1]map[int]int{map[int]int{1: 2}}, l(), m(), i(1), i(2), e(), e())
+}
+
+func TestBuilderArrayFail(t *testing.T) {
+	assertBuildPanics(t, [1]int{}, n())
+	assertBuildPanics(t, [1]int{}, m())
+	assertBuildPanics(t, [1][]int{}, l(), m())
+}
+
+func TestBuilderByteArray(t *testing.T) {
+	assertBuild(t, [1]byte{1}, bin([]byte{1}))
+}
+
+func TestBuilderByteArrayFail(t *testing.T) {
+	assertBuildPanics(t, [1]byte{}, n())
+	assertBuildPanics(t, [1]byte{}, b(false))
+	assertBuildPanics(t, [1]byte{}, pi(1))
+	assertBuildPanics(t, [1]byte{}, ni(1))
+	assertBuildPanics(t, [1]byte{}, f(1.1))
+	assertBuildPanics(t, [1]byte{}, bf(newBigFloat("1.1", 2)))
+	assertBuildPanics(t, [1]byte{}, df(newDFloat("1.1")))
+	assertBuildPanics(t, [1]byte{}, bdf(newBDF("1.1")))
+	assertBuildPanics(t, [1]byte{}, bf(newBigFloat("1e20", 2)))
+	assertBuildPanics(t, [1]byte{}, df(newDFloat("1e20")))
+	assertBuildPanics(t, [1]byte{}, bdf(newBDF("1e20")))
+	assertBuildPanics(t, [1]byte{}, bi(newBigInt("100000000000000000000")))
+	assertBuildPanics(t, [1]byte{}, s(""))
+	assertBuildPanics(t, [1]byte{}, uri("x://x"))
+	assertBuildPanics(t, [1]byte{}, uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, [1]byte{}, ct(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, [1]byte{}, gt(time.Now()))
+	assertBuildPanics(t, [1]byte{}, l())
+	assertBuildPanics(t, [1]byte{}, m())
+	assertBuildPanics(t, [1]byte{}, e())
 }
 
 func TestBuilderMap(t *testing.T) {
-	assertBuild(t, map[string]bool{"true": true, "false": false}, m(), s("true"), b(true), s("false"), b(false), e())
-	assertBuild(t, map[interface{}]interface{}{"false": false, 1: "one"}, m(), s("false"), b(false), i(1), s("one"), e())
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
+	assertBuild(t, map[int]interface{}{
+		1:  nil,
+		2:  true,
+		3:  1,
+		4:  -1,
+		5:  1.1,
+		6:  newBigFloat("1.1", 2),
+		7:  newDFloat("1.1"),
+		8:  newBDF("1.1"),
+		9:  newBigInt("100000000000000000000"),
+		10: "test",
+		11: newURI("http://example.com"),
+		12: []byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		13: gtime,
+		14: ctime,
+		15: []float64{1},
+		16: map[int]int{1: 2},
+		17: []byte{1},
+	},
+		m(),
+		i(1), n(),
+		i(2), b(true),
+		i(3), pi(1),
+		i(4), ni(1),
+		i(5), f(1.1),
+		i(6), bf(newBigFloat("1.1", 2)),
+		i(7), df(newDFloat("1.1")),
+		i(8), bdf(newBDF("1.1")),
+		i(9), bi(newBigInt("100000000000000000000")),
+		i(10), s("test"),
+		i(11), uri("http://example.com"),
+		i(12), uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		i(13), gt(gtime),
+		i(14), ct(ctime),
+		i(15), l(), f(1), e(),
+		i(16), m(), i(1), i(2), e(),
+		i(17), bin([]byte{1}),
+		e())
 }
 
-func TestBuilderSliceSlice(t *testing.T) {
-	assertBuild(t, [][]bool{{false, true}}, l(), l(), b(false), b(true), e(), e())
+func TestBuilderStruct(t *testing.T) {
+	s := newTestingOuterStruct(1)
+	includeFakes := true
+	assertBuild(t, s, s.Events(includeFakes)...)
 }
 
-func TestBuilderMapMap(t *testing.T) {
-	assertBuild(t, map[string]map[int]bool{"first": {1: true}}, m(), s("first"), m(), i(1), b(true), e(), e())
+func TestBuilderInterfaceSlice(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
+	assertBuild(t, []interface{}{
+		// nil,
+		true,
+		1,
+		-1,
+		1.1,
+		newBigFloat("1.1", 2),
+		newDFloat("1.1"),
+		newBDF("1.1"),
+		newBigInt("100000000000000000000"),
+		"test",
+		newURI("http://example.com"),
+		[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		gtime,
+		ctime,
+		[]float64{1},
+		map[int]int{1: 2},
+		[]byte{1},
+	}, l(),
+		// n(),
+		b(true),
+		pi(1),
+		ni(1),
+		f(1.1),
+		bf(newBigFloat("1.1", 2)),
+		df(newDFloat("1.1")),
+		bdf(newBDF("1.1")),
+		bi(newBigInt("100000000000000000000")),
+		s("test"),
+		uri("http://example.com"),
+		uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		gt(gtime),
+		ct(ctime),
+		l(), f(1), e(),
+		m(), i(1), i(2), e(),
+		bin([]byte{1}),
+		e())
 }
 
-func TestBuilderSliceMap(t *testing.T) {
-	assertBuild(t, []map[int]bool{{1: true}}, l(), m(), i(1), b(true), e(), e())
+func TestBuilderInterfaceMap(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := compact_time.AsCompactTime(gtime)
+
+	assertBuild(t, map[interface{}]interface{}{
+		1:  nil,
+		2:  true,
+		3:  1,
+		4:  -1,
+		5:  1.1,
+		6:  newBigFloat("1.1", 2),
+		7:  newDFloat("1.1"),
+		8:  newBDF("1.1"),
+		9:  newBigInt("100000000000000000000"),
+		10: "test",
+		11: newURI("http://example.com"),
+		12: []byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		13: gtime,
+		14: ctime,
+		15: []float64{1},
+		16: map[int]int{1: 2},
+		17: []byte{1},
+	},
+		m(),
+		i(1), n(),
+		i(2), b(true),
+		i(3), pi(1),
+		i(4), ni(1),
+		i(5), f(1.1),
+		i(6), bf(newBigFloat("1.1", 2)),
+		i(7), df(newDFloat("1.1")),
+		i(8), bdf(newBDF("1.1")),
+		i(9), bi(newBigInt("100000000000000000000")),
+		i(10), s("test"),
+		i(11), uri("http://example.com"),
+		i(12), uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		i(13), gt(gtime),
+		i(14), ct(ctime),
+		i(15), l(), f(1), e(),
+		i(16), m(), i(1), i(2), e(),
+		i(17), bin([]byte{1}),
+		e())
 }
 
-func TestBuilderMapSlice(t *testing.T) {
-	assertBuild(t, map[string][]int{"first": {1}}, m(), s("first"), l(), i(1), e(), e())
-}
+// Older tests
 
 type BuilderTestStruct struct {
 	internal string
@@ -626,24 +819,6 @@ type BuilderTestStruct struct {
 	AnInt    int
 	AMap     map[int]int8
 	ASlice   []string
-}
-
-func TestBuilderStruct(t *testing.T) {
-	assertBuild(t,
-		BuilderTestStruct{
-			AString: "test",
-			AnInt:   1,
-			ABool:   true,
-			AMap:    map[int]int8{1: 50},
-			ASlice:  []string{"the slice"},
-		},
-		m(),
-		s("AString"), s("test"),
-		s("AMap"), m(), i(1), i(50), e(),
-		s("AnInt"), i(1),
-		s("ASlice"), l(), s("the slice"), e(),
-		s("ABool"), b(true),
-		e())
 }
 
 func TestBuilderStructIgnored(t *testing.T) {

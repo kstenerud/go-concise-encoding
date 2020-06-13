@@ -32,6 +32,7 @@ type IteratorOptions struct {
 	// walking the object again. This is useful for cyclic or recursive data
 	// structures.
 	UseReferences bool
+	// OmitNilPointers bool
 }
 
 // Iterate over an object (recursively), calling the eventReceiver as data is

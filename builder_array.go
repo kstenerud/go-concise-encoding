@@ -137,7 +137,8 @@ func (this *arrayBuilder) BuildFromString(value string, ignored reflect.Value) {
 }
 
 func (this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BuildFromBytes")
+	this.elemBuilder.BuildFromBytes(value, this.currentElem())
+	this.index++
 }
 
 func (this *arrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {

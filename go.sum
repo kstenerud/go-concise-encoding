@@ -2,8 +2,8 @@ github.com/cockroachdb/apd/v2 v2.0.1 h1:y1Rh3tEU89D+7Tgbw+lp52T6p/GJLpDmNvr10UWq
 github.com/cockroachdb/apd/v2 v2.0.1/go.mod h1:DDxRlzC2lo3/vSlmSoS7JkqbbrARPuFOGr0B9pvN3Gw=
 github.com/kstenerud/go-compact-float v1.4.7 h1:0SBrmQ/l+w7RPDgxWpOaiaQs2fT3YXcMz7sCTDvVLYM=
 github.com/kstenerud/go-compact-float v1.4.7/go.mod h1:L9bVnWPbz4zUB8wXFXN9RQfvkSt/KlAUcLj2H+73EiU=
-github.com/kstenerud/go-compact-time v1.3.2 h1:xP0pHqjw0AffxDXavfp2VBURDfaLF9+UtjDcT8yWg3Y=
-github.com/kstenerud/go-compact-time v1.3.2/go.mod h1:BLFAONzS2YG4qLf/mwn6UBtAztxkBH7f/z8hT/I1dUo=
+github.com/kstenerud/go-compact-time v1.3.5 h1:VFIruOmJ9dzXzTXGcBakOl9ERFuKn58L4DR1iZyy1U4=
+github.com/kstenerud/go-compact-time v1.3.5/go.mod h1:BLFAONzS2YG4qLf/mwn6UBtAztxkBH7f/z8hT/I1dUo=
 github.com/kstenerud/go-describe v1.2.9 h1:p3ZQ2l4t1LiekUfYw7qIxvgUibCjEvm7LmSs9jfsJLo=
 github.com/kstenerud/go-describe v1.2.9/go.mod h1:iE3AFLH5Mbb3f0OAoQqTn2Ao1bOJN66kjxiMWHFQuAU=
 github.com/kstenerud/go-duplicates v1.0.3 h1:ZSkVFer/fxLT84T5GuE/pfiqBnHr3E8DHcfKL5DilFk=

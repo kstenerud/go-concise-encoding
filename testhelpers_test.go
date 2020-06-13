@@ -25,9 +25,11 @@ import (
 	"math"
 	"math/big"
 	"net/url"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
+	"unsafe"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -381,6 +383,13 @@ func (this *tevent) Invoke(receiver DataEventReceiver) {
 	}
 }
 
+func eventOrNil(eventType teventType, value interface{}) *tevent {
+	if value == nil {
+		eventType = teventNil
+	}
+	return newTEvent(eventType, value, nil)
+}
+
 func tt() *tevent { return newTEvent(teventBool, true, nil) }
 func ff() *tevent { return newTEvent(teventBool, false, nil) }
 func i(v int64) *tevent {
@@ -400,22 +409,23 @@ func f(v float64) *tevent {
 	}
 	return newTEvent(teventFloat, v, nil)
 }
-func bf(v *big.Float) *tevent           { return newTEvent(teventBigFloat, v, nil) }
+
+func bf(v *big.Float) *tevent           { return eventOrNil(teventBigFloat, v) }
 func df(v compact_float.DFloat) *tevent { return newTEvent(teventDecimalFloat, v, nil) }
-func bdf(v *apd.Decimal) *tevent        { return newTEvent(teventBigDecimalFloat, v, nil) }
+func bdf(v *apd.Decimal) *tevent        { return eventOrNil(teventBigDecimalFloat, v) }
 func v(v uint64) *tevent                { return newTEvent(teventVersion, v, nil) }
 func n() *tevent                        { return newTEvent(teventNil, nil, nil) }
 func pad(v int) *tevent                 { return newTEvent(teventPadding, v, nil) }
 func b(v bool) *tevent                  { return newTEvent(teventBool, v, nil) }
 func pi(v uint64) *tevent               { return newTEvent(teventPInt, v, nil) }
 func ni(v uint64) *tevent               { return newTEvent(teventNInt, v, nil) }
-func bi(v *big.Int) *tevent             { return newTEvent(teventBigInt, v, nil) }
+func bi(v *big.Int) *tevent             { return eventOrNil(teventBigInt, v) }
 func cplx(v complex128) *tevent         { return newTEvent(teventComplex, v, nil) }
 func nan() *tevent                      { return newTEvent(teventNan, nil, nil) }
 func snan() *tevent                     { return newTEvent(teventSNan, nil, nil) }
 func uuid(v []byte) *tevent             { return newTEvent(teventUUID, v, nil) }
 func gt(v time.Time) *tevent            { return newTEvent(teventTime, v, nil) }
-func ct(v *compact_time.Time) *tevent   { return newTEvent(teventCompactTime, v, nil) }
+func ct(v *compact_time.Time) *tevent   { return eventOrNil(teventCompactTime, v) }
 func bin(v []byte) *tevent              { return newTEvent(teventBytes, v, nil) }
 func s(v string) *tevent                { return newTEvent(teventString, v, nil) }
 func uri(v string) *tevent              { return newTEvent(teventURI, v, nil) }
@@ -435,6 +445,74 @@ func e() *tevent                        { return newTEvent(teventEnd, nil, nil) 
 func mark() *tevent                     { return newTEvent(teventMarker, nil, nil) }
 func ref() *tevent                      { return newTEvent(teventReference, nil, nil) }
 func ed() *tevent                       { return newTEvent(teventEndDocument, nil, nil) }
+
+func eventForValue(value interface{}) *tevent {
+	rv := reflect.ValueOf(value)
+	if !rv.IsValid() {
+		return n()
+	}
+	switch rv.Kind() {
+	case reflect.Bool:
+		return b(rv.Bool())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return i(rv.Int())
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return pi(rv.Uint())
+	case reflect.Float32, reflect.Float64:
+		return f(rv.Float())
+	case reflect.Complex64, reflect.Complex128:
+		panic(fmt.Errorf("TODO: %v", rv.Type()))
+	case reflect.String:
+		return s(rv.String())
+	case reflect.Slice:
+		switch rv.Type() {
+		case typeBytes:
+			return bin(rv.Bytes())
+		}
+	case reflect.Ptr:
+		if rv.IsNil() {
+			return n()
+		}
+		switch rv.Type() {
+		case typePBigDecimalFloat:
+			return bdf(rv.Interface().(*apd.Decimal))
+		case typePBigFloat:
+			return bf(rv.Interface().(*big.Float))
+		case typePBigInt:
+			return bi(rv.Interface().(*big.Int))
+		case typePCompactTime:
+			return ct(rv.Interface().(*compact_time.Time))
+		case typePURL:
+			return uri(rv.Interface().(*url.URL).String())
+		}
+		return eventForValue(rv.Elem().Interface())
+	case reflect.Struct:
+		switch rv.Type() {
+		case typeBigDecimalFloat:
+			v := rv.Interface().(apd.Decimal)
+			return bdf(&v)
+		case typeBigFloat:
+			v := rv.Interface().(big.Float)
+			return bf(&v)
+		case typeBigInt:
+			v := rv.Interface().(big.Int)
+			return bi(&v)
+		case typeCompactTime:
+			v := rv.Interface().(compact_time.Time)
+			return ct(&v)
+		case typeDFloat:
+			v := rv.Interface().(compact_float.DFloat)
+			return df(v)
+		case typeTime:
+			v := rv.Interface().(time.Time)
+			return gt(v)
+		case typeURL:
+			v := rv.Interface().(url.URL)
+			return uri(v.String())
+		}
+	}
+	panic(fmt.Errorf("Testing BUG: Unhandled kind: %v", rv.Kind()))
+}
 
 type TER struct {
 	Events []*tevent
@@ -518,4 +596,280 @@ func (h *TER) OnNan(signaling bool) {
 	} else {
 		h.add(nan())
 	}
+}
+
+type TestingInnerStruct struct {
+	Inner int
+}
+
+type TestingOuterStruct struct {
+	Bo     bool
+	PBo    *bool
+	By     byte
+	PBy    *byte
+	I      int
+	PI     *int
+	I8     int8
+	PI8    *int8
+	I16    int16
+	PI16   *int16
+	I32    int32
+	PI32   *int32
+	I64    int64
+	PI64   *int64
+	U      uint
+	PU     *uint
+	U8     uint8
+	PU8    *uint8
+	U16    uint16
+	PU16   *uint16
+	U32    uint32
+	PU32   *uint32
+	U64    uint64
+	PU64   *uint64
+	BI     big.Int
+	PBI    *big.Int
+	F32    float32
+	PF32   *float32
+	F64    float64
+	PF64   *float64
+	BF     big.Float
+	PBF    *big.Float
+	DF     compact_float.DFloat
+	BDF    apd.Decimal
+	PBDF   *apd.Decimal
+	Ar     [4]byte
+	St     string
+	Ba     []byte
+	Sl     []interface{}
+	M      map[interface{}]interface{}
+	IS     TestingInnerStruct
+	PIS    *TestingInnerStruct
+	Time   time.Time
+	PTime  *time.Time
+	CTime  compact_time.Time
+	PCTime *compact_time.Time
+	PURL   *url.URL
+	// TODO: URL must have at least 2 chars... what to do here?
+	// URL   url.URL
+}
+
+func (this *TestingOuterStruct) Events(includeFakes bool) (events []*tevent) {
+	ade := func(e ...*tevent) {
+		events = append(events, e...)
+	}
+	adv := func(value interface{}) {
+		ade(eventForValue(value))
+	}
+	anv := func(name string, value interface{}) {
+		adv(name)
+		adv(value)
+	}
+	ane := func(name string, e ...*tevent) {
+		adv(name)
+		ade(e...)
+	}
+
+	ade(m())
+
+	anv("Bo", this.Bo)
+	anv("PBo", this.PBo)
+	anv("By", this.By)
+	anv("PBy", this.PBy)
+	anv("I", this.I)
+	anv("PI", this.PI)
+	anv("I8", this.I8)
+	anv("PI8", this.PI8)
+	anv("I16", this.I16)
+	anv("PI16", this.PI16)
+	anv("I32", this.I32)
+	anv("PI32", this.PI32)
+	anv("I64", this.I64)
+	anv("PI64", this.PI64)
+	anv("U", this.U)
+	anv("PU", this.PU)
+	anv("U8", this.U8)
+	anv("PU8", this.PU8)
+	anv("U16", this.U16)
+	anv("PU16", this.PU16)
+	anv("U32", this.U32)
+	anv("PU32", this.PU32)
+	anv("U64", this.U64)
+	anv("PU64", this.PU64)
+	anv("BI", this.BI)
+	anv("PBI", this.PBI)
+	anv("F32", this.F32)
+	anv("PF32", this.PF32)
+	anv("F64", this.F64)
+	anv("PF64", this.PF64)
+	anv("BF", this.BF)
+	anv("PBF", this.PBF)
+	anv("DF", this.DF)
+	anv("BDF", this.BDF)
+	anv("PBDF", this.PBDF)
+	ane("Ar", bin(this.Ar[:]))
+	anv("St", this.St)
+	anv("Ba", this.Ba)
+
+	ane("Sl", l())
+	for _, v := range this.Sl {
+		adv(v)
+	}
+	ade(e())
+
+	ane("M", m())
+	for k, v := range this.M {
+		adv(k)
+		adv(v)
+	}
+	ade(e())
+
+	ane("IS", m())
+	anv("Inner", this.IS.Inner)
+	ade(e())
+
+	if this.PIS != nil {
+		ane("PIS", m())
+		anv("Inner", this.PIS.Inner)
+		ade(e())
+	}
+
+	anv("Time", this.Time)
+	anv("PTime", this.PTime)
+	anv("CTime", this.CTime)
+	anv("PCTime", this.PCTime)
+	anv("PURL", this.PURL)
+
+	if includeFakes {
+		ane("F1", b(true))
+		ane("F2", b(false))
+		ane("F3", i(1))
+		ane("F4", i(-1))
+		ane("F5", f(1.1))
+		ane("F6", bf(newBigFloat("1.1", 2)))
+		ane("F7", df(newDFloat("1.1")))
+		ane("F8", bdf(newBDF("1.1")))
+		ane("F9", n())
+		ane("F10", bi(newBigInt("1000")))
+		// ane("F11", cplx(1+1i))
+		ane("F12", nan())
+		ane("F13", snan())
+		ane("F14", uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+		ane("F15", gt(this.Time))
+		ane("F16", ct(this.PCTime))
+		ane("F17", bin([]byte{1}))
+		ane("F18", s("xyz"))
+		ane("F19", uri("http://example.com"))
+		// ane("F20", cust([]byte{1}))
+		ane("FakeList", l(), e())
+		ane("FakeMap", m(), e())
+		ane("FakeDeep", l(), m(), s("A"), l(),
+			b(true),
+			b(false),
+			i(1),
+			i(-1),
+			f(1.1),
+			bf(newBigFloat("1.1", 2)),
+			df(newDFloat("1.1")),
+			bdf(newBDF("1.1")),
+			n(),
+			bi(newBigInt("1000")),
+			// cplx(1+1i),
+			nan(),
+			snan(),
+			uuid([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+			gt(this.Time),
+			ct(this.PCTime),
+			bin([]byte{1}),
+			s("xyz"),
+			uri("http://example.com"),
+			// cust([]byte{1}),
+			e(), e(), e())
+	}
+
+	ade(e())
+	return
+}
+
+func newTestingOuterStruct(baseValue int) *TestingOuterStruct {
+	this := new(TestingOuterStruct)
+	this.Init(baseValue)
+	return this
+}
+
+func newBlankTestingOuterStruct() *TestingOuterStruct {
+	this := new(TestingOuterStruct)
+	this.CTime.Year = 1
+	this.CTime.Month = 1
+	this.CTime.Day = 1
+	return this
+}
+
+func (this *TestingOuterStruct) Init(baseValue int) {
+	this.Bo = baseValue&1 == 1
+	this.PBo = &this.Bo
+	this.By = byte(baseValue + int(unsafe.Offsetof(this.By)))
+	this.PBy = &this.By
+	this.I = baseValue + int(unsafe.Offsetof(this.I))
+	this.PI = &this.I
+	this.I8 = int8(baseValue + int(unsafe.Offsetof(this.I8)))
+	this.PI8 = &this.I8
+	this.I16 = int16(-baseValue - int(unsafe.Offsetof(this.I16)))
+	this.PI16 = &this.I16
+	this.I32 = int32(baseValue + int(unsafe.Offsetof(this.I32)))
+	this.PI32 = &this.I32
+	this.I64 = int64(baseValue + int(unsafe.Offsetof(this.I64)))
+	this.PI64 = &this.I64
+	this.U = uint(baseValue + int(unsafe.Offsetof(this.U)))
+	this.PU = &this.U
+	this.U8 = uint8(baseValue + int(unsafe.Offsetof(this.U8)))
+	this.PU8 = &this.U8
+	this.U16 = uint16(baseValue + int(unsafe.Offsetof(this.U16)))
+	this.PU16 = &this.U16
+	this.U32 = uint32(baseValue + int(unsafe.Offsetof(this.U32)))
+	this.PU32 = &this.U32
+	this.U64 = uint64(baseValue + int(unsafe.Offsetof(this.U64)))
+	this.PU64 = &this.U64
+	this.BI = big.Int{}
+	this.BI.Add(&this.BI, big.NewInt(int64(baseValue)+int64(unsafe.Offsetof(this.PBI)+10)))
+	this.BI.Exp(&this.BI, big.NewInt(20), nil)
+	this.BI.Add(&this.BI, big.NewInt(12345678))
+	this.PBI = big.NewInt(int64(baseValue) + int64(unsafe.Offsetof(this.PBI)+10))
+	this.PBI = this.PBI.Exp(this.PBI, big.NewInt(20), nil)
+	this.F32 = float32(baseValue+int(unsafe.Offsetof(this.F32))) + 0.5
+	this.PF32 = &this.F32
+	this.F64 = float64(baseValue+int(unsafe.Offsetof(this.F64))) + 0.5
+	this.PF64 = &this.F64
+	this.PBF = big.NewFloat(1234567890)
+	this.PBF.SetPrec(70)
+	this.BF = *this.PBF
+	this.PBF = this.PBF.Add(this.PBF, big.NewFloat(0.12345678901))
+	this.DF = compact_float.DFloat{
+		Exponent:    -int32(baseValue),
+		Coefficient: int64(baseValue + int(unsafe.Offsetof(this.DF))),
+	}
+	bdf, _, err := apd.NewFromString("-1.234567890123456789e-10000")
+	if err != nil {
+		panic(err)
+	}
+	this.PBDF = bdf
+	this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(this.Ar)))
+	this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+1))
+	this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+2))
+	this.Ar[3] = byte(baseValue + int(unsafe.Offsetof(this.Ar)+3))
+	this.St = generateString(baseValue+5, baseValue)
+	this.Ba = generateBytes(baseValue+1, baseValue)
+	this.M = make(map[interface{}]interface{})
+	for i := 0; i < baseValue+2; i++ {
+		this.Sl = append(this.Sl, i)
+		this.M[fmt.Sprintf("key%v", i)] = i
+	}
+	this.IS.Inner = baseValue + 15
+	this.PIS = new(TestingInnerStruct)
+	this.PIS.Inner = baseValue + 16
+	testTime := time.Date(2000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
+	this.PTime = &testTime
+	this.PCTime = compact_time.NewTimestamp(2000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
+	this.CTime = *this.PCTime
+	this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
 }

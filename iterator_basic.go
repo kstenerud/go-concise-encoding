@@ -97,7 +97,11 @@ func (this *pCompactTimeIterator) PostCacheInitIterator() {
 }
 
 func (this *pCompactTimeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
+	if v.IsNil() {
+		root.eventReceiver.OnNil()
+	} else {
+		root.eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
+	}
 }
 
 // ----

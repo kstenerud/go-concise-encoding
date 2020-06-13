@@ -118,14 +118,12 @@ func (this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst re
 }
 
 func (this *ignoreBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder()
-	builder.CloneFromTemplate(this.root, this)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent)
 	builder.PrepareForListContents()
 }
 
 func (this *ignoreBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder()
-	builder.CloneFromTemplate(this.root, this)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent)
 	builder.PrepareForMapContents()
 }
 
@@ -142,15 +140,15 @@ func (this *ignoreBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *ignoreBuilder) PrepareForListContents() {
-	this.root.setCurrentBuilder(this)
+	builderPanicBadEvent(this, typePBigInt, "PrepareForListContents")
 }
 
 func (this *ignoreBuilder) PrepareForMapContents() {
-	this.root.setCurrentBuilder(this)
+	builderPanicBadEvent(this, typePBigInt, "PrepareForMapContents")
 }
 
 func (this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+	builderPanicBadEvent(this, typePBigInt, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -182,60 +180,72 @@ func (this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent 
 }
 
 func (this *ignoreContainerBuilder) BuildFromNil(dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromString(value string, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	// TODO: Should these panic?
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	// Ignore this directive
 }
 
 func (this *ignoreContainerBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder()
-	builder.CloneFromTemplate(this.root, this)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this)
 	builder.PrepareForListContents()
 }
 
 func (this *ignoreContainerBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder()
-	builder.CloneFromTemplate(this.root, this)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this)
 	builder.PrepareForMapContents()
 }
 
