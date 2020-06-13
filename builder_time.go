@@ -49,7 +49,7 @@ func (this *timeBuilder) IsContainerOnly() bool {
 func (this *timeBuilder) PostCacheInitBuilder() {
 }
 
-func (this *timeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *timeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 
@@ -167,7 +167,7 @@ func (this *compactTimeBuilder) IsContainerOnly() bool {
 func (this *compactTimeBuilder) PostCacheInitBuilder() {
 }
 
-func (this *compactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *compactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 
@@ -281,7 +281,7 @@ func (this *pCompactTimeBuilder) IsContainerOnly() bool {
 func (this *pCompactTimeBuilder) PostCacheInitBuilder() {
 }
 
-func (this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

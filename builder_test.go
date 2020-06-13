@@ -33,7 +33,7 @@ import (
 )
 
 func runBuild(expected interface{}, events ...*tevent) interface{} {
-	builder := NewBuilderFor(expected)
+	builder := NewBuilderFor(expected, nil)
 	invokeEvents(builder, events...)
 	return builder.GetBuiltObject()
 }

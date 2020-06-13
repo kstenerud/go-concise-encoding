@@ -32,14 +32,21 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-func CTEDecode(document []byte, eventReceiver DataEventReceiver) (err error) {
+type CTEDecoderOptions struct {
+	// TODO: implied version
+	// TODO: implied tl container
+	// TODO: Maximums?
+	// TODO: Zero copy
+}
+
+func CTEDecode(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
 		}
 	}()
 
-	decoder := NewCTEDecoder([]byte(document), eventReceiver)
+	decoder := NewCTEDecoder([]byte(document), eventReceiver, options)
 	decoder.Decode()
 	return
 }
@@ -52,17 +59,22 @@ type CTEDecoder struct {
 	endPos         int
 	containerState []cteDecoderState
 	currentState   cteDecoderState
+	options        *CTEDecoderOptions
 }
 
-func NewCTEDecoder(document []byte, eventReceiver DataEventReceiver) *CTEDecoder {
+func NewCTEDecoder(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) *CTEDecoder {
 	this := &CTEDecoder{}
-	this.Init(document, eventReceiver)
+	this.Init(document, eventReceiver, options)
 	return this
 }
 
-func (this *CTEDecoder) Init(document []byte, eventReceiver DataEventReceiver) {
+func (this *CTEDecoder) Init(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) {
+	if options == nil {
+		options = &CTEDecoderOptions{}
+	}
 	this.document = document
 	this.eventReceiver = eventReceiver
+	this.options = options
 	this.endPos = len(document) - 1
 }
 

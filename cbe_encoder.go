@@ -32,12 +32,25 @@ import (
 	"github.com/kstenerud/go-uleb128"
 )
 
-type CBEEncoder struct {
-	buff buffer
+type CBEEncoderOptions struct {
 }
 
-func NewCBEEncoder() *CBEEncoder {
-	return &CBEEncoder{}
+type CBEEncoder struct {
+	buff    buffer
+	options *CBEEncoderOptions
+}
+
+func NewCBEEncoder(options *CBEEncoderOptions) *CBEEncoder {
+	this := &CBEEncoder{}
+	this.Init(options)
+	return this
+}
+
+func (this *CBEEncoder) Init(options *CBEEncoderOptions) {
+	if options == nil {
+		options = &CBEEncoderOptions{}
+	}
+	this.options = options
 }
 
 func (this *CBEEncoder) Document() []byte {

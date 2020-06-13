@@ -32,6 +32,38 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+// RootBuilder adapts DataEventReceiver to ObjectBuilder, coordinating the build.
+// Use GetBuiltObject() to fetch the final result.
+type RootBuilder struct {
+	dstType        reflect.Type
+	currentBuilder ObjectBuilder
+	object         reflect.Value
+}
+
+// -----------
+// RootBuilder
+// -----------
+
+func NewRootBuilder(dstType reflect.Type, options *BuilderOptions) *RootBuilder {
+	this := &RootBuilder{}
+	this.Init(dstType, options)
+	return this
+}
+
+func (this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
+	if options == nil {
+		options = &BuilderOptions{}
+	}
+	this.dstType = dstType
+	this.object = reflect.New(dstType).Elem()
+
+	builder := getBuilderForType(dstType).CloneFromTemplate(this, this, options)
+	if builder.IsContainerOnly() {
+		builder = newTopLevelContainerBuilder(this, builder)
+	}
+	this.currentBuilder = builder
+}
+
 func (this *RootBuilder) GetBuiltObject() interface{} {
 	// TODO: Verify this behavior
 	if !this.object.IsValid() {
@@ -50,33 +82,6 @@ func (this *RootBuilder) GetBuiltObject() interface{} {
 	}
 }
 
-// RootBuilder adapts DataEventReceiver to ObjectBuilder, coordinates the
-// build, and provides GetBuiltObject() for fetching the final result.
-type RootBuilder struct {
-	dstType        reflect.Type
-	currentBuilder ObjectBuilder
-	object         reflect.Value
-}
-
-// -----------
-// RootBuilder
-// -----------
-
-func newRootBuilder(dstType reflect.Type) *RootBuilder {
-	this := &RootBuilder{
-		dstType: dstType,
-		object:  reflect.New(dstType).Elem(),
-	}
-
-	builder := getBuilderForType(dstType).CloneFromTemplate(this, this)
-	if builder.IsContainerOnly() {
-		builder = newTopLevelContainerBuilder(this, builder)
-	}
-	this.currentBuilder = builder
-
-	return this
-}
-
 func (this *RootBuilder) setCurrentBuilder(builder ObjectBuilder) {
 	this.currentBuilder = builder
 }
@@ -92,7 +97,7 @@ func (this *RootBuilder) IsContainerOnly() bool {
 func (this *RootBuilder) PostCacheInitBuilder() {
 	panic(fmt.Errorf("BUG: PostCacheInitBuilder should never be called on RootBuilder"))
 }
-func (this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder) ObjectBuilder {
+func (this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *BuilderOptions) ObjectBuilder {
 	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on RootBuilder"))
 }
 func (this *RootBuilder) BuildFromNil(_ reflect.Value) {

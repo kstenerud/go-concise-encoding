@@ -51,7 +51,7 @@ func (this *directBuilder) IsContainerOnly() bool {
 func (this *directBuilder) PostCacheInitBuilder() {
 }
 
-func (this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 
@@ -167,7 +167,7 @@ func (this *directPtrBuilder) IsContainerOnly() bool {
 func (this *directPtrBuilder) PostCacheInitBuilder() {
 }
 
-func (this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

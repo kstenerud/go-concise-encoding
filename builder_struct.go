@@ -83,18 +83,18 @@ func (this *structBuilder) PostCacheInitBuilder() {
 	}
 }
 
-func (this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &structBuilder{
 		dstType:      this.dstType,
 		builderDescs: make(map[string]*structBuilderDesc),
 		parent:       parent,
 		root:         root,
 	}
-	that.nameBuilder = this.nameBuilder.CloneFromTemplate(root, that)
-	that.ignoreBuilder = this.ignoreBuilder.CloneFromTemplate(root, that)
+	that.nameBuilder = this.nameBuilder.CloneFromTemplate(root, that, options)
+	that.ignoreBuilder = this.ignoreBuilder.CloneFromTemplate(root, that, options)
 	for k, builderElem := range this.builderDescs {
 		that.builderDescs[k] = &structBuilderDesc{
-			builder: builderElem.builder.CloneFromTemplate(root, that),
+			builder: builderElem.builder.CloneFromTemplate(root, that, options),
 			index:   builderElem.index,
 		}
 	}

@@ -24,35 +24,42 @@ import (
 	"fmt"
 )
 
-func CBEDecode(document []byte, eventReceiver DataEventReceiver, shouldZeroCopy bool) (err error) {
+type CBEDecoderOptions struct {
+	ShouldZeroCopy bool
+}
+
+func CBEDecode(document []byte, eventReceiver DataEventReceiver, options *CBEDecoderOptions) (err error) {
 	defer func() {
-		if DebugPassThroughPanics {
+		if DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				err = r.(error)
 			}
 		}
 	}()
 
-	decoder := NewCBEDecoder([]byte(document), eventReceiver, shouldZeroCopy)
+	decoder := NewCBEDecoder([]byte(document), eventReceiver, options)
 	decoder.Decode()
 	return
 }
 
 type CBEDecoder struct {
-	buffer         cbeDecodeBuffer
-	shouldZeroCopy bool
-	nextReceiver   DataEventReceiver
+	buffer       cbeDecodeBuffer
+	nextReceiver DataEventReceiver
+	options      *CBEDecoderOptions
 }
 
-func NewCBEDecoder(document []byte, nextReceiver DataEventReceiver, shouldZeroCopy bool) *CBEDecoder {
+func NewCBEDecoder(document []byte, nextReceiver DataEventReceiver, options *CBEDecoderOptions) *CBEDecoder {
 	this := &CBEDecoder{}
-	this.Init(document, nextReceiver, shouldZeroCopy)
+	this.Init(document, nextReceiver, options)
 	return this
 }
 
-func (this *CBEDecoder) Init(document []byte, nextReceiver DataEventReceiver, shouldZeroCopy bool) {
+func (this *CBEDecoder) Init(document []byte, nextReceiver DataEventReceiver, options *CBEDecoderOptions) {
+	if options == nil {
+		options = &CBEDecoderOptions{}
+	}
 	this.buffer.Init(document)
-	this.shouldZeroCopy = shouldZeroCopy
+	this.options = options
 	this.nextReceiver = nextReceiver
 }
 
@@ -166,7 +173,7 @@ func (this *CBEDecoder) Decode() {
 // ============================================================================
 
 func (this *CBEDecoder) possiblyZeroCopy(bytes []byte) []byte {
-	if this.shouldZeroCopy {
+	if this.options.ShouldZeroCopy {
 		return bytes
 	}
 	bytesCopy := make([]byte, len(bytes), len(bytes))

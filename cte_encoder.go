@@ -60,12 +60,16 @@ type CTEEncoder struct {
 }
 
 func NewCTEEncoder(options *CTEEncoderOptions) *CTEEncoder {
+	this := &CTEEncoder{}
+	this.Init(options)
+	return this
+}
+
+func (this *CTEEncoder) Init(options *CTEEncoderOptions) {
 	if options == nil {
 		options = &CTEEncoderOptions{}
 	}
-	return &CTEEncoder{
-		options: options,
-	}
+	this.options = options
 }
 
 func (this *CTEEncoder) Document() []byte {

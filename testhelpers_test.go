@@ -135,8 +135,7 @@ func invokeEvents(receiver DataEventReceiver, events ...*tevent) {
 
 func cbeDecode(document []byte) (events []*tevent, err error) {
 	receiver := NewTER()
-	shouldZeroCopy := false
-	err = CBEDecode(document, receiver, shouldZeroCopy)
+	err = CBEDecode(document, receiver, nil)
 	events = receiver.Events
 	return
 }
@@ -148,7 +147,7 @@ func cbeEncodeDecode(expected ...*tevent) (events []*tevent, err error) {
 		}
 	}()
 
-	encoder := NewCBEEncoder()
+	encoder := NewCBEEncoder(nil)
 	invokeEvents(encoder, expected...)
 	document := encoder.Document()
 
@@ -157,7 +156,7 @@ func cbeEncodeDecode(expected ...*tevent) (events []*tevent, err error) {
 
 func cteDecode(document []byte) (events []*tevent, err error) {
 	receiver := NewTER()
-	err = CTEDecode(document, receiver)
+	err = CTEDecode(document, receiver, nil)
 	events = receiver.Events
 	return
 }

@@ -45,7 +45,7 @@ func (this *bigDecimalFloatBuilder) IsContainerOnly() bool {
 func (this *bigDecimalFloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 
@@ -155,7 +155,7 @@ func (this *pBigDecimalFloatBuilder) IsContainerOnly() bool {
 func (this *pBigDecimalFloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

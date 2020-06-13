@@ -45,7 +45,7 @@ func (this *dfloatBuilder) IsContainerOnly() bool {
 func (this *dfloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

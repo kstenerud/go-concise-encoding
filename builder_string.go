@@ -47,7 +47,7 @@ func (this *stringBuilder) IsContainerOnly() bool {
 func (this *stringBuilder) PostCacheInitBuilder() {
 }
 
-func (this *stringBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *stringBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

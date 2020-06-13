@@ -26,6 +26,16 @@ import (
 	"github.com/kstenerud/go-duplicates"
 )
 
+// RootObjectIterator iterates recursively depth-first through an object,
+// notifying the event receiver as it encounters data.
+type RootObjectIterator struct {
+	foundReferences map[duplicates.TypedPointer]bool
+	namedReferences map[duplicates.TypedPointer]uint32
+	nextMarkerName  uint32
+	eventReceiver   DataEventReceiver
+	options         *IteratorOptions
+}
+
 func NewRootObjectIterator(eventReceiver DataEventReceiver, options *IteratorOptions) *RootObjectIterator {
 	this := new(RootObjectIterator)
 	this.Init(eventReceiver, options)
@@ -55,16 +65,6 @@ func (this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator
 	this.eventReceiver.OnVersion(cbeCodecVersion)
 	iterator.Iterate(rv, this)
 	this.eventReceiver.OnEndDocument()
-}
-
-// Iterates depth-first recursively through an object, notifying callbacks as it
-// encounters data.
-type RootObjectIterator struct {
-	foundReferences map[duplicates.TypedPointer]bool
-	namedReferences map[duplicates.TypedPointer]uint32
-	nextMarkerName  uint32
-	eventReceiver   DataEventReceiver
-	options         *IteratorOptions
 }
 
 func (this *RootObjectIterator) findReferences(value interface{}) {

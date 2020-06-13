@@ -70,15 +70,15 @@ func (this *mapBuilder) PostCacheInitBuilder() {
 	this.kvBuilders[kvBuilderValue] = getBuilderForType(this.dstType.Elem())
 }
 
-func (this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &mapBuilder{
 		dstType: this.dstType,
 		kvTypes: this.kvTypes,
 		parent:  parent,
 		root:    root,
 	}
-	that.kvBuilders[kvBuilderKey] = this.kvBuilders[kvBuilderKey].CloneFromTemplate(root, that)
-	that.kvBuilders[kvBuilderValue] = this.kvBuilders[kvBuilderValue].CloneFromTemplate(root, that)
+	that.kvBuilders[kvBuilderKey] = this.kvBuilders[kvBuilderKey].CloneFromTemplate(root, that, options)
+	that.kvBuilders[kvBuilderValue] = this.kvBuilders[kvBuilderValue].CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }

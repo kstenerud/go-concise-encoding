@@ -33,8 +33,9 @@ import (
 
 type ignoreBuilder struct {
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 }
 
 var globalIgnoreBuilder = &ignoreBuilder{}
@@ -50,10 +51,11 @@ func (this *ignoreBuilder) IsContainerOnly() bool {
 func (this *ignoreBuilder) PostCacheInitBuilder() {
 }
 
-func (this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return &ignoreBuilder{
-		parent: parent,
-		root:   root,
+		parent:  parent,
+		root:    root,
+		options: options,
 	}
 }
 
@@ -118,12 +120,12 @@ func (this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst re
 }
 
 func (this *ignoreBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent, this.options)
 	builder.PrepareForListContents()
 }
 
 func (this *ignoreBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent, this.options)
 	builder.PrepareForMapContents()
 }
 
@@ -155,8 +157,9 @@ func (this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
 
 type ignoreContainerBuilder struct {
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 }
 
 var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
@@ -172,10 +175,11 @@ func (this *ignoreContainerBuilder) IsContainerOnly() bool {
 func (this *ignoreContainerBuilder) PostCacheInitBuilder() {
 }
 
-func (this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return &ignoreContainerBuilder{
-		parent: parent,
-		root:   root,
+		parent:  parent,
+		root:    root,
+		options: options,
 	}
 }
 
@@ -240,12 +244,12 @@ func (this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Tim
 }
 
 func (this *ignoreContainerBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this, this.options)
 	builder.PrepareForListContents()
 }
 
 func (this *ignoreContainerBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this)
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this, this.options)
 	builder.PrepareForMapContents()
 }
 

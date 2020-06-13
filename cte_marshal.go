@@ -24,17 +24,9 @@ import (
 	"fmt"
 )
 
-// TODO: DecoderOptions
-// type DecoderOptions struct {
-// 	// TODO: implied version
-// 	// TODO: implied tl container
-// 	// TODO: Maximums?
-// 	// TODO: Zero copy
-// }
-
 type CTEMarshalerOptions struct {
-	EncoderOptions  CTEEncoderOptions
-	IteratorOptions IteratorOptions
+	Encoder  CTEEncoderOptions
+	Iterator IteratorOptions
 }
 
 func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []byte, err error) {
@@ -42,7 +34,7 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 		options = &CTEMarshalerOptions{}
 	}
 	defer func() {
-		if DebugPassThroughPanics {
+		if DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -53,15 +45,23 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 		}
 	}()
 
-	encoder := NewCTEEncoder(&options.EncoderOptions)
-	IterateObject(object, encoder, &options.IteratorOptions)
+	encoder := NewCTEEncoder(&options.Encoder)
+	IterateObject(object, encoder, &options.Iterator)
 	document = encoder.Document()
 	return
 }
 
-func UnmarshalCTE(document []byte, template interface{}) (decoded interface{}, err error) {
+type CTEUnmarshalerOptions struct {
+	Decoder CTEDecoderOptions
+	Builder BuilderOptions
+}
+
+func UnmarshalCTE(document []byte, template interface{}, options *CTEUnmarshalerOptions) (decoded interface{}, err error) {
+	if options == nil {
+		options = &CTEUnmarshalerOptions{}
+	}
 	defer func() {
-		if DebugPassThroughPanics {
+		if DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -72,9 +72,9 @@ func UnmarshalCTE(document []byte, template interface{}) (decoded interface{}, e
 		}
 	}()
 
-	builder := NewBuilderFor(template)
+	builder := NewBuilderFor(template, &options.Builder)
 	rules := NewRules(cbeCodecVersion, DefaultLimits(), builder)
-	decoder := NewCTEDecoder(document, rules)
+	decoder := NewCTEDecoder(document, rules, &options.Decoder)
 	decoder.Decode()
 	decoded = builder.GetBuiltObject()
 	return

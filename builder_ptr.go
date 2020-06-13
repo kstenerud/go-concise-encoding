@@ -56,12 +56,12 @@ func (this *ptrBuilder) PostCacheInitBuilder() {
 	this.elemBuilder = getBuilderForType(this.dstType.Elem())
 }
 
-func (this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &ptrBuilder{
 		dstType: this.dstType,
 		parent:  parent,
 	}
-	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that)
+	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that, options)
 	return that
 }
 

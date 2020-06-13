@@ -25,7 +25,8 @@ import (
 )
 
 type CBEMarshalerOptions struct {
-	IteratorOptions IteratorOptions
+	Encoder  CBEEncoderOptions
+	Iterator IteratorOptions
 }
 
 func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []byte, err error) {
@@ -33,7 +34,7 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 		options = &CBEMarshalerOptions{}
 	}
 	defer func() {
-		if DebugPassThroughPanics {
+		if DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -44,15 +45,23 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 		}
 	}()
 
-	encoder := NewCBEEncoder()
-	IterateObject(object, encoder, &options.IteratorOptions)
+	encoder := NewCBEEncoder(&options.Encoder)
+	IterateObject(object, encoder, &options.Iterator)
 	document = encoder.Document()
 	return
 }
 
-func UnmarshalCBE(document []byte, template interface{}, shouldZeroCopy bool) (decoded interface{}, err error) {
+type CBEUnmarshalerOptions struct {
+	Decoder CBEDecoderOptions
+	Builder BuilderOptions
+}
+
+func UnmarshalCBE(document []byte, template interface{}, options *CBEUnmarshalerOptions) (decoded interface{}, err error) {
+	if options == nil {
+		options = &CBEUnmarshalerOptions{}
+	}
 	defer func() {
-		if DebugPassThroughPanics {
+		if DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -63,9 +72,9 @@ func UnmarshalCBE(document []byte, template interface{}, shouldZeroCopy bool) (d
 		}
 	}()
 
-	builder := NewBuilderFor(template)
+	builder := NewBuilderFor(template, &options.Builder)
 	rules := NewRules(cbeCodecVersion, DefaultLimits(), builder)
-	decoder := NewCBEDecoder(document, rules, shouldZeroCopy)
+	decoder := NewCBEDecoder(document, rules, &options.Decoder)
 	decoder.Decode()
 	decoded = builder.GetBuiltObject()
 	return

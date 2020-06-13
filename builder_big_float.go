@@ -45,7 +45,7 @@ func (this *bigFloatBuilder) IsContainerOnly() bool {
 func (this *bigFloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *bigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *bigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 
@@ -155,7 +155,7 @@ func (this *pBigFloatBuilder) IsContainerOnly() bool {
 func (this *pBigFloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *pBigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *pBigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

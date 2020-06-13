@@ -43,8 +43,9 @@ var (
 
 type intfBuilder struct {
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 }
 
 func newInterfaceBuilder() ObjectBuilder {
@@ -58,10 +59,11 @@ func (this *intfBuilder) IsContainerOnly() bool {
 func (this *intfBuilder) PostCacheInitBuilder() {
 }
 
-func (this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return &intfBuilder{
-		parent: parent,
-		root:   root,
+		parent:  parent,
+		root:    root,
+		options: options,
 	}
 }
 
@@ -146,12 +148,12 @@ func (this *intfBuilder) BuildFromReference(id interface{}) {
 }
 
 func (this *intfBuilder) PrepareForListContents() {
-	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this.parent)
+	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this.parent, this.options)
 	builder.PrepareForListContents()
 }
 
 func (this *intfBuilder) PrepareForMapContents() {
-	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this.parent)
+	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this.parent, this.options)
 	builder.PrepareForMapContents()
 }
 
@@ -165,8 +167,9 @@ func (this *intfBuilder) NotifyChildContainerFinished(value reflect.Value) {
 
 type intfSliceBuilder struct {
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 
 	// Variable data (must be reset)
 	container reflect.Value
@@ -183,10 +186,11 @@ func (this *intfSliceBuilder) IsContainerOnly() bool {
 func (this *intfSliceBuilder) PostCacheInitBuilder() {
 }
 
-func (this *intfSliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *intfSliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &intfSliceBuilder{
-		parent: parent,
-		root:   root,
+		parent:  parent,
+		root:    root,
+		options: options,
 	}
 	that.reset()
 	return that
@@ -265,12 +269,12 @@ func (this *intfSliceBuilder) BuildFromCompactTime(value *compact_time.Time, ign
 }
 
 func (this *intfSliceBuilder) BuildBeginList() {
-	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this)
+	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this, this.options)
 	builder.PrepareForListContents()
 }
 
 func (this *intfSliceBuilder) BuildBeginMap() {
-	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this)
+	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this, this.options)
 	builder.PrepareForMapContents()
 }
 
@@ -307,8 +311,9 @@ func (this *intfSliceBuilder) NotifyChildContainerFinished(value reflect.Value) 
 
 type intfIntfMapBuilder struct {
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 
 	// Variable data (must be reset)
 	container reflect.Value
@@ -327,10 +332,11 @@ func (this *intfIntfMapBuilder) IsContainerOnly() bool {
 func (this *intfIntfMapBuilder) PostCacheInitBuilder() {
 }
 
-func (this *intfIntfMapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *intfIntfMapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &intfIntfMapBuilder{
-		parent: parent,
-		root:   root,
+		parent:  parent,
+		root:    root,
+		options: options,
 	}
 	that.reset()
 	return that
@@ -412,12 +418,12 @@ func (this *intfIntfMapBuilder) BuildFromCompactTime(value *compact_time.Time, i
 }
 
 func (this *intfIntfMapBuilder) BuildBeginList() {
-	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this)
+	builder := globalIntfSliceBuilder.CloneFromTemplate(this.root, this, this.options)
 	builder.PrepareForListContents()
 }
 
 func (this *intfIntfMapBuilder) BuildBeginMap() {
-	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this)
+	builder := globalIntfIntfMapBuilder.CloneFromTemplate(this.root, this, this.options)
 	builder.PrepareForMapContents()
 }
 

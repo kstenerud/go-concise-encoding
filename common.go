@@ -34,9 +34,14 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// Debug: Setting this to true will cause all panics to bubble up rather than
-//        being handled in the library.
-var DebugPassThroughPanics = false
+// Settings to help with debugging
+type DebugOptionsStruct struct {
+	// Setting this to true will cause all panics to bubble up rather than
+	// being handled in the library.
+	PassThroughPanics bool
+}
+
+var DebugOptions DebugOptionsStruct
 
 var (
 	typeString       = reflect.TypeOf("")

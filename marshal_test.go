@@ -29,7 +29,7 @@ import (
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	options := &CBEMarshalerOptions{
-		IteratorOptions: IteratorOptions{
+		Iterator: IteratorOptions{
 			UseReferences: true,
 		},
 	}
@@ -40,7 +40,7 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	}
 
 	var actual interface{}
-	actual, err = UnmarshalCBE(document, expected, false)
+	actual, err = UnmarshalCBE(document, expected, nil)
 	if err != nil {
 		t.Errorf("CBE Unmarshal error: %v\n- While unmarshaling %v", err, describe.D(document))
 		return
@@ -53,7 +53,7 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	options := &CTEMarshalerOptions{
-		IteratorOptions: IteratorOptions{
+		Iterator: IteratorOptions{
 			UseReferences: true,
 		},
 	}
@@ -64,7 +64,7 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	}
 
 	var actual interface{}
-	actual, err = UnmarshalCTE(document, expected)
+	actual, err = UnmarshalCTE(document, expected, nil)
 	if err != nil {
 		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(document))
 		return

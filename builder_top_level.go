@@ -54,7 +54,7 @@ func (this *topLevelContainerBuilder) PostCacheInitBuilder() {
 	panic(fmt.Errorf("BUG: PostCacheInitBuilder should never be called on topLevelContainerBuilder"))
 }
 
-func (this *topLevelContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *topLevelContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on topLevelContainerBuilder"))
 }
 

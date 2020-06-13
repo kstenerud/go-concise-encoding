@@ -61,13 +61,13 @@ func (this *arrayBuilder) PostCacheInitBuilder() {
 	this.elemBuilder = getBuilderForType(this.dstType.Elem())
 }
 
-func (this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &arrayBuilder{
 		dstType: this.dstType,
 		parent:  parent,
 		root:    root,
 	}
-	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that)
+	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }
@@ -210,7 +210,7 @@ func (this *bytesArrayBuilder) IsContainerOnly() bool {
 func (this *bytesArrayBuilder) PostCacheInitBuilder() {
 }
 
-func (this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 

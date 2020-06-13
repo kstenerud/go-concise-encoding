@@ -49,7 +49,7 @@ func (this *floatBuilder) IsContainerOnly() bool {
 func (this *floatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *floatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder) ObjectBuilder {
+func (this *floatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return this
 }
 
