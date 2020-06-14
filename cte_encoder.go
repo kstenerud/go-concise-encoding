@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
@@ -47,8 +48,7 @@ const (
 
 // TODO: Actually use these options
 type CTEEncoderOptions struct {
-	IndentCount   int
-	IndentType    IndentType
+	Indent        string
 	BracePosition BracePosition
 }
 
@@ -436,10 +436,23 @@ func (this *CTEEncoder) prefixNone() {
 }
 
 func (this *CTEEncoder) prefixIndent() {
+	if len(this.options.Indent) > 0 {
+		level := len(this.containerState)
+		indent := strings.Repeat(this.options.Indent, level)
+		this.addString("\n" + indent)
+	}
 }
 
 func (this *CTEEncoder) prefixSpacer() {
 	this.addString(" ")
+}
+
+func (this *CTEEncoder) prefixIndentOrSpacer() {
+	if len(this.options.Indent) > 0 {
+		this.prefixIndent()
+	} else {
+		this.addString(" ")
+	}
 }
 
 func (this *CTEEncoder) prefixPipe() {
@@ -491,10 +504,10 @@ func init() {
 	}
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitTLO] = (*CTEEncoder).prefixNone
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitListFirstItem] = (*CTEEncoder).prefixIndent
-	cteEncoderPrefixHandlers[cteEncoderStateAwaitListItem] = (*CTEEncoder).prefixSpacer
+	cteEncoderPrefixHandlers[cteEncoderStateAwaitListItem] = (*CTEEncoder).prefixIndentOrSpacer
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitMapFirstKey] = (*CTEEncoder).prefixIndent
-	cteEncoderPrefixHandlers[cteEncoderStateAwaitMapKey] = (*CTEEncoder).prefixSpacer
-	cteEncoderPrefixHandlers[cteEncoderStateAwaitMapValue] = (*CTEEncoder).prefixIndent
+	cteEncoderPrefixHandlers[cteEncoderStateAwaitMapKey] = (*CTEEncoder).prefixIndentOrSpacer
+	cteEncoderPrefixHandlers[cteEncoderStateAwaitMapValue] = (*CTEEncoder).prefixNone
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitMetaFirstKey] = (*CTEEncoder).prefixIndent
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitMetaKey] = (*CTEEncoder).prefixSpacer
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitMetaValue] = (*CTEEncoder).prefixIndent
