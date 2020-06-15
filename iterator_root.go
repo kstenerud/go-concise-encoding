@@ -33,7 +33,7 @@ type RootObjectIterator struct {
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
 	eventReceiver   DataEventReceiver
-	options         *IteratorOptions
+	options         IteratorOptions
 }
 
 func NewRootObjectIterator(eventReceiver DataEventReceiver, options *IteratorOptions) *RootObjectIterator {
@@ -43,17 +43,14 @@ func NewRootObjectIterator(eventReceiver DataEventReceiver, options *IteratorOpt
 }
 
 func (this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *IteratorOptions) {
-	if options == nil {
-		options = &IteratorOptions{}
-	}
-	this.options = options
+	this.options = *applyDefaultIteratorOptions(options)
 	this.eventReceiver = eventReceiver
 }
 
 // The *RootObjectIterator field is ignored by the root iterator. It can be nil.
 func (this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator) {
 	if value == nil {
-		this.eventReceiver.OnVersion(cbeCodecVersion)
+		this.eventReceiver.OnVersion(this.options.ConciseEncodingVersion)
 		this.eventReceiver.OnNil()
 		this.eventReceiver.OnEndDocument()
 		return
@@ -61,8 +58,7 @@ func (this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator
 	this.findReferences(value)
 	rv := reflect.ValueOf(value)
 	iterator := getIteratorForType(rv.Type())
-	// TODO: Move this somewhere else
-	this.eventReceiver.OnVersion(cbeCodecVersion)
+	this.eventReceiver.OnVersion(this.options.ConciseEncodingVersion)
 	iterator.Iterate(rv, this)
 	this.eventReceiver.OnEndDocument()
 }

@@ -34,6 +34,16 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+const ConciseEncodingVersion = 1
+
+type TLContainerType int
+
+const (
+	TLContainerTypeNone = iota
+	TLContainerTypeList
+	TLContainerTypeMap
+)
+
 // Settings to help with debugging
 type DebugOptionsStruct struct {
 	// Setting this to true will cause all panics to bubble up rather than

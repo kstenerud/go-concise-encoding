@@ -32,11 +32,11 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-type IndentType int
+type BinaryFloatEncodeAs int
 
 const (
-	IndentTypeSpace = iota
-	IndentTypeTab
+	BinaryFloatEncodeAsDecimal = iota
+	BinaryFloatEncodeAsBinary
 )
 
 type BracePosition int
@@ -46,17 +46,19 @@ const (
 	BracePositionNextLine
 )
 
-// TODO: Actually use these options
 type CTEEncoderOptions struct {
-	Indent        string
+	Indent string
+	// TODO: BracePosition option
 	BracePosition BracePosition
+	// TODO: BinaryFloatEncoding option
+	BinaryFloatEncoding BinaryFloatEncodeAs
 }
 
 type CTEEncoder struct {
 	buff           buffer
 	containerState []cteEncoderState
 	currentState   cteEncoderState
-	options        *CTEEncoderOptions
+	options        CTEEncoderOptions
 }
 
 func NewCTEEncoder(options *CTEEncoderOptions) *CTEEncoder {
@@ -66,10 +68,9 @@ func NewCTEEncoder(options *CTEEncoderOptions) *CTEEncoder {
 }
 
 func (this *CTEEncoder) Init(options *CTEEncoderOptions) {
-	if options == nil {
-		options = &CTEEncoderOptions{}
+	if options != nil {
+		this.options = *options
 	}
-	this.options = options
 }
 
 func (this *CTEEncoder) Document() []byte {

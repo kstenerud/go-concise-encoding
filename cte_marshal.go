@@ -34,7 +34,7 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 		options = &CTEMarshalerOptions{}
 	}
 	defer func() {
-		if DebugOptions.PassThroughPanics {
+		if !DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -54,6 +54,7 @@ func MarshalCTE(object interface{}, options *CTEMarshalerOptions) (document []by
 type CTEUnmarshalerOptions struct {
 	Decoder CTEDecoderOptions
 	Builder BuilderOptions
+	Rules   RuleOptions
 }
 
 func UnmarshalCTE(document []byte, template interface{}, options *CTEUnmarshalerOptions) (decoded interface{}, err error) {
@@ -61,7 +62,7 @@ func UnmarshalCTE(document []byte, template interface{}, options *CTEUnmarshaler
 		options = &CTEUnmarshalerOptions{}
 	}
 	defer func() {
-		if DebugOptions.PassThroughPanics {
+		if !DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -73,7 +74,7 @@ func UnmarshalCTE(document []byte, template interface{}, options *CTEUnmarshaler
 	}()
 
 	builder := NewBuilderFor(template, &options.Builder)
-	rules := NewRules(cbeCodecVersion, DefaultLimits(), builder)
+	rules := NewRules(&options.Rules, builder)
 	decoder := NewCTEDecoder(document, rules, &options.Decoder)
 	decoder.Decode()
 	decoded = builder.GetBuiltObject()

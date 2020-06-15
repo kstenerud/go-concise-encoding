@@ -26,11 +26,15 @@ import (
 
 type CBEDecoderOptions struct {
 	ShouldZeroCopy bool
+	// TODO: ImpliedVersion option
+	ImpliedVersion uint
+	// TODO: ImpliedTLContainer option
+	ImpliedTLContainer TLContainerType
 }
 
 func CBEDecode(document []byte, eventReceiver DataEventReceiver, options *CBEDecoderOptions) (err error) {
 	defer func() {
-		if DebugOptions.PassThroughPanics {
+		if !DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				err = r.(error)
 			}
@@ -45,7 +49,7 @@ func CBEDecode(document []byte, eventReceiver DataEventReceiver, options *CBEDec
 type CBEDecoder struct {
 	buffer       cbeDecodeBuffer
 	nextReceiver DataEventReceiver
-	options      *CBEDecoderOptions
+	options      CBEDecoderOptions
 }
 
 func NewCBEDecoder(document []byte, nextReceiver DataEventReceiver, options *CBEDecoderOptions) *CBEDecoder {
@@ -55,11 +59,10 @@ func NewCBEDecoder(document []byte, nextReceiver DataEventReceiver, options *CBE
 }
 
 func (this *CBEDecoder) Init(document []byte, nextReceiver DataEventReceiver, options *CBEDecoderOptions) {
-	if options == nil {
-		options = &CBEDecoderOptions{}
-	}
 	this.buffer.Init(document)
-	this.options = options
+	if options != nil {
+		this.options = *options
+	}
 	this.nextReceiver = nextReceiver
 }
 

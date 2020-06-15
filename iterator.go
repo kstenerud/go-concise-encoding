@@ -27,12 +27,14 @@ import (
 )
 
 type IteratorOptions struct {
+	ConciseEncodingVersion uint64
 	// If useReferences is true, the iterator will also look for duplicate
 	// pointers to data, generating marker and reference events rather than
 	// walking the object again. This is useful for cyclic or recursive data
 	// structures.
 	UseReferences bool
-	// OmitNilPointers bool
+	// TODO
+	OmitNilPointers bool
 }
 
 // Iterate over an object (recursively), calling the eventReceiver as data is
@@ -154,4 +156,21 @@ func getIteratorForType(t reflect.Type) ObjectIterator {
 	iterator, _ := iterators.LoadOrStore(t, generateIteratorForType(t))
 	iterator.(ObjectIterator).PostCacheInitIterator()
 	return iterator.(ObjectIterator)
+}
+
+var defaultIteratorOptions = IteratorOptions{
+	ConciseEncodingVersion: ConciseEncodingVersion,
+}
+
+func applyDefaultIteratorOptions(original *IteratorOptions) *IteratorOptions {
+	var options IteratorOptions
+	if original == nil {
+		options = defaultIteratorOptions
+	} else {
+		options = *original
+		if options.ConciseEncodingVersion < 1 {
+			options.ConciseEncodingVersion = defaultIteratorOptions.ConciseEncodingVersion
+		}
+	}
+	return &options
 }

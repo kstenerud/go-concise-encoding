@@ -33,11 +33,11 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// TODO: BuilderOptions
 type BuilderOptions struct {
 	// TODO: Currently handled in bigIntMaxBase10Exponent in conversions.go
 	FloatToBigIntMaxExponent int
-	// TODO: Something for lossy conversions?
+	// TODO: AllowFloatLossyConversions option
+	AllowFloatLossyConversions bool
 	// TODO: Something for decimal floats?
 }
 
@@ -223,4 +223,12 @@ func getBuilderForType(dstType reflect.Type) ObjectBuilder {
 	builder, _ := builders.LoadOrStore(dstType, generateBuilderForType(dstType))
 	builder.(ObjectBuilder).PostCacheInitBuilder()
 	return builder.(ObjectBuilder)
+}
+
+func applyDefaultBuilderOptions(original *BuilderOptions) *BuilderOptions {
+	var options BuilderOptions
+	if original != nil {
+		options = *original
+	}
+	return &options
 }

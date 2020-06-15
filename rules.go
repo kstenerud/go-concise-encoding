@@ -33,8 +33,11 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// Limits before the ruleset artificially terminates with an error.
-type Limits struct {
+type RuleOptions struct {
+	// Concise encoding spec version to adhere to
+	ConciseEncodingVersion uint64
+
+	// Limits before the ruleset artificially terminates with an error.
 	MaxBytesLength      uint64
 	MaxStringLength     uint64
 	MaxURILength        uint64
@@ -45,47 +48,15 @@ type Limits struct {
 	MaxReferenceCount   uint64
 }
 
-func DefaultLimits() *Limits {
-	return &Limits{
-		MaxBytesLength:      1000000000,
-		MaxStringLength:     100000000,
-		MaxURILength:        10000,
-		MaxIDLength:         100,
-		MaxMarkupNameLength: 100,
-		MaxContainerDepth:   1000,
-		MaxObjectCount:      10000000,
-		MaxReferenceCount:   100000,
-	}
-}
-
-func validate(limits *Limits) {
-	if limits.MaxBytesLength < 1 {
-		panic(fmt.Errorf("MaxByteLength must be greater than 0"))
-	}
-	if limits.MaxStringLength < 1 {
-		panic(fmt.Errorf("MaxStringLength must be greater than 0"))
-	}
-	if limits.MaxURILength < 1 {
-		panic(fmt.Errorf("MaxURILength must be greater than 0"))
-	}
-	if limits.MaxIDLength < 1 {
-		panic(fmt.Errorf("MaxIDLength must be greater than 0"))
-	}
-	if limits.MaxMarkupNameLength < 1 {
-		panic(fmt.Errorf("MaxMarkupNameLength must be greater than 0"))
-	}
-	if limits.MaxContainerDepth < 1 {
-		panic(fmt.Errorf("MaxContainerDepth must be greater than 0"))
-	}
-	if limits.MaxObjectCount < 1 {
-		panic(fmt.Errorf("MaxObjectCount must be greater than 0"))
-	}
+func DefaultRuleOptions() *RuleOptions {
+	var options RuleOptions
+	options = defaultRuleOptions
+	return &options
 }
 
 type Rules struct {
-	version           uint64
+	options           RuleOptions
 	charValidator     Utf8Validator
-	limits            *Limits
 	maxDepth          int
 	stateStack        []ruleState
 	arrayType         ruleEvent
@@ -100,24 +71,15 @@ type Rules struct {
 	nextReceiver      DataEventReceiver
 }
 
-func NewRules(version uint64, limits *Limits, nextReceiver DataEventReceiver) *Rules {
+func NewRules(options *RuleOptions, nextReceiver DataEventReceiver) *Rules {
 	this := new(Rules)
-	this.Init(version, limits, nextReceiver)
+	this.Init(options, nextReceiver)
 	return this
 }
 
-func (this *Rules) Init(version uint64, limits *Limits, nextReceiver DataEventReceiver) {
-	this.version = version
-	if limits == nil {
-		this.limits = DefaultLimits()
-	} else {
-		limitsCopy := *limits
-		this.limits = &limitsCopy
-	}
-
-	validate(this.limits)
-	this.limits.MaxContainerDepth += rulesMaxDepthAdjust
-	this.stateStack = make([]ruleState, 0, this.limits.MaxContainerDepth)
+func (this *Rules) Init(options *RuleOptions, nextReceiver DataEventReceiver) {
+	this.options = applyDefaultRuleOptions(options)
+	this.stateStack = make([]ruleState, 0, this.options.MaxContainerDepth)
 	this.nextReceiver = nextReceiver
 
 	this.Reset()
@@ -141,8 +103,8 @@ func (this *Rules) Reset() {
 
 func (this *Rules) OnVersion(version uint64) {
 	this.assertCurrentStateAllowsType(eventTypeVersion)
-	if version != this.version {
-		panic(fmt.Errorf("Expected version %v but got version %v", this.version, version))
+	if version != this.options.ConciseEncodingVersion {
+		panic(fmt.Errorf("Expected version %v but got version %v", this.options.ConciseEncodingVersion, version))
 	}
 	this.changeState(stateAwaitingTLO)
 	this.nextReceiver.OnVersion(version)
@@ -399,8 +361,8 @@ func (this *Rules) OnEnd() {
 }
 
 func (this *Rules) OnMarker() {
-	if uint64(len(this.assignedIDs)) >= this.limits.MaxReferenceCount {
-		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", this.limits.MaxReferenceCount))
+	if uint64(len(this.assignedIDs)) >= this.options.MaxReferenceCount {
+		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", this.options.MaxReferenceCount))
 	}
 	this.beginContainer(eventTypeMarker, stateAwaitingMarkerID)
 	this.nextReceiver.OnMarker()
@@ -467,12 +429,12 @@ func (this *Rules) onArrayData(data []byte) {
 
 	switch this.arrayType {
 	case eventTypeBytes:
-		if this.arrayBytesWritten+dataLength > this.limits.MaxBytesLength {
-			panic(fmt.Errorf("Max byte array length (%v) exceeded", this.limits.MaxBytesLength))
+		if this.arrayBytesWritten+dataLength > this.options.MaxBytesLength {
+			panic(fmt.Errorf("Max byte array length (%v) exceeded", this.options.MaxBytesLength))
 		}
 	case eventTypeString:
-		if this.arrayBytesWritten+dataLength > this.limits.MaxStringLength {
-			panic(fmt.Errorf("Max string length (%v) exceeded", this.limits.MaxStringLength))
+		if this.arrayBytesWritten+dataLength > this.options.MaxStringLength {
+			panic(fmt.Errorf("Max string length (%v) exceeded", this.options.MaxStringLength))
 		}
 		if this.isStringInsideComment() {
 			this.validateCommentContents(data)
@@ -483,8 +445,8 @@ func (this *Rules) onArrayData(data []byte) {
 			this.arrayData = append(this.arrayData, data...)
 		}
 	case eventTypeURI:
-		if this.arrayBytesWritten+dataLength > this.limits.MaxURILength {
-			panic(fmt.Errorf("Max URI length (%v) exceeded", this.limits.MaxURILength))
+		if this.arrayBytesWritten+dataLength > this.options.MaxURILength {
+			panic(fmt.Errorf("Max URI length (%v) exceeded", this.options.MaxURILength))
 		}
 		if this.isAwaitingID() {
 			this.arrayData = append(this.arrayData, data...)
@@ -520,8 +482,8 @@ func (this *Rules) changeState(st ruleState) {
 }
 
 func (this *Rules) stackState(st ruleState) {
-	if uint64(len(this.stateStack)) >= this.limits.MaxContainerDepth {
-		panic(fmt.Errorf("Max depth of %v exceeded", this.limits.MaxContainerDepth-rulesMaxDepthAdjust))
+	if uint64(len(this.stateStack)) >= this.options.MaxContainerDepth {
+		panic(fmt.Errorf("Max depth of %v exceeded", this.options.MaxContainerDepth-rulesMaxDepthAdjust))
 	}
 	this.stateStack = append(this.stateStack, st)
 }
@@ -620,16 +582,16 @@ func (this *Rules) onArrayChunkEnded() {
 			if this.arrayBytesWritten == 0 {
 				panic(fmt.Errorf("Markup name cannot be length 0"))
 			}
-			if this.arrayBytesWritten > this.limits.MaxMarkupNameLength {
-				panic(fmt.Errorf("Markup name length %v exceeds max of %v", this.arrayBytesWritten, this.limits.MaxMarkupNameLength))
+			if this.arrayBytesWritten > this.options.MaxMarkupNameLength {
+				panic(fmt.Errorf("Markup name length %v exceeds max of %v", this.arrayBytesWritten, this.options.MaxMarkupNameLength))
 			}
 		}
 		if this.isAwaitingID() {
 			if this.arrayBytesWritten == 0 {
 				panic(fmt.Errorf("An ID cannot be length 0"))
 			}
-			if this.arrayBytesWritten > this.limits.MaxIDLength {
-				panic(fmt.Errorf("ID length %v exceeds max of %v", this.arrayBytesWritten, this.limits.MaxIDLength))
+			if this.arrayBytesWritten > this.options.MaxIDLength {
+				panic(fmt.Errorf("ID length %v exceeds max of %v", this.arrayBytesWritten, this.options.MaxIDLength))
 			}
 			this.stackId(string(this.arrayData))
 		}
@@ -655,8 +617,8 @@ func (this *Rules) onArrayChunkEnded() {
 
 func (this *Rules) incrementObjectCount() {
 	this.objectCount++
-	if this.objectCount > this.limits.MaxObjectCount {
-		panic(fmt.Errorf("Max object count of %v exceeded", this.limits.MaxObjectCount))
+	if this.objectCount > this.options.MaxObjectCount {
+		panic(fmt.Errorf("Max object count of %v exceeded", this.options.MaxObjectCount))
 	}
 }
 
@@ -713,8 +675,60 @@ func (this *Rules) beginContainer(containerType ruleEvent, newState ruleState) {
 	this.stackState(newState)
 }
 
+var defaultRuleOptions = RuleOptions{
+	ConciseEncodingVersion: ConciseEncodingVersion,
+	MaxBytesLength:         1000000000,
+	MaxStringLength:        100000000,
+	MaxURILength:           10000,
+	MaxIDLength:            100,
+	MaxMarkupNameLength:    100,
+	MaxContainerDepth:      1000,
+	MaxObjectCount:         10000000,
+	MaxReferenceCount:      100000,
+}
+
 // The initial rule state comes pre-stacked. This value accounts for it in calculations.
 const rulesMaxDepthAdjust = 2
+
+func applyDefaultRuleOptions(original *RuleOptions) RuleOptions {
+	var options RuleOptions
+	if original == nil {
+		options = defaultRuleOptions
+	} else {
+		options = *original
+		if options.ConciseEncodingVersion < 1 {
+			options.ConciseEncodingVersion = defaultRuleOptions.ConciseEncodingVersion
+		}
+		if options.MaxBytesLength < 1 {
+			options.MaxBytesLength = defaultRuleOptions.MaxBytesLength
+		}
+		if options.MaxStringLength < 1 {
+			options.MaxStringLength = defaultRuleOptions.MaxStringLength
+		}
+		if options.MaxURILength < 1 {
+			options.MaxURILength = defaultRuleOptions.MaxURILength
+		}
+		if options.MaxIDLength < 1 {
+			options.MaxIDLength = defaultRuleOptions.MaxIDLength
+		}
+		if options.MaxMarkupNameLength < 1 {
+			options.MaxMarkupNameLength = defaultRuleOptions.MaxMarkupNameLength
+		}
+		if options.MaxContainerDepth < 1 {
+			options.MaxContainerDepth = defaultRuleOptions.MaxContainerDepth
+		}
+		if options.MaxObjectCount < 1 {
+			options.MaxObjectCount = defaultRuleOptions.MaxObjectCount
+		}
+		if options.MaxReferenceCount < 1 {
+			options.MaxReferenceCount = defaultRuleOptions.MaxReferenceCount
+		}
+	}
+
+	options.MaxContainerDepth += rulesMaxDepthAdjust
+
+	return options
+}
 
 type ruleEvent int
 

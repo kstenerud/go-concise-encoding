@@ -37,7 +37,7 @@ type CBEEncoderOptions struct {
 
 type CBEEncoder struct {
 	buff    buffer
-	options *CBEEncoderOptions
+	options CBEEncoderOptions
 }
 
 func NewCBEEncoder(options *CBEEncoderOptions) *CBEEncoder {
@@ -47,10 +47,9 @@ func NewCBEEncoder(options *CBEEncoderOptions) *CBEEncoder {
 }
 
 func (this *CBEEncoder) Init(options *CBEEncoderOptions) {
-	if options == nil {
-		options = &CBEEncoderOptions{}
+	if options != nil {
+		this.options = *options
 	}
-	this.options = options
 }
 
 func (this *CBEEncoder) Document() []byte {

@@ -81,16 +81,16 @@ func assertRulesNotInArray(t *testing.T, rules *Rules) {
 	}
 }
 
-func newRulesAfterVersion(limits *Limits) *Rules {
-	rules := NewRules(rulesCodecVersion, limits, NewNullEventReceiver())
-	rules.OnVersion(rulesCodecVersion)
+func newRulesAfterVersion(options *RuleOptions) *Rules {
+	rules := NewRules(options, NewNullEventReceiver())
+	rules.OnVersion(options.ConciseEncodingVersion)
 	return rules
 }
 
 func newRulesWithMaxDepth(maxDepth int) *Rules {
-	limits := DefaultLimits()
-	limits.MaxContainerDepth = uint64(maxDepth)
-	return newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxContainerDepth = uint64(maxDepth)
+	return newRulesAfterVersion(options)
 }
 
 // ===========
@@ -98,7 +98,9 @@ func newRulesWithMaxDepth(maxDepth int) *Rules {
 // ===========
 
 func TestRulesVersion(t *testing.T) {
-	rules := NewRules(1, nil, NewNullEventReceiver())
+	options := DefaultRuleOptions()
+	options.ConciseEncodingVersion = 1
+	rules := NewRules(options, NewNullEventReceiver())
 	assertPanics(t, func() { rules.OnVersion(2) })
 	assertNoPanic(t, func() { rules.OnVersion(1) })
 	assertPanics(t, func() { rules.OnVersion(1) })
@@ -2192,14 +2194,14 @@ func TestRulesErrorDuplicateMarkerID(t *testing.T) {
 // ======
 
 func TestRulesMaxBytesLength(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxBytesLength = 10
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxBytesLength = 10
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnBytesBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
 	assertPanics(t, func() { rules.OnArrayData(generateBytes(11, 0)) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnBytesBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(8, false) })
 	assertNoPanic(t, func() { rules.OnArrayData(generateBytes(8, 0)) })
@@ -2208,14 +2210,14 @@ func TestRulesMaxBytesLength(t *testing.T) {
 }
 
 func TestRulesMaxStringLength(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxStringLength = 10
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxStringLength = 10
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
 	assertPanics(t, func() { rules.OnArrayData([]byte(generateString(11, 0))) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(8, false) })
 	assertNoPanic(t, func() { rules.OnArrayData([]byte(generateString(8, 0))) })
@@ -2224,14 +2226,14 @@ func TestRulesMaxStringLength(t *testing.T) {
 }
 
 func TestRulesMaxURILength(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxURILength = 10
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxURILength = 10
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnURIBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
 	assertPanics(t, func() { rules.OnArrayData([]byte("someuri:aaa")) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnURIBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(8, false) })
 	assertNoPanic(t, func() { rules.OnArrayData([]byte("someuri:")) })
@@ -2240,15 +2242,15 @@ func TestRulesMaxURILength(t *testing.T) {
 }
 
 func TestRulesMaxIDLength(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxIDLength = 10
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxIDLength = 10
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
 	assertPanics(t, func() { rules.OnArrayData([]byte(generateString(11, 0))) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(8, false) })
@@ -2256,13 +2258,13 @@ func TestRulesMaxIDLength(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnArrayChunk(4, true) })
 	assertPanics(t, func() { rules.OnArrayData([]byte(generateString(4, 0))) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
 	assertPanics(t, func() { rules.OnArrayData([]byte(generateString(11, 0))) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnReference() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(8, false) })
@@ -2272,15 +2274,15 @@ func TestRulesMaxIDLength(t *testing.T) {
 }
 
 func TestRulesMaxMarkupNameLength(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxMarkupNameLength = 10
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxMarkupNameLength = 10
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
 	assertPanics(t, func() { rules.OnArrayData([]byte(generateString(11, 0))) })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnMarkup() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(8, false) })
@@ -2296,9 +2298,9 @@ func TestRulesMaxContainerDepth(t *testing.T) {
 }
 
 func TestRulesMaxObjectCount(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxObjectCount = 3
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxObjectCount = 3
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })
 	assertNoPanic(t, func() { rules.OnArrayChunk(11, true) })
@@ -2307,7 +2309,7 @@ func TestRulesMaxObjectCount(t *testing.T) {
 	assertNoPanic(t, func() { rules.OnBool(true) })
 	assertPanics(t, func() { rules.OnEnd() })
 
-	rules = newRulesAfterVersion(limits)
+	rules = newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnComment() })
 	assertNoPanic(t, func() { rules.OnEnd() })
@@ -2319,9 +2321,9 @@ func TestRulesMaxObjectCount(t *testing.T) {
 }
 
 func TestRulesMaxReferenceCount(t *testing.T) {
-	limits := DefaultLimits()
-	limits.MaxReferenceCount = 2
-	rules := newRulesAfterVersion(limits)
+	options := DefaultRuleOptions()
+	options.MaxReferenceCount = 2
+	rules := newRulesAfterVersion(options)
 	assertNoPanic(t, func() { rules.OnList() })
 	assertNoPanic(t, func() { rules.OnMarker() })
 	assertNoPanic(t, func() { rules.OnStringBegin() })

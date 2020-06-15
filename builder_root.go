@@ -51,13 +51,10 @@ func NewRootBuilder(dstType reflect.Type, options *BuilderOptions) *RootBuilder 
 }
 
 func (this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
-	if options == nil {
-		options = &BuilderOptions{}
-	}
 	this.dstType = dstType
 	this.object = reflect.New(dstType).Elem()
 
-	builder := getBuilderForType(dstType).CloneFromTemplate(this, this, options)
+	builder := getBuilderForType(dstType).CloneFromTemplate(this, this, applyDefaultBuilderOptions(options))
 	if builder.IsContainerOnly() {
 		builder = newTopLevelContainerBuilder(this, builder)
 	}

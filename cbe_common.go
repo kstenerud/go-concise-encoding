@@ -20,8 +20,6 @@
 
 package concise_encoding
 
-const cbeCodecVersion = 1
-
 type cbeTypeField uint8
 
 const (

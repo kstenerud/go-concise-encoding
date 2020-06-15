@@ -33,10 +33,12 @@ import (
 )
 
 type CTEDecoderOptions struct {
-	// TODO: implied version
-	// TODO: implied tl container
-	// TODO: Maximums?
-	// TODO: Zero copy
+	// TODO: ShouldZeroCopy option
+	ShouldZeroCopy bool
+	// TODO: ImpliedVersion option
+	ImpliedVersion uint
+	// TODO: ImpliedTLContainer option
+	ImpliedTLContainer TLContainerType
 }
 
 func CTEDecode(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) (err error) {
@@ -59,7 +61,7 @@ type CTEDecoder struct {
 	endPos         int
 	containerState []cteDecoderState
 	currentState   cteDecoderState
-	options        *CTEDecoderOptions
+	options        CTEDecoderOptions
 }
 
 func NewCTEDecoder(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) *CTEDecoder {
@@ -69,12 +71,11 @@ func NewCTEDecoder(document []byte, eventReceiver DataEventReceiver, options *CT
 }
 
 func (this *CTEDecoder) Init(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) {
-	if options == nil {
-		options = &CTEDecoderOptions{}
-	}
 	this.document = document
 	this.eventReceiver = eventReceiver
-	this.options = options
+	if options != nil {
+		this.options = *options
+	}
 	this.endPos = len(document) - 1
 }
 

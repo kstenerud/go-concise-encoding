@@ -34,7 +34,7 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 		options = &CBEMarshalerOptions{}
 	}
 	defer func() {
-		if DebugOptions.PassThroughPanics {
+		if !DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -54,6 +54,7 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 type CBEUnmarshalerOptions struct {
 	Decoder CBEDecoderOptions
 	Builder BuilderOptions
+	Rules   RuleOptions
 }
 
 func UnmarshalCBE(document []byte, template interface{}, options *CBEUnmarshalerOptions) (decoded interface{}, err error) {
@@ -61,7 +62,7 @@ func UnmarshalCBE(document []byte, template interface{}, options *CBEUnmarshaler
 		options = &CBEUnmarshalerOptions{}
 	}
 	defer func() {
-		if DebugOptions.PassThroughPanics {
+		if !DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
 				err, ok = r.(error)
@@ -73,7 +74,7 @@ func UnmarshalCBE(document []byte, template interface{}, options *CBEUnmarshaler
 	}()
 
 	builder := NewBuilderFor(template, &options.Builder)
-	rules := NewRules(cbeCodecVersion, DefaultLimits(), builder)
+	rules := NewRules(&options.Rules, builder)
 	decoder := NewCBEDecoder(document, rules, &options.Decoder)
 	decoder.Decode()
 	decoded = builder.GetBuiltObject()
