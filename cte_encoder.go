@@ -163,18 +163,21 @@ func (this *CTEEncoder) OnFloat(value float64) {
 }
 
 func (this *CTEEncoder) OnBigFloat(value *big.Float) {
+	this.addPrefix()
 	this.addString(bigFloatToString(value))
 	this.addSuffix()
 	this.transitionState()
 }
 
 func (this *CTEEncoder) OnDecimalFloat(value compact_float.DFloat) {
+	this.addPrefix()
 	this.addString(value.Text('g'))
 	this.addSuffix()
 	this.transitionState()
 }
 
 func (this *CTEEncoder) OnBigDecimalFloat(value *apd.Decimal) {
+	this.addPrefix()
 	this.addString(value.Text('g'))
 	this.addSuffix()
 	this.transitionState()

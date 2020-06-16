@@ -250,6 +250,11 @@ func TestCTEMap(t *testing.T) {
 	assertCTEEncodeDecode(t, `c1 {}`, v(1), m(), e(), ed())
 	assertCTEEncodeDecode(t, `c1 {1=2}`, v(1), m(), pi(1), pi(2), e(), ed())
 	assertCTEDecode(t, "c1 {  1 = 2 3=4 \t}", v(1), m(), pi(1), pi(2), pi(3), pi(4), e(), ed())
+
+	assertCTEDecode(t, `c1 {email = u"mailto:me@somewhere.com" 1.5 = "a string"}`, v(1), m(),
+	 s("email"), uri("mailto:me@somewhere.com"),
+	df(newDFloat("1.5")), s("a string"),
+	 e(), ed())
 }
 
 func TestCTEListList(t *testing.T) {

@@ -147,4 +147,5 @@ func TestEncodeDecodeList(t *testing.T) {
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, v(1), m(), e(), ed())
 	assertEncodeDecode(t, v(1), m(), s("a"), ni(1), e(), ed())
+	assertEncodeDecode(t, v(1), m(), s("some nil"), n(), df(newDFloat("1.1")), s("somefloat"), e(), ed())
 }

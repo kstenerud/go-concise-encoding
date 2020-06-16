@@ -36,8 +36,8 @@ import (
 type BuilderOptions struct {
 	// TODO: Currently handled in bigIntMaxBase10Exponent in conversions.go
 	FloatToBigIntMaxExponent int
-	// TODO: AllowFloatLossyConversions option
-	AllowFloatLossyConversions bool
+	// TODO: ErrorOnLossyFloatConversion option
+	ErrorOnLossyFloatConversion bool
 	// TODO: Something for decimal floats?
 }
 
