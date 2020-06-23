@@ -29,6 +29,7 @@ type CBEMarshalerOptions struct {
 	Iterator IteratorOptions
 }
 
+// Marshal a go object into a CBE document
 func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []byte, err error) {
 	if options == nil {
 		options = &CBEMarshalerOptions{}
@@ -47,7 +48,7 @@ func MarshalCBE(object interface{}, options *CBEMarshalerOptions) (document []by
 
 	encoder := NewCBEEncoder(&options.Encoder)
 	IterateObject(object, encoder, &options.Iterator)
-	document = encoder.Document()
+	document = encoder.GetBuiltDocument()
 	return
 }
 
@@ -57,6 +58,7 @@ type CBEUnmarshalerOptions struct {
 	Rules   RuleOptions
 }
 
+// Unmarshal a CTE document, creating an object of the same type as the template.
 func UnmarshalCBE(document []byte, template interface{}, options *CBEUnmarshalerOptions) (decoded interface{}, err error) {
 	if options == nil {
 		options = &CBEUnmarshalerOptions{}

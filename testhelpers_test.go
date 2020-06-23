@@ -149,7 +149,7 @@ func cbeEncodeDecode(expected ...*tevent) (events []*tevent, err error) {
 
 	encoder := NewCBEEncoder(nil)
 	invokeEvents(encoder, expected...)
-	document := encoder.Document()
+	document := encoder.GetBuiltDocument()
 
 	return cbeDecode(document)
 }
@@ -164,7 +164,7 @@ func cteDecode(document []byte) (events []*tevent, err error) {
 func cteEncode(events ...*tevent) []byte {
 	encoder := NewCTEEncoder(nil)
 	invokeEvents(encoder, events...)
-	return encoder.Document()
+	return encoder.GetBuiltDocument()
 }
 
 func cteEncodeDecode(events ...*tevent) (decodedEvents []*tevent, err error) {
@@ -394,9 +394,8 @@ func ff() *tevent { return newTEvent(teventBool, false, nil) }
 func i(v int64) *tevent {
 	if v >= 0 {
 		return pi(uint64(v))
-	} else {
-		return ni(uint64(-v))
 	}
+	return ni(uint64(-v))
 }
 func f(v float64) *tevent {
 	// TODO: Do I need to check for this? Doesn't the library handle it?
@@ -653,7 +652,7 @@ type TestingOuterStruct struct {
 	// URL   url.URL
 }
 
-func (_this *TestingOuterStruct) Events(includeFakes bool) (events []*tevent) {
+func (_this *TestingOuterStruct) getRepresentativeEvents(includeFakes bool) (events []*tevent) {
 	ade := func(e ...*tevent) {
 		events = append(events, e...)
 	}

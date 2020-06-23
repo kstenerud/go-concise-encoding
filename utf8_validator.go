@@ -22,17 +22,22 @@ package concise_encoding
 
 import "fmt"
 
-type Utf8Validator struct {
+// UTF8 Validator takes a stream of bytes and ensures that they form a complete
+// UTF-8 character.
+type UTF8Validator struct {
 	bytesRemaining int
 	accumulator    int
 }
 
-func (_this *Utf8Validator) Reset() {
+func (_this *UTF8Validator) Reset() {
 	_this.bytesRemaining = 0
 	_this.accumulator = 0
 }
 
-func (_this *Utf8Validator) AddByte(byteValue int) {
+// Add a byte to the UTF-8 character that is being built. When the character is
+// complete. IsCompleteCharacter will return true.
+// This method panics if the UTF-8 sequence is invalid.
+func (_this *UTF8Validator) AddByte(byteValue int) {
 	const continuationMask = 0xc0
 	const continuationMatch = 0x80
 	if _this.bytesRemaining > 0 {
@@ -85,10 +90,13 @@ func (_this *Utf8Validator) AddByte(byteValue int) {
 	panic(fmt.Errorf("UTF-8 encoding: Invalid byte [0x%02x]", byteValue))
 }
 
-func (_this *Utf8Validator) IsCompleteCharacter() bool {
+// Returns true if the last added byte completed the UTF-8 character.
+func (_this *UTF8Validator) IsCompleteCharacter() bool {
 	return _this.bytesRemaining == 0
 }
 
-func (_this *Utf8Validator) Character() int {
+// Get the fully built UTF-8 character. Don't call this until
+// IsCompleteCharacter() returns true.
+func (_this *UTF8Validator) GetCharacter() int {
 	return _this.accumulator
 }

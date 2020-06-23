@@ -47,7 +47,8 @@ func (_this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *
 	_this.eventReceiver = eventReceiver
 }
 
-// The *RootObjectIterator field is ignored by the root iterator. It can be nil.
+// Iterates over an object, sending events to the root iterator's
+// DataEventReceiver as it visits all elements of the value.
 func (_this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator) {
 	if value == nil {
 		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
@@ -71,24 +72,26 @@ func (_this *RootObjectIterator) findReferences(value interface{}) {
 }
 
 func (_this *RootObjectIterator) addReference(v reflect.Value) (didAddReferenceObject bool) {
-	if _this.options.UseReferences {
-		ptr := duplicates.TypedPointerOfRV(v)
-		if _this.foundReferences[ptr] {
-			var name uint32
-			var exists bool
-			if name, exists = _this.namedReferences[ptr]; !exists {
-				name = _this.nextMarkerName
-				_this.nextMarkerName++
-				_this.namedReferences[ptr] = name
-				_this.eventReceiver.OnMarker()
-				_this.eventReceiver.OnPositiveInt(uint64(name))
-				return false
-			} else {
-				_this.eventReceiver.OnReference()
-				_this.eventReceiver.OnPositiveInt(uint64(name))
-				return true
-			}
-		}
+	if !_this.options.UseReferences {
+		return false
 	}
-	return false
+
+	ptr := duplicates.TypedPointerOfRV(v)
+	if !_this.foundReferences[ptr] {
+		return false
+	}
+
+	name, exists := _this.namedReferences[ptr]
+	if !exists {
+		name = _this.nextMarkerName
+		_this.nextMarkerName++
+		_this.namedReferences[ptr] = name
+		_this.eventReceiver.OnMarker()
+		_this.eventReceiver.OnPositiveInt(uint64(name))
+		return false
+	}
+
+	_this.eventReceiver.OnReference()
+	_this.eventReceiver.OnPositiveInt(uint64(name))
+	return true
 }

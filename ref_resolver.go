@@ -49,19 +49,23 @@ import (
 // - so ref builder needs reference to another builder. get built object.
 // - for scalars, just keep a copy of the value. Generate and run builder.
 
+// TODO: Refine this into something real
 type ReferenceResolver struct {
 	markers map[interface{}][]reflect.Value
 }
 
+// TODO
 func (_this *ReferenceResolver) DefineMarker(id interface{}) {
 	// TODO: Does this need to check for existence? Or is that better off in rules?
 	_this.markers[id] = make([]reflect.Value, 0, 2)
 }
 
+// TODO
 func (_this *ReferenceResolver) AddReference(id interface{}, object reflect.Value) {
 	_this.markers[id] = append(_this.markers[id], object)
 }
 
+// TODO
 func (_this *ReferenceResolver) ResolveReferences() {
 	panic("TODO: ResolveReferences")
 }

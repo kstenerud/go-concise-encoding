@@ -49,15 +49,17 @@ type RuleOptions struct {
 	// Max bytes total for all array types
 }
 
-func DefaultRuleOptions() *RuleOptions {
+func NewDefaultRuleOptions() *RuleOptions {
 	var options RuleOptions
 	options = defaultRuleOptions
 	return &options
 }
 
+// Rules constrains the order in which builder commands may be sent, such that
+// they form a valid and complete Concise Encoding document.
 type Rules struct {
 	options           RuleOptions
-	charValidator     Utf8Validator
+	charValidator     UTF8Validator
 	maxDepth          int
 	stateStack        []ruleState
 	arrayType         ruleEvent
@@ -338,22 +340,22 @@ func (_this *Rules) OnComment() {
 func (_this *Rules) OnEnd() {
 	_this.assertCurrentStateAllowsType(eventTypeEndContainer)
 
-	switch _this.getCurrentStateId() {
-	case stateIdAwaitingListItem:
+	switch _this.getCurrentStateID() {
+	case stateIDAwaitingListItem:
 		_this.unstackState()
 		_this.onChildEnded(eventTypeList)
-	case stateIdAwaitingMapKey:
+	case stateIDAwaitingMapKey:
 		_this.unstackState()
 		_this.onChildEnded(eventTypeMap)
-	case stateIdAwaitingMarkupKey:
+	case stateIDAwaitingMarkupKey:
 		_this.changeState(stateAwaitingMarkupContents)
-	case stateIdAwaitingMarkupContents:
+	case stateIDAwaitingMarkupContents:
 		_this.unstackState()
 		_this.onChildEnded(eventTypeMarkup)
-	case stateIdAwaitingMetadataKey:
+	case stateIDAwaitingMetadataKey:
 		_this.changeState(stateAwaitingMetadataObject)
 		_this.incrementObjectCount()
-	case stateIdAwaitingCommentItem:
+	case stateIDAwaitingCommentItem:
 		_this.unstackState()
 		_this.incrementObjectCount()
 	default:
@@ -382,7 +384,7 @@ func (_this *Rules) OnEndDocument() {
 
 func (_this *Rules) onPositiveInt(value uint64) {
 	if _this.isAwaitingID() {
-		_this.stackId(value)
+		_this.stackID(value)
 	}
 	_this.addScalar(eventTypePInt)
 }
@@ -467,7 +469,7 @@ func (_this *Rules) getCurrentState() ruleState {
 	return _this.stateStack[len(_this.stateStack)-1]
 }
 
-func (_this *Rules) getCurrentStateId() ruleState {
+func (_this *Rules) getCurrentStateID() ruleState {
 	return _this.getCurrentState() & ruleState(ruleIDFieldMask)
 }
 
@@ -505,11 +507,11 @@ func (_this *Rules) isAwaitingMarkupName() bool {
 	return _this.getCurrentState() == stateAwaitingMarkupName
 }
 
-func (_this *Rules) stackId(id interface{}) {
+func (_this *Rules) stackID(id interface{}) {
 	_this.unassignedIDs = append(_this.unassignedIDs, id)
 }
 
-func (_this *Rules) unstackId() (id interface{}) {
+func (_this *Rules) unstackID() (id interface{}) {
 	id = _this.unassignedIDs[len(_this.unassignedIDs)-1]
 	_this.unassignedIDs = _this.unassignedIDs[:len(_this.unassignedIDs)-1]
 	return
@@ -517,7 +519,7 @@ func (_this *Rules) unstackId() (id interface{}) {
 
 func (_this *Rules) isStringInsideComment() bool {
 	return _this.hasParentState() &&
-		_this.getParentState()&ruleState(ruleIDFieldMask) == stateIdAwaitingCommentItem
+		_this.getParentState()&ruleState(ruleIDFieldMask) == stateIDAwaitingCommentItem
 }
 
 func (_this *Rules) validateStringContents(data []byte) {
@@ -530,7 +532,7 @@ func (_this *Rules) validateCommentContents(data []byte) {
 	for _, ch := range data {
 		_this.charValidator.AddByte(int(ch))
 		if _this.charValidator.IsCompleteCharacter() {
-			validateRulesCommentCharacter(_this.charValidator.Character())
+			validateRulesCommentCharacter(_this.charValidator.GetCharacter())
 		}
 	}
 }
@@ -595,7 +597,7 @@ func (_this *Rules) onArrayChunkEnded() {
 			if _this.arrayBytesWritten > _this.options.MaxIDLength {
 				panic(fmt.Errorf("ID length %v exceeds max of %v", _this.arrayBytesWritten, _this.options.MaxIDLength))
 			}
-			_this.stackId(string(_this.arrayData))
+			_this.stackID(string(_this.arrayData))
 		}
 	case eventTypeURI:
 		if _this.arrayBytesWritten < 2 {
@@ -606,7 +608,7 @@ func (_this *Rules) onArrayChunkEnded() {
 			if err != nil {
 				panic(fmt.Errorf("%v", err))
 			}
-			_this.stackId(url)
+			_this.stackID(url)
 		}
 	case eventTypeBytes:
 		// Nothing to do
@@ -627,25 +629,25 @@ func (_this *Rules) incrementObjectCount() {
 func (_this *Rules) onChildEnded(childType ruleEvent) {
 	_this.incrementObjectCount()
 
-	switch _this.getCurrentStateId() {
-	case stateIdAwaitingMetadataObject:
+	switch _this.getCurrentStateID() {
+	case stateIDAwaitingMetadataObject:
 		container := _this.getFirstRealContainer()
 		assertStateAllowsType(container, childType)
 		_this.unstackState()
 		_this.onChildEnded(childType)
-	case stateIdAwaitingMarkerObject:
+	case stateIDAwaitingMarkerObject:
 		container := _this.getFirstRealContainer()
 		assertStateAllowsType(container, childType)
-		markerID := _this.unstackId()
+		markerID := _this.unstackID()
 		if _, exists := _this.assignedIDs[markerID]; exists {
 			panic(fmt.Errorf("%v: Marker ID already defined", markerID))
 		}
 		_this.assignedIDs[markerID] = childType
 		_this.unstackState()
 		_this.onChildEnded(childType)
-	case stateIdAwaitingReferenceID:
+	case stateIDAwaitingReferenceID:
 		container := _this.getFirstRealContainer()
-		markerID := _this.unstackId()
+		markerID := _this.unstackID()
 
 		_, ok := markerID.(*url.URL)
 		if ok {
@@ -663,7 +665,7 @@ func (_this *Rules) onChildEnded(childType ruleEvent) {
 		_this.unstackState()
 		_this.onChildEnded(referencedType)
 	default:
-		_this.changeState(childEndRuleStateChanges[_this.getCurrentStateId()])
+		_this.changeState(childEndRuleStateChanges[_this.getCurrentStateID()])
 	}
 }
 
@@ -736,32 +738,32 @@ func applyDefaultRuleOptions(original *RuleOptions) RuleOptions {
 type ruleEvent int
 
 const (
-	eventIdNothing ruleEvent = iota
-	eventIdVersion
-	eventIdPadding
-	eventIdNil
-	eventIdBool
-	eventIdPInt
-	eventIdNInt
-	eventIdFloat
-	eventIdNan
-	eventIdUUID
-	eventIdTime
-	eventIdList
-	eventIdMap
-	eventIdMarkup
-	eventIdMetadata
-	eventIdComment
-	eventIdMarker
-	eventIdReference
-	eventIdEndContainer
-	eventIdBytes
-	eventIdString
-	eventIdURI
-	eventIdCustom
-	eventIdAChunk
-	eventIdAData
-	eventIdEndDocument
+	eventIDNothing ruleEvent = iota
+	eventIDVersion
+	eventIDPadding
+	eventIDNil
+	eventIDBool
+	eventIDPInt
+	eventIDNInt
+	eventIDFloat
+	eventIDNan
+	eventIDUUID
+	eventIDTime
+	eventIDList
+	eventIDMap
+	eventIDMarkup
+	eventIDMetadata
+	eventIDComment
+	eventIDMarker
+	eventIDReference
+	eventIDEndContainer
+	eventIDBytes
+	eventIDString
+	eventIDURI
+	eventIDCustom
+	eventIDAChunk
+	eventIDAData
+	eventIDEndDocument
 )
 
 var ruleEventNames = [...]string{
@@ -800,26 +802,26 @@ func (_this ruleEvent) String() string {
 type ruleState int
 
 const (
-	stateIdAwaitingNothing ruleState = iota
-	stateIdAwaitingVersion
-	stateIdAwaitingTLO
-	stateIdAwaitingListItem
-	stateIdAwaitingCommentItem
-	stateIdAwaitingMapKey
-	stateIdAwaitingMapValue
-	stateIdAwaitingMetadataKey
-	stateIdAwaitingMetadataValue
-	stateIdAwaitingMetadataObject
-	stateIdAwaitingMarkupName
-	stateIdAwaitingMarkupKey
-	stateIdAwaitingMarkupValue
-	stateIdAwaitingMarkupContents
-	stateIdAwaitingMarkerID
-	stateIdAwaitingMarkerObject
-	stateIdAwaitingReferenceID
-	stateIdAwaitingArrayChunk
-	stateIdAwaitingArrayData
-	stateIdAwaitingEndDocument
+	stateIDAwaitingNothing ruleState = iota
+	stateIDAwaitingVersion
+	stateIDAwaitingTLO
+	stateIDAwaitingListItem
+	stateIDAwaitingCommentItem
+	stateIDAwaitingMapKey
+	stateIDAwaitingMapValue
+	stateIDAwaitingMetadataKey
+	stateIDAwaitingMetadataValue
+	stateIDAwaitingMetadataObject
+	stateIDAwaitingMarkupName
+	stateIDAwaitingMarkupKey
+	stateIDAwaitingMarkupValue
+	stateIDAwaitingMarkupContents
+	stateIDAwaitingMarkerID
+	stateIDAwaitingMarkerObject
+	stateIDAwaitingReferenceID
+	stateIDAwaitingArrayChunk
+	stateIDAwaitingArrayData
+	stateIDAwaitingEndDocument
 )
 
 var ruleStateNames = [...]string{
@@ -888,32 +890,32 @@ const (
 )
 
 const (
-	eventTypeNothing      = eventIdNothing
-	eventTypeVersion      = eventIdVersion | eventVersion
-	eventTypePadding      = eventIdPadding | eventPadding
-	eventTypeNil          = eventIdNil | eventNil
-	eventTypeBool         = eventIdBool | eventScalar
-	eventTypePInt         = eventIdPInt | eventPositiveInt
-	eventTypeNInt         = eventIdNInt | eventScalar
-	eventTypeFloat        = eventIdFloat | eventScalar
-	eventTypeNan          = eventIdNan | eventNan
-	eventTypeUUID         = eventIdUUID | eventScalar
-	eventTypeTime         = eventIdTime | eventScalar
-	eventTypeList         = eventIdList | eventBeginList
-	eventTypeMap          = eventIdMap | eventBeginMap
-	eventTypeMarkup       = eventIdMarkup | eventBeginMarkup
-	eventTypeMetadata     = eventIdMetadata | eventBeginMetadata
-	eventTypeComment      = eventIdComment | eventBeginComment
-	eventTypeMarker       = eventIdMarker | eventBeginMarker
-	eventTypeReference    = eventIdReference | eventBeginReference
-	eventTypeEndContainer = eventIdEndContainer | eventEndContainer
-	eventTypeBytes        = eventIdBytes | eventBeginBytes
-	eventTypeString       = eventIdString | eventBeginString
-	eventTypeURI          = eventIdURI | eventBeginURI
-	eventTypeCustom       = eventIdCustom | eventBeginCustom
-	eventTypeAChunk       = eventIdAChunk | eventArrayChunk
-	eventTypeAData        = eventIdAData | eventArrayData
-	eventTypeEndDocument  = eventIdEndDocument | eventEndDocument
+	eventTypeNothing      = eventIDNothing
+	eventTypeVersion      = eventIDVersion | eventVersion
+	eventTypePadding      = eventIDPadding | eventPadding
+	eventTypeNil          = eventIDNil | eventNil
+	eventTypeBool         = eventIDBool | eventScalar
+	eventTypePInt         = eventIDPInt | eventPositiveInt
+	eventTypeNInt         = eventIDNInt | eventScalar
+	eventTypeFloat        = eventIDFloat | eventScalar
+	eventTypeNan          = eventIDNan | eventNan
+	eventTypeUUID         = eventIDUUID | eventScalar
+	eventTypeTime         = eventIDTime | eventScalar
+	eventTypeList         = eventIDList | eventBeginList
+	eventTypeMap          = eventIDMap | eventBeginMap
+	eventTypeMarkup       = eventIDMarkup | eventBeginMarkup
+	eventTypeMetadata     = eventIDMetadata | eventBeginMetadata
+	eventTypeComment      = eventIDComment | eventBeginComment
+	eventTypeMarker       = eventIDMarker | eventBeginMarker
+	eventTypeReference    = eventIDReference | eventBeginReference
+	eventTypeEndContainer = eventIDEndContainer | eventEndContainer
+	eventTypeBytes        = eventIDBytes | eventBeginBytes
+	eventTypeString       = eventIDString | eventBeginString
+	eventTypeURI          = eventIDURI | eventBeginURI
+	eventTypeCustom       = eventIDCustom | eventBeginCustom
+	eventTypeAChunk       = eventIDAChunk | eventArrayChunk
+	eventTypeAData        = eventIDAData | eventArrayData
+	eventTypeEndDocument  = eventIDEndDocument | eventEndDocument
 	eventTypeAny          = ruleEventsMask
 )
 
@@ -938,49 +940,49 @@ const (
 	allowVersion        = ruleState(eventVersion)
 	allowEndDocument    = ruleState(eventEndDocument | eventBeginComment | eventPadding)
 
-	stateAwaitingNothing        = stateIdAwaitingNothing
-	stateAwaitingVersion        = stateIdAwaitingVersion | allowVersion
-	stateAwaitingTLO            = stateIdAwaitingTLO | allowTLO | ruleFlagRealContainer
-	stateAwaitingEndDocument    = stateIdAwaitingEndDocument | allowEndDocument
-	stateAwaitingListItem       = stateIdAwaitingListItem | allowListItem | ruleFlagRealContainer
-	stateAwaitingMapKey         = stateIdAwaitingMapKey | allowMapKey | ruleFlagRealContainer
-	stateAwaitingMapValue       = stateIdAwaitingMapValue | allowMapValue | ruleFlagRealContainer
-	stateAwaitingMarkupName     = stateIdAwaitingMarkupName | allowMarkupName | ruleFlagRealContainer
-	stateAwaitingMarkupKey      = stateIdAwaitingMarkupKey | allowMapKey | ruleFlagRealContainer
-	stateAwaitingMarkupValue    = stateIdAwaitingMarkupValue | allowMapValue | ruleFlagRealContainer
-	stateAwaitingMarkupContents = stateIdAwaitingMarkupContents | allowMarkupContents | ruleFlagRealContainer
-	stateAwaitingMarkerID       = stateIdAwaitingMarkerID | allowMarkerID | ruleFlagAwaitingID
-	stateAwaitingMarkerObject   = stateIdAwaitingMarkerObject | allowAny
-	stateAwaitingReferenceID    = stateIdAwaitingReferenceID | allowReferenceID | ruleFlagAwaitingID
-	stateAwaitingCommentItem    = stateIdAwaitingCommentItem | allowCommentItem /* Not a "real" container */
-	stateAwaitingMetadataKey    = stateIdAwaitingMetadataKey | allowMapKey | ruleFlagRealContainer
-	stateAwaitingMetadataValue  = stateIdAwaitingMetadataValue | allowMapValue | ruleFlagRealContainer
-	stateAwaitingMetadataObject = stateIdAwaitingMetadataObject | allowAny
-	stateAwaitingArrayChunk     = stateIdAwaitingArrayChunk | allowArrayChunk
-	stateAwaitingArrayData      = stateIdAwaitingArrayData | allowArrayData
+	stateAwaitingNothing        = stateIDAwaitingNothing
+	stateAwaitingVersion        = stateIDAwaitingVersion | allowVersion
+	stateAwaitingTLO            = stateIDAwaitingTLO | allowTLO | ruleFlagRealContainer
+	stateAwaitingEndDocument    = stateIDAwaitingEndDocument | allowEndDocument
+	stateAwaitingListItem       = stateIDAwaitingListItem | allowListItem | ruleFlagRealContainer
+	stateAwaitingMapKey         = stateIDAwaitingMapKey | allowMapKey | ruleFlagRealContainer
+	stateAwaitingMapValue       = stateIDAwaitingMapValue | allowMapValue | ruleFlagRealContainer
+	stateAwaitingMarkupName     = stateIDAwaitingMarkupName | allowMarkupName | ruleFlagRealContainer
+	stateAwaitingMarkupKey      = stateIDAwaitingMarkupKey | allowMapKey | ruleFlagRealContainer
+	stateAwaitingMarkupValue    = stateIDAwaitingMarkupValue | allowMapValue | ruleFlagRealContainer
+	stateAwaitingMarkupContents = stateIDAwaitingMarkupContents | allowMarkupContents | ruleFlagRealContainer
+	stateAwaitingMarkerID       = stateIDAwaitingMarkerID | allowMarkerID | ruleFlagAwaitingID
+	stateAwaitingMarkerObject   = stateIDAwaitingMarkerObject | allowAny
+	stateAwaitingReferenceID    = stateIDAwaitingReferenceID | allowReferenceID | ruleFlagAwaitingID
+	stateAwaitingCommentItem    = stateIDAwaitingCommentItem | allowCommentItem /* Not a "real" container */
+	stateAwaitingMetadataKey    = stateIDAwaitingMetadataKey | allowMapKey | ruleFlagRealContainer
+	stateAwaitingMetadataValue  = stateIDAwaitingMetadataValue | allowMapValue | ruleFlagRealContainer
+	stateAwaitingMetadataObject = stateIDAwaitingMetadataObject | allowAny
+	stateAwaitingArrayChunk     = stateIDAwaitingArrayChunk | allowArrayChunk
+	stateAwaitingArrayData      = stateIDAwaitingArrayData | allowArrayData
 )
 
 var childEndRuleStateChanges = [...]ruleState{
-	/* stateIdAwaitingNothing                */ stateAwaitingNothing,
-	/* stateIdAwaitingVersion              > */ stateAwaitingTLO,
-	/* stateIdAwaitingTLO                  > */ stateAwaitingEndDocument,
-	/* stateIdAwaitingListItem               */ stateAwaitingListItem,
-	/* stateIdAwaitingCommentItem            */ stateAwaitingCommentItem,
-	/* stateIdAwaitingMapKey               > */ stateAwaitingMapValue,
-	/* stateIdAwaitingMapValue             > */ stateAwaitingMapKey,
-	/* stateIdAwaitingMetadataKey          > */ stateAwaitingMetadataValue,
-	/* stateIdAwaitingMetadataValue        > */ stateAwaitingMetadataKey,
-	/* stateIdAwaitingMetadataObject         */ stateIdAwaitingMetadataObject,
-	/* stateIdAwaitingMarkupName           > */ stateAwaitingMarkupKey,
-	/* stateIdAwaitingMarkupAttributeKey   > */ stateAwaitingMarkupValue,
-	/* stateIdAwaitingMarkupAttributeValue > */ stateAwaitingMarkupKey,
-	/* stateIdAwaitingMarkupContents         */ stateAwaitingMarkupContents,
-	/* stateIdAwaitingMarkerID             > */ stateAwaitingMarkerObject,
-	/* stateIdAwaitingMarkerObject           */ stateAwaitingMarkerObject,
-	/* stateIdAwaitingReferenceID            */ stateAwaitingReferenceID,
-	/* stateIdAwaitingArrayChunk             */ stateAwaitingArrayChunk,
-	/* stateIdAwaitingArrayData              */ stateAwaitingArrayData,
-	/* stateIdAwaitingEndDocument          > */ stateAwaitingNothing,
+	/* stateIDAwaitingNothing                */ stateAwaitingNothing,
+	/* stateIDAwaitingVersion              > */ stateAwaitingTLO,
+	/* stateIDAwaitingTLO                  > */ stateAwaitingEndDocument,
+	/* stateIDAwaitingListItem               */ stateAwaitingListItem,
+	/* stateIDAwaitingCommentItem            */ stateAwaitingCommentItem,
+	/* stateIDAwaitingMapKey               > */ stateAwaitingMapValue,
+	/* stateIDAwaitingMapValue             > */ stateAwaitingMapKey,
+	/* stateIDAwaitingMetadataKey          > */ stateAwaitingMetadataValue,
+	/* stateIDAwaitingMetadataValue        > */ stateAwaitingMetadataKey,
+	/* stateIDAwaitingMetadataObject         */ stateIDAwaitingMetadataObject,
+	/* stateIDAwaitingMarkupName           > */ stateAwaitingMarkupKey,
+	/* stateIDAwaitingMarkupAttributeKey   > */ stateAwaitingMarkupValue,
+	/* stateIDAwaitingMarkupAttributeValue > */ stateAwaitingMarkupKey,
+	/* stateIDAwaitingMarkupContents         */ stateAwaitingMarkupContents,
+	/* stateIDAwaitingMarkerID             > */ stateAwaitingMarkerObject,
+	/* stateIDAwaitingMarkerObject           */ stateAwaitingMarkerObject,
+	/* stateIDAwaitingReferenceID            */ stateAwaitingReferenceID,
+	/* stateIDAwaitingArrayChunk             */ stateAwaitingArrayChunk,
+	/* stateIDAwaitingArrayData              */ stateAwaitingArrayData,
+	/* stateIDAwaitingEndDocument          > */ stateAwaitingNothing,
 }
 
 func validateRulesCommentCharacter(ch int) {

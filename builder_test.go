@@ -720,7 +720,7 @@ func TestBuilderMap(t *testing.T) {
 func TestBuilderStruct(t *testing.T) {
 	s := newTestingOuterStruct(1)
 	includeFakes := true
-	assertBuild(t, s, s.Events(includeFakes)...)
+	assertBuild(t, s, s.getRepresentativeEvents(includeFakes)...)
 }
 
 func TestBuilderInterfaceSlice(t *testing.T) {

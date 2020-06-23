@@ -41,6 +41,7 @@ type CTEDecoderOptions struct {
 	ImpliedTLContainer TLContainerType
 }
 
+// Decode a CTE document, sending all data events to the specified event receiver.
 func CTEDecode(document []byte, eventReceiver DataEventReceiver, options *CTEDecoderOptions) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -53,6 +54,7 @@ func CTEDecode(document []byte, eventReceiver DataEventReceiver, options *CTEDec
 	return
 }
 
+// Decodes CTE documents
 type CTEDecoder struct {
 	eventReceiver  DataEventReceiver
 	document       []byte
@@ -79,6 +81,8 @@ func (_this *CTEDecoder) Init(document []byte, eventReceiver DataEventReceiver, 
 	_this.endPos = len(document) - 1
 }
 
+// Run the complete decode process. The document and data receiver specified
+// when initializing the decoder will be used.
 func (_this *CTEDecoder) Decode() (err error) {
 	_this.currentState = cteDecoderStateAwaitObject
 

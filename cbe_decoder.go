@@ -32,6 +32,7 @@ type CBEDecoderOptions struct {
 	ImpliedTLContainer TLContainerType
 }
 
+// Decode a CBE document, sending all data events to the specified event receiver.
 func CBEDecode(document []byte, eventReceiver DataEventReceiver, options *CBEDecoderOptions) (err error) {
 	defer func() {
 		if !DebugOptions.PassThroughPanics {
@@ -46,6 +47,7 @@ func CBEDecode(document []byte, eventReceiver DataEventReceiver, options *CBEDec
 	return
 }
 
+// Decodes CBE documents
 type CBEDecoder struct {
 	buffer       cbeDecodeBuffer
 	nextReceiver DataEventReceiver
@@ -66,6 +68,8 @@ func (_this *CBEDecoder) Init(document []byte, nextReceiver DataEventReceiver, o
 	_this.nextReceiver = nextReceiver
 }
 
+// Run the complete decode process. The document and data receiver specified
+// when initializing the decoder will be used.
 func (_this *CBEDecoder) Decode() {
 	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())
 

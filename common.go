@@ -34,13 +34,19 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+// Which version of concise encoding this library adheres to
 const ConciseEncodingVersion = 1
 
+// The type of top-level container to assume is already opened (for implied
+// structure documents). For normal operation, use TLContainerTypeNone.
 type TLContainerType int
 
 const (
+	// Assume that no top-level container has already been opened when beginning decoding.
 	TLContainerTypeNone = iota
+	// Assume a list has already been opened when beginning decoding.
 	TLContainerTypeList
+	// Assume a map has already been opened when beginning decoding.
 	TLContainerTypeMap
 )
 
@@ -51,6 +57,7 @@ type DebugOptionsStruct struct {
 	PassThroughPanics bool
 }
 
+// Only set these options when debugging a problem with the library.
 var DebugOptions DebugOptionsStruct
 
 var (

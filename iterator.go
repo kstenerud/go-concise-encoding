@@ -46,8 +46,7 @@ func IterateObject(value interface{}, eventReceiver DataEventReceiver, options *
 
 // ObjectIterator iterates through a value, calling callback methods as it goes.
 type ObjectIterator interface {
-	// Iterate iterates over a value, potentially calling other iterators as
-	// it goes.
+	// Iterates over a value, potentially calling other iterators as it goes.
 	Iterate(v reflect.Value, root *RootObjectIterator)
 
 	// PostCacheInitIterator is called after the iterator template is saved to

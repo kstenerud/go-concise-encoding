@@ -35,6 +35,7 @@ import (
 type CBEEncoderOptions struct {
 }
 
+// Receives data events, constructing a CBE document from them.
 type CBEEncoder struct {
 	buff    buffer
 	options CBEEncoderOptions
@@ -52,7 +53,8 @@ func (_this *CBEEncoder) Init(options *CBEEncoderOptions) {
 	}
 }
 
-func (_this *CBEEncoder) Document() []byte {
+// Get the document that resulted from the data events this encoder received.
+func (_this *CBEEncoder) GetBuiltDocument() []byte {
 	return _this.buff.bytes
 }
 

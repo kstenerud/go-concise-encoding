@@ -32,17 +32,23 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+// How to encode binary floats
 type BinaryFloatEncodeAs int
 
 const (
+	// Use decimal encoding (1.2e4)
 	BinaryFloatEncodeAsDecimal = iota
+	// Use binary encoding (0x1.2p4)
 	BinaryFloatEncodeAsBinary
 )
 
+// Where to place the opening brace on a struct, map, list
 type BracePosition int
 
 const (
+	// Place the opening brace on the same line
 	BracePositionAdjacent = iota
+	// Place the opening brace on the next line
 	BracePositionNextLine
 )
 
@@ -54,6 +60,7 @@ type CTEEncoderOptions struct {
 	BinaryFloatEncoding BinaryFloatEncodeAs
 }
 
+// Receives data events, constructing a CTE document from them.
 type CTEEncoder struct {
 	buff           buffer
 	containerState []cteEncoderState
@@ -73,7 +80,8 @@ func (_this *CTEEncoder) Init(options *CTEEncoderOptions) {
 	}
 }
 
-func (_this *CTEEncoder) Document() []byte {
+// Get the document that resulted from the data events this encoder received.
+func (_this *CTEEncoder) GetBuiltDocument() []byte {
 	return _this.buff.bytes
 }
 

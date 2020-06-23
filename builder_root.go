@@ -61,6 +61,7 @@ func (_this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
 	_this.currentBuilder = builder
 }
 
+// Get the object that was built after using this root builder as a DataEventReceiver.
 func (_this *RootBuilder) GetBuiltObject() interface{} {
 	// TODO: Verify this behavior
 	if !_this.object.IsValid() {
