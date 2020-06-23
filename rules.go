@@ -46,6 +46,7 @@ type RuleOptions struct {
 	MaxContainerDepth   uint64
 	MaxObjectCount      uint64
 	MaxReferenceCount   uint64
+	// Max bytes total for all array types
 }
 
 func DefaultRuleOptions() *RuleOptions {
@@ -68,7 +69,8 @@ type Rules struct {
 	objectCount       uint64
 	unassignedIDs     []interface{}
 	assignedIDs       map[interface{}]ruleEvent
-	nextReceiver      DataEventReceiver
+	// TODO: Keep track of marked data stats (sizes etc)
+	nextReceiver DataEventReceiver
 }
 
 func NewRules(options *RuleOptions, nextReceiver DataEventReceiver) *Rules {
@@ -685,6 +687,7 @@ var defaultRuleOptions = RuleOptions{
 	MaxContainerDepth:      1000,
 	MaxObjectCount:         10000000,
 	MaxReferenceCount:      100000,
+	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 }
 
 // The initial rule state comes pre-stacked. This value accounts for it in calculations.
