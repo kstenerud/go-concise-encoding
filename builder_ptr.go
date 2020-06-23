@@ -48,143 +48,143 @@ func newPtrBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *ptrBuilder) IsContainerOnly() bool {
-	return this.elemBuilder.IsContainerOnly()
+func (_this *ptrBuilder) IsContainerOnly() bool {
+	return _this.elemBuilder.IsContainerOnly()
 }
 
-func (this *ptrBuilder) PostCacheInitBuilder() {
-	this.elemBuilder = getBuilderForType(this.dstType.Elem())
+func (_this *ptrBuilder) PostCacheInitBuilder() {
+	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
 
-func (this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &ptrBuilder{
-		dstType: this.dstType,
+		dstType: _this.dstType,
 		parent:  parent,
 	}
-	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that, options)
+	that.elemBuilder = _this.elemBuilder.CloneFromTemplate(root, that, options)
 	return that
 }
 
-func (this *ptrBuilder) newElem() reflect.Value {
-	return reflect.New(this.dstType.Elem())
+func (_this *ptrBuilder) newElem() reflect.Value {
+	return reflect.New(_this.dstType.Elem())
 }
 
-func (this *ptrBuilder) BuildFromNil(dst reflect.Value) {
-	dst.Set(reflect.Zero(this.dstType))
+func (_this *ptrBuilder) BuildFromNil(dst reflect.Value) {
+	dst.Set(reflect.Zero(_this.dstType))
 }
 
-func (this *ptrBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromBool(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromBool(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromInt(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromInt(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromUint(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromUint(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromBigInt(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromBigInt(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromFloat(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromBigFloat(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromBigFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromDecimalFloat(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromDecimalFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromBigDecimalFloat(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromBigDecimalFloat(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromUUID(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromUUID(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromString(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromString(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromBytes(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromBytes(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromURI(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromURI(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromTime(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromTime(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	ptr := this.newElem()
-	this.elemBuilder.BuildFromCompactTime(value, ptr.Elem())
+func (_this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromCompactTime(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (this *ptrBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, this.dstType, "List")
+func (_this *ptrBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, _this.dstType, "List")
 }
 
-func (this *ptrBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, this.dstType, "Map")
+func (_this *ptrBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, _this.dstType, "Map")
 }
 
-func (this *ptrBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, this.dstType, "ContainerEnd")
+func (_this *ptrBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
 }
 
-func (this *ptrBuilder) BuildFromMarker(id interface{}) {
+func (_this *ptrBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: ptrBuilder.Marker")
 }
 
-func (this *ptrBuilder) BuildFromReference(id interface{}) {
+func (_this *ptrBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: ptrBuilder.Reference")
 }
 
-func (this *ptrBuilder) PrepareForListContents() {
-	this.elemBuilder.PrepareForListContents()
+func (_this *ptrBuilder) PrepareForListContents() {
+	_this.elemBuilder.PrepareForListContents()
 }
 
-func (this *ptrBuilder) PrepareForMapContents() {
-	this.elemBuilder.PrepareForMapContents()
+func (_this *ptrBuilder) PrepareForMapContents() {
+	_this.elemBuilder.PrepareForMapContents()
 }
 
-func (this *ptrBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	this.parent.NotifyChildContainerFinished(value.Addr())
+func (_this *ptrBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	_this.parent.NotifyChildContainerFinished(value.Addr())
 }

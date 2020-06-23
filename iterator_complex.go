@@ -35,10 +35,10 @@ func newInterfaceIterator(srcType reflect.Type) ObjectIterator {
 	return &interfaceIterator{}
 }
 
-func (this *interfaceIterator) PostCacheInitIterator() {
+func (_this *interfaceIterator) PostCacheInitIterator() {
 }
 
-func (this *interfaceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *interfaceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
 		root.eventReceiver.OnNil()
 	} else {
@@ -61,11 +61,11 @@ func newPointerIterator(srcType reflect.Type) ObjectIterator {
 	return &pointerIterator{srcType: srcType}
 }
 
-func (this *pointerIterator) PostCacheInitIterator() {
-	this.elemIter = getIteratorForType(this.srcType.Elem())
+func (_this *pointerIterator) PostCacheInitIterator() {
+	_this.elemIter = getIteratorForType(_this.srcType.Elem())
 }
 
-func (this *pointerIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pointerIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
 		root.eventReceiver.OnNil()
 		return
@@ -73,7 +73,7 @@ func (this *pointerIterator) Iterate(v reflect.Value, root *RootObjectIterator) 
 	if root.addReference(v) {
 		return
 	}
-	this.elemIter.Iterate(v.Elem(), root)
+	_this.elemIter.Iterate(v.Elem(), root)
 }
 
 // -----------
@@ -87,10 +87,10 @@ func newUInt8ArrayIterator() ObjectIterator {
 	return &uint8ArrayIterator{}
 }
 
-func (this *uint8ArrayIterator) PostCacheInitIterator() {
+func (_this *uint8ArrayIterator) PostCacheInitIterator() {
 }
 
-func (this *uint8ArrayIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *uint8ArrayIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.CanAddr() {
 		root.eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
 	} else {
@@ -114,10 +114,10 @@ func newComplexIterator() ObjectIterator {
 	return &complexIterator{}
 }
 
-func (this *complexIterator) PostCacheInitIterator() {
+func (_this *complexIterator) PostCacheInitIterator() {
 }
 
-func (this *complexIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *complexIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	root.eventReceiver.OnComplex(v.Complex())
 }
 
@@ -136,11 +136,11 @@ func newSliceIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (this *sliceIterator) PostCacheInitIterator() {
-	this.elemIter = getIteratorForType(this.srcType.Elem())
+func (_this *sliceIterator) PostCacheInitIterator() {
+	_this.elemIter = getIteratorForType(_this.srcType.Elem())
 }
 
-func (this *sliceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *sliceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
 		root.eventReceiver.OnNil()
 		return
@@ -152,7 +152,7 @@ func (this *sliceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	root.eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
-		this.elemIter.Iterate(v.Index(i), root)
+		_this.elemIter.Iterate(v.Index(i), root)
 	}
 	root.eventReceiver.OnEnd()
 }
@@ -172,15 +172,15 @@ func newArrayIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (this *arrayIterator) PostCacheInitIterator() {
-	this.elemIter = getIteratorForType(this.srcType.Elem())
+func (_this *arrayIterator) PostCacheInitIterator() {
+	_this.elemIter = getIteratorForType(_this.srcType.Elem())
 }
 
-func (this *arrayIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *arrayIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	root.eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
-		this.elemIter.Iterate(v.Index(i), root)
+		_this.elemIter.Iterate(v.Index(i), root)
 	}
 	root.eventReceiver.OnEnd()
 }
@@ -201,12 +201,12 @@ func newMapIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (this *mapIterator) PostCacheInitIterator() {
-	this.keyIter = getIteratorForType(this.srcType.Key())
-	this.valueIter = getIteratorForType(this.srcType.Elem())
+func (_this *mapIterator) PostCacheInitIterator() {
+	_this.keyIter = getIteratorForType(_this.srcType.Key())
+	_this.valueIter = getIteratorForType(_this.srcType.Elem())
 }
 
-func (this *mapIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *mapIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	if v.IsNil() {
 		root.eventReceiver.OnNil()
 		return
@@ -219,8 +219,8 @@ func (this *mapIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 
 	iter := mapRange(v)
 	for iter.Next() {
-		this.keyIter.Iterate(iter.Key(), root)
-		this.valueIter.Iterate(iter.Value(), root)
+		_this.keyIter.Iterate(iter.Key(), root)
+		_this.valueIter.Iterate(iter.Value(), root)
 	}
 
 	root.eventReceiver.OnEnd()
@@ -255,24 +255,24 @@ func newStructIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (this *structIterator) PostCacheInitIterator() {
-	for i := 0; i < this.srcType.NumField(); i++ {
-		field := this.srcType.Field(i)
+func (_this *structIterator) PostCacheInitIterator() {
+	for i := 0; i < _this.srcType.NumField(); i++ {
+		field := _this.srcType.Field(i)
 		if isFieldExported(field.Name) {
 			iterator := &structIteratorField{
 				Name:     field.Name,
 				Index:    i,
 				Iterator: getIteratorForType(field.Type),
 			}
-			this.fieldIterators = append(this.fieldIterators, iterator)
+			_this.fieldIterators = append(_this.fieldIterators, iterator)
 		}
 	}
 }
 
-func (this *structIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *structIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
 	root.eventReceiver.OnMap()
 
-	for _, iter := range this.fieldIterators {
+	for _, iter := range _this.fieldIterators {
 		root.eventReceiver.OnString(iter.Name)
 		iter.Iterator.Iterate(v.Field(iter.Index), root)
 	}

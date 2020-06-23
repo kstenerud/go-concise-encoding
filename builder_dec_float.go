@@ -38,105 +38,105 @@ func newDFloatBuilder() ObjectBuilder {
 	return &dfloatBuilder{}
 }
 
-func (this *dfloatBuilder) IsContainerOnly() bool {
+func (_this *dfloatBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *dfloatBuilder) PostCacheInitBuilder() {
+func (_this *dfloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *dfloatBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "Nil")
+func (_this *dfloatBuilder) BuildFromNil(dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "Nil")
 }
 
-func (this *dfloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "Bool")
+func (_this *dfloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "Bool")
 }
 
-func (this *dfloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatValue(0, value)))
 }
 
-func (this *dfloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatFromUInt(value)))
 }
 
-func (this *dfloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigInt(value)))
 }
 
-func (this *dfloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatFromFloat64(value, 0)))
 }
 
-func (this *dfloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigFloat(value)))
 }
 
-func (this *dfloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *dfloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatFromAPD(value)))
 }
 
-func (this *dfloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "UUID")
+func (_this *dfloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "UUID")
 }
 
-func (this *dfloatBuilder) BuildFromString(value string, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "String")
+func (_this *dfloatBuilder) BuildFromString(value string, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "String")
 }
 
-func (this *dfloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "Bytes")
+func (_this *dfloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "Bytes")
 }
 
-func (this *dfloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "URI")
+func (_this *dfloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "URI")
 }
 
-func (this *dfloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "Time")
+func (_this *dfloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "Time")
 }
 
-func (this *dfloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "CompactTime")
+func (_this *dfloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "CompactTime")
 }
 
-func (this *dfloatBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, typeDFloat, "List")
+func (_this *dfloatBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, typeDFloat, "List")
 }
 
-func (this *dfloatBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, typeDFloat, "Map")
+func (_this *dfloatBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, typeDFloat, "Map")
 }
 
-func (this *dfloatBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, typeDFloat, "ContainerEnd")
+func (_this *dfloatBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, typeDFloat, "ContainerEnd")
 }
 
-func (this *dfloatBuilder) BuildFromMarker(id interface{}) {
+func (_this *dfloatBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: dfloatBuilder.Marker")
 }
 
-func (this *dfloatBuilder) BuildFromReference(id interface{}) {
+func (_this *dfloatBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: dfloatBuilder.Reference")
 }
 
-func (this *dfloatBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, typeDFloat, "PrepareForListContents")
+func (_this *dfloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, typeDFloat, "PrepareForListContents")
 }
 
-func (this *dfloatBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, typeDFloat, "PrepareForMapContents")
+func (_this *dfloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, typeDFloat, "PrepareForMapContents")
 }
 
-func (this *dfloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, typeDFloat, "NotifyChildContainerFinished")
+func (_this *dfloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, typeDFloat, "NotifyChildContainerFinished")
 }

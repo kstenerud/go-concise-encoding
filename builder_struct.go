@@ -63,19 +63,19 @@ func newStructBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *structBuilder) IsContainerOnly() bool {
+func (_this *structBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (this *structBuilder) PostCacheInitBuilder() {
-	this.nameBuilder = getBuilderForType(reflect.TypeOf(""))
-	this.builderDescs = make(map[string]*structBuilderDesc)
-	this.ignoreBuilder = newIgnoreBuilder()
-	for i := 0; i < this.dstType.NumField(); i++ {
-		field := this.dstType.Field(i)
+func (_this *structBuilder) PostCacheInitBuilder() {
+	_this.nameBuilder = getBuilderForType(reflect.TypeOf(""))
+	_this.builderDescs = make(map[string]*structBuilderDesc)
+	_this.ignoreBuilder = newIgnoreBuilder()
+	for i := 0; i < _this.dstType.NumField(); i++ {
+		field := _this.dstType.Field(i)
 		if field.PkgPath == "" {
 			builder := getBuilderForType(field.Type)
-			this.builderDescs[field.Name] = &structBuilderDesc{
+			_this.builderDescs[field.Name] = &structBuilderDesc{
 				builder: builder,
 				index:   i,
 			}
@@ -83,16 +83,16 @@ func (this *structBuilder) PostCacheInitBuilder() {
 	}
 }
 
-func (this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &structBuilder{
-		dstType:      this.dstType,
+		dstType:      _this.dstType,
 		builderDescs: make(map[string]*structBuilderDesc),
 		parent:       parent,
 		root:         root,
 	}
-	that.nameBuilder = this.nameBuilder.CloneFromTemplate(root, that, options)
-	that.ignoreBuilder = this.ignoreBuilder.CloneFromTemplate(root, that, options)
-	for k, builderElem := range this.builderDescs {
+	that.nameBuilder = _this.nameBuilder.CloneFromTemplate(root, that, options)
+	that.ignoreBuilder = _this.ignoreBuilder.CloneFromTemplate(root, that, options)
+	for k, builderElem := range _this.builderDescs {
 		that.builderDescs[k] = &structBuilderDesc{
 			builder: builderElem.builder.CloneFromTemplate(root, that, options),
 			index:   builderElem.index,
@@ -102,143 +102,143 @@ func (this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBui
 	return that
 }
 
-func (this *structBuilder) reset() {
-	this.nextBuilder = this.nameBuilder
-	this.container = reflect.New(this.dstType).Elem()
-	this.nextValue = reflect.Value{}
-	this.nextIsKey = true
-	this.nextIsIgnored = false
+func (_this *structBuilder) reset() {
+	_this.nextBuilder = _this.nameBuilder
+	_this.container = reflect.New(_this.dstType).Elem()
+	_this.nextValue = reflect.Value{}
+	_this.nextIsKey = true
+	_this.nextIsIgnored = false
 }
 
-func (this *structBuilder) swapKeyValue() {
-	this.nextIsKey = !this.nextIsKey
+func (_this *structBuilder) swapKeyValue() {
+	_this.nextIsKey = !_this.nextIsKey
 }
 
-func (this *structBuilder) BuildFromNil(ignored reflect.Value) {
-	this.nextBuilder.BuildFromNil(this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromNil(ignored reflect.Value) {
+	_this.nextBuilder.BuildFromNil(_this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromBool(value bool, ignored reflect.Value) {
-	this.nextBuilder.BuildFromBool(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromBool(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromInt(value int64, ignored reflect.Value) {
-	this.nextBuilder.BuildFromInt(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromInt(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
-	this.nextBuilder.BuildFromUint(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromUint(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
-	this.nextBuilder.BuildFromBigInt(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromBigInt(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
-	this.nextBuilder.BuildFromFloat(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromFloat(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
-	this.nextBuilder.BuildFromBigFloat(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromBigFloat(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
-	this.nextBuilder.BuildFromDecimalFloat(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromDecimalFloat(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
-	this.nextBuilder.BuildFromBigDecimalFloat(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromBigDecimalFloat(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
-	this.nextBuilder.BuildFromUUID(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromUUID(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromString(value string, ignored reflect.Value) {
-	if this.nextIsKey {
-		if builderDesc, ok := this.builderDescs[value]; ok {
-			this.nextBuilder = builderDesc.builder
-			this.nextValue = this.container.Field(builderDesc.index)
+func (_this *structBuilder) BuildFromString(value string, ignored reflect.Value) {
+	if _this.nextIsKey {
+		if builderDesc, ok := _this.builderDescs[value]; ok {
+			_this.nextBuilder = builderDesc.builder
+			_this.nextValue = _this.container.Field(builderDesc.index)
 		} else {
-			this.root.setCurrentBuilder(this.ignoreBuilder)
-			this.nextBuilder = this.ignoreBuilder
-			this.nextIsIgnored = true
+			_this.root.setCurrentBuilder(_this.ignoreBuilder)
+			_this.nextBuilder = _this.ignoreBuilder
+			_this.nextIsIgnored = true
 			return
 		}
 	} else {
-		this.nextBuilder.BuildFromString(value, this.nextValue)
+		_this.nextBuilder.BuildFromString(value, _this.nextValue)
 	}
 
-	this.swapKeyValue()
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
-	this.nextBuilder.BuildFromBytes(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromBytes(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	this.nextBuilder.BuildFromURI(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromURI(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	this.nextBuilder.BuildFromTime(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromTime(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	this.nextBuilder.BuildFromCompactTime(value, this.nextValue)
-	this.swapKeyValue()
+func (_this *structBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromCompactTime(value, _this.nextValue)
+	_this.swapKeyValue()
 }
 
-func (this *structBuilder) BuildBeginList() {
-	this.nextBuilder.PrepareForListContents()
+func (_this *structBuilder) BuildBeginList() {
+	_this.nextBuilder.PrepareForListContents()
 }
 
-func (this *structBuilder) BuildBeginMap() {
-	this.nextBuilder.PrepareForMapContents()
+func (_this *structBuilder) BuildBeginMap() {
+	_this.nextBuilder.PrepareForMapContents()
 }
 
-func (this *structBuilder) BuildEndContainer() {
-	object := this.container
-	this.reset()
-	this.parent.NotifyChildContainerFinished(object)
+func (_this *structBuilder) BuildEndContainer() {
+	object := _this.container
+	_this.reset()
+	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *structBuilder) BuildFromMarker(id interface{}) {
+func (_this *structBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: structBuilder.Marker")
 }
 
-func (this *structBuilder) BuildFromReference(id interface{}) {
+func (_this *structBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: structBuilder.Reference")
 }
 
-func (this *structBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForListContents")
+func (_this *structBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
 }
 
-func (this *structBuilder) PrepareForMapContents() {
-	this.root.setCurrentBuilder(this)
+func (_this *structBuilder) PrepareForMapContents() {
+	_this.root.setCurrentBuilder(_this)
 }
 
-func (this *structBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	this.root.setCurrentBuilder(this)
-	if this.nextIsIgnored {
-		this.nextIsIgnored = false
+func (_this *structBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	_this.root.setCurrentBuilder(_this)
+	if _this.nextIsIgnored {
+		_this.nextIsIgnored = false
 		return
 	}
 
-	this.nextValue.Set(value)
-	this.swapKeyValue()
+	_this.nextValue.Set(value)
+	_this.swapKeyValue()
 }

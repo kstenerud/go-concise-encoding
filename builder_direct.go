@@ -44,107 +44,107 @@ func newDirectBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *directBuilder) IsContainerOnly() bool {
+func (_this *directBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *directBuilder) PostCacheInitBuilder() {
+func (_this *directBuilder) PostCacheInitBuilder() {
 }
 
-func (this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *directBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Nil")
+func (_this *directBuilder) BuildFromNil(dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Nil")
 }
 
-func (this *directBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *directBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	dst.SetBool(value)
 }
 
-func (this *directBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Int")
+func (_this *directBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Int")
 }
 
-func (this *directBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Uint")
+func (_this *directBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Uint")
 }
 
-func (this *directBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BigInt")
+func (_this *directBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "BigInt")
 }
 
-func (this *directBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Float")
+func (_this *directBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Float")
 }
 
-func (this *directBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BigFloat")
+func (_this *directBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "BigFloat")
 }
 
-func (this *directBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "DecimalFloat")
+func (_this *directBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "DecimalFloat")
 }
 
-func (this *directBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BigDecimalFloat")
+func (_this *directBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "BigDecimalFloat")
 }
 
-func (this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *directBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *directBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.SetString(value)
 }
 
-func (this *directBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Bytes")
+func (_this *directBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Bytes")
 }
 
-func (this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value).Elem())
 }
 
-func (this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *directBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *directBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *directBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, this.dstType, "List")
+func (_this *directBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, _this.dstType, "List")
 }
 
-func (this *directBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, this.dstType, "Map")
+func (_this *directBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, _this.dstType, "Map")
 }
 
-func (this *directBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, this.dstType, "ContainerEnd")
+func (_this *directBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
 }
 
-func (this *directBuilder) BuildFromMarker(id interface{}) {
+func (_this *directBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: directBuilder.BuildFromMarker")
 }
 
-func (this *directBuilder) BuildFromReference(id interface{}) {
+func (_this *directBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: directBuilder.BuildFromReference")
 }
 
-func (this *directBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForListContents")
+func (_this *directBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
 }
 
-func (this *directBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForMapContents")
+func (_this *directBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
-func (this *directBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "NotifyChildContainerFinished")
+func (_this *directBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
 }
 
 // The direct builder has an unambiguous direct mapping from build event to
@@ -160,108 +160,108 @@ func newDirectPtrBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *directPtrBuilder) IsContainerOnly() bool {
+func (_this *directPtrBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *directPtrBuilder) PostCacheInitBuilder() {
+func (_this *directPtrBuilder) PostCacheInitBuilder() {
 }
 
-func (this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *directPtrBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.Zero(dst.Type()))
 }
 
-func (this *directPtrBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Bool")
+func (_this *directPtrBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Bool")
 }
 
-func (this *directPtrBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Int")
+func (_this *directPtrBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Int")
 }
 
-func (this *directPtrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Uint")
+func (_this *directPtrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Uint")
 }
 
-func (this *directPtrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BigInt")
+func (_this *directPtrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "BigInt")
 }
 
-func (this *directPtrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Float")
+func (_this *directPtrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Float")
 }
 
-func (this *directPtrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BigFloat")
+func (_this *directPtrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "BigFloat")
 }
 
-func (this *directPtrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "DecimalFloat")
+func (_this *directPtrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "DecimalFloat")
 }
 
-func (this *directPtrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "BigDecimalFloat")
+func (_this *directPtrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "BigDecimalFloat")
 }
 
-func (this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.SetBytes(value)
 }
 
-func (this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) {
 	// String needs special handling since there's no such thing as a nil string
 	// in go.
-	builderPanicBadEvent(this, this.dstType, "String")
+	builderPanicBadEvent(_this, _this.dstType, "String")
 }
 
-func (this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	dst.SetBytes(value)
 }
 
-func (this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	// TODO: Should non-pointer stuff be here?
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *directPtrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *directPtrBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, this.dstType, "List")
+func (_this *directPtrBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, _this.dstType, "List")
 }
 
-func (this *directPtrBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, this.dstType, "Map")
+func (_this *directPtrBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, _this.dstType, "Map")
 }
 
-func (this *directPtrBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, this.dstType, "ContainerEnd")
+func (_this *directPtrBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
 }
 
-func (this *directPtrBuilder) BuildFromMarker(id interface{}) {
+func (_this *directPtrBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: directPtrBuilder.BuildFromMarker")
 }
 
-func (this *directPtrBuilder) BuildFromReference(id interface{}) {
+func (_this *directPtrBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: directPtrBuilder.BuildFromReference")
 }
 
-func (this *directPtrBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForListContents")
+func (_this *directPtrBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
 }
 
-func (this *directPtrBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForMapContents")
+func (_this *directPtrBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
-func (this *directPtrBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "NotifyChildContainerFinished")
+func (_this *directPtrBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
 }

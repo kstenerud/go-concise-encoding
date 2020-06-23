@@ -44,14 +44,14 @@ func newIgnoreBuilder() ObjectBuilder {
 	return globalIgnoreBuilder
 }
 
-func (this *ignoreBuilder) IsContainerOnly() bool {
+func (_this *ignoreBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *ignoreBuilder) PostCacheInitBuilder() {
+func (_this *ignoreBuilder) PostCacheInitBuilder() {
 }
 
-func (this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return &ignoreBuilder{
 		parent:  parent,
 		root:    root,
@@ -59,98 +59,98 @@ func (this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBui
 	}
 }
 
-func (this *ignoreBuilder) BuildFromNil(dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromNil(dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromString(value string, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromString(value string, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent, this.options)
+func (_this *ignoreBuilder) BuildBeginList() {
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
-func (this *ignoreBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this.parent, this.options)
+func (_this *ignoreBuilder) BuildBeginMap() {
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
 
-func (this *ignoreBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, reflect.TypeOf([]interface{}{}).Elem(), "End")
+func (_this *ignoreBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, reflect.TypeOf([]interface{}{}).Elem(), "End")
 }
 
-func (this *ignoreBuilder) BuildFromMarker(id interface{}) {
+func (_this *ignoreBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: ignoreBuilder.Marker")
 }
 
-func (this *ignoreBuilder) BuildFromReference(id interface{}) {
+func (_this *ignoreBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: ignoreBuilder.Reference")
 }
 
-func (this *ignoreBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, typePBigInt, "PrepareForListContents")
+func (_this *ignoreBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, typePBigInt, "PrepareForListContents")
 }
 
-func (this *ignoreBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, typePBigInt, "PrepareForMapContents")
+func (_this *ignoreBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, typePBigInt, "PrepareForMapContents")
 }
 
-func (this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, typePBigInt, "NotifyChildContainerFinished")
+func (_this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, typePBigInt, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -168,14 +168,14 @@ func newIgnoreContainerBuilder() ObjectBuilder {
 	return globalIgnoreContainerBuilder
 }
 
-func (this *ignoreContainerBuilder) IsContainerOnly() bool {
+func (_this *ignoreContainerBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (this *ignoreContainerBuilder) PostCacheInitBuilder() {
+func (_this *ignoreContainerBuilder) PostCacheInitBuilder() {
 }
 
-func (this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return &ignoreContainerBuilder{
 		parent:  parent,
 		root:    root,
@@ -183,95 +183,95 @@ func (this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent 
 	}
 }
 
-func (this *ignoreContainerBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromNil(dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromString(value string, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (this *ignoreContainerBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this, this.options)
+func (_this *ignoreContainerBuilder) BuildBeginList() {
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this, _this.options)
 	builder.PrepareForListContents()
 }
 
-func (this *ignoreContainerBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(this.root, this, this.options)
+func (_this *ignoreContainerBuilder) BuildBeginMap() {
+	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this, _this.options)
 	builder.PrepareForMapContents()
 }
 
-func (this *ignoreContainerBuilder) BuildEndContainer() {
-	this.root.setCurrentBuilder(this.parent)
+func (_this *ignoreContainerBuilder) BuildEndContainer() {
+	_this.root.setCurrentBuilder(_this.parent)
 }
 
-func (this *ignoreContainerBuilder) BuildFromMarker(id interface{}) {
+func (_this *ignoreContainerBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: ignoreContainerBuilder.Marker")
 }
 
-func (this *ignoreContainerBuilder) BuildFromReference(id interface{}) {
+func (_this *ignoreContainerBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: ignoreContainerBuilder.Reference")
 }
 
-func (this *ignoreContainerBuilder) PrepareForListContents() {
-	this.root.setCurrentBuilder(this)
+func (_this *ignoreContainerBuilder) PrepareForListContents() {
+	_this.root.setCurrentBuilder(_this)
 }
 
-func (this *ignoreContainerBuilder) PrepareForMapContents() {
-	this.root.setCurrentBuilder(this)
+func (_this *ignoreContainerBuilder) PrepareForMapContents() {
+	_this.root.setCurrentBuilder(_this)
 }
 
-func (this *ignoreContainerBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *ignoreContainerBuilder) NotifyChildContainerFinished(value reflect.Value) {
 }

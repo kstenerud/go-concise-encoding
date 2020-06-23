@@ -53,143 +53,143 @@ func newArrayBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *arrayBuilder) IsContainerOnly() bool {
+func (_this *arrayBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (this *arrayBuilder) PostCacheInitBuilder() {
-	this.elemBuilder = getBuilderForType(this.dstType.Elem())
+func (_this *arrayBuilder) PostCacheInitBuilder() {
+	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
 
-func (this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &arrayBuilder{
-		dstType: this.dstType,
+		dstType: _this.dstType,
 		parent:  parent,
 		root:    root,
 	}
-	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that, options)
+	that.elemBuilder = _this.elemBuilder.CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }
 
-func (this *arrayBuilder) reset() {
-	this.container = reflect.New(this.dstType).Elem()
-	this.index = 0
+func (_this *arrayBuilder) reset() {
+	_this.container = reflect.New(_this.dstType).Elem()
+	_this.index = 0
 }
 
-func (this *arrayBuilder) currentElem() reflect.Value {
-	return this.container.Index(this.index)
+func (_this *arrayBuilder) currentElem() reflect.Value {
+	return _this.container.Index(_this.index)
 }
 
-func (this *arrayBuilder) BuildFromNil(ignored reflect.Value) {
-	this.elemBuilder.BuildFromNil(this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromNil(ignored reflect.Value) {
+	_this.elemBuilder.BuildFromNil(_this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
-	this.elemBuilder.BuildFromBool(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromBool(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
-	this.elemBuilder.BuildFromInt(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromInt(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
-	this.elemBuilder.BuildFromUint(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromUint(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
-	this.elemBuilder.BuildFromBigInt(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromBigInt(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
-	this.elemBuilder.BuildFromFloat(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromFloat(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
-	this.elemBuilder.BuildFromBigFloat(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromBigFloat(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
-	this.elemBuilder.BuildFromDecimalFloat(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromDecimalFloat(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
-	this.elemBuilder.BuildFromBigDecimalFloat(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromBigDecimalFloat(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
-	this.elemBuilder.BuildFromUUID(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromUUID(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromString(value string, ignored reflect.Value) {
-	this.elemBuilder.BuildFromString(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromString(value string, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromString(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	this.elemBuilder.BuildFromBytes(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	_this.elemBuilder.BuildFromBytes(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	this.elemBuilder.BuildFromURI(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromURI(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	this.elemBuilder.BuildFromTime(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromTime(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	this.elemBuilder.BuildFromCompactTime(value, this.currentElem())
-	this.index++
+func (_this *arrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	_this.elemBuilder.BuildFromCompactTime(value, _this.currentElem())
+	_this.index++
 }
 
-func (this *arrayBuilder) BuildBeginList() {
-	this.elemBuilder.PrepareForListContents()
+func (_this *arrayBuilder) BuildBeginList() {
+	_this.elemBuilder.PrepareForListContents()
 }
 
-func (this *arrayBuilder) BuildBeginMap() {
-	this.elemBuilder.PrepareForMapContents()
+func (_this *arrayBuilder) BuildBeginMap() {
+	_this.elemBuilder.PrepareForMapContents()
 }
 
-func (this *arrayBuilder) BuildEndContainer() {
-	object := this.container
-	this.reset()
-	this.parent.NotifyChildContainerFinished(object)
+func (_this *arrayBuilder) BuildEndContainer() {
+	object := _this.container
+	_this.reset()
+	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *arrayBuilder) BuildFromMarker(id interface{}) {
+func (_this *arrayBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: arrayBuilder.BuildFromMarker")
 }
 
-func (this *arrayBuilder) BuildFromReference(id interface{}) {
+func (_this *arrayBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: arrayBuilder.BuildFromReference")
 }
 
-func (this *arrayBuilder) PrepareForListContents() {
-	this.root.setCurrentBuilder(this)
+func (_this *arrayBuilder) PrepareForListContents() {
+	_this.root.setCurrentBuilder(_this)
 }
 
-func (this *arrayBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForMapContents")
+func (_this *arrayBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
-func (this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	this.root.setCurrentBuilder(this)
-	this.currentElem().Set(value)
-	this.index++
+func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	_this.root.setCurrentBuilder(_this)
+	_this.currentElem().Set(value)
+	_this.index++
 }
 
 // Bytes array
@@ -203,62 +203,62 @@ func newBytesArrayBuilder() ObjectBuilder {
 	return &globalBytesArrayBuilder
 }
 
-func (this *bytesArrayBuilder) IsContainerOnly() bool {
+func (_this *bytesArrayBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *bytesArrayBuilder) PostCacheInitBuilder() {
+func (_this *bytesArrayBuilder) PostCacheInitBuilder() {
 }
 
-func (this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *bytesArrayBuilder) BuildFromNil(ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromNil")
+func (_this *bytesArrayBuilder) BuildFromNil(ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromNil")
 }
 
-func (this *bytesArrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromBool")
+func (_this *bytesArrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromBool")
 }
 
-func (this *bytesArrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromInt")
+func (_this *bytesArrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromInt")
 }
 
-func (this *bytesArrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromUint")
+func (_this *bytesArrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromUint")
 }
 
-func (this *bytesArrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromBigInt")
+func (_this *bytesArrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromBigInt")
 }
 
-func (this *bytesArrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromFloat")
+func (_this *bytesArrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromFloat")
 }
 
-func (this *bytesArrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromBigFloat")
+func (_this *bytesArrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromBigFloat")
 }
 
-func (this *bytesArrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromDecimalFloat")
+func (_this *bytesArrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromDecimalFloat")
 }
 
-func (this *bytesArrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromBigDecimalFloat")
+func (_this *bytesArrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromBigDecimalFloat")
 }
 
-func (this *bytesArrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromUUID")
+func (_this *bytesArrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromUUID")
 }
 
-func (this *bytesArrayBuilder) BuildFromString(value string, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromString")
+func (_this *bytesArrayBuilder) BuildFromString(value string, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromString")
 }
 
-func (this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	// TODO: Is there a more efficient way?
 	for i := 0; i < len(value); i++ {
 		elem := dst.Index(i)
@@ -266,46 +266,46 @@ func (this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	}
 }
 
-func (this *bytesArrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromURI")
+func (_this *bytesArrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromURI")
 }
 
-func (this *bytesArrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromTime")
+func (_this *bytesArrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromTime")
 }
 
-func (this *bytesArrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "BuildFromCompactTime")
+func (_this *bytesArrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "BuildFromCompactTime")
 }
 
-func (this *bytesArrayBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, typeBytes, "BuildBeginList")
+func (_this *bytesArrayBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, typeBytes, "BuildBeginList")
 }
 
-func (this *bytesArrayBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, typeBytes, "BuildBeginMap")
+func (_this *bytesArrayBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, typeBytes, "BuildBeginMap")
 }
 
-func (this *bytesArrayBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, typeBytes, "BuildEndContainer")
+func (_this *bytesArrayBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, typeBytes, "BuildEndContainer")
 }
 
-func (this *bytesArrayBuilder) BuildFromMarker(id interface{}) {
+func (_this *bytesArrayBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: bytesArrayBuilder.BuildFromMarker")
 }
 
-func (this *bytesArrayBuilder) BuildFromReference(id interface{}) {
+func (_this *bytesArrayBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: bytesArrayBuilder.BuildFromReference")
 }
 
-func (this *bytesArrayBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, typeBytes, "PrepareForListContents")
+func (_this *bytesArrayBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, typeBytes, "PrepareForListContents")
 }
 
-func (this *bytesArrayBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, typeBytes, "PrepareForMapContents")
+func (_this *bytesArrayBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, typeBytes, "PrepareForMapContents")
 }
 
-func (this *bytesArrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, typeBytes, "NotifyChildContainerFinished")
+func (_this *bytesArrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, typeBytes, "NotifyChildContainerFinished")
 }

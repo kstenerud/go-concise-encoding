@@ -61,166 +61,166 @@ func newMapBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *mapBuilder) IsContainerOnly() bool {
+func (_this *mapBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (this *mapBuilder) PostCacheInitBuilder() {
-	this.kvBuilders[kvBuilderKey] = getBuilderForType(this.dstType.Key())
-	this.kvBuilders[kvBuilderValue] = getBuilderForType(this.dstType.Elem())
+func (_this *mapBuilder) PostCacheInitBuilder() {
+	_this.kvBuilders[kvBuilderKey] = getBuilderForType(_this.dstType.Key())
+	_this.kvBuilders[kvBuilderValue] = getBuilderForType(_this.dstType.Elem())
 }
 
-func (this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &mapBuilder{
-		dstType: this.dstType,
-		kvTypes: this.kvTypes,
+		dstType: _this.dstType,
+		kvTypes: _this.kvTypes,
 		parent:  parent,
 		root:    root,
 	}
-	that.kvBuilders[kvBuilderKey] = this.kvBuilders[kvBuilderKey].CloneFromTemplate(root, that, options)
-	that.kvBuilders[kvBuilderValue] = this.kvBuilders[kvBuilderValue].CloneFromTemplate(root, that, options)
+	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].CloneFromTemplate(root, that, options)
+	that.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }
 
-func (this *mapBuilder) reset() {
-	this.container = reflect.MakeMap(this.dstType)
-	this.builderIndex = kvBuilderKey
-	this.key = reflect.Value{}
+func (_this *mapBuilder) reset() {
+	_this.container = reflect.MakeMap(_this.dstType)
+	_this.builderIndex = kvBuilderKey
+	_this.key = reflect.Value{}
 }
 
-func (this *mapBuilder) getBuilder() ObjectBuilder {
-	return this.kvBuilders[this.builderIndex]
+func (_this *mapBuilder) getBuilder() ObjectBuilder {
+	return _this.kvBuilders[_this.builderIndex]
 }
 
-func (this *mapBuilder) storeValue(value reflect.Value) {
-	if this.builderIndex == kvBuilderKey {
-		this.key = value
+func (_this *mapBuilder) storeValue(value reflect.Value) {
+	if _this.builderIndex == kvBuilderKey {
+		_this.key = value
 	} else {
-		this.container.SetMapIndex(this.key, value)
+		_this.container.SetMapIndex(_this.key, value)
 	}
-	this.builderIndex = (this.builderIndex + 1) & 1
+	_this.builderIndex = (_this.builderIndex + 1) & 1
 }
 
-func (this *mapBuilder) newElem() reflect.Value {
-	return reflect.New(this.kvTypes[this.builderIndex]).Elem()
+func (_this *mapBuilder) newElem() reflect.Value {
+	return reflect.New(_this.kvTypes[_this.builderIndex]).Elem()
 }
 
-func (this *mapBuilder) BuildFromNil(ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromNil(object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromNil(ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromNil(object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromBool(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromBool(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromInt(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromInt(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromUint(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromUint(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromBigInt(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromBigInt(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromFloat(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromBigFloat(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromBigFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromDecimalFloat(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromDecimalFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromBigDecimalFloat(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromBigDecimalFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromUUID(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromUUID(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromString(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromString(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
-	object := this.newElem()
-	this.getBuilder().BuildFromBytes(value, object)
-	this.storeValue(object)
+func (_this *mapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.getBuilder().BuildFromBytes(value, object)
+	_this.storeValue(object)
 }
 
-func (this *mapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	this.storeValue(reflect.ValueOf(value))
+func (_this *mapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	_this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *mapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	this.storeValue(reflect.ValueOf(value))
+func (_this *mapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	_this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	this.storeValue(reflect.ValueOf(value))
+func (_this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	_this.storeValue(reflect.ValueOf(value))
 }
 
-func (this *mapBuilder) BuildBeginList() {
-	this.getBuilder().PrepareForListContents()
+func (_this *mapBuilder) BuildBeginList() {
+	_this.getBuilder().PrepareForListContents()
 }
 
-func (this *mapBuilder) BuildBeginMap() {
-	this.getBuilder().PrepareForMapContents()
+func (_this *mapBuilder) BuildBeginMap() {
+	_this.getBuilder().PrepareForMapContents()
 }
 
-func (this *mapBuilder) BuildEndContainer() {
-	object := this.container
-	this.reset()
-	this.parent.NotifyChildContainerFinished(object)
+func (_this *mapBuilder) BuildEndContainer() {
+	object := _this.container
+	_this.reset()
+	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *mapBuilder) BuildFromMarker(id interface{}) {
+func (_this *mapBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: mapBuilder.Marker")
 }
 
-func (this *mapBuilder) BuildFromReference(id interface{}) {
+func (_this *mapBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: mapBuilder.Reference")
 }
 
-func (this *mapBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, builderIntfType, "PrepareForListContents")
+func (_this *mapBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, builderIntfType, "PrepareForListContents")
 }
 
-func (this *mapBuilder) PrepareForMapContents() {
-	this.root.setCurrentBuilder(this)
+func (_this *mapBuilder) PrepareForMapContents() {
+	_this.root.setCurrentBuilder(_this)
 }
 
-func (this *mapBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	this.root.setCurrentBuilder(this)
-	this.storeValue(value)
+func (_this *mapBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	_this.root.setCurrentBuilder(_this)
+	_this.storeValue(value)
 }

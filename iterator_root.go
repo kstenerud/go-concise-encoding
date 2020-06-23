@@ -37,55 +37,55 @@ type RootObjectIterator struct {
 }
 
 func NewRootObjectIterator(eventReceiver DataEventReceiver, options *IteratorOptions) *RootObjectIterator {
-	this := new(RootObjectIterator)
-	this.Init(eventReceiver, options)
-	return this
+	_this := new(RootObjectIterator)
+	_this.Init(eventReceiver, options)
+	return _this
 }
 
-func (this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *IteratorOptions) {
-	this.options = *applyDefaultIteratorOptions(options)
-	this.eventReceiver = eventReceiver
+func (_this *RootObjectIterator) Init(eventReceiver DataEventReceiver, options *IteratorOptions) {
+	_this.options = *applyDefaultIteratorOptions(options)
+	_this.eventReceiver = eventReceiver
 }
 
 // The *RootObjectIterator field is ignored by the root iterator. It can be nil.
-func (this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator) {
+func (_this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator) {
 	if value == nil {
-		this.eventReceiver.OnVersion(this.options.ConciseEncodingVersion)
-		this.eventReceiver.OnNil()
-		this.eventReceiver.OnEndDocument()
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnNil()
+		_this.eventReceiver.OnEndDocument()
 		return
 	}
-	this.findReferences(value)
+	_this.findReferences(value)
 	rv := reflect.ValueOf(value)
 	iterator := getIteratorForType(rv.Type())
-	this.eventReceiver.OnVersion(this.options.ConciseEncodingVersion)
-	iterator.Iterate(rv, this)
-	this.eventReceiver.OnEndDocument()
+	_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+	iterator.Iterate(rv, _this)
+	_this.eventReceiver.OnEndDocument()
 }
 
-func (this *RootObjectIterator) findReferences(value interface{}) {
-	if this.options.UseReferences {
-		this.foundReferences = duplicates.FindDuplicatePointers(value)
-		this.namedReferences = make(map[duplicates.TypedPointer]uint32)
+func (_this *RootObjectIterator) findReferences(value interface{}) {
+	if _this.options.UseReferences {
+		_this.foundReferences = duplicates.FindDuplicatePointers(value)
+		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
 	}
 }
 
-func (this *RootObjectIterator) addReference(v reflect.Value) (didAddReferenceObject bool) {
-	if this.options.UseReferences {
+func (_this *RootObjectIterator) addReference(v reflect.Value) (didAddReferenceObject bool) {
+	if _this.options.UseReferences {
 		ptr := duplicates.TypedPointerOfRV(v)
-		if this.foundReferences[ptr] {
+		if _this.foundReferences[ptr] {
 			var name uint32
 			var exists bool
-			if name, exists = this.namedReferences[ptr]; !exists {
-				name = this.nextMarkerName
-				this.nextMarkerName++
-				this.namedReferences[ptr] = name
-				this.eventReceiver.OnMarker()
-				this.eventReceiver.OnPositiveInt(uint64(name))
+			if name, exists = _this.namedReferences[ptr]; !exists {
+				name = _this.nextMarkerName
+				_this.nextMarkerName++
+				_this.namedReferences[ptr] = name
+				_this.eventReceiver.OnMarker()
+				_this.eventReceiver.OnPositiveInt(uint64(name))
 				return false
 			} else {
-				this.eventReceiver.OnReference()
-				this.eventReceiver.OnPositiveInt(uint64(name))
+				_this.eventReceiver.OnReference()
+				_this.eventReceiver.OnPositiveInt(uint64(name))
 				return true
 			}
 		}

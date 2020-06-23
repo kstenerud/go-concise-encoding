@@ -42,105 +42,105 @@ func newFloatBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *floatBuilder) IsContainerOnly() bool {
+func (_this *floatBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *floatBuilder) PostCacheInitBuilder() {
+func (_this *floatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *floatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *floatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *floatBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Nil")
+func (_this *floatBuilder) BuildFromNil(dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Nil")
 }
 
-func (this *floatBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Bool")
+func (_this *floatBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Bool")
 }
 
-func (this *floatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	setFloatFromInt(value, dst)
 }
 
-func (this *floatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	setFloatFromUint(value, dst)
 }
 
-func (this *floatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	setFloatFromBigInt(value, dst)
 }
 
-func (this *floatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.SetFloat(value)
 }
 
-func (this *floatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 	setFloatFromBigFloat(value, dst)
 }
 
-func (this *floatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.SetFloat(value.Float())
 }
 
-func (this *floatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	setFloatFromBigDecimalFloat(value, dst)
 }
 
-func (this *floatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "UUID")
+func (_this *floatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "UUID")
 }
 
-func (this *floatBuilder) BuildFromString(value string, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "String")
+func (_this *floatBuilder) BuildFromString(value string, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "String")
 }
 
-func (this *floatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Bytes")
+func (_this *floatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Bytes")
 }
 
-func (this *floatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "URI")
+func (_this *floatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "URI")
 }
 
-func (this *floatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "Time")
+func (_this *floatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "Time")
 }
 
-func (this *floatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "CompactTime")
+func (_this *floatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "CompactTime")
 }
 
-func (this *floatBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, this.dstType, "ListBegin")
+func (_this *floatBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, _this.dstType, "ListBegin")
 }
 
-func (this *floatBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, this.dstType, "MapBegin")
+func (_this *floatBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, _this.dstType, "MapBegin")
 }
 
-func (this *floatBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, this.dstType, "ContainerEnd")
+func (_this *floatBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
 }
 
-func (this *floatBuilder) BuildFromMarker(id interface{}) {
+func (_this *floatBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: floatBuilder.BuildFromMarker")
 }
 
-func (this *floatBuilder) BuildFromReference(id interface{}) {
+func (_this *floatBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: floatBuilder.BuildFromReference")
 }
 
-func (this *floatBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForListContents")
+func (_this *floatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
 }
 
-func (this *floatBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForMapContents")
+func (_this *floatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
-func (this *floatBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, this.dstType, "NotifyChildContainerFinished")
+func (_this *floatBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
 }

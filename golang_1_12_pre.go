@@ -32,17 +32,17 @@ type mapIter struct {
 	index       int
 }
 
-func (this *mapIter) Key() reflect.Value {
-	return this.keys[this.index]
+func (_this *mapIter) Key() reflect.Value {
+	return _this.keys[_this.index]
 }
 
-func (this *mapIter) Value() reflect.Value {
-	return this.mapInstance.MapIndex(this.Key())
+func (_this *mapIter) Value() reflect.Value {
+	return _this.mapInstance.MapIndex(_this.Key())
 }
 
-func (this *mapIter) Next() bool {
-	this.index++
-	return this.index < len(this.keys)
+func (_this *mapIter) Next() bool {
+	_this.index++
+	return _this.index < len(_this.keys)
 }
 
 func mapRange(v reflect.Value) *mapIter {

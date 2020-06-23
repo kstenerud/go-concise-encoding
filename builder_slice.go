@@ -54,158 +54,158 @@ func newSliceBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (this *sliceBuilder) IsContainerOnly() bool {
+func (_this *sliceBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (this *sliceBuilder) PostCacheInitBuilder() {
-	this.elemBuilder = getBuilderForType(this.dstType.Elem())
+func (_this *sliceBuilder) PostCacheInitBuilder() {
+	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
 
-func (this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &sliceBuilder{
-		dstType: this.dstType,
+		dstType: _this.dstType,
 		parent:  parent,
 		root:    root,
 	}
-	that.elemBuilder = this.elemBuilder.CloneFromTemplate(root, that, options)
+	that.elemBuilder = _this.elemBuilder.CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }
 
-func (this *sliceBuilder) reset() {
-	this.container = reflect.MakeSlice(this.dstType, 0, defaultSliceCap)
+func (_this *sliceBuilder) reset() {
+	_this.container = reflect.MakeSlice(_this.dstType, 0, defaultSliceCap)
 }
 
-func (this *sliceBuilder) newElem() reflect.Value {
-	return reflect.New(this.dstType.Elem()).Elem()
+func (_this *sliceBuilder) newElem() reflect.Value {
+	return reflect.New(_this.dstType.Elem()).Elem()
 }
 
-func (this *sliceBuilder) storeValue(value reflect.Value) {
-	this.container = reflect.Append(this.container, value)
+func (_this *sliceBuilder) storeValue(value reflect.Value) {
+	_this.container = reflect.Append(_this.container, value)
 }
 
-func (this *sliceBuilder) BuildFromNil(ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromNil(object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromNil(ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromNil(object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromBool(value bool, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromBool(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromBool(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromInt(value int64, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromInt(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromInt(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromUint(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromUint(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromBigInt(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromBigInt(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromFloat(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromBigFloat(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromBigFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromDecimalFloat(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromDecimalFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromBigDecimalFloat(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromBigDecimalFloat(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromUUID(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromUUID(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromString(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromString(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromBytes(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromBytes(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromURI(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromURI(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromTime(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromTime(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	object := this.newElem()
-	this.elemBuilder.BuildFromCompactTime(value, object)
-	this.storeValue(object)
+func (_this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromCompactTime(value, object)
+	_this.storeValue(object)
 }
 
-func (this *sliceBuilder) BuildBeginList() {
-	this.elemBuilder.PrepareForListContents()
+func (_this *sliceBuilder) BuildBeginList() {
+	_this.elemBuilder.PrepareForListContents()
 }
 
-func (this *sliceBuilder) BuildBeginMap() {
-	this.elemBuilder.PrepareForMapContents()
+func (_this *sliceBuilder) BuildBeginMap() {
+	_this.elemBuilder.PrepareForMapContents()
 }
 
-func (this *sliceBuilder) BuildEndContainer() {
-	object := this.container
-	this.reset()
-	this.parent.NotifyChildContainerFinished(object)
+func (_this *sliceBuilder) BuildEndContainer() {
+	object := _this.container
+	_this.reset()
+	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (this *sliceBuilder) BuildFromMarker(id interface{}) {
+func (_this *sliceBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: sliceBuilder.Marker")
 }
 
-func (this *sliceBuilder) BuildFromReference(id interface{}) {
+func (_this *sliceBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: sliceBuilder.Reference")
 }
 
-func (this *sliceBuilder) PrepareForListContents() {
-	this.root.setCurrentBuilder(this)
+func (_this *sliceBuilder) PrepareForListContents() {
+	_this.root.setCurrentBuilder(_this)
 }
 
-func (this *sliceBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, this.dstType, "PrepareForMapContents")
+func (_this *sliceBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
-func (this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	this.root.setCurrentBuilder(this)
-	this.storeValue(value)
+func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	_this.root.setCurrentBuilder(_this)
+	_this.storeValue(value)
 }

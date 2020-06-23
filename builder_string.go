@@ -40,106 +40,106 @@ func newStringBuilder() ObjectBuilder {
 	return globalStringBuilder
 }
 
-func (this *stringBuilder) IsContainerOnly() bool {
+func (_this *stringBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *stringBuilder) PostCacheInitBuilder() {
+func (_this *stringBuilder) PostCacheInitBuilder() {
 }
 
-func (this *stringBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *stringBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *stringBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
 	// Go doesn't have the concept of a nil string.
 	dst.SetString("")
 }
 
-func (this *stringBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "Bool")
+func (_this *stringBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "Bool")
 }
 
-func (this *stringBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "Int")
+func (_this *stringBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "Int")
 }
 
-func (this *stringBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "Uint")
+func (_this *stringBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "Uint")
 }
 
-func (this *stringBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "BigInt")
+func (_this *stringBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "BigInt")
 }
 
-func (this *stringBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "Float")
+func (_this *stringBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "Float")
 }
 
-func (this *stringBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "BigFloat")
+func (_this *stringBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "BigFloat")
 }
 
-func (this *stringBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "DecimalFloat")
+func (_this *stringBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "DecimalFloat")
 }
 
-func (this *stringBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "BigDecimalFloat")
+func (_this *stringBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "BigDecimalFloat")
 }
 
-func (this *stringBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "UUID")
+func (_this *stringBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "UUID")
 }
 
-func (this *stringBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.SetString(value)
 }
 
-func (this *stringBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "Bytes")
+func (_this *stringBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "Bytes")
 }
 
-func (this *stringBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "URI")
+func (_this *stringBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "URI")
 }
 
-func (this *stringBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "Time")
+func (_this *stringBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "Time")
 }
 
-func (this *stringBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeString, "CompactTime")
+func (_this *stringBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "CompactTime")
 }
 
-func (this *stringBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, typeString, "List")
+func (_this *stringBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, typeString, "List")
 }
 
-func (this *stringBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, typeString, "Map")
+func (_this *stringBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, typeString, "Map")
 }
 
-func (this *stringBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, typeString, "ContainerEnd")
+func (_this *stringBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, typeString, "ContainerEnd")
 }
 
-func (this *stringBuilder) BuildFromMarker(id interface{}) {
+func (_this *stringBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: stringBuilder.Marker")
 }
 
-func (this *stringBuilder) BuildFromReference(id interface{}) {
+func (_this *stringBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: stringBuilder.Reference")
 }
 
-func (this *stringBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, typeString, "PrepareForListContents")
+func (_this *stringBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, typeString, "PrepareForListContents")
 }
 
-func (this *stringBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, typeString, "PrepareForMapContents")
+func (_this *stringBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, typeString, "PrepareForMapContents")
 }
 
-func (this *stringBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, typeString, "NotifyChildContainerFinished")
+func (_this *stringBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, typeString, "NotifyChildContainerFinished")
 }

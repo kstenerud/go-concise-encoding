@@ -53,15 +53,15 @@ type ReferenceResolver struct {
 	markers map[interface{}][]reflect.Value
 }
 
-func (this *ReferenceResolver) DefineMarker(id interface{}) {
+func (_this *ReferenceResolver) DefineMarker(id interface{}) {
 	// TODO: Does this need to check for existence? Or is that better off in rules?
-	this.markers[id] = make([]reflect.Value, 0, 2)
+	_this.markers[id] = make([]reflect.Value, 0, 2)
 }
 
-func (this *ReferenceResolver) AddReference(id interface{}, object reflect.Value) {
-	this.markers[id] = append(this.markers[id], object)
+func (_this *ReferenceResolver) AddReference(id interface{}, object reflect.Value) {
+	_this.markers[id] = append(_this.markers[id], object)
 }
 
-func (this *ReferenceResolver) ResolveReferences() {
+func (_this *ReferenceResolver) ResolveReferences() {
 	panic("TODO: ResolveReferences")
 }

@@ -38,107 +38,107 @@ func newBigDecimalFloatBuilder() ObjectBuilder {
 	return &bigDecimalFloatBuilder{}
 }
 
-func (this *bigDecimalFloatBuilder) IsContainerOnly() bool {
+func (_this *bigDecimalFloatBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *bigDecimalFloatBuilder) PostCacheInitBuilder() {
+func (_this *bigDecimalFloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "Nil")
+func (_this *bigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "Nil")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "Bool")
+func (_this *bigDecimalFloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "Bool")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	setBigDecimalFloatFromInt(value, dst)
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	setBigDecimalFloatFromUint(value, dst)
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	setBigDecimalFloatFromBigInt(value, dst)
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	setBigDecimalFloatFromFloat(value, dst)
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 	setBigDecimalFloatFromBigFloat(value, dst)
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	setBigDecimalFloatFromDecimalFloat(value, dst)
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(*value))
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "UUID")
+func (_this *bigDecimalFloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "UUID")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromString(value string, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "String")
+func (_this *bigDecimalFloatBuilder) BuildFromString(value string, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "String")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "Bytes")
+func (_this *bigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "Bytes")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "URI")
+func (_this *bigDecimalFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "URI")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "Time")
+func (_this *bigDecimalFloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "Time")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "CompactTime")
+func (_this *bigDecimalFloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "CompactTime")
 }
 
-func (this *bigDecimalFloatBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "List")
+func (_this *bigDecimalFloatBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "List")
 }
 
-func (this *bigDecimalFloatBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "Map")
+func (_this *bigDecimalFloatBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "Map")
 }
 
-func (this *bigDecimalFloatBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "ContainerEnd")
+func (_this *bigDecimalFloatBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "ContainerEnd")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromMarker(id interface{}) {
+func (_this *bigDecimalFloatBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: bigDecimalFloatBuilder.Marker")
 }
 
-func (this *bigDecimalFloatBuilder) BuildFromReference(id interface{}) {
+func (_this *bigDecimalFloatBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: bigDecimalFloatBuilder.Reference")
 }
 
-func (this *bigDecimalFloatBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "PrepareForListContents")
+func (_this *bigDecimalFloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "PrepareForListContents")
 }
 
-func (this *bigDecimalFloatBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "PrepareForMapContents")
+func (_this *bigDecimalFloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "PrepareForMapContents")
 }
 
-func (this *bigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "NotifyChildContainerFinished")
+func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "NotifyChildContainerFinished")
 }
 
 type pBigDecimalFloatBuilder struct {
@@ -148,105 +148,105 @@ func newPBigDecimalFloatBuilder() ObjectBuilder {
 	return &pBigDecimalFloatBuilder{}
 }
 
-func (this *pBigDecimalFloatBuilder) IsContainerOnly() bool {
+func (_this *pBigDecimalFloatBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (this *pBigDecimalFloatBuilder) PostCacheInitBuilder() {
+func (_this *pBigDecimalFloatBuilder) PostCacheInitBuilder() {
 }
 
-func (this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return this
+func (_this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.ValueOf((*apd.Decimal)(nil)))
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "Bool")
+func (_this *pBigDecimalFloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "Bool")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	setPBigDecimalFloatFromInt(value, dst)
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	setPBigDecimalFloatFromUint(value, dst)
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	setPBigDecimalFloatFromBigInt(value, dst)
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	setPBigDecimalFloatFromFloat(value, dst)
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 	setPBigDecimalFloatFromBigFloat(value, dst)
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value.APD()))
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "UUID")
+func (_this *pBigDecimalFloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "UUID")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromString(value string, dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "String")
+func (_this *pBigDecimalFloatBuilder) BuildFromString(value string, dst reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "String")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "Bytes")
+func (_this *pBigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "Bytes")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "URI")
+func (_this *pBigDecimalFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "URI")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "Time")
+func (_this *pBigDecimalFloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "Time")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(this, typeBigDecimalFloat, "CompactTime")
+func (_this *pBigDecimalFloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, typeBigDecimalFloat, "CompactTime")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildBeginList() {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "List")
+func (_this *pBigDecimalFloatBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "List")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildBeginMap() {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "Map")
+func (_this *pBigDecimalFloatBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "Map")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildEndContainer() {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "ContainerEnd")
+func (_this *pBigDecimalFloatBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "ContainerEnd")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromMarker(id interface{}) {
+func (_this *pBigDecimalFloatBuilder) BuildFromMarker(id interface{}) {
 	panic("TODO: pBigDecimalFloatBuilder.Marker")
 }
 
-func (this *pBigDecimalFloatBuilder) BuildFromReference(id interface{}) {
+func (_this *pBigDecimalFloatBuilder) BuildFromReference(id interface{}) {
 	panic("TODO: pBigDecimalFloatBuilder.Reference")
 }
 
-func (this *pBigDecimalFloatBuilder) PrepareForListContents() {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "PrepareForListContents")
+func (_this *pBigDecimalFloatBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "PrepareForListContents")
 }
 
-func (this *pBigDecimalFloatBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "PrepareForMapContents")
+func (_this *pBigDecimalFloatBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "PrepareForMapContents")
 }
 
-func (this *pBigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(this, typePBigDecimalFloat, "NotifyChildContainerFinished")
+func (_this *pBigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, typePBigDecimalFloat, "NotifyChildContainerFinished")
 }

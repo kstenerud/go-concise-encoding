@@ -62,161 +62,161 @@ type CTEEncoder struct {
 }
 
 func NewCTEEncoder(options *CTEEncoderOptions) *CTEEncoder {
-	this := &CTEEncoder{}
-	this.Init(options)
-	return this
+	_this := &CTEEncoder{}
+	_this.Init(options)
+	return _this
 }
 
-func (this *CTEEncoder) Init(options *CTEEncoderOptions) {
+func (_this *CTEEncoder) Init(options *CTEEncoderOptions) {
 	if options != nil {
-		this.options = *options
+		_this.options = *options
 	}
 }
 
-func (this *CTEEncoder) Document() []byte {
-	return this.buff.bytes
+func (_this *CTEEncoder) Document() []byte {
+	return _this.buff.bytes
 }
 
-func (this *CTEEncoder) OnPadding(count int) {
+func (_this *CTEEncoder) OnPadding(count int) {
 	// Nothing to do
 }
 
-func (this *CTEEncoder) OnVersion(version uint64) {
-	this.addFmt("c%d ", version)
+func (_this *CTEEncoder) OnVersion(version uint64) {
+	_this.addFmt("c%d ", version)
 }
 
-func (this *CTEEncoder) OnNil() {
-	this.addPrefix()
-	this.addString("@nil")
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnNil() {
+	_this.addPrefix()
+	_this.addString("@nil")
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnBool(value bool) {
+func (_this *CTEEncoder) OnBool(value bool) {
 	if value {
-		this.OnTrue()
+		_this.OnTrue()
 	} else {
-		this.OnFalse()
+		_this.OnFalse()
 	}
 }
 
-func (this *CTEEncoder) OnTrue() {
-	this.addPrefix()
-	this.addString("@true")
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnTrue() {
+	_this.addPrefix()
+	_this.addString("@true")
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnFalse() {
-	this.addPrefix()
-	this.addString("@false")
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnFalse() {
+	_this.addPrefix()
+	_this.addString("@false")
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnInt(value int64) {
+func (_this *CTEEncoder) OnInt(value int64) {
 	if value >= 0 {
-		this.OnPositiveInt(uint64(value))
+		_this.OnPositiveInt(uint64(value))
 	} else {
-		this.OnNegativeInt(uint64(-value))
+		_this.OnNegativeInt(uint64(-value))
 	}
 }
 
-func (this *CTEEncoder) OnBigInt(value *big.Int) {
-	this.addFmt("%v", value)
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnBigInt(value *big.Int) {
+	_this.addFmt("%v", value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnPositiveInt(value uint64) {
-	this.addPrefix()
-	this.addFmt("%d", value)
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnPositiveInt(value uint64) {
+	_this.addPrefix()
+	_this.addFmt("%d", value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnNegativeInt(value uint64) {
-	this.addPrefix()
-	this.addFmt("-%d", value)
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnNegativeInt(value uint64) {
+	_this.addPrefix()
+	_this.addFmt("-%d", value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnFloat(value float64) {
+func (_this *CTEEncoder) OnFloat(value float64) {
 	if math.IsNaN(value) {
-		this.OnNan(isSignalingNan(value))
+		_this.OnNan(isSignalingNan(value))
 		return
 	}
-	this.addPrefix()
+	_this.addPrefix()
 	if math.IsInf(value, 0) {
 		if value < 0 {
-			this.addString("-@inf")
+			_this.addString("-@inf")
 		} else {
-			this.addString("@inf")
+			_this.addString("@inf")
 		}
 		return
 	}
 	// TODO: Hex float?
-	this.addFmt("%g", value)
-	this.addSuffix()
-	this.transitionState()
+	_this.addFmt("%g", value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnBigFloat(value *big.Float) {
-	this.addPrefix()
-	this.addString(bigFloatToString(value))
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnBigFloat(value *big.Float) {
+	_this.addPrefix()
+	_this.addString(bigFloatToString(value))
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnDecimalFloat(value compact_float.DFloat) {
-	this.addPrefix()
-	this.addString(value.Text('g'))
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnDecimalFloat(value compact_float.DFloat) {
+	_this.addPrefix()
+	_this.addString(value.Text('g'))
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnBigDecimalFloat(value *apd.Decimal) {
-	this.addPrefix()
-	this.addString(value.Text('g'))
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnBigDecimalFloat(value *apd.Decimal) {
+	_this.addPrefix()
+	_this.addString(value.Text('g'))
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnNan(signaling bool) {
-	this.addPrefix()
+func (_this *CTEEncoder) OnNan(signaling bool) {
+	_this.addPrefix()
 	if signaling {
-		this.addString("@snan")
+		_this.addString("@snan")
 	} else {
-		this.addString("@nan")
+		_this.addString("@nan")
 	}
-	this.addSuffix()
-	this.transitionState()
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnUUID(v []byte) {
+func (_this *CTEEncoder) OnUUID(v []byte) {
 	if len(v) != 16 {
 		panic(fmt.Errorf("Expected UUID length 16 but got %v", len(v)))
 	}
-	this.addPrefix()
-	this.addFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+	_this.addPrefix()
+	_this.addFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
-	this.addSuffix()
-	this.transitionState()
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnComplex(value complex128) {
-	this.addPrefix()
+func (_this *CTEEncoder) OnComplex(value complex128) {
+	_this.addPrefix()
 	panic("TODO: CTEEncoder.OnComplex")
-	this.addSuffix()
-	this.transitionState()
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnTime(value time.Time) {
-	this.OnCompactTime(compact_time.AsCompactTime(value))
+func (_this *CTEEncoder) OnTime(value time.Time) {
+	_this.OnCompactTime(compact_time.AsCompactTime(value))
 }
 
-func (this *CTEEncoder) OnCompactTime(value *compact_time.Time) {
+func (_this *CTEEncoder) OnCompactTime(value *compact_time.Time) {
 	tz := func(v *compact_time.Time) string {
 		switch v.TimezoneIs {
 		case compact_time.TypeUTC:
@@ -240,184 +240,184 @@ func (this *CTEEncoder) OnCompactTime(value *compact_time.Time) {
 		}
 		return str[1:]
 	}
-	this.addPrefix()
+	_this.addPrefix()
 	switch value.TimeIs {
 	case compact_time.TypeDate:
-		this.addFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
+		_this.addFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
 	case compact_time.TypeTime:
-		this.addFmt("%02d:%02d:%02d%v%v", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
+		_this.addFmt("%02d:%02d:%02d%v%v", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	case compact_time.TypeTimestamp:
-		this.addFmt("%d-%02d-%02d/%02d:%02d:%02d%v%v",
+		_this.addFmt("%d-%02d-%02d/%02d:%02d:%02d%v%v",
 			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	default:
 		panic(fmt.Errorf("Unknown compact time type %v", value.TimeIs))
 	}
-	this.addSuffix()
-	this.transitionState()
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnBytes(value []byte) {
-	this.addPrefix()
-	this.encodeHex('b', value)
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnBytes(value []byte) {
+	_this.addPrefix()
+	_this.encodeHex('b', value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnURI(value string) {
-	this.addPrefix()
+func (_this *CTEEncoder) OnURI(value string) {
+	_this.addPrefix()
 	// TODO: URL escaping
-	this.addFmt(`u"%v"`, value)
-	this.addSuffix()
-	this.transitionState()
+	_this.addFmt(`u"%v"`, value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnString(value string) {
-	this.addPrefix()
-	if this.currentState == cteEncoderStateAwaitMarkupItem ||
-		this.currentState == cteEncoderStateAwaitMarkupFirstItemPre ||
-		this.currentState == cteEncoderStateAwaitMarkupFirstItemPost ||
+func (_this *CTEEncoder) OnString(value string) {
+	_this.addPrefix()
+	if _this.currentState == cteEncoderStateAwaitMarkupItem ||
+		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPre ||
+		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPost ||
 		isUnquotedString(value) {
-		this.addString(value)
+		_this.addString(value)
 	} else {
-		this.addFmt(`"%v"`, value)
+		_this.addFmt(`"%v"`, value)
 	}
-	this.addSuffix()
-	this.transitionState()
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnCustom(value []byte) {
-	this.addPrefix()
-	this.encodeHex('c', value)
-	this.addSuffix()
-	this.transitionState()
+func (_this *CTEEncoder) OnCustom(value []byte) {
+	_this.addPrefix()
+	_this.encodeHex('c', value)
+	_this.addSuffix()
+	_this.transitionState()
 }
 
-func (this *CTEEncoder) OnBytesBegin() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitBytes, `b"`)
+func (_this *CTEEncoder) OnBytesBegin() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitBytes, `b"`)
 }
 
-func (this *CTEEncoder) OnStringBegin() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitQuotedString, `"`)
+func (_this *CTEEncoder) OnStringBegin() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitQuotedString, `"`)
 }
 
-func (this *CTEEncoder) OnURIBegin() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitURI, `u"`)
+func (_this *CTEEncoder) OnURIBegin() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitURI, `u"`)
 }
 
-func (this *CTEEncoder) OnCustomBegin() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitCustom, `c"`)
+func (_this *CTEEncoder) OnCustomBegin() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitCustom, `c"`)
 }
 
-func (this *CTEEncoder) OnArrayChunk(length uint64, isFinalChunk bool) {
+func (_this *CTEEncoder) OnArrayChunk(length uint64, isFinalChunk bool) {
 	panic("TODO: CTEEncoder.OnArrayChunk")
 }
 
-func (this *CTEEncoder) OnArrayData(data []byte) {
+func (_this *CTEEncoder) OnArrayData(data []byte) {
 	panic("TODO: CTEEncoder.OnArrayData")
-	dst := this.buff.Allocate(len(data))
+	dst := _this.buff.Allocate(len(data))
 	copy(dst, data)
 }
 
-func (this *CTEEncoder) OnList() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitListFirstItem, "[")
+func (_this *CTEEncoder) OnList() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitListFirstItem, "[")
 }
 
-func (this *CTEEncoder) OnMap() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitMapFirstKey, "{")
+func (_this *CTEEncoder) OnMap() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitMapFirstKey, "{")
 }
 
-func (this *CTEEncoder) OnMarkup() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitMarkupFirstItemPre, "")
-	this.stackState(cteEncoderStateAwaitMarkupName, "<")
+func (_this *CTEEncoder) OnMarkup() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitMarkupFirstItemPre, "")
+	_this.stackState(cteEncoderStateAwaitMarkupName, "<")
 }
 
-func (this *CTEEncoder) OnMetadata() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitMetaFirstKey, "(")
+func (_this *CTEEncoder) OnMetadata() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitMetaFirstKey, "(")
 }
 
-func (this *CTEEncoder) OnComment() {
-	this.addPrefix()
-	this.stackState(cteEncoderStateAwaitCommentItem, "/*")
+func (_this *CTEEncoder) OnComment() {
+	_this.addPrefix()
+	_this.stackState(cteEncoderStateAwaitCommentItem, "/*")
 }
 
-func (this *CTEEncoder) OnEnd() {
+func (_this *CTEEncoder) OnEnd() {
 	// TODO: Make this nicer
-	isInvisible := this.currentState == cteEncoderStateAwaitMetaKey ||
-		this.currentState == cteEncoderStateAwaitMetaFirstKey
-	this.unstackState()
+	isInvisible := _this.currentState == cteEncoderStateAwaitMetaKey ||
+		_this.currentState == cteEncoderStateAwaitMetaFirstKey
+	_this.unstackState()
 	if isInvisible {
-		this.currentState |= cteEncoderStateWithInvisibleItem
+		_this.currentState |= cteEncoderStateWithInvisibleItem
 	} else {
-		this.addSuffix()
-		this.transitionState()
+		_this.addSuffix()
+		_this.transitionState()
 	}
 }
 
-func (this *CTEEncoder) OnMarker() {
-	this.addPrefix()
+func (_this *CTEEncoder) OnMarker() {
+	_this.addPrefix()
 	panic("TODO: CTEEncoder.OnMarker")
-	this.addSuffix()
+	_this.addSuffix()
 }
 
-func (this *CTEEncoder) OnReference() {
-	this.addPrefix()
+func (_this *CTEEncoder) OnReference() {
+	_this.addPrefix()
 	panic("TODO: CTEEncoder.OnReference")
-	this.addSuffix()
+	_this.addSuffix()
 }
 
-func (this *CTEEncoder) OnEndDocument() {
+func (_this *CTEEncoder) OnEndDocument() {
 }
 
 // ============================================================================
 
-func (this *CTEEncoder) stackState(newState cteEncoderState, prefix string) {
-	this.containerState = append(this.containerState, this.currentState)
-	this.currentState = newState
-	this.addString(prefix)
+func (_this *CTEEncoder) stackState(newState cteEncoderState, prefix string) {
+	_this.containerState = append(_this.containerState, _this.currentState)
+	_this.currentState = newState
+	_this.addString(prefix)
 }
 
-func (this *CTEEncoder) unstackState() {
-	this.addString(cteEncoderTerminators[this.currentState])
-	this.currentState = this.containerState[len(this.containerState)-1]
-	this.containerState = this.containerState[:len(this.containerState)-1]
+func (_this *CTEEncoder) unstackState() {
+	_this.addString(cteEncoderTerminators[_this.currentState])
+	_this.currentState = _this.containerState[len(_this.containerState)-1]
+	_this.containerState = _this.containerState[:len(_this.containerState)-1]
 }
 
-func (this *CTEEncoder) transitionState() {
-	this.currentState = cteEncoderStateTransitions[this.currentState]
+func (_this *CTEEncoder) transitionState() {
+	_this.currentState = cteEncoderStateTransitions[_this.currentState]
 }
 
-func (this *CTEEncoder) addPrefix() {
-	cteEncoderPrefixHandlers[this.currentState](this)
+func (_this *CTEEncoder) addPrefix() {
+	cteEncoderPrefixHandlers[_this.currentState](_this)
 }
 
-func (this *CTEEncoder) addSuffix() {
-	cteEncoderSuffixHandlers[this.currentState](this)
+func (_this *CTEEncoder) addSuffix() {
+	cteEncoderSuffixHandlers[_this.currentState](_this)
 }
 
-func (this *CTEEncoder) addString(str string) {
-	dst := this.buff.Allocate(len(str))
+func (_this *CTEEncoder) addString(str string) {
+	dst := _this.buff.Allocate(len(str))
 	copy(dst, str)
 }
 
-func (this *CTEEncoder) addFmt(format string, args ...interface{}) {
+func (_this *CTEEncoder) addFmt(format string, args ...interface{}) {
 	// TODO: Make something more efficient
-	this.addString(fmt.Sprintf(format, args...))
+	_this.addString(fmt.Sprintf(format, args...))
 }
 
 var hexToChar = [16]byte{
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 }
 
-func (this *CTEEncoder) encodeHex(prefix byte, value []byte) {
-	dst := this.buff.Allocate(len(value)*2 + 3)
+func (_this *CTEEncoder) encodeHex(prefix byte, value []byte) {
+	dst := _this.buff.Allocate(len(value)*2 + 3)
 	dst[0] = prefix
 	dst[1] = '"'
 	dst[len(dst)-1] = '"'
@@ -429,38 +429,38 @@ func (this *CTEEncoder) encodeHex(prefix byte, value []byte) {
 	}
 }
 
-func (this *CTEEncoder) suffixNone() {
+func (_this *CTEEncoder) suffixNone() {
 }
 
-func (this *CTEEncoder) suffixEquals() {
-	this.addString("=")
+func (_this *CTEEncoder) suffixEquals() {
+	_this.addString("=")
 }
 
-func (this *CTEEncoder) prefixNone() {
+func (_this *CTEEncoder) prefixNone() {
 }
 
-func (this *CTEEncoder) prefixIndent() {
-	if len(this.options.Indent) > 0 {
-		level := len(this.containerState)
-		indent := strings.Repeat(this.options.Indent, level)
-		this.addString("\n" + indent)
+func (_this *CTEEncoder) prefixIndent() {
+	if len(_this.options.Indent) > 0 {
+		level := len(_this.containerState)
+		indent := strings.Repeat(_this.options.Indent, level)
+		_this.addString("\n" + indent)
 	}
 }
 
-func (this *CTEEncoder) prefixSpacer() {
-	this.addString(" ")
+func (_this *CTEEncoder) prefixSpacer() {
+	_this.addString(" ")
 }
 
-func (this *CTEEncoder) prefixIndentOrSpacer() {
-	if len(this.options.Indent) > 0 {
-		this.prefixIndent()
+func (_this *CTEEncoder) prefixIndentOrSpacer() {
+	if len(_this.options.Indent) > 0 {
+		_this.prefixIndent()
 	} else {
-		this.addString(" ")
+		_this.addString(" ")
 	}
 }
 
-func (this *CTEEncoder) prefixPipe() {
-	this.addString("|")
+func (_this *CTEEncoder) prefixPipe() {
+	_this.addString("|")
 }
 
 type cteEncoderState int

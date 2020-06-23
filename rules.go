@@ -74,470 +74,470 @@ type Rules struct {
 }
 
 func NewRules(options *RuleOptions, nextReceiver DataEventReceiver) *Rules {
-	this := new(Rules)
-	this.Init(options, nextReceiver)
-	return this
+	_this := new(Rules)
+	_this.Init(options, nextReceiver)
+	return _this
 }
 
-func (this *Rules) Init(options *RuleOptions, nextReceiver DataEventReceiver) {
-	this.options = applyDefaultRuleOptions(options)
-	this.stateStack = make([]ruleState, 0, this.options.MaxContainerDepth)
-	this.nextReceiver = nextReceiver
+func (_this *Rules) Init(options *RuleOptions, nextReceiver DataEventReceiver) {
+	_this.options = applyDefaultRuleOptions(options)
+	_this.stateStack = make([]ruleState, 0, _this.options.MaxContainerDepth)
+	_this.nextReceiver = nextReceiver
 
-	this.Reset()
+	_this.Reset()
 }
 
-func (this *Rules) Reset() {
-	this.stateStack = this.stateStack[:0]
-	this.stackState(stateAwaitingEndDocument)
-	this.stackState(stateAwaitingVersion)
-	this.unassignedIDs = this.unassignedIDs[:0]
-	this.assignedIDs = make(map[interface{}]ruleEvent)
+func (_this *Rules) Reset() {
+	_this.stateStack = _this.stateStack[:0]
+	_this.stackState(stateAwaitingEndDocument)
+	_this.stackState(stateAwaitingVersion)
+	_this.unassignedIDs = _this.unassignedIDs[:0]
+	_this.assignedIDs = make(map[interface{}]ruleEvent)
 
-	this.arrayType = eventTypeNothing
-	this.arrayData = this.arrayData[:0]
-	this.chunkByteCount = 0
-	this.chunkBytesWritten = 0
-	this.arrayBytesWritten = 0
-	this.isFinalChunk = false
-	this.objectCount = 0
+	_this.arrayType = eventTypeNothing
+	_this.arrayData = _this.arrayData[:0]
+	_this.chunkByteCount = 0
+	_this.chunkBytesWritten = 0
+	_this.arrayBytesWritten = 0
+	_this.isFinalChunk = false
+	_this.objectCount = 0
 }
 
-func (this *Rules) OnVersion(version uint64) {
-	this.assertCurrentStateAllowsType(eventTypeVersion)
-	if version != this.options.ConciseEncodingVersion {
-		panic(fmt.Errorf("Expected version %v but got version %v", this.options.ConciseEncodingVersion, version))
+func (_this *Rules) OnVersion(version uint64) {
+	_this.assertCurrentStateAllowsType(eventTypeVersion)
+	if version != _this.options.ConciseEncodingVersion {
+		panic(fmt.Errorf("Expected version %v but got version %v", _this.options.ConciseEncodingVersion, version))
 	}
-	this.changeState(stateAwaitingTLO)
-	this.nextReceiver.OnVersion(version)
+	_this.changeState(stateAwaitingTLO)
+	_this.nextReceiver.OnVersion(version)
 }
 
-func (this *Rules) OnPadding(count int) {
-	this.assertCurrentStateAllowsType(eventTypePadding)
-	this.nextReceiver.OnPadding(count)
+func (_this *Rules) OnPadding(count int) {
+	_this.assertCurrentStateAllowsType(eventTypePadding)
+	_this.nextReceiver.OnPadding(count)
 }
 
-func (this *Rules) OnNil() {
-	this.addScalar(eventTypeNil)
-	this.nextReceiver.OnNil()
+func (_this *Rules) OnNil() {
+	_this.addScalar(eventTypeNil)
+	_this.nextReceiver.OnNil()
 }
 
-func (this *Rules) OnBool(value bool) {
-	this.addScalar(eventTypeBool)
-	this.nextReceiver.OnBool(value)
+func (_this *Rules) OnBool(value bool) {
+	_this.addScalar(eventTypeBool)
+	_this.nextReceiver.OnBool(value)
 }
 
-func (this *Rules) OnTrue() {
-	this.addScalar(eventTypeBool)
-	this.nextReceiver.OnTrue()
+func (_this *Rules) OnTrue() {
+	_this.addScalar(eventTypeBool)
+	_this.nextReceiver.OnTrue()
 }
 
-func (this *Rules) OnFalse() {
-	this.addScalar(eventTypeBool)
-	this.nextReceiver.OnFalse()
+func (_this *Rules) OnFalse() {
+	_this.addScalar(eventTypeBool)
+	_this.nextReceiver.OnFalse()
 }
 
-func (this *Rules) OnPositiveInt(value uint64) {
-	this.onPositiveInt(value)
-	this.nextReceiver.OnPositiveInt(value)
+func (_this *Rules) OnPositiveInt(value uint64) {
+	_this.onPositiveInt(value)
+	_this.nextReceiver.OnPositiveInt(value)
 }
 
-func (this *Rules) OnNegativeInt(value uint64) {
-	this.onNegativeInt()
-	this.nextReceiver.OnNegativeInt(value)
+func (_this *Rules) OnNegativeInt(value uint64) {
+	_this.onNegativeInt()
+	_this.nextReceiver.OnNegativeInt(value)
 }
 
-func (this *Rules) OnInt(value int64) {
+func (_this *Rules) OnInt(value int64) {
 	if value >= 0 {
-		this.onPositiveInt(uint64(value))
+		_this.onPositiveInt(uint64(value))
 	} else {
-		this.onNegativeInt()
+		_this.onNegativeInt()
 	}
-	this.nextReceiver.OnInt(value)
+	_this.nextReceiver.OnInt(value)
 }
 
-func (this *Rules) OnBigInt(value *big.Int) {
+func (_this *Rules) OnBigInt(value *big.Int) {
 	if value.IsInt64() {
-		this.OnInt(value.Int64())
+		_this.OnInt(value.Int64())
 		return
 	}
 
 	zero := &big.Int{}
 	if value.Cmp(zero) < 0 {
-		this.onNegativeInt()
+		_this.onNegativeInt()
 	} else {
-		if this.isAwaitingID() {
+		if _this.isAwaitingID() {
 			panic(fmt.Errorf("ID values must not be larger than 64 bits"))
 		}
 		// If we're not waiting for an ID, then the argument to onPositiveInt
 		// isn't used.
 		unusedValue := uint64(0)
-		this.onPositiveInt(unusedValue)
+		_this.onPositiveInt(unusedValue)
 	}
-	this.nextReceiver.OnBigInt(value)
+	_this.nextReceiver.OnBigInt(value)
 }
 
-func (this *Rules) OnFloat(value float64) {
+func (_this *Rules) OnFloat(value float64) {
 	if math.IsNaN(value) {
-		this.OnNan(isSignalingNan(value))
+		_this.OnNan(isSignalingNan(value))
 		return
 	}
-	this.addScalar(eventTypeFloat)
-	this.nextReceiver.OnFloat(value)
+	_this.addScalar(eventTypeFloat)
+	_this.nextReceiver.OnFloat(value)
 }
 
-func (this *Rules) OnBigFloat(value *big.Float) {
-	this.addScalar(eventTypeFloat)
-	this.nextReceiver.OnBigFloat(value)
+func (_this *Rules) OnBigFloat(value *big.Float) {
+	_this.addScalar(eventTypeFloat)
+	_this.nextReceiver.OnBigFloat(value)
 }
 
-func (this *Rules) OnDecimalFloat(value compact_float.DFloat) {
+func (_this *Rules) OnDecimalFloat(value compact_float.DFloat) {
 	if value.IsNan() {
 		if value.IsSignalingNan() {
-			this.OnNan(true)
+			_this.OnNan(true)
 			return
 		}
-		this.OnNan(false)
+		_this.OnNan(false)
 		return
 	}
 
-	this.addScalar(eventTypeFloat)
-	this.nextReceiver.OnDecimalFloat(value)
+	_this.addScalar(eventTypeFloat)
+	_this.nextReceiver.OnDecimalFloat(value)
 }
 
-func (this *Rules) OnBigDecimalFloat(value *apd.Decimal) {
+func (_this *Rules) OnBigDecimalFloat(value *apd.Decimal) {
 	switch value.Form {
 	case apd.NaN:
-		this.OnNan(false)
+		_this.OnNan(false)
 		return
 	case apd.NaNSignaling:
-		this.OnNan(true)
+		_this.OnNan(true)
 		return
 	}
 
-	this.addScalar(eventTypeFloat)
-	this.nextReceiver.OnBigDecimalFloat(value)
+	_this.addScalar(eventTypeFloat)
+	_this.nextReceiver.OnBigDecimalFloat(value)
 }
 
-func (this *Rules) OnComplex(value complex128) {
-	this.addScalar(eventTypeCustom)
-	this.nextReceiver.OnComplex(value)
+func (_this *Rules) OnComplex(value complex128) {
+	_this.addScalar(eventTypeCustom)
+	_this.nextReceiver.OnComplex(value)
 }
 
-func (this *Rules) OnNan(signaling bool) {
-	this.addScalar(eventTypeNan)
-	this.nextReceiver.OnNan(signaling)
+func (_this *Rules) OnNan(signaling bool) {
+	_this.addScalar(eventTypeNan)
+	_this.nextReceiver.OnNan(signaling)
 }
 
-func (this *Rules) OnUUID(value []byte) {
-	this.addScalar(eventTypeUUID)
-	this.nextReceiver.OnUUID(value)
+func (_this *Rules) OnUUID(value []byte) {
+	_this.addScalar(eventTypeUUID)
+	_this.nextReceiver.OnUUID(value)
 }
 
-func (this *Rules) OnTime(value time.Time) {
-	this.addScalar(eventTypeTime)
-	this.nextReceiver.OnTime(value)
+func (_this *Rules) OnTime(value time.Time) {
+	_this.addScalar(eventTypeTime)
+	_this.nextReceiver.OnTime(value)
 }
 
-func (this *Rules) OnCompactTime(value *compact_time.Time) {
-	this.addScalar(eventTypeTime)
-	this.nextReceiver.OnCompactTime(value)
+func (_this *Rules) OnCompactTime(value *compact_time.Time) {
+	_this.addScalar(eventTypeTime)
+	_this.nextReceiver.OnCompactTime(value)
 }
 
-func (this *Rules) OnBytes(value []byte) {
-	this.onBytesBegin()
-	this.onArrayChunk(uint64(len(value)), true)
+func (_this *Rules) OnBytes(value []byte) {
+	_this.onBytesBegin()
+	_this.onArrayChunk(uint64(len(value)), true)
 	if len(value) > 0 {
-		this.onArrayData([]byte(value))
+		_this.onArrayData([]byte(value))
 	}
-	this.nextReceiver.OnBytes(value)
+	_this.nextReceiver.OnBytes(value)
 }
 
-func (this *Rules) OnString(value string) {
-	this.onStringBegin()
-	this.onArrayChunk(uint64(len(value)), true)
+func (_this *Rules) OnString(value string) {
+	_this.onStringBegin()
+	_this.onArrayChunk(uint64(len(value)), true)
 	if len(value) > 0 {
-		this.onArrayData([]byte(value))
+		_this.onArrayData([]byte(value))
 	}
-	this.nextReceiver.OnString(value)
+	_this.nextReceiver.OnString(value)
 }
 
-func (this *Rules) OnURI(value string) {
-	this.onURIBegin()
-	this.onArrayChunk(uint64(len(value)), true)
+func (_this *Rules) OnURI(value string) {
+	_this.onURIBegin()
+	_this.onArrayChunk(uint64(len(value)), true)
 	if len(value) > 0 {
-		this.onArrayData([]byte(value))
+		_this.onArrayData([]byte(value))
 	}
-	this.nextReceiver.OnURI(value)
+	_this.nextReceiver.OnURI(value)
 }
 
-func (this *Rules) OnCustom(value []byte) {
-	this.onCustomBegin()
-	this.onArrayChunk(uint64(len(value)), true)
+func (_this *Rules) OnCustom(value []byte) {
+	_this.onCustomBegin()
+	_this.onArrayChunk(uint64(len(value)), true)
 	if len(value) > 0 {
-		this.onArrayData([]byte(value))
+		_this.onArrayData([]byte(value))
 	}
-	this.nextReceiver.OnCustom(value)
+	_this.nextReceiver.OnCustom(value)
 }
 
-func (this *Rules) OnBytesBegin() {
-	this.onBytesBegin()
-	this.nextReceiver.OnBytesBegin()
+func (_this *Rules) OnBytesBegin() {
+	_this.onBytesBegin()
+	_this.nextReceiver.OnBytesBegin()
 }
 
-func (this *Rules) OnStringBegin() {
-	this.onStringBegin()
-	this.nextReceiver.OnStringBegin()
+func (_this *Rules) OnStringBegin() {
+	_this.onStringBegin()
+	_this.nextReceiver.OnStringBegin()
 }
 
-func (this *Rules) OnURIBegin() {
-	this.onURIBegin()
-	this.nextReceiver.OnURIBegin()
+func (_this *Rules) OnURIBegin() {
+	_this.onURIBegin()
+	_this.nextReceiver.OnURIBegin()
 }
 
-func (this *Rules) OnCustomBegin() {
-	this.onCustomBegin()
-	this.nextReceiver.OnCustomBegin()
+func (_this *Rules) OnCustomBegin() {
+	_this.onCustomBegin()
+	_this.nextReceiver.OnCustomBegin()
 }
 
-func (this *Rules) OnArrayChunk(length uint64, isFinalChunk bool) {
-	this.onArrayChunk(length, isFinalChunk)
-	this.nextReceiver.OnArrayChunk(length, isFinalChunk)
+func (_this *Rules) OnArrayChunk(length uint64, isFinalChunk bool) {
+	_this.onArrayChunk(length, isFinalChunk)
+	_this.nextReceiver.OnArrayChunk(length, isFinalChunk)
 }
 
-func (this *Rules) OnArrayData(data []byte) {
-	this.onArrayData(data)
-	this.nextReceiver.OnArrayData(data)
+func (_this *Rules) OnArrayData(data []byte) {
+	_this.onArrayData(data)
+	_this.nextReceiver.OnArrayData(data)
 }
 
-func (this *Rules) OnList() {
-	this.beginContainer(eventTypeList, stateAwaitingListItem)
-	this.nextReceiver.OnList()
+func (_this *Rules) OnList() {
+	_this.beginContainer(eventTypeList, stateAwaitingListItem)
+	_this.nextReceiver.OnList()
 }
 
-func (this *Rules) OnMap() {
-	this.beginContainer(eventTypeMap, stateAwaitingMapKey)
-	this.nextReceiver.OnMap()
+func (_this *Rules) OnMap() {
+	_this.beginContainer(eventTypeMap, stateAwaitingMapKey)
+	_this.nextReceiver.OnMap()
 }
 
-func (this *Rules) OnMarkup() {
-	this.beginContainer(eventTypeMarkup, stateAwaitingMarkupName)
-	this.nextReceiver.OnMarkup()
+func (_this *Rules) OnMarkup() {
+	_this.beginContainer(eventTypeMarkup, stateAwaitingMarkupName)
+	_this.nextReceiver.OnMarkup()
 }
 
-func (this *Rules) OnMetadata() {
-	this.beginContainer(eventTypeMetadata, stateAwaitingMetadataKey)
-	this.nextReceiver.OnMetadata()
+func (_this *Rules) OnMetadata() {
+	_this.beginContainer(eventTypeMetadata, stateAwaitingMetadataKey)
+	_this.nextReceiver.OnMetadata()
 }
 
-func (this *Rules) OnComment() {
-	this.beginContainer(eventTypeComment, stateAwaitingCommentItem)
-	this.nextReceiver.OnComment()
+func (_this *Rules) OnComment() {
+	_this.beginContainer(eventTypeComment, stateAwaitingCommentItem)
+	_this.nextReceiver.OnComment()
 }
 
-func (this *Rules) OnEnd() {
-	this.assertCurrentStateAllowsType(eventTypeEndContainer)
+func (_this *Rules) OnEnd() {
+	_this.assertCurrentStateAllowsType(eventTypeEndContainer)
 
-	switch this.getCurrentStateId() {
+	switch _this.getCurrentStateId() {
 	case stateIdAwaitingListItem:
-		this.unstackState()
-		this.onChildEnded(eventTypeList)
+		_this.unstackState()
+		_this.onChildEnded(eventTypeList)
 	case stateIdAwaitingMapKey:
-		this.unstackState()
-		this.onChildEnded(eventTypeMap)
+		_this.unstackState()
+		_this.onChildEnded(eventTypeMap)
 	case stateIdAwaitingMarkupKey:
-		this.changeState(stateAwaitingMarkupContents)
+		_this.changeState(stateAwaitingMarkupContents)
 	case stateIdAwaitingMarkupContents:
-		this.unstackState()
-		this.onChildEnded(eventTypeMarkup)
+		_this.unstackState()
+		_this.onChildEnded(eventTypeMarkup)
 	case stateIdAwaitingMetadataKey:
-		this.changeState(stateAwaitingMetadataObject)
-		this.incrementObjectCount()
+		_this.changeState(stateAwaitingMetadataObject)
+		_this.incrementObjectCount()
 	case stateIdAwaitingCommentItem:
-		this.unstackState()
-		this.incrementObjectCount()
+		_this.unstackState()
+		_this.incrementObjectCount()
 	default:
-		panic(fmt.Errorf("BUG: EndContainer() in state %x (%v) failed to trigger", this.getCurrentState(), this.getCurrentState()))
+		panic(fmt.Errorf("BUG: EndContainer() in state %x (%v) failed to trigger", _this.getCurrentState(), _this.getCurrentState()))
 	}
-	this.nextReceiver.OnEnd()
+	_this.nextReceiver.OnEnd()
 }
 
-func (this *Rules) OnMarker() {
-	if uint64(len(this.assignedIDs)) >= this.options.MaxReferenceCount {
-		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", this.options.MaxReferenceCount))
+func (_this *Rules) OnMarker() {
+	if uint64(len(_this.assignedIDs)) >= _this.options.MaxReferenceCount {
+		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", _this.options.MaxReferenceCount))
 	}
-	this.beginContainer(eventTypeMarker, stateAwaitingMarkerID)
-	this.nextReceiver.OnMarker()
+	_this.beginContainer(eventTypeMarker, stateAwaitingMarkerID)
+	_this.nextReceiver.OnMarker()
 }
 
-func (this *Rules) OnReference() {
-	this.beginContainer(eventTypeReference, stateAwaitingReferenceID)
-	this.nextReceiver.OnReference()
+func (_this *Rules) OnReference() {
+	_this.beginContainer(eventTypeReference, stateAwaitingReferenceID)
+	_this.nextReceiver.OnReference()
 }
 
-func (this *Rules) OnEndDocument() {
-	this.assertCurrentStateAllowsType(eventTypeEndDocument)
-	this.nextReceiver.OnEndDocument()
+func (_this *Rules) OnEndDocument() {
+	_this.assertCurrentStateAllowsType(eventTypeEndDocument)
+	_this.nextReceiver.OnEndDocument()
 }
 
-func (this *Rules) onPositiveInt(value uint64) {
-	if this.isAwaitingID() {
-		this.stackId(value)
+func (_this *Rules) onPositiveInt(value uint64) {
+	if _this.isAwaitingID() {
+		_this.stackId(value)
 	}
-	this.addScalar(eventTypePInt)
+	_this.addScalar(eventTypePInt)
 }
 
-func (this *Rules) onNegativeInt() {
-	this.addScalar(eventTypeNInt)
+func (_this *Rules) onNegativeInt() {
+	_this.addScalar(eventTypeNInt)
 }
 
-func (this *Rules) onBytesBegin() {
-	this.beginArray(eventTypeBytes)
+func (_this *Rules) onBytesBegin() {
+	_this.beginArray(eventTypeBytes)
 }
 
-func (this *Rules) onStringBegin() {
-	this.beginArray(eventTypeString)
+func (_this *Rules) onStringBegin() {
+	_this.beginArray(eventTypeString)
 }
 
-func (this *Rules) onURIBegin() {
-	this.beginArray(eventTypeURI)
+func (_this *Rules) onURIBegin() {
+	_this.beginArray(eventTypeURI)
 }
 
-func (this *Rules) onCustomBegin() {
-	this.beginArray(eventTypeCustom)
+func (_this *Rules) onCustomBegin() {
+	_this.beginArray(eventTypeCustom)
 }
 
-func (this *Rules) onArrayChunk(length uint64, isFinalChunk bool) {
-	this.assertCurrentStateAllowsType(eventTypeAChunk)
+func (_this *Rules) onArrayChunk(length uint64, isFinalChunk bool) {
+	_this.assertCurrentStateAllowsType(eventTypeAChunk)
 
-	this.chunkByteCount = length
-	this.chunkBytesWritten = 0
-	this.isFinalChunk = isFinalChunk
-	this.changeState(stateAwaitingArrayData)
+	_this.chunkByteCount = length
+	_this.chunkBytesWritten = 0
+	_this.isFinalChunk = isFinalChunk
+	_this.changeState(stateAwaitingArrayData)
 
 	if length == 0 {
-		this.onArrayChunkEnded()
+		_this.onArrayChunkEnded()
 	}
 }
 
-func (this *Rules) onArrayData(data []byte) {
-	this.assertCurrentStateAllowsType(eventTypeAData)
+func (_this *Rules) onArrayData(data []byte) {
+	_this.assertCurrentStateAllowsType(eventTypeAData)
 
 	dataLength := uint64(len(data))
-	if this.chunkBytesWritten+dataLength > this.chunkByteCount {
+	if _this.chunkBytesWritten+dataLength > _this.chunkByteCount {
 		panic(fmt.Errorf("Chunk length %v exceeded by %v bytes",
-			this.chunkByteCount, this.chunkBytesWritten+dataLength-this.chunkByteCount))
+			_this.chunkByteCount, _this.chunkBytesWritten+dataLength-_this.chunkByteCount))
 	}
 
-	switch this.arrayType {
+	switch _this.arrayType {
 	case eventTypeBytes:
-		if this.arrayBytesWritten+dataLength > this.options.MaxBytesLength {
-			panic(fmt.Errorf("Max byte array length (%v) exceeded", this.options.MaxBytesLength))
+		if _this.arrayBytesWritten+dataLength > _this.options.MaxBytesLength {
+			panic(fmt.Errorf("Max byte array length (%v) exceeded", _this.options.MaxBytesLength))
 		}
 	case eventTypeString:
-		if this.arrayBytesWritten+dataLength > this.options.MaxStringLength {
-			panic(fmt.Errorf("Max string length (%v) exceeded", this.options.MaxStringLength))
+		if _this.arrayBytesWritten+dataLength > _this.options.MaxStringLength {
+			panic(fmt.Errorf("Max string length (%v) exceeded", _this.options.MaxStringLength))
 		}
-		if this.isStringInsideComment() {
-			this.validateCommentContents(data)
+		if _this.isStringInsideComment() {
+			_this.validateCommentContents(data)
 		} else {
-			this.validateStringContents(data)
+			_this.validateStringContents(data)
 		}
-		if this.isAwaitingID() {
-			this.arrayData = append(this.arrayData, data...)
+		if _this.isAwaitingID() {
+			_this.arrayData = append(_this.arrayData, data...)
 		}
 	case eventTypeURI:
-		if this.arrayBytesWritten+dataLength > this.options.MaxURILength {
-			panic(fmt.Errorf("Max URI length (%v) exceeded", this.options.MaxURILength))
+		if _this.arrayBytesWritten+dataLength > _this.options.MaxURILength {
+			panic(fmt.Errorf("Max URI length (%v) exceeded", _this.options.MaxURILength))
 		}
-		if this.isAwaitingID() {
-			this.arrayData = append(this.arrayData, data...)
+		if _this.isAwaitingID() {
+			_this.arrayData = append(_this.arrayData, data...)
 		}
 		// Note: URI validation happens when the array is complete
 	}
 
-	this.arrayBytesWritten += dataLength
-	this.chunkBytesWritten += dataLength
-	if this.chunkBytesWritten == this.chunkByteCount {
-		this.onArrayChunkEnded()
+	_this.arrayBytesWritten += dataLength
+	_this.chunkBytesWritten += dataLength
+	if _this.chunkBytesWritten == _this.chunkByteCount {
+		_this.onArrayChunkEnded()
 	}
 }
 
-func (this *Rules) getCurrentState() ruleState {
-	return this.stateStack[len(this.stateStack)-1]
+func (_this *Rules) getCurrentState() ruleState {
+	return _this.stateStack[len(_this.stateStack)-1]
 }
 
-func (this *Rules) getCurrentStateId() ruleState {
-	return this.getCurrentState() & ruleState(ruleIDFieldMask)
+func (_this *Rules) getCurrentStateId() ruleState {
+	return _this.getCurrentState() & ruleState(ruleIDFieldMask)
 }
 
-func (this *Rules) getParentState() ruleState {
-	return this.stateStack[len(this.stateStack)-2]
+func (_this *Rules) getParentState() ruleState {
+	return _this.stateStack[len(_this.stateStack)-2]
 }
 
-func (this *Rules) hasParentState() bool {
-	return len(this.stateStack) > 1
+func (_this *Rules) hasParentState() bool {
+	return len(_this.stateStack) > 1
 }
 
-func (this *Rules) changeState(st ruleState) {
-	this.stateStack[len(this.stateStack)-1] = st
+func (_this *Rules) changeState(st ruleState) {
+	_this.stateStack[len(_this.stateStack)-1] = st
 }
 
-func (this *Rules) stackState(st ruleState) {
-	if uint64(len(this.stateStack)) >= this.options.MaxContainerDepth {
-		panic(fmt.Errorf("Max depth of %v exceeded", this.options.MaxContainerDepth-rulesMaxDepthAdjust))
+func (_this *Rules) stackState(st ruleState) {
+	if uint64(len(_this.stateStack)) >= _this.options.MaxContainerDepth {
+		panic(fmt.Errorf("Max depth of %v exceeded", _this.options.MaxContainerDepth-rulesMaxDepthAdjust))
 	}
-	this.stateStack = append(this.stateStack, st)
+	_this.stateStack = append(_this.stateStack, st)
 }
 
-func (this *Rules) unstackState() {
-	this.stateStack = this.stateStack[:len(this.stateStack)-1]
+func (_this *Rules) unstackState() {
+	_this.stateStack = _this.stateStack[:len(_this.stateStack)-1]
 }
 
-func (this *Rules) isAwaitingID() bool {
-	if this.getCurrentState()&ruleState(eventArrayChunk|eventArrayData) != 0 {
-		return this.getParentState()&ruleFlagAwaitingID != 0
+func (_this *Rules) isAwaitingID() bool {
+	if _this.getCurrentState()&ruleState(eventArrayChunk|eventArrayData) != 0 {
+		return _this.getParentState()&ruleFlagAwaitingID != 0
 	}
-	return this.getCurrentState()&ruleFlagAwaitingID != 0
+	return _this.getCurrentState()&ruleFlagAwaitingID != 0
 }
 
-func (this *Rules) isAwaitingMarkupName() bool {
-	return this.getCurrentState() == stateAwaitingMarkupName
+func (_this *Rules) isAwaitingMarkupName() bool {
+	return _this.getCurrentState() == stateAwaitingMarkupName
 }
 
-func (this *Rules) stackId(id interface{}) {
-	this.unassignedIDs = append(this.unassignedIDs, id)
+func (_this *Rules) stackId(id interface{}) {
+	_this.unassignedIDs = append(_this.unassignedIDs, id)
 }
 
-func (this *Rules) unstackId() (id interface{}) {
-	id = this.unassignedIDs[len(this.unassignedIDs)-1]
-	this.unassignedIDs = this.unassignedIDs[:len(this.unassignedIDs)-1]
+func (_this *Rules) unstackId() (id interface{}) {
+	id = _this.unassignedIDs[len(_this.unassignedIDs)-1]
+	_this.unassignedIDs = _this.unassignedIDs[:len(_this.unassignedIDs)-1]
 	return
 }
 
-func (this *Rules) isStringInsideComment() bool {
-	return this.hasParentState() &&
-		this.getParentState()&ruleState(ruleIDFieldMask) == stateIdAwaitingCommentItem
+func (_this *Rules) isStringInsideComment() bool {
+	return _this.hasParentState() &&
+		_this.getParentState()&ruleState(ruleIDFieldMask) == stateIdAwaitingCommentItem
 }
 
-func (this *Rules) validateStringContents(data []byte) {
+func (_this *Rules) validateStringContents(data []byte) {
 	for _, ch := range data {
-		this.charValidator.AddByte(int(ch))
+		_this.charValidator.AddByte(int(ch))
 	}
 }
 
-func (this *Rules) validateCommentContents(data []byte) {
+func (_this *Rules) validateCommentContents(data []byte) {
 	for _, ch := range data {
-		this.charValidator.AddByte(int(ch))
-		if this.charValidator.IsCompleteCharacter() {
-			validateRulesCommentCharacter(this.charValidator.Character())
+		_this.charValidator.AddByte(int(ch))
+		if _this.charValidator.IsCompleteCharacter() {
+			validateRulesCommentCharacter(_this.charValidator.Character())
 		}
 	}
 }
 
-func (this *Rules) getFirstRealContainer() ruleState {
-	for i := len(this.stateStack) - 1; i >= 0; i-- {
-		currentState := this.stateStack[i]
+func (_this *Rules) getFirstRealContainer() ruleState {
+	for i := len(_this.stateStack) - 1; i >= 0; i-- {
+		currentState := _this.stateStack[i]
 		if currentState&ruleFlagRealContainer != 0 {
 			return currentState
 		}
@@ -552,129 +552,129 @@ func assertStateAllowsType(currentState ruleState, objectType ruleEvent) {
 	}
 }
 
-func (this *Rules) assertCurrentStateAllowsType(objectType ruleEvent) {
-	assertStateAllowsType(this.getCurrentState(), objectType)
+func (_this *Rules) assertCurrentStateAllowsType(objectType ruleEvent) {
+	assertStateAllowsType(_this.getCurrentState(), objectType)
 }
 
-func (this *Rules) beginArray(arrayType ruleEvent) {
-	this.assertCurrentStateAllowsType(arrayType)
+func (_this *Rules) beginArray(arrayType ruleEvent) {
+	_this.assertCurrentStateAllowsType(arrayType)
 
-	this.arrayType = arrayType
-	this.arrayData = this.arrayData[:0]
-	this.chunkByteCount = 0
-	this.chunkBytesWritten = 0
-	this.arrayBytesWritten = 0
-	this.isFinalChunk = false
+	_this.arrayType = arrayType
+	_this.arrayData = _this.arrayData[:0]
+	_this.chunkByteCount = 0
+	_this.chunkBytesWritten = 0
+	_this.arrayBytesWritten = 0
+	_this.isFinalChunk = false
 
-	this.stackState(stateAwaitingArrayChunk)
+	_this.stackState(stateAwaitingArrayChunk)
 }
 
-func (this *Rules) onArrayChunkEnded() {
-	if !this.isFinalChunk {
-		this.changeState(stateAwaitingArrayChunk)
+func (_this *Rules) onArrayChunkEnded() {
+	if !_this.isFinalChunk {
+		_this.changeState(stateAwaitingArrayChunk)
 		return
 	}
 
-	this.unstackState()
+	_this.unstackState()
 
-	switch this.arrayType {
+	switch _this.arrayType {
 	case eventTypeString:
-		if this.isAwaitingMarkupName() {
+		if _this.isAwaitingMarkupName() {
 
-			if this.arrayBytesWritten == 0 {
+			if _this.arrayBytesWritten == 0 {
 				panic(fmt.Errorf("Markup name cannot be length 0"))
 			}
-			if this.arrayBytesWritten > this.options.MaxMarkupNameLength {
-				panic(fmt.Errorf("Markup name length %v exceeds max of %v", this.arrayBytesWritten, this.options.MaxMarkupNameLength))
+			if _this.arrayBytesWritten > _this.options.MaxMarkupNameLength {
+				panic(fmt.Errorf("Markup name length %v exceeds max of %v", _this.arrayBytesWritten, _this.options.MaxMarkupNameLength))
 			}
 		}
-		if this.isAwaitingID() {
-			if this.arrayBytesWritten == 0 {
+		if _this.isAwaitingID() {
+			if _this.arrayBytesWritten == 0 {
 				panic(fmt.Errorf("An ID cannot be length 0"))
 			}
-			if this.arrayBytesWritten > this.options.MaxIDLength {
-				panic(fmt.Errorf("ID length %v exceeds max of %v", this.arrayBytesWritten, this.options.MaxIDLength))
+			if _this.arrayBytesWritten > _this.options.MaxIDLength {
+				panic(fmt.Errorf("ID length %v exceeds max of %v", _this.arrayBytesWritten, _this.options.MaxIDLength))
 			}
-			this.stackId(string(this.arrayData))
+			_this.stackId(string(_this.arrayData))
 		}
 	case eventTypeURI:
-		if this.arrayBytesWritten < 2 {
+		if _this.arrayBytesWritten < 2 {
 			panic(fmt.Errorf("URI length must allow at least a scheme and colon (2 chars)"))
 		}
-		if this.isAwaitingID() {
-			url, err := url.Parse(string(this.arrayData))
+		if _this.isAwaitingID() {
+			url, err := url.Parse(string(_this.arrayData))
 			if err != nil {
 				panic(fmt.Errorf("%v", err))
 			}
-			this.stackId(url)
+			_this.stackId(url)
 		}
 	case eventTypeBytes:
 		// Nothing to do
 	}
 
-	arrayType := this.arrayType
-	this.arrayType = eventTypeNothing
-	this.onChildEnded(arrayType)
+	arrayType := _this.arrayType
+	_this.arrayType = eventTypeNothing
+	_this.onChildEnded(arrayType)
 }
 
-func (this *Rules) incrementObjectCount() {
-	this.objectCount++
-	if this.objectCount > this.options.MaxObjectCount {
-		panic(fmt.Errorf("Max object count of %v exceeded", this.options.MaxObjectCount))
+func (_this *Rules) incrementObjectCount() {
+	_this.objectCount++
+	if _this.objectCount > _this.options.MaxObjectCount {
+		panic(fmt.Errorf("Max object count of %v exceeded", _this.options.MaxObjectCount))
 	}
 }
 
-func (this *Rules) onChildEnded(childType ruleEvent) {
-	this.incrementObjectCount()
+func (_this *Rules) onChildEnded(childType ruleEvent) {
+	_this.incrementObjectCount()
 
-	switch this.getCurrentStateId() {
+	switch _this.getCurrentStateId() {
 	case stateIdAwaitingMetadataObject:
-		container := this.getFirstRealContainer()
+		container := _this.getFirstRealContainer()
 		assertStateAllowsType(container, childType)
-		this.unstackState()
-		this.onChildEnded(childType)
+		_this.unstackState()
+		_this.onChildEnded(childType)
 	case stateIdAwaitingMarkerObject:
-		container := this.getFirstRealContainer()
+		container := _this.getFirstRealContainer()
 		assertStateAllowsType(container, childType)
-		markerID := this.unstackId()
-		if _, exists := this.assignedIDs[markerID]; exists {
+		markerID := _this.unstackId()
+		if _, exists := _this.assignedIDs[markerID]; exists {
 			panic(fmt.Errorf("%v: Marker ID already defined", markerID))
 		}
-		this.assignedIDs[markerID] = childType
-		this.unstackState()
-		this.onChildEnded(childType)
+		_this.assignedIDs[markerID] = childType
+		_this.unstackState()
+		_this.onChildEnded(childType)
 	case stateIdAwaitingReferenceID:
-		container := this.getFirstRealContainer()
-		markerID := this.unstackId()
+		container := _this.getFirstRealContainer()
+		markerID := _this.unstackId()
 
 		_, ok := markerID.(*url.URL)
 		if ok {
 			// We have no way to verify what the URL points to, so call it "anything".
-			this.unstackState()
-			this.onChildEnded(eventTypeAny)
+			_this.unstackState()
+			_this.onChildEnded(eventTypeAny)
 			return
 		}
 
-		referencedType, ok := this.assignedIDs[markerID]
+		referencedType, ok := _this.assignedIDs[markerID]
 		if !ok {
 			panic(fmt.Errorf("Referenced ID [%v] not found", markerID))
 		}
 		assertStateAllowsType(container, referencedType)
-		this.unstackState()
-		this.onChildEnded(referencedType)
+		_this.unstackState()
+		_this.onChildEnded(referencedType)
 	default:
-		this.changeState(childEndRuleStateChanges[this.getCurrentStateId()])
+		_this.changeState(childEndRuleStateChanges[_this.getCurrentStateId()])
 	}
 }
 
-func (this *Rules) addScalar(scalarType ruleEvent) {
-	this.assertCurrentStateAllowsType(scalarType)
-	this.onChildEnded(scalarType)
+func (_this *Rules) addScalar(scalarType ruleEvent) {
+	_this.assertCurrentStateAllowsType(scalarType)
+	_this.onChildEnded(scalarType)
 }
 
-func (this *Rules) beginContainer(containerType ruleEvent, newState ruleState) {
-	this.assertCurrentStateAllowsType(containerType)
-	this.stackState(newState)
+func (_this *Rules) beginContainer(containerType ruleEvent, newState ruleState) {
+	_this.assertCurrentStateAllowsType(containerType)
+	_this.stackState(newState)
 }
 
 var defaultRuleOptions = RuleOptions{
@@ -793,8 +793,8 @@ var ruleEventNames = [...]string{
 	"end document",
 }
 
-func (this ruleEvent) String() string {
-	return ruleEventNames[this&ruleEvent(ruleIDFieldMask)]
+func (_this ruleEvent) String() string {
+	return ruleEventNames[_this&ruleEvent(ruleIDFieldMask)]
 }
 
 type ruleState int
@@ -845,8 +845,8 @@ var ruleStateNames = [...]string{
 	"end document",
 }
 
-func (this ruleState) String() string {
-	return ruleStateNames[this&ruleState(ruleIDFieldMask)]
+func (_this ruleState) String() string {
+	return ruleStateNames[_this&ruleState(ruleIDFieldMask)]
 }
 
 const (

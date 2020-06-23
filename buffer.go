@@ -25,31 +25,31 @@ type buffer struct {
 	lastAllocatedSize int
 }
 
-func (this *buffer) Bytes() []byte {
-	return this.bytes
+func (_this *buffer) Bytes() []byte {
+	return _this.bytes
 }
 
-func (this *buffer) Allocate(byteCount int) []byte {
-	length := len(this.bytes)
-	if cap(this.bytes)-length < byteCount {
-		this.grow(byteCount)
+func (_this *buffer) Allocate(byteCount int) []byte {
+	length := len(_this.bytes)
+	if cap(_this.bytes)-length < byteCount {
+		_this.grow(byteCount)
 	} else {
-		this.bytes = this.bytes[:length+byteCount]
+		_this.bytes = _this.bytes[:length+byteCount]
 	}
-	this.lastAllocatedSize = byteCount
-	return this.bytes[length:]
+	_this.lastAllocatedSize = byteCount
+	return _this.bytes[length:]
 }
 
-func (this *buffer) CorrectAllocation(usedByteCount int) {
-	unused := this.lastAllocatedSize - usedByteCount
-	this.bytes = this.bytes[:len(this.bytes)-unused]
+func (_this *buffer) CorrectAllocation(usedByteCount int) {
+	unused := _this.lastAllocatedSize - usedByteCount
+	_this.bytes = _this.bytes[:len(_this.bytes)-unused]
 }
 
 // ============================================================================
 
-func (this *buffer) grow(byteCount int) {
-	length := len(this.bytes)
-	growAmount := cap(this.bytes)
+func (_this *buffer) grow(byteCount int) {
+	length := len(_this.bytes)
+	growAmount := cap(_this.bytes)
 	if byteCount > growAmount {
 		if byteCount > minBufferCap {
 			growAmount = byteCount
@@ -57,9 +57,9 @@ func (this *buffer) grow(byteCount int) {
 			growAmount = minBufferCap
 		}
 	}
-	newCap := cap(this.bytes) + growAmount
+	newCap := cap(_this.bytes) + growAmount
 	newBytes := make([]byte, length+byteCount, newCap)
-	oldBytes := this.bytes
+	oldBytes := _this.bytes
 	copy(newBytes, oldBytes)
-	this.bytes = newBytes
+	_this.bytes = newBytes
 }
