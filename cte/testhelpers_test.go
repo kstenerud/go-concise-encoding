@@ -18,64 +18,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package concise_encoding
+package cte
 
 import (
 	"math/big"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/cbe"
-	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/test"
 )
-
-func cbeDecode(document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTER()
-	err = cbe.Decode(document, receiver, nil)
-	events = receiver.Events
-	return
-}
-
-func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
-		}
-	}()
-
-	encoder := cbe.NewEncoder(nil)
-	test.InvokeEvents(encoder, expected...)
-	document := encoder.GetBuiltDocument()
-
-	return cbeDecode(document)
-}
-
-func cteDecode(document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTER()
-	err = cte.Decode(document, receiver, nil)
-	events = receiver.Events
-	return
-}
-
-func cteEncode(events ...*test.TEvent) []byte {
-	encoder := cte.NewEncoder(nil)
-	test.InvokeEvents(encoder, events...)
-	return encoder.GetBuiltDocument()
-}
-
-func cteEncodeDecode(events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
-		}
-	}()
-
-	return cteDecode(cteEncode(events...))
-}
 
 func TT() *test.TEvent                       { return test.TT() }
 func FF() *test.TEvent                       { return test.FF() }
@@ -116,3 +70,16 @@ func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
+
+func cteDecode(document []byte) (events []*test.TEvent, err error) {
+	receiver := test.NewTER()
+	err = Decode(document, receiver, nil)
+	events = receiver.Events
+	return
+}
+
+func cteEncode(events ...*test.TEvent) []byte {
+	encoder := NewEncoder(nil)
+	test.InvokeEvents(encoder, events...)
+	return encoder.GetBuiltDocument()
+}

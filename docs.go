@@ -21,9 +21,9 @@
 // - Decoder: Decodes a CBE or CTE document, generating data events.
 //
 // Low Level API:
-// - Iterator: Iterates through an object, generating data events.
 // - Rules: Passes through data events, applying rules to ensure the events
 //          conform to the concise encoding specifications.
+// - Iterator: Iterates through an object, generating data events.
 // - Root Iterator: Iterates through a top-level object to generate data events.
 // - Builder: Responds to builder directives to build complex objects.
 // - Root Builder: Translates data events to builder directives.

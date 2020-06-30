@@ -23,24 +23,29 @@ package concise_encoding
 import (
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/iterator"
+	"github.com/kstenerud/go-concise-encoding/test"
+
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	options := &CBEMarshalerOptions{
-		Iterator: IteratorOptions{
+	options := &cbe.MarshalerOptions{
+		Iterator: iterator.IteratorOptions{
 			UseReferences: true,
 		},
 	}
-	document, err := MarshalCBE(expected, options)
+	document, err := cbe.Marshal(expected, options)
 	if err != nil {
 		t.Errorf("CBE Marshal error: %v", err)
 		return
 	}
 
 	var actual interface{}
-	actual, err = UnmarshalCBE(document, expected, nil)
+	actual, err = cbe.Unmarshal(document, expected, nil)
 	if err != nil {
 		t.Errorf("CBE Unmarshal error: %v\n- While unmarshaling %v", err, describe.D(document))
 		return
@@ -52,19 +57,19 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 }
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	options := &CTEMarshalerOptions{
-		Iterator: IteratorOptions{
+	options := &cte.MarshalerOptions{
+		Iterator: iterator.IteratorOptions{
 			UseReferences: true,
 		},
 	}
-	document, err := MarshalCTE(expected, options)
+	document, err := cte.Marshal(expected, options)
 	if err != nil {
 		t.Errorf("CTE Marshal error: %v", err)
 		return
 	}
 
 	var actual interface{}
-	actual, err = UnmarshalCTE(document, expected, nil)
+	actual, err = cte.Unmarshal(document, expected, nil)
 	if err != nil {
 		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(document))
 		return
@@ -82,6 +87,6 @@ func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 
 func TestMarshalUnmarshal(t *testing.T) {
 	assertMarshalUnmarshal(t, 101)
-	assertMarshalUnmarshal(t, *newTestingOuterStruct(1))
-	assertMarshalUnmarshal(t, *newBlankTestingOuterStruct())
+	assertMarshalUnmarshal(t, *test.NewTestingOuterStruct(1))
+	assertMarshalUnmarshal(t, *test.NewBlankTestingOuterStruct())
 }
