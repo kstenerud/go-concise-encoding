@@ -38,6 +38,7 @@ type RootBuilder struct {
 	dstType        reflect.Type
 	currentBuilder ObjectBuilder
 	object         reflect.Value
+	markerRegistry MarkerRegistry
 }
 
 // -----------
@@ -61,6 +62,10 @@ func (_this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
 	_this.currentBuilder = builder
 }
 
+func (_this *RootBuilder) GetMarkerRegistry() *MarkerRegistry {
+	return &_this.markerRegistry
+}
+
 // Get the object that was built after using this root builder as a DataEventReceiver.
 func (_this *RootBuilder) GetBuiltObject() interface{} {
 	// TODO: Verify this behavior
@@ -80,7 +85,7 @@ func (_this *RootBuilder) GetBuiltObject() interface{} {
 	}
 }
 
-func (_this *RootBuilder) setCurrentBuilder(builder ObjectBuilder) {
+func (_this *RootBuilder) SetCurrentBuilder(builder ObjectBuilder) {
 	_this.currentBuilder = builder
 }
 
@@ -97,6 +102,9 @@ func (_this *RootBuilder) PostCacheInitBuilder() {
 }
 func (_this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *BuilderOptions) ObjectBuilder {
 	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on RootBuilder"))
+}
+func (_this *RootBuilder) SetParent(parent ObjectBuilder) {
+	panic(fmt.Errorf("BUG: SetParent should never be called on RootBuilder"))
 }
 func (_this *RootBuilder) BuildFromNil(_ reflect.Value) {
 	panic(fmt.Errorf("BUG: BuildFromNil should never be called on RootBuilder"))

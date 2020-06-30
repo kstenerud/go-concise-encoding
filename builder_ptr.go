@@ -65,6 +65,10 @@ func (_this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuild
 	return that
 }
 
+func (_this *ptrBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *ptrBuilder) newElem() reflect.Value {
 	return reflect.New(_this.dstType.Elem())
 }

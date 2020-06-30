@@ -53,6 +53,9 @@ func (_this *uintBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuil
 	return _this
 }
 
+func (_this *uintBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *uintBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(_this, _this.dstType, "Nil")
 }

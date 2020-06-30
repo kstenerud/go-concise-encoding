@@ -58,6 +58,10 @@ func (_this *topLevelContainerBuilder) CloneFromTemplate(root *RootBuilder, pare
 	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on topLevelContainerBuilder"))
 }
 
+func (_this *topLevelContainerBuilder) SetParent(parent ObjectBuilder) {
+	panic(fmt.Errorf("BUG: SetParent should never be called on topLevelContainerBuilder"))
+}
+
 func (_this *topLevelContainerBuilder) BuildFromNil(dst reflect.Value) {
 	panic(fmt.Errorf("BUG: BuildFromNil should never be called on topLevelContainerBuilder"))
 }
@@ -119,12 +123,12 @@ func (_this *topLevelContainerBuilder) BuildFromCompactTime(value *compact_time.
 }
 
 func (_this *topLevelContainerBuilder) BuildBeginList() {
-	_this.root.setCurrentBuilder(_this.builder)
+	_this.root.SetCurrentBuilder(_this.builder)
 	_this.builder.PrepareForListContents()
 }
 
 func (_this *topLevelContainerBuilder) BuildBeginMap() {
-	_this.root.setCurrentBuilder(_this.builder)
+	_this.root.SetCurrentBuilder(_this.builder)
 	_this.builder.PrepareForMapContents()
 }
 

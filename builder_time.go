@@ -53,6 +53,9 @@ func (_this *timeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuil
 	return _this
 }
 
+func (_this *timeBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *timeBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(_this, typeTime, "Nil")
 }
@@ -149,7 +152,7 @@ func (_this *timeBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	builderPanicBadEvent(_this, typeTime, "NotifyChildContainerFinished")
 }
 
-// Compact Time
+// ============================================================================
 
 type compactTimeBuilder struct {
 }
@@ -169,6 +172,9 @@ func (_this *compactTimeBuilder) PostCacheInitBuilder() {
 
 func (_this *compactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return _this
+}
+
+func (_this *compactTimeBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *compactTimeBuilder) BuildFromNil(dst reflect.Value) {
@@ -263,7 +269,7 @@ func (_this *compactTimeBuilder) NotifyChildContainerFinished(value reflect.Valu
 	builderPanicBadEvent(_this, typeCompactTime, "NotifyChildContainerFinished")
 }
 
-// PCompact Time
+// ============================================================================
 
 type pCompactTimeBuilder struct {
 }
@@ -283,6 +289,9 @@ func (_this *pCompactTimeBuilder) PostCacheInitBuilder() {
 
 func (_this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return _this
+}
+
+func (_this *pCompactTimeBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *pCompactTimeBuilder) BuildFromNil(dst reflect.Value) {

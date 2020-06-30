@@ -21,8 +21,110 @@
 package concise_encoding
 
 import (
+	"fmt"
 	"reflect"
 )
+
+// src accumulator
+// dst value setter
+
+// src is:
+// not defined at all yet
+// completely defined (save copy or ptr)
+// being built (save ref to src builder)
+
+// Container builders will need to know that there's a marked object being built
+// On object complete, it registers the marked object
+// on registering, marker registry checks for references and fills them
+// create a reflect.Value style interface so that setting it sets the r.v and also fills a marker?
+// This means an extra indirection for all settters. Better than if statement?
+// Alternative: Fit in a wrapper builder that passes on build instr and also fills marker?
+// marker, scalar: insert marker-builder-scalar in front of current builder, trap all scalar builds
+// marker, container: insert marker-builder-container in front of inner builder, trap child finished.
+// what about interface, where scalar or container not known yet?
+// - outer marker builder can somehow notify that a container build is needed?
+// - OnMarkerContainer?
+/*
+marker:
+- insert marker name builder, which accepts string or int
+- on string or int finished, remove name builder and insert marked object builder, passing in name
+- on scalar, pass on the build message, store value in reference manager
+- on list/map, wait for child container finished, store value in reference manager
+
+reference:
+- insert reference name builder, which accepts string or int
+- on finished, either fetch value from ref manager, or ...
+
+Reference has pointer to thing that needs to be set:
+- ptr to object
+- map w/ key
+- ptr to array w/ index
+- slice ... ? pointer to builder maybe?
+-- use ptr to slice in builder?
+
+--------------------
+
+Or maybe have builder methods return a reflect.Value of the object just built?
+- would require chain of returns. Maybe not
+
+
+OnMarker:
+- replace root's builder with marker ID builder
+
+OnString:
+- marker ID builder calls BuildFromMarker
+
+BuildFromMarker:
+- insert marker object builder before elem builder...
+-- how to deal with struct elem builders?
+-- maybe just use if statement to call marker builder chained to real builder...
+-- or build parallel elem builder sets, one with marker wrapper...
+
+*/
+
+type MarkerRegistry struct {
+	markedValues         map[interface{}]interface{}
+	unresolvedReferences map[interface{}][]interface{}
+}
+
+func (_this *MarkerRegistry) HasUnresolvedReferences() bool {
+	return len(_this.unresolvedReferences) > 0
+}
+
+func (_this *MarkerRegistry) NotifyMarker(id interface{}, value interface{}) {
+	_this.markedValues[id] = value
+
+	if references, ok := _this.unresolvedReferences[id]; ok {
+		for _, reference := range references {
+			fillReference(reference, value)
+		}
+		delete(_this.unresolvedReferences, id)
+	}
+}
+
+func (_this *MarkerRegistry) NotifyReference(id interface{}, reference interface{}) {
+	if value, ok := _this.markedValues[id]; ok {
+		fillReference(reference, value)
+		return
+	}
+	_this.unresolvedReferences[id] = append(_this.unresolvedReferences[id], reference)
+}
+
+// Maybe use ptr to reflect.value?
+func fillReference(reference interface{}, value interface{}) {
+	src := reflect.ValueOf(value)
+	dst := reflect.ValueOf(reference)
+	if dst.Type() == src.Type() {
+		dst.Set(src)
+	}
+	panic(fmt.Errorf("TODO: Support converting %v to %v", src.Type(), dst.Type()))
+}
+
+//
+
+// dst is:
+// asking for completely built src (just set it)
+// asking for unfinished src (save ref to dst builder? Special setter?)
 
 // How does this work for adding to an array?
 // Create default value, keep reflect.Value for it?

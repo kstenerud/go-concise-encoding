@@ -55,6 +55,9 @@ func (_this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 	return _this
 }
 
+func (_this *directBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *directBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(_this, _this.dstType, "Nil")
 }
@@ -147,6 +150,8 @@ func (_this *directBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	builderPanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
 }
 
+// ============================================================================
+
 // The direct builder has an unambiguous direct mapping from build event to
 // a pointer destination type (for example, a *url is always a *url).
 type directPtrBuilder struct {
@@ -169,6 +174,9 @@ func (_this *directPtrBuilder) PostCacheInitBuilder() {
 
 func (_this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return _this
+}
+
+func (_this *directPtrBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *directPtrBuilder) BuildFromNil(dst reflect.Value) {

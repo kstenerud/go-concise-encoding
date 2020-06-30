@@ -45,7 +45,8 @@ type sliceBuilder struct {
 	parent ObjectBuilder
 
 	// Variable data (must be reset)
-	container reflect.Value
+	container   reflect.Value
+	nextBuilder ObjectBuilder
 }
 
 func newSliceBuilder(dstType reflect.Type) ObjectBuilder {
@@ -73,8 +74,13 @@ func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBui
 	return that
 }
 
+func (_this *sliceBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *sliceBuilder) reset() {
 	_this.container = reflect.MakeSlice(_this.dstType, 0, defaultSliceCap)
+	_this.nextBuilder = _this.elemBuilder
 }
 
 func (_this *sliceBuilder) newElem() reflect.Value {
@@ -87,100 +93,117 @@ func (_this *sliceBuilder) storeValue(value reflect.Value) {
 
 func (_this *sliceBuilder) BuildFromNil(ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromNil(object)
+	_this.nextBuilder.BuildFromNil(object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBool(value, object)
+	_this.nextBuilder.BuildFromBool(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromInt(value, object)
+	_this.nextBuilder.BuildFromInt(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromUint(value, object)
+	_this.nextBuilder.BuildFromUint(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBigInt(value, object)
+	_this.nextBuilder.BuildFromBigInt(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromFloat(value, object)
+	_this.nextBuilder.BuildFromFloat(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBigFloat(value, object)
+	_this.nextBuilder.BuildFromBigFloat(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromDecimalFloat(value, object)
+	_this.nextBuilder.BuildFromDecimalFloat(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBigDecimalFloat(value, object)
+	_this.nextBuilder.BuildFromBigDecimalFloat(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromUUID(value, object)
+	_this.nextBuilder.BuildFromUUID(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromString(value, object)
+	_this.nextBuilder.BuildFromString(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBytes(value, object)
+	_this.nextBuilder.BuildFromBytes(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromURI(value, object)
+	_this.nextBuilder.BuildFromURI(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromTime(value, object)
+	_this.nextBuilder.BuildFromTime(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromCompactTime(value, object)
+	_this.nextBuilder.BuildFromCompactTime(value, object)
+	_this.nextBuilder = _this.elemBuilder
 	_this.storeValue(object)
 }
 
 func (_this *sliceBuilder) BuildBeginList() {
-	_this.elemBuilder.PrepareForListContents()
+	_this.nextBuilder.PrepareForListContents()
+	_this.nextBuilder = _this.elemBuilder
 }
 
 func (_this *sliceBuilder) BuildBeginMap() {
-	_this.elemBuilder.PrepareForMapContents()
+	_this.nextBuilder.PrepareForMapContents()
+	_this.nextBuilder = _this.elemBuilder
 }
 
 func (_this *sliceBuilder) BuildEndContainer() {
@@ -189,16 +212,53 @@ func (_this *sliceBuilder) BuildEndContainer() {
 	_this.parent.NotifyChildContainerFinished(object)
 }
 
+// Marker: next obj is ID, obj after that also gets stored to registry
+// Reference: next obj is ID, fetch and set obj from registry when available
+
+// To store marker, need:
+// - ID
+// - Value
+// - Registry
+
+// To store reference, need:
+// - ID
+// - ptr to zero value
+// - Registry
+
+// In registry:
+// NotifyMarker(id, value)
+// - store marker
+// - check for unmet references, set value
+// NotifyReference(id, ptr-to-zero-value)
+// - If marker exists, set value
+// - If marker absent, store reference
+// Rules about reference existing can be done in rules object
+
+// Fetch ID by hijacking root current builder with marker ID builder.
+// - marker ID builder has ptr to real builder, restores it after fetching ID
+// -- need wrapper around real builder that waits for real builder to build, then NotifyMarker with result
+// - where is ID kept during this?
+
+// build from reference:
+// - hijack to get ID
+// - set using zero value
+// - NotifyReference - need to pass in dst type?
+// - registry will set later
+
 func (_this *sliceBuilder) BuildFromMarker(id interface{}) {
+	//_this.nextBuilder = newMarkerBuilder(...)
+	// or maybe pass in builder?
 	panic("TODO: sliceBuilder.Marker")
 }
 
 func (_this *sliceBuilder) BuildFromReference(id interface{}) {
+	// Change this to "BuildFromObject" and just pass in finished object?
+	// Need a global slow-setter that accepts anything for anything
 	panic("TODO: sliceBuilder.Reference")
 }
 
 func (_this *sliceBuilder) PrepareForListContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *sliceBuilder) PrepareForMapContents() {
@@ -206,6 +266,6 @@ func (_this *sliceBuilder) PrepareForMapContents() {
 }
 
 func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 	_this.storeValue(value)
 }

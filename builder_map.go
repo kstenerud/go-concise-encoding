@@ -83,6 +83,10 @@ func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuild
 	return that
 }
 
+func (_this *mapBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *mapBuilder) reset() {
 	_this.container = reflect.MakeMap(_this.dstType)
 	_this.builderIndex = kvBuilderKey
@@ -217,10 +221,10 @@ func (_this *mapBuilder) PrepareForListContents() {
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *mapBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 	_this.storeValue(value)
 }

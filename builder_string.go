@@ -51,6 +51,9 @@ func (_this *stringBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 	return _this
 }
 
+func (_this *stringBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
 	// Go doesn't have the concept of a nil string.
 	dst.SetString("")

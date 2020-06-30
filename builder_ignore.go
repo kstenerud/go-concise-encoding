@@ -59,64 +59,68 @@ func (_this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 	}
 }
 
+func (_this *ignoreBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *ignoreBuilder) BuildFromNil(dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromString(value string, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildBeginList() {
@@ -181,6 +185,10 @@ func (_this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent
 		root:    root,
 		options: options,
 	}
+}
+
+func (_this *ignoreContainerBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
 }
 
 func (_this *ignoreContainerBuilder) BuildFromNil(dst reflect.Value) {
@@ -254,7 +262,7 @@ func (_this *ignoreContainerBuilder) BuildBeginMap() {
 }
 
 func (_this *ignoreContainerBuilder) BuildEndContainer() {
-	_this.root.setCurrentBuilder(_this.parent)
+	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreContainerBuilder) BuildFromMarker(id interface{}) {
@@ -266,11 +274,11 @@ func (_this *ignoreContainerBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *ignoreContainerBuilder) PrepareForListContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *ignoreContainerBuilder) PrepareForMapContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *ignoreContainerBuilder) NotifyChildContainerFinished(value reflect.Value) {

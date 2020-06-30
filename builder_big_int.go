@@ -49,6 +49,9 @@ func (_this *bigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 	return _this
 }
 
+func (_this *bigIntBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *bigIntBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(_this, typeBigInt, "Nil")
 }
@@ -141,6 +144,8 @@ func (_this *bigIntBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	builderPanicBadEvent(_this, typeBigInt, "NotifyChildContainerFinished")
 }
 
+// ============================================================================
+
 type pBigIntBuilder struct {
 }
 
@@ -157,6 +162,9 @@ func (_this *pBigIntBuilder) PostCacheInitBuilder() {
 
 func (_this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return _this
+}
+
+func (_this *pBigIntBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *pBigIntBuilder) BuildFromNil(dst reflect.Value) {

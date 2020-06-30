@@ -49,6 +49,9 @@ func (_this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 	return _this
 }
 
+func (_this *dfloatBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *dfloatBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(_this, typeDFloat, "Nil")
 }

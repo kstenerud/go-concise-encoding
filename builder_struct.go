@@ -102,6 +102,10 @@ func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 	return that
 }
 
+func (_this *structBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *structBuilder) reset() {
 	_this.nextBuilder = _this.nameBuilder
 	_this.container = reflect.New(_this.dstType).Elem()
@@ -170,7 +174,7 @@ func (_this *structBuilder) BuildFromString(value string, ignored reflect.Value)
 			_this.nextBuilder = builderDesc.builder
 			_this.nextValue = _this.container.Field(builderDesc.index)
 		} else {
-			_this.root.setCurrentBuilder(_this.ignoreBuilder)
+			_this.root.SetCurrentBuilder(_this.ignoreBuilder)
 			_this.nextBuilder = _this.ignoreBuilder
 			_this.nextIsIgnored = true
 			return
@@ -229,11 +233,11 @@ func (_this *structBuilder) PrepareForListContents() {
 }
 
 func (_this *structBuilder) PrepareForMapContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *structBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 	if _this.nextIsIgnored {
 		_this.nextIsIgnored = false
 		return

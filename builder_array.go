@@ -72,6 +72,10 @@ func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBui
 	return that
 }
 
+func (_this *arrayBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *arrayBuilder) reset() {
 	_this.container = reflect.New(_this.dstType).Elem()
 	_this.index = 0
@@ -179,7 +183,7 @@ func (_this *arrayBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *arrayBuilder) PrepareForListContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *arrayBuilder) PrepareForMapContents() {
@@ -187,12 +191,12 @@ func (_this *arrayBuilder) PrepareForMapContents() {
 }
 
 func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 	_this.currentElem().Set(value)
 	_this.index++
 }
 
-// Bytes array
+// ============================================================================
 
 type bytesArrayBuilder struct {
 }
@@ -212,6 +216,9 @@ func (_this *bytesArrayBuilder) PostCacheInitBuilder() {
 
 func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return _this
+}
+
+func (_this *bytesArrayBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *bytesArrayBuilder) BuildFromNil(ignored reflect.Value) {

@@ -67,6 +67,10 @@ func (_this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuil
 	}
 }
 
+func (_this *intfBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
+}
+
 func (_this *intfBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.Zero(builderIntfType))
 }
@@ -163,9 +167,7 @@ func (_this *intfBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.parent.NotifyChildContainerFinished(value)
 }
 
-// -----
-// Slice
-// -----
+// ============================================================================
 
 type intfSliceBuilder struct {
 	// Clone inserted data
@@ -196,6 +198,10 @@ func (_this *intfSliceBuilder) CloneFromTemplate(root *RootBuilder, parent Objec
 	}
 	that.reset()
 	return that
+}
+
+func (_this *intfSliceBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
 }
 
 func (_this *intfSliceBuilder) reset() {
@@ -295,7 +301,7 @@ func (_this *intfSliceBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *intfSliceBuilder) PrepareForListContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *intfSliceBuilder) PrepareForMapContents() {
@@ -303,13 +309,11 @@ func (_this *intfSliceBuilder) PrepareForMapContents() {
 }
 
 func (_this *intfSliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 	_this.storeRValue(value)
 }
 
-// ---
-// Map
-// ---
+// ============================================================================
 
 type intfIntfMapBuilder struct {
 	// Clone inserted data
@@ -342,6 +346,10 @@ func (_this *intfIntfMapBuilder) CloneFromTemplate(root *RootBuilder, parent Obj
 	}
 	that.reset()
 	return that
+}
+
+func (_this *intfIntfMapBuilder) SetParent(parent ObjectBuilder) {
+	_this.parent = parent
 }
 
 func (_this *intfIntfMapBuilder) reset() {
@@ -448,10 +456,10 @@ func (_this *intfIntfMapBuilder) PrepareForListContents() {
 }
 
 func (_this *intfIntfMapBuilder) PrepareForMapContents() {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 }
 
 func (_this *intfIntfMapBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.setCurrentBuilder(_this)
+	_this.root.SetCurrentBuilder(_this)
 	_this.storeValue(value)
 }

@@ -49,6 +49,9 @@ func (_this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent
 	return _this
 }
 
+func (_this *bigDecimalFloatBuilder) SetParent(parent ObjectBuilder) {
+}
+
 func (_this *bigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
 	builderPanicBadEvent(_this, typeBigDecimalFloat, "Nil")
 }
@@ -141,6 +144,8 @@ func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.
 	builderPanicBadEvent(_this, typeBigDecimalFloat, "NotifyChildContainerFinished")
 }
 
+// ============================================================================
+
 type pBigDecimalFloatBuilder struct {
 }
 
@@ -157,6 +162,9 @@ func (_this *pBigDecimalFloatBuilder) PostCacheInitBuilder() {
 
 func (_this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	return _this
+}
+
+func (_this *pBigDecimalFloatBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
