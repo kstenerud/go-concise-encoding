@@ -24,6 +24,8 @@ import (
 	"math/big"
 	"reflect"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/conversions"
 
 	"github.com/cockroachdb/apd/v2"
@@ -176,6 +178,10 @@ func setFloatFromUint(value uint64, dst reflect.Value) {
 	if uint64(dst.Float()) != value {
 		builderPanicCannotConvert(value, dst.Type())
 	}
+}
+
+func setFloatFromFloat(value float64, dst reflect.Value) {
+	dst.SetFloat(value)
 }
 
 func setFloatFromBigInt(value *big.Int, dst reflect.Value) {
@@ -430,4 +436,158 @@ func setPBigDecimalFloatFromBigFloat(value *big.Float, dst reflect.Value) {
 
 func setPBigDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(*value.APD()))
+}
+
+func setUintFromAnything(src reflect.Value, dst reflect.Value) {
+	switch src.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		setUintFromInt(src.Int(), dst)
+		return
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		setUintFromUint(src.Uint(), dst)
+		return
+	case reflect.Float32, reflect.Float64:
+		setUintFromFloat(src.Float(), dst)
+		return
+	case reflect.Interface:
+		setUintFromAnything(src.Elem(), dst)
+		return
+	case reflect.Struct:
+		switch src.Type() {
+		case common.TypeDFloat:
+			setUintFromDecimalFloat(src.Interface().(compact_float.DFloat), dst)
+			return
+		}
+	case reflect.Ptr:
+		switch src.Type() {
+		case common.TypePBigInt:
+			setUintFromBigInt(src.Interface().(*big.Int), dst)
+			return
+		case common.TypePBigFloat:
+			setUintFromBigFloat(src.Interface().(*big.Float), dst)
+			return
+		case common.TypePBigDecimalFloat:
+			setUintFromBigDecimalFloat(src.Interface().(*apd.Decimal), dst)
+			return
+		}
+		setUintFromAnything(src.Elem(), dst)
+		return
+	}
+	builderPanicCannotConvert(src, dst.Type())
+}
+
+func setIntFromAnything(src reflect.Value, dst reflect.Value) {
+	switch src.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		setIntFromInt(src.Int(), dst)
+		return
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		setIntFromUint(src.Uint(), dst)
+		return
+	case reflect.Float32, reflect.Float64:
+		setIntFromFloat(src.Float(), dst)
+		return
+	case reflect.Interface:
+		setIntFromAnything(src.Elem(), dst)
+		return
+	case reflect.Struct:
+		switch src.Type() {
+		case common.TypeDFloat:
+			setIntFromDecimalFloat(src.Interface().(compact_float.DFloat), dst)
+			return
+		}
+	case reflect.Ptr:
+		switch src.Type() {
+		case common.TypePBigInt:
+			setIntFromBigInt(src.Interface().(*big.Int), dst)
+			return
+		case common.TypePBigFloat:
+			setIntFromBigFloat(src.Interface().(*big.Float), dst)
+			return
+		case common.TypePBigDecimalFloat:
+			setIntFromBigDecimalFloat(src.Interface().(*apd.Decimal), dst)
+			return
+		}
+		setIntFromAnything(src.Elem(), dst)
+		return
+	}
+	builderPanicCannotConvert(src, dst.Type())
+}
+
+func setFloatFromAnything(src reflect.Value, dst reflect.Value) {
+	switch src.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		setFloatFromInt(src.Int(), dst)
+		return
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		setFloatFromUint(src.Uint(), dst)
+		return
+	case reflect.Float32, reflect.Float64:
+		setFloatFromFloat(src.Float(), dst)
+		return
+	case reflect.Interface:
+		setFloatFromAnything(src.Elem(), dst)
+		return
+	case reflect.Struct:
+		switch src.Type() {
+		case common.TypeDFloat:
+			setFloatFromDecimalFloat(src.Interface().(compact_float.DFloat), dst)
+			return
+		}
+	case reflect.Ptr:
+		switch src.Type() {
+		case common.TypePBigInt:
+			setFloatFromBigInt(src.Interface().(*big.Int), dst)
+			return
+		case common.TypePBigFloat:
+			setFloatFromBigFloat(src.Interface().(*big.Float), dst)
+			return
+		case common.TypePBigDecimalFloat:
+			setFloatFromBigDecimalFloat(src.Interface().(*apd.Decimal), dst)
+			return
+		}
+		setFloatFromAnything(src.Elem(), dst)
+		return
+	}
+	builderPanicCannotConvert(src, dst.Type())
+}
+
+func setAnythingFromAnything(src reflect.Value, dst reflect.Value) {
+	if src.Type() == dst.Type() {
+		dst.Set(src)
+		return
+	}
+
+	switch dst.Kind() {
+	case reflect.Bool:
+		if src.Kind() == reflect.Bool {
+			dst.SetBool(src.Bool())
+		}
+	case reflect.String:
+		if src.Kind() == reflect.String {
+			dst.SetString(src.String())
+		}
+	case reflect.Interface:
+		dst.Set(src)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		setUintFromAnything(src, dst)
+		return
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		setIntFromAnything(src, dst)
+		return
+	case reflect.Float32, reflect.Float64:
+		setFloatFromAnything(src, dst)
+		return
+	case reflect.Array:
+		panic("TODO: setAnythingFromAnything: Array")
+	case reflect.Slice:
+		panic("TODO: setAnythingFromAnything: Slice")
+	case reflect.Map:
+		panic("TODO: setAnythingFromAnything: Map")
+	case reflect.Struct:
+		panic("TODO: setAnythingFromAnything: Struct")
+	case reflect.Ptr:
+		panic("TODO: setAnythingFromAnything: Ptr")
+	}
+	builderPanicCannotConvert(src, dst.Type())
 }

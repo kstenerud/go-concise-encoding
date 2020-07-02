@@ -142,10 +142,10 @@ func (_this *intfBuilder) BuildBeginMap() {
 }
 
 func (_this *intfBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, builderIntfType, "ContainerEnd")
+	builderPanicBadEventType(_this, builderIntfType, "ContainerEnd")
 }
 
-func (_this *intfBuilder) BuildFromMarker(id interface{}) {
+func (_this *intfBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: intfBuilder.Marker")
 }
 
@@ -292,7 +292,7 @@ func (_this *intfSliceBuilder) BuildEndContainer() {
 	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (_this *intfSliceBuilder) BuildFromMarker(id interface{}) {
+func (_this *intfSliceBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: intfSliceBuilder.Marker")
 }
 
@@ -305,7 +305,7 @@ func (_this *intfSliceBuilder) PrepareForListContents() {
 }
 
 func (_this *intfSliceBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, builderIntfType, "PrepareForMapContents")
+	builderPanicBadEventType(_this, builderIntfType, "PrepareForMapContents")
 }
 
 func (_this *intfSliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -443,7 +443,7 @@ func (_this *intfIntfMapBuilder) BuildEndContainer() {
 	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (_this *intfIntfMapBuilder) BuildFromMarker(id interface{}) {
+func (_this *intfIntfMapBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: intfIntfMapBuilder.Marker")
 }
 
@@ -452,7 +452,7 @@ func (_this *intfIntfMapBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *intfIntfMapBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, builderIntfType, "PrepareForListContents")
+	builderPanicBadEventType(_this, builderIntfType, "PrepareForListContents")
 }
 
 func (_this *intfIntfMapBuilder) PrepareForMapContents() {

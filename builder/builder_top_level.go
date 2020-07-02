@@ -21,7 +21,6 @@
 package builder
 
 import (
-	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -47,79 +46,81 @@ func newTopLevelContainerBuilder(root *RootBuilder, builder ObjectBuilder) Objec
 }
 
 func (_this *topLevelContainerBuilder) IsContainerOnly() bool {
-	panic(fmt.Errorf("BUG: IsContainerOnly should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "IsContainerOnly")
+	return false
 }
 
 func (_this *topLevelContainerBuilder) PostCacheInitBuilder() {
-	panic(fmt.Errorf("BUG: PostCacheInitBuilder should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
 
 func (_this *topLevelContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "CloneFromTemplate")
+	return nil
 }
 
 func (_this *topLevelContainerBuilder) SetParent(parent ObjectBuilder) {
-	panic(fmt.Errorf("BUG: SetParent should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "SetParent")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromNil(dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromNil should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Nil")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBool should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Bool")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromInt should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Int")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromUint should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Uint")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBigInt should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "BigInt")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromFloat should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Float")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBigFloat should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "BigFloat")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromDecimalFloat should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "DecimalFloat")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBigDecimalFloat should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "BigDecimalFloat")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromUUID should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "UUID")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromString(value string, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromString should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "String")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBytes should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Bytes")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromURI should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "URI")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromTime should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "Time")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	panic(fmt.Errorf("BUG: topLevelContainerBuilder should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "CompactTime")
 }
 
 func (_this *topLevelContainerBuilder) BuildBeginList() {
@@ -133,23 +134,23 @@ func (_this *topLevelContainerBuilder) BuildBeginMap() {
 }
 
 func (_this *topLevelContainerBuilder) BuildEndContainer() {
-	panic(fmt.Errorf("BUG: BuildEndContainer should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "End")
 }
 
 func (_this *topLevelContainerBuilder) PrepareForListContents() {
-	panic(fmt.Errorf("BUG: PrepareForListContents should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *topLevelContainerBuilder) PrepareForMapContents() {
-	panic(fmt.Errorf("BUG: PrepareForMapContents should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *topLevelContainerBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	panic(fmt.Errorf("BUG: NotifyChildContainerFinished should never be called on topLevelContainerBuilder"))
+	builderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
-func (_this *topLevelContainerBuilder) BuildFromMarker(id interface{}) {
-	panic("TODO: BuildFromMarker")
+func (_this *topLevelContainerBuilder) BuildBeginMarker(id interface{}) {
+	panic("TODO: BuildBeginMarker")
 }
 
 func (_this *topLevelContainerBuilder) BuildFromReference(id interface{}) {

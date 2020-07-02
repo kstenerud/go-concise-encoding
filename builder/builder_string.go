@@ -62,39 +62,39 @@ func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
 }
 
 func (_this *stringBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "Bool")
+	builderPanicBadEventType(_this, common.TypeString, "Bool")
 }
 
 func (_this *stringBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "Int")
+	builderPanicBadEventType(_this, common.TypeString, "Int")
 }
 
 func (_this *stringBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "Uint")
+	builderPanicBadEventType(_this, common.TypeString, "Uint")
 }
 
 func (_this *stringBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "BigInt")
+	builderPanicBadEventType(_this, common.TypeString, "BigInt")
 }
 
 func (_this *stringBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "Float")
+	builderPanicBadEventType(_this, common.TypeString, "Float")
 }
 
 func (_this *stringBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "BigFloat")
+	builderPanicBadEventType(_this, common.TypeString, "BigFloat")
 }
 
 func (_this *stringBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "DecimalFloat")
+	builderPanicBadEventType(_this, common.TypeString, "DecimalFloat")
 }
 
 func (_this *stringBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "BigDecimalFloat")
+	builderPanicBadEventType(_this, common.TypeString, "BigDecimalFloat")
 }
 
 func (_this *stringBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "UUID")
+	builderPanicBadEventType(_this, common.TypeString, "UUID")
 }
 
 func (_this *stringBuilder) BuildFromString(value string, dst reflect.Value) {
@@ -102,34 +102,34 @@ func (_this *stringBuilder) BuildFromString(value string, dst reflect.Value) {
 }
 
 func (_this *stringBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "Bytes")
+	builderPanicBadEventType(_this, common.TypeString, "Bytes")
 }
 
 func (_this *stringBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "URI")
+	builderPanicBadEventType(_this, common.TypeString, "URI")
 }
 
 func (_this *stringBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "Time")
+	builderPanicBadEventType(_this, common.TypeString, "Time")
 }
 
 func (_this *stringBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "CompactTime")
+	builderPanicBadEventType(_this, common.TypeString, "CompactTime")
 }
 
 func (_this *stringBuilder) BuildBeginList() {
-	builderPanicBadEvent(_this, common.TypeString, "List")
+	builderPanicBadEventType(_this, common.TypeString, "List")
 }
 
 func (_this *stringBuilder) BuildBeginMap() {
-	builderPanicBadEvent(_this, common.TypeString, "Map")
+	builderPanicBadEventType(_this, common.TypeString, "Map")
 }
 
 func (_this *stringBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, common.TypeString, "ContainerEnd")
+	builderPanicBadEventType(_this, common.TypeString, "ContainerEnd")
 }
 
-func (_this *stringBuilder) BuildFromMarker(id interface{}) {
+func (_this *stringBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: stringBuilder.Marker")
 }
 
@@ -138,13 +138,13 @@ func (_this *stringBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *stringBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, common.TypeString, "PrepareForListContents")
+	builderPanicBadEventType(_this, common.TypeString, "PrepareForListContents")
 }
 
 func (_this *stringBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, common.TypeString, "PrepareForMapContents")
+	builderPanicBadEventType(_this, common.TypeString, "PrepareForMapContents")
 }
 
 func (_this *stringBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeString, "NotifyChildContainerFinished")
+	builderPanicBadEventType(_this, common.TypeString, "NotifyChildContainerFinished")
 }

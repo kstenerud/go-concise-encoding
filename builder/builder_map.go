@@ -208,7 +208,7 @@ func (_this *mapBuilder) BuildEndContainer() {
 	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (_this *mapBuilder) BuildFromMarker(id interface{}) {
+func (_this *mapBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: mapBuilder.Marker")
 }
 
@@ -217,7 +217,7 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *mapBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, builderIntfType, "PrepareForListContents")
+	builderPanicBadEventType(_this, builderIntfType, "PrepareForListContents")
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {

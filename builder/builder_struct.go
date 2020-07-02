@@ -220,7 +220,7 @@ func (_this *structBuilder) BuildEndContainer() {
 	_this.parent.NotifyChildContainerFinished(object)
 }
 
-func (_this *structBuilder) BuildFromMarker(id interface{}) {
+func (_this *structBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: structBuilder.Marker")
 }
 
@@ -229,7 +229,7 @@ func (_this *structBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *structBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
+	builderPanicBadEventType(_this, _this.dstType, "PrepareForListContents")
 }
 
 func (_this *structBuilder) PrepareForMapContents() {

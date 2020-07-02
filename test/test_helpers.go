@@ -84,7 +84,7 @@ func NewURL(str string) *url.URL {
 func NewURI(uriString string) *url.URL {
 	uri, err := url.Parse(uriString)
 	if err != nil {
-		fmt.Printf("ERROR ERROR ERROR BUG: Bad URL (%v): %v", uriString, err)
+		fmt.Printf("TEST CODE BUG: Bad URL (%v): %v", uriString, err)
 		panic(err)
 	}
 	return uri
@@ -469,7 +469,7 @@ func EventForValue(value interface{}) *TEvent {
 			return URI(v.String())
 		}
 	}
-	panic(fmt.Errorf("Testing BUG: Unhandled kind: %v", rv.Kind()))
+	panic(fmt.Errorf("TEST CODE BUG: Unhandled kind: %v", rv.Kind()))
 }
 
 type TER struct {

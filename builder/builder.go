@@ -84,7 +84,7 @@ type ObjectBuilder interface {
 	BuildBeginList()
 	BuildBeginMap()
 	BuildEndContainer()
-	BuildFromMarker(id interface{})
+	BuildBeginMarker(id interface{})
 	BuildFromReference(id interface{})
 
 	IsContainerOnly() bool
@@ -133,8 +133,12 @@ func init() {
 	}
 }
 
-func builderPanicBadEvent(builder ObjectBuilder, dstType reflect.Type, containerMsg string) {
-	panic(fmt.Errorf(`BUG: %v with type %v cannot respond to event "%v"`, reflect.TypeOf(builder), dstType, containerMsg))
+func builderPanicBadEvent(builder ObjectBuilder, event string) {
+	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), event))
+}
+
+func builderPanicBadEventType(builder ObjectBuilder, dstType reflect.Type, event string) {
+	panic(fmt.Errorf(`BUG: %v with type %v cannot respond to %v`, reflect.TypeOf(builder), dstType, event))
 }
 
 func builderPanicCannotConvert(value interface{}, dstType reflect.Type) {

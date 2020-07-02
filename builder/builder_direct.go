@@ -59,7 +59,7 @@ func (_this *directBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *directBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Nil")
+	builderPanicBadEventType(_this, _this.dstType, "Nil")
 }
 
 func (_this *directBuilder) BuildFromBool(value bool, dst reflect.Value) {
@@ -67,31 +67,31 @@ func (_this *directBuilder) BuildFromBool(value bool, dst reflect.Value) {
 }
 
 func (_this *directBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Int")
+	builderPanicBadEventType(_this, _this.dstType, "Int")
 }
 
 func (_this *directBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Uint")
+	builderPanicBadEventType(_this, _this.dstType, "Uint")
 }
 
 func (_this *directBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "BigInt")
+	builderPanicBadEventType(_this, _this.dstType, "BigInt")
 }
 
 func (_this *directBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Float")
+	builderPanicBadEventType(_this, _this.dstType, "Float")
 }
 
 func (_this *directBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "BigFloat")
+	builderPanicBadEventType(_this, _this.dstType, "BigFloat")
 }
 
 func (_this *directBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "DecimalFloat")
+	builderPanicBadEventType(_this, _this.dstType, "DecimalFloat")
 }
 
 func (_this *directBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "BigDecimalFloat")
+	builderPanicBadEventType(_this, _this.dstType, "BigDecimalFloat")
 }
 
 func (_this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
@@ -103,7 +103,7 @@ func (_this *directBuilder) BuildFromString(value string, dst reflect.Value) {
 }
 
 func (_this *directBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Bytes")
+	builderPanicBadEventType(_this, _this.dstType, "Bytes")
 }
 
 func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
@@ -119,19 +119,19 @@ func (_this *directBuilder) BuildFromCompactTime(value *compact_time.Time, dst r
 }
 
 func (_this *directBuilder) BuildBeginList() {
-	builderPanicBadEvent(_this, _this.dstType, "List")
+	builderPanicBadEventType(_this, _this.dstType, "List")
 }
 
 func (_this *directBuilder) BuildBeginMap() {
-	builderPanicBadEvent(_this, _this.dstType, "Map")
+	builderPanicBadEventType(_this, _this.dstType, "Map")
 }
 
 func (_this *directBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
+	builderPanicBadEventType(_this, _this.dstType, "ContainerEnd")
 }
 
-func (_this *directBuilder) BuildFromMarker(id interface{}) {
-	panic("TODO: directBuilder.BuildFromMarker")
+func (_this *directBuilder) BuildBeginMarker(id interface{}) {
+	panic("TODO: directBuilder.BuildBeginMarker")
 }
 
 func (_this *directBuilder) BuildFromReference(id interface{}) {
@@ -139,15 +139,15 @@ func (_this *directBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *directBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
+	builderPanicBadEventType(_this, _this.dstType, "PrepareForListContents")
 }
 
 func (_this *directBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
+	builderPanicBadEventType(_this, _this.dstType, "PrepareForMapContents")
 }
 
 func (_this *directBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
+	builderPanicBadEventType(_this, _this.dstType, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -184,35 +184,35 @@ func (_this *directPtrBuilder) BuildFromNil(dst reflect.Value) {
 }
 
 func (_this *directPtrBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Bool")
+	builderPanicBadEventType(_this, _this.dstType, "Bool")
 }
 
 func (_this *directPtrBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Int")
+	builderPanicBadEventType(_this, _this.dstType, "Int")
 }
 
 func (_this *directPtrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Uint")
+	builderPanicBadEventType(_this, _this.dstType, "Uint")
 }
 
 func (_this *directPtrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "BigInt")
+	builderPanicBadEventType(_this, _this.dstType, "BigInt")
 }
 
 func (_this *directPtrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "Float")
+	builderPanicBadEventType(_this, _this.dstType, "Float")
 }
 
 func (_this *directPtrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "BigFloat")
+	builderPanicBadEventType(_this, _this.dstType, "BigFloat")
 }
 
 func (_this *directPtrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "DecimalFloat")
+	builderPanicBadEventType(_this, _this.dstType, "DecimalFloat")
 }
 
 func (_this *directPtrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "BigDecimalFloat")
+	builderPanicBadEventType(_this, _this.dstType, "BigDecimalFloat")
 }
 
 func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
@@ -222,7 +222,7 @@ func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 func (_this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) {
 	// String needs special handling since there's no such thing as a nil string
 	// in go.
-	builderPanicBadEvent(_this, _this.dstType, "String")
+	builderPanicBadEventType(_this, _this.dstType, "String")
 }
 
 func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
@@ -243,19 +243,19 @@ func (_this *directPtrBuilder) BuildFromCompactTime(value *compact_time.Time, ds
 }
 
 func (_this *directPtrBuilder) BuildBeginList() {
-	builderPanicBadEvent(_this, _this.dstType, "List")
+	builderPanicBadEventType(_this, _this.dstType, "List")
 }
 
 func (_this *directPtrBuilder) BuildBeginMap() {
-	builderPanicBadEvent(_this, _this.dstType, "Map")
+	builderPanicBadEventType(_this, _this.dstType, "Map")
 }
 
 func (_this *directPtrBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
+	builderPanicBadEventType(_this, _this.dstType, "ContainerEnd")
 }
 
-func (_this *directPtrBuilder) BuildFromMarker(id interface{}) {
-	panic("TODO: directPtrBuilder.BuildFromMarker")
+func (_this *directPtrBuilder) BuildBeginMarker(id interface{}) {
+	panic("TODO: directPtrBuilder.BuildBeginMarker")
 }
 
 func (_this *directPtrBuilder) BuildFromReference(id interface{}) {
@@ -263,13 +263,13 @@ func (_this *directPtrBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *directPtrBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, _this.dstType, "PrepareForListContents")
+	builderPanicBadEventType(_this, _this.dstType, "PrepareForListContents")
 }
 
 func (_this *directPtrBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
+	builderPanicBadEventType(_this, _this.dstType, "PrepareForMapContents")
 }
 
 func (_this *directPtrBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
+	builderPanicBadEventType(_this, _this.dstType, "NotifyChildContainerFinished")
 }

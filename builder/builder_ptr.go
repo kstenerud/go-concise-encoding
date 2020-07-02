@@ -162,18 +162,18 @@ func (_this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst refl
 }
 
 func (_this *ptrBuilder) BuildBeginList() {
-	builderPanicBadEvent(_this, _this.dstType, "List")
+	builderPanicBadEventType(_this, _this.dstType, "List")
 }
 
 func (_this *ptrBuilder) BuildBeginMap() {
-	builderPanicBadEvent(_this, _this.dstType, "Map")
+	builderPanicBadEventType(_this, _this.dstType, "Map")
 }
 
 func (_this *ptrBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, _this.dstType, "ContainerEnd")
+	builderPanicBadEventType(_this, _this.dstType, "ContainerEnd")
 }
 
-func (_this *ptrBuilder) BuildFromMarker(id interface{}) {
+func (_this *ptrBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: ptrBuilder.Marker")
 }
 

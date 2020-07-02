@@ -1133,6 +1133,15 @@ func TestBuilderByteArrayBytes(t *testing.T) {
 		BIN([]byte{1, 2}))
 }
 
+func TestBuilderMarker(t *testing.T) {
+	assertBuild(t, []int{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
+	assertBuild(t, []string{"abcdef", "abcdef"}, L(), MARK(), PI(1), S("abcdef"), REF(), PI(1), E())
+
+	assertBuild(t, [][]int{[]int{100, 100}, []int{100}},
+		L(), L(), REF(), PI(1), REF(), PI(1), E(),
+		L(), MARK(), PI(1), PI(100), E(), E())
+}
+
 // TODO: Self-referential struct
 // type SelfReferential struct {
 // 	Self *SelfReferential

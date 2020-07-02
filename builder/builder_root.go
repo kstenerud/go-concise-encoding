@@ -21,7 +21,6 @@
 package builder
 
 import (
-	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -62,6 +61,7 @@ func (_this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
 		builder = newTopLevelContainerBuilder(_this, builder)
 	}
 	_this.currentBuilder = builder
+	_this.markerRegistry.Init()
 }
 
 func (_this *RootBuilder) GetMarkerRegistry() *MarkerRegistry {
@@ -96,83 +96,85 @@ func (_this *RootBuilder) SetCurrentBuilder(builder ObjectBuilder) {
 // -------------
 
 func (_this *RootBuilder) IsContainerOnly() bool {
-	panic(fmt.Errorf("BUG: IsContainerOnly should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "IsContainerOnly")
+	return false
 }
 
 func (_this *RootBuilder) PostCacheInitBuilder() {
-	panic(fmt.Errorf("BUG: PostCacheInitBuilder should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
 func (_this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *BuilderOptions) ObjectBuilder {
-	panic(fmt.Errorf("BUG: CloneFromTemplate should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "CloneFromTemplate")
+	return nil
 }
 func (_this *RootBuilder) SetParent(parent ObjectBuilder) {
-	panic(fmt.Errorf("BUG: SetParent should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "SetParent")
 }
 func (_this *RootBuilder) BuildFromNil(_ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromNil should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Nil")
 }
 func (_this *RootBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBool should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Bool")
 }
 func (_this *RootBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromInt should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Int")
 }
 func (_this *RootBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromUint should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Uint")
 }
 func (_this *RootBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBigInt should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "BigInt")
 }
 func (_this *RootBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromFloat should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Float")
 }
 func (_this *RootBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBigFloat should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "BigFloat")
 }
 func (_this *RootBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromDecimalFloat should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Float")
 }
 func (_this *RootBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBigDecimalFloat should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "DecimalFloat")
 }
 func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromUUID should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "UUID")
 }
 func (_this *RootBuilder) BuildFromString(_ string, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromString should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "String")
 }
 func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromBytes should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Bytes")
 }
 func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromURI should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "URI")
 }
 func (_this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromTime should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Time")
 }
 func (_this *RootBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	panic(fmt.Errorf("BUG: BuildFromCompactTime should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "CompactTime")
 }
 func (_this *RootBuilder) BuildBeginList() {
-	panic(fmt.Errorf("BUG: BuildBeginList should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "List")
 }
 func (_this *RootBuilder) BuildBeginMap() {
-	panic(fmt.Errorf("BUG: BuildBeginMap should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Map")
 }
 func (_this *RootBuilder) BuildEndContainer() {
-	panic(fmt.Errorf("BUG: BuildEndContainer should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "End")
 }
-func (_this *RootBuilder) BuildFromMarker(_ interface{}) {
-	panic(fmt.Errorf("BUG: BuildFromMarker should never be called on RootBuilder"))
+func (_this *RootBuilder) BuildBeginMarker(_ interface{}) {
+	builderPanicBadEvent(_this, "Marker")
 }
 func (_this *RootBuilder) BuildFromReference(_ interface{}) {
-	panic(fmt.Errorf("BUG: BuildFromReference should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "Reference")
 }
 func (_this *RootBuilder) PrepareForListContents() {
-	panic(fmt.Errorf("BUG: PrepareForListContents should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "PrepareForListContents")
 }
 func (_this *RootBuilder) PrepareForMapContents() {
-	panic(fmt.Errorf("BUG: PrepareForMapContents should never be called on RootBuilder"))
+	builderPanicBadEvent(_this, "PrepareForMapContents")
 }
 func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.object = value
@@ -298,10 +300,18 @@ func (_this *RootBuilder) OnEnd() {
 	_this.currentBuilder.BuildEndContainer()
 }
 func (_this *RootBuilder) OnMarker() {
-	panic("TODO: RootBuilder.OnMarker")
+	originalBuilder := _this.currentBuilder
+	_this.currentBuilder = newMarkerIDBuilder(func(id interface{}) {
+		_this.currentBuilder = originalBuilder
+		_this.currentBuilder.BuildBeginMarker(id)
+	})
 }
 func (_this *RootBuilder) OnReference() {
-	panic("TODO: RootBuilder.OnReference")
+	originalBuilder := _this.currentBuilder
+	_this.currentBuilder = newMarkerIDBuilder(func(id interface{}) {
+		_this.currentBuilder = originalBuilder
+		_this.currentBuilder.BuildFromReference(id)
+	})
 }
 func (_this *RootBuilder) OnEndDocument() {
 	// Nothing to do

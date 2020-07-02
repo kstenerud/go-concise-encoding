@@ -26,8 +26,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -136,10 +134,10 @@ func (_this *ignoreBuilder) BuildBeginMap() {
 }
 
 func (_this *ignoreBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, common.TypeNone, "End")
+	builderPanicBadEvent(_this, "End")
 }
 
-func (_this *ignoreBuilder) BuildFromMarker(id interface{}) {
+func (_this *ignoreBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: ignoreBuilder.Marker")
 }
 
@@ -148,15 +146,15 @@ func (_this *ignoreBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *ignoreBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, common.TypeNone, "PrepareForListContents")
+	builderPanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *ignoreBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, common.TypeNone, "PrepareForMapContents")
+	builderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "NotifyChildContainerFinished")
+	builderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -267,7 +265,7 @@ func (_this *ignoreContainerBuilder) BuildEndContainer() {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreContainerBuilder) BuildFromMarker(id interface{}) {
+func (_this *ignoreContainerBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: ignoreContainerBuilder.Marker")
 }
 

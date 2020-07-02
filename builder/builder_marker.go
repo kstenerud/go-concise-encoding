@@ -33,170 +33,143 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-func BeginMarkerBuilder(parentBuilder ObjectBuilder, childBuilder ObjectBuilder, root *RootBuilder, options *BuilderOptions) {
-	marker := &markerNameBuilder{
-		root:    root,
-		parent:  parentBuilder,
-		options: options,
-		child:   childBuilder,
+type markerIDBuilder struct {
+	onID func(interface{})
+}
+
+func newMarkerIDBuilder(onID func(interface{})) *markerIDBuilder {
+	return &markerIDBuilder{
+		onID: onID,
 	}
-
-	root.SetCurrentBuilder(marker)
 }
 
-type markerNameBuilder struct {
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *BuilderOptions
-
-	// Variable data (must be reset)
-	child ObjectBuilder
-	name  interface{}
-}
-
-func (_this *markerNameBuilder) IsContainerOnly() bool {
+func (_this *markerIDBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *markerNameBuilder) PostCacheInitBuilder() {
+func (_this *markerIDBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *markerNameBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return &markerNameBuilder{
-		parent:  parent,
-		root:    root,
-		options: options,
-	}
+func (_this *markerIDBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+	builderPanicBadEvent(_this, "CloneFromTemplate")
+	return nil
 }
 
-func (_this *markerNameBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
+func (_this *markerIDBuilder) SetParent(parent ObjectBuilder) {
 }
 
-func (_this *markerNameBuilder) prepareForMarkerObject(name interface{}) {
-	mob := &markerObjectBuilder{
-		root:           _this.root,
-		parent:         _this.parent,
-		options:        _this.options,
-		name:           name,
-		child:          _this.child,
-		markerRegistry: _this.root.GetMarkerRegistry(),
-	}
-	_this.child.SetParent(mob)
-	_this.root.SetCurrentBuilder(mob)
+func (_this *markerIDBuilder) BuildFromNil(dst reflect.Value) {
+	builderPanicBadEvent(_this, "Nil")
 }
 
-func (_this *markerNameBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Nil")
+func (_this *markerIDBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	builderPanicBadEvent(_this, "Bool")
 }
 
-func (_this *markerNameBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Bool")
-}
-
-func (_this *markerNameBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	if value < 0 {
-		builderPanicBadEvent(_this, common.TypeNone, "Int")
+		builderPanicBadEvent(_this, "Int")
 	}
-	_this.prepareForMarkerObject(value)
+	_this.onID(value)
 }
 
-func (_this *markerNameBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	_this.prepareForMarkerObject(value)
+func (_this *markerIDBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	_this.onID(value)
 }
 
-func (_this *markerNameBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	if common.IsBigIntNegative(value) || !value.IsUint64() {
-		builderPanicBadEvent(_this, common.TypeNone, "BigInt")
+		builderPanicBadEvent(_this, "BigInt")
 	}
-	_this.prepareForMarkerObject(value.Uint64())
+	_this.onID(value.Uint64())
 }
 
-func (_this *markerNameBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Float")
+func (_this *markerIDBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	builderPanicBadEvent(_this, "Float")
 }
 
-func (_this *markerNameBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "BigFloat")
+func (_this *markerIDBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	builderPanicBadEvent(_this, "BigFloat")
 }
 
-func (_this *markerNameBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "DecimalFloat")
+func (_this *markerIDBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	builderPanicBadEvent(_this, "DecimalFloat")
 }
 
-func (_this *markerNameBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "BigDecimalFloat")
+func (_this *markerIDBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	builderPanicBadEvent(_this, "BigDecimalFloat")
 }
 
-func (_this *markerNameBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "UUID")
+func (_this *markerIDBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, "UUID")
 }
 
-func (_this *markerNameBuilder) BuildFromString(value string, dst reflect.Value) {
-	_this.prepareForMarkerObject(value)
+func (_this *markerIDBuilder) BuildFromString(value string, dst reflect.Value) {
+	_this.onID(value)
 }
 
-func (_this *markerNameBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Bytes")
+func (_this *markerIDBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	builderPanicBadEvent(_this, "Bytes")
 }
 
-func (_this *markerNameBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "URI")
+func (_this *markerIDBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	builderPanicBadEvent(_this, "URI")
 }
 
-func (_this *markerNameBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Time")
+func (_this *markerIDBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, "Time")
 }
 
-func (_this *markerNameBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "CompactTime")
+func (_this *markerIDBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	builderPanicBadEvent(_this, "CompactTime")
 }
 
-func (_this *markerNameBuilder) BuildBeginList() {
-	builderPanicBadEvent(_this, common.TypeNone, "List")
+func (_this *markerIDBuilder) BuildBeginList() {
+	builderPanicBadEvent(_this, "List")
 }
 
-func (_this *markerNameBuilder) BuildBeginMap() {
-	builderPanicBadEvent(_this, common.TypeNone, "Map")
+func (_this *markerIDBuilder) BuildBeginMap() {
+	builderPanicBadEvent(_this, "Map")
 }
 
-func (_this *markerNameBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, common.TypeNone, "End")
+func (_this *markerIDBuilder) BuildEndContainer() {
+	builderPanicBadEvent(_this, "End")
 }
 
-func (_this *markerNameBuilder) BuildFromMarker(id interface{}) {
-	panic("TODO: markerNameBuilder.Marker")
+func (_this *markerIDBuilder) BuildBeginMarker(id interface{}) {
+	builderPanicBadEvent(_this, "Marker")
 }
 
-func (_this *markerNameBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: markerNameBuilder.Reference")
+func (_this *markerIDBuilder) BuildFromReference(id interface{}) {
+	builderPanicBadEvent(_this, "Reference")
 }
 
-func (_this *markerNameBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, common.TypeNone, "PrepareForListContents")
+func (_this *markerIDBuilder) PrepareForListContents() {
+	builderPanicBadEvent(_this, "PrepareForListContents")
 }
 
-func (_this *markerNameBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, common.TypeNone, "PrepareForMapContents")
+func (_this *markerIDBuilder) PrepareForMapContents() {
+	builderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
-func (_this *markerNameBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "NotifyChildContainerFinished")
+func (_this *markerIDBuilder) NotifyChildContainerFinished(value reflect.Value) {
+	builderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
 
 type markerObjectBuilder struct {
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *BuilderOptions
+	parent           ObjectBuilder
+	child            ObjectBuilder
+	onObjectComplete func(reflect.Value)
+}
 
-	// Variable data (must be reset)
-	name           interface{}
-	child          ObjectBuilder
-	markerRegistry *MarkerRegistry
+func newMarkerObjectBuilder(parent, child ObjectBuilder, onObjectComplete func(reflect.Value)) *markerObjectBuilder {
+	return &markerObjectBuilder{
+		parent:           parent,
+		child:            child,
+		onObjectComplete: onObjectComplete,
+	}
 }
 
 func (_this *markerObjectBuilder) IsContainerOnly() bool {
@@ -207,11 +180,8 @@ func (_this *markerObjectBuilder) PostCacheInitBuilder() {
 }
 
 func (_this *markerObjectBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	return &markerObjectBuilder{
-		parent:  parent,
-		root:    root,
-		options: options,
-	}
+	builderPanicBadEvent(_this, "CloneFromTemplate")
+	return nil
 }
 
 func (_this *markerObjectBuilder) SetParent(parent ObjectBuilder) {
@@ -220,99 +190,109 @@ func (_this *markerObjectBuilder) SetParent(parent ObjectBuilder) {
 
 func (_this *markerObjectBuilder) BuildFromNil(dst reflect.Value) {
 	_this.child.BuildFromNil(dst)
-	_this.markerRegistry.NotifyMarker(_this.name, dst.Interface())
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Bool")
+	_this.child.BuildFromBool(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	if value < 0 {
-		builderPanicBadEvent(_this, common.TypeNone, "Int")
-	}
-	panic("TODO: markerObjectBuilder.BuildFromInt")
+	_this.child.BuildFromInt(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	panic("TODO: markerObjectBuilder.BuildFromUint")
+	_this.child.BuildFromUint(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	if common.IsBigIntNegative(value) {
-		builderPanicBadEvent(_this, common.TypeNone, "BigInt")
-	}
-	panic("TODO: markerObjectBuilder.BuildFromBigInt")
+	_this.child.BuildFromBigInt(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Float")
+	_this.child.BuildFromFloat(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "BigFloat")
+	_this.child.BuildFromBigFloat(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "DecimalFloat")
+	_this.child.BuildFromDecimalFloat(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "BigDecimalFloat")
+	_this.child.BuildFromBigDecimalFloat(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "UUID")
+	_this.child.BuildFromUUID(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromString(value string, dst reflect.Value) {
-	panic("TODO: markerObjectBuilder.BuildFromString")
+	_this.child.BuildFromString(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Bytes")
+	_this.child.BuildFromBytes(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "URI")
+	_this.child.BuildFromURI(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "Time")
+	_this.child.BuildFromTime(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "CompactTime")
+	_this.child.BuildFromCompactTime(value, dst)
+	_this.onObjectComplete(dst)
 }
 
 func (_this *markerObjectBuilder) BuildBeginList() {
-	builderPanicBadEvent(_this, common.TypeNone, "List")
+	builderPanicBadEvent(_this, "List")
 }
 
 func (_this *markerObjectBuilder) BuildBeginMap() {
-	builderPanicBadEvent(_this, common.TypeNone, "Map")
+	builderPanicBadEvent(_this, "Map")
 }
 
 func (_this *markerObjectBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, common.TypeNone, "End")
+	builderPanicBadEvent(_this, "End")
 }
 
-func (_this *markerObjectBuilder) BuildFromMarker(id interface{}) {
-	panic("TODO: markerObjectBuilder.Marker")
+func (_this *markerObjectBuilder) BuildBeginMarker(id interface{}) {
+	builderPanicBadEvent(_this, "Marker")
 }
 
 func (_this *markerObjectBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: markerObjectBuilder.Reference")
+	builderPanicBadEvent(_this, "Reference")
 }
 
 func (_this *markerObjectBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, common.TypeNone, "PrepareForListContents")
+	_this.child.PrepareForListContents()
 }
 
 func (_this *markerObjectBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, common.TypeNone, "PrepareForMapContents")
+	_this.child.PrepareForMapContents()
 }
 
 func (_this *markerObjectBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, common.TypeNone, "NotifyChildContainerFinished")
+	_this.onObjectComplete(value)
+	_this.child.SetParent(_this.parent)
+	_this.parent.NotifyChildContainerFinished(value)
 }
