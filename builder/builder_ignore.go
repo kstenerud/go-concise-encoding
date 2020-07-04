@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -42,6 +43,10 @@ var globalIgnoreBuilder = &ignoreBuilder{}
 
 func newIgnoreBuilder() ObjectBuilder {
 	return globalIgnoreBuilder
+}
+
+func (_this *ignoreBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *ignoreBuilder) IsContainerOnly() bool {
@@ -170,6 +175,10 @@ var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
 
 func newIgnoreContainerBuilder() ObjectBuilder {
 	return globalIgnoreContainerBuilder
+}
+
+func (_this *ignoreContainerBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *ignoreContainerBuilder) IsContainerOnly() bool {

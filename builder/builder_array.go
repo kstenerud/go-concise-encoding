@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -53,6 +54,10 @@ func newArrayBuilder(dstType reflect.Type) ObjectBuilder {
 	return &arrayBuilder{
 		dstType: dstType,
 	}
+}
+
+func (_this *arrayBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
 func (_this *arrayBuilder) IsContainerOnly() bool {
@@ -207,6 +212,10 @@ var globalBytesArrayBuilder bytesArrayBuilder
 
 func newBytesArrayBuilder() ObjectBuilder {
 	return &globalBytesArrayBuilder
+}
+
+func (_this *bytesArrayBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *bytesArrayBuilder) IsContainerOnly() bool {

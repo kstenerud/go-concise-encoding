@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -38,6 +39,10 @@ type bigDecimalFloatBuilder struct {
 
 func newBigDecimalFloatBuilder() ObjectBuilder {
 	return &bigDecimalFloatBuilder{}
+}
+
+func (_this *bigDecimalFloatBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *bigDecimalFloatBuilder) IsContainerOnly() bool {
@@ -153,6 +158,10 @@ type pBigDecimalFloatBuilder struct {
 
 func newPBigDecimalFloatBuilder() ObjectBuilder {
 	return &pBigDecimalFloatBuilder{}
+}
+
+func (_this *pBigDecimalFloatBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *pBigDecimalFloatBuilder) IsContainerOnly() bool {

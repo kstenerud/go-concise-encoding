@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -54,12 +55,12 @@ func newSliceBuilder(dstType reflect.Type) ObjectBuilder {
 	}
 }
 
-func (_this *sliceBuilder) IsContainerOnly() bool {
-	return true
+func (_this *sliceBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *sliceBuilder) InjectBuilder(builder ObjectBuilder) {
-	_this.elemBuilder = builder
+func (_this *sliceBuilder) IsContainerOnly() bool {
+	return true
 }
 
 func (_this *sliceBuilder) PostCacheInitBuilder() {
@@ -200,18 +201,18 @@ func (_this *sliceBuilder) BuildEndContainer() {
 }
 
 func (_this *sliceBuilder) BuildBeginMarker(id interface{}) {
-	elemBuilder := _this.elemBuilder
-	builder := newMarkerObjectBuilder(_this.parent, _this.elemBuilder, func(object reflect.Value) {
-		_this.elemBuilder = elemBuilder
+	origBuilder := _this.elemBuilder
+	_this.elemBuilder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
+		_this.elemBuilder = origBuilder
 		_this.root.GetMarkerRegistry().NotifyMarker(id, object)
 	})
-	_this.elemBuilder = builder
 }
 
 func (_this *sliceBuilder) BuildFromReference(id interface{}) {
 	ppContainer := _this.ppContainer
 	index := (**ppContainer).Len()
-	_this.storeValue(_this.newElem())
+	elem := _this.newElem()
+	_this.storeValue(elem)
 	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, (**ppContainer).Index(index))
 	})

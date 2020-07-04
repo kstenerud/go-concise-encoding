@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -40,6 +41,10 @@ func newUintBuilder(dstType reflect.Type) ObjectBuilder {
 	return &uintBuilder{
 		dstType: dstType,
 	}
+}
+
+func (_this *uintBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
 func (_this *uintBuilder) IsContainerOnly() bool {

@@ -105,7 +105,7 @@ type ObjectBuilder interface {
 	// Clone from this builder as a template, adding contextual data
 	CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder
 
-	SetParent(parent ObjectBuilder)
+	SetParent(newParent ObjectBuilder)
 }
 
 // ============================================================================

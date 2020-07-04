@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -36,10 +37,10 @@ import (
 // RootBuilder adapts DataEventReceiver to ObjectBuilder, coordinating the build.
 // Use GetBuiltObject() to fetch the final result.
 type RootBuilder struct {
-	dstType        reflect.Type
-	currentBuilder ObjectBuilder
-	object         reflect.Value
-	markerRegistry MarkerRegistry
+	dstType         reflect.Type
+	currentBuilder  ObjectBuilder
+	object          reflect.Value
+	referenceFiller ReferenceFiller
 }
 
 // -----------
@@ -58,14 +59,18 @@ func (_this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
 
 	builder := getBuilderForType(dstType).CloneFromTemplate(_this, _this, applyDefaultBuilderOptions(options))
 	if builder.IsContainerOnly() {
-		builder = newTopLevelContainerBuilder(_this, builder)
+		builder = newTopLevelBuilder(_this, builder)
 	}
 	_this.currentBuilder = builder
-	_this.markerRegistry.Init()
+	_this.referenceFiller.Init()
 }
 
-func (_this *RootBuilder) GetMarkerRegistry() *MarkerRegistry {
-	return &_this.markerRegistry
+func (_this *RootBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.currentBuilder)
+}
+
+func (_this *RootBuilder) GetMarkerRegistry() *ReferenceFiller {
+	return &_this.referenceFiller
 }
 
 // Get the object that was built after using this root builder as a DataEventReceiver.

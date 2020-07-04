@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -40,6 +41,10 @@ func newFloatBuilder(dstType reflect.Type) ObjectBuilder {
 	return &floatBuilder{
 		dstType: dstType,
 	}
+}
+
+func (_this *floatBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *floatBuilder) IsContainerOnly() bool {

@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -40,6 +41,10 @@ var globalStringBuilder = &stringBuilder{}
 
 func newStringBuilder() ObjectBuilder {
 	return globalStringBuilder
+}
+
+func (_this *stringBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *stringBuilder) IsContainerOnly() bool {

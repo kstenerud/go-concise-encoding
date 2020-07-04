@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -42,6 +43,10 @@ var globalTimeBuilder timeBuilder
 
 func newTimeBuilder() ObjectBuilder {
 	return &globalTimeBuilder
+}
+
+func (_this *timeBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *timeBuilder) IsContainerOnly() bool {
@@ -165,6 +170,10 @@ func newCompactTimeBuilder() ObjectBuilder {
 	return &globalCompactTimeBuilder
 }
 
+func (_this *compactTimeBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
+}
+
 func (_this *compactTimeBuilder) IsContainerOnly() bool {
 	return false
 }
@@ -280,6 +289,10 @@ var globalPCompactTimeBuilder pCompactTimeBuilder
 
 func newPCompactTimeBuilder() ObjectBuilder {
 	return &globalPCompactTimeBuilder
+}
+
+func (_this *pCompactTimeBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *pCompactTimeBuilder) IsContainerOnly() bool {

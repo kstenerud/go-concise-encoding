@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -41,6 +42,10 @@ func newMarkerIDBuilder(onID func(interface{})) *markerIDBuilder {
 	return &markerIDBuilder{
 		onID: onID,
 	}
+}
+
+func (_this *markerIDBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *markerIDBuilder) IsContainerOnly() bool {
@@ -172,6 +177,10 @@ func newMarkerObjectBuilder(parent, child ObjectBuilder, onObjectComplete func(r
 	}
 }
 
+func (_this *markerObjectBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.child)
+}
+
 func (_this *markerObjectBuilder) IsContainerOnly() bool {
 	return false
 }
@@ -284,10 +293,12 @@ func (_this *markerObjectBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *markerObjectBuilder) PrepareForListContents() {
+	_this.child.SetParent(_this)
 	_this.child.PrepareForListContents()
 }
 
 func (_this *markerObjectBuilder) PrepareForMapContents() {
+	_this.child.SetParent(_this)
 	_this.child.PrepareForMapContents()
 }
 

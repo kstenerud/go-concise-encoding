@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -42,6 +43,10 @@ func newDirectBuilder(dstType reflect.Type) ObjectBuilder {
 	return &directBuilder{
 		dstType: dstType,
 	}
+}
+
+func (_this *directBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
 func (_this *directBuilder) IsContainerOnly() bool {
@@ -163,6 +168,10 @@ func newDirectPtrBuilder(dstType reflect.Type) ObjectBuilder {
 	return &directPtrBuilder{
 		dstType: dstType,
 	}
+}
+
+func (_this *directPtrBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
 func (_this *directPtrBuilder) IsContainerOnly() bool {

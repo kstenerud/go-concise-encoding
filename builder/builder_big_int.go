@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -38,6 +39,10 @@ type bigIntBuilder struct {
 
 func newBigIntBuilder() ObjectBuilder {
 	return &bigIntBuilder{}
+}
+
+func (_this *bigIntBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *bigIntBuilder) IsContainerOnly() bool {
@@ -153,6 +158,10 @@ type pBigIntBuilder struct {
 
 func newPBigIntBuilder() ObjectBuilder {
 	return &pBigIntBuilder{}
+}
+
+func (_this *pBigIntBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *pBigIntBuilder) IsContainerOnly() bool {

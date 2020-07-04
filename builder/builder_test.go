@@ -1140,6 +1140,27 @@ func TestBuilderMarker(t *testing.T) {
 	assertBuild(t, [][]int{[]int{100, 100}, []int{100}},
 		L(), L(), REF(), PI(1), REF(), PI(1), E(),
 		L(), MARK(), PI(1), PI(100), E(), E())
+
+	assertBuild(t, [][]int{[]int{}, []int{}}, L(), MARK(), PI(1), L(), E(), REF(), PI(1), E())
+	assertBuild(t, [][]int{[]int{}, []int{}}, L(), REF(), PI(1), MARK(), PI(1), L(), E(), E())
+
+	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), MARK(), PI(1), L(), PI(100), E(), REF(), PI(1), E())
+	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), REF(), PI(1), MARK(), PI(1), L(), PI(100), E(), E())
+
+	assertBuild(t, [][]int{[]int{100, 100}, []int{100, 100}},
+		L(), REF(), PI(1),
+		MARK(), PI(1), L(), PI(100), PI(100), E(), E())
+
+	assertBuild(t, []int{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
+
+	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+		L(), REF(), PI(1),
+		MARK(), PI(1), M(), PI(100), PI(100), E(), E())
+
+	// TODO: How to handle reference map keys? Disallow?
+	// assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+	// 	L(), M(), REF(), PI(1), REF(), PI(1), E(),
+	// 	M(), MARK(), PI(1), PI(100), REF(), PI(1), E(), E())
 }
 
 // TODO: Self-referential struct

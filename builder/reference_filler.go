@@ -24,29 +24,32 @@ import (
 	"reflect"
 )
 
-// TODO: Also keep a map of the costs of the references (bytes, depth, etc)
+// TODO: Also keep a map of the costs of the references (bytes, depth, etc) (in rules)
 
-type MarkerRegistry struct {
+// ReferenceFiller tracks markers and references encountered in a document,
+// filling out references when their corresponding markers are found.
+type ReferenceFiller struct {
 	markedValues         map[interface{}]reflect.Value
 	unresolvedReferences map[interface{}][]func(reflect.Value)
 }
 
-func NewMarkerRegistry() *MarkerRegistry {
-	_this := new(MarkerRegistry)
+func NewMarkerRegistry() *ReferenceFiller {
+	_this := new(ReferenceFiller)
 	_this.Init()
 	return _this
 }
 
-func (_this *MarkerRegistry) Init() {
+func (_this *ReferenceFiller) Init() {
 	_this.markedValues = make(map[interface{}]reflect.Value)
 	_this.unresolvedReferences = make(map[interface{}][]func(reflect.Value))
 }
 
-func (_this *MarkerRegistry) HasUnresolvedReferences() bool {
+func (_this *ReferenceFiller) HasUnresolvedReferences() bool {
 	return len(_this.unresolvedReferences) > 0
 }
 
-func (_this *MarkerRegistry) NotifyMarker(id interface{}, value reflect.Value) {
+// Notify that a new marker has been found.
+func (_this *ReferenceFiller) NotifyMarker(id interface{}, value reflect.Value) {
 	_this.markedValues[id] = value
 
 	if setters, ok := _this.unresolvedReferences[id]; ok {
@@ -57,10 +60,13 @@ func (_this *MarkerRegistry) NotifyMarker(id interface{}, value reflect.Value) {
 	}
 }
 
-func (_this *MarkerRegistry) NotifyReference(id interface{}, setter func(value reflect.Value)) {
-	if value, ok := _this.markedValues[id]; ok {
-		setter(value)
+// Notify that a new reference has been found. valueSetter will be called when
+// the marker with lookingForID is found (possibly immediately if it already has
+// been found).
+func (_this *ReferenceFiller) NotifyReference(lookingForID interface{}, valueSetter func(value reflect.Value)) {
+	if value, ok := _this.markedValues[lookingForID]; ok {
+		valueSetter(value)
 		return
 	}
-	_this.unresolvedReferences[id] = append(_this.unresolvedReferences[id], setter)
+	_this.unresolvedReferences[lookingForID] = append(_this.unresolvedReferences[lookingForID], valueSetter)
 }

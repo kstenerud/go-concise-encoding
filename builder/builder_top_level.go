@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -33,126 +34,149 @@ import (
 
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
 // are properly built. See BuildBeginList and BuildBeginMap.
-type topLevelContainerBuilder struct {
+type topLevelBuilder struct {
 	builder ObjectBuilder
 	root    *RootBuilder
 }
 
-func newTopLevelContainerBuilder(root *RootBuilder, builder ObjectBuilder) ObjectBuilder {
-	return &topLevelContainerBuilder{
+func newTopLevelBuilder(root *RootBuilder, builder ObjectBuilder) ObjectBuilder {
+	return &topLevelBuilder{
 		builder: builder,
 		root:    root,
 	}
 }
 
-func (_this *topLevelContainerBuilder) IsContainerOnly() bool {
+func (_this *topLevelBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.builder)
+}
+
+func (_this *topLevelBuilder) IsContainerOnly() bool {
 	builderPanicBadEvent(_this, "IsContainerOnly")
 	return false
 }
 
-func (_this *topLevelContainerBuilder) PostCacheInitBuilder() {
+func (_this *topLevelBuilder) PostCacheInitBuilder() {
 	builderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
 
-func (_this *topLevelContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *topLevelBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	builderPanicBadEvent(_this, "CloneFromTemplate")
 	return nil
 }
 
-func (_this *topLevelContainerBuilder) SetParent(parent ObjectBuilder) {
+func (_this *topLevelBuilder) SetParent(parent ObjectBuilder) {
 	builderPanicBadEvent(_this, "SetParent")
 }
 
-func (_this *topLevelContainerBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEvent(_this, "Nil")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEvent(_this, "Bool")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromInt(value int64, dst reflect.Value) {
-	builderPanicBadEvent(_this, "Int")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromUint(value uint64, dst reflect.Value) {
-	builderPanicBadEvent(_this, "Uint")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
-	builderPanicBadEvent(_this, "BigInt")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	builderPanicBadEvent(_this, "Float")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	builderPanicBadEvent(_this, "BigFloat")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	builderPanicBadEvent(_this, "DecimalFloat")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	builderPanicBadEvent(_this, "BigDecimalFloat")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, "UUID")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromString(value string, dst reflect.Value) {
-	builderPanicBadEvent(_this, "String")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEvent(_this, "Bytes")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEvent(_this, "URI")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, "Time")
-}
-
-func (_this *topLevelContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEvent(_this, "CompactTime")
-}
-
-func (_this *topLevelContainerBuilder) BuildBeginList() {
+func (_this *topLevelBuilder) BuildFromNil(dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromNil(dst)
+}
+
+func (_this *topLevelBuilder) BuildFromBool(value bool, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromBool(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromInt(value int64, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromInt(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromUint(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromBigInt(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromFloat(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromBigFloat(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromDecimalFloat(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromBigDecimalFloat(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromUUID(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromString(value string, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromString(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromBytes(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromURI(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromTime(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromCompactTime(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildBeginList() {
 	_this.builder.PrepareForListContents()
 }
 
-func (_this *topLevelContainerBuilder) BuildBeginMap() {
-	_this.root.SetCurrentBuilder(_this.builder)
+func (_this *topLevelBuilder) BuildBeginMap() {
 	_this.builder.PrepareForMapContents()
 }
 
-func (_this *topLevelContainerBuilder) BuildEndContainer() {
+func (_this *topLevelBuilder) BuildEndContainer() {
 	builderPanicBadEvent(_this, "End")
 }
 
-func (_this *topLevelContainerBuilder) PrepareForListContents() {
+func (_this *topLevelBuilder) PrepareForListContents() {
 	builderPanicBadEvent(_this, "PrepareForListContents")
 }
 
-func (_this *topLevelContainerBuilder) PrepareForMapContents() {
+func (_this *topLevelBuilder) PrepareForMapContents() {
 	builderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
-func (_this *topLevelContainerBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *topLevelBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	builderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
-func (_this *topLevelContainerBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: BuildBeginMarker")
+func (_this *topLevelBuilder) BuildBeginMarker(id interface{}) {
+	panic("TODO: Look at this again")
+	origBuilder := _this.builder
+	_this.builder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
+		_this.builder = origBuilder
+		_this.root.GetMarkerRegistry().NotifyMarker(id, object)
+	})
 }
 
-func (_this *topLevelContainerBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: BuildFromReference")
+func (_this *topLevelBuilder) BuildFromReference(id interface{}) {
+
+	builderPanicBadEvent(_this, "BuildFromReference")
 }

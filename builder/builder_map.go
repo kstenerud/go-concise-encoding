@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -49,9 +50,11 @@ type mapBuilder struct {
 	parent ObjectBuilder
 
 	// Variable data (must be reset)
-	container    reflect.Value
-	builderIndex int
-	key          reflect.Value
+	container       reflect.Value
+	key             reflect.Value
+	builderIndex    int
+	nextBuilder     ObjectBuilder
+	nextStoreMethod func(*mapBuilder, reflect.Value)
 }
 
 func newMapBuilder(dstType reflect.Type) ObjectBuilder {
@@ -59,6 +62,10 @@ func newMapBuilder(dstType reflect.Type) ObjectBuilder {
 		dstType: dstType,
 		kvTypes: [2]reflect.Type{dstType.Key(), dstType.Elem()},
 	}
+}
+
+func (_this *mapBuilder) String() string {
+	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvBuilders[0], _this.kvBuilders[1])
 }
 
 func (_this *mapBuilder) IsContainerOnly() bool {
@@ -89,21 +96,30 @@ func (_this *mapBuilder) SetParent(parent ObjectBuilder) {
 
 func (_this *mapBuilder) reset() {
 	_this.container = reflect.MakeMap(_this.dstType)
-	_this.builderIndex = kvBuilderKey
 	_this.key = reflect.Value{}
+	_this.builderIndex = kvBuilderKey
+	_this.nextBuilder = _this.kvBuilders[_this.builderIndex]
+	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
 }
 
-func (_this *mapBuilder) getBuilder() ObjectBuilder {
-	return _this.kvBuilders[_this.builderIndex]
+func (_this *mapBuilder) storeKey(value reflect.Value) {
+	_this.key = value
 }
 
 func (_this *mapBuilder) storeValue(value reflect.Value) {
-	if _this.builderIndex == kvBuilderKey {
-		_this.key = value
-	} else {
-		_this.container.SetMapIndex(_this.key, value)
-	}
+	_this.container.SetMapIndex(_this.key, value)
+}
+
+var mapBuilderKVStoreMethods = []func(*mapBuilder, reflect.Value){
+	(*mapBuilder).storeKey,
+	(*mapBuilder).storeValue,
+}
+
+func (_this *mapBuilder) store(value reflect.Value) {
+	_this.nextStoreMethod(_this, value)
 	_this.builderIndex = (_this.builderIndex + 1) & 1
+	_this.nextBuilder = _this.kvBuilders[_this.builderIndex]
+	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
 }
 
 func (_this *mapBuilder) newElem() reflect.Value {
@@ -112,94 +128,94 @@ func (_this *mapBuilder) newElem() reflect.Value {
 
 func (_this *mapBuilder) BuildFromNil(ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromNil(object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromNil(object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromBool(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromBool(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromInt(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromInt(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromUint(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromUint(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromBigInt(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromBigInt(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromFloat(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromFloat(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromBigFloat(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromBigFloat(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromDecimalFloat(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromDecimalFloat(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromBigDecimalFloat(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromBigDecimalFloat(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromUUID(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromUUID(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromString(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromString(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
 	object := _this.newElem()
-	_this.getBuilder().BuildFromBytes(value, object)
-	_this.storeValue(object)
+	_this.nextBuilder.BuildFromBytes(value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
+	_this.store(reflect.ValueOf(value))
 }
 
 func (_this *mapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
+	_this.store(reflect.ValueOf(value))
 }
 
 func (_this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
+	_this.store(reflect.ValueOf(value))
 }
 
 func (_this *mapBuilder) BuildBeginList() {
-	_this.getBuilder().PrepareForListContents()
+	_this.nextBuilder.PrepareForListContents()
 }
 
 func (_this *mapBuilder) BuildBeginMap() {
-	_this.getBuilder().PrepareForMapContents()
+	_this.nextBuilder.PrepareForMapContents()
 }
 
 func (_this *mapBuilder) BuildEndContainer() {
@@ -209,11 +225,20 @@ func (_this *mapBuilder) BuildEndContainer() {
 }
 
 func (_this *mapBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: mapBuilder.Marker")
+	root := _this.root
+	_this.nextBuilder = newMarkerObjectBuilder(_this, _this.nextBuilder, func(object reflect.Value) {
+		root.GetMarkerRegistry().NotifyMarker(id, object)
+	})
 }
 
 func (_this *mapBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: mapBuilder.Reference")
+	// TODO: What if the key is the reference? Disallow this?
+	key := _this.key
+	container := _this.container
+	_this.store(_this.newElem())
+	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
+		setAnythingFromAnything(object, container.MapIndex(key))
+	})
 }
 
 func (_this *mapBuilder) PrepareForListContents() {
@@ -226,5 +251,5 @@ func (_this *mapBuilder) PrepareForMapContents() {
 
 func (_this *mapBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.root.SetCurrentBuilder(_this)
-	_this.storeValue(value)
+	_this.store(value)
 }

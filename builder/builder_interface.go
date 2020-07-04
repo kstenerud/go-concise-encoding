@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
@@ -50,6 +51,10 @@ type intfBuilder struct {
 
 func newInterfaceBuilder() ObjectBuilder {
 	return globalIntfBuilder
+}
+
+func (_this *intfBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *intfBuilder) IsContainerOnly() bool {
@@ -181,6 +186,10 @@ type intfSliceBuilder struct {
 
 func newIntfSliceBuilder() ObjectBuilder {
 	return globalIntfSliceBuilder
+}
+
+func (_this *intfSliceBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *intfSliceBuilder) IsContainerOnly() bool {
@@ -329,6 +338,10 @@ type intfIntfMapBuilder struct {
 
 func newIntfIntfMapBuilder() ObjectBuilder {
 	return globalIntfIntfMapBuilder
+}
+
+func (_this *intfIntfMapBuilder) String() string {
+	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
 func (_this *intfIntfMapBuilder) IsContainerOnly() bool {
