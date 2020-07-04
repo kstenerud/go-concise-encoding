@@ -174,8 +174,6 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
 			return newDirectPtrBuilder(dstType)
-		case reflect.Interface:
-			return newIntfSliceBuilder()
 		default:
 			return newSliceBuilder(dstType)
 		}

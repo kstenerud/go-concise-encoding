@@ -1157,6 +1157,8 @@ func TestBuilderMarker(t *testing.T) {
 		L(), REF(), PI(1),
 		MARK(), PI(1), M(), PI(100), PI(100), E(), E())
 
+	assertBuild(t, []interface{}{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
+
 	// TODO: How to handle reference map keys? Disallow?
 	// assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
 	// 	L(), M(), REF(), PI(1), REF(), PI(1), E(),

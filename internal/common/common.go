@@ -35,14 +35,15 @@ import (
 )
 
 var (
-	TypeNone         = reflect.TypeOf(nil)
-	TypeInterface    = reflect.TypeOf([]interface{}{}).Elem()
-	TypeString       = reflect.TypeOf("")
-	TypeBytes        = reflect.TypeOf([]uint8{})
-	TypeTime         = reflect.TypeOf(time.Time{})
-	TypeCompactTime  = reflect.TypeOf(compact_time.Time{})
-	TypePCompactTime = reflect.TypeOf((*compact_time.Time)(nil))
-	TypeDFloat       = reflect.TypeOf(compact_float.DFloat{})
+	TypeNone           = reflect.TypeOf(nil)
+	TypeInterface      = reflect.TypeOf([]interface{}{}).Elem()
+	TypeSliceInterface = reflect.TypeOf([]interface{}{})
+	TypeString         = reflect.TypeOf("")
+	TypeBytes          = reflect.TypeOf([]uint8{})
+	TypeTime           = reflect.TypeOf(time.Time{})
+	TypeCompactTime    = reflect.TypeOf(compact_time.Time{})
+	TypePCompactTime   = reflect.TypeOf((*compact_time.Time)(nil))
+	TypeDFloat         = reflect.TypeOf(compact_float.DFloat{})
 
 	TypeBigInt  = reflect.TypeOf(big.Int{})
 	TypePBigInt = reflect.TypeOf((*big.Int)(nil))
