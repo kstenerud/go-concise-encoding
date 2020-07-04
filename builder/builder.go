@@ -178,9 +178,6 @@ func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
 			return newSliceBuilder(dstType)
 		}
 	case reflect.Map:
-		if dstType.Elem().Kind() == reflect.Interface && dstType.Key().Kind() == reflect.Interface {
-			return newIntfIntfMapBuilder()
-		}
 		return newMapBuilder(dstType)
 	case reflect.Struct:
 		switch dstType {

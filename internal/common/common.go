@@ -37,7 +37,8 @@ import (
 var (
 	TypeNone           = reflect.TypeOf(nil)
 	TypeInterface      = reflect.TypeOf([]interface{}{}).Elem()
-	TypeSliceInterface = reflect.TypeOf([]interface{}{})
+	TypeInterfaceSlice = reflect.TypeOf([]interface{}{})
+	TypeInterfaceMap   = reflect.TypeOf(map[interface{}]interface{}{})
 	TypeString         = reflect.TypeOf("")
 	TypeBytes          = reflect.TypeOf([]uint8{})
 	TypeTime           = reflect.TypeOf(time.Time{})

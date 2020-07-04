@@ -39,8 +39,7 @@ var (
 	builderIntfSliceType   = reflect.TypeOf([]interface{}{})
 	builderIntfType        = builderIntfSliceType.Elem()
 
-	globalIntfBuilder        = &intfBuilder{}
-	globalIntfIntfMapBuilder = &intfIntfMapBuilder{}
+	globalIntfBuilder = &intfBuilder{}
 )
 
 type intfBuilder struct {
@@ -138,13 +137,14 @@ func (_this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst ref
 }
 
 func (_this *intfBuilder) BuildBeginList() {
-	builder := getBuilderForType(common.TypeSliceInterface)
+	builder := getBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) BuildBeginMap() {
-	builder := globalIntfIntfMapBuilder.CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder := getBuilderForType(common.TypeInterfaceSlice)
+	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
 
@@ -161,172 +161,17 @@ func (_this *intfBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *intfBuilder) PrepareForListContents() {
-	builder := getBuilderForType(common.TypeSliceInterface)
+	builder := getBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) PrepareForMapContents() {
-	builder := globalIntfIntfMapBuilder.CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder := getBuilderForType(common.TypeInterfaceMap)
+	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
 
 func (_this *intfBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.parent.NotifyChildContainerFinished(value)
-}
-
-// ============================================================================
-
-type intfIntfMapBuilder struct {
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *BuilderOptions
-
-	// Variable data (must be reset)
-	container reflect.Value
-	key       reflect.Value
-	nextIsKey bool
-}
-
-func newIntfIntfMapBuilder() ObjectBuilder {
-	return globalIntfIntfMapBuilder
-}
-
-func (_this *intfIntfMapBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-
-func (_this *intfIntfMapBuilder) IsContainerOnly() bool {
-	return true
-}
-
-func (_this *intfIntfMapBuilder) PostCacheInitBuilder() {
-}
-
-func (_this *intfIntfMapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
-	that := &intfIntfMapBuilder{
-		parent:  parent,
-		root:    root,
-		options: options,
-	}
-	that.reset()
-	return that
-}
-
-func (_this *intfIntfMapBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
-}
-
-func (_this *intfIntfMapBuilder) reset() {
-	_this.container = reflect.MakeMap(builderIntfIntfMapType)
-	_this.key = reflect.Value{}
-	_this.nextIsKey = true
-}
-
-func (_this *intfIntfMapBuilder) storeValue(value reflect.Value) {
-	if _this.nextIsKey {
-		_this.key = value
-	} else {
-		_this.container.SetMapIndex(_this.key, value)
-	}
-	_this.nextIsKey = !_this.nextIsKey
-}
-
-func (_this *intfIntfMapBuilder) BuildFromNil(ignored reflect.Value) {
-	_this.storeValue(reflect.Zero(builderIntfType))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromString(value string, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
-	_this.storeValue(reflect.ValueOf(value))
-}
-
-func (_this *intfIntfMapBuilder) BuildBeginList() {
-	builder := getBuilderForType(common.TypeSliceInterface)
-	builder = builder.CloneFromTemplate(_this.root, _this, _this.options)
-	builder.PrepareForListContents()
-}
-
-func (_this *intfIntfMapBuilder) BuildBeginMap() {
-	builder := globalIntfIntfMapBuilder.CloneFromTemplate(_this.root, _this, _this.options)
-	builder.PrepareForMapContents()
-}
-
-func (_this *intfIntfMapBuilder) BuildEndContainer() {
-	object := _this.container
-	_this.reset()
-	_this.parent.NotifyChildContainerFinished(object)
-}
-
-func (_this *intfIntfMapBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: intfIntfMapBuilder.Marker")
-}
-
-func (_this *intfIntfMapBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: intfIntfMapBuilder.Reference")
-}
-
-func (_this *intfIntfMapBuilder) PrepareForListContents() {
-	builderPanicBadEventType(_this, builderIntfType, "PrepareForListContents")
-}
-
-func (_this *intfIntfMapBuilder) PrepareForMapContents() {
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *intfIntfMapBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.SetCurrentBuilder(_this)
-	_this.storeValue(value)
 }
