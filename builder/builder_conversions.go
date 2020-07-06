@@ -562,13 +562,16 @@ func setAnythingFromAnything(src reflect.Value, dst reflect.Value) {
 	case reflect.Bool:
 		if src.Kind() == reflect.Bool {
 			dst.SetBool(src.Bool())
+			return
 		}
 	case reflect.String:
 		if src.Kind() == reflect.String {
 			dst.SetString(src.String())
+			return
 		}
 	case reflect.Interface:
 		dst.Set(src)
+		return
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		setUintFromAnything(src, dst)
 		return

@@ -164,11 +164,10 @@ func (_this *topLevelBuilder) PrepareForMapContents() {
 }
 
 func (_this *topLevelBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, "NotifyChildContainerFinished")
+	_this.root.NotifyChildContainerFinished(value)
 }
 
 func (_this *topLevelBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: Look at this again")
 	origBuilder := _this.builder
 	_this.builder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
 		_this.builder = origBuilder

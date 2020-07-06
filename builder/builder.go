@@ -33,6 +33,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-describe"
 )
 
 type BuilderOptions struct {
@@ -142,11 +143,11 @@ func builderPanicBadEventType(builder ObjectBuilder, dstType reflect.Type, event
 }
 
 func builderPanicCannotConvert(value interface{}, dstType reflect.Type) {
-	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", value, reflect.TypeOf(value), dstType))
+	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", describe.D(value), reflect.TypeOf(value), dstType))
 }
 
 func builderPanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", value, reflect.TypeOf(value), dstType, err))
+	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
 }
 
 func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
