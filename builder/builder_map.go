@@ -119,10 +119,10 @@ var mapBuilderKVStoreMethods = []func(*mapBuilder, reflect.Value){
 
 func (_this *mapBuilder) store(value reflect.Value) {
 	_this.nextStoreMethod(_this, value)
-	_this.swapKV()
+	_this.swapKeyValue()
 }
 
-func (_this *mapBuilder) swapKV() {
+func (_this *mapBuilder) swapKeyValue() {
 	_this.builderIndex = (_this.builderIndex + 1) & 1
 	_this.nextBuilder = _this.kvBuilders[_this.builderIndex]
 	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
@@ -241,7 +241,7 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 	container := _this.container
 	key := _this.key
 	tempValue := _this.newElem()
-	_this.swapKV()
+	_this.swapKeyValue()
 	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
 		if container.Type().Elem().Kind() == reflect.Interface || object.Type() == container.Type().Elem() {
 			// In case of self-referencing pointers, we need to pass the original container, not a copy.

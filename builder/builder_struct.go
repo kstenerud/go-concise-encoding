@@ -230,6 +230,7 @@ func (_this *structBuilder) BuildBeginMarker(id interface{}) {
 
 func (_this *structBuilder) BuildFromReference(id interface{}) {
 	nextValue := _this.nextValue
+	_this.swapKeyValue()
 	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, nextValue)
 	})

@@ -1148,6 +1148,10 @@ func TestBuilderMarkerSlice(t *testing.T) {
 	// Referenced containers
 	assertBuild(t, [][]int{[]int{}, []int{}}, L(), MARK(), PI(1), L(), E(), REF(), PI(1), E())
 	assertBuild(t, [][]int{[]int{}, []int{}}, L(), REF(), PI(1), MARK(), PI(1), L(), E(), E())
+	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+		L(), REF(), PI(1), MARK(), PI(1), M(), PI(100), PI(100), E(), E())
+	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+		L(), MARK(), PI(1), M(), PI(100), PI(100), E(), REF(), PI(1), E())
 
 	// Interface
 	assertBuild(t, []interface{}{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
@@ -1165,10 +1169,8 @@ func TestBuilderMarkerArray(t *testing.T) {
 }
 
 func TestBuilderMarkerMap(t *testing.T) {
-	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
-		L(), REF(), PI(1), MARK(), PI(1), M(), PI(100), PI(100), E(), E())
-	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
-		L(), MARK(), PI(1), M(), PI(100), PI(100), E(), REF(), PI(1), E())
+	assertBuild(t, map[int]int8{1: 100, 2: 100, 3: 100},
+		M(), PI(1), REF(), PI(5), PI(2), MARK(), PI(5), PI(100), PI(3), REF(), PI(5), E())
 
 	rmap := make(map[int]interface{})
 	rmap[0] = rmap
@@ -1194,5 +1196,26 @@ func TestBuilderSelfReferential(t *testing.T) {
 		PI(100),
 		S("Next"),
 		REF(), PI(1),
+		E())
+}
+
+type RefStruct struct {
+	I16 int16
+	F32 float32
+	S1  string
+	S2  string
+}
+
+func TestBuilderRefStruct(t *testing.T) {
+	assertBuild(t, &RefStruct{
+		I16: 1000,
+		F32: 1000,
+		S1:  "test",
+		S2:  "test",
+	}, M(),
+		S("I16"), REF(), PI(1),
+		S("F32"), MARK(), PI(1), PI(1000),
+		S("S1"), MARK(), PI(2), S("test"),
+		S("S2"), REF(), PI(2),
 		E())
 }
