@@ -926,8 +926,8 @@ const (
 const (
 	eventsArray         = eventBeginBytes | eventBeginString | eventBeginURI | eventBeginCustom
 	eventsInvisible     = eventPadding | eventBeginComment | eventBeginMetadata
-	eventsKeyableObject = eventsInvisible | eventScalar | eventPositiveInt | eventsArray | eventBeginMarker | eventBeginReference
-	eventsAnyObject     = eventsKeyableObject | eventNil | eventNan | eventBeginList | eventBeginMap | eventBeginMarkup
+	eventsKeyableObject = eventsInvisible | eventScalar | eventPositiveInt | eventsArray | eventBeginMarker
+	eventsAnyObject     = eventsKeyableObject | eventNil | eventNan | eventBeginList | eventBeginMap | eventBeginMarkup | eventBeginReference
 	allowAny            = ruleState(eventsAnyObject)
 	allowTLO            = allowAny | ruleState(eventEndDocument)
 	allowListItem       = allowAny | ruleState(eventEndContainer)

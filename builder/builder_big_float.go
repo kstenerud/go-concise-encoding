@@ -132,11 +132,11 @@ func (_this *bigFloatBuilder) BuildEndContainer() {
 }
 
 func (_this *bigFloatBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: bigFloatBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypeBigFloat, "Marker")
 }
 
 func (_this *bigFloatBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: bigFloatBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypeBigFloat, "Reference")
 }
 
 func (_this *bigFloatBuilder) PrepareForListContents() {
@@ -251,11 +251,11 @@ func (_this *pBigFloatBuilder) BuildEndContainer() {
 }
 
 func (_this *pBigFloatBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: pBigFloatBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypePBigFloat, "Marker")
 }
 
 func (_this *pBigFloatBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: pBigFloatBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypePBigFloat, "Reference")
 }
 
 func (_this *pBigFloatBuilder) PrepareForListContents() {

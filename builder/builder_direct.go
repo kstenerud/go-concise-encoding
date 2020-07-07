@@ -264,11 +264,11 @@ func (_this *directPtrBuilder) BuildEndContainer() {
 }
 
 func (_this *directPtrBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: directPtrBuilder.BuildBeginMarker")
+	builderPanicBadEventType(_this, _this.dstType, "Marker")
 }
 
 func (_this *directPtrBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: directPtrBuilder.BuildFromReference")
+	builderPanicBadEventType(_this, _this.dstType, "Reference")
 }
 
 func (_this *directPtrBuilder) PrepareForListContents() {

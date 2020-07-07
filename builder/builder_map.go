@@ -46,8 +46,9 @@ type mapBuilder struct {
 	kvBuilders [2]ObjectBuilder
 
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 
 	// Variable data (must be reset)
 	container       reflect.Value
@@ -83,9 +84,10 @@ func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuild
 		kvTypes: _this.kvTypes,
 		parent:  parent,
 		root:    root,
+		options: options,
 	}
 	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].CloneFromTemplate(root, that, options)
-	that.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].CloneFromTemplate(root, that, options)
+	that.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue]
 	that.reset()
 	return that
 }
@@ -117,6 +119,10 @@ var mapBuilderKVStoreMethods = []func(*mapBuilder, reflect.Value){
 
 func (_this *mapBuilder) store(value reflect.Value) {
 	_this.nextStoreMethod(_this, value)
+	_this.swapKV()
+}
+
+func (_this *mapBuilder) swapKV() {
 	_this.builderIndex = (_this.builderIndex + 1) & 1
 	_this.nextBuilder = _this.kvBuilders[_this.builderIndex]
 	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
@@ -232,12 +238,18 @@ func (_this *mapBuilder) BuildBeginMarker(id interface{}) {
 }
 
 func (_this *mapBuilder) BuildFromReference(id interface{}) {
-	// TODO: What if the key is the reference? Disallow this?
-	key := _this.key
 	container := _this.container
-	_this.store(_this.newElem())
+	key := _this.key
+	tempValue := _this.newElem()
+	_this.swapKV()
 	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
-		setAnythingFromAnything(object, container.MapIndex(key))
+		if container.Type().Elem().Kind() == reflect.Interface || object.Type() == container.Type().Elem() {
+			// In case of self-referencing pointers, we need to pass the original container, not a copy.
+			container.SetMapIndex(key, object)
+		} else {
+			setAnythingFromAnything(object, tempValue)
+			container.SetMapIndex(key, tempValue)
+		}
 	})
 }
 
@@ -246,6 +258,7 @@ func (_this *mapBuilder) PrepareForListContents() {
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {
+	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].CloneFromTemplate(_this.root, _this, _this.options)
 	_this.root.SetCurrentBuilder(_this)
 }
 

@@ -42,8 +42,9 @@ type arrayBuilder struct {
 	elemBuilder ObjectBuilder
 
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 
 	// Variable data (must be reset)
 	container reflect.Value
@@ -70,11 +71,12 @@ func (_this *arrayBuilder) PostCacheInitBuilder() {
 
 func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &arrayBuilder{
-		dstType: _this.dstType,
-		parent:  parent,
-		root:    root,
+		dstType:     _this.dstType,
+		parent:      parent,
+		root:        root,
+		options:     options,
+		elemBuilder: _this.elemBuilder,
 	}
-	that.elemBuilder = _this.elemBuilder.CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }
@@ -182,14 +184,24 @@ func (_this *arrayBuilder) BuildEndContainer() {
 }
 
 func (_this *arrayBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: arrayBuilder.BuildBeginMarker")
+	origBuilder := _this.elemBuilder
+	_this.elemBuilder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
+		_this.elemBuilder = origBuilder
+		_this.root.GetMarkerRegistry().NotifyMarker(id, object)
+	})
 }
 
 func (_this *arrayBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: arrayBuilder.BuildFromReference")
+	container := _this.container
+	index := _this.index
+	_this.index++
+	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
+		setAnythingFromAnything(object, container.Index(index))
+	})
 }
 
 func (_this *arrayBuilder) PrepareForListContents() {
+	_this.elemBuilder = _this.elemBuilder.CloneFromTemplate(_this.root, _this, _this.options)
 	_this.root.SetCurrentBuilder(_this)
 }
 
@@ -309,11 +321,11 @@ func (_this *bytesArrayBuilder) BuildEndContainer() {
 }
 
 func (_this *bytesArrayBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: bytesArrayBuilder.BuildBeginMarker")
+	builderPanicBadEventType(_this, common.TypeBytes, "BuildBeginMarker")
 }
 
 func (_this *bytesArrayBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: bytesArrayBuilder.BuildFromReference")
+	builderPanicBadEventType(_this, common.TypeBytes, "BuildFromReference")
 }
 
 func (_this *bytesArrayBuilder) PrepareForListContents() {

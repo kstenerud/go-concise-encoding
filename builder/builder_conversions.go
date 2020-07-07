@@ -473,7 +473,7 @@ func setUintFromAnything(src reflect.Value, dst reflect.Value) {
 		setUintFromAnything(src.Elem(), dst)
 		return
 	}
-	builderPanicCannotConvert(src, dst.Type())
+	builderPanicCannotConvertRV(src, dst.Type())
 }
 
 func setIntFromAnything(src reflect.Value, dst reflect.Value) {
@@ -511,7 +511,7 @@ func setIntFromAnything(src reflect.Value, dst reflect.Value) {
 		setIntFromAnything(src.Elem(), dst)
 		return
 	}
-	builderPanicCannotConvert(src, dst.Type())
+	builderPanicCannotConvertRV(src, dst.Type())
 }
 
 func setFloatFromAnything(src reflect.Value, dst reflect.Value) {

@@ -1133,51 +1133,66 @@ func TestBuilderByteArrayBytes(t *testing.T) {
 		BIN([]byte{1, 2}))
 }
 
-func TestBuilderMarker(t *testing.T) {
+func TestBuilderMarkerSlice(t *testing.T) {
+	// Reference in same container
 	assertBuild(t, []int{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
+	assertBuild(t, []int{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
 	assertBuild(t, []string{"abcdef", "abcdef"}, L(), MARK(), PI(1), S("abcdef"), REF(), PI(1), E())
+	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), MARK(), PI(1), L(), PI(100), E(), REF(), PI(1), E())
+	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), REF(), PI(1), MARK(), PI(1), L(), PI(100), E(), E())
+	assertBuild(t, [][]int{[]int{100, 100}, []int{100, 100}}, L(), REF(), PI(1), MARK(), PI(1), L(), PI(100), PI(100), E(), E())
 
-	assertBuild(t, [][]int{[]int{100, 100}, []int{100}},
-		L(), L(), REF(), PI(1), REF(), PI(1), E(),
-		L(), MARK(), PI(1), PI(100), E(), E())
+	// Reference in different container
+	assertBuild(t, [][]int{[]int{100, 100}, []int{100}}, L(), L(), REF(), PI(1), REF(), PI(1), E(), L(), MARK(), PI(1), PI(100), E(), E())
 
+	// Referenced containers
 	assertBuild(t, [][]int{[]int{}, []int{}}, L(), MARK(), PI(1), L(), E(), REF(), PI(1), E())
 	assertBuild(t, [][]int{[]int{}, []int{}}, L(), REF(), PI(1), MARK(), PI(1), L(), E(), E())
 
-	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), MARK(), PI(1), L(), PI(100), E(), REF(), PI(1), E())
-	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), REF(), PI(1), MARK(), PI(1), L(), PI(100), E(), E())
-
-	assertBuild(t, [][]int{[]int{100, 100}, []int{100, 100}},
-		L(), REF(), PI(1),
-		MARK(), PI(1), L(), PI(100), PI(100), E(), E())
-
-	assertBuild(t, []int{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
-
-	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
-		L(), REF(), PI(1),
-		MARK(), PI(1), M(), PI(100), PI(100), E(), E())
-
+	// Interface
 	assertBuild(t, []interface{}{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
+	assertBuild(t, []interface{}{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
 
+	// Recursive interface
 	rintf := make([]interface{}, 1)
 	rintf[0] = rintf
 	assertBuild(t, rintf, MARK(), PI(1), L(), REF(), PI(1), E())
-
-	// TODO: How to handle reference map keys? Disallow?
-	// assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
-	// 	L(), M(), REF(), PI(1), REF(), PI(1), E(),
-	// 	M(), MARK(), PI(1), PI(100), REF(), PI(1), E(), E())
 }
 
-// TODO: Self-referential struct
-// type SelfReferential struct {
-// 	Self *SelfReferential
-// }
+func TestBuilderMarkerArray(t *testing.T) {
+	assertBuild(t, [2]int{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
+	assertBuild(t, [2]int{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
+}
 
-// func TestBuilderSelfReferential(t *testing.T) {
-// 	assertBuild(t, SelfReferential{},
-// 		m(),
-// 		s("Self"),
-// 		n(),
-// 		e())
-// }
+func TestBuilderMarkerMap(t *testing.T) {
+	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+		L(), REF(), PI(1), MARK(), PI(1), M(), PI(100), PI(100), E(), E())
+	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+		L(), MARK(), PI(1), M(), PI(100), PI(100), E(), REF(), PI(1), E())
+
+	rmap := make(map[int]interface{})
+	rmap[0] = rmap
+	assertBuild(t, rmap,
+		MARK(), PI(1), M(), PI(0), REF(), PI(1), E())
+
+}
+
+type SelfReferential struct {
+	Value int
+	Next  *SelfReferential
+}
+
+func TestBuilderSelfReferential(t *testing.T) {
+	v := &SelfReferential{
+		Value: 100,
+	}
+	v.Next = v
+	assertBuild(t, v,
+		MARK(), PI(1),
+		M(),
+		S("Value"),
+		PI(100),
+		S("Next"),
+		REF(), PI(1),
+		E())
+}

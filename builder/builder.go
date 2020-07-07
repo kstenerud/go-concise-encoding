@@ -146,6 +146,10 @@ func builderPanicCannotConvert(value interface{}, dstType reflect.Type) {
 	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", describe.D(value), reflect.TypeOf(value), dstType))
 }
 
+func builderPanicCannotConvertRV(value reflect.Value, dstType reflect.Type) {
+	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", describe.D(value), value.Type(), dstType))
+}
+
 func builderPanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
 }

@@ -147,7 +147,7 @@ func (_this *ignoreBuilder) BuildBeginMarker(id interface{}) {
 }
 
 func (_this *ignoreBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: ignoreBuilder.Reference")
+	// Ignore this directive
 }
 
 func (_this *ignoreBuilder) PrepareForListContents() {
@@ -279,7 +279,7 @@ func (_this *ignoreContainerBuilder) BuildBeginMarker(id interface{}) {
 }
 
 func (_this *ignoreContainerBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: ignoreContainerBuilder.Reference")
+	// Ignore this directive
 }
 
 func (_this *ignoreContainerBuilder) PrepareForListContents() {

@@ -42,8 +42,9 @@ type sliceBuilder struct {
 	elemBuilder ObjectBuilder
 
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 
 	// Variable data (must be reset)
 	ppContainer **reflect.Value
@@ -69,11 +70,12 @@ func (_this *sliceBuilder) PostCacheInitBuilder() {
 
 func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &sliceBuilder{
-		dstType: _this.dstType,
-		parent:  parent,
-		root:    root,
+		dstType:     _this.dstType,
+		parent:      parent,
+		root:        root,
+		elemBuilder: _this.elemBuilder,
+		options:     options,
 	}
-	that.elemBuilder = _this.elemBuilder.CloneFromTemplate(root, that, options)
 	that.reset()
 	return that
 }
@@ -219,6 +221,7 @@ func (_this *sliceBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *sliceBuilder) PrepareForListContents() {
+	_this.elemBuilder = _this.elemBuilder.CloneFromTemplate(_this.root, _this, _this.options)
 	_this.root.SetCurrentBuilder(_this)
 }
 

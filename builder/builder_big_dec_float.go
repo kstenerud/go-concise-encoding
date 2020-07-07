@@ -132,11 +132,11 @@ func (_this *bigDecimalFloatBuilder) BuildEndContainer() {
 }
 
 func (_this *bigDecimalFloatBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: bigDecimalFloatBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypeBigDecimalFloat, "Marker")
 }
 
 func (_this *bigDecimalFloatBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: bigDecimalFloatBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypeBigDecimalFloat, "Reference")
 }
 
 func (_this *bigDecimalFloatBuilder) PrepareForListContents() {
@@ -251,11 +251,11 @@ func (_this *pBigDecimalFloatBuilder) BuildEndContainer() {
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: pBigDecimalFloatBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypePBigDecimalFloat, "Marker")
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: pBigDecimalFloatBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypePBigDecimalFloat, "Reference")
 }
 
 func (_this *pBigDecimalFloatBuilder) PrepareForListContents() {

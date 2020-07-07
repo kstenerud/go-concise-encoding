@@ -47,8 +47,9 @@ type structBuilder struct {
 	ignoreBuilder ObjectBuilder
 
 	// Clone inserted data
-	root   *RootBuilder
-	parent ObjectBuilder
+	root    *RootBuilder
+	parent  ObjectBuilder
+	options *BuilderOptions
 
 	// Variable data (must be reset)
 	nextBuilder   ObjectBuilder
@@ -91,18 +92,13 @@ func (_this *structBuilder) PostCacheInitBuilder() {
 func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
 	that := &structBuilder{
 		dstType:      _this.dstType,
-		builderDescs: make(map[string]*structBuilderDesc),
+		builderDescs: _this.builderDescs,
 		parent:       parent,
 		root:         root,
+		options:      options,
 	}
 	that.nameBuilder = _this.nameBuilder.CloneFromTemplate(root, that, options)
 	that.ignoreBuilder = _this.ignoreBuilder.CloneFromTemplate(root, that, options)
-	for k, builderElem := range _this.builderDescs {
-		that.builderDescs[k] = &structBuilderDesc{
-			builder: builderElem.builder.CloneFromTemplate(root, that, options),
-			index:   builderElem.index,
-		}
-	}
 	that.reset()
 	return that
 }
@@ -226,11 +222,17 @@ func (_this *structBuilder) BuildEndContainer() {
 }
 
 func (_this *structBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: structBuilder.Marker")
+	root := _this.root
+	_this.nextBuilder = newMarkerObjectBuilder(_this, _this.nextBuilder, func(object reflect.Value) {
+		root.GetMarkerRegistry().NotifyMarker(id, object)
+	})
 }
 
 func (_this *structBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: structBuilder.Reference")
+	nextValue := _this.nextValue
+	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
+		setAnythingFromAnything(object, nextValue)
+	})
 }
 
 func (_this *structBuilder) PrepareForListContents() {
@@ -238,6 +240,15 @@ func (_this *structBuilder) PrepareForListContents() {
 }
 
 func (_this *structBuilder) PrepareForMapContents() {
+	builderDescs := make(map[string]*structBuilderDesc)
+
+	for k, builderElem := range _this.builderDescs {
+		builderDescs[k] = &structBuilderDesc{
+			builder: builderElem.builder.CloneFromTemplate(_this.root, _this, _this.options),
+			index:   builderElem.index,
+		}
+	}
+	_this.builderDescs = builderDescs
 	_this.root.SetCurrentBuilder(_this)
 }
 

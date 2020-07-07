@@ -134,11 +134,11 @@ func (_this *intBuilder) BuildEndContainer() {
 }
 
 func (_this *intBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: intBuilder.Marker")
+	builderPanicBadEventType(_this, _this.dstType, "Marker")
 }
 
 func (_this *intBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: intBuilder.Reference")
+	builderPanicBadEventType(_this, _this.dstType, "Reference")
 }
 
 func (_this *intBuilder) PrepareForListContents() {

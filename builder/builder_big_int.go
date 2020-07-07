@@ -132,11 +132,11 @@ func (_this *bigIntBuilder) BuildEndContainer() {
 }
 
 func (_this *bigIntBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: bigIntBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypeBigInt, "Marker")
 }
 
 func (_this *bigIntBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: bigIntBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypeBigInt, "Reference")
 }
 
 func (_this *bigIntBuilder) PrepareForListContents() {
@@ -251,11 +251,11 @@ func (_this *pBigIntBuilder) BuildEndContainer() {
 }
 
 func (_this *pBigIntBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: pBigIntBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypePBigInt, "Marker")
 }
 
 func (_this *pBigIntBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: pBigIntBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypePBigInt, "Reference")
 }
 
 func (_this *pBigIntBuilder) PrepareForListContents() {

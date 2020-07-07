@@ -140,11 +140,11 @@ func (_this *timeBuilder) BuildEndContainer() {
 }
 
 func (_this *timeBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: timeBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypeTime, "Marker")
 }
 
 func (_this *timeBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: timeBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypeTime, "Reference")
 }
 
 func (_this *timeBuilder) PrepareForListContents() {
@@ -261,11 +261,11 @@ func (_this *compactTimeBuilder) BuildEndContainer() {
 }
 
 func (_this *compactTimeBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: compactTimeBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypeCompactTime, "Marker")
 }
 
 func (_this *compactTimeBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: compactTimeBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypeCompactTime, "Reference")
 }
 
 func (_this *compactTimeBuilder) PrepareForListContents() {
@@ -382,11 +382,11 @@ func (_this *pCompactTimeBuilder) BuildEndContainer() {
 }
 
 func (_this *pCompactTimeBuilder) BuildBeginMarker(id interface{}) {
-	panic("TODO: pCompactTimeBuilder.Marker")
+	builderPanicBadEventType(_this, common.TypePCompactTime, "Marker")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromReference(id interface{}) {
-	panic("TODO: pCompactTimeBuilder.Reference")
+	builderPanicBadEventType(_this, common.TypePCompactTime, "Reference")
 }
 
 func (_this *pCompactTimeBuilder) PrepareForListContents() {
