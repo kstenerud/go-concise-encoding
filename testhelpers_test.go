@@ -21,6 +21,7 @@
 package concise_encoding
 
 import (
+	"bytes"
 	"math/big"
 	"time"
 
@@ -47,9 +48,10 @@ func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error
 		}
 	}()
 
-	encoder := cbe.NewEncoder(nil)
+	buffer := &bytes.Buffer{}
+	encoder := cbe.NewEncoder(buffer, nil)
 	test.InvokeEvents(encoder, expected...)
-	document := encoder.GetBuiltDocument()
+	document := buffer.Bytes()
 
 	return cbeDecode(document)
 }
@@ -62,9 +64,10 @@ func cteDecode(document []byte) (events []*test.TEvent, err error) {
 }
 
 func cteEncode(events ...*test.TEvent) []byte {
-	encoder := cte.NewEncoder(nil)
+	buffer := &bytes.Buffer{}
+	encoder := cte.NewEncoder(buffer, nil)
 	test.InvokeEvents(encoder, events...)
-	return encoder.GetBuiltDocument()
+	return buffer.Bytes()
 }
 
 func cteEncodeDecode(events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {

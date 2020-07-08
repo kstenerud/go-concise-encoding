@@ -23,8 +23,8 @@ package cbe
 import (
 	"fmt"
 
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/debug"
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/toplevel"
 )
 
@@ -36,35 +36,32 @@ type DecoderOptions struct {
 	ImpliedTLContainer toplevel.TLContainerType
 }
 
-// Decode a CBE document, sending all data events to the specified event receiver.
-func Decode(document []byte, eventReceiver events.DataEventReceiver, options *DecoderOptions) (err error) {
-	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
-			if r := recover(); r != nil {
-				err = r.(error)
-			}
-		}
-	}()
+var defaultDecoderOptions = DecoderOptions{}
 
-	decoder := NewDecoder([]byte(document), eventReceiver, options)
-	decoder.Decode()
-	return
+func DefaultDecoderOptions() *DecoderOptions {
+	opts := defaultDecoderOptions
+	return &opts
+}
+
+// Decode a CBE document, sending all data events to the specified event receiver.
+func Decode(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
+	return NewDecoder([]byte(document), eventReceiver, options).Decode()
 }
 
 // Decodes CBE documents
 type Decoder struct {
 	buffer       cbeDecodeBuffer
-	nextReceiver events.DataEventReceiver
+	nextReceiver ce.DataEventReceiver
 	options      DecoderOptions
 }
 
-func NewDecoder(document []byte, nextReceiver events.DataEventReceiver, options *DecoderOptions) *Decoder {
+func NewDecoder(document []byte, nextReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(document, nextReceiver, options)
 	return _this
 }
 
-func (_this *Decoder) Init(document []byte, nextReceiver events.DataEventReceiver, options *DecoderOptions) {
+func (_this *Decoder) Init(document []byte, nextReceiver ce.DataEventReceiver, options *DecoderOptions) {
 	_this.buffer.Init(document)
 	if options != nil {
 		_this.options = *options
@@ -74,7 +71,15 @@ func (_this *Decoder) Init(document []byte, nextReceiver events.DataEventReceive
 
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
-func (_this *Decoder) Decode() {
+func (_this *Decoder) Decode() (err error) {
+	defer func() {
+		if !debug.DebugOptions.PassThroughPanics {
+			if r := recover(); r != nil {
+				err = r.(error)
+			}
+		}
+	}()
+
 	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())
 
 	for _this.buffer.HasUnreadData() {

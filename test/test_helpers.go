@@ -31,8 +31,8 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/conversions"
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 
 	"github.com/cockroachdb/apd/v2"
@@ -131,7 +131,7 @@ func GenerateBytes(length int, startIndex int) []byte {
 	return []byte(GenerateString(length, startIndex))
 }
 
-func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
+func InvokeEvents(receiver ce.DataEventReceiver, events ...*TEvent) {
 	for _, event := range events {
 		event.Invoke(receiver)
 	}
@@ -252,7 +252,7 @@ func (_this *TEvent) String() string {
 	return str
 }
 
-func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
+func (_this *TEvent) Invoke(receiver ce.DataEventReceiver) {
 	switch _this.Type {
 	case TEventVersion:
 		receiver.OnVersion(_this.V1.(uint64))

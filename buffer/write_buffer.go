@@ -20,46 +20,72 @@
 
 package buffer
 
-const (
-	minBufferCap = 64
+import (
+	"io"
 )
 
-type Buffer struct {
+const (
+	minBufferSize = 1024
+)
+
+type WriteBuffer struct {
+	writer            io.Writer
 	bytes             []byte
 	lastAllocatedSize int
 }
 
-func (_this *Buffer) Bytes() []byte {
+func NewWriteBuffer(writer io.Writer, bufferSize int) *WriteBuffer {
+	_this := &WriteBuffer{}
+	_this.Init(writer, bufferSize)
+	return _this
+}
+
+func (_this *WriteBuffer) Init(writer io.Writer, bufferSize int) {
+	if bufferSize < minBufferSize {
+		bufferSize = minBufferSize
+	}
+	_this.bytes = make([]byte, 0, bufferSize)
+	_this.writer = writer
+}
+
+func (_this *WriteBuffer) Bytes() []byte {
 	return _this.bytes
 }
 
-func (_this *Buffer) Allocate(byteCount int) []byte {
+func (_this *WriteBuffer) Allocate(byteCount int) []byte {
 	length := len(_this.bytes)
 	if cap(_this.bytes)-length < byteCount {
-		_this.grow(byteCount)
-	} else {
-		_this.bytes = _this.bytes[:length+byteCount]
+		_this.Flush()
+		length = 0
+		if cap(_this.bytes) < byteCount {
+			_this.grow(byteCount)
+		}
 	}
+	_this.bytes = _this.bytes[:length+byteCount]
 	_this.lastAllocatedSize = byteCount
 	return _this.bytes[length:]
 }
 
-func (_this *Buffer) CorrectAllocation(usedByteCount int) {
+func (_this *WriteBuffer) CorrectAllocation(usedByteCount int) {
 	unused := _this.lastAllocatedSize - usedByteCount
 	_this.bytes = _this.bytes[:len(_this.bytes)-unused]
 }
 
+func (_this *WriteBuffer) Flush() {
+	_, err := _this.writer.Write(_this.bytes)
+	if err != nil {
+		panic(err)
+	}
+	_this.bytes = _this.bytes[:0]
+}
+
 // ============================================================================
 
-func (_this *Buffer) grow(byteCount int) {
+func (_this *WriteBuffer) grow(byteCount int) {
 	length := len(_this.bytes)
 	growAmount := cap(_this.bytes)
 	if byteCount > growAmount {
-		if byteCount > minBufferCap {
-			growAmount = byteCount
-		} else {
-			growAmount = minBufferCap
-		}
+		growAmount = byteCount
 	}
 	newCap := cap(_this.bytes) + growAmount
 	newBytes := make([]byte, length+byteCount, newCap)

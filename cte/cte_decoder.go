@@ -27,7 +27,8 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/toplevel"
 
@@ -45,22 +46,21 @@ type DecoderOptions struct {
 	ImpliedTLContainer toplevel.TLContainerType
 }
 
-// Decode a CTE document, sending all data events to the specified event receiver.
-func Decode(document []byte, eventReceiver events.DataEventReceiver, options *DecoderOptions) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
-		}
-	}()
+var defaultDecoderOptions = DecoderOptions{}
 
-	decoder := NewDecoder([]byte(document), eventReceiver, options)
-	decoder.Decode()
-	return
+func DefaultDecoderOptions() *DecoderOptions {
+	opts := defaultDecoderOptions
+	return &opts
+}
+
+// Decode a CTE document, sending all data events to the specified event receiver.
+func Decode(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
+	return NewDecoder(document, eventReceiver, options).Decode()
 }
 
 // Decodes CTE documents
 type Decoder struct {
-	eventReceiver  events.DataEventReceiver
+	eventReceiver  ce.DataEventReceiver
 	document       []byte
 	tokenStart     int
 	tokenPos       int
@@ -70,13 +70,13 @@ type Decoder struct {
 	options        DecoderOptions
 }
 
-func NewDecoder(document []byte, eventReceiver events.DataEventReceiver, options *DecoderOptions) *Decoder {
+func NewDecoder(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(document, eventReceiver, options)
 	return _this
 }
 
-func (_this *Decoder) Init(document []byte, eventReceiver events.DataEventReceiver, options *DecoderOptions) {
+func (_this *Decoder) Init(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) {
 	_this.document = document
 	_this.eventReceiver = eventReceiver
 	if options != nil {
@@ -88,6 +88,14 @@ func (_this *Decoder) Init(document []byte, eventReceiver events.DataEventReceiv
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
 func (_this *Decoder) Decode() (err error) {
+	defer func() {
+		if !debug.DebugOptions.PassThroughPanics {
+			if r := recover(); r != nil {
+				err = r.(error)
+			}
+		}
+	}()
+
 	_this.currentState = cteDecoderStateAwaitObject
 
 	// Forgive initial whitespace even though it's technically not allowed

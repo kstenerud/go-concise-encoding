@@ -44,6 +44,13 @@ type BuilderOptions struct {
 	// TODO: Something for decimal floats?
 }
 
+var defaultBuilderOptions = BuilderOptions{}
+
+func DefaultBuilderOptions() *BuilderOptions {
+	opts := defaultBuilderOptions
+	return &opts
+}
+
 // Register a specific builder for a type.
 // If a builder has already been registered for this type, it will be replaced.
 func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {

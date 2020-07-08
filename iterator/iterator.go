@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
@@ -41,9 +41,18 @@ type IteratorOptions struct {
 	OmitNilPointers bool
 }
 
+var defaultIteratorOptions = IteratorOptions{
+	ConciseEncodingVersion: version.ConciseEncodingVersion,
+}
+
+func DefaultIteratorOptions() *IteratorOptions {
+	opts := defaultIteratorOptions
+	return &opts
+}
+
 // Iterate over an object (recursively), calling the eventReceiver as data is
 // encountered. If options is nil, a zero value will be provided.
-func IterateObject(value interface{}, eventReceiver events.DataEventReceiver, options *IteratorOptions) {
+func IterateObject(value interface{}, eventReceiver ce.DataEventReceiver, options *IteratorOptions) {
 	iter := NewRootObjectIterator(eventReceiver, options)
 	iter.Iterate(value, nil)
 }
@@ -159,10 +168,6 @@ func getIteratorForType(t reflect.Type) ObjectIterator {
 	iterator, _ := iterators.LoadOrStore(t, generateIteratorForType(t))
 	iterator.(ObjectIterator).PostCacheInitIterator()
 	return iterator.(ObjectIterator)
-}
-
-var defaultIteratorOptions = IteratorOptions{
-	ConciseEncodingVersion: version.ConciseEncodingVersion,
 }
 
 func applyDefaultIteratorOptions(original *IteratorOptions) *IteratorOptions {

@@ -22,6 +22,7 @@ package cbe
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"math/big"
 	"time"
@@ -37,24 +38,36 @@ import (
 )
 
 type EncoderOptions struct {
+	BufferSize int
+}
+
+var defaultEncoderOptions = EncoderOptions{
+	BufferSize: 1024,
+}
+
+func DefaultEncoderOptions() *EncoderOptions {
+	opts := defaultEncoderOptions
+	return &opts
 }
 
 // Receives data events, constructing a CBE document from them.
 type Encoder struct {
-	buff    buffer.Buffer
+	buff    buffer.WriteBuffer
 	options EncoderOptions
 }
 
-func NewEncoder(options *EncoderOptions) *Encoder {
+func NewEncoder(writer io.Writer, options *EncoderOptions) *Encoder {
 	_this := &Encoder{}
-	_this.Init(options)
+	_this.Init(writer, options)
 	return _this
 }
 
-func (_this *Encoder) Init(options *EncoderOptions) {
-	if options != nil {
-		_this.options = *options
+func (_this *Encoder) Init(writer io.Writer, options *EncoderOptions) {
+	if options == nil {
+		options = DefaultEncoderOptions()
 	}
+	_this.options = *options
+	_this.buff.Init(writer, _this.options.BufferSize)
 }
 
 // Get the document that resulted from the data events this encoder received.
@@ -322,6 +335,7 @@ func (_this *Encoder) OnReference() {
 }
 
 func (_this *Encoder) OnEndDocument() {
+	_this.buff.Flush()
 }
 
 // ============================================================================

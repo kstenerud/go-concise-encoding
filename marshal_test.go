@@ -21,10 +21,12 @@
 package concise_encoding
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/iterator"
 	"github.com/kstenerud/go-concise-encoding/test"
 
@@ -33,16 +35,19 @@ import (
 )
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
+	debug.DebugOptions.PassThroughPanics = true
 	options := &cbe.MarshalerOptions{
 		Iterator: iterator.IteratorOptions{
 			UseReferences: true,
 		},
 	}
-	document, err := cbe.Marshal(expected, options)
+	buffer := &bytes.Buffer{}
+	err := cbe.Marshal(expected, buffer, options)
 	if err != nil {
 		t.Errorf("CBE Marshal error: %v", err)
 		return
 	}
+	document := buffer.Bytes()
 
 	var actual interface{}
 	actual, err = cbe.Unmarshal(document, expected, nil)
@@ -57,16 +62,19 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 }
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
+	debug.DebugOptions.PassThroughPanics = true
 	options := &cte.MarshalerOptions{
 		Iterator: iterator.IteratorOptions{
 			UseReferences: true,
 		},
 	}
-	document, err := cte.Marshal(expected, options)
+	buffer := &bytes.Buffer{}
+	err := cte.Marshal(expected, buffer, options)
 	if err != nil {
 		t.Errorf("CTE Marshal error: %v", err)
 		return
 	}
+	document := buffer.Bytes()
 
 	var actual interface{}
 	actual, err = cte.Unmarshal(document, expected, nil)

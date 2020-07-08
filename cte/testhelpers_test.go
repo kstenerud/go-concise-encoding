@@ -21,6 +21,7 @@
 package cte
 
 import (
+	"bytes"
 	"math/big"
 	"time"
 
@@ -79,7 +80,8 @@ func cteDecode(document []byte) (events []*test.TEvent, err error) {
 }
 
 func cteEncode(events ...*test.TEvent) []byte {
-	encoder := NewEncoder(nil)
+	buffer := &bytes.Buffer{}
+	encoder := NewEncoder(buffer, nil)
 	test.InvokeEvents(encoder, events...)
-	return encoder.GetBuiltDocument()
+	return buffer.Bytes()
 }

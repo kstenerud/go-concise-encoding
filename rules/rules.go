@@ -27,7 +27,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/version"
 
@@ -52,10 +52,22 @@ type RuleOptions struct {
 	// Max bytes total for all array types
 }
 
-func NewDefaultRuleOptions() *RuleOptions {
-	var options RuleOptions
-	options = defaultRuleOptions
-	return &options
+var defaultRuleOptions = RuleOptions{
+	ConciseEncodingVersion: version.ConciseEncodingVersion,
+	MaxBytesLength:         1000000000,
+	MaxStringLength:        100000000,
+	MaxURILength:           10000,
+	MaxIDLength:            100,
+	MaxMarkupNameLength:    100,
+	MaxContainerDepth:      1000,
+	MaxObjectCount:         10000000,
+	MaxReferenceCount:      100000,
+	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
+}
+
+func DefaultRuleOptions() *RuleOptions {
+	opts := defaultRuleOptions
+	return &opts
 }
 
 // Rules constrains the order in which builder commands may be sent, such that
@@ -75,16 +87,16 @@ type Rules struct {
 	unassignedIDs     []interface{}
 	assignedIDs       map[interface{}]ruleEvent
 	// TODO: Keep track of marked data stats (sizes etc)
-	nextReceiver events.DataEventReceiver
+	nextReceiver ce.DataEventReceiver
 }
 
-func NewRules(options *RuleOptions, nextReceiver events.DataEventReceiver) *Rules {
+func NewRules(options *RuleOptions, nextReceiver ce.DataEventReceiver) *Rules {
 	_this := new(Rules)
 	_this.Init(options, nextReceiver)
 	return _this
 }
 
-func (_this *Rules) Init(options *RuleOptions, nextReceiver events.DataEventReceiver) {
+func (_this *Rules) Init(options *RuleOptions, nextReceiver ce.DataEventReceiver) {
 	_this.options = applyDefaultRuleOptions(options)
 	_this.stateStack = make([]ruleState, 0, _this.options.MaxContainerDepth)
 	_this.nextReceiver = nextReceiver
@@ -680,19 +692,6 @@ func (_this *Rules) addScalar(scalarType ruleEvent) {
 func (_this *Rules) beginContainer(containerType ruleEvent, newState ruleState) {
 	_this.assertCurrentStateAllowsType(containerType)
 	_this.stackState(newState)
-}
-
-var defaultRuleOptions = RuleOptions{
-	ConciseEncodingVersion: version.ConciseEncodingVersion,
-	MaxBytesLength:         1000000000,
-	MaxStringLength:        100000000,
-	MaxURILength:           10000,
-	MaxIDLength:            100,
-	MaxMarkupNameLength:    100,
-	MaxContainerDepth:      1000,
-	MaxObjectCount:         10000000,
-	MaxReferenceCount:      100000,
-	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 }
 
 // The initial rule state comes pre-stacked. This value accounts for it in calculations.

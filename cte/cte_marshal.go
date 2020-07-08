@@ -22,6 +22,7 @@ package cte
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/debug"
@@ -34,8 +35,15 @@ type MarshalerOptions struct {
 	Iterator iterator.IteratorOptions
 }
 
+var defaultMarshalerOptions = MarshalerOptions{}
+
+func DefaultMarshalerOptions() *MarshalerOptions {
+	opts := defaultMarshalerOptions
+	return &opts
+}
+
 // Marshal a go object into a CTE document
-func Marshal(object interface{}, options *MarshalerOptions) (document []byte, err error) {
+func Marshal(object interface{}, writer io.Writer, options *MarshalerOptions) (err error) {
 	if options == nil {
 		options = &MarshalerOptions{}
 	}
@@ -51,22 +59,28 @@ func Marshal(object interface{}, options *MarshalerOptions) (document []byte, er
 		}
 	}()
 
-	encoder := NewEncoder(&options.Encoder)
+	encoder := NewEncoder(writer, &options.Encoder)
 	iterator.IterateObject(object, encoder, &options.Iterator)
-	document = encoder.GetBuiltDocument()
 	return
 }
 
-type CTEUnmarshalerOptions struct {
+type UnmarshalerOptions struct {
 	Decoder DecoderOptions
 	Builder builder.BuilderOptions
 	Rules   rules.RuleOptions
 }
 
+var defaultUnmarshalerOptions = UnmarshalerOptions{}
+
+func DefaultUnmarshalerOptions() *UnmarshalerOptions {
+	opts := defaultUnmarshalerOptions
+	return &opts
+}
+
 // Unmarshal a CTE document, creating an object of the same type as the template.
-func Unmarshal(document []byte, template interface{}, options *CTEUnmarshalerOptions) (decoded interface{}, err error) {
+func Unmarshal(document []byte, template interface{}, options *UnmarshalerOptions) (decoded interface{}, err error) {
 	if options == nil {
-		options = &CTEUnmarshalerOptions{}
+		options = &UnmarshalerOptions{}
 	}
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
