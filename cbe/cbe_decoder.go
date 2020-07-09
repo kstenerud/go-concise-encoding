@@ -22,6 +22,7 @@ package cbe
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/debug"
@@ -44,25 +45,25 @@ func DefaultDecoderOptions() *DecoderOptions {
 }
 
 // Decode a CBE document, sending all data events to the specified event receiver.
-func Decode(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
-	return NewDecoder([]byte(document), eventReceiver, options).Decode()
+func Decode(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
+	return NewDecoder(reader, eventReceiver, options).Decode()
 }
 
 // Decodes CBE documents
 type Decoder struct {
-	buffer       cbeDecodeBuffer
+	buffer       CBEReadBuffer
 	nextReceiver ce.DataEventReceiver
 	options      DecoderOptions
 }
 
-func NewDecoder(document []byte, nextReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
+func NewDecoder(reader io.Reader, nextReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
 	_this := &Decoder{}
-	_this.Init(document, nextReceiver, options)
+	_this.Init(reader, nextReceiver, options)
 	return _this
 }
 
-func (_this *Decoder) Init(document []byte, nextReceiver ce.DataEventReceiver, options *DecoderOptions) {
-	_this.buffer.Init(document)
+func (_this *Decoder) Init(reader io.Reader, nextReceiver ce.DataEventReceiver, options *DecoderOptions) {
+	_this.buffer.Init(reader, -1)
 	if options != nil {
 		_this.options = *options
 	}
@@ -80,9 +81,16 @@ func (_this *Decoder) Decode() (err error) {
 		}
 	}()
 
+	if err = _this.buffer.RefillIfNecessary(); err != nil {
+		return
+	}
+
 	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())
 
 	for _this.buffer.HasUnreadData() {
+		if err = _this.buffer.RefillIfNecessary(); err != nil {
+			return
+		}
 		cbeType := _this.buffer.DecodeType()
 		switch cbeType {
 		case cbeTypeDecimal:

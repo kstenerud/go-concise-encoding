@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	minBufferSize = 1024
+	minWriteBufferSize = 1024
 )
 
 type WriteBuffer struct {
@@ -41,8 +41,8 @@ func NewWriteBuffer(writer io.Writer, bufferSize int) *WriteBuffer {
 }
 
 func (_this *WriteBuffer) Init(writer io.Writer, bufferSize int) {
-	if bufferSize < minBufferSize {
-		bufferSize = minBufferSize
+	if bufferSize < minWriteBufferSize {
+		bufferSize = minWriteBufferSize
 	}
 	_this.bytes = make([]byte, 0, bufferSize)
 	_this.writer = writer

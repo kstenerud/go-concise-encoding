@@ -68,6 +68,7 @@ type UnmarshalerOptions struct {
 	Decoder DecoderOptions
 	Builder builder.BuilderOptions
 	Rules   rules.RuleOptions
+	// TODO: Error on unknown field
 }
 
 var defaultUnmarshalerOptions = UnmarshalerOptions{}

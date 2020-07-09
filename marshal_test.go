@@ -36,6 +36,9 @@ import (
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
+	defer func() {
+		debug.DebugOptions.PassThroughPanics = false
+	}()
 	options := &cbe.MarshalerOptions{
 		Iterator: iterator.IteratorOptions{
 			UseReferences: true,
@@ -50,7 +53,7 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	document := buffer.Bytes()
 
 	var actual interface{}
-	actual, err = cbe.Unmarshal(document, expected, nil)
+	actual, err = cbe.Unmarshal(buffer, expected, nil)
 	if err != nil {
 		t.Errorf("CBE Unmarshal error: %v\n- While unmarshaling %v", err, describe.D(document))
 		return
@@ -63,6 +66,9 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
+	defer func() {
+		debug.DebugOptions.PassThroughPanics = false
+	}()
 	options := &cte.MarshalerOptions{
 		Iterator: iterator.IteratorOptions{
 			UseReferences: true,

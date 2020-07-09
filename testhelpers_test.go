@@ -36,18 +36,12 @@ import (
 
 func cbeDecode(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
-	err = cbe.Decode(document, receiver, nil)
+	err = cbe.Decode(bytes.NewBuffer(document), receiver, nil)
 	events = receiver.Events
 	return
 }
 
 func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
-		}
-	}()
-
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(buffer, nil)
 	test.InvokeEvents(encoder, expected...)
@@ -71,12 +65,6 @@ func cteEncode(events ...*test.TEvent) []byte {
 }
 
 func cteEncodeDecode(events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = r.(error)
-		}
-	}()
-
 	return cteDecode(cteEncode(events...))
 }
 
