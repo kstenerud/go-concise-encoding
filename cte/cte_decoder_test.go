@@ -295,6 +295,7 @@ func TestCTEMarkup(t *testing.T) {
 	assertCTEDecode(t, `c1 <a|>`, V(1), MUP(), S("a"), E(), E(), ED())
 	assertCTEEncodeDecode(t, `c1 <a|a>`, V(1), MUP(), S("a"), E(), S("a"), E(), ED())
 	assertCTEEncodeDecode(t, `c1 <a|a string >`, V(1), MUP(), S("a"), E(), S("a string "), E(), ED())
+	assertCTEEncodeDecode(t, `c1 <a|<a>>`, V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertCTEEncodeDecode(t, `c1 <a|a<a>>`, V(1), MUP(), S("a"), E(), S("a"), MUP(), S("a"), E(), E(), E(), ED())
 	assertCTEEncodeDecode(t, `c1 <a|<a>>`, V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertCTEDecode(t, `c1 <a 1=2 |>`, V(1), MUP(), S("a"), PI(1), PI(2), E(), E(), ED())
