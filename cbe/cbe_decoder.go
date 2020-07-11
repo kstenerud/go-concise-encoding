@@ -81,16 +81,12 @@ func (_this *Decoder) Decode() (err error) {
 		}
 	}()
 
-	if err = _this.buffer.RefillIfNecessary(); err != nil {
-		return
-	}
+	_this.buffer.RefillIfNecessary()
 
 	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())
 
 	for _this.buffer.HasUnreadData() {
-		if err = _this.buffer.RefillIfNecessary(); err != nil {
-			return
-		}
+		_this.buffer.RefillIfNecessary()
 		cbeType := _this.buffer.DecodeType()
 		switch cbeType {
 		case cbeTypeDecimal:

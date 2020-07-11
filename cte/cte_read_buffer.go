@@ -21,6 +21,7 @@
 package cte
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"math/big"
@@ -38,6 +39,7 @@ type CTEReadBuffer struct {
 	subtokenStart int
 	tokenPos      int
 	endPos        int
+	tempBuffer    bytes.Buffer
 }
 
 func NewReadBuffer(document []byte) *CTEReadBuffer {
