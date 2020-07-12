@@ -48,10 +48,6 @@ func (_this *WriteBuffer) Init(writer io.Writer, bufferSize int) {
 	_this.writer = writer
 }
 
-func (_this *WriteBuffer) Bytes() []byte {
-	return _this.bytes
-}
-
 func (_this *WriteBuffer) Allocate(byteCount int) []byte {
 	length := len(_this.bytes)
 	if cap(_this.bytes)-length < byteCount {

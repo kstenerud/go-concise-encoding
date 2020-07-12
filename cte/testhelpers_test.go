@@ -74,7 +74,7 @@ func ED() *test.TEvent                       { return test.ED() }
 
 func cteDecode(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
-	err = Decode(document, receiver, nil)
+	err = Decode(bytes.NewBuffer(document), receiver, nil)
 	events = receiver.Events
 	return
 }

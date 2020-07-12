@@ -79,7 +79,7 @@ func DefaultUnmarshalerOptions() *UnmarshalerOptions {
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
-func Unmarshal(document []byte, template interface{}, options *UnmarshalerOptions) (decoded interface{}, err error) {
+func Unmarshal(reader io.Reader, template interface{}, options *UnmarshalerOptions) (decoded interface{}, err error) {
 	if options == nil {
 		options = &UnmarshalerOptions{}
 	}
@@ -97,7 +97,7 @@ func Unmarshal(document []byte, template interface{}, options *UnmarshalerOption
 
 	builder := builder.NewBuilderFor(template, &options.Builder)
 	rules := rules.NewRules(&options.Rules, builder)
-	decoder := NewDecoder(document, rules, &options.Decoder)
+	decoder := NewDecoder(reader, rules, &options.Decoder)
 	decoder.Decode()
 	decoded = builder.GetBuiltObject()
 	return

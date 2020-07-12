@@ -35,16 +35,28 @@ type StreamingReadBuffer struct {
 	isEOF        bool
 }
 
+// Create a new buffer. The buffer will be empty until a refill, request, or
+// require method is called.
 func NewStreamingReadBuffer(reader io.Reader, bufferSize int, minFreeBytes int) *StreamingReadBuffer {
 	_this := &StreamingReadBuffer{}
 	_this.Init(reader, bufferSize, minFreeBytes)
 	return _this
 }
 
+// Initialize the buffer. Note that the buffer will be empty until a refill,
+// request, or require method is called.
 func (_this *StreamingReadBuffer) Init(reader io.Reader, bufferSize int, minFreeBytes int) {
 	_this.Buffer = make([]byte, 0, bufferSize)
 	_this.reader = reader
 	_this.minFreeBytes = minFreeBytes
+}
+
+func (_this *StreamingReadBuffer) ByteAtOffset(offset int) byte {
+	return _this.Buffer[offset]
+}
+
+func (_this *StreamingReadBuffer) HasByteAtOffset(offset int) bool {
+	return offset < len(_this.Buffer)
 }
 
 // Refill the internal buffer from the reader only if there are less than
@@ -97,7 +109,10 @@ func (_this *StreamingReadBuffer) RequestBytes(position int, byteCount int) (pos
 	}
 
 	if byteCount > cap(_this.Buffer) {
-		newSlice := make([]byte, byteCount, byteCount)
+		// Make sure to at least double the buffer size to avoid massive
+		// copying due to a loop that increments by a tiny amount every time.
+		newSize := byteCount + cap(_this.Buffer)
+		newSlice := make([]byte, newSize, newSize)
 		copy(newSlice, _this.Buffer[position:])
 		_this.Buffer = newSlice[:unreadCount]
 	}

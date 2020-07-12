@@ -52,7 +52,7 @@ func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error
 
 func cteDecode(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
-	err = cte.Decode(document, receiver, nil)
+	err = cte.Decode(bytes.NewBuffer(document), receiver, nil)
 	events = receiver.Events
 	return
 }

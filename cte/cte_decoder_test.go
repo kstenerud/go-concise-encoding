@@ -25,6 +25,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/debug"
+
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-compact-time"
@@ -33,6 +35,8 @@ import (
 // TODO: cteDecode function with recover()
 
 func assertCTEDecode(t *testing.T, document string, expectDecoded ...*test.TEvent) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	actualDecoded, err := cteDecode([]byte(document))
 	if err != nil {
 		t.Error(err)
@@ -44,6 +48,8 @@ func assertCTEDecode(t *testing.T, document string, expectDecoded ...*test.TEven
 }
 
 func assertCTEEncodeDecode(t *testing.T, document string, expectDecoded ...*test.TEvent) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	actualDecoded, err := cteDecode([]byte(document))
 	if err != nil {
 		t.Error(err)
@@ -364,27 +370,28 @@ func TestCTEUUID(t *testing.T) {
 }
 
 func TestCTEMarker(t *testing.T) {
-	assertCTEDecode(t, `c1 &`, V(1), MARK(), ED())
+	assertCTEDecode(t, `c1 &2`, V(1), MARK(), PI(2), ED())
 	assertCTEDecode(t, `c1 &1 string`, V(1), MARK(), PI(1), S("string"), ED())
 	assertCTEDecode(t, `c1 &a string`, V(1), MARK(), S("a"), S("string"), ED())
 	assertCTEDecodeFails(t, `c1 & 1 string`)
 }
 
 func TestCTEReference(t *testing.T) {
-	assertCTEDecode(t, `c1 #`, V(1), REF(), ED())
-	assertCTEDecode(t, `c1 #1 string`, V(1), REF(), PI(1), S("string"), ED())
-	assertCTEDecode(t, `c1 #a string`, V(1), REF(), S("a"), S("string"), ED())
-	assertCTEDecodeFails(t, `c1 # 1 string`)
+	assertCTEDecode(t, `c1 #2`, V(1), REF(), PI(2), ED())
+	assertCTEDecode(t, `c1 #a`, V(1), REF(), S("a"), ED())
+	assertCTEDecodeFails(t, `c1 # 1`)
 }
 
 func TestCTECommentSingleLine(t *testing.T) {
-	assertCTEDecode(t, "c1 //", V(1), CMT(), E(), ED())
+	assertCTEDecodeFails(t, "c1 //")
 	assertCTEDecode(t, "c1 //\n", V(1), CMT(), E(), ED())
 	assertCTEDecode(t, "c1 //\r\n", V(1), CMT(), E(), ED())
-	assertCTEDecode(t, "c1 // ", V(1), CMT(), S(" "), E(), ED())
+	assertCTEDecodeFails(t, "c1 // ")
 	assertCTEDecode(t, "c1 // \n", V(1), CMT(), S(" "), E(), ED())
 	assertCTEDecode(t, "c1 // \r\n", V(1), CMT(), S(" "), E(), ED())
-	assertCTEDecode(t, "c1 //a", V(1), CMT(), S("a"), E(), ED())
+	assertCTEDecodeFails(t, "c1 //a")
+	assertCTEDecode(t, "c1 //a\n", V(1), CMT(), S("a"), E(), ED())
+	assertCTEDecode(t, "c1 //a\r\n", V(1), CMT(), S("a"), E(), ED())
 	assertCTEDecode(t, "c1 // This is a comment\n", V(1), CMT(), S(" This is a comment"), E(), ED())
 }
 

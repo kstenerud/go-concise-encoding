@@ -70,11 +70,6 @@ func (_this *Encoder) Init(writer io.Writer, options *EncoderOptions) {
 	_this.buff.Init(writer, _this.options.BufferSize)
 }
 
-// Get the document that resulted from the data events this encoder received.
-func (_this *Encoder) GetBuiltDocument() []byte {
-	return _this.buff.Bytes()
-}
-
 func (_this *Encoder) OnPadding(count int) {
 	dst := _this.buff.Allocate(count)
 	for i := 0; i < count; i++ {

@@ -80,17 +80,16 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 		t.Errorf("CTE Marshal error: %v", err)
 		return
 	}
-	document := buffer.Bytes()
 
 	var actual interface{}
-	actual, err = cte.Unmarshal(document, expected, nil)
+	actual, err = cte.Unmarshal(buffer, expected, nil)
 	if err != nil {
-		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(document))
+		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(buffer.Bytes()))
 		return
 	}
 
 	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("CTE Unmarshal: Expected %v but got %v\n- While unmarshaling %v", describe.D(expected), describe.D(actual), string(document))
+		t.Errorf("CTE Unmarshal: Expected %v but got %v\n- While unmarshaling %v", describe.D(expected), describe.D(actual), string(buffer.Bytes()))
 	}
 }
 

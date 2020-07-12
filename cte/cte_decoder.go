@@ -21,6 +21,7 @@
 package cte
 
 import (
+	"io"
 	"math"
 	"strings"
 
@@ -37,6 +38,7 @@ type DecoderOptions struct {
 	ImpliedVersion uint
 	// TODO: ImpliedTLContainer option
 	ImpliedTLContainer toplevel.TLContainerType
+	ReadBufferSize     int
 }
 
 var defaultDecoderOptions = DecoderOptions{}
@@ -47,8 +49,8 @@ func DefaultDecoderOptions() *DecoderOptions {
 }
 
 // Decode a CTE document, sending all data events to the specified event receiver.
-func Decode(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
-	return NewDecoder(document, eventReceiver, options).Decode()
+func Decode(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
+	return NewDecoder(reader, eventReceiver, options).Decode()
 }
 
 // Decodes CTE documents
@@ -60,14 +62,18 @@ type Decoder struct {
 	options        DecoderOptions
 }
 
-func NewDecoder(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
+func NewDecoder(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
 	_this := &Decoder{}
-	_this.Init(document, eventReceiver, options)
+	_this.Init(reader, eventReceiver, options)
 	return _this
 }
 
-func (_this *Decoder) Init(document []byte, eventReceiver ce.DataEventReceiver, options *DecoderOptions) {
-	_this.buffer.Init(document)
+func (_this *Decoder) Init(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) {
+	if options == nil {
+		defaults := defaultDecoderOptions
+		options = &defaults
+	}
+	_this.buffer.Init(reader, options.ReadBufferSize)
 	_this.eventReceiver = eventReceiver
 	if options != nil {
 		_this.options = *options
@@ -89,12 +95,14 @@ func (_this *Decoder) Decode() (err error) {
 
 	// Forgive initial whitespace even though it's technically not allowed
 	_this.buffer.SkipWhitespace()
+	_this.buffer.EndToken()
 
 	// TODO: Inline containers etc
 	_this.handleVersion()
 
 	for !_this.buffer.IsEndOfDocument() {
 		_this.handleNextState()
+		_this.buffer.RefillIfNecessary()
 	}
 	_this.eventReceiver.OnEndDocument()
 	return
@@ -138,12 +146,11 @@ func (_this *Decoder) handleNothing() {
 }
 
 func (_this *Decoder) handleNextState() {
-	// TODO: Refresh buffer here
 	cteDecoderStateHandlers[_this.currentState](_this)
 }
 
 func (_this *Decoder) handleObject() {
-	charBasedHandlers[_this.buffer.PeekByte()](_this)
+	charBasedHandlers[_this.buffer.PeekByteAllowEOD()](_this)
 }
 
 func (_this *Decoder) handleInvalidChar() {
@@ -156,12 +163,12 @@ func (_this *Decoder) handleInvalidState() {
 
 func (_this *Decoder) handleKVSeparator() {
 	_this.buffer.SkipWhitespace()
-	b := _this.buffer.PeekByte()
-	if b != '=' {
+	if _this.buffer.PeekByteNoEOD() != '=' {
 		_this.buffer.Errorf("Expected map separator (=) but got [%v]", _this.buffer.DescribeCurrentChar())
 	}
 	_this.buffer.AdvanceByte()
 	_this.buffer.SkipWhitespace()
+	_this.buffer.EndToken()
 	_this.endObject()
 }
 
@@ -171,10 +178,11 @@ func (_this *Decoder) handleWhitespace() {
 }
 
 func (_this *Decoder) handleVersion() {
-	if b := _this.buffer.ReadByte(); b != 'c' && b != 'C' {
-		_this.buffer.UngetByte()
+	if b := _this.buffer.PeekByteNoEOD(); b != 'c' && b != 'C' {
 		_this.buffer.Errorf(`Expected document to begin with "c" but got [%v]`, _this.buffer.DescribeCurrentChar())
 	}
+
+	_this.buffer.AdvanceByte()
 
 	version, bigVersion, digitCount := _this.buffer.DecodeDecimalInteger(0, nil)
 	if digitCount == 0 {
@@ -184,27 +192,28 @@ func (_this *Decoder) handleVersion() {
 		_this.buffer.Errorf("Version too big")
 	}
 
-	if !_this.buffer.ReadByte().HasProperty(ctePropertyWhitespace) {
-		_this.buffer.UngetByte()
+	if !hasProperty(_this.buffer.PeekByteNoEOD(), ctePropertyWhitespace) {
 		_this.buffer.UnexpectedChar("whitespace after version")
 	}
+	_this.buffer.AdvanceByte()
 
 	_this.eventReceiver.OnVersion(version)
 	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleStringish() {
-	_this.buffer.ReadWhileProperty(ctePropertyUnquotedMid)
+	_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyUnquotedMid)
 
 	// Unquoted string
-	if _this.buffer.PeekByte().HasProperty(ctePropertyObjectEnd) {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
 		_this.eventReceiver.OnString(string(_this.buffer.GetToken()))
 		_this.endObject()
 		return
 	}
 
 	// Bytes, Custom, URI
-	if _this.buffer.GetTokenLength() == 1 && _this.buffer.ReadByte() == '"' {
+	if _this.buffer.GetTokenLength() == 1 && _this.buffer.PeekByteNoEOD() == '"' {
+		_this.buffer.AdvanceByte()
 		initiator := _this.buffer.GetTokenFirstByte()
 		switch initiator {
 		case 'b':
@@ -220,12 +229,11 @@ func (_this *Decoder) handleStringish() {
 			_this.endObject()
 			return
 		default:
-			_this.buffer.UngetBytes(2)
+			_this.buffer.UngetByte()
 			_this.buffer.UnexpectedChar("byte array initiator")
 		}
 	}
 
-	_this.buffer.UngetByte()
 	_this.buffer.UnexpectedChar("unquoted string")
 }
 
@@ -239,7 +247,7 @@ func (_this *Decoder) handlePositiveNumeric() {
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalInteger(0, nil)
 
 	// Integer
-	if _this.buffer.PeekByte().HasProperty(ctePropertyObjectEnd) {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
 		if bigCoefficient != nil {
 			_this.eventReceiver.OnBigInt(bigCoefficient)
 		} else {
@@ -277,14 +285,14 @@ func (_this *Decoder) handlePositiveNumeric() {
 
 func (_this *Decoder) handleNegativeNumeric() {
 	_this.buffer.AdvanceByte()
-	switch _this.buffer.PeekByte() {
+	switch _this.buffer.PeekByteNoEOD() {
 	case '0':
 		_this.handleOtherBaseNegative()
 		return
 	case '@':
 		_this.buffer.AdvanceByte()
 		_this.buffer.BeginSubtoken()
-		_this.buffer.ReadWhileProperty(ctePropertyAZ)
+		_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyAZ)
 		token := strings.ToLower(string(_this.buffer.GetSubtoken()))
 		if token != "inf" {
 			_this.buffer.Errorf("Unknown named value: %v", token)
@@ -296,7 +304,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalInteger(0, nil)
 
 	// Integer
-	if _this.buffer.PeekByte().HasProperty(ctePropertyObjectEnd) {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
 		if bigCoefficient != nil {
 			// TODO: More efficient way to negate?
 			bigCoefficient = bigCoefficient.Mul(bigCoefficient, common.BigIntN1)
@@ -331,7 +339,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 
 func (_this *Decoder) handleOtherBasePositive() {
 	_this.buffer.AdvanceByte()
-	b := _this.buffer.PeekByte()
+	b := _this.buffer.PeekByteAllowEOD()
 
 	if b.HasProperty(ctePropertyObjectEnd) {
 		_this.eventReceiver.OnPositiveInt(0)
@@ -353,7 +361,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 		_this.endObject()
 	case 'x':
 		v, digitCount := _this.buffer.DecodeHexInteger(0)
-		if _this.buffer.PeekByte() == '.' {
+		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
 			fv := _this.buffer.DecodeHexFloat(1, v, digitCount)
 			_this.buffer.AssertAtObjectEnd("hex float")
@@ -374,7 +382,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 		}
 		_this.endObject()
 	default:
-		if b.HasProperty(cteProperty09) && _this.buffer.PeekByte() == ':' {
+		if b.HasProperty(cteProperty09) && _this.buffer.PeekByteNoEOD() == ':' {
 			_this.buffer.AdvanceByte()
 			v := _this.buffer.DecodeTime(int(b - '0'))
 			_this.buffer.AssertAtObjectEnd("time")
@@ -403,7 +411,7 @@ func (_this *Decoder) handleOtherBaseNegative() {
 		_this.endObject()
 	case 'x':
 		v, digitCount := _this.buffer.DecodeHexInteger(0)
-		if _this.buffer.PeekByte() == '.' {
+		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
 			fv := _this.buffer.DecodeHexFloat(-1, v, digitCount)
 			_this.buffer.AssertAtObjectEnd("hex float")
@@ -473,7 +481,7 @@ func (_this *Decoder) handleMetadataEnd() {
 }
 
 func (_this *Decoder) handleComment() {
-	_this.buffer.ReadByte()
+	_this.buffer.AdvanceByte()
 	switch _this.buffer.ReadByte() {
 	case '/':
 		_this.eventReceiver.OnComment()
@@ -569,7 +577,7 @@ func (_this *Decoder) handleMarkupEnd() {
 func (_this *Decoder) handleNamedValue() {
 	_this.buffer.AdvanceByte()
 	_this.buffer.BeginSubtoken()
-	_this.buffer.ReadWhileProperty(ctePropertyAZ)
+	_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyAZ)
 	token := strings.ToLower(string(_this.buffer.GetSubtoken()))
 	switch token {
 	case "nil":
@@ -606,7 +614,6 @@ func (_this *Decoder) handleNamedValue() {
 
 func (_this *Decoder) handleVerbatimString() {
 	_this.buffer.AdvanceByte()
-	_this.buffer.AssertNotEOD()
 	_this.eventReceiver.OnString(string(_this.buffer.DecodeVerbatimString()))
 	_this.endObject()
 }
@@ -614,7 +621,7 @@ func (_this *Decoder) handleVerbatimString() {
 func (_this *Decoder) handleReference() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnReference()
-	if _this.buffer.PeekByte().HasProperty(ctePropertyWhitespace) {
+	if hasProperty(_this.buffer.PeekByteNoEOD(), ctePropertyWhitespace) {
 		_this.buffer.Errorf("Whitespace not allowed between reference and tag name")
 	}
 	_this.buffer.EndToken()
@@ -623,7 +630,7 @@ func (_this *Decoder) handleReference() {
 func (_this *Decoder) handleMarker() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMarker()
-	if _this.buffer.PeekByte().HasProperty(ctePropertyWhitespace) {
+	if hasProperty(_this.buffer.PeekByteNoEOD(), ctePropertyWhitespace) {
 		_this.buffer.Errorf("Whitespace not allowed between marker and tag name")
 	}
 	_this.buffer.EndToken()
