@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
@@ -78,7 +79,7 @@ func ED() *test.TEvent                       { return test.ED() }
 func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
 	expected := append([]*test.TEvent{V(1)}, events...)
 	expected = append(expected, ED())
-	options := IteratorOptions{}
+	options := options.IteratorOptions{}
 	receiver := test.NewTER()
 	IterateObject(obj, receiver, &options)
 
@@ -215,7 +216,7 @@ func TestIterateRecurse(t *testing.T) {
 	obj.R = obj
 
 	expected := []*test.TEvent{V(1), MARK(), I(0), M(), S("I"), I(50), S("R"), REF(), I(0), E(), ED()}
-	options := IteratorOptions{
+	options := options.IteratorOptions{
 		UseReferences: true,
 	}
 	receiver := test.NewTER()

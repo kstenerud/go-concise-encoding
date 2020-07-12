@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -49,7 +51,7 @@ type structBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 
 	// Variable data (must be reset)
 	nextBuilder   ObjectBuilder
@@ -89,7 +91,7 @@ func (_this *structBuilder) PostCacheInitBuilder() {
 	}
 }
 
-func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &structBuilder{
 		dstType:      _this.dstType,
 		builderDescs: _this.builderDescs,

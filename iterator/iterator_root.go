@@ -23,7 +23,8 @@ package iterator
 import (
 	"reflect"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-duplicates"
 )
@@ -34,17 +35,17 @@ type RootObjectIterator struct {
 	foundReferences map[duplicates.TypedPointer]bool
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
-	eventReceiver   ce.DataEventReceiver
-	options         IteratorOptions
+	eventReceiver   events.DataEventReceiver
+	options         options.IteratorOptions
 }
 
-func NewRootObjectIterator(eventReceiver ce.DataEventReceiver, options *IteratorOptions) *RootObjectIterator {
+func NewRootObjectIterator(eventReceiver events.DataEventReceiver, options *options.IteratorOptions) *RootObjectIterator {
 	_this := new(RootObjectIterator)
 	_this.Init(eventReceiver, options)
 	return _this
 }
 
-func (_this *RootObjectIterator) Init(eventReceiver ce.DataEventReceiver, options *IteratorOptions) {
+func (_this *RootObjectIterator) Init(eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
 	_this.options = *applyDefaultIteratorOptions(options)
 	_this.eventReceiver = eventReceiver
 }

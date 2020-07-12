@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -48,7 +50,7 @@ type mapBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 
 	// Variable data (must be reset)
 	container       reflect.Value
@@ -78,7 +80,7 @@ func (_this *mapBuilder) PostCacheInitBuilder() {
 	_this.kvBuilders[kvBuilderValue] = getBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &mapBuilder{
 		dstType: _this.dstType,
 		kvTypes: _this.kvTypes,

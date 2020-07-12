@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -61,7 +63,7 @@ func (_this *ptrBuilder) PostCacheInitBuilder() {
 	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &ptrBuilder{
 		dstType: _this.dstType,
 		parent:  parent,

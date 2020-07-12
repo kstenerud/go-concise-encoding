@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -44,7 +46,7 @@ type sliceBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 
 	// Variable data (must be reset)
 	ppContainer **reflect.Value
@@ -68,7 +70,7 @@ func (_this *sliceBuilder) PostCacheInitBuilder() {
 	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &sliceBuilder{
 		dstType:     _this.dstType,
 		parent:      parent,

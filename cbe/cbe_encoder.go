@@ -30,6 +30,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -37,15 +38,11 @@ import (
 	"github.com/kstenerud/go-uleb128"
 )
 
-type EncoderOptions struct {
-	BufferSize int
-}
-
-var defaultEncoderOptions = EncoderOptions{
+var defaultEncoderOptions = options.CBEEncoderOptions{
 	BufferSize: 1024,
 }
 
-func DefaultEncoderOptions() *EncoderOptions {
+func DefaultEncoderOptions() *options.CBEEncoderOptions {
 	opts := defaultEncoderOptions
 	return &opts
 }
@@ -53,16 +50,16 @@ func DefaultEncoderOptions() *EncoderOptions {
 // Receives data events, constructing a CBE document from them.
 type Encoder struct {
 	buff    buffer.WriteBuffer
-	options EncoderOptions
+	options options.CBEEncoderOptions
 }
 
-func NewEncoder(writer io.Writer, options *EncoderOptions) *Encoder {
+func NewEncoder(writer io.Writer, options *options.CBEEncoderOptions) *Encoder {
 	_this := &Encoder{}
 	_this.Init(writer, options)
 	return _this
 }
 
-func (_this *Encoder) Init(writer io.Writer, options *EncoderOptions) {
+func (_this *Encoder) Init(writer io.Writer, options *options.CBEEncoderOptions) {
 	if options == nil {
 		options = DefaultEncoderOptions()
 	}

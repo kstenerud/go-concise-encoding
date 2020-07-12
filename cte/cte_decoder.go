@@ -25,50 +25,40 @@ import (
 	"math"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/debug"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/toplevel"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type DecoderOptions struct {
-	// TODO: ShouldZeroCopy option
-	ShouldZeroCopy bool
-	// TODO: ImpliedVersion option
-	ImpliedVersion uint
-	// TODO: ImpliedTLContainer option
-	ImpliedTLContainer toplevel.TLContainerType
-	ReadBufferSize     int
-}
+var defaultDecoderOptions = options.CTEDecoderOptions{}
 
-var defaultDecoderOptions = DecoderOptions{}
-
-func DefaultDecoderOptions() *DecoderOptions {
+func DefaultDecoderOptions() *options.CTEDecoderOptions {
 	opts := defaultDecoderOptions
 	return &opts
 }
 
 // Decode a CTE document, sending all data events to the specified event receiver.
-func Decode(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
+func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) (err error) {
 	return NewDecoder(reader, eventReceiver, options).Decode()
 }
 
 // Decodes CTE documents
 type Decoder struct {
-	eventReceiver  ce.DataEventReceiver
+	eventReceiver  events.DataEventReceiver
 	buffer         CTEReadBuffer
 	containerState []cteDecoderState
 	currentState   cteDecoderState
-	options        DecoderOptions
+	options        options.CTEDecoderOptions
 }
 
-func NewDecoder(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
+func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(reader, eventReceiver, options)
 	return _this
 }
 
-func (_this *Decoder) Init(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) {
+func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) {
 	if options == nil {
 		defaults := defaultDecoderOptions
 		options = &defaults

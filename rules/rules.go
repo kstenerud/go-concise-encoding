@@ -27,8 +27,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/version"
 
 	"github.com/cockroachdb/apd/v2"
@@ -36,23 +37,7 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-type RuleOptions struct {
-	// Concise encoding spec version to adhere to
-	ConciseEncodingVersion uint64
-
-	// Limits before the ruleset artificially terminates with an error.
-	MaxBytesLength      uint64
-	MaxStringLength     uint64
-	MaxURILength        uint64
-	MaxIDLength         uint64
-	MaxMarkupNameLength uint64
-	MaxContainerDepth   uint64
-	MaxObjectCount      uint64
-	MaxReferenceCount   uint64
-	// Max bytes total for all array types
-}
-
-var defaultRuleOptions = RuleOptions{
+var defaultRuleOptions = options.RuleOptions{
 	ConciseEncodingVersion: version.ConciseEncodingVersion,
 	MaxBytesLength:         1000000000,
 	MaxStringLength:        100000000,
@@ -65,7 +50,7 @@ var defaultRuleOptions = RuleOptions{
 	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 }
 
-func DefaultRuleOptions() *RuleOptions {
+func DefaultRuleOptions() *options.RuleOptions {
 	opts := defaultRuleOptions
 	return &opts
 }
@@ -73,7 +58,7 @@ func DefaultRuleOptions() *RuleOptions {
 // Rules constrains the order in which builder commands may be sent, such that
 // they form a valid and complete Concise Encoding document.
 type Rules struct {
-	options           RuleOptions
+	options           options.RuleOptions
 	charValidator     UTF8Validator
 	maxDepth          int
 	stateStack        []ruleState
@@ -87,16 +72,16 @@ type Rules struct {
 	unassignedIDs     []interface{}
 	assignedIDs       map[interface{}]ruleEvent
 	// TODO: Keep track of marked data stats (sizes etc)
-	nextReceiver ce.DataEventReceiver
+	nextReceiver events.DataEventReceiver
 }
 
-func NewRules(options *RuleOptions, nextReceiver ce.DataEventReceiver) *Rules {
+func NewRules(options *options.RuleOptions, nextReceiver events.DataEventReceiver) *Rules {
 	_this := new(Rules)
 	_this.Init(options, nextReceiver)
 	return _this
 }
 
-func (_this *Rules) Init(options *RuleOptions, nextReceiver ce.DataEventReceiver) {
+func (_this *Rules) Init(options *options.RuleOptions, nextReceiver events.DataEventReceiver) {
 	_this.options = applyDefaultRuleOptions(options)
 	_this.stateStack = make([]ruleState, 0, _this.options.MaxContainerDepth)
 	_this.nextReceiver = nextReceiver
@@ -697,8 +682,8 @@ func (_this *Rules) beginContainer(containerType ruleEvent, newState ruleState) 
 // The initial rule state comes pre-stacked. This value accounts for it in calculations.
 const rulesMaxDepthAdjust = 2
 
-func applyDefaultRuleOptions(original *RuleOptions) RuleOptions {
-	var options RuleOptions
+func applyDefaultRuleOptions(original *options.RuleOptions) options.RuleOptions {
+	var options options.RuleOptions
 	if original == nil {
 		options = defaultRuleOptions
 	} else {

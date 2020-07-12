@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -44,7 +45,7 @@ type arrayBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 
 	// Variable data (must be reset)
 	container reflect.Value
@@ -69,7 +70,7 @@ func (_this *arrayBuilder) PostCacheInitBuilder() {
 	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &arrayBuilder{
 		dstType:     _this.dstType,
 		parent:      parent,
@@ -237,7 +238,7 @@ func (_this *bytesArrayBuilder) IsContainerOnly() bool {
 func (_this *bytesArrayBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

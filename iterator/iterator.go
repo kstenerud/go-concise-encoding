@@ -25,34 +25,24 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
-type IteratorOptions struct {
-	ConciseEncodingVersion uint64
-	// If useReferences is true, the iterator will also look for duplicate
-	// pointers to data, generating marker and reference events rather than
-	// walking the object again. This is useful for cyclic or recursive data
-	// structures.
-	UseReferences bool
-	// TODO
-	OmitNilPointers bool
-}
-
-var defaultIteratorOptions = IteratorOptions{
+var defaultIteratorOptions = options.IteratorOptions{
 	ConciseEncodingVersion: version.ConciseEncodingVersion,
 }
 
-func DefaultIteratorOptions() *IteratorOptions {
+func DefaultIteratorOptions() *options.IteratorOptions {
 	opts := defaultIteratorOptions
 	return &opts
 }
 
 // Iterate over an object (recursively), calling the eventReceiver as data is
 // encountered. If options is nil, a zero value will be provided.
-func IterateObject(value interface{}, eventReceiver ce.DataEventReceiver, options *IteratorOptions) {
+func IterateObject(value interface{}, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
 	iter := NewRootObjectIterator(eventReceiver, options)
 	iter.Iterate(value, nil)
 }
@@ -170,8 +160,8 @@ func getIteratorForType(t reflect.Type) ObjectIterator {
 	return iterator.(ObjectIterator)
 }
 
-func applyDefaultIteratorOptions(original *IteratorOptions) *IteratorOptions {
-	var options IteratorOptions
+func applyDefaultIteratorOptions(original *options.IteratorOptions) *options.IteratorOptions {
+	var options options.IteratorOptions
 	if original == nil {
 		options = defaultIteratorOptions
 	} else {

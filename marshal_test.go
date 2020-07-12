@@ -27,7 +27,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/debug"
-	"github.com/kstenerud/go-concise-encoding/iterator"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-describe"
@@ -39,8 +39,8 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	defer func() {
 		debug.DebugOptions.PassThroughPanics = false
 	}()
-	options := &cbe.MarshalerOptions{
-		Iterator: iterator.IteratorOptions{
+	options := &options.CBEMarshalerOptions{
+		Iterator: options.IteratorOptions{
 			UseReferences: true,
 		},
 	}
@@ -69,8 +69,8 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	defer func() {
 		debug.DebugOptions.PassThroughPanics = false
 	}()
-	options := &cte.MarshalerOptions{
-		Iterator: iterator.IteratorOptions{
+	options := &options.CTEMarshalerOptions{
+		Iterator: options.IteratorOptions{
 			UseReferences: true,
 		},
 	}

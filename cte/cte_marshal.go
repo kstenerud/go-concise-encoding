@@ -27,25 +27,21 @@ import (
 	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/iterator"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 )
 
-type MarshalerOptions struct {
-	Encoder  EncoderOptions
-	Iterator iterator.IteratorOptions
-}
+var defaultMarshalerOptions = options.CTEMarshalerOptions{}
 
-var defaultMarshalerOptions = MarshalerOptions{}
-
-func DefaultMarshalerOptions() *MarshalerOptions {
+func DefaultMarshalerOptions() *options.CTEMarshalerOptions {
 	opts := defaultMarshalerOptions
 	return &opts
 }
 
 // Marshal a go object into a CTE document
-func Marshal(object interface{}, writer io.Writer, options *MarshalerOptions) (err error) {
-	if options == nil {
-		options = &MarshalerOptions{}
+func Marshal(object interface{}, writer io.Writer, opts *options.CTEMarshalerOptions) (err error) {
+	if opts == nil {
+		opts = &options.CTEMarshalerOptions{}
 	}
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
@@ -59,29 +55,22 @@ func Marshal(object interface{}, writer io.Writer, options *MarshalerOptions) (e
 		}
 	}()
 
-	encoder := NewEncoder(writer, &options.Encoder)
-	iterator.IterateObject(object, encoder, &options.Iterator)
+	encoder := NewEncoder(writer, &opts.Encoder)
+	iterator.IterateObject(object, encoder, &opts.Iterator)
 	return
 }
 
-type UnmarshalerOptions struct {
-	Decoder DecoderOptions
-	Builder builder.BuilderOptions
-	Rules   rules.RuleOptions
-	// TODO: Error on unknown field
-}
+var defaultUnmarshalerOptions = options.CTEUnmarshalerOptions{}
 
-var defaultUnmarshalerOptions = UnmarshalerOptions{}
-
-func DefaultUnmarshalerOptions() *UnmarshalerOptions {
+func DefaultUnmarshalerOptions() *options.CTEUnmarshalerOptions {
 	opts := defaultUnmarshalerOptions
 	return &opts
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
-func Unmarshal(reader io.Reader, template interface{}, options *UnmarshalerOptions) (decoded interface{}, err error) {
-	if options == nil {
-		options = &UnmarshalerOptions{}
+func Unmarshal(reader io.Reader, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
+	if opts == nil {
+		opts = &options.CTEUnmarshalerOptions{}
 	}
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
@@ -95,9 +84,9 @@ func Unmarshal(reader io.Reader, template interface{}, options *UnmarshalerOptio
 		}
 	}()
 
-	builder := builder.NewBuilderFor(template, &options.Builder)
-	rules := rules.NewRules(&options.Rules, builder)
-	decoder := NewDecoder(reader, rules, &options.Decoder)
+	builder := builder.NewBuilderFor(template, &opts.Builder)
+	rules := rules.NewRules(&opts.Rules, builder)
+	decoder := NewDecoder(reader, rules, &opts.Decoder)
 	decoder.Decode()
 	decoded = builder.GetBuiltObject()
 	return

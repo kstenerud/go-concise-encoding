@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -55,7 +56,7 @@ func (_this *markerIDBuilder) IsContainerOnly() bool {
 func (_this *markerIDBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *markerIDBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *markerIDBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	builderPanicBadEvent(_this, "CloneFromTemplate")
 	return nil
 }
@@ -188,7 +189,7 @@ func (_this *markerObjectBuilder) IsContainerOnly() bool {
 func (_this *markerObjectBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *markerObjectBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *markerObjectBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	builderPanicBadEvent(_this, "CloneFromTemplate")
 	return nil
 }

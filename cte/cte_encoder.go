@@ -31,46 +31,18 @@ import (
 	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
-// How to encode binary floats
-type BinaryFloatEncodeAs int
-
-const (
-	// Use decimal encoding (1.2e4)
-	BinaryFloatEncodeAsDecimal = iota
-	// Use binary encoding (0x1.2p4)
-	BinaryFloatEncodeAsBinary
-)
-
-// Where to place the opening brace on a struct, map, list
-type BracePosition int
-
-const (
-	// Place the opening brace on the same line
-	BracePositionAdjacent = iota
-	// Place the opening brace on the next line
-	BracePositionNextLine
-)
-
-type EncoderOptions struct {
-	BufferSize int
-	Indent     string
-	// TODO: BracePosition option
-	BracePosition BracePosition
-	// TODO: BinaryFloatEncoding option
-	BinaryFloatEncoding BinaryFloatEncodeAs
-}
-
-var defaultEncoderOptions = EncoderOptions{
+var defaultEncoderOptions = options.CTEEncoderOptions{
 	BufferSize: 1024,
 }
 
-func DefaultEncoderOptions() *EncoderOptions {
+func DefaultEncoderOptions() *options.CTEEncoderOptions {
 	opts := defaultEncoderOptions
 	return &opts
 }
@@ -80,16 +52,16 @@ type Encoder struct {
 	buff           buffer.WriteBuffer
 	containerState []cteEncoderState
 	currentState   cteEncoderState
-	options        EncoderOptions
+	options        options.CTEEncoderOptions
 }
 
-func NewEncoder(writer io.Writer, options *EncoderOptions) *Encoder {
+func NewEncoder(writer io.Writer, options *options.CTEEncoderOptions) *Encoder {
 	_this := &Encoder{}
 	_this.Init(writer, options)
 	return _this
 }
 
-func (_this *Encoder) Init(writer io.Writer, options *EncoderOptions) {
+func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions) {
 	if options == nil {
 		options = DefaultEncoderOptions()
 	}

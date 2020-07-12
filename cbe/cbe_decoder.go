@@ -24,45 +24,37 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/debug"
-	"github.com/kstenerud/go-concise-encoding/toplevel"
+	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type DecoderOptions struct {
-	ShouldZeroCopy bool
-	// TODO: ImpliedVersion option
-	ImpliedVersion uint
-	// TODO: ImpliedTLContainer option
-	ImpliedTLContainer toplevel.TLContainerType
-}
+var defaultDecoderOptions = options.CBEDecoderOptions{}
 
-var defaultDecoderOptions = DecoderOptions{}
-
-func DefaultDecoderOptions() *DecoderOptions {
+func DefaultDecoderOptions() *options.CBEDecoderOptions {
 	opts := defaultDecoderOptions
 	return &opts
 }
 
 // Decode a CBE document, sending all data events to the specified event receiver.
-func Decode(reader io.Reader, eventReceiver ce.DataEventReceiver, options *DecoderOptions) (err error) {
+func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) (err error) {
 	return NewDecoder(reader, eventReceiver, options).Decode()
 }
 
 // Decodes CBE documents
 type Decoder struct {
 	buffer       CBEReadBuffer
-	nextReceiver ce.DataEventReceiver
-	options      DecoderOptions
+	nextReceiver events.DataEventReceiver
+	options      options.CBEDecoderOptions
 }
 
-func NewDecoder(reader io.Reader, nextReceiver ce.DataEventReceiver, options *DecoderOptions) *Decoder {
+func NewDecoder(reader io.Reader, nextReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(reader, nextReceiver, options)
 	return _this
 }
 
-func (_this *Decoder) Init(reader io.Reader, nextReceiver ce.DataEventReceiver, options *DecoderOptions) {
+func (_this *Decoder) Init(reader io.Reader, nextReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) {
 	_this.buffer.Init(reader, -1)
 	if options != nil {
 		_this.options = *options

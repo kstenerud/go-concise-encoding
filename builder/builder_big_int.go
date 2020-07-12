@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -52,7 +53,7 @@ func (_this *bigIntBuilder) IsContainerOnly() bool {
 func (_this *bigIntBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *bigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *bigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
@@ -171,7 +172,7 @@ func (_this *pBigIntBuilder) IsContainerOnly() bool {
 func (_this *pBigIntBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

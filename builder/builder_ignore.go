@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -36,7 +38,7 @@ type ignoreBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 }
 
 var globalIgnoreBuilder = &ignoreBuilder{}
@@ -56,7 +58,7 @@ func (_this *ignoreBuilder) IsContainerOnly() bool {
 func (_this *ignoreBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &ignoreBuilder{
 		parent:  parent,
 		root:    root,
@@ -168,7 +170,7 @@ type ignoreContainerBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 }
 
 var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
@@ -188,7 +190,7 @@ func (_this *ignoreContainerBuilder) IsContainerOnly() bool {
 func (_this *ignoreContainerBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &ignoreContainerBuilder{
 		parent:  parent,
 		root:    root,

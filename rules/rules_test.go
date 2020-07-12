@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
@@ -84,7 +85,7 @@ func assertRulesNotInArray(t *testing.T, rules *Rules) {
 	}
 }
 
-func newRulesAfterVersion(options *RuleOptions) *Rules {
+func newRulesAfterVersion(options *options.RuleOptions) *Rules {
 	rules := NewRules(options, events.NewNullEventReceiver())
 	rules.OnVersion(options.ConciseEncodingVersion)
 	return rules

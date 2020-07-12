@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -47,13 +48,13 @@ type RootBuilder struct {
 // RootBuilder
 // -----------
 
-func NewRootBuilder(dstType reflect.Type, options *BuilderOptions) *RootBuilder {
+func NewRootBuilder(dstType reflect.Type, options *options.BuilderOptions) *RootBuilder {
 	_this := &RootBuilder{}
 	_this.Init(dstType, options)
 	return _this
 }
 
-func (_this *RootBuilder) Init(dstType reflect.Type, options *BuilderOptions) {
+func (_this *RootBuilder) Init(dstType reflect.Type, options *options.BuilderOptions) {
 	_this.dstType = dstType
 	_this.object = reflect.New(dstType).Elem()
 
@@ -108,7 +109,7 @@ func (_this *RootBuilder) IsContainerOnly() bool {
 func (_this *RootBuilder) PostCacheInitBuilder() {
 	builderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
-func (_this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *BuilderOptions) ObjectBuilder {
+func (_this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	builderPanicBadEvent(_this, "CloneFromTemplate")
 	return nil
 }

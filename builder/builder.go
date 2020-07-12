@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -36,17 +37,9 @@ import (
 	"github.com/kstenerud/go-describe"
 )
 
-type BuilderOptions struct {
-	// TODO: Currently handled in bigIntMaxBase10Exponent in conversions.go
-	FloatToBigIntMaxExponent int
-	// TODO: ErrorOnLossyFloatConversion option
-	ErrorOnLossyFloatConversion bool
-	// TODO: Something for decimal floats?
-}
+var defaultBuilderOptions = options.BuilderOptions{}
 
-var defaultBuilderOptions = BuilderOptions{}
-
-func DefaultBuilderOptions() *BuilderOptions {
+func DefaultBuilderOptions() *options.BuilderOptions {
 	opts := defaultBuilderOptions
 	return &opts
 }
@@ -59,7 +52,7 @@ func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
 
 // NewBuilderFor creates a new builder that builds objects of the same type as
 // the template object.
-func NewBuilderFor(template interface{}, options *BuilderOptions) *RootBuilder {
+func NewBuilderFor(template interface{}, options *options.BuilderOptions) *RootBuilder {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
 	if rv.IsValid() {
@@ -111,7 +104,7 @@ type ObjectBuilder interface {
 	PostCacheInitBuilder()
 
 	// Clone from this builder as a template, adding contextual data
-	CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder
+	CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder
 
 	SetParent(newParent ObjectBuilder)
 }
@@ -240,8 +233,8 @@ func getBuilderForType(dstType reflect.Type) ObjectBuilder {
 	return builder.(ObjectBuilder)
 }
 
-func applyDefaultBuilderOptions(original *BuilderOptions) *BuilderOptions {
-	var options BuilderOptions
+func applyDefaultBuilderOptions(original *options.BuilderOptions) *options.BuilderOptions {
+	var options options.BuilderOptions
 	if original != nil {
 		options = *original
 	}

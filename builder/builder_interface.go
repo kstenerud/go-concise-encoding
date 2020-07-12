@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -46,7 +47,7 @@ type intfBuilder struct {
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
-	options *BuilderOptions
+	options *options.BuilderOptions
 }
 
 func newInterfaceBuilder() ObjectBuilder {
@@ -64,7 +65,7 @@ func (_this *intfBuilder) IsContainerOnly() bool {
 func (_this *intfBuilder) PostCacheInitBuilder() {
 }
 
-func (_this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *BuilderOptions) ObjectBuilder {
+func (_this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &intfBuilder{
 		parent:  parent,
 		root:    root,
