@@ -36,7 +36,8 @@ func DefaultDecoderOptions() *options.CBEDecoderOptions {
 	return &opts
 }
 
-// Decode a CBE document, sending all data events to the specified event receiver.
+// Decode a CBE document from reader, sending all data events to eventReceiver.
+// If options is nil, default options will be used.
 func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) (err error) {
 	return NewDecoder(reader, eventReceiver, options).Decode()
 }
@@ -48,12 +49,16 @@ type Decoder struct {
 	options      options.CBEDecoderOptions
 }
 
+// Create a new CBE decoder, which will read from reader and send data events
+// to nextReceiver. If options is nil, default options will be used.
 func NewDecoder(reader io.Reader, nextReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(reader, nextReceiver, options)
 	return _this
 }
 
+// Initialize this decoder, which will read from reader and send data events
+// to nextReceiver. If options is nil, default options will be used.
 func (_this *Decoder) Init(reader io.Reader, nextReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) {
 	_this.buffer.Init(reader, -1)
 	if options != nil {

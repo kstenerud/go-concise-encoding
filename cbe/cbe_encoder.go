@@ -53,12 +53,16 @@ type Encoder struct {
 	options options.CBEEncoderOptions
 }
 
+// Create a new CBE encoder, which will receive data events and write a document
+// to writer. If options is nil, default options will be used.
 func NewEncoder(writer io.Writer, options *options.CBEEncoderOptions) *Encoder {
 	_this := &Encoder{}
 	_this.Init(writer, options)
 	return _this
 }
 
+// Initialize this encoder, which will receive data events and write a document
+// to writer. If options is nil, default options will be used.
 func (_this *Encoder) Init(writer io.Writer, options *options.CBEEncoderOptions) {
 	if options == nil {
 		options = DefaultEncoderOptions()

@@ -18,6 +18,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Performs encoding and decoding of Concise Text Encoding documents
+// (https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md).
+//
+// The decoder decodes a document to produce data events, and the encoder
+// consumes data events to produce a document.
 package cte
 
 import (
@@ -38,7 +43,8 @@ func DefaultDecoderOptions() *options.CTEDecoderOptions {
 	return &opts
 }
 
-// Decode a CTE document, sending all data events to the specified event receiver.
+// Decode a CTE document from reader, sending all data events to eventReceiver.
+// If options is nil, default options will be used.
 func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) (err error) {
 	return NewDecoder(reader, eventReceiver, options).Decode()
 }
@@ -52,12 +58,16 @@ type Decoder struct {
 	options        options.CTEDecoderOptions
 }
 
+// Create a new CTE decoder, which will read from reader and send data events
+// to nextReceiver. If options is nil, default options will be used.
 func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(reader, eventReceiver, options)
 	return _this
 }
 
+// Initialize this decoder, which will read from reader and send data events
+// to nextReceiver. If options is nil, default options will be used.
 func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) {
 	if options == nil {
 		defaults := defaultDecoderOptions

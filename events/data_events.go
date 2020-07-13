@@ -18,6 +18,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Data events, which are primarily produced by iterators and consumed by builders.
+//
+// Data events form the backbone of the library. Everything is built upon the
+// concepts of producing and consuming data events in order to create and
+// interpret Concise Encoding documents.
 package events
 
 import (
@@ -32,6 +37,13 @@ import (
 // DataEventReceiver receives data events (int, string, etc) and performs
 // actions based on those events. Generally, this is used to drive complex
 // object builders, and also the encoders.
+//
+// IMPORTANT: DataEventReceiver's methods signal errors via panics, not
+// returned errors.
+// You must use recover() in code that calls DataEventReceiver methods. The
+// recover statements should not be inside of loops, as this causes slow defers.
+// (https://go.googlesource.com/proposal/+/refs/heads/master/design/34481-opencoded-defers.md)
+// (https://github.com/golang/go/commit/be64a19d99918c843f8555aad580221207ea35bc)
 type DataEventReceiver interface {
 	OnVersion(version uint64)
 	OnPadding(count int)

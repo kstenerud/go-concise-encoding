@@ -18,6 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Globally settable options that are useful in debugging this library.
 package debug
 
 // Settings to help with debugging
@@ -27,5 +28,4 @@ type DebugOptionsStruct struct {
 	PassThroughPanics bool
 }
 
-// Only set these options when debugging a problem with the library.
 var DebugOptions DebugOptionsStruct

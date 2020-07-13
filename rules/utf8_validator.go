@@ -35,7 +35,8 @@ func (_this *UTF8Validator) Reset() {
 }
 
 // Add a byte to the UTF-8 character that is being built. When the character is
-// complete. IsCompleteCharacter will return true.
+// complete. IsCompleteCharacter() will return true.
+//
 // This method panics if the UTF-8 sequence is invalid.
 func (_this *UTF8Validator) AddByte(byteValue int) {
 	const continuationMask = 0xc0

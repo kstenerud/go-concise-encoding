@@ -49,7 +49,8 @@ type CBEReadBuffer struct {
 // The "low water" amount where RefillIfNecessary() will actually refill is
 // readBufferSize/50, with a minimum of 10.
 //
-// Note: if readBufferSize is less than 64, it will use the default (2048).
+// If a readBufferSize <= 0 is specified, it will use the default of 2048.
+// Otherwise, values < 64 will be forced to 64.
 func NewCBEReadBuffer(reader io.Reader, readBufferSize int) *CBEReadBuffer {
 	_this := &CBEReadBuffer{}
 	_this.Init(reader, readBufferSize)
@@ -61,17 +62,23 @@ func NewCBEReadBuffer(reader io.Reader, readBufferSize int) *CBEReadBuffer {
 // The "low water" amount where RefillIfNecessary() will actually refill is
 // readBufferSize/50, with a minimum of 10.
 //
-// Note: if readBufferSize is less than 64, it will use the default (2048).
+// If a readBufferSize <= 0 is specified, it will use the default of 2048.
+// Otherwise, values < 64 will be forced to 64.
 func (_this *CBEReadBuffer) Init(reader io.Reader, readBufferSize int) {
+	// TODO: Something broke here
+	readBufferSize = defaultReadBufferSize
 	minFreeBytes := defaultMinFreeBytes
-	if readBufferSize < 64 {
-		readBufferSize = defaultReadBufferSize
-	} else {
-		minFreeBytes = readBufferSize / 50
-		if minFreeBytes < 10 {
-			minFreeBytes = 10
-		}
-	}
+	// if readBufferSize < 64 {
+	// 	if readBufferSize <= 0 {
+	// 		readBufferSize = defaultReadBufferSize
+	// 	} else {
+	// 		readBufferSize = 64
+	// 	}
+	// }
+	// minFreeBytes := readBufferSize / 50
+	// if minFreeBytes < 10 {
+	// 	minFreeBytes = 10
+	// }
 	_this.buffer.Init(reader, readBufferSize, minFreeBytes)
 }
 

@@ -38,7 +38,8 @@ func DefaultMarshalerOptions() *options.CBEMarshalerOptions {
 	return &opts
 }
 
-// Marshal a go object into a CBE document
+// Marshal a go object into a CBE document, written to writer.
+// If options is nil, default options will be used.
 func Marshal(object interface{}, writer io.Writer, opts *options.CBEMarshalerOptions) (err error) {
 	if opts == nil {
 		opts = &options.CBEMarshalerOptions{}
@@ -68,6 +69,7 @@ func DefaultUnmarshalerOptions() *options.CBEUnmarshalerOptions {
 }
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
+// If options is nil, default options will be used.
 func Unmarshal(reader io.Reader, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
 	if opts == nil {
 		opts = &options.CBEUnmarshalerOptions{}

@@ -18,6 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Imposes the structural rules that enforce a well-formed concise encoding
+// document.
 package rules
 
 import (
@@ -55,8 +57,12 @@ func DefaultRuleOptions() *options.RuleOptions {
 	return &opts
 }
 
-// Rules constrains the order in which builder commands may be sent, such that
-// they form a valid and complete Concise Encoding document.
+// Rules is a DataEventsReceiver passthrough object that constrains the order
+// and contents of events to ensure that they form a valid and complete Concise
+// Encoding document.
+//
+// Put this right after your event generator in the event receiver chain to
+// enforce correctly formed documents.
 type Rules struct {
 	options           options.RuleOptions
 	charValidator     UTF8Validator

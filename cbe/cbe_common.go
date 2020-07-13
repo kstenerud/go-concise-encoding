@@ -18,6 +18,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Performs encoding and decoding of Concise Binary Encoding documents
+// (https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md).
+//
+// The decoder decodes a document to produce data events, and the encoder
+// consumes data events to produce a document.
 package cbe
 
 type cbeTypeField uint8

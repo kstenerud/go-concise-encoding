@@ -38,7 +38,8 @@ func DefaultMarshalerOptions() *options.CTEMarshalerOptions {
 	return &opts
 }
 
-// Marshal a go object into a CTE document
+// Marshal a go object into a CTE document, written to writer.
+// If options is nil, default options will be used.
 func Marshal(object interface{}, writer io.Writer, opts *options.CTEMarshalerOptions) (err error) {
 	if opts == nil {
 		opts = &options.CTEMarshalerOptions{}
@@ -68,6 +69,7 @@ func DefaultUnmarshalerOptions() *options.CTEUnmarshalerOptions {
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
+// If options is nil, default options will be used.
 func Unmarshal(reader io.Reader, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
 	if opts == nil {
 		opts = &options.CTEUnmarshalerOptions{}

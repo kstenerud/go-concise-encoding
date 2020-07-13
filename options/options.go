@@ -18,6 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// All options that can be used to fine-tune the behavior of various aspects of
+// this library.
 package options
 
 type CTEMarshalerOptions struct {

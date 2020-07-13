@@ -35,7 +35,9 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// RootBuilder adapts DataEventReceiver to ObjectBuilder, coordinating the build.
+// RootBuilder adapts DataEventReceiver to ObjectBuilder, coordinating the
+// build via sub-builders.
+//
 // Use GetBuiltObject() to fetch the final result.
 type RootBuilder struct {
 	dstType         reflect.Type
@@ -48,12 +50,16 @@ type RootBuilder struct {
 // RootBuilder
 // -----------
 
+// Create a new root builder to build objects of dstType. If options is nil,
+// default options will be used.
 func NewRootBuilder(dstType reflect.Type, options *options.BuilderOptions) *RootBuilder {
 	_this := &RootBuilder{}
 	_this.Init(dstType, options)
 	return _this
 }
 
+// Initialize this root builder to build objects of dstType. If options is nil,
+// default options will be used.
 func (_this *RootBuilder) Init(dstType reflect.Type, options *options.BuilderOptions) {
 	_this.dstType = dstType
 	_this.object = reflect.New(dstType).Elem()

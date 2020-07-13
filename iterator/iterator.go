@@ -18,6 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Iterators iterate through go objects, producing data events.
 package iterator
 
 import (
@@ -41,16 +42,17 @@ func DefaultIteratorOptions() *options.IteratorOptions {
 }
 
 // Iterate over an object (recursively), calling the eventReceiver as data is
-// encountered. If options is nil, a zero value will be provided.
-func IterateObject(value interface{}, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
+// encountered. If options is nil, default options will be used.
+func IterateObject(object interface{}, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
 	iter := NewRootObjectIterator(eventReceiver, options)
-	iter.Iterate(value, nil)
+	iter.Iterate(object, nil)
 }
 
-// ObjectIterator iterates through a value, calling callback methods as it goes.
+// ObjectIterator iterates through an object, calling DataEventReceiver callback
+// methods as it encounters data.
 type ObjectIterator interface {
-	// Iterates over a value, potentially calling other iterators as it goes.
-	Iterate(v reflect.Value, root *RootObjectIterator)
+	// Iterate over an object.
+	Iterate(object reflect.Value, root *RootObjectIterator)
 
 	// PostCacheInitIterator is called after the iterator template is saved to
 	// cache but before use, so that lookups succeed on cyclic type references.
@@ -79,6 +81,7 @@ func init() {
 
 // Register a specific iterator for a type.
 // If an iterator has already been registered for this type, it will be replaced.
+// This function is thread-safe.
 func RegisterIteratorForType(t reflect.Type, iterator ObjectIterator) {
 	iterators.Store(t, iterator)
 }

@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Which version of concise encoding this library adheres to.
 package version
 
-// Which version of concise encoding this library adheres to
 const ConciseEncodingVersion = 1

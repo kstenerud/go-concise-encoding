@@ -33,19 +33,17 @@ type ReferenceFiller struct {
 	unresolvedReferences map[interface{}][]func(reflect.Value)
 }
 
-func NewMarkerRegistry() *ReferenceFiller {
+// Create and initialize a new ReferenceFiller
+func NewReferenceFiller() *ReferenceFiller {
 	_this := new(ReferenceFiller)
 	_this.Init()
 	return _this
 }
 
+// Initialize an existing ReferenceFiller
 func (_this *ReferenceFiller) Init() {
 	_this.markedValues = make(map[interface{}]reflect.Value)
 	_this.unresolvedReferences = make(map[interface{}][]func(reflect.Value))
-}
-
-func (_this *ReferenceFiller) HasUnresolvedReferences() bool {
-	return len(_this.unresolvedReferences) > 0
 }
 
 // Notify that a new marker has been found.

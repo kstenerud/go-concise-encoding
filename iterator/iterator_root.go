@@ -29,8 +29,8 @@ import (
 	"github.com/kstenerud/go-duplicates"
 )
 
-// RootObjectIterator iterates recursively depth-first through an object,
-// notifying the event receiver as it encounters data.
+// RootObjectIterator acts as a top-level iterator, coordinating iteration
+// through an arbitrary object via sub-iterators.
 type RootObjectIterator struct {
 	foundReferences map[duplicates.TypedPointer]bool
 	namedReferences map[duplicates.TypedPointer]uint32
@@ -39,12 +39,16 @@ type RootObjectIterator struct {
 	options         options.IteratorOptions
 }
 
+// Create a new root object iterator that will send data events to eventReceiver.
+// If options is nil, default options will be used.
 func NewRootObjectIterator(eventReceiver events.DataEventReceiver, options *options.IteratorOptions) *RootObjectIterator {
 	_this := new(RootObjectIterator)
 	_this.Init(eventReceiver, options)
 	return _this
 }
 
+// Initialize this iterator to send data events to eventReceiver.
+// If options is nil, default options will be used.
 func (_this *RootObjectIterator) Init(eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
 	_this.options = *applyDefaultIteratorOptions(options)
 	_this.eventReceiver = eventReceiver
@@ -52,15 +56,15 @@ func (_this *RootObjectIterator) Init(eventReceiver events.DataEventReceiver, op
 
 // Iterates over an object, sending events to the root iterator's
 // DataEventReceiver as it visits all elements of the value.
-func (_this *RootObjectIterator) Iterate(value interface{}, _ *RootObjectIterator) {
-	if value == nil {
+func (_this *RootObjectIterator) Iterate(object interface{}, _ *RootObjectIterator) {
+	if object == nil {
 		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
 		_this.eventReceiver.OnNil()
 		_this.eventReceiver.OnEndDocument()
 		return
 	}
-	_this.findReferences(value)
-	rv := reflect.ValueOf(value)
+	_this.findReferences(object)
+	rv := reflect.ValueOf(object)
 	iterator := getIteratorForType(rv.Type())
 	_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
 	iterator.Iterate(rv, _this)

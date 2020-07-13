@@ -18,6 +18,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// Builders consume events to produce objects.
+//
+// Builders respond to builder events in order to build arbitrary objects.
+// Generally, they take template types and generate objects of those types.
 package builder
 
 import (
@@ -46,12 +50,13 @@ func DefaultBuilderOptions() *options.BuilderOptions {
 
 // Register a specific builder for a type.
 // If a builder has already been registered for this type, it will be replaced.
+// This function is thread-safe.
 func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
 	builders.Store(dstType, builder)
 }
 
 // NewBuilderFor creates a new builder that builds objects of the same type as
-// the template object.
+// the template object. If options is nil, default options will be used.
 func NewBuilderFor(template interface{}, options *options.BuilderOptions) *RootBuilder {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
@@ -88,6 +93,7 @@ type ObjectBuilder interface {
 	BuildBeginMarker(id interface{})
 	BuildFromReference(id interface{})
 
+	// Tells the build system that this builder can only build containers.
 	IsContainerOnly() bool
 
 	// Prepare this builder for storing list contents, ultimately followed by End()
