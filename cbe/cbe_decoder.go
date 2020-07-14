@@ -29,7 +29,9 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-var defaultDecoderOptions = options.CBEDecoderOptions{}
+var defaultDecoderOptions = options.CBEDecoderOptions{
+	BufferSize: 2048,
+}
 
 func DefaultDecoderOptions() *options.CBEDecoderOptions {
 	opts := defaultDecoderOptions
@@ -51,20 +53,18 @@ type Decoder struct {
 
 // Create a new CBE decoder, which will read from reader and send data events
 // to nextReceiver. If options is nil, default options will be used.
-func NewDecoder(reader io.Reader, nextReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) *Decoder {
+func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) *Decoder {
 	_this := &Decoder{}
-	_this.Init(reader, nextReceiver, options)
+	_this.Init(reader, eventReceiver, options)
 	return _this
 }
 
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If options is nil, default options will be used.
-func (_this *Decoder) Init(reader io.Reader, nextReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) {
-	_this.buffer.Init(reader, -1)
-	if options != nil {
-		_this.options = *options
-	}
-	_this.nextReceiver = nextReceiver
+func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) {
+	_this.options = applyDefaultRuleOptions(options)
+	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
+	_this.nextReceiver = eventReceiver
 }
 
 // Run the complete decode process. The document and data receiver specified
@@ -188,6 +188,25 @@ func (_this *Decoder) Decode() (err error) {
 }
 
 // ============================================================================
+
+func chooseLowWater(bufferSize int) int {
+	lowWater := bufferSize / 50
+	if lowWater < 30 {
+		lowWater = 30
+	}
+	return lowWater
+}
+
+func applyDefaultRuleOptions(original *options.CBEDecoderOptions) options.CBEDecoderOptions {
+	options := defaultDecoderOptions
+	if original != nil {
+		options = *original
+		if options.BufferSize < 64 {
+			options.BufferSize = 64
+		}
+	}
+	return options
+}
 
 func (_this *Decoder) possiblyZeroCopy(bytes []byte) []byte {
 	if _this.options.ShouldZeroCopy {

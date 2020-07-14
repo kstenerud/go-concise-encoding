@@ -689,10 +689,8 @@ func (_this *Rules) beginContainer(containerType ruleEvent, newState ruleState) 
 const rulesMaxDepthAdjust = 2
 
 func applyDefaultRuleOptions(original *options.RuleOptions) options.RuleOptions {
-	var options options.RuleOptions
-	if original == nil {
-		options = defaultRuleOptions
-	} else {
+	options := defaultRuleOptions
+	if original != nil {
 		options = *original
 		if options.ConciseEncodingVersion < 1 {
 			options.ConciseEncodingVersion = defaultRuleOptions.ConciseEncodingVersion

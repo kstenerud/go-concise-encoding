@@ -31,7 +31,9 @@ import (
 	"github.com/kstenerud/go-concise-encoding/rules"
 )
 
-var defaultMarshalerOptions = options.CTEMarshalerOptions{}
+var defaultMarshalerOptions = options.CTEMarshalerOptions{
+	Encoder: defaultEncoderOptions,
+}
 
 func DefaultMarshalerOptions() *options.CTEMarshalerOptions {
 	opts := defaultMarshalerOptions
@@ -61,7 +63,9 @@ func Marshal(object interface{}, writer io.Writer, opts *options.CTEMarshalerOpt
 	return
 }
 
-var defaultUnmarshalerOptions = options.CTEUnmarshalerOptions{}
+var defaultUnmarshalerOptions = options.CTEUnmarshalerOptions{
+	Decoder: defaultDecoderOptions,
+}
 
 func DefaultUnmarshalerOptions() *options.CTEUnmarshalerOptions {
 	opts := defaultUnmarshalerOptions

@@ -33,59 +33,37 @@ import (
 	"github.com/kstenerud/go-uleb128"
 )
 
-const (
-	defaultReadBufferSize = 2048
-	defaultMinFreeBytes   = 48
-)
-
 type CBEReadBuffer struct {
 	buffer   buffer.StreamingReadBuffer
 	position int
 }
 
-// Create a new CBE read buffer. The buffer will be empty until
-// RefillIfNecessary is called.
+// Create a new CBE read buffer. The buffer will be empty until RefillIfNecessary() is
+// called.
 //
-// The "low water" amount where RefillIfNecessary() will actually refill is
-// readBufferSize/50, with a minimum of 10.
-//
-// If a readBufferSize <= 0 is specified, it will use the default of 2048.
-// Otherwise, values < 64 will be forced to 64.
-func NewCBEReadBuffer(reader io.Reader, readBufferSize int) *CBEReadBuffer {
+// readBufferSize determines the initial size of the buffer, and
+// loWaterByteCount determines when RefillIfNecessary() refills the buffer from
+// the reader.
+func NewCBEReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *CBEReadBuffer {
 	_this := &CBEReadBuffer{}
-	_this.Init(reader, readBufferSize)
+	_this.Init(reader, readBufferSize, loWaterByteCount)
 	return _this
 }
 
-// Init the read buffer. The buffer will be empty until RefillIfNecessary is called.
+// Init the read buffer. The buffer will be empty until RefillIfNecessary() is
+// called.
 //
-// The "low water" amount where RefillIfNecessary() will actually refill is
-// readBufferSize/50, with a minimum of 10.
-//
-// If a readBufferSize <= 0 is specified, it will use the default of 2048.
-// Otherwise, values < 64 will be forced to 64.
-func (_this *CBEReadBuffer) Init(reader io.Reader, readBufferSize int) {
-	// TODO: Something broke here
-	readBufferSize = defaultReadBufferSize
-	minFreeBytes := defaultMinFreeBytes
-	// if readBufferSize < 64 {
-	// 	if readBufferSize <= 0 {
-	// 		readBufferSize = defaultReadBufferSize
-	// 	} else {
-	// 		readBufferSize = 64
-	// 	}
-	// }
-	// minFreeBytes := readBufferSize / 50
-	// if minFreeBytes < 10 {
-	// 	minFreeBytes = 10
-	// }
-	_this.buffer.Init(reader, readBufferSize, minFreeBytes)
+// readBufferSize determines the initial size of the buffer, and
+// loWaterByteCount determines when RefillIfNecessary() refills the buffer from
+// the reader.
+func (_this *CBEReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
+	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
 // Refill the buffer from the reader if we've hit the "low water" of unread
 // bytes.
 func (_this *CBEReadBuffer) RefillIfNecessary() {
-	_this.position += _this.buffer.RefillIfNecessary(_this.position)
+	_this.position += _this.buffer.RefillIfNecessary(_this.position, _this.position)
 }
 
 func (_this *CBEReadBuffer) HasUnreadData() bool {

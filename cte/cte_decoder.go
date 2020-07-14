@@ -36,7 +36,9 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-var defaultDecoderOptions = options.CTEDecoderOptions{}
+var defaultDecoderOptions = options.CTEDecoderOptions{
+	BufferSize: 4096,
+}
 
 func DefaultDecoderOptions() *options.CTEDecoderOptions {
 	opts := defaultDecoderOptions
@@ -69,15 +71,9 @@ func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, option
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If options is nil, default options will be used.
 func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) {
-	if options == nil {
-		defaults := defaultDecoderOptions
-		options = &defaults
-	}
-	_this.buffer.Init(reader, options.ReadBufferSize)
+	_this.options = applyDefaultRuleOptions(options)
+	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
 	_this.eventReceiver = eventReceiver
-	if options != nil {
-		_this.options = *options
-	}
 }
 
 // Run the complete decode process. The document and data receiver specified
@@ -90,6 +86,8 @@ func (_this *Decoder) Decode() (err error) {
 			}
 		}
 	}()
+
+	_this.buffer.RefillIfNecessary()
 
 	_this.currentState = cteDecoderStateAwaitObject
 
@@ -109,6 +107,25 @@ func (_this *Decoder) Decode() (err error) {
 }
 
 // ============================================================================
+
+func chooseLowWater(bufferSize int) int {
+	lowWater := bufferSize / 50
+	if lowWater < 30 {
+		lowWater = 30
+	}
+	return lowWater
+}
+
+func applyDefaultRuleOptions(original *options.CTEDecoderOptions) options.CTEDecoderOptions {
+	options := defaultDecoderOptions
+	if original != nil {
+		options = *original
+		if options.BufferSize < 64 {
+			options.BufferSize = 64
+		}
+	}
+	return options
+}
 
 // Tokens
 

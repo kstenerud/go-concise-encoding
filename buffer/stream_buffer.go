@@ -66,9 +66,9 @@ func (_this *StreamingReadBuffer) HasByteAtOffset(offset int) bool {
 // The existing "unread" data (data after position) may be moved to the start
 // of the buffer, in which case positionOffset will be set to the offset from
 // old position to new.
-func (_this *StreamingReadBuffer) RefillIfNecessary(position int) (positionOffset int) {
-	if _this.unreadByteCount(position) < _this.minFreeBytes {
-		return _this.Refill(position)
+func (_this *StreamingReadBuffer) RefillIfNecessary(startOffset, position int) (positionOffset int) {
+	if !_this.isEOF && _this.unreadByteCount(position) < _this.minFreeBytes {
+		return _this.Refill(startOffset)
 	}
 	return 0
 }

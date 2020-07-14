@@ -36,11 +36,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-const (
-	defaultReadBufferSize = 2048
-	defaultMinFreeBytes   = 48
-)
-
 type CTEReadBuffer struct {
 	buffer        buffer.StreamingReadBuffer
 	tokenStart    int
@@ -51,43 +46,26 @@ type CTEReadBuffer struct {
 	colCount      int
 }
 
-// Create a new CTE read buffer. The buffer will be empty until
-// RefillIfNecessary is called.
+// Create a new CTE read buffer. The buffer will be empty until RefillIfNecessary() is
+// called.
 //
-// The "low water" amount where RefillIfNecessary() will actually refill is
-// readBufferSize/50, with a minimum of 10.
-//
-// If a readBufferSize <= 0 is specified, it will use the default of 2048.
-// Otherwise, values < 64 will be forced to 64.
-func NewReadBuffer(reader io.Reader, readBufferSize int) *CTEReadBuffer {
+// readBufferSize determines the initial size of the buffer, and
+// loWaterByteCount determines when RefillIfNecessary() refills the buffer from
+// the reader.
+func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *CTEReadBuffer {
 	_this := &CTEReadBuffer{}
-	_this.Init(reader, readBufferSize)
+	_this.Init(reader, readBufferSize, loWaterByteCount)
 	return _this
 }
 
-// Init the read buffer. The buffer will be empty until RefillIfNecessary is called.
+// Init the read buffer. The buffer will be empty until RefillIfNecessary() is
+// called.
 //
-// The "low water" amount where RefillIfNecessary() will actually refill is
-// readBufferSize/50, with a minimum of 10.
-//
-// If a readBufferSize <= 0 is specified, it will use the default of 2048.
-// Otherwise, values < 64 will be forced to 64.
-func (_this *CTEReadBuffer) Init(reader io.Reader, readBufferSize int) {
-	// TODO: Something broke here
-	readBufferSize = defaultReadBufferSize
-	minFreeBytes := defaultMinFreeBytes
-	// if readBufferSize < 64 {
-	// 	if readBufferSize <= 0 {
-	// 		readBufferSize = defaultReadBufferSize
-	// 	} else {
-	// 		readBufferSize = 64
-	// 	}
-	// }
-	// minFreeBytes := readBufferSize / 50
-	// if minFreeBytes < 10 {
-	// 	minFreeBytes = 10
-	// }
-	_this.buffer.Init(reader, readBufferSize, minFreeBytes)
+// readBufferSize determines the initial size of the buffer, and
+// loWaterByteCount determines when RefillIfNecessary() refills the buffer from
+// the reader.
+func (_this *CTEReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
+	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
 // Bytes
@@ -124,7 +102,10 @@ func (_this *CTEReadBuffer) AdvanceByte() {
 }
 
 func (_this *CTEReadBuffer) RefillIfNecessary() {
-	offset := _this.buffer.RefillIfNecessary(_this.tokenStart)
+	offset := _this.buffer.RefillIfNecessary(_this.tokenStart, _this.tokenPos)
+	if _this.tokenStart-offset < 0 {
+		panic(fmt.Errorf("TokenStart was %v, tokenPos was %v", _this.tokenStart-offset, _this.tokenPos))
+	}
 	_this.tokenPos += offset
 	_this.tokenStart += offset
 	_this.subtokenStart += offset

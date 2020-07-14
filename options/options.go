@@ -65,6 +65,7 @@ type CBEDecoderOptions struct {
 	ImpliedVersion uint
 	// TODO: ImpliedTLContainer option
 	ImpliedTLContainer TLContainerType
+	BufferSize         int
 }
 
 type CBEEncoderOptions struct {
@@ -107,7 +108,7 @@ type CTEDecoderOptions struct {
 	ImpliedVersion uint
 	// TODO: ImpliedTLContainer option
 	ImpliedTLContainer TLContainerType
-	ReadBufferSize     int
+	BufferSize         int
 }
 
 type BuilderOptions struct {
