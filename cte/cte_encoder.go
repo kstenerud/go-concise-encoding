@@ -53,6 +53,7 @@ type Encoder struct {
 	containerState []cteEncoderState
 	currentState   cteEncoderState
 	options        options.CTEEncoderOptions
+	nextPrefix     string
 }
 
 // Create a new CTE encoder, which will receive data events and write a document
@@ -125,10 +126,15 @@ func (_this *Encoder) OnBigInt(value *big.Int) {
 }
 
 func (_this *Encoder) OnPositiveInt(value uint64) {
-	_this.addPrefix()
-	_this.addFmt("%d", value)
-	_this.addSuffix()
-	_this.transitionState()
+	if _this.currentState == cteEncoderStateAwaitMarkerID {
+		_this.nextPrefix = fmt.Sprintf("%v%v:", _this.nextPrefix, value)
+		_this.unstackState()
+	} else {
+		_this.addPrefix()
+		_this.addFmt("%d", value)
+		_this.addSuffix()
+		_this.transitionState()
+	}
 }
 
 func (_this *Encoder) OnNegativeInt(value uint64) {
@@ -268,17 +274,23 @@ func (_this *Encoder) OnURI(value string) {
 }
 
 func (_this *Encoder) OnString(value string) {
-	_this.addPrefix()
-	if _this.currentState == cteEncoderStateAwaitMarkupItem ||
+	if _this.currentState == cteEncoderStateAwaitMarkerID {
+		_this.nextPrefix = fmt.Sprintf("%v%v:", _this.nextPrefix, value)
+		_this.unstackState()
+	} else if _this.currentState == cteEncoderStateAwaitMarkupItem ||
 		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPre ||
 		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPost ||
 		isUnquotedString(value) {
+		_this.addPrefix()
 		_this.addString(value)
+		_this.addSuffix()
+		_this.transitionState()
 	} else {
+		_this.addPrefix()
 		_this.addFmt(`"%v"`, value)
+		_this.addSuffix()
+		_this.transitionState()
 	}
-	_this.addSuffix()
-	_this.transitionState()
 }
 
 func (_this *Encoder) OnCustom(value []byte) {
@@ -345,6 +357,7 @@ func (_this *Encoder) OnComment() {
 }
 
 func (_this *Encoder) OnEnd() {
+	_this.applyIndentation(-1)
 	// TODO: Make this nicer
 	isInvisible := _this.currentState == cteEncoderStateAwaitMetaKey ||
 		_this.currentState == cteEncoderStateAwaitMetaFirstKey
@@ -358,15 +371,12 @@ func (_this *Encoder) OnEnd() {
 }
 
 func (_this *Encoder) OnMarker() {
-	_this.addPrefix()
-	panic("TODO: CTEEncoder.OnMarker")
-	_this.addSuffix()
+	_this.nextPrefix = "&"
+	_this.stackState(cteEncoderStateAwaitMarkerID, "")
 }
 
 func (_this *Encoder) OnReference() {
-	_this.addPrefix()
-	panic("TODO: CTEEncoder.OnReference")
-	_this.addSuffix()
+	_this.nextPrefix = "#"
 }
 
 func (_this *Encoder) OnEndDocument() {
@@ -393,6 +403,10 @@ func (_this *Encoder) transitionState() {
 
 func (_this *Encoder) addPrefix() {
 	cteEncoderPrefixHandlers[_this.currentState](_this)
+	if len(_this.nextPrefix) > 0 {
+		_this.addString(_this.nextPrefix)
+		_this.nextPrefix = ""
+	}
 }
 
 func (_this *Encoder) addSuffix() {
@@ -400,6 +414,8 @@ func (_this *Encoder) addSuffix() {
 }
 
 func (_this *Encoder) addString(str string) {
+	// TODO: String continuation
+	// TODO: Max column option?
 	dst := _this.buff.Allocate(len(str))
 	copy(dst, str)
 }
@@ -436,12 +452,16 @@ func (_this *Encoder) suffixEquals() {
 func (_this *Encoder) prefixNone() {
 }
 
-func (_this *Encoder) prefixIndent() {
+func (_this *Encoder) applyIndentation(levelOffset int) {
 	if len(_this.options.Indent) > 0 {
-		level := len(_this.containerState)
+		level := len(_this.containerState) + levelOffset
 		indent := strings.Repeat(_this.options.Indent, level)
 		_this.addString("\n" + indent)
 	}
+}
+
+func (_this *Encoder) prefixIndent() {
+	_this.applyIndentation(0)
 }
 
 func (_this *Encoder) prefixSpacer() {
@@ -460,7 +480,7 @@ func (_this *Encoder) prefixPipe() {
 	_this.addString("|")
 }
 
-type cteEncoderState int
+type cteEncoderState int64
 
 const (
 	/*  0 */ cteEncoderStateAwaitTLO cteEncoderState = iota * 2
@@ -478,18 +498,16 @@ const (
 	/* 24 */ cteEncoderStateAwaitMarkupFirstItemPre
 	/* 26 */ cteEncoderStateAwaitMarkupFirstItemPost
 	/* 28 */ cteEncoderStateAwaitMarkupItem
-	cteEncoderStateAwaitCommentItem
-	cteEncoderStateAwaitMarkerID
-	cteEncoderStateAwaitMarkerItem
-	cteEncoderStateAwaitReferenceID
-	cteEncoderStateAwaitQuotedString
-	cteEncoderStateAwaitQuotedStringLast
-	cteEncoderStateAwaitBytes
-	cteEncoderStateAwaitBytesLast
-	cteEncoderStateAwaitURI
-	cteEncoderStateAwaitURILast
-	cteEncoderStateAwaitCustom
-	cteEncoderStateAwaitCustomLast
+	/* 30 */ cteEncoderStateAwaitCommentItem
+	/* 32 */ cteEncoderStateAwaitMarkerID
+	/* 34 */ cteEncoderStateAwaitQuotedString
+	/* 36 */ cteEncoderStateAwaitQuotedStringLast
+	/* 38 */ cteEncoderStateAwaitBytes
+	/* 40 */ cteEncoderStateAwaitBytesLast
+	/* 42 */ cteEncoderStateAwaitURI
+	/* 44 */ cteEncoderStateAwaitURILast
+	/* 46 */ cteEncoderStateAwaitCustom
+	/* 48 */ cteEncoderStateAwaitCustomLast
 	cteEncoderStateCount
 
 	cteEncoderStateWithInvisibleItem cteEncoderState = 1
@@ -520,8 +538,6 @@ func init() {
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitMarkupItem] = (*Encoder).prefixNone
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitCommentItem] = (*Encoder).prefixNone
 	cteEncoderPrefixHandlers[cteEncoderStateAwaitMarkerID] = (*Encoder).prefixNone
-	cteEncoderPrefixHandlers[cteEncoderStateAwaitMarkerItem] = (*Encoder).prefixSpacer
-	cteEncoderPrefixHandlers[cteEncoderStateAwaitReferenceID] = (*Encoder).prefixNone
 }
 
 var cteEncoderSuffixHandlers [cteEncoderStateCount]cteEncoderPrefixFunction
@@ -561,9 +577,7 @@ func init() {
 	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupFirstItemPost] = cteEncoderStateAwaitMarkupItem
 	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupItem] = cteEncoderStateAwaitMarkupItem
 	cteEncoderStateTransitions[cteEncoderStateAwaitCommentItem] = cteEncoderStateAwaitCommentItem
-	cteEncoderStateTransitions[cteEncoderStateAwaitMarkerID] = cteEncoderStateAwaitMarkerItem
-	// cteEncoderStateTransitions[cteEncoderStateAwaitMarkerItem] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitReferenceID] = cteEncoderStateAwait
+
 	// cteEncoderStateTransitions[cteEncoderStateAwaitQuotedString] = cteEncoderStateAwait
 	// cteEncoderStateTransitions[cteEncoderStateAwaitQuotedStringLast] = cteEncoderStateAwait
 	// cteEncoderStateTransitions[cteEncoderStateAwaitBytes] = cteEncoderStateAwait

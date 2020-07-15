@@ -316,6 +316,7 @@ const maxPreShiftDecimal = uint64(0x1999999999999999)
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
 func (_this *CTEReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+	// TODO: numeric whitespace _
 	if bigStartValue == nil {
 		value = startValue
 		for {
@@ -819,6 +820,41 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
 
 		isCommentInitiator = currentByte == '/'
 	}
+}
+
+// Decode a marker ID. asString will be empty if the result is an integer.
+func (_this *CTEReadBuffer) DecodeMarkerID() (asString string, asUint uint64) {
+	isInteger := true
+	_this.BeginSubtoken()
+Loop:
+	for {
+		b := _this.PeekByteAllowEOD()
+		switch {
+		case b.HasProperty(cteProperty09):
+			if isInteger {
+				if asUint > maxPreShiftDecimal {
+					_this.Errorf("Integer marker ID is too big")
+				} else {
+					asUint = asUint*10 + uint64(b-'0')
+				}
+			}
+		case b.HasProperty(ctePropertyMarkerID):
+			isInteger = false
+		default:
+			break Loop
+		}
+		_this.AdvanceByte()
+	}
+
+	subtoken := _this.GetSubtoken()
+	if len(subtoken) == 0 {
+		_this.Errorf("Missing marker ID")
+	}
+
+	if !isInteger {
+		asString = string(subtoken)
+	}
+	return
 }
 
 type nextType int

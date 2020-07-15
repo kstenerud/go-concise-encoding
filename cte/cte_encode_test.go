@@ -22,9 +22,14 @@ package cte
 
 import (
 	"testing"
+
+	"github.com/kstenerud/go-concise-encoding/debug"
 )
 
 func assertCTEDecodeEncode(t *testing.T, expected string) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+
 	events, err := cteDecode([]byte(expected))
 	if err != nil {
 		t.Error(err)
@@ -38,4 +43,8 @@ func assertCTEDecodeEncode(t *testing.T, expected string) {
 
 func TestMapFloatKey(t *testing.T) {
 	assertCTEDecodeEncode(t, "c1 {nil=@nil 1.5=1000}")
+}
+
+func TestMarkerReference(t *testing.T) {
+	assertCTEDecodeEncode(t, "c1 {first=&1:1000 second=#1}")
 }

@@ -370,10 +370,12 @@ func TestCTEUUID(t *testing.T) {
 }
 
 func TestCTEMarker(t *testing.T) {
-	assertCTEDecode(t, `c1 &2`, V(1), MARK(), PI(2), ED())
-	assertCTEDecode(t, `c1 &1 string`, V(1), MARK(), PI(1), S("string"), ED())
-	assertCTEDecode(t, `c1 &a string`, V(1), MARK(), S("a"), S("string"), ED())
-	assertCTEDecodeFails(t, `c1 & 1 string`)
+	assertCTEDecodeFails(t, `c1 &2`)
+	assertCTEDecode(t, `c1 &1:string`, V(1), MARK(), PI(1), S("string"), ED())
+	assertCTEDecode(t, `c1 &a:string`, V(1), MARK(), S("a"), S("string"), ED())
+	assertCTEDecodeFails(t, `c1 & 1:string`)
+	assertCTEDecodeFails(t, `c1 &1 string`)
+	assertCTEDecodeFails(t, `c1 &1string`)
 }
 
 func TestCTEReference(t *testing.T) {

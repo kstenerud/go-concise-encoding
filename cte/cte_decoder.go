@@ -536,7 +536,7 @@ func (_this *Decoder) handleCommentContent() {
 func (_this *Decoder) handleMarkupBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMarkup()
-	_this.stackContainer(cteDecoderStateAwaitMarkupValue)
+	_this.stackContainer(cteDecoderStateAwaitMarkupName)
 	_this.buffer.EndToken()
 }
 
@@ -638,19 +638,30 @@ func (_this *Decoder) handleVerbatimString() {
 func (_this *Decoder) handleReference() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnReference()
-	if hasProperty(_this.buffer.PeekByteNoEOD(), ctePropertyWhitespace) {
-		_this.buffer.Errorf("Whitespace not allowed between reference and tag name")
+	asString, asUint := _this.buffer.DecodeMarkerID()
+	if len(asString) > 0 {
+		_this.eventReceiver.OnString(asString)
+	} else {
+		_this.eventReceiver.OnPositiveInt(asUint)
 	}
-	_this.buffer.EndToken()
+	_this.endObject()
 }
 
 func (_this *Decoder) handleMarker() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMarker()
-	if hasProperty(_this.buffer.PeekByteNoEOD(), ctePropertyWhitespace) {
-		_this.buffer.Errorf("Whitespace not allowed between marker and tag name")
+	asString, asUint := _this.buffer.DecodeMarkerID()
+	if b := _this.buffer.PeekByteNoEOD(); b != ':' {
+		_this.buffer.UnexpectedChar("marker ID")
+	}
+	_this.buffer.AdvanceByte()
+	if len(asString) > 0 {
+		_this.eventReceiver.OnString(asString)
+	} else {
+		_this.eventReceiver.OnPositiveInt(asUint)
 	}
 	_this.buffer.EndToken()
+	// Don't end object here because the real object follows the marker ID
 }
 
 type cteDecoderState int
@@ -670,7 +681,6 @@ const (
 	cteDecoderStateAwaitMarkupKVSeparator
 	cteDecoderStateAwaitMarkupValue
 	cteDecoderStateAwaitMarkupItem
-	cteDecoderStateAwaitMarkerID
 	cteDecoderStateAwaitReferenceID
 	cteDecoderStateCount
 )
@@ -693,7 +703,6 @@ func init() {
 	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupKVSeparator] = cteDecoderStateAwaitMarkupValue
 	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupValue] = cteDecoderStateAwaitMarkupKey
 	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupItem] = cteDecoderStateAwaitMarkupItem
-	cteDecoderStateTransitions[cteDecoderStateAwaitMarkerID] = cteDecoderStateAwaitObject
 	cteDecoderStateTransitions[cteDecoderStateAwaitReferenceID] = cteDecoderStateAwaitObject
 
 	cteDecoderStateHandlers[cteDecoderStateAwaitObject] = (*Decoder).handleObject
@@ -710,7 +719,6 @@ func init() {
 	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupKVSeparator] = (*Decoder).handleKVSeparator
 	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupValue] = (*Decoder).handleObject
 	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupItem] = (*Decoder).handleMarkupContent
-	cteDecoderStateHandlers[cteDecoderStateAwaitMarkerID] = (*Decoder).handleObject
 	cteDecoderStateHandlers[cteDecoderStateAwaitReferenceID] = (*Decoder).handleObject
 }
 
@@ -805,10 +813,10 @@ const (
 	cteProperty09
 	ctePropertyLowercaseAF
 	ctePropertyUppercaseAF
-	ctePropertyMarkupInitiator
 	ctePropertyBinaryDigit
 	ctePropertyOctalDigit
 	ctePropertyAreaLocation
+	ctePropertyMarkerID
 )
 
 func (_this cteByteProprty) HasProperty(property cteByteProprty) bool {
@@ -828,15 +836,15 @@ func init() {
 	cteByteProperties['.'] |= ctePropertyUnquotedMid
 	cteByteProperties[':'] |= ctePropertyUnquotedMid
 	cteByteProperties['/'] |= ctePropertyUnquotedMid
-	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation
+	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation | ctePropertyMarkerID
 	for i := '0'; i <= '9'; i++ {
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyAreaLocation
+		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyAreaLocation | ctePropertyMarkerID
 	}
 	for i := 'a'; i <= 'z'; i++ {
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAZ | ctePropertyAreaLocation
+		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAZ | ctePropertyAreaLocation | ctePropertyMarkerID
 	}
 	for i := 'A'; i <= 'Z'; i++ {
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAZ | ctePropertyAreaLocation
+		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAZ | ctePropertyAreaLocation | ctePropertyMarkerID
 	}
 	for i := 0xc0; i < 0xf8; i++ {
 		// UTF-8 initiator
@@ -876,11 +884,6 @@ func init() {
 	for i := '0'; i <= '1'; i++ {
 		cteByteProperties[i] |= ctePropertyBinaryDigit
 	}
-
-	cteByteProperties['/'] |= ctePropertyMarkupInitiator
-	cteByteProperties['<'] |= ctePropertyMarkupInitiator
-	cteByteProperties['>'] |= ctePropertyMarkupInitiator
-	cteByteProperties['\\'] |= ctePropertyMarkupInitiator
 }
 
 var subsecondMagnitudes = []int{

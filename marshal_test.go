@@ -48,9 +48,7 @@ func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
 	expected interface{}) {
 
 	debug.DebugOptions.PassThroughPanics = true
-	defer func() {
-		debug.DebugOptions.PassThroughPanics = false
-	}()
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	buffer := &bytes.Buffer{}
 	err := cbe.Marshal(expected, buffer, marshalOptions)
 	if err != nil {

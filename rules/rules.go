@@ -57,6 +57,8 @@ func DefaultRuleOptions() *options.RuleOptions {
 	return &opts
 }
 
+// TODO: Marker ID rules
+
 // Rules is a DataEventsReceiver passthrough object that constrains the order
 // and contents of events to ensure that they form a valid and complete Concise
 // Encoding document.
