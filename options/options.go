@@ -22,6 +22,10 @@
 // this library.
 package options
 
+// TODO: Opt: Convert line endings to escapes
+// TODO: Opt: Don't convert escapes
+// TODO: Don't use marker/ref on empty containers
+
 type CTEMarshalerOptions struct {
 	Encoder  CTEEncoderOptions
 	Iterator IteratorOptions
