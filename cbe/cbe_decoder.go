@@ -41,10 +41,23 @@ func DefaultDecoderOptions() *options.CBEDecoderOptions {
 // Decode a CBE document from reader, sending all data events to eventReceiver.
 // If options is nil, default options will be used.
 func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) (err error) {
+	defer func() {
+		if !debug.DebugOptions.PassThroughPanics {
+			if r := recover(); r != nil {
+				err = r.(error)
+			}
+		}
+	}()
+
 	return NewDecoder(reader, eventReceiver, options).Decode()
 }
 
 // Decodes CBE documents
+//
+// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
+// to recover() at an appropriate location when calling this struct's methods
+// directly (with the exception of constructors and initializers, which are not
+// designed to panic).
 type Decoder struct {
 	buffer       CBEReadBuffer
 	nextReceiver events.DataEventReceiver
@@ -70,14 +83,6 @@ func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventRecei
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
 func (_this *Decoder) Decode() (err error) {
-	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
-			if r := recover(); r != nil {
-				err = r.(error)
-			}
-		}
-	}()
-
 	_this.buffer.RefillIfNecessary()
 
 	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())

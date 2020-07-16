@@ -46,10 +46,6 @@ func (_this *dfloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *dfloatBuilder) IsContainerOnly() bool {
-	return false
-}
-
 func (_this *dfloatBuilder) PostCacheInitBuilder() {
 }
 
@@ -61,11 +57,11 @@ func (_this *dfloatBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *dfloatBuilder) BuildFromNil(dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Nil")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Nil")
 }
 
 func (_this *dfloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Bool")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Bool")
 }
 
 func (_this *dfloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
@@ -97,57 +93,57 @@ func (_this *dfloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst ref
 }
 
 func (_this *dfloatBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "UUID")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "UUID")
 }
 
 func (_this *dfloatBuilder) BuildFromString(value string, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "String")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "String")
 }
 
 func (_this *dfloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Bytes")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Bytes")
 }
 
 func (_this *dfloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "URI")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "URI")
 }
 
 func (_this *dfloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Time")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Time")
 }
 
 func (_this *dfloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "CompactTime")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "CompactTime")
 }
 
 func (_this *dfloatBuilder) BuildBeginList() {
-	builderPanicBadEventType(_this, common.TypeDFloat, "List")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "List")
 }
 
 func (_this *dfloatBuilder) BuildBeginMap() {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Map")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Map")
 }
 
 func (_this *dfloatBuilder) BuildEndContainer() {
-	builderPanicBadEventType(_this, common.TypeDFloat, "ContainerEnd")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "ContainerEnd")
 }
 
 func (_this *dfloatBuilder) BuildBeginMarker(id interface{}) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Marker")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Marker")
 }
 
 func (_this *dfloatBuilder) BuildFromReference(id interface{}) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "Reference")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Reference")
 }
 
 func (_this *dfloatBuilder) PrepareForListContents() {
-	builderPanicBadEventType(_this, common.TypeDFloat, "PrepareForListContents")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "PrepareForListContents")
 }
 
 func (_this *dfloatBuilder) PrepareForMapContents() {
-	builderPanicBadEventType(_this, common.TypeDFloat, "PrepareForMapContents")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "PrepareForMapContents")
 }
 
 func (_this *dfloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEventType(_this, common.TypeDFloat, "NotifyChildContainerFinished")
+	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "NotifyChildContainerFinished")
 }

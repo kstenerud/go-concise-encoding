@@ -71,10 +71,6 @@ func (_this *structBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
-func (_this *structBuilder) IsContainerOnly() bool {
-	return true
-}
-
 func (_this *structBuilder) PostCacheInitBuilder() {
 	_this.nameBuilder = getBuilderForType(reflect.TypeOf(""))
 	_this.builderDescs = make(map[string]*structBuilderDesc)
@@ -239,7 +235,7 @@ func (_this *structBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *structBuilder) PrepareForListContents() {
-	builderPanicBadEventType(_this, _this.dstType, "PrepareForListContents")
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForListContents")
 }
 
 func (_this *structBuilder) PrepareForMapContents() {

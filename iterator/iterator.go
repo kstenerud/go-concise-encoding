@@ -43,6 +43,9 @@ func DefaultIteratorOptions() *options.IteratorOptions {
 
 // Iterate over an object (recursively), calling the eventReceiver as data is
 // encountered. If options is nil, default options will be used.
+//
+// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
+// to recover() at an appropriate location when calling this function.
 func IterateObject(object interface{}, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
 	iter := NewRootObjectIterator(eventReceiver, options)
 	iter.Iterate(object, nil)

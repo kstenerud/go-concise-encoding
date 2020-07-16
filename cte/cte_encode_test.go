@@ -64,7 +64,7 @@ func TestMarkerReference(t *testing.T) {
 func TestDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
 	v := []interface{}{sl, sl, sl}
-	assertCTEDecodeEncode(t, "c1 [[] [] []]")
+	assertCTEEncode(t, v, "c1 [[] [] []]")
 }
 
 func TestDuplicateEmptySliceInMap(t *testing.T) {
@@ -74,5 +74,5 @@ func TestDuplicateEmptySliceInMap(t *testing.T) {
 		"b": sl,
 		"c": sl,
 	}
-	assertCTEDecodeEncode(t, "c1 {a=[] b=[] c=[]}")
+	assertCTEEncode(t, v, "c1 {a=[] b=[] c=[]}")
 }

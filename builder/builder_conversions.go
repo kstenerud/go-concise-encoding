@@ -37,71 +37,71 @@ import (
 func setIntFromInt(value int64, dst reflect.Value) {
 	dst.SetInt(value)
 	if dst.Int() != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setIntFromUint(value uint64, dst reflect.Value) {
 	i, err := conversions.UintToInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 
 	}
 	dst.SetInt(i)
 	if uint64(dst.Int()) != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setIntFromBigInt(value *big.Int, dst reflect.Value) {
 	i, err := conversions.BigIntToInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 
 	}
 	dst.SetInt(i)
 	if dst.Int() != i {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setIntFromFloat(value float64, dst reflect.Value) {
 	dst.SetInt(int64(value))
 	if float64(dst.Int()) != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setIntFromBigFloat(value *big.Float, dst reflect.Value) {
 	i, err := conversions.BigFloatToInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetInt(i)
 	if dst.Int() != i {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	i, err := value.Int()
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetInt(i)
 	if dst.Int() != i {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	i, err := value.Int64()
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetInt(i)
 	if dst.Int() != i {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
@@ -110,7 +110,7 @@ func setIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 func setUintFromInt(value int64, dst reflect.Value) {
 	u, err := conversions.IntToUint(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	setUintFromUint(u, dst)
 }
@@ -118,14 +118,14 @@ func setUintFromInt(value int64, dst reflect.Value) {
 func setUintFromUint(value uint64, dst reflect.Value) {
 	dst.SetUint(value)
 	if dst.Uint() != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setUintFromBigInt(value *big.Int, dst reflect.Value) {
 	u, err := conversions.BigIntToUint(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	setUintFromUint(u, dst)
 }
@@ -133,7 +133,7 @@ func setUintFromBigInt(value *big.Int, dst reflect.Value) {
 func setUintFromFloat(value float64, dst reflect.Value) {
 	u := uint64(value)
 	if float64(u) != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 	setUintFromUint(u, dst)
 }
@@ -141,7 +141,7 @@ func setUintFromFloat(value float64, dst reflect.Value) {
 func setUintFromBigFloat(value *big.Float, dst reflect.Value) {
 	u, err := conversions.BigFloatToUint(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	setUintFromUint(u, dst)
 }
@@ -149,7 +149,7 @@ func setUintFromBigFloat(value *big.Float, dst reflect.Value) {
 func setUintFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	u, err := value.Uint()
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	setUintFromUint(u, dst)
 }
@@ -157,7 +157,7 @@ func setUintFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 func setUintFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	u, err := conversions.BigDecimalFloatToUint(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	setUintFromUint(u, dst)
 }
@@ -169,14 +169,14 @@ func setUintFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 func setFloatFromInt(value int64, dst reflect.Value) {
 	dst.SetFloat(float64(value))
 	if int64(dst.Float()) != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
 func setFloatFromUint(value uint64, dst reflect.Value) {
 	dst.SetFloat(float64(value))
 	if uint64(dst.Float()) != value {
-		builderPanicCannotConvert(value, dst.Type())
+		BuilderPanicCannotConvert(value, dst.Type())
 	}
 }
 
@@ -187,7 +187,7 @@ func setFloatFromFloat(value float64, dst reflect.Value) {
 func setFloatFromBigInt(value *big.Int, dst reflect.Value) {
 	v, err := conversions.BigIntToFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetFloat(v)
 }
@@ -195,7 +195,7 @@ func setFloatFromBigInt(value *big.Int, dst reflect.Value) {
 func setFloatFromBigFloat(value *big.Float, dst reflect.Value) {
 	f, err := conversions.BigFloatToFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetFloat(f)
 }
@@ -207,7 +207,7 @@ func setFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 func setFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	v, err := value.Float64()
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.SetFloat(v)
 }
@@ -225,7 +225,7 @@ func setBigIntFromUint(value uint64, dst reflect.Value) {
 func setBigIntFromFloat(value float64, dst reflect.Value) {
 	bi, err := conversions.FloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
@@ -233,7 +233,7 @@ func setBigIntFromFloat(value float64, dst reflect.Value) {
 func setBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
 	bi, err := conversions.BigFloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
@@ -241,7 +241,7 @@ func setBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
 func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	bi, err := conversions.DecimalFloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
@@ -249,7 +249,7 @@ func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 func setBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	bi, err := conversions.BigDecimalFloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
@@ -267,7 +267,7 @@ func setPBigIntFromUint(value uint64, dst reflect.Value) {
 func setPBigIntFromFloat(value float64, dst reflect.Value) {
 	bi, err := conversions.FloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
@@ -275,7 +275,7 @@ func setPBigIntFromFloat(value float64, dst reflect.Value) {
 func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
 	bi, err := conversions.BigFloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
@@ -283,7 +283,7 @@ func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
 func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	bi, err := conversions.DecimalFloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
@@ -291,7 +291,7 @@ func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 func setPBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	bi, err := conversions.BigDecimalFloatToBigInt(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
@@ -329,7 +329,7 @@ func setBigFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) 
 func setBigFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	bf, err := conversions.BigDecimalFloatToBigFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bf))
 }
@@ -365,7 +365,7 @@ func setPBigFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
 func setPBigFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	bf, err := conversions.BigDecimalFloatToBigFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bf))
 }
@@ -387,7 +387,7 @@ func setBigDecimalFloatFromBigInt(value *big.Int, dst reflect.Value) {
 func setBigDecimalFloatFromFloat(value float64, dst reflect.Value) {
 	bdf, err := conversions.FloatToBigDecimalFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bdf))
 }
@@ -395,7 +395,7 @@ func setBigDecimalFloatFromFloat(value float64, dst reflect.Value) {
 func setBigDecimalFloatFromBigFloat(value *big.Float, dst reflect.Value) {
 	pbdf, err := conversions.BigFloatToPBigDecimalFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*pbdf))
 }
@@ -421,7 +421,7 @@ func setPBigDecimalFloatFromBigInt(value *big.Int, dst reflect.Value) {
 func setPBigDecimalFloatFromFloat(value float64, dst reflect.Value) {
 	v, err := conversions.FloatToPBigDecimalFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(v))
 }
@@ -429,7 +429,7 @@ func setPBigDecimalFloatFromFloat(value float64, dst reflect.Value) {
 func setPBigDecimalFloatFromBigFloat(value *big.Float, dst reflect.Value) {
 	pbdf, err := conversions.BigFloatToPBigDecimalFloat(value)
 	if err != nil {
-		builderPanicErrorConverting(value, dst.Type(), err)
+		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(pbdf))
 }
@@ -473,7 +473,7 @@ func setUintFromAnything(src reflect.Value, dst reflect.Value) {
 		setUintFromAnything(src.Elem(), dst)
 		return
 	}
-	builderPanicCannotConvertRV(src, dst.Type())
+	BuilderPanicCannotConvertRV(src, dst.Type())
 }
 
 func setIntFromAnything(src reflect.Value, dst reflect.Value) {
@@ -511,7 +511,7 @@ func setIntFromAnything(src reflect.Value, dst reflect.Value) {
 		setIntFromAnything(src.Elem(), dst)
 		return
 	}
-	builderPanicCannotConvertRV(src, dst.Type())
+	BuilderPanicCannotConvertRV(src, dst.Type())
 }
 
 func setFloatFromAnything(src reflect.Value, dst reflect.Value) {
@@ -549,7 +549,7 @@ func setFloatFromAnything(src reflect.Value, dst reflect.Value) {
 		setFloatFromAnything(src.Elem(), dst)
 		return
 	}
-	builderPanicCannotConvert(src, dst.Type())
+	BuilderPanicCannotConvert(src, dst.Type())
 }
 
 func setAnythingFromAnything(src reflect.Value, dst reflect.Value) {
@@ -592,5 +592,5 @@ func setAnythingFromAnything(src reflect.Value, dst reflect.Value) {
 	case reflect.Ptr:
 		panic("TODO: setAnythingFromAnything: Ptr")
 	}
-	builderPanicCannotConvert(src, dst.Type())
+	BuilderPanicCannotConvert(src, dst.Type())
 }

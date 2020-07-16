@@ -52,22 +52,17 @@ func (_this *topLevelBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.builder)
 }
 
-func (_this *topLevelBuilder) IsContainerOnly() bool {
-	builderPanicBadEvent(_this, "IsContainerOnly")
-	return false
-}
-
 func (_this *topLevelBuilder) PostCacheInitBuilder() {
-	builderPanicBadEvent(_this, "PostCacheInitBuilder")
+	BuilderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
 
 func (_this *topLevelBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	builderPanicBadEvent(_this, "CloneFromTemplate")
+	BuilderPanicBadEvent(_this, "CloneFromTemplate")
 	return nil
 }
 
 func (_this *topLevelBuilder) SetParent(parent ObjectBuilder) {
-	builderPanicBadEvent(_this, "SetParent")
+	BuilderPanicBadEvent(_this, "SetParent")
 }
 
 func (_this *topLevelBuilder) BuildFromNil(dst reflect.Value) {
@@ -154,15 +149,15 @@ func (_this *topLevelBuilder) BuildBeginMap() {
 }
 
 func (_this *topLevelBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, "End")
+	BuilderPanicBadEvent(_this, "End")
 }
 
 func (_this *topLevelBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, "PrepareForListContents")
+	BuilderPanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *topLevelBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, "PrepareForMapContents")
+	BuilderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *topLevelBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -179,5 +174,5 @@ func (_this *topLevelBuilder) BuildBeginMarker(id interface{}) {
 
 func (_this *topLevelBuilder) BuildFromReference(id interface{}) {
 
-	builderPanicBadEvent(_this, "BuildFromReference")
+	BuilderPanicBadEvent(_this, "BuildFromReference")
 }

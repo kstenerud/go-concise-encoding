@@ -48,6 +48,11 @@ func DefaultEncoderOptions() *options.CBEEncoderOptions {
 }
 
 // Receives data events, constructing a CBE document from them.
+//
+// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
+// to recover() at an appropriate location when calling this struct's methods
+// directly (with the exception of constructors and initializers, which are not
+// designed to panic).
 type Encoder struct {
 	buff    buffer.WriteBuffer
 	options options.CBEEncoderOptions

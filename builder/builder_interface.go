@@ -58,10 +58,6 @@ func (_this *intfBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *intfBuilder) IsContainerOnly() bool {
-	return false
-}
-
 func (_this *intfBuilder) PostCacheInitBuilder() {
 }
 
@@ -150,7 +146,7 @@ func (_this *intfBuilder) BuildBeginMap() {
 }
 
 func (_this *intfBuilder) BuildEndContainer() {
-	builderPanicBadEventType(_this, builderIntfType, "ContainerEnd")
+	BuilderWithTypePanicBadEvent(_this, builderIntfType, "ContainerEnd")
 }
 
 func (_this *intfBuilder) BuildBeginMarker(id interface{}) {

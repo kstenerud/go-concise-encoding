@@ -71,10 +71,6 @@ func (_this *mapBuilder) String() string {
 	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvBuilders[0], _this.kvBuilders[1])
 }
 
-func (_this *mapBuilder) IsContainerOnly() bool {
-	return true
-}
-
 func (_this *mapBuilder) PostCacheInitBuilder() {
 	_this.kvBuilders[kvBuilderKey] = getBuilderForType(_this.dstType.Key())
 	_this.kvBuilders[kvBuilderValue] = getBuilderForType(_this.dstType.Elem())
@@ -256,7 +252,7 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *mapBuilder) PrepareForListContents() {
-	builderPanicBadEventType(_this, builderIntfType, "PrepareForListContents")
+	BuilderWithTypePanicBadEvent(_this, builderIntfType, "PrepareForListContents")
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {

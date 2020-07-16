@@ -55,10 +55,6 @@ func (_this *ptrBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *ptrBuilder) IsContainerOnly() bool {
-	return _this.elemBuilder.IsContainerOnly()
-}
-
 func (_this *ptrBuilder) PostCacheInitBuilder() {
 	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
@@ -169,15 +165,15 @@ func (_this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst refl
 }
 
 func (_this *ptrBuilder) BuildBeginList() {
-	builderPanicBadEventType(_this, _this.dstType, "List")
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "List")
 }
 
 func (_this *ptrBuilder) BuildBeginMap() {
-	builderPanicBadEventType(_this, _this.dstType, "Map")
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Map")
 }
 
 func (_this *ptrBuilder) BuildEndContainer() {
-	builderPanicBadEventType(_this, _this.dstType, "ContainerEnd")
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "ContainerEnd")
 }
 
 func (_this *ptrBuilder) BuildBeginMarker(id interface{}) {

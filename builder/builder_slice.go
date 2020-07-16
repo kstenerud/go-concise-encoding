@@ -62,10 +62,6 @@ func (_this *sliceBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *sliceBuilder) IsContainerOnly() bool {
-	return true
-}
-
 func (_this *sliceBuilder) PostCacheInitBuilder() {
 	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
 }
@@ -228,7 +224,7 @@ func (_this *sliceBuilder) PrepareForListContents() {
 }
 
 func (_this *sliceBuilder) PrepareForMapContents() {
-	builderPanicBadEventType(_this, _this.dstType, "PrepareForMapContents")
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
 func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {

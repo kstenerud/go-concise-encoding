@@ -31,6 +31,11 @@ import (
 
 // RootObjectIterator acts as a top-level iterator, coordinating iteration
 // through an arbitrary object via sub-iterators.
+//
+// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
+// to recover() at an appropriate location when calling this struct's methods
+// directly (with the exception of constructors and initializers, which are not
+// designed to panic).
 type RootObjectIterator struct {
 	foundReferences map[duplicates.TypedPointer]bool
 	namedReferences map[duplicates.TypedPointer]uint32

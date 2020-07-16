@@ -141,7 +141,7 @@ func (_this *ignoreBuilder) BuildBeginMap() {
 }
 
 func (_this *ignoreBuilder) BuildEndContainer() {
-	builderPanicBadEvent(_this, "End")
+	BuilderPanicBadEvent(_this, "End")
 }
 
 func (_this *ignoreBuilder) BuildBeginMarker(id interface{}) {
@@ -153,15 +153,15 @@ func (_this *ignoreBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *ignoreBuilder) PrepareForListContents() {
-	builderPanicBadEvent(_this, "PrepareForListContents")
+	BuilderPanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *ignoreBuilder) PrepareForMapContents() {
-	builderPanicBadEvent(_this, "PrepareForMapContents")
+	BuilderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	builderPanicBadEvent(_this, "NotifyChildContainerFinished")
+	BuilderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
