@@ -30,16 +30,28 @@ func assertCTEDecodeEncode(t *testing.T, expected string) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
-	events, err := cteDecode([]byte(expected))
+	events, err := cteDecodeToEvents([]byte(expected))
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	result := string(cteEncode(events...))
+	result := string(cteEncodeEvents(events...))
 	if result != expected {
 		t.Errorf("Expected [%v] but got [%v]", expected, result)
 	}
 }
+
+func assertCTEEncode(t *testing.T, v interface{}, expected string) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+
+	actual := string(cteEncodeValue(v))
+	if actual != expected {
+		t.Errorf("Expected [%v] but got [%v]", expected, actual)
+	}
+}
+
+// ============================================================================
 
 func TestMapFloatKey(t *testing.T) {
 	assertCTEDecodeEncode(t, "c1 {nil=@nil 1.5=1000}")
@@ -47,4 +59,20 @@ func TestMapFloatKey(t *testing.T) {
 
 func TestMarkerReference(t *testing.T) {
 	assertCTEDecodeEncode(t, "c1 {first=&1:1000 second=#1}")
+}
+
+func TestDuplicateEmptySliceInSlice(t *testing.T) {
+	sl := []interface{}{}
+	v := []interface{}{sl, sl, sl}
+	assertCTEDecodeEncode(t, "c1 [[] [] []]")
+}
+
+func TestDuplicateEmptySliceInMap(t *testing.T) {
+	sl := []interface{}{}
+	v := map[interface{}]interface{}{
+		"a": sl,
+		"b": sl,
+		"c": sl,
+	}
+	assertCTEDecodeEncode(t, "c1 {a=[] b=[] c=[]}")
 }

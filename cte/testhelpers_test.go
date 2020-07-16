@@ -72,16 +72,24 @@ func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
 
-func cteDecode(document []byte) (events []*test.TEvent, err error) {
+func cteDecodeToEvents(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
 	err = Decode(bytes.NewBuffer(document), receiver, nil)
 	events = receiver.Events
 	return
 }
 
-func cteEncode(events ...*test.TEvent) []byte {
+func cteEncodeEvents(events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(buffer, nil)
 	test.InvokeEvents(encoder, events...)
+	return buffer.Bytes()
+}
+
+func cteEncodeValue(v interface{}) []byte {
+	buffer := &bytes.Buffer{}
+	if err := Marshal(v, buffer, nil); err != nil {
+		panic(err)
+	}
 	return buffer.Bytes()
 }

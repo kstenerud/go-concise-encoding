@@ -37,7 +37,7 @@ import (
 func assertCTEDecode(t *testing.T, document string, expectDecoded ...*test.TEvent) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-	actualDecoded, err := cteDecode([]byte(document))
+	actualDecoded, err := cteDecodeToEvents([]byte(document))
 	if err != nil {
 		t.Error(err)
 		return
@@ -50,7 +50,7 @@ func assertCTEDecode(t *testing.T, document string, expectDecoded ...*test.TEven
 func assertCTEEncodeDecode(t *testing.T, document string, expectDecoded ...*test.TEvent) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-	actualDecoded, err := cteDecode([]byte(document))
+	actualDecoded, err := cteDecodeToEvents([]byte(document))
 	if err != nil {
 		t.Error(err)
 		return
@@ -60,14 +60,14 @@ func assertCTEEncodeDecode(t *testing.T, document string, expectDecoded ...*test
 	}
 
 	expectEncoded := document
-	actualEncoded := string(cteEncode(expectDecoded...))
+	actualEncoded := string(cteEncodeEvents(expectDecoded...))
 	if actualEncoded != expectEncoded {
 		t.Errorf("Expected encode to [%v] but got [%v]", expectEncoded, actualEncoded)
 	}
 }
 
 func assertCTEDecodeFails(t *testing.T, document string) {
-	_, err := cteDecode([]byte(document))
+	_, err := cteDecodeToEvents([]byte(document))
 	if err == nil {
 		t.Errorf("Expected CTE decode to fail")
 	}
