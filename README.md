@@ -1,22 +1,17 @@
-Concise Binary Encoding
-=======================
+Concise Encoding
+================
 
-A go implementation of [concise binary encoding](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md).
+A go implementation of [concise encoding](https://github.com/kstenerud/concise-encoding).
 
-Concise Binary Encoding is a general purpose, machine-readable, compact representation of semi-structured hierarchical data.
+Convenience like JSON, in a twin text/binary format with full datatype support.
 
-
-Goals
------
-
-  * General purpose encoding for a large number of applications
-  * Supports the most common data types
-  * Supports hierarchical data structuring
-  * Binary format to minimize parsing costs
-  * Little endian byte ordering to allow the most common systems to read directly off the wire
-  * Balanced space and computation efficiency
-  * Minimal complexity
-  * Type compatible with [Concise Text Encoding (CTE)](cte-specification.md)
+ * **No schema necessary.** The simplicity of ad-hoc data, like in JSON & XML.
+ * **Rich type support.** No more special code for dates, bytes, large values, etc.
+ * **Edit text, transmit binary.** Twin binary and text formats are 1:1 compatible.
+ * **Plug and play.** No extra compilation phase or descriptor files.
+ * **Metadata.** Out-of-band data? Not a problem!
+ * **Recursive/cyclic data.** Recursive structures? Also not a problem!
+ * **Fully specified.** No more ambiguities in implementations.
 
 
 
@@ -30,40 +25,70 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kstenerud/go-cbe"
+	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/cte"
 )
 
-func demonstrateMarshal() {
+func demonstrateCTEMarshal() {
 	dict := map[interface{}]interface{}{
 		"a key": 2.5,
-		900:     time.Now(),
+		900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
 	}
-	encoder := cbe.NewCbeEncoder(cbe.InlineContainerTypeNone, nil, 100)
-	cbe.Marshal(encoder, cbe.InlineContainerTypeNone, dict)
-	fmt.Printf("Marshaled bytes: %v\n", encoder.EncodedBytes())
+	var buffer bytes.Buffer
+	err := cte.Marshal(dict, &buffer, nil)
+	if err != nil {
+		fmt.Printf("Error marshaling: %v", err)
+		return
+	}
+	fmt.Printf("Marshaled CTE: %v\n", string(buffer.Bytes()))
+	// Prints: Marshaled CTE: c1 {"a key"=2.5 900=2020-01-15/13:41:00.000599}
 }
 
-func demonstrateUnmarshal() {
-	document := []byte{0x94, 0x6b, 0x84, 0x3, 0x79, 0x33, 0xda, 0xc3, 0xe3,
-		0xbe, 0xb1, 0x58, 0x31, 0x85, 0x61, 0x20, 0x6b, 0x65, 0x79, 0x72, 0x0,
-		0x0, 0x20, 0x40, 0x95}
-	unmarshaler := new(cbe.Unmarshaler)
-	decoder := cbe.NewCbeDecoder(cbe.InlineContainerTypeNone, 100, unmarshaler)
-	if err := decoder.Decode(document); err != nil {
-		panic(fmt.Errorf("Unexpected error while decoding: %v", err))
+func demonstrateCTEUnmarshal() {
+	data := bytes.NewBuffer([]byte(`c1 {"a key"=2.5 900=2020-01-15/13:41:00.000599}`))
+
+	value, err := cte.Unmarshal(data, nil, nil)
+	if err != nil {
+		fmt.Printf("Error unmarshaling: %v", err)
+		return
 	}
-	fmt.Printf("Unmarshaled object: %v\n", unmarshaler.Unmarshaled())
+	fmt.Printf("Unmarshaled CTE: %v\n", value)
+	// Prints: Unmarshaled CTE: map[a key:2.5 900:2020-01-15/13:41:00.599]
+}
+
+func demonstrateCBEMarshal() {
+	dict := map[interface{}]interface{}{
+		"a key": 2.5,
+		900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
+	}
+	var buffer bytes.Buffer
+	err := cbe.Marshal(dict, &buffer, nil)
+	if err != nil {
+		fmt.Printf("Error marshaling: %v", err)
+		return
+	}
+	fmt.Printf("Marshaled CBE: %v\n", buffer.Bytes())
+	// Prints: Marshaled CBE: [1 121 133 97 32 107 101 121 112 0 0 32 64 106 132 3 155 188 18 0 32 109 47 80 0 123]
+}
+
+func demonstrateCBEUnmarshal() {
+	data := bytes.NewBuffer([]byte{0x01, 0x79, 0x85, 0x61, 0x20, 0x6b, 0x65,
+		0x79, 0x70, 0x00, 0x00, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x9b, 0xbc, 0x12,
+		0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x7b})
+
+	value, err := cbe.Unmarshal(data, nil, nil)
+	if err != nil {
+		fmt.Printf("Error unmarshaling: %v", err)
+		return
+	}
+	fmt.Printf("Unmarshaled CBE: %v\n", value)
+	// Prints: Unmarshaled CBE: map[a key:2.5 900:2020-01-15/13:41:00.599]
 }
 
 func main() {
-	demonstrateMarshal()
-	demonstrateUnmarshal()
+	demonstrateCTEMarshal()
+	demonstrateCTEUnmarshal()
+	demonstrateCBEMarshal()
+	demonstrateCBEUnmarshal()
 }
-```
-
-Output:
-
-```
-Marshaled bytes: [148 107 132 3 121 240 85 214 182 13 178 88 49 133 97 32 107 101 121 114 0 0 32 64 149]
-Unmarshaled object: map[a key:2.5 900:2019-05-17 12:27:59.600037939 +0000 UTC]
 ```
