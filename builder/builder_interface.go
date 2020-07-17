@@ -44,6 +44,8 @@ var (
 )
 
 type intfBuilder struct {
+	session *Session
+
 	// Clone inserted data
 	root    *RootBuilder
 	parent  ObjectBuilder
@@ -58,11 +60,13 @@ func (_this *intfBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *intfBuilder) PostCacheInitBuilder() {
+func (_this *intfBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &intfBuilder{
+		session: _this.session,
 		parent:  parent,
 		root:    root,
 		options: options,
@@ -134,13 +138,13 @@ func (_this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst ref
 }
 
 func (_this *intfBuilder) BuildBeginList() {
-	builder := getBuilderForType(common.TypeInterfaceSlice)
+	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) BuildBeginMap() {
-	builder := getBuilderForType(common.TypeInterfaceSlice)
+	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
@@ -158,13 +162,13 @@ func (_this *intfBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *intfBuilder) PrepareForListContents() {
-	builder := getBuilderForType(common.TypeInterfaceSlice)
+	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) PrepareForMapContents() {
-	builder := getBuilderForType(common.TypeInterfaceMap)
+	builder := _this.session.GetBuilderForType(common.TypeInterfaceMap)
 	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }

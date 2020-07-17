@@ -49,7 +49,7 @@ func (_this *floatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *floatBuilder) PostCacheInitBuilder() {
+func (_this *floatBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *floatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

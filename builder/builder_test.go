@@ -77,7 +77,8 @@ func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
 
 func runBuild(template interface{}, events ...*test.TEvent) interface{} {
-	builder := NewBuilderFor(template, nil)
+	session := NewSession()
+	builder := session.NewBuilderFor(template, nil)
 	test.InvokeEvents(builder, events...)
 	return builder.GetBuiltObject()
 }

@@ -35,8 +35,8 @@ import (
 )
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	marshalOptions := cbe.DefaultMarshalerOptions()
-	unmarshalOptions := cbe.DefaultUnmarshalerOptions()
+	marshalOptions := options.DefaultCBEMarshalerOptions()
+	unmarshalOptions := options.DefaultCBEUnmarshalerOptions()
 	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 	marshalOptions.Iterator.UseReferences = true
 	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
@@ -70,8 +70,8 @@ func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
 }
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	marshalOptions := cte.DefaultMarshalerOptions()
-	unmarshalOptions := cte.DefaultUnmarshalerOptions()
+	marshalOptions := options.DefaultCTEMarshalerOptions()
+	unmarshalOptions := options.DefaultCTEUnmarshalerOptions()
 	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 	marshalOptions.Iterator.UseReferences = true
 	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
@@ -111,18 +111,22 @@ func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 }
 
 func assertMarshalUnmarshalWithBufferSize(t *testing.T, bufferSize int, expected interface{}) {
-	cbeMarshalOptions := cbe.DefaultMarshalerOptions()
+	cbeMarshalOptions := options.DefaultCBEMarshalerOptions()
 	cbeMarshalOptions.Encoder.BufferSize = bufferSize
-	cbeUnmarshalOptions := cbe.DefaultUnmarshalerOptions()
+	cbeUnmarshalOptions := options.DefaultCBEUnmarshalerOptions()
 	cbeUnmarshalOptions.Decoder.BufferSize = bufferSize
 	assertCBEMarshalUnmarshalWithOptions(t, cbeMarshalOptions, cbeUnmarshalOptions, expected)
 
-	cteMarshalOptions := cte.DefaultMarshalerOptions()
+	cteMarshalOptions := options.DefaultCTEMarshalerOptions()
 	cteMarshalOptions.Encoder.BufferSize = bufferSize
-	cteUnmarshalOptions := cte.DefaultUnmarshalerOptions()
+	cteUnmarshalOptions := options.DefaultCTEUnmarshalerOptions()
 	cteUnmarshalOptions.Decoder.BufferSize = bufferSize
 	assertCTEMarshalUnmarshalWithOptions(t, cteMarshalOptions, cteUnmarshalOptions, expected)
 }
+
+// ============================================================================
+
+// Tests
 
 func TestMarshalUnmarshal(t *testing.T) {
 	assertMarshalUnmarshal(t, 101)

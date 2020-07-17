@@ -36,35 +36,13 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-var defaultDecoderOptions = options.CTEDecoderOptions{
-	BufferSize: 4096,
-}
-
-func DefaultDecoderOptions() *options.CTEDecoderOptions {
-	opts := defaultDecoderOptions
-	return &opts
-}
-
 // Decode a CTE document from reader, sending all data events to eventReceiver.
 // If options is nil, default options will be used.
 func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) (err error) {
-	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
-			if r := recover(); r != nil {
-				err = r.(error)
-			}
-		}
-	}()
-
 	return NewDecoder(reader, eventReceiver, options).Decode()
 }
 
-// Decodes CTE documents
-//
-// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
-// to recover() at an appropriate location when calling this struct's methods
-// directly (with the exception of constructors and initializers, which are not
-// designed to panic).
+// Decodes CTE documents.
 type Decoder struct {
 	eventReceiver  events.DataEventReceiver
 	buffer         CTEReadBuffer
@@ -84,7 +62,7 @@ func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, option
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If options is nil, default options will be used.
 func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) {
-	_this.options = applyDefaultRuleOptions(options)
+	_this.options = *options.ApplyDefaults()
 	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
 	_this.eventReceiver = eventReceiver
 }
@@ -92,6 +70,14 @@ func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventRecei
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
 func (_this *Decoder) Decode() (err error) {
+	defer func() {
+		if !debug.DebugOptions.PassThroughPanics {
+			if r := recover(); r != nil {
+				err = r.(error)
+			}
+		}
+	}()
+
 	_this.buffer.RefillIfNecessary()
 
 	_this.currentState = cteDecoderStateAwaitObject
@@ -113,23 +99,14 @@ func (_this *Decoder) Decode() (err error) {
 
 // ============================================================================
 
+// Internal
+
 func chooseLowWater(bufferSize int) int {
 	lowWater := bufferSize / 50
 	if lowWater < 30 {
 		lowWater = 30
 	}
 	return lowWater
-}
-
-func applyDefaultRuleOptions(original *options.CTEDecoderOptions) options.CTEDecoderOptions {
-	options := defaultDecoderOptions
-	if original != nil {
-		options = *original
-		if options.BufferSize < 64 {
-			options.BufferSize = 64
-		}
-	}
-	return options
 }
 
 // Tokens

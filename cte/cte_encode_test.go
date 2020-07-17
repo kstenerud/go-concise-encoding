@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
+	"github.com/kstenerud/go-equivalence"
 )
 
 func assertCTEDecodeEncode(t *testing.T, expected string) {
@@ -35,9 +36,9 @@ func assertCTEDecodeEncode(t *testing.T, expected string) {
 		t.Error(err)
 		return
 	}
-	result := string(cteEncodeEvents(events...))
-	if result != expected {
-		t.Errorf("Expected [%v] but got [%v]", expected, result)
+	actual := string(cteEncodeEvents(events...))
+	if !equivalence.IsEquivalent(actual, expected) {
+		t.Errorf("Expected [%v] but got [%v]", expected, actual)
 	}
 }
 
@@ -46,12 +47,14 @@ func assertCTEEncode(t *testing.T, v interface{}, expected string) {
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	actual := string(cteEncodeValue(v))
-	if actual != expected {
+	if !equivalence.IsEquivalent(actual, expected) {
 		t.Errorf("Expected [%v] but got [%v]", expected, actual)
 	}
 }
 
 // ============================================================================
+
+// Tests
 
 func TestMapFloatKey(t *testing.T) {
 	assertCTEDecodeEncode(t, "c1 {nil=@nil 1.5=1000}")

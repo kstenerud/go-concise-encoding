@@ -25,6 +25,10 @@
 // consumes data events to produce a document.
 package cbe
 
+// ============================================================================
+
+// Internal
+
 type cbeTypeField uint8
 
 const (

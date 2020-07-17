@@ -71,14 +71,14 @@ func (_this *structBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
-func (_this *structBuilder) PostCacheInitBuilder() {
-	_this.nameBuilder = getBuilderForType(reflect.TypeOf(""))
+func (_this *structBuilder) PostCacheInitBuilder(session *Session) {
+	_this.nameBuilder = session.GetBuilderForType(reflect.TypeOf(""))
 	_this.builderDescs = make(map[string]*structBuilderDesc)
 	_this.ignoreBuilder = newIgnoreBuilder()
 	for i := 0; i < _this.dstType.NumField(); i++ {
 		field := _this.dstType.Field(i)
 		if field.PkgPath == "" {
-			builder := getBuilderForType(field.Type)
+			builder := session.GetBuilderForType(field.Type)
 			_this.builderDescs[field.Name] = &structBuilderDesc{
 				builder: builder,
 				index:   i,

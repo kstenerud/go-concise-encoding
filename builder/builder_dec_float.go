@@ -46,7 +46,7 @@ func (_this *dfloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *dfloatBuilder) PostCacheInitBuilder() {
+func (_this *dfloatBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

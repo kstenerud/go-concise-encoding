@@ -50,7 +50,7 @@ func (_this *timeBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *timeBuilder) PostCacheInitBuilder() {
+func (_this *timeBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *timeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -171,7 +171,7 @@ func (_this *compactTimeBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *compactTimeBuilder) PostCacheInitBuilder() {
+func (_this *compactTimeBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *compactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -288,7 +288,7 @@ func (_this *pCompactTimeBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *pCompactTimeBuilder) PostCacheInitBuilder() {
+func (_this *pCompactTimeBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

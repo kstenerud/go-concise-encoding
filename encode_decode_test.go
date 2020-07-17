@@ -67,6 +67,10 @@ func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 	assertEncodeDecodeCTE(t, expected...)
 }
 
+// ============================================================================
+
+// Tests
+
 func TestEncodeDecodeVersion(t *testing.T) {
 	assertEncodeDecode(t, V(1), ED())
 }

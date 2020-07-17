@@ -77,6 +77,8 @@ func (_this *WriteBuffer) Flush() {
 
 // ============================================================================
 
+// Internal
+
 func (_this *WriteBuffer) grow(byteCount int) {
 	length := len(_this.bytes)
 	growAmount := cap(_this.bytes)

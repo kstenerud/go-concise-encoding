@@ -26,6 +26,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -42,11 +44,11 @@ func newUInt8SliceIterator() ObjectIterator {
 	return &uint8SliceIterator{}
 }
 
-func (_this *uint8SliceIterator) PostCacheInitIterator() {
+func (_this *uint8SliceIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *uint8SliceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnBytes(v.Bytes())
+func (_this *uint8SliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnBytes(v.Bytes())
 }
 
 // ----
@@ -60,11 +62,11 @@ func newTimeIterator() ObjectIterator {
 	return &timeIterator{}
 }
 
-func (_this *timeIterator) PostCacheInitIterator() {
+func (_this *timeIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *timeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnTime(v.Interface().(time.Time))
+func (_this *timeIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnTime(v.Interface().(time.Time))
 }
 
 // ------------
@@ -78,12 +80,12 @@ func newCompactTimeIterator() ObjectIterator {
 	return &compactTimeIterator{}
 }
 
-func (_this *compactTimeIterator) PostCacheInitIterator() {
+func (_this *compactTimeIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *compactTimeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *compactTimeIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	ct := v.Interface().(compact_time.Time)
-	root.eventReceiver.OnCompactTime(&ct)
+	eventReceiver.OnCompactTime(&ct)
 }
 
 type pCompactTimeIterator struct {
@@ -93,14 +95,14 @@ func newPCompactTimeIterator() ObjectIterator {
 	return &pCompactTimeIterator{}
 }
 
-func (_this *pCompactTimeIterator) PostCacheInitIterator() {
+func (_this *pCompactTimeIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *pCompactTimeIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pCompactTimeIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 	} else {
-		root.eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
+		eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
 	}
 }
 
@@ -115,14 +117,14 @@ func newPURLIterator() ObjectIterator {
 	return &pURLIterator{}
 }
 
-func (_this *pURLIterator) PostCacheInitIterator() {
+func (_this *pURLIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *pURLIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pURLIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 	} else {
-		root.eventReceiver.OnURI(v.Interface().(*url.URL).String())
+		eventReceiver.OnURI(v.Interface().(*url.URL).String())
 	}
 }
 
@@ -137,12 +139,12 @@ func newURLIterator() ObjectIterator {
 	return &urlIterator{}
 }
 
-func (_this *urlIterator) PostCacheInitIterator() {
+func (_this *urlIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *urlIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *urlIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	vCopy := v.Interface().(url.URL)
-	root.eventReceiver.OnURI((&vCopy).String())
+	eventReceiver.OnURI((&vCopy).String())
 }
 
 // --------
@@ -156,14 +158,14 @@ func newPBigIntIterator() ObjectIterator {
 	return &pBigIntIterator{}
 }
 
-func (_this *pBigIntIterator) PostCacheInitIterator() {
+func (_this *pBigIntIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *pBigIntIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pBigIntIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 	} else {
-		root.eventReceiver.OnBigInt(v.Interface().(*big.Int))
+		eventReceiver.OnBigInt(v.Interface().(*big.Int))
 	}
 }
 
@@ -178,12 +180,12 @@ func newBigIntIterator() ObjectIterator {
 	return &bigIntIterator{}
 }
 
-func (_this *bigIntIterator) PostCacheInitIterator() {
+func (_this *bigIntIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *bigIntIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *bigIntIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	vCopy := v.Interface().(big.Int)
-	root.eventReceiver.OnBigInt((&vCopy))
+	eventReceiver.OnBigInt((&vCopy))
 }
 
 // ----------
@@ -197,14 +199,14 @@ func newPBigFloatIterator() ObjectIterator {
 	return &pBigFloatIterator{}
 }
 
-func (_this *pBigFloatIterator) PostCacheInitIterator() {
+func (_this *pBigFloatIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *pBigFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pBigFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 	} else {
-		root.eventReceiver.OnBigFloat(v.Interface().(*big.Float))
+		eventReceiver.OnBigFloat(v.Interface().(*big.Float))
 	}
 }
 
@@ -219,12 +221,12 @@ func newBigFloatIterator() ObjectIterator {
 	return &bigFloatIterator{}
 }
 
-func (_this *bigFloatIterator) PostCacheInitIterator() {
+func (_this *bigFloatIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *bigFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *bigFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	vCopy := v.Interface().(big.Float)
-	root.eventReceiver.OnBigFloat((&vCopy))
+	eventReceiver.OnBigFloat((&vCopy))
 }
 
 // ------------
@@ -238,14 +240,14 @@ func newPBigDecimalFloatIterator() ObjectIterator {
 	return &pBigDecimalFloatIterator{}
 }
 
-func (_this *pBigDecimalFloatIterator) PostCacheInitIterator() {
+func (_this *pBigDecimalFloatIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *pBigDecimalFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pBigDecimalFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 	} else {
-		root.eventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
+		eventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
 	}
 }
 
@@ -260,12 +262,12 @@ func newBigDecimalFloatIterator() ObjectIterator {
 	return &bigDecimalFloatIterator{}
 }
 
-func (_this *bigDecimalFloatIterator) PostCacheInitIterator() {
+func (_this *bigDecimalFloatIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *bigDecimalFloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *bigDecimalFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	vCopy := v.Interface().(apd.Decimal)
-	root.eventReceiver.OnBigDecimalFloat((&vCopy))
+	eventReceiver.OnBigDecimalFloat((&vCopy))
 }
 
 // ------
@@ -279,11 +281,11 @@ func newDFloatIterator() ObjectIterator {
 	return &dfloatIterator{}
 }
 
-func (_this *dfloatIterator) PostCacheInitIterator() {
+func (_this *dfloatIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *dfloatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnDecimalFloat(v.Interface().(compact_float.DFloat))
+func (_this *dfloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnDecimalFloat(v.Interface().(compact_float.DFloat))
 }
 
 // ----
@@ -297,11 +299,11 @@ func newBoolIterator() ObjectIterator {
 	return &boolIterator{}
 }
 
-func (_this *boolIterator) PostCacheInitIterator() {
+func (_this *boolIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *boolIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnBool(v.Bool())
+func (_this *boolIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnBool(v.Bool())
 }
 
 // ---
@@ -315,11 +317,11 @@ func newIntIterator() ObjectIterator {
 	return &intIterator{}
 }
 
-func (_this *intIterator) PostCacheInitIterator() {
+func (_this *intIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *intIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnInt(v.Int())
+func (_this *intIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnInt(v.Int())
 }
 
 // ----
@@ -333,11 +335,11 @@ func newUintIterator() ObjectIterator {
 	return &uintIterator{}
 }
 
-func (_this *uintIterator) PostCacheInitIterator() {
+func (_this *uintIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *uintIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnPositiveInt(v.Uint())
+func (_this *uintIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnPositiveInt(v.Uint())
 }
 
 // -----
@@ -351,11 +353,11 @@ func newFloatIterator() ObjectIterator {
 	return &floatIterator{}
 }
 
-func (_this *floatIterator) PostCacheInitIterator() {
+func (_this *floatIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *floatIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnFloat(v.Float())
+func (_this *floatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnFloat(v.Float())
 }
 
 // ------
@@ -369,9 +371,9 @@ func newStringIterator() ObjectIterator {
 	return &stringIterator{}
 }
 
-func (_this *stringIterator) PostCacheInitIterator() {
+func (_this *stringIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *stringIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnString(v.String())
+func (_this *stringIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnString(v.String())
 }

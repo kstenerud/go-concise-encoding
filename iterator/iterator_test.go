@@ -90,6 +90,8 @@ func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
 
 // ============================================================================
 
+// Tests
+
 func TestIterateBasic(t *testing.T) {
 	pBigIntP := test.NewBigInt("12345678901234567890123456789")
 	pBigIntN := test.NewBigInt("-999999999999999999999999999999")

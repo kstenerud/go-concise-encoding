@@ -49,7 +49,7 @@ func (_this *markerIDBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *markerIDBuilder) PostCacheInitBuilder() {
+func (_this *markerIDBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *markerIDBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -178,7 +178,7 @@ func (_this *markerObjectBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.child)
 }
 
-func (_this *markerObjectBuilder) PostCacheInitBuilder() {
+func (_this *markerObjectBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *markerObjectBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

@@ -52,7 +52,7 @@ func (_this *topLevelBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.builder)
 }
 
-func (_this *topLevelBuilder) PostCacheInitBuilder() {
+func (_this *topLevelBuilder) PostCacheInitBuilder(session *Session) {
 	BuilderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
 

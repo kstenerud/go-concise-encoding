@@ -71,9 +71,9 @@ func (_this *mapBuilder) String() string {
 	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvBuilders[0], _this.kvBuilders[1])
 }
 
-func (_this *mapBuilder) PostCacheInitBuilder() {
-	_this.kvBuilders[kvBuilderKey] = getBuilderForType(_this.dstType.Key())
-	_this.kvBuilders[kvBuilderValue] = getBuilderForType(_this.dstType.Elem())
+func (_this *mapBuilder) PostCacheInitBuilder(session *Session) {
+	_this.kvBuilders[kvBuilderKey] = session.GetBuilderForType(_this.dstType.Key())
+	_this.kvBuilders[kvBuilderValue] = session.GetBuilderForType(_this.dstType.Elem())
 }
 
 func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

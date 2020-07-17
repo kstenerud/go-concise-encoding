@@ -29,10 +29,8 @@ import (
 	"math/big"
 	"net/url"
 	"reflect"
-	"sync"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -40,34 +38,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-describe"
 )
-
-var defaultBuilderOptions = options.BuilderOptions{}
-
-func DefaultBuilderOptions() *options.BuilderOptions {
-	opts := defaultBuilderOptions
-	return &opts
-}
-
-// Register a specific builder for a type.
-// If a builder has already been registered for this type, it will be replaced.
-// This function is thread-safe.
-func RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
-	builders.Store(dstType, builder)
-}
-
-// NewBuilderFor creates a new builder that builds objects of the same type as
-// the template object. If options is nil, default options will be used.
-func NewBuilderFor(template interface{}, options *options.BuilderOptions) *RootBuilder {
-	rv := reflect.ValueOf(template)
-	var t reflect.Type
-	if rv.IsValid() {
-		t = rv.Type()
-	} else {
-		t = common.TypeInterface
-	}
-
-	return NewRootBuilder(t, options)
-}
 
 // ObjectBuilder responds to external events to progressively build an object.
 type ObjectBuilder interface {
@@ -104,7 +74,7 @@ type ObjectBuilder interface {
 
 	// Called after the builder template is saved to cache but before use, so
 	// that lookups succeed on cyclic builder references
-	PostCacheInitBuilder()
+	PostCacheInitBuilder(session *Session)
 
 	// Clone from this builder as a template, adding contextual data
 	CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder
@@ -142,116 +112,4 @@ func BuilderPanicCannotConvertRV(value reflect.Value, dstType reflect.Type) {
 // This normally indicates a bug.
 func BuilderPanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
-}
-
-// ============================================================================
-
-var builders sync.Map
-
-func init() {
-	// Pre-cache the most common builders
-	for _, t := range common.KeyableTypes {
-		getBuilderForType(t)
-		getBuilderForType(reflect.PtrTo(t))
-		getBuilderForType(reflect.SliceOf(t))
-		for _, u := range common.KeyableTypes {
-			getBuilderForType(reflect.MapOf(t, u))
-		}
-		for _, u := range common.NonKeyableTypes {
-			getBuilderForType(reflect.MapOf(t, u))
-		}
-	}
-
-	for _, t := range common.NonKeyableTypes {
-		getBuilderForType(t)
-		getBuilderForType(reflect.PtrTo(t))
-		getBuilderForType(reflect.SliceOf(t))
-	}
-}
-
-func generateBuilderForType(dstType reflect.Type) ObjectBuilder {
-	switch dstType.Kind() {
-	case reflect.Bool:
-		return newDirectBuilder(dstType)
-	case reflect.String:
-		return newStringBuilder()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return newIntBuilder(dstType)
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return newUintBuilder(dstType)
-	case reflect.Float32, reflect.Float64:
-		return newFloatBuilder(dstType)
-	case reflect.Interface:
-		return newInterfaceBuilder()
-	case reflect.Array:
-		switch dstType.Elem().Kind() {
-		case reflect.Uint8:
-			return newBytesArrayBuilder()
-		default:
-			return newArrayBuilder(dstType)
-		}
-	case reflect.Slice:
-		switch dstType.Elem().Kind() {
-		case reflect.Uint8:
-			return newDirectPtrBuilder(dstType)
-		default:
-			return newSliceBuilder(dstType)
-		}
-	case reflect.Map:
-		return newMapBuilder(dstType)
-	case reflect.Struct:
-		switch dstType {
-		case common.TypeTime:
-			return newTimeBuilder()
-		case common.TypeCompactTime:
-			return newCompactTimeBuilder()
-		case common.TypeURL:
-			return newDirectBuilder(dstType)
-		case common.TypeDFloat:
-			return newDFloatBuilder()
-		case common.TypeBigInt:
-			return newBigIntBuilder()
-		case common.TypeBigFloat:
-			return newBigFloatBuilder()
-		case common.TypeBigDecimalFloat:
-			return newBigDecimalFloatBuilder()
-		default:
-			return newStructBuilder(dstType)
-		}
-	case reflect.Ptr:
-		switch dstType {
-		case common.TypePURL:
-			return newDirectPtrBuilder(dstType)
-		case common.TypePBigInt:
-			return newPBigIntBuilder()
-		case common.TypePBigFloat:
-			return newPBigFloatBuilder()
-		case common.TypePBigDecimalFloat:
-			return newPBigDecimalFloatBuilder()
-		case common.TypePCompactTime:
-			return newPCompactTimeBuilder()
-		default:
-			return newPtrBuilder(dstType)
-		}
-	default:
-		panic(fmt.Errorf("BUG: Unhandled type %v", dstType))
-	}
-}
-
-func getBuilderForType(dstType reflect.Type) ObjectBuilder {
-	if builder, ok := builders.Load(dstType); ok {
-		return builder.(ObjectBuilder)
-	}
-
-	builder, _ := builders.LoadOrStore(dstType, generateBuilderForType(dstType))
-	builder.(ObjectBuilder).PostCacheInitBuilder()
-	return builder.(ObjectBuilder)
-}
-
-func applyDefaultBuilderOptions(original *options.BuilderOptions) *options.BuilderOptions {
-	var options options.BuilderOptions
-	if original != nil {
-		options = *original
-	}
-	return &options
 }

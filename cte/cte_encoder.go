@@ -38,15 +38,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-var defaultEncoderOptions = options.CTEEncoderOptions{
-	BufferSize: 1024,
-}
-
-func DefaultEncoderOptions() *options.CTEEncoderOptions {
-	opts := defaultEncoderOptions
-	return &opts
-}
-
 // Receives data events, constructing a CTE document from them.
 //
 // Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
@@ -65,19 +56,20 @@ type Encoder struct {
 // to writer. If options is nil, default options will be used.
 func NewEncoder(writer io.Writer, options *options.CTEEncoderOptions) *Encoder {
 	_this := &Encoder{}
-	_this.Init(writer, options)
+	_this.Init(writer, options.ApplyDefaults())
 	return _this
 }
 
 // Initialize this encoder, which will receive data events and write a document
 // to writer. If options is nil, default options will be used.
 func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions) {
-	if options == nil {
-		options = DefaultEncoderOptions()
-	}
-	_this.options = *options
+	_this.options = *options.ApplyDefaults()
 	_this.buff.Init(writer, options.BufferSize)
 }
+
+// ============================================================================
+
+// DataEventReceiver
 
 func (_this *Encoder) OnPadding(count int) {
 	// Nothing to do
@@ -389,6 +381,8 @@ func (_this *Encoder) OnEndDocument() {
 }
 
 // ============================================================================
+
+// Internal
 
 func (_this *Encoder) stackState(newState cteEncoderState, prefix string) {
 	_this.containerState = append(_this.containerState, _this.currentState)

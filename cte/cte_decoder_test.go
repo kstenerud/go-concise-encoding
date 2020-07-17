@@ -73,6 +73,8 @@ func assertCTEDecodeFails(t *testing.T, document string) {
 	}
 }
 
+// ============================================================================
+
 // Tests
 
 func TestCTEVersion(t *testing.T) {

@@ -156,6 +156,10 @@ func (_this *StreamingReadBuffer) IsEOF() bool {
 	return _this.isEOF
 }
 
+// ============================================================================
+
+// Internal
+
 func (_this *StreamingReadBuffer) unreadByteCount(position int) int {
 	return len(_this.Buffer) - position
 }

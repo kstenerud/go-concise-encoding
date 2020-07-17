@@ -55,7 +55,7 @@ func (_this *directBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *directBuilder) PostCacheInitBuilder() {
+func (_this *directBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -180,7 +180,7 @@ func (_this *directPtrBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *directPtrBuilder) PostCacheInitBuilder() {
+func (_this *directPtrBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

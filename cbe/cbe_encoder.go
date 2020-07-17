@@ -38,15 +38,6 @@ import (
 	"github.com/kstenerud/go-uleb128"
 )
 
-var defaultEncoderOptions = options.CBEEncoderOptions{
-	BufferSize: 1024,
-}
-
-func DefaultEncoderOptions() *options.CBEEncoderOptions {
-	opts := defaultEncoderOptions
-	return &opts
-}
-
 // Receives data events, constructing a CBE document from them.
 //
 // Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
@@ -69,12 +60,13 @@ func NewEncoder(writer io.Writer, options *options.CBEEncoderOptions) *Encoder {
 // Initialize this encoder, which will receive data events and write a document
 // to writer. If options is nil, default options will be used.
 func (_this *Encoder) Init(writer io.Writer, options *options.CBEEncoderOptions) {
-	if options == nil {
-		options = DefaultEncoderOptions()
-	}
-	_this.options = *options
+	_this.options = *options.ApplyDefaults()
 	_this.buff.Init(writer, _this.options.BufferSize)
 }
+
+// ============================================================================
+
+// DataEventReceiver
 
 func (_this *Encoder) OnPadding(count int) {
 	dst := _this.buff.Allocate(count)
@@ -340,6 +332,8 @@ func (_this *Encoder) OnEndDocument() {
 }
 
 // ============================================================================
+
+// Internal
 
 const (
 	maxSmallStringLength = 15

@@ -230,6 +230,10 @@ func (_this *CBEReadBuffer) DecodeBytes(byteCount int) []byte {
 	return value
 }
 
+// ============================================================================
+
+// Internal
+
 func (_this *CBEReadBuffer) byteAtPositionOffset(offset int) byte {
 	return _this.buffer.Buffer[_this.position+offset]
 }

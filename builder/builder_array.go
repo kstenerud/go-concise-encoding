@@ -62,8 +62,8 @@ func (_this *arrayBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *arrayBuilder) PostCacheInitBuilder() {
-	_this.elemBuilder = getBuilderForType(_this.dstType.Elem())
+func (_this *arrayBuilder) PostCacheInitBuilder(session *Session) {
+	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
 
 func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -231,7 +231,7 @@ func (_this *bytesArrayBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *bytesArrayBuilder) PostCacheInitBuilder() {
+func (_this *bytesArrayBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

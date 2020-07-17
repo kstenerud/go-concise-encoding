@@ -23,6 +23,8 @@ package iterator
 import (
 	"reflect"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
@@ -31,22 +33,24 @@ import (
 // ---------
 
 type interfaceIterator struct {
+	session *Session
 }
 
 func newInterfaceIterator(srcType reflect.Type) ObjectIterator {
 	return &interfaceIterator{}
 }
 
-func (_this *interfaceIterator) PostCacheInitIterator() {
+func (_this *interfaceIterator) PostCacheInitIterator(session *Session) {
+	_this.session = session
 }
 
-func (_this *interfaceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *interfaceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 	} else {
 		elem := v.Elem()
-		iter := getIteratorForType(elem.Type())
-		iter.Iterate(elem, root)
+		iter := _this.session.GetIteratorForType(elem.Type())
+		iter.IterateObject(elem, eventReceiver, references)
 	}
 }
 
@@ -63,19 +67,19 @@ func newPointerIterator(srcType reflect.Type) ObjectIterator {
 	return &pointerIterator{srcType: srcType}
 }
 
-func (_this *pointerIterator) PostCacheInitIterator() {
-	_this.elemIter = getIteratorForType(_this.srcType.Elem())
+func (_this *pointerIterator) PostCacheInitIterator(session *Session) {
+	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
 }
 
-func (_this *pointerIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *pointerIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 		return
 	}
-	if root.addReference(v) {
+	if references.AddReference(v) {
 		return
 	}
-	_this.elemIter.Iterate(v.Elem(), root)
+	_this.elemIter.IterateObject(v.Elem(), eventReceiver, references)
 }
 
 // -----------
@@ -89,19 +93,19 @@ func newUInt8ArrayIterator() ObjectIterator {
 	return &uint8ArrayIterator{}
 }
 
-func (_this *uint8ArrayIterator) PostCacheInitIterator() {
+func (_this *uint8ArrayIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *uint8ArrayIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.CanAddr() {
-		root.eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
+		eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
 	} else {
 		tempSlice := make([]byte, v.Len())
 		tempLen := v.Len()
 		for i := 0; i < tempLen; i++ {
 			tempSlice[i] = v.Index(i).Interface().(uint8)
 		}
-		root.eventReceiver.OnBytes(tempSlice)
+		eventReceiver.OnBytes(tempSlice)
 	}
 }
 
@@ -116,11 +120,11 @@ func newComplexIterator() ObjectIterator {
 	return &complexIterator{}
 }
 
-func (_this *complexIterator) PostCacheInitIterator() {
+func (_this *complexIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *complexIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnComplex(v.Complex())
+func (_this *complexIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnComplex(v.Complex())
 }
 
 // -----
@@ -138,25 +142,25 @@ func newSliceIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (_this *sliceIterator) PostCacheInitIterator() {
-	_this.elemIter = getIteratorForType(_this.srcType.Elem())
+func (_this *sliceIterator) PostCacheInitIterator(session *Session) {
+	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
 }
 
-func (_this *sliceIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *sliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 		return
 	}
-	if root.addReference(v) {
+	if references.AddReference(v) {
 		return
 	}
 
-	root.eventReceiver.OnList()
+	eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
-		_this.elemIter.Iterate(v.Index(i), root)
+		_this.elemIter.IterateObject(v.Index(i), eventReceiver, references)
 	}
-	root.eventReceiver.OnEnd()
+	eventReceiver.OnEnd()
 }
 
 // -----
@@ -174,17 +178,17 @@ func newArrayIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (_this *arrayIterator) PostCacheInitIterator() {
-	_this.elemIter = getIteratorForType(_this.srcType.Elem())
+func (_this *arrayIterator) PostCacheInitIterator(session *Session) {
+	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
 }
 
-func (_this *arrayIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnList()
+func (_this *arrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
-		_this.elemIter.Iterate(v.Index(i), root)
+		_this.elemIter.IterateObject(v.Index(i), eventReceiver, references)
 	}
-	root.eventReceiver.OnEnd()
+	eventReceiver.OnEnd()
 }
 
 // ---
@@ -203,29 +207,29 @@ func newMapIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (_this *mapIterator) PostCacheInitIterator() {
-	_this.keyIter = getIteratorForType(_this.srcType.Key())
-	_this.valueIter = getIteratorForType(_this.srcType.Elem())
+func (_this *mapIterator) PostCacheInitIterator(session *Session) {
+	_this.keyIter = session.GetIteratorForType(_this.srcType.Key())
+	_this.valueIter = session.GetIteratorForType(_this.srcType.Elem())
 }
 
-func (_this *mapIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
+func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
-		root.eventReceiver.OnNil()
+		eventReceiver.OnNil()
 		return
 	}
-	if root.addReference(v) {
+	if references.AddReference(v) {
 		return
 	}
 
-	root.eventReceiver.OnMap()
+	eventReceiver.OnMap()
 
 	iter := common.MapRange(v)
 	for iter.Next() {
-		_this.keyIter.Iterate(iter.Key(), root)
-		_this.valueIter.Iterate(iter.Value(), root)
+		_this.keyIter.IterateObject(iter.Key(), eventReceiver, references)
+		_this.valueIter.IterateObject(iter.Value(), eventReceiver, references)
 	}
 
-	root.eventReceiver.OnEnd()
+	eventReceiver.OnEnd()
 }
 
 // ------
@@ -257,27 +261,27 @@ func newStructIterator(srcType reflect.Type) ObjectIterator {
 	}
 }
 
-func (_this *structIterator) PostCacheInitIterator() {
+func (_this *structIterator) PostCacheInitIterator(session *Session) {
 	for i := 0; i < _this.srcType.NumField(); i++ {
 		field := _this.srcType.Field(i)
 		if common.IsFieldExported(field.Name) {
 			iterator := &structIteratorField{
 				Name:     field.Name,
 				Index:    i,
-				Iterator: getIteratorForType(field.Type),
+				Iterator: session.GetIteratorForType(field.Type),
 			}
 			_this.fieldIterators = append(_this.fieldIterators, iterator)
 		}
 	}
 }
 
-func (_this *structIterator) Iterate(v reflect.Value, root *RootObjectIterator) {
-	root.eventReceiver.OnMap()
+func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	eventReceiver.OnMap()
 
 	for _, iter := range _this.fieldIterators {
-		root.eventReceiver.OnString(iter.Name)
-		iter.Iterator.Iterate(v.Field(iter.Index), root)
+		eventReceiver.OnString(iter.Name)
+		iter.Iterator.IterateObject(v.Field(iter.Index), eventReceiver, references)
 	}
 
-	root.eventReceiver.OnEnd()
+	eventReceiver.OnEnd()
 }

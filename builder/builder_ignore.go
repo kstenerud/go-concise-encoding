@@ -55,7 +55,7 @@ func (_this *ignoreBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *ignoreBuilder) PostCacheInitBuilder() {
+func (_this *ignoreBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -187,7 +187,7 @@ func (_this *ignoreContainerBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (_this *ignoreContainerBuilder) PostCacheInitBuilder() {
+func (_this *ignoreContainerBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

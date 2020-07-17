@@ -32,30 +32,11 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/version"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
-
-var defaultRuleOptions = options.RuleOptions{
-	ConciseEncodingVersion: version.ConciseEncodingVersion,
-	MaxBytesLength:         1000000000,
-	MaxStringLength:        100000000,
-	MaxURILength:           10000,
-	MaxIDLength:            100,
-	MaxMarkupNameLength:    100,
-	MaxContainerDepth:      1000,
-	MaxObjectCount:         10000000,
-	MaxReferenceCount:      100000,
-	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
-}
-
-func DefaultRuleOptions() *options.RuleOptions {
-	opts := defaultRuleOptions
-	return &opts
-}
 
 // TODO: Marker ID rules
 
@@ -71,37 +52,45 @@ func DefaultRuleOptions() *options.RuleOptions {
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Rules struct {
-	options           options.RuleOptions
-	charValidator     UTF8Validator
-	maxDepth          int
-	stateStack        []ruleState
-	arrayType         ruleEvent
-	arrayData         []byte
-	chunkByteCount    uint64
-	chunkBytesWritten uint64
-	arrayBytesWritten uint64
-	isFinalChunk      bool
-	objectCount       uint64
-	unassignedIDs     []interface{}
-	assignedIDs       map[interface{}]ruleEvent
+	options               options.RuleOptions
+	charValidator         UTF8Validator
+	maxDepth              int
+	stateStack            []ruleState
+	arrayType             ruleEvent
+	arrayData             []byte
+	chunkByteCount        uint64
+	chunkBytesWritten     uint64
+	arrayBytesWritten     uint64
+	isFinalChunk          bool
+	objectCount           uint64
+	unassignedIDs         []interface{}
+	assignedIDs           map[interface{}]ruleEvent
+	realMaxContainerDepth uint64
 	// TODO: Keep track of marked data stats (sizes etc)
 	nextReceiver events.DataEventReceiver
 }
 
-func NewRules(options *options.RuleOptions, nextReceiver events.DataEventReceiver) *Rules {
+// The initial rule state comes pre-stacked. This value accounts for it in calculations.
+const rulesMaxDepthAdjust = 2
+
+// Create a new rules set. If options = nil, defaults are used.
+func NewRules(nextReceiver events.DataEventReceiver, options *options.RuleOptions) *Rules {
 	_this := new(Rules)
-	_this.Init(options, nextReceiver)
+	_this.Init(nextReceiver, options)
 	return _this
 }
 
-func (_this *Rules) Init(options *options.RuleOptions, nextReceiver events.DataEventReceiver) {
-	_this.options = applyDefaultRuleOptions(options)
-	_this.stateStack = make([]ruleState, 0, _this.options.MaxContainerDepth)
+// Initialize a rules set. If options = nil, defaults are used.
+func (_this *Rules) Init(nextReceiver events.DataEventReceiver, options *options.RuleOptions) {
+	_this.options = *options.ApplyDefaults()
+	_this.realMaxContainerDepth = _this.options.MaxContainerDepth + rulesMaxDepthAdjust
+	_this.stateStack = make([]ruleState, 0, _this.realMaxContainerDepth)
 	_this.nextReceiver = nextReceiver
 
 	_this.Reset()
 }
 
+// Reset the rules set back to its initial state.
 func (_this *Rules) Reset() {
 	_this.stateStack = _this.stateStack[:0]
 	_this.stackState(stateAwaitingEndDocument)
@@ -117,6 +106,10 @@ func (_this *Rules) Reset() {
 	_this.isFinalChunk = false
 	_this.objectCount = 0
 }
+
+// ============================================================================
+
+// DataEventReceiver
 
 func (_this *Rules) OnVersion(version uint64) {
 	_this.assertCurrentStateAllowsType(eventTypeVersion)
@@ -395,6 +388,10 @@ func (_this *Rules) OnEndDocument() {
 	_this.nextReceiver.OnEndDocument()
 }
 
+// ============================================================================
+
+// Internal
+
 func (_this *Rules) onPositiveInt(value uint64) {
 	if _this.isAwaitingID() {
 		_this.stackID(value)
@@ -499,8 +496,8 @@ func (_this *Rules) changeState(st ruleState) {
 }
 
 func (_this *Rules) stackState(st ruleState) {
-	if uint64(len(_this.stateStack)) >= _this.options.MaxContainerDepth {
-		panic(fmt.Errorf("Max depth of %v exceeded", _this.options.MaxContainerDepth-rulesMaxDepthAdjust))
+	if uint64(len(_this.stateStack)) >= _this.realMaxContainerDepth {
+		panic(fmt.Errorf("Max depth of %v exceeded", _this.realMaxContainerDepth-rulesMaxDepthAdjust))
 	}
 	_this.stateStack = append(_this.stateStack, st)
 }
@@ -690,47 +687,6 @@ func (_this *Rules) addScalar(scalarType ruleEvent) {
 func (_this *Rules) beginContainer(containerType ruleEvent, newState ruleState) {
 	_this.assertCurrentStateAllowsType(containerType)
 	_this.stackState(newState)
-}
-
-// The initial rule state comes pre-stacked. This value accounts for it in calculations.
-const rulesMaxDepthAdjust = 2
-
-func applyDefaultRuleOptions(original *options.RuleOptions) options.RuleOptions {
-	options := defaultRuleOptions
-	if original != nil {
-		options = *original
-		if options.ConciseEncodingVersion < 1 {
-			options.ConciseEncodingVersion = defaultRuleOptions.ConciseEncodingVersion
-		}
-		if options.MaxBytesLength < 1 {
-			options.MaxBytesLength = defaultRuleOptions.MaxBytesLength
-		}
-		if options.MaxStringLength < 1 {
-			options.MaxStringLength = defaultRuleOptions.MaxStringLength
-		}
-		if options.MaxURILength < 1 {
-			options.MaxURILength = defaultRuleOptions.MaxURILength
-		}
-		if options.MaxIDLength < 1 {
-			options.MaxIDLength = defaultRuleOptions.MaxIDLength
-		}
-		if options.MaxMarkupNameLength < 1 {
-			options.MaxMarkupNameLength = defaultRuleOptions.MaxMarkupNameLength
-		}
-		if options.MaxContainerDepth < 1 {
-			options.MaxContainerDepth = defaultRuleOptions.MaxContainerDepth
-		}
-		if options.MaxObjectCount < 1 {
-			options.MaxObjectCount = defaultRuleOptions.MaxObjectCount
-		}
-		if options.MaxReferenceCount < 1 {
-			options.MaxReferenceCount = defaultRuleOptions.MaxReferenceCount
-		}
-	}
-
-	options.MaxContainerDepth += rulesMaxDepthAdjust
-
-	return options
 }
 
 type ruleEvent int

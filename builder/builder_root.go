@@ -49,6 +49,7 @@ type RootBuilder struct {
 	currentBuilder  ObjectBuilder
 	object          reflect.Value
 	referenceFiller ReferenceFiller
+	session         *Session
 }
 
 // -----------
@@ -57,19 +58,20 @@ type RootBuilder struct {
 
 // Create a new root builder to build objects of dstType. If options is nil,
 // default options will be used.
-func NewRootBuilder(dstType reflect.Type, options *options.BuilderOptions) *RootBuilder {
+func NewRootBuilder(session *Session, dstType reflect.Type, options *options.BuilderOptions) *RootBuilder {
 	_this := &RootBuilder{}
-	_this.Init(dstType, options)
+	_this.Init(session, dstType, options)
 	return _this
 }
 
 // Initialize this root builder to build objects of dstType. If options is nil,
 // default options will be used.
-func (_this *RootBuilder) Init(dstType reflect.Type, options *options.BuilderOptions) {
+func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, options *options.BuilderOptions) {
+	_this.session = session
 	_this.dstType = dstType
 	_this.object = reflect.New(dstType).Elem()
 
-	builder := getBuilderForType(dstType).CloneFromTemplate(_this, _this, applyDefaultBuilderOptions(options))
+	builder := session.GetBuilderForType(dstType).CloneFromTemplate(_this, _this, options.ApplyDefaults())
 	_this.currentBuilder = newTopLevelBuilder(_this, builder)
 	_this.referenceFiller.Init()
 }
@@ -109,7 +111,7 @@ func (_this *RootBuilder) SetCurrentBuilder(builder ObjectBuilder) {
 // ObjectBuilder
 // -------------
 
-func (_this *RootBuilder) PostCacheInitBuilder() {
+func (_this *RootBuilder) PostCacheInitBuilder(_ *Session) {
 	BuilderPanicBadEvent(_this, "PostCacheInitBuilder")
 }
 func (_this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {

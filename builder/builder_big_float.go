@@ -46,7 +46,7 @@ func (_this *bigFloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *bigFloatBuilder) PostCacheInitBuilder() {
+func (_this *bigFloatBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *bigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -161,7 +161,7 @@ func (_this *pBigFloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *pBigFloatBuilder) PostCacheInitBuilder() {
+func (_this *pBigFloatBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *pBigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {

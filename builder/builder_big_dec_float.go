@@ -46,7 +46,7 @@ func (_this *bigDecimalFloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *bigDecimalFloatBuilder) PostCacheInitBuilder() {
+func (_this *bigDecimalFloatBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -161,7 +161,7 @@ func (_this *pBigDecimalFloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *pBigDecimalFloatBuilder) PostCacheInitBuilder() {
+func (_this *pBigDecimalFloatBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
