@@ -45,7 +45,7 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	buff    buffer.WriteBuffer
+	buff    buffer.StreamingWriteBuffer
 	options options.CBEEncoderOptions
 }
 
