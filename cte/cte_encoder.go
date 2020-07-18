@@ -628,23 +628,3 @@ func init() {
 		cteEncoderTerminators[i+1] = cteEncoderTerminators[i]
 	}
 }
-
-func isUnquotedString(str string) bool {
-	bytes := []byte(str)
-
-	if len(bytes) == 0 {
-		return false
-	}
-
-	if !hasProperty(bytes[0], ctePropertyUnquotedStart) {
-		return false
-	}
-
-	for i := 1; i < len(bytes); i++ {
-		if !hasProperty(bytes[i], ctePropertyUnquotedMid) {
-			return false
-		}
-	}
-
-	return true
-}

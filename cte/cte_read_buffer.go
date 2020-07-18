@@ -664,7 +664,8 @@ func (_this *CTEReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, b
 		_this.UnexpectedChar("float fractional")
 	}
 
-	if _this.PeekByteAllowEOD() == 'e' {
+	b := _this.PeekByteAllowEOD()
+	if b == 'e' || b == 'E' {
 		_this.AdvanceByte()
 		exponentSign := int32(1)
 		switch _this.PeekByteNoEOD() {
@@ -721,7 +722,8 @@ func (_this *CTEReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coeff
 		_this.UnexpectedChar("float fractional")
 	}
 
-	if _this.PeekByteAllowEOD() == 'p' {
+	b := _this.PeekByteAllowEOD()
+	if b == 'p' || b == 'P' {
 		_this.AdvanceByte()
 		exponentSign := 1
 		switch _this.PeekByteNoEOD() {
