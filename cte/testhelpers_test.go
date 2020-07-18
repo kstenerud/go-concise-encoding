@@ -23,6 +23,7 @@ package cte
 import (
 	"bytes"
 	"math/big"
+	"testing"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -30,6 +31,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-equivalence"
 )
 
 func TT() *test.TEvent                       { return test.TT() }
@@ -72,24 +74,96 @@ func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
 
-func cteDecodeToEvents(document []byte) (events []*test.TEvent, err error) {
+func decodeToEvents(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
 	err = Decode(bytes.NewBuffer(document), receiver, nil)
 	events = receiver.Events
 	return
 }
 
-func cteEncodeEvents(events ...*test.TEvent) []byte {
+func encodeEvents(events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(buffer, nil)
 	test.InvokeEvents(encoder, events...)
 	return buffer.Bytes()
 }
 
-func cteEncodeValue(v interface{}) []byte {
-	buffer := &bytes.Buffer{}
-	if err := Marshal(v, buffer, nil); err != nil {
-		panic(err)
+func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
+	actualEvents, err := decodeToEvents([]byte(document))
+	if err != nil {
+		t.Error(err)
+		return
 	}
-	return buffer.Bytes()
+
+	if len(expectedEvents) > 0 {
+		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
+			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
+			return
+		}
+	}
+	events = actualEvents
+	successful = true
+	return
+}
+
+func assertDecodeFails(t *testing.T, document string) {
+	_, err := decodeToEvents([]byte(document))
+	if err == nil {
+		t.Errorf("Expected decode to fail")
+	}
+}
+
+func assertEncode(t *testing.T, expectedDocument string, events ...*test.TEvent) (successful bool) {
+	actualDocument := string(encodeEvents(events...))
+	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
+		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
+		return
+	}
+	successful = true
+	return
+}
+
+func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool) {
+	successful, actualEvents := assertDecode(t, document, expectedEvents...)
+	if !successful {
+		return
+	}
+	return assertEncode(t, document, actualEvents...)
+}
+
+func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
+	document, err := MarshalToBytes(value, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	actualDocument := string(document)
+	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
+		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
+		return
+	}
+	successful = true
+	return
+}
+
+func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
+	actualValue, err := UnmarshalFromBytes([]byte(document), expectedValue, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !equivalence.IsEquivalent(actualValue, expectedValue) {
+		t.Errorf("Expected unmarshaled [%v] but got [%v]", expectedValue, actualValue)
+		return
+	}
+	successful = true
+	return
+}
+
+func assertMarshalUnmarshal(t *testing.T, expectedValue interface{}, expectedDocument string) (successful bool) {
+	if !assertMarshal(t, expectedValue, expectedDocument) {
+		return
+	}
+	return assertUnmarshal(t, expectedValue, expectedDocument)
 }
