@@ -283,6 +283,7 @@ func (_this *Encoder) OnString(value string) {
 		_this.addSuffix()
 		_this.transitionState()
 	} else {
+		// TODO: Chars requiring quotes/escapes/verbatim
 		_this.addPrefix()
 		_this.addFmt(`"%v"`, value)
 		_this.addSuffix()

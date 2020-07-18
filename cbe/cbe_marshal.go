@@ -21,6 +21,7 @@
 package cbe
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -45,6 +46,21 @@ func Unmarshal(reader io.Reader, template interface{}, opts *options.CBEUnmarsha
 	var marshaler Marshaler
 	marshaler.Init(nil, opts)
 	return marshaler.Unmarshal(reader, template)
+}
+
+// Marshal a go object into a CBE document, returned as a byte slice.
+// If options is nil, default options will be used.
+func MarshalToBytes(object interface{}, opts *options.CBEMarshalerOptions) (document []byte, err error) {
+	var buff bytes.Buffer
+	err = Marshal(object, &buff, opts)
+	document = buff.Bytes()
+	return
+}
+
+// Unmarshal CBE from a byte slice, creating an object of the same type as the template.
+// If options is nil, default options will be used.
+func UnmarshalFromBytes(document []byte, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
+	return Unmarshal(bytes.NewBuffer(document), template, opts)
 }
 
 // A marshaler keeps builder and iterator sessions so that cached builder &
