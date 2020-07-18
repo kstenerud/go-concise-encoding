@@ -276,16 +276,15 @@ func (_this *Encoder) OnString(value string) {
 		_this.unstackState()
 	} else if _this.currentState == cteEncoderStateAwaitMarkupItem ||
 		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPre ||
-		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPost ||
-		isUnquotedString(value) {
+		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPost {
+		// TODO: markup escaping
 		_this.addPrefix()
 		_this.addString(value)
 		_this.addSuffix()
 		_this.transitionState()
 	} else {
-		// TODO: Chars requiring quotes/escapes/verbatim
 		_this.addPrefix()
-		_this.addFmt(`"%v"`, value)
+		_this.addString(wrapString(value))
 		_this.addSuffix()
 		_this.transitionState()
 	}

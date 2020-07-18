@@ -23,17 +23,17 @@ package common
 type CharProperty uint8
 
 const (
-	CharNoProperties = iota << 1
-	CharIsControl
-	CharIsWhitespace
-	CharIsNumeralOrLookalike
-	CharIsLowSymbolOrLookalike
-	CharIsURIUnsafe
-	CharIsQuoteUnsafe
-	CharIsMarkupUnsafe
+	/*  0 */ CharNoProperties CharProperty = 1 << iota
+	/*  1 */ CharIsControl
+	/*  2 */ CharIsWhitespace
+	/*  4 */ CharIsNumeralOrLookalike
+	/*  8 */ CharIsLowSymbolOrLookalike
+	/* 10 */ CharIsURIUnsafe
+	/* 20 */ CharIsQuoteUnsafe
+	/* 40 */ CharIsMarkupUnsafe
 )
 
-func GetProperty(char rune) CharProperty {
+func GetCharProperty(char rune) CharProperty {
 	return charProperties[char]
 }
 
