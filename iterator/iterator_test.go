@@ -50,7 +50,6 @@ func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func CPLX(v complex128) *test.TEvent         { return test.CPLX(v) }
 func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
@@ -131,8 +130,6 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, *pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, (*apd.Decimal)(nil), N())
-	assertIterate(t, complex64(-1+5i), CPLX(-1+5i))
-	assertIterate(t, complex128(-1+5i), CPLX(-1+5i))
 	assertIterate(t, common.SignalingNan, SNAN())
 	assertIterate(t, common.QuietNan, NAN())
 	assertIterate(t, gTimeNow, GT(gTimeNow))

@@ -204,13 +204,6 @@ func (_this *Encoder) OnUUID(v []byte) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnComplex(value complex128) {
-	_this.addPrefix()
-	panic("TODO: CTEEncoder.OnComplex")
-	_this.addSuffix()
-	_this.transitionState()
-}
-
 func (_this *Encoder) OnTime(value time.Time) {
 	_this.OnCompactTime(compact_time.AsCompactTime(value))
 }

@@ -109,24 +109,6 @@ func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver ev
 	}
 }
 
-// -------
-// Complex
-// -------
-
-type complexIterator struct {
-}
-
-func newComplexIterator() ObjectIterator {
-	return &complexIterator{}
-}
-
-func (_this *complexIterator) PostCacheInitIterator(session *Session) {
-}
-
-func (_this *complexIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
-	eventReceiver.OnComplex(v.Complex())
-}
-
 // -----
 // Slice
 // -----

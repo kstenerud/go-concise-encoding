@@ -214,10 +214,6 @@ func (_this *Encoder) OnUUID(value []byte) {
 	copy(dst, value[:])
 }
 
-func (_this *Encoder) OnComplex(value complex128) {
-	panic("TODO: CBEEncoder.OnComplex")
-}
-
 func (_this *Encoder) OnTime(value time.Time) {
 	_this.OnCompactTime(compact_time.AsCompactTime(value))
 }

@@ -227,11 +227,6 @@ func (_this *Rules) OnBigDecimalFloat(value *apd.Decimal) {
 	_this.nextReceiver.OnBigDecimalFloat(value)
 }
 
-func (_this *Rules) OnComplex(value complex128) {
-	_this.addScalar(eventTypeCustom)
-	_this.nextReceiver.OnComplex(value)
-}
-
 func (_this *Rules) OnNan(signaling bool) {
 	_this.addScalar(eventTypeNan)
 	_this.nextReceiver.OnNan(signaling)

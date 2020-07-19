@@ -250,12 +250,6 @@ func TestRulesBigDecimalFloat(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
-func TestRulesComplex(t *testing.T) {
-	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnComplex(1 + 4i) })
-	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
-}
-
 func TestRulesUUID(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
 	test.AssertNoPanic(t, func() { rules.OnUUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}) })

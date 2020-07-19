@@ -59,7 +59,6 @@ type DataEventReceiver interface {
 	OnBigFloat(value *big.Float)
 	OnDecimalFloat(value compact_float.DFloat)
 	OnBigDecimalFloat(value *apd.Decimal)
-	OnComplex(value complex128)
 	OnNan(signaling bool)
 	OnUUID(value []byte)
 	OnTime(value time.Time)
@@ -105,7 +104,6 @@ func (_this *NullEventReceiver) OnFloat(value float64)                         {
 func (_this *NullEventReceiver) OnBigFloat(value *big.Float)                   {}
 func (_this *NullEventReceiver) OnDecimalFloat(value compact_float.DFloat)     {}
 func (_this *NullEventReceiver) OnBigDecimalFloat(value *apd.Decimal)          {}
-func (_this *NullEventReceiver) OnComplex(value complex128)                    {}
 func (_this *NullEventReceiver) OnNan(signaling bool)                          {}
 func (_this *NullEventReceiver) OnUUID(value []byte)                           {}
 func (_this *NullEventReceiver) OnTime(value time.Time)                        {}

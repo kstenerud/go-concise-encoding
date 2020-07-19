@@ -155,7 +155,6 @@ const (
 	TEventBigFloat
 	TEventDecimalFloat
 	TEventBigDecimalFloat
-	TEventComplex
 	TEventNan
 	TEventSNan
 	TEventUUID
@@ -288,8 +287,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnDecimalFloat(_this.V1.(compact_float.DFloat))
 	case TEventBigDecimalFloat:
 		receiver.OnBigDecimalFloat(_this.V1.(*apd.Decimal))
-	case TEventComplex:
-		receiver.OnComplex(_this.V1.(complex128))
 	case TEventNan:
 		receiver.OnNan(false)
 	case TEventSNan:
@@ -379,7 +376,6 @@ func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
 func NI(v uint64) *TEvent               { return newTEvent(TEventNInt, v, nil) }
 func BI(v *big.Int) *TEvent             { return EventOrNil(TEventBigInt, v) }
-func CPLX(v complex128) *TEvent         { return newTEvent(TEventComplex, v, nil) }
 func NAN() *TEvent                      { return newTEvent(TEventNan, nil, nil) }
 func SNAN() *TEvent                     { return newTEvent(TEventSNan, nil, nil) }
 func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
@@ -419,8 +415,6 @@ func EventForValue(value interface{}) *TEvent {
 		return PI(rv.Uint())
 	case reflect.Float32, reflect.Float64:
 		return F(rv.Float())
-	case reflect.Complex64, reflect.Complex128:
-		panic(fmt.Errorf("TODO: %v", rv.Type()))
 	case reflect.String:
 		return S(rv.String())
 	case reflect.Slice:
@@ -526,7 +520,6 @@ func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
 		h.add(BDF(value))
 	}
 }
-func (h *TER) OnComplex(value complex128)             { h.add(CPLX(value)) }
 func (h *TER) OnUUID(value []byte)                    { h.add(UUID(value)) }
 func (h *TER) OnTime(value time.Time)                 { h.add(GT(value)) }
 func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(CT(value)) }

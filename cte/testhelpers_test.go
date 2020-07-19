@@ -48,7 +48,6 @@ func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func CPLX(v complex128) *test.TEvent         { return test.CPLX(v) }
 func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }

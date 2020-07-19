@@ -249,9 +249,6 @@ func (_this *RootBuilder) OnNan(signaling bool) {
 	}
 	_this.currentBuilder.BuildFromFloat(nan, _this.object)
 }
-func (_this *RootBuilder) OnComplex(value complex128) {
-	panic("TODO: RootBuilder.OnComplex")
-}
 func (_this *RootBuilder) OnUUID(value []byte) {
 	_this.currentBuilder.BuildFromUUID(value, _this.object)
 }

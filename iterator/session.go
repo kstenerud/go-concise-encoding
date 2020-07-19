@@ -134,8 +134,6 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 		return newUintIterator()
 	case reflect.Float32, reflect.Float64:
 		return newFloatIterator()
-	case reflect.Complex64, reflect.Complex128:
-		return newComplexIterator()
 	case reflect.Interface:
 		return newInterfaceIterator(t)
 	case reflect.Array:
