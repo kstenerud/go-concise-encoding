@@ -35,7 +35,8 @@ import (
 )
 
 type floatBuilder struct {
-	// Const data
+	// Static data
+	session *Session
 	dstType reflect.Type
 }
 
@@ -50,6 +51,7 @@ func (_this *floatBuilder) String() string {
 }
 
 func (_this *floatBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *floatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -105,6 +107,12 @@ func (_this *floatBuilder) BuildFromString(value string, dst reflect.Value) {
 
 func (_this *floatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bytes")
+}
+
+func (_this *floatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *floatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

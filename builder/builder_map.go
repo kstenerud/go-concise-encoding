@@ -40,7 +40,8 @@ const (
 )
 
 type mapBuilder struct {
-	// Const data
+	// Static data
+	session *Session
 	dstType reflect.Type
 	kvTypes [2]reflect.Type
 
@@ -72,12 +73,14 @@ func (_this *mapBuilder) String() string {
 }
 
 func (_this *mapBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 	_this.kvBuilders[kvBuilderKey] = session.GetBuilderForType(_this.dstType.Key())
 	_this.kvBuilders[kvBuilderValue] = session.GetBuilderForType(_this.dstType.Elem())
 }
 
 func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &mapBuilder{
+		session: _this.session,
 		dstType: _this.dstType,
 		kvTypes: _this.kvTypes,
 		parent:  parent,
@@ -197,6 +200,12 @@ func (_this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
 }
 
 func (_this *mapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.nextBuilder.BuildFromBytes(value, object)
+	_this.store(object)
+}
+
+func (_this *mapBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromBytes(value, object)
 	_this.store(object)

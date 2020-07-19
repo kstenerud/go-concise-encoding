@@ -114,6 +114,10 @@ func (_this *markerIDBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderPanicBadEvent(_this, "Bytes")
 }
 
+func (_this *markerIDBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	BuilderPanicBadEvent(_this, "Custom")
+}
+
 func (_this *markerIDBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	BuilderPanicBadEvent(_this, "URI")
 }
@@ -161,6 +165,7 @@ func (_this *markerIDBuilder) NotifyChildContainerFinished(value reflect.Value) 
 // ============================================================================
 
 type markerObjectBuilder struct {
+	// Clone inserted data
 	parent           ObjectBuilder
 	child            ObjectBuilder
 	onObjectComplete func(reflect.Value)
@@ -247,6 +252,11 @@ func (_this *markerObjectBuilder) BuildFromString(value string, dst reflect.Valu
 
 func (_this *markerObjectBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.child.BuildFromBytes(value, dst)
+	_this.onObjectComplete(dst)
+}
+
+func (_this *markerObjectBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	_this.child.BuildFromCustom(value, dst)
 	_this.onObjectComplete(dst)
 }
 

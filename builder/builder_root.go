@@ -157,6 +157,9 @@ func (_this *RootBuilder) BuildFromString(_ string, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Bytes")
 }
+func (_this *RootBuilder) BuildFromCustom(_ []byte, _ reflect.Value) {
+	BuilderPanicBadEvent(_this, "Custom")
+}
 func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "URI")
 }
@@ -272,7 +275,7 @@ func (_this *RootBuilder) OnURI(value string) {
 	_this.currentBuilder.BuildFromURI(u, _this.object)
 }
 func (_this *RootBuilder) OnCustom(value []byte) {
-	panic("TODO: RootBuilder.OnCustom")
+	_this.currentBuilder.BuildFromCustom(value, _this.object)
 }
 func (_this *RootBuilder) OnBytesBegin() {
 	panic("TODO: RootBuilder.OnBytesBegin")

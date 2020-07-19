@@ -36,12 +36,12 @@ import (
 )
 
 type stringBuilder struct {
+	// Static data
+	session *Session
 }
 
-var globalStringBuilder = &stringBuilder{}
-
 func newStringBuilder() ObjectBuilder {
-	return globalStringBuilder
+	return &stringBuilder{}
 }
 
 func (_this *stringBuilder) String() string {
@@ -49,6 +49,7 @@ func (_this *stringBuilder) String() string {
 }
 
 func (_this *stringBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *stringBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -105,6 +106,12 @@ func (_this *stringBuilder) BuildFromString(value string, dst reflect.Value) {
 
 func (_this *stringBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Bytes")
+}
+
+func (_this *stringBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *stringBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

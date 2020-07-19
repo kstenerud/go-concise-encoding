@@ -36,6 +36,8 @@ import (
 )
 
 type bigFloatBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newBigFloatBuilder() ObjectBuilder {
@@ -47,6 +49,7 @@ func (_this *bigFloatBuilder) String() string {
 }
 
 func (_this *bigFloatBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *bigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -104,6 +107,12 @@ func (_this *bigFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigFloat, "Bytes")
 }
 
+func (_this *bigFloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
+}
+
 func (_this *bigFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigFloat, "URI")
 }
@@ -151,6 +160,8 @@ func (_this *bigFloatBuilder) NotifyChildContainerFinished(value reflect.Value) 
 // ============================================================================
 
 type pBigFloatBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newPBigFloatBuilder() ObjectBuilder {
@@ -162,6 +173,7 @@ func (_this *pBigFloatBuilder) String() string {
 }
 
 func (_this *pBigFloatBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *pBigFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -217,6 +229,12 @@ func (_this *pBigFloatBuilder) BuildFromString(value string, dst reflect.Value) 
 
 func (_this *pBigFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigFloat, "Bytes")
+}
+
+func (_this *pBigFloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *pBigFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

@@ -44,6 +44,7 @@ var (
 )
 
 type intfBuilder struct {
+	// Static data
 	session *Session
 
 	// Clone inserted data
@@ -123,6 +124,12 @@ func (_this *intfBuilder) BuildFromString(value string, dst reflect.Value) {
 
 func (_this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
+}
+
+func (_this *intfBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *intfBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

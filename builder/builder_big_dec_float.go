@@ -36,6 +36,8 @@ import (
 )
 
 type bigDecimalFloatBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newBigDecimalFloatBuilder() ObjectBuilder {
@@ -47,6 +49,7 @@ func (_this *bigDecimalFloatBuilder) String() string {
 }
 
 func (_this *bigDecimalFloatBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -104,6 +107,12 @@ func (_this *bigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Va
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigDecimalFloat, "Bytes")
 }
 
+func (_this *bigDecimalFloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
+}
+
 func (_this *bigDecimalFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigDecimalFloat, "URI")
 }
@@ -151,6 +160,8 @@ func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.
 // ============================================================================
 
 type pBigDecimalFloatBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newPBigDecimalFloatBuilder() ObjectBuilder {
@@ -162,6 +173,7 @@ func (_this *pBigDecimalFloatBuilder) String() string {
 }
 
 func (_this *pBigDecimalFloatBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -217,6 +229,12 @@ func (_this *pBigDecimalFloatBuilder) BuildFromString(value string, dst reflect.
 
 func (_this *pBigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigDecimalFloat, "Bytes")
+}
+
+func (_this *pBigDecimalFloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

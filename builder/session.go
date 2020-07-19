@@ -39,13 +39,20 @@ import (
 // only in their own session, and don't pollute the base mapping and cause
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
-	builders sync.Map
+	builders            sync.Map
+	customBuildFunction CustomBuildFunction
 }
 
 // Start a new builder session. It will begin with the basic builders registered,
 // and any further builders will only be registered to this session.
 func NewSession() *Session {
 	return baseSession.Clone()
+}
+
+func (_this *Session) Init() {
+	_this.customBuildFunction = (func(src []byte, dst reflect.Value) error {
+		return fmt.Errorf("No builder has been registered to handle custom data")
+	})
 }
 
 // Make a clone of the current session, with all registered builders of this
@@ -58,6 +65,7 @@ func (_this *Session) Clone() *Session {
 
 // Copy all registered builders from another session.
 func (_this *Session) CopyFrom(session *Session) {
+	_this.customBuildFunction = session.customBuildFunction
 	session.builders.Range(func(k interface{}, v interface{}) bool {
 		_this.builders.Store(k, v)
 		return true
@@ -98,31 +106,28 @@ func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
 	return builder.(ObjectBuilder)
 }
 
-// ============================================================================
-
-// The base session caches the most common builders. All sessions inherit
-// these cached values.
-var baseSession Session
-
-func init() {
-	for _, t := range common.KeyableTypes {
-		baseSession.GetBuilderForType(t)
-		baseSession.GetBuilderForType(reflect.PtrTo(t))
-		baseSession.GetBuilderForType(reflect.SliceOf(t))
-		for _, u := range common.KeyableTypes {
-			baseSession.GetBuilderForType(reflect.MapOf(t, u))
-		}
-		for _, u := range common.NonKeyableTypes {
-			baseSession.GetBuilderForType(reflect.MapOf(t, u))
-		}
-	}
-
-	for _, t := range common.NonKeyableTypes {
-		baseSession.GetBuilderForType(t)
-		baseSession.GetBuilderForType(reflect.PtrTo(t))
-		baseSession.GetBuilderForType(reflect.SliceOf(t))
-	}
+// Register a type to be built using your custom build function. You must also
+// call SetCustomBuildFunction() to register the function that will do the
+// actual building from the source bytes.
+func (_this *Session) UseCustomBuildFunctionForType(dstType reflect.Type) {
+	_this.RegisterBuilderForType(dstType, newCustomBuilder(_this))
 }
+
+// Choose the function that will handle all building from custom data in the
+// document. Any types registered via UseCustomBuildFunctionForType() will be
+// built using this function.
+//
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
+func (_this *Session) SetCustomBuildFunction(customBuilder CustomBuildFunction) {
+	_this.customBuildFunction = customBuilder
+}
+
+func (_this *Session) GetCustomBuildFunction() CustomBuildFunction {
+	return _this.customBuildFunction
+}
+
+// ============================================================================
 
 func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder {
 	switch dstType.Kind() {
@@ -190,5 +195,33 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 		}
 	default:
 		panic(fmt.Errorf("BUG: Unhandled type %v", dstType))
+	}
+}
+
+// ============================================================================
+
+// The base session caches the most common builders. All sessions inherit
+// these cached values.
+var baseSession Session
+
+func init() {
+	baseSession.Init()
+
+	for _, t := range common.KeyableTypes {
+		baseSession.GetBuilderForType(t)
+		baseSession.GetBuilderForType(reflect.PtrTo(t))
+		baseSession.GetBuilderForType(reflect.SliceOf(t))
+		for _, u := range common.KeyableTypes {
+			baseSession.GetBuilderForType(reflect.MapOf(t, u))
+		}
+		for _, u := range common.NonKeyableTypes {
+			baseSession.GetBuilderForType(reflect.MapOf(t, u))
+		}
+	}
+
+	for _, t := range common.NonKeyableTypes {
+		baseSession.GetBuilderForType(t)
+		baseSession.GetBuilderForType(reflect.PtrTo(t))
+		baseSession.GetBuilderForType(reflect.SliceOf(t))
 	}
 }

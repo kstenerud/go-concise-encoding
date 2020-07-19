@@ -48,9 +48,8 @@ func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
 
 func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
 	debug.DebugOptions.PassThroughPanics = true
-	defer func() {
-		debug.DebugOptions.PassThroughPanics = false
-	}()
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+
 	actual, err := cteEncodeDecode(expected...)
 	if err != nil {
 		t.Error(err)

@@ -37,7 +37,8 @@ import (
 // The direct builder has an unambiguous direct mapping from build event to
 // a non-pointer destination type (for example, a bool is always a bool).
 type directBuilder struct {
-	// Const data
+	// Static data
+	session *Session
 	dstType reflect.Type
 }
 
@@ -56,6 +57,7 @@ func (_this *directBuilder) IsContainerOnly() bool {
 }
 
 func (_this *directBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -111,6 +113,12 @@ func (_this *directBuilder) BuildFromString(value string, dst reflect.Value) {
 
 func (_this *directBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bytes")
+}
+
+func (_this *directBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
@@ -238,6 +246,10 @@ func (_this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) 
 
 func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	dst.SetBytes(value)
+}
+
+func (_this *directPtrBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Custom")
 }
 
 func (_this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

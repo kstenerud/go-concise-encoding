@@ -36,10 +36,8 @@ import (
 )
 
 type arrayBuilder struct {
-	// Const data
-	dstType reflect.Type
-
-	// Cloned data (must be populated)
+	// Static data
+	dstType     reflect.Type
 	elemBuilder ObjectBuilder
 
 	// Clone inserted data
@@ -69,10 +67,10 @@ func (_this *arrayBuilder) PostCacheInitBuilder(session *Session) {
 func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &arrayBuilder{
 		dstType:     _this.dstType,
-		parent:      parent,
-		root:        root,
-		options:     options,
 		elemBuilder: _this.elemBuilder,
+		root:        root,
+		parent:      parent,
+		options:     options,
 	}
 	that.reset()
 	return that
@@ -151,6 +149,11 @@ func (_this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.index++
 }
 
+func (_this *arrayBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	_this.elemBuilder.BuildFromCustom(value, _this.currentElem())
+	_this.index++
+}
+
 func (_this *arrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
 	_this.elemBuilder.BuildFromURI(value, _this.currentElem())
 	_this.index++
@@ -215,23 +218,20 @@ func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
 // ============================================================================
 
 type bytesArrayBuilder struct {
+	// Static data
+	session *Session
 }
 
-var globalBytesArrayBuilder bytesArrayBuilder
-
 func newBytesArrayBuilder() ObjectBuilder {
-	return &globalBytesArrayBuilder
+	return &bytesArrayBuilder{}
 }
 
 func (_this *bytesArrayBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *bytesArrayBuilder) IsContainerOnly() bool {
-	return false
-}
-
 func (_this *bytesArrayBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -291,6 +291,10 @@ func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) 
 		elem := dst.Index(i)
 		elem.SetUint(uint64(value[i]))
 	}
+}
+
+func (_this *bytesArrayBuilder) BuildFromCustom(value []byte, ignored reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustom")
 }
 
 func (_this *bytesArrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {

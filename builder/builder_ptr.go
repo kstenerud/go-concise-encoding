@@ -35,7 +35,7 @@ import (
 )
 
 type ptrBuilder struct {
-	// Const data
+	// Static data
 	dstType reflect.Type
 
 	// Cloned data (must be populated)
@@ -143,6 +143,12 @@ func (_this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
 func (_this *ptrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
 	_this.elemBuilder.BuildFromBytes(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
+func (_this *ptrBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromCustom(value, ptr.Elem())
 	dst.Set(ptr)
 }
 

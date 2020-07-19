@@ -40,7 +40,7 @@ type structBuilderDesc struct {
 }
 
 type structBuilder struct {
-	// Const data
+	// Static data
 	dstType reflect.Type
 
 	// Cloned data (must be populated)
@@ -187,6 +187,11 @@ func (_this *structBuilder) BuildFromString(value string, ignored reflect.Value)
 
 func (_this *structBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
 	_this.nextBuilder.BuildFromBytes(value, _this.nextValue)
+	_this.swapKeyValue()
+}
+
+func (_this *structBuilder) BuildFromCustom(value []byte, ignored reflect.Value) {
+	_this.nextBuilder.BuildFromCustom(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 

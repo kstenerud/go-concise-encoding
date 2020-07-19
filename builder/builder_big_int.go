@@ -36,6 +36,8 @@ import (
 )
 
 type bigIntBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newBigIntBuilder() ObjectBuilder {
@@ -47,6 +49,7 @@ func (_this *bigIntBuilder) String() string {
 }
 
 func (_this *bigIntBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *bigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -104,6 +107,12 @@ func (_this *bigIntBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "Bytes")
 }
 
+func (_this *bigIntBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
+}
+
 func (_this *bigIntBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "URI")
 }
@@ -151,6 +160,8 @@ func (_this *bigIntBuilder) NotifyChildContainerFinished(value reflect.Value) {
 // ============================================================================
 
 type pBigIntBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newPBigIntBuilder() ObjectBuilder {
@@ -162,6 +173,7 @@ func (_this *pBigIntBuilder) String() string {
 }
 
 func (_this *pBigIntBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -217,6 +229,12 @@ func (_this *pBigIntBuilder) BuildFromString(value string, dst reflect.Value) {
 
 func (_this *pBigIntBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "Bytes")
+}
+
+func (_this *pBigIntBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *pBigIntBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

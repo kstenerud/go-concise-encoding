@@ -54,6 +54,7 @@ type ObjectBuilder interface {
 	BuildFromUUID(value []byte, dst reflect.Value)
 	BuildFromString(value string, dst reflect.Value)
 	BuildFromBytes(value []byte, dst reflect.Value)
+	BuildFromCustom(value []byte, dst reflect.Value)
 	BuildFromURI(value *url.URL, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
 	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
@@ -81,6 +82,14 @@ type ObjectBuilder interface {
 
 	SetParent(newParent ObjectBuilder)
 }
+
+// CustomBuilderFunction fills out a value from a custom byte array source.
+// This allows fully user-configurable building of types from custom Concise
+// Encoding data.
+//
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
+type CustomBuildFunction func(src []byte, dst reflect.Value) error
 
 // Error reporting
 
@@ -112,4 +121,10 @@ func BuilderPanicCannotConvertRV(value reflect.Value, dstType reflect.Type) {
 // This normally indicates a bug.
 func BuilderPanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
+}
+
+// Report that an error occurred while building from custom data.
+// This normally indicates a bug in your custom builder.
+func BuilderPanicBuildFromCustom(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("Error converting custom data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
 }

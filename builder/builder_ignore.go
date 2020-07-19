@@ -118,6 +118,10 @@ func (_this *ignoreBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
+func (_this *ignoreBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.parent)
+}
+
 func (_this *ignoreBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
@@ -247,6 +251,10 @@ func (_this *ignoreContainerBuilder) BuildFromString(value string, dst reflect.V
 }
 
 func (_this *ignoreContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+	// Ignore this directive
+}
+
+func (_this *ignoreContainerBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
 	// Ignore this directive
 }
 

@@ -36,6 +36,8 @@ import (
 )
 
 type dfloatBuilder struct {
+	// Static data
+	session *Session
 }
 
 func newDFloatBuilder() ObjectBuilder {
@@ -47,6 +49,7 @@ func (_this *dfloatBuilder) String() string {
 }
 
 func (_this *dfloatBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -102,6 +105,12 @@ func (_this *dfloatBuilder) BuildFromString(value string, dst reflect.Value) {
 
 func (_this *dfloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Bytes")
+}
+
+func (_this *dfloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *dfloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

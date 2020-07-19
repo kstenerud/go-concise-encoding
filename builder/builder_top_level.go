@@ -125,6 +125,11 @@ func (_this *topLevelBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.builder.BuildFromBytes(value, dst)
 }
 
+func (_this *topLevelBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromCustom(value, dst)
+}
+
 func (_this *topLevelBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
 	_this.builder.BuildFromURI(value, dst)

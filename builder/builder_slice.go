@@ -37,7 +37,7 @@ import (
 const defaultSliceCap = 4
 
 type sliceBuilder struct {
-	// Const data
+	// Static data
 	dstType reflect.Type
 
 	// Cloned data (must be populated)
@@ -69,9 +69,9 @@ func (_this *sliceBuilder) PostCacheInitBuilder(session *Session) {
 func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &sliceBuilder{
 		dstType:     _this.dstType,
+		elemBuilder: _this.elemBuilder,
 		parent:      parent,
 		root:        root,
-		elemBuilder: _this.elemBuilder,
 		options:     options,
 	}
 	that.reset()
@@ -165,6 +165,12 @@ func (_this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) 
 func (_this *sliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromBytes(value, object)
+	_this.storeValue(object)
+}
+
+func (_this *sliceBuilder) BuildFromCustom(value []byte, ignored reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromCustom(value, object)
 	_this.storeValue(object)
 }
 

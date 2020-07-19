@@ -38,12 +38,12 @@ import (
 // Go Time
 
 type timeBuilder struct {
+	// Static data
+	session *Session
 }
 
-var globalTimeBuilder timeBuilder
-
 func newTimeBuilder() ObjectBuilder {
-	return &globalTimeBuilder
+	return &timeBuilder{}
 }
 
 func (_this *timeBuilder) String() string {
@@ -51,6 +51,7 @@ func (_this *timeBuilder) String() string {
 }
 
 func (_this *timeBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *timeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -108,6 +109,12 @@ func (_this *timeBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Bytes")
 }
 
+func (_this *timeBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
+}
+
 func (_this *timeBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "URI")
 }
@@ -159,12 +166,12 @@ func (_this *timeBuilder) NotifyChildContainerFinished(value reflect.Value) {
 // ============================================================================
 
 type compactTimeBuilder struct {
+	// Static data
+	session *Session
 }
 
-var globalCompactTimeBuilder compactTimeBuilder
-
 func newCompactTimeBuilder() ObjectBuilder {
-	return &globalCompactTimeBuilder
+	return &compactTimeBuilder{}
 }
 
 func (_this *compactTimeBuilder) String() string {
@@ -172,6 +179,7 @@ func (_this *compactTimeBuilder) String() string {
 }
 
 func (_this *compactTimeBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *compactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -229,6 +237,12 @@ func (_this *compactTimeBuilder) BuildFromBytes(value []byte, dst reflect.Value)
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Bytes")
 }
 
+func (_this *compactTimeBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
+}
+
 func (_this *compactTimeBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "URI")
 }
@@ -276,12 +290,12 @@ func (_this *compactTimeBuilder) NotifyChildContainerFinished(value reflect.Valu
 // ============================================================================
 
 type pCompactTimeBuilder struct {
+	// Static data
+	session *Session
 }
 
-var globalPCompactTimeBuilder pCompactTimeBuilder
-
 func newPCompactTimeBuilder() ObjectBuilder {
-	return &globalPCompactTimeBuilder
+	return &pCompactTimeBuilder{}
 }
 
 func (_this *pCompactTimeBuilder) String() string {
@@ -289,6 +303,7 @@ func (_this *pCompactTimeBuilder) String() string {
 }
 
 func (_this *pCompactTimeBuilder) PostCacheInitBuilder(session *Session) {
+	_this.session = session
 }
 
 func (_this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
@@ -344,6 +359,12 @@ func (_this *pCompactTimeBuilder) BuildFromString(value string, dst reflect.Valu
 
 func (_this *pCompactTimeBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Bytes")
+}
+
+func (_this *pCompactTimeBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+	}
 }
 
 func (_this *pCompactTimeBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

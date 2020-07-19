@@ -40,6 +40,14 @@ func Marshal(object interface{}, writer io.Writer, opts *options.CTEMarshalerOpt
 	return marshaler.Marshal(object, writer)
 }
 
+// Marshal a go object into a CTE document, returned as a byte slice.
+// If options is nil, default options will be used.
+func MarshalToBytes(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
+	var marshaler Marshaler
+	marshaler.Init(opts, nil)
+	return marshaler.MarshalToBytes(object)
+}
+
 // Unmarshal a CTE document, creating an object of the same type as the template.
 // If options is nil, default options will be used.
 func Unmarshal(reader io.Reader, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
@@ -48,19 +56,12 @@ func Unmarshal(reader io.Reader, template interface{}, opts *options.CTEUnmarsha
 	return marshaler.Unmarshal(reader, template)
 }
 
-// Marshal a go object into a CTE document, returned as a byte slice.
-// If options is nil, default options will be used.
-func MarshalToBytes(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
-	var buff bytes.Buffer
-	err = Marshal(object, &buff, opts)
-	document = buff.Bytes()
-	return
-}
-
 // Unmarshal CTE from a byte slice, creating an object of the same type as the template.
 // If options is nil, default options will be used.
 func UnmarshalFromBytes(document []byte, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
-	return Unmarshal(bytes.NewBuffer(document), template, opts)
+	var marshaler Marshaler
+	marshaler.Init(nil, opts)
+	return marshaler.UnmarshalFromBytes(document, template)
 }
 
 // A marshaler keeps builder and iterator sessions so that cached builder &
@@ -92,7 +93,6 @@ func (_this *Marshaler) Init(marshalOpts *options.CTEMarshalerOptions, unmarshal
 }
 
 // Marshal a go object into a CTE document, written to writer.
-// If options is nil, default options will be used.
 func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error) {
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
@@ -112,8 +112,15 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 	return
 }
 
+// Marshal a go object into a CTE document, returning the document as a byte slice.
+func (_this *Marshaler) MarshalToBytes(object interface{}) (document []byte, err error) {
+	var buff bytes.Buffer
+	err = _this.Marshal(object, &buff)
+	document = buff.Bytes()
+	return
+}
+
 // Unmarshal a CTE document, creating an object of the same type as the template.
-// If options is nil, default options will be used.
 func (_this *Marshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
@@ -135,4 +142,9 @@ func (_this *Marshaler) Unmarshal(reader io.Reader, template interface{}) (decod
 	}
 	decoded = builder.GetBuiltObject()
 	return
+}
+
+// Unmarshal a CTE document, creating an object of the same type as the template.
+func (_this *Marshaler) UnmarshalFromBytes(document []byte, template interface{}) (decoded interface{}, err error) {
+	return _this.Unmarshal(bytes.NewBuffer(document), template)
 }
