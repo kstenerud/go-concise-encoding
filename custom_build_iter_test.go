@@ -40,41 +40,60 @@ import (
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
 
-// Demonstration custom type. Technically, this would be better off encoded as
-// a map, but it's best to demonstrate with something simple!
-type Measure struct {
-	Units string
-	Value float64
-}
-
 // ============================================================================
 
-// Assume the following custom serialized format for Measure:
+// Assume the following custom serialized formats for complex64 and 128:
 //
 // | Offset | Size | Description                                             |
 // | ------ | ---- | ------------------------------------------------------- |
 // |      0 |    1 | Data type code (so we can have multiple custom types)   |
-// |      1 |    8 | Value (float64, little endian)                          |
-// |      9 |    1 | Units name length (max 255)                             |
-// |     10 |    n | Units name (string with length from units name length)  |
+// |      1 |    4 | Real portion (float32, little endian)                   |
+// |      5 |    4 | Imaginary portion (float32, little endian)              |
+//
+// | Offset | Size | Description                                             |
+// | ------ | ---- | ------------------------------------------------------- |
+// |      0 |    1 | Data type code (so we can have multiple custom types)   |
+// |      1 |    8 | Real portion (float64, little endian)                   |
+// |      9 |    8 | Imaginary portion (float64, little endian)              |
 
 // Simple type mechanism: The first byte of the data is the type field
-const typeCodeMeasure = 1
+const (
+	typeCodeComplex64  = 0
+	typeCodeComplex128 = 1
+)
 
-// First piece: function to convert from an object to custom bytes.
-// This function handles a single type only.
-func convertToCustom(v reflect.Value) (asBytes []byte, err error) {
-	value := v.FieldByName("Value").Float()
-	units := v.FieldByName("Units").String()
-	unitsLength := len(units)
+// First piece: functions to convert from complex type to custom bytes.
+// These functions each handle a single type only.
+func convertComplex64ToCustom(rv reflect.Value) (asBytes []byte, err error) {
+	cplx := complex64(rv.Complex())
 
 	buff := bytes.Buffer{}
-	buff.WriteByte(typeCodeMeasure)
-	if err = binary.Write(&buff, binary.LittleEndian, value); err != nil {
+
+	buff.WriteByte(typeCodeComplex64)
+	if err = binary.Write(&buff, binary.LittleEndian, real(cplx)); err != nil {
 		return
 	}
-	buff.WriteByte(byte(unitsLength))
-	buff.Write([]byte(units))
+	if err = binary.Write(&buff, binary.LittleEndian, imag(cplx)); err != nil {
+		return
+	}
+
+	asBytes = buff.Bytes()
+	return
+}
+
+func convertComplex128ToCustom(rv reflect.Value) (asBytes []byte, err error) {
+	cplx := rv.Complex()
+
+	buff := bytes.Buffer{}
+
+	buff.WriteByte(typeCodeComplex128)
+	if err = binary.Write(&buff, binary.LittleEndian, real(cplx)); err != nil {
+		return
+	}
+	if err = binary.Write(&buff, binary.LittleEndian, imag(cplx)); err != nil {
+		return
+	}
+
 	asBytes = buff.Bytes()
 	return
 }
@@ -86,38 +105,44 @@ func convertFromCustom(src []byte, dst reflect.Value) error {
 
 	customType, _ := buff.ReadByte()
 	switch customType {
-	case typeCodeMeasure:
-		var value float64
-		if err := binary.Read(buff, binary.LittleEndian, &value); err != nil {
+	case typeCodeComplex64:
+		var realPart float32
+		var imagPart float32
+		if err := binary.Read(buff, binary.LittleEndian, &realPart); err != nil {
 			return err
 		}
-		unitsLength, _ := buff.ReadByte()
-		units := make([]byte, unitsLength)
-		byteCount, err := buff.Read(units)
-		if err != nil {
+		if err := binary.Read(buff, binary.LittleEndian, &imagPart); err != nil {
 			return err
 		}
-		if byteCount < len(units) {
-			return fmt.Errorf("Incomplete data")
+		dst.SetComplex(complex128(complex(realPart, imagPart)))
+		return nil
+	case typeCodeComplex128:
+		var realPart float64
+		var imagPart float64
+		if err := binary.Read(buff, binary.LittleEndian, &realPart); err != nil {
+			return err
 		}
-		dst.FieldByName("Value").SetFloat(value)
-		dst.FieldByName("Units").SetString(string(units))
+		if err := binary.Read(buff, binary.LittleEndian, &imagPart); err != nil {
+			return err
+		}
+		dst.SetComplex(complex(realPart, imagPart))
 		return nil
 	default:
-		return fmt.Errorf("%x: Unknown custom type", customType)
+		return fmt.Errorf("Unknown custom type [0x%02x]", customType)
 	}
 }
 
 // ============================================================================
 
-func assertCBEMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
+func assertCBEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	marshaler := cbe.NewMarshaler(nil, nil)
 	marshaler.BuilderSession.SetCustomBuildFunction(convertFromCustom)
-	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(*value))
-	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(*value), convertToCustom)
+	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(value))
+	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float32(0), float32(0))), convertComplex64ToCustom)
+	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float64(0), float64(0))), convertComplex128ToCustom)
 
 	document, err := marshaler.MarshalToBytes(value)
 	if err != nil {
@@ -137,14 +162,15 @@ func assertCBEMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
 	}
 }
 
-func assertCTEMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
+func assertCTEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	marshaler := cte.NewMarshaler(nil, nil)
 	marshaler.BuilderSession.SetCustomBuildFunction(convertFromCustom)
-	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(*value))
-	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(*value), convertToCustom)
+	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(value))
+	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float32(0), float32(0))), convertComplex64ToCustom)
+	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float64(0), float64(0))), convertComplex128ToCustom)
 
 	document, err := marshaler.MarshalToBytes(value)
 	if err != nil {
@@ -164,16 +190,14 @@ func assertCTEMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
 	}
 }
 
-func assertMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
-	assertCBEMarshalUnmarshalMeasure(t, value)
-	assertCTEMarshalUnmarshalMeasure(t, value)
+func assertMarshalUnmarshalComplex(t *testing.T, value interface{}) {
+	assertCBEMarshalUnmarshalComplex(t, value)
+	assertCTEMarshalUnmarshalComplex(t, value)
 }
 
 // ============================================================================
 
 func TestCustomBuildIter(t *testing.T) {
-	assertMarshalUnmarshalMeasure(t, &Measure{
-		Units: "cm",
-		Value: 1.8,
-	})
+	assertMarshalUnmarshalComplex(t, complex(1, 1))
+	assertMarshalUnmarshalComplex(t, complex(float64(1.0000000000000000000000000001), float64(1)))
 }
