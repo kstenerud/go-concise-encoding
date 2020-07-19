@@ -31,8 +31,6 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/debug"
-	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/iterator"
 
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
@@ -63,31 +61,27 @@ type Measure struct {
 // Simple type mechanism: The first byte of the data is the type field
 const typeCodeMeasure = 1
 
-// First piece: Iterator that converts to binary and calls OnCustom()
-type MeasureIterator struct {
-}
-
-func (_this *MeasureIterator) PostCacheInitIterator(session *iterator.Session) {
-}
-
-func (_this *MeasureIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references iterator.ReferenceEventGenerator) {
+// First piece: function to convert from an object to custom bytes.
+// This function handles a single type only.
+func convertToCustom(v reflect.Value) (asBytes []byte, err error) {
 	value := v.FieldByName("Value").Float()
 	units := v.FieldByName("Units").String()
 	unitsLength := len(units)
 
 	buff := bytes.Buffer{}
 	buff.WriteByte(typeCodeMeasure)
-	if err := binary.Write(&buff, binary.LittleEndian, value); err != nil {
-		panic(err)
+	if err = binary.Write(&buff, binary.LittleEndian, value); err != nil {
+		return
 	}
 	buff.WriteByte(byte(unitsLength))
 	buff.Write([]byte(units))
-	eventReceiver.OnCustom(buff.Bytes())
+	asBytes = buff.Bytes()
+	return
 }
 
 // Second piece: converter function to fill in an object from custom data.
 // This same function will be used for ALL custom types.
-func convertCustom(src []byte, dst reflect.Value) error {
+func convertFromCustom(src []byte, dst reflect.Value) error {
 	buff := bytes.NewBuffer(src)
 
 	customType, _ := buff.ReadByte()
@@ -121,9 +115,9 @@ func assertCBEMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	marshaler := cbe.NewMarshaler(nil, nil)
-	marshaler.BuilderSession.SetCustomBuildFunction(convertCustom)
+	marshaler.BuilderSession.SetCustomBuildFunction(convertFromCustom)
 	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(*value))
-	marshaler.IteratorSession.RegisterIteratorForType(reflect.TypeOf(*value), &MeasureIterator{})
+	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(*value), convertToCustom)
 
 	document, err := marshaler.MarshalToBytes(value)
 	if err != nil {
@@ -148,9 +142,9 @@ func assertCTEMarshalUnmarshalMeasure(t *testing.T, value *Measure) {
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	marshaler := cte.NewMarshaler(nil, nil)
-	marshaler.BuilderSession.SetCustomBuildFunction(convertCustom)
+	marshaler.BuilderSession.SetCustomBuildFunction(convertFromCustom)
 	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(*value))
-	marshaler.IteratorSession.RegisterIteratorForType(reflect.TypeOf(*value), &MeasureIterator{})
+	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(*value), convertToCustom)
 
 	document, err := marshaler.MarshalToBytes(value)
 	if err != nil {

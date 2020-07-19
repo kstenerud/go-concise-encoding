@@ -75,6 +75,15 @@ func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator ObjectIte
 	_this.iterators.Store(t, iterator)
 }
 
+// Register a conversion function to convert the specified type to a Concise
+// Encoding custom byte array. This will register a new interator for that type.
+//
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
+func (_this *Session) RegisterCustomConverterForType(t reflect.Type, convertFunction ConvertToCustomBytesFunction) {
+	_this.RegisterIteratorForType(t, newCustomIterator(convertFunction))
+}
+
 // Get an iterator for the specified type. If a registered iterator doesn't yet
 // exist, a new default iterator will be generated and registered.
 // This method is thread-safe.

@@ -48,3 +48,11 @@ type ObjectIterator interface {
 	// cache but before use, so that lookups succeed on cyclic type references.
 	PostCacheInitIterator(session *Session)
 }
+
+// ConvertToCustomBytesFunction converts a value to a custom array of bytes.
+// This allows fully user-configurable converting to custom Concise Encoding
+// data.
+//
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
+type ConvertToCustomBytesFunction func(v reflect.Value) (asBytes []byte, err error)
