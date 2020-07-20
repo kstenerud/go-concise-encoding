@@ -356,13 +356,6 @@ func I(v int64) *TEvent {
 	return NI(uint64(-v))
 }
 func F(v float64) *TEvent {
-	// TODO: Do I need to check for this? Doesn't the library handle it?
-	if math.IsNaN(v) {
-		if common.IsSignalingNan(v) {
-			return SNAN()
-		}
-		return NAN()
-	}
 	return newTEvent(TEventFloat, v, nil)
 }
 
@@ -602,8 +595,7 @@ type TestingOuterStruct struct {
 	CTime  compact_time.Time
 	PCTime *compact_time.Time
 	PURL   *url.URL
-	// TODO: If URI is relative, doesn't need scheme. Can be 0 length...
-	// URL   url.URL
+	URL    url.URL
 }
 
 func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (events []*TEvent) {

@@ -605,9 +605,6 @@ func (_this *Rules) onArrayChunkEnded() {
 			_this.stackID(string(_this.arrayData))
 		}
 	case eventTypeURI:
-		if _this.arrayBytesWritten < 2 {
-			panic(fmt.Errorf("URI length must allow at least a scheme and colon (2 chars)"))
-		}
 		if _this.isAwaitingID() {
 			url, err := url.Parse(string(_this.arrayData))
 			if err != nil {

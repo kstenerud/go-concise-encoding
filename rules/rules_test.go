@@ -2156,15 +2156,15 @@ func TestRulesErrorReferenceIDLength0(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnArrayChunk(0, true) })
 }
 
-func TestRulesErrorURILength0_1(t *testing.T) {
+func TestRulesURILength0_1(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
-	test.AssertPanics(t, func() { rules.OnArrayChunk(0, true) })
+	test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, true) })
 
 	rules = newRulesWithMaxDepth(2)
 	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(1, true) })
-	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0x40}) })
+	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte{0x40}) })
 }
 
 func TestRulesErrorDuplicateMarkerID(t *testing.T) {
