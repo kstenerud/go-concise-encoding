@@ -222,32 +222,32 @@ func setBigIntFromUint(value uint64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(*conversions.UintToBigInt(value)))
 }
 
-func setBigIntFromFloat(value float64, dst reflect.Value) {
-	bi, err := conversions.FloatToBigInt(value)
+func setBigIntFromFloat(value float64, dst reflect.Value, maxBase2Exponent int) {
+	bi, err := conversions.FloatToBigInt(value, maxBase2Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
 
-func setBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
-	bi, err := conversions.BigFloatToBigInt(value)
+func setBigIntFromBigFloat(value *big.Float, dst reflect.Value, maxBase2Exponent int) {
+	bi, err := conversions.BigFloatToBigInt(value, maxBase2Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
 
-func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	bi, err := conversions.DecimalFloatToBigInt(value)
+func setBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value, maxBase10Exponent int) {
+	bi, err := conversions.DecimalFloatToBigInt(value, maxBase10Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(*bi))
 }
 
-func setBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	bi, err := conversions.BigDecimalFloatToBigInt(value)
+func setBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value, maxBase10Exponent int) {
+	bi, err := conversions.BigDecimalFloatToBigInt(value, maxBase10Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
@@ -264,32 +264,32 @@ func setPBigIntFromUint(value uint64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(conversions.UintToBigInt(value)))
 }
 
-func setPBigIntFromFloat(value float64, dst reflect.Value) {
-	bi, err := conversions.FloatToBigInt(value)
+func setPBigIntFromFloat(value float64, dst reflect.Value, maxBase2Exponent int) {
+	bi, err := conversions.FloatToBigInt(value, maxBase2Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
 
-func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value) {
-	bi, err := conversions.BigFloatToBigInt(value)
+func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value, maxBase2Exponent int) {
+	bi, err := conversions.BigFloatToBigInt(value, maxBase2Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
 
-func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	bi, err := conversions.DecimalFloatToBigInt(value)
+func setPBigIntFromDecimalFloat(value compact_float.DFloat, dst reflect.Value, maxBase10Exponent int) {
+	bi, err := conversions.DecimalFloatToBigInt(value, maxBase10Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
 }
 
-func setPBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	bi, err := conversions.BigDecimalFloatToBigInt(value)
+func setPBigIntFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value, maxBase10Exponent int) {
+	bi, err := conversions.BigDecimalFloatToBigInt(value, maxBase10Exponent)
 	if err != nil {
 		BuilderPanicErrorConverting(value, dst.Type(), err)
 	}

@@ -213,7 +213,7 @@ func validateLength(length uint64) {
 
 func (_this *Decoder) decodeUnichunkArray(length uint64) []byte {
 	validateLength(length)
-	// TODO:
+	// TODO: array chunk
 	// _this.nextReceiver.OnArrayChunk(length, true)
 	if length == 0 {
 		return []byte{}
@@ -229,7 +229,7 @@ func (_this *Decoder) decodeMultichunkArray(initialLength uint64) []byte {
 	bytes := []byte{}
 	for {
 		validateLength(length)
-		// TODO:
+		// TODO: array chunk
 		// _this.nextReceiver.OnArrayChunk(length, isFinalChunk)
 		nextBytes := _this.buffer.DecodeBytes(int(length))
 		// _this.nextReceiver.OnArrayData(nextBytes)

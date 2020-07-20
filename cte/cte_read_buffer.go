@@ -26,6 +26,7 @@ import (
 	"io"
 	"math"
 	"math/big"
+	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/buffer"
 
@@ -282,6 +283,10 @@ const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 func (_this *CTEReadBuffer) DecodeBinaryInteger() (value uint64) {
 	for {
 		b := _this.PeekByteAllowEOD()
+		if b.HasProperty(ctePropertyNumericWhitespace) {
+			_this.AdvanceByte()
+			continue
+		}
 		if !b.HasProperty(ctePropertyBinaryDigit) {
 			return
 		}
@@ -299,6 +304,10 @@ const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 func (_this *CTEReadBuffer) DecodeOctalInteger() (value uint64) {
 	for {
 		b := _this.PeekByteAllowEOD()
+		if b.HasProperty(ctePropertyNumericWhitespace) {
+			_this.AdvanceByte()
+			continue
+		}
 		if !b.HasProperty(ctePropertyOctalDigit) {
 			return
 		}
@@ -316,11 +325,14 @@ const maxPreShiftDecimal = uint64(0x1999999999999999)
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
 func (_this *CTEReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
-	// TODO: numeric whitespace _
 	if bigStartValue == nil {
 		value = startValue
 		for {
 			b := _this.PeekByteAllowEOD()
+			if b.HasProperty(ctePropertyNumericWhitespace) {
+				_this.AdvanceByte()
+				continue
+			}
 			if !b.HasProperty(cteProperty09) {
 				return
 			}
@@ -359,6 +371,9 @@ func (_this *CTEReadBuffer) DecodeHexInteger(startValue uint64) (value uint64, d
 		b := _this.PeekByteAllowEOD()
 		nextNybble := uint64(0)
 		switch {
+		case b.HasProperty(ctePropertyNumericWhitespace):
+			_this.AdvanceByte()
+			continue
 		case b.HasProperty(cteProperty09):
 			nextNybble = uint64(b - '0')
 		case b.HasProperty(ctePropertyLowercaseAF):
@@ -379,13 +394,69 @@ func (_this *CTEReadBuffer) DecodeHexInteger(startValue uint64) (value uint64, d
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() string {
-	_this.Errorf("TODO: CTEDecoder: Escape sequences")
-	return ""
+func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
+	sb := strings.Builder{}
+	sb.Write(_this.GetSubtoken())
+	for {
+		b := _this.PeekByteNoEOD()
+		switch b {
+		case '"':
+			_this.AdvanceByte()
+			return []byte(sb.String())
+		case '\\':
+			_this.AdvanceByte()
+			escape := _this.PeekByteNoEOD()
+			switch escape {
+			case 'r':
+				sb.WriteByte('\r')
+			case 'n':
+				sb.WriteByte('\n')
+			case 't':
+				sb.WriteByte('\t')
+			case '\r':
+				_this.AdvanceByte()
+				if _this.PeekByteNoEOD() != '\n' {
+					_this.UnexpectedChar("\\r\\n continuation")
+				}
+			case '\n':
+				// Nothing to do
+			case '"':
+				sb.WriteByte('"')
+			case '*':
+				sb.WriteByte('*')
+			case '/':
+				sb.WriteByte('/')
+			case '\\':
+				sb.WriteByte('\\')
+			case 'u':
+				var codepoint rune
+				for i := 0; i < 4; i++ {
+					_this.AdvanceByte()
+					b := _this.PeekByteNoEOD()
+					switch {
+					case hasProperty(b, cteProperty09):
+						codepoint = (codepoint << 4) | (rune(b) - '0')
+					case hasProperty(b, ctePropertyLowercaseAF):
+						codepoint = (codepoint << 4) | (rune(b) - 'a' + 10)
+					case hasProperty(b, ctePropertyUppercaseAF):
+						codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
+					default:
+						_this.UnexpectedChar("unicode sequence")
+					}
+				}
+				sb.WriteRune(codepoint)
+			default:
+				_this.UnexpectedChar("escape sequence")
+			}
+			_this.AdvanceByte()
+		default:
+			sb.WriteByte(b)
+			_this.AdvanceByte()
+		}
+	}
 }
 
-// TODO: Return []byte instead
-func (_this *CTEReadBuffer) DecodeQuotedString() string {
+func (_this *CTEReadBuffer) DecodeQuotedString() []byte {
 	_this.BeginSubtoken()
 	for {
 		b := _this.PeekByteNoEOD()
@@ -393,11 +464,12 @@ func (_this *CTEReadBuffer) DecodeQuotedString() string {
 		case '"':
 			token := _this.GetSubtoken()
 			_this.AdvanceByte()
-			return string(token)
+			return token
 		case '\\':
 			return _this.DecodeQuotedStringWithEscapes()
+		default:
+			_this.AdvanceByte()
 		}
-		_this.AdvanceByte()
 	}
 }
 

@@ -224,7 +224,7 @@ func (_this *Decoder) handleStringish() {
 			_this.endObject()
 			return
 		case 'u':
-			_this.eventReceiver.OnURI(_this.buffer.DecodeQuotedString())
+			_this.eventReceiver.OnURI(string(_this.buffer.DecodeQuotedString()))
 			_this.endObject()
 			return
 		default:
@@ -238,7 +238,7 @@ func (_this *Decoder) handleStringish() {
 
 func (_this *Decoder) handleQuotedString() {
 	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnString(_this.buffer.DecodeQuotedString())
+	_this.eventReceiver.OnString(string(_this.buffer.DecodeQuotedString()))
 	_this.endObject()
 }
 
@@ -788,6 +788,7 @@ type cteByteProprty uint16
 
 const (
 	ctePropertyWhitespace cteByteProprty = 1 << iota
+	ctePropertyNumericWhitespace
 	ctePropertyObjectEnd
 	ctePropertyUnquotedStart
 	ctePropertyUnquotedMid
@@ -818,7 +819,7 @@ func init() {
 	cteByteProperties['.'] |= ctePropertyUnquotedMid
 	cteByteProperties[':'] |= ctePropertyUnquotedMid
 	cteByteProperties['/'] |= ctePropertyUnquotedMid
-	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation | ctePropertyMarkerID
+	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation | ctePropertyMarkerID | ctePropertyNumericWhitespace
 	for i := '0'; i <= '9'; i++ {
 		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyAreaLocation | ctePropertyMarkerID
 	}

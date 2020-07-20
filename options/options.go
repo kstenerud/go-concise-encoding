@@ -314,15 +314,18 @@ func (_this *CTEUnmarshalerOptions) ApplyDefaults() *CTEUnmarshalerOptions {
 // ============================================================================
 
 type BuilderOptions struct {
-	// TODO: Currently handled in bigIntMaxBase10Exponent in conversions.go
-	FloatToBigIntMaxExponent int
+	FloatToBigIntMaxBase10Exponent int
+	FloatToBigIntMaxBase2Exponent  int
 	// TODO: ErrorOnLossyFloatConversion option
 	ErrorOnLossyFloatConversion bool
 	// TODO: Something for decimal floats?
 	// TODO: Error on unknown field
 }
 
-var defaultBuilderOptions = BuilderOptions{}
+var defaultBuilderOptions = BuilderOptions{
+	FloatToBigIntMaxBase10Exponent: 300,
+	FloatToBigIntMaxBase2Exponent:  300 * 10 / 3,
+}
 
 func DefaultBuilderOptions() *BuilderOptions {
 	options := defaultBuilderOptions

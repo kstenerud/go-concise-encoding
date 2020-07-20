@@ -38,6 +38,9 @@ import (
 type bigIntBuilder struct {
 	// Static data
 	session *Session
+
+	// Clone inserted data
+	options *options.BuilderOptions
 }
 
 func newBigIntBuilder() ObjectBuilder {
@@ -53,7 +56,10 @@ func (_this *bigIntBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *bigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	return _this
+	return &bigIntBuilder{
+		session: _this.session,
+		options: options,
+	}
 }
 
 func (_this *bigIntBuilder) SetParent(parent ObjectBuilder) {
@@ -80,19 +86,19 @@ func (_this *bigIntBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 }
 
 func (_this *bigIntBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	setBigIntFromFloat(value, dst)
+	setBigIntFromFloat(value, dst, _this.options.FloatToBigIntMaxBase2Exponent)
 }
 
 func (_this *bigIntBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	setBigIntFromBigFloat(value, dst)
+	setBigIntFromBigFloat(value, dst, _this.options.FloatToBigIntMaxBase2Exponent)
 }
 
 func (_this *bigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	setBigIntFromDecimalFloat(value, dst)
+	setBigIntFromDecimalFloat(value, dst, _this.options.FloatToBigIntMaxBase10Exponent)
 }
 
 func (_this *bigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	setBigIntFromBigDecimalFloat(value, dst)
+	setBigIntFromBigDecimalFloat(value, dst, _this.options.FloatToBigIntMaxBase10Exponent)
 }
 
 func (_this *bigIntBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
@@ -162,6 +168,9 @@ func (_this *bigIntBuilder) NotifyChildContainerFinished(value reflect.Value) {
 type pBigIntBuilder struct {
 	// Static data
 	session *Session
+
+	// Clone inserted data
+	options *options.BuilderOptions
 }
 
 func newPBigIntBuilder() ObjectBuilder {
@@ -177,7 +186,10 @@ func (_this *pBigIntBuilder) PostCacheInitBuilder(session *Session) {
 }
 
 func (_this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	return _this
+	return &pBigIntBuilder{
+		session: _this.session,
+		options: options,
+	}
 }
 
 func (_this *pBigIntBuilder) SetParent(parent ObjectBuilder) {
@@ -204,19 +216,19 @@ func (_this *pBigIntBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) 
 }
 
 func (_this *pBigIntBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	setPBigIntFromFloat(value, dst)
+	setPBigIntFromFloat(value, dst, _this.options.FloatToBigIntMaxBase2Exponent)
 }
 
 func (_this *pBigIntBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	setPBigIntFromBigFloat(value, dst)
+	setPBigIntFromBigFloat(value, dst, _this.options.FloatToBigIntMaxBase2Exponent)
 }
 
 func (_this *pBigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	setPBigIntFromDecimalFloat(value, dst)
+	setPBigIntFromDecimalFloat(value, dst, _this.options.FloatToBigIntMaxBase10Exponent)
 }
 
 func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	setPBigIntFromBigDecimalFloat(value, dst)
+	setPBigIntFromBigDecimalFloat(value, dst, _this.options.FloatToBigIntMaxBase10Exponent)
 }
 
 func (_this *pBigIntBuilder) BuildFromUUID(value []byte, dst reflect.Value) {

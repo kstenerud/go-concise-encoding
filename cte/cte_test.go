@@ -106,6 +106,7 @@ func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 -49523", V(1), NI(49523), ED())
 	assertDecodeEncode(t, "c1 10000000000000000000000000000", V(1), BI(test.NewBigInt("10000000000000000000000000000")), ED())
 	assertDecodeEncode(t, "c1 -10000000000000000000000000000", V(1), BI(test.NewBigInt("-10000000000000000000000000000")), ED())
+	assertDecode(t, "c1 -4_9_5__2___3", V(1), NI(49523), ED())
 }
 
 func TestCTEBinaryInt(t *testing.T) {
@@ -114,6 +115,7 @@ func TestCTEBinaryInt(t *testing.T) {
 	assertDecode(t, "c1 0b101", V(1), PI(5), ED())
 	assertDecode(t, "c1 0b0010100", V(1), PI(20), ED())
 	assertDecode(t, "c1 -0b100", V(1), NI(4), ED())
+	assertDecode(t, "c1 -0b_1_0_0", V(1), NI(4), ED())
 }
 
 func TestCTEOctalInt(t *testing.T) {
@@ -123,6 +125,7 @@ func TestCTEOctalInt(t *testing.T) {
 	assertDecode(t, "c1 0o71", V(1), PI(57), ED())
 	assertDecode(t, "c1 0o644", V(1), PI(420), ED())
 	assertDecode(t, "c1 -0o777", V(1), NI(511), ED())
+	assertDecode(t, "c1 -0o_7__7___7", V(1), NI(511), ED())
 }
 
 func TestCTEHexInt(t *testing.T) {
@@ -132,6 +135,7 @@ func TestCTEHexInt(t *testing.T) {
 	assertDecode(t, "c1 0xfedcba9876543210", V(1), PI(0xfedcba9876543210), ED())
 	assertDecode(t, "c1 0xFEDCBA9876543210", V(1), PI(0xfedcba9876543210), ED())
 	assertDecode(t, "c1 -0x88", V(1), NI(0x88), ED())
+	assertDecode(t, "c1 -0x_8_8__5_a_f__d", V(1), NI(0x885afd), ED())
 }
 
 func TestCTEFloat(t *testing.T) {
@@ -168,6 +172,8 @@ func TestCTEFloat(t *testing.T) {
 	assertDecode(t, "c1 -1.50000000000000000000000001E10000", V(1), BDF(test.NewBDF("-1.50000000000000000000000001E10000")), ED())
 	assertDecode(t, "c1 1.50000000000000000000000001E10000", V(1), BDF(test.NewBDF("1.50000000000000000000000001E10000")), ED())
 
+	assertDecode(t, "c1 1_._1_2_5_e+1_0", V(1), DF(test.NewDFloat("1.125e+10")), ED())
+
 	assertDecodeFails(t, "c1 -0.5.4")
 	assertDecodeFails(t, "c1 -0,5.4")
 	assertDecodeFails(t, "c1 0.5.4")
@@ -199,6 +205,8 @@ func TestCTEHexFloat(t *testing.T) {
 	assertDecode(t, "c1 -0x0.1p+10", V(1), F(-0x0.1p+10), ED())
 	assertDecode(t, "c1 -0x0.1p-10", V(1), F(-0x0.1p-10), ED())
 	assertDecode(t, "c1 -0x0.1p10", V(1), F(-0x0.1p10), ED())
+
+	assertDecode(t, "c1 -0x_0_._1_p_1_0", V(1), F(-0x0.1p10), ED())
 }
 
 func TestCTEDate(t *testing.T) {
@@ -226,10 +234,21 @@ func TestCTEURI(t *testing.T) {
 
 func TestCTEQuotedString(t *testing.T) {
 	assertDecodeEncode(t, `c1 "test string"`, V(1), S("test string"), ED())
+	assertDecode(t, `c1 "test\nstring"`, V(1), S("test\nstring"), ED())
+	assertDecode(t, `c1 "test\rstring"`, V(1), S("test\rstring"), ED())
+	assertDecode(t, `c1 "test\tstring"`, V(1), S("test\tstring"), ED())
+	assertDecodeEncode(t, `c1 "test\"string"`, V(1), S("test\"string"), ED())
+	assertDecode(t, `c1 "test\*string"`, V(1), S("test*string"), ED())
+	assertDecode(t, `c1 "test\/string"`, V(1), S("test/string"), ED())
+	assertDecodeEncode(t, `c1 "test\\string"`, V(1), S("test\\string"), ED())
+	assertDecodeEncode(t, `c1 "test\u0001string"`, V(1), S("test\u0001string"), ED())
+	assertDecodeEncode(t, `c1 "test\u206dstring"`, V(1), S("test\u206dstring"), ED())
+	assertDecode(t, `c1 "test\
+string"`, V(1), S("teststring"), ED())
+	assertDecode(t, "c1 \"test\\\r\nstring\"", V(1), S("teststring"), ED())
 }
 
 func TestCTEList(t *testing.T) {
-	// TODO: Unquoted string
 	assertDecodeEncode(t, `c1 []`, V(1), L(), E(), ED())
 	assertDecodeEncode(t, `c1 [123]`, V(1), L(), PI(123), E(), ED())
 	assertDecodeEncode(t, `c1 [test]`, V(1), L(), S("test"), E(), ED())
