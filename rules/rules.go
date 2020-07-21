@@ -65,6 +65,7 @@ type Rules struct {
 	objectCount           uint64
 	unassignedIDs         []interface{}
 	assignedIDs           map[interface{}]ruleEvent
+	unmatchedIDs          map[interface{}]bool
 	realMaxContainerDepth uint64
 	// TODO: Keep track of marked data stats (sizes etc)
 	nextReceiver events.DataEventReceiver
@@ -97,6 +98,7 @@ func (_this *Rules) Reset() {
 	_this.stackState(stateAwaitingVersion)
 	_this.unassignedIDs = _this.unassignedIDs[:0]
 	_this.assignedIDs = make(map[interface{}]ruleEvent)
+	_this.unmatchedIDs = make(map[interface{}]bool)
 
 	_this.arrayType = eventTypeNothing
 	_this.arrayData = _this.arrayData[:0]
@@ -380,6 +382,12 @@ func (_this *Rules) OnReference() {
 
 func (_this *Rules) OnEndDocument() {
 	_this.assertCurrentStateAllowsType(eventTypeEndDocument)
+	for markerID, _ := range _this.unmatchedIDs {
+		_, ok := _this.assignedIDs[markerID]
+		if !ok {
+			panic(fmt.Errorf("Unmatched reference to marker ID %v", markerID))
+		}
+	}
 	_this.nextReceiver.OnEndDocument()
 }
 
@@ -661,8 +669,13 @@ func (_this *Rules) onChildEnded(childType ruleEvent) {
 
 		referencedType, ok := _this.assignedIDs[markerID]
 		if !ok {
-			panic(fmt.Errorf("Referenced ID [%v] not found", markerID))
+			_this.unmatchedIDs[markerID] = true
+			// We have no way to verify what the unmatched ref points to, so call it "anything".
+			_this.unstackState()
+			_this.onChildEnded(eventTypeAny)
+			return
 		}
+
 		assertStateAllowsType(container, referencedType)
 		_this.unstackState()
 		_this.onChildEnded(referencedType)

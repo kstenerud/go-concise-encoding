@@ -153,6 +153,8 @@ func (_this *Encoder) OnFloat(value float64) {
 		} else {
 			_this.addString("@inf")
 		}
+		_this.addSuffix()
+		_this.transitionState()
 		return
 	}
 	// TODO: Hex float?
@@ -275,6 +277,9 @@ func (_this *Encoder) OnString(value string) {
 		_this.addString(value)
 		_this.addSuffix()
 		_this.transitionState()
+	} else if _this.currentState == cteEncoderStateAwaitCommentItem {
+		_this.addString(value)
+		_this.transitionState()
 	} else {
 		_this.addPrefix()
 		_this.addString(wrapString(value))
@@ -350,7 +355,8 @@ func (_this *Encoder) OnEnd() {
 	_this.applyIndentation(-1)
 	// TODO: Make this nicer
 	isInvisible := _this.currentState == cteEncoderStateAwaitMetaKey ||
-		_this.currentState == cteEncoderStateAwaitMetaFirstKey
+		_this.currentState == cteEncoderStateAwaitMetaFirstKey ||
+		_this.currentState == cteEncoderStateAwaitCommentItem
 	_this.unstackState()
 	if isInvisible {
 		_this.currentState |= cteEncoderStateWithInvisibleItem
@@ -605,6 +611,7 @@ func init() {
 	cteEncoderTerminators[cteEncoderStateAwaitMarkupFirstItemPre] = ">"
 	cteEncoderTerminators[cteEncoderStateAwaitMarkupFirstItemPost] = ">"
 	cteEncoderTerminators[cteEncoderStateAwaitMarkupItem] = ">"
+	cteEncoderTerminators[cteEncoderStateAwaitCommentItem] = "*/"
 	// cteEncoderTerminators[cteEncoderStateAwaitMarkerID] = ""
 	// cteEncoderTerminators[cteEncoderStateAwaitMarkerItem] = ""
 	// cteEncoderTerminators[cteEncoderStateAwaitReferenceID] = ""

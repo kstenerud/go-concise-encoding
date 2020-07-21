@@ -24,7 +24,7 @@ import (
 	"math"
 	"testing"
 
-	// "github.com/kstenerud/go-concise-encoding/debug"
+	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-compact-time"
@@ -270,7 +270,6 @@ func TestCTEMapBadKVSeparator(t *testing.T) {
 	assertDecodeFails(t, "c1 {a:b}")
 }
 
-
 func TestCTEListList(t *testing.T) {
 	assertDecodeEncode(t, `c1 [[]]`, V(1), L(), L(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 [1 []]`, V(1), L(), PI(1), L(), E(), E(), ED())
@@ -306,7 +305,7 @@ func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, `c1 <a 1=2 3=4>`, V(1), MUP(), S("a"), PI(1), PI(2), PI(3), PI(4), E(), E(), ED())
 	assertDecode(t, `c1 <a|>`, V(1), MUP(), S("a"), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a|a>`, V(1), MUP(), S("a"), E(), S("a"), E(), ED())
-	assertDecodeEncode(t, `c1 <a|a string >`, V(1), MUP(), S("a"), E(), S("a string "), E(), ED())
+	assertDecode(t, `c1 <a|a string >`, V(1), MUP(), S("a"), E(), S("a string"), E(), ED())
 	assertDecodeEncode(t, `c1 <a|<a>>`, V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a|a<a>>`, V(1), MUP(), S("a"), E(), S("a"), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a|<a>>`, V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
@@ -322,8 +321,8 @@ func TestCTEMarkupMarkup(t *testing.T) {
 
 func TestCTEMarkupComment(t *testing.T) {
 	assertDecode(t, "c1 <a|//blah\n>", V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, "c1 <a|//blah\n a>", V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S(" a"), E(), ED())
-	assertDecode(t, "c1 <a|a//blah\n a>", V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), S(" a"), E(), ED())
+	assertDecode(t, "c1 <a|//blah\n a>", V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, "c1 <a|a//blah\n a>", V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), S("a"), E(), ED())
 
 	assertDecode(t, "c1 <a|/*blah*/>", V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
 	assertDecode(t, "c1 <a|a/*blah*/>", V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), E(), ED())
@@ -447,13 +446,121 @@ func TestDuplicateEmptySliceInSlice(t *testing.T) {
 	assertMarshalUnmarshal(t, v, "c1 [[] [] []]")
 }
 
-// TODO: Fails intermittently due to different k-v pair ordering
-// func TestDuplicateEmptySliceInMap(t *testing.T) {
-// 	sl := []interface{}{}
-// 	v := map[interface{}]interface{}{
-// 		"a": sl,
-// 		"b": sl,
-// 		"c": sl,
-// 	}
-// 	assertCTEEncode(t, v, "c1 {a=[] b=[] c=[]}")
-// }
+func TestInf(t *testing.T) {
+	assertDecodeEncode(t, `c1 {a=@inf b=1}`)
+	assertDecodeEncode(t, `c1 {a=-@inf b=1}`)
+}
+
+func TestComment(t *testing.T) {
+	// TODO: Better comment formatting
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+	assertDecodeEncode(t, `c1 {a=@inf /*test*/b=1}`)
+}
+
+func TestURIReference(t *testing.T) {
+	assertDecode(t, `c1
+{
+    outside_ref      = #u"https://"
+    // The markup type is good for presentation data
+}
+`)
+}
+
+func TestMarkupVerbatimString(t *testing.T) {
+	assertDecode(t, "c1 <s| `## <d></d>##>")
+	assertDecode(t, "c1 <s| `## /d##>")
+}
+
+func TestBufferEdge(t *testing.T) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+	assertDecode(t, `c1
+{
+     1  = <a|
+            <b|
+               <c| `+"`"+`##                       ##>
+                         >
+                       >
+}
+`)
+}
+
+func TestBufferEdge2(t *testing.T) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+	assertDecode(t, `c1
+{
+    x  = <a|
+                     <b|
+                             <c| `+"`"+`##                     ##>
+                           >
+                       >
+}
+`)
+}
+
+func TestComplexExample(t *testing.T) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+	// DebugPrintEvents = true
+	assertDecodeWithRules(t, `c1
+// Metadata: _ct is the creation time
+(_ct = 2019-9-1/22:14:01)
+{
+    /* /* Nested comments are allowed */ */
+    // There are no commas in maps and lists
+    (info = "something interesting about a_list")
+    a_list           = [1 2 "a string"]
+    map              = {2=two 3=3000 1=one}
+    string           = "A string value"
+    boolean          = @true
+    "binary int"     = -0b10001011
+    "octal int"      = 0o644
+    "regular int"    = -10000000
+    "hex int"        = 0xfffe0001
+    "decimal float"  = -14.125
+    "hex float"      = 0x5.1ec4p20
+    uuid             = @f1ce4567-e89b-12d3-a456-426655440000
+    date             = 2019-7-1
+    time             = 18:04:00.940231541/E/Prague
+    timestamp        = 2010-7-15/13:28:15.415942344/Z
+    nil              = @nil
+    bytes            = b"10ff389add004f4f91"
+    url              = u"https://example.com/"
+    email            = u"mailto:me@somewhere.com"
+    1.5              = "Keys don't have to be strings"
+    long-string      = `+"`"+`ZZZ
+A backtick induces verbatim processing, which in this case will continue
+until three Z characters are encountered, similar to how here documents in
+bash work.
+You can put anything in here, including double-quote ("), or even more
+backticks (`+"`"+`). Verbatim processing stops at the end sequence, which in this
+case is three Z characters, specified earlier as a sentinel.ZZZ
+    marked_object    = &tag1:{
+                                description = "This map will be referenced later using #tag1"
+                                value = -@inf
+                                child_elements = @nil
+                                recursive = #tag1
+                            }
+    ref1             = #tag1
+    ref2             = #tag1
+    outside_ref      = #u"https://somewhere.else.com/path/to/document.cte#some_tag"
+    // The markup type is good for presentation data
+    html_compatible  = <html xmlns=u"http://www.w3.org/1999/xhtml" xml:lang=en |
+                         <body|
+                           Please choose from the following widgets:
+                           <div id=parent style=normal ref-id=1 |
+                             /* Here we use a backtick to induce verbatim processing.
+                              * In this case, "##" is chosen as the ending sequence
+                              */
+                             <script| `+"`"+`##
+                               document.getElementById('parent').insertAdjacentHTML('beforeend',
+                                  '<div id="idChild"> content </div>');
+                             ##>
+                           >
+                         >
+                       >
+}
+`)
+}

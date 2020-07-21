@@ -94,7 +94,7 @@ func (_this *CTEReadBuffer) ReadByte() byte {
 }
 
 func (_this *CTEReadBuffer) SkipBytes(byteCount int) {
-	_this.buffer.RequireBytes(_this.tokenPos, _this.tokenPos+byteCount)
+	_this.buffer.RequireBytes(_this.tokenPos, byteCount)
 	_this.tokenPos += byteCount
 }
 
@@ -477,6 +477,7 @@ func (_this *CTEReadBuffer) DecodeVerbatimString() []byte {
 	_this.BeginSubtoken()
 	_this.ReadUntilPropertyNoEOD(ctePropertyWhitespace)
 	sentinel := _this.GetSubtoken()
+	sentinelOffset := _this.subtokenStart - _this.tokenStart
 	sentinelLen := len(sentinel)
 	wsByte := _this.ReadByte()
 	if wsByte == '\r' {
@@ -491,9 +492,10 @@ func (_this *CTEReadBuffer) DecodeVerbatimString() []byte {
 Outer:
 	for {
 		_this.ReadByte()
+		sentinelStart := _this.tokenStart + sentinelOffset
 		compareStart := _this.tokenPos - sentinelLen
 		for i := sentinelLen - 1; i >= 0; i-- {
-			if sentinel[i] != _this.buffer.Buffer[compareStart+i] {
+			if _this.buffer.Buffer[sentinelStart+i] != _this.buffer.Buffer[compareStart+i] {
 				continue Outer
 			}
 		}
@@ -859,40 +861,75 @@ func (_this *CTEReadBuffer) DecodeMultilineComment() (string, nextType) {
 }
 
 func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
+	isInitialWS := true
+	wsCount := 0
 	isCommentInitiator := false
+	sb := strings.Builder{}
+
+	completeStringPortion := func() {
+		if wsCount > 0 {
+			if !isInitialWS {
+				sb.WriteByte(' ')
+			}
+			wsCount = 0
+		}
+		isInitialWS = false
+	}
+
+	completeContentsPortion := func() {
+		wsCount = 0
+		isInitialWS = false
+	}
+
+	addSlashIfNeeded := func() {
+		if isCommentInitiator {
+			sb.WriteByte('/')
+			isCommentInitiator = false
+		}
+	}
 
 	for {
 		currentByte := _this.ReadByte()
 		switch currentByte {
+		case '\r', '\n', '\t', ' ':
+			wsCount++
 		case '\\':
 			panic("TODO: Escape sequences")
 		case '<':
-			token := _this.GetToken()
-			token = token[:len(token)-1]
+			completeStringPortion()
+			addSlashIfNeeded()
 			_this.EndToken()
-			return string(token), nextIsMarkupBegin
+			return sb.String(), nextIsMarkupBegin
 		case '>':
-			token := _this.GetToken()
-			token = token[:len(token)-1]
+			completeContentsPortion()
+			addSlashIfNeeded()
 			_this.EndToken()
-			return string(token), nextIsMarkupEnd
+			return sb.String(), nextIsMarkupEnd
 		case '/':
 			if isCommentInitiator {
-				token := _this.GetToken()
-				token = token[:len(token)-2]
+				completeStringPortion()
 				_this.EndToken()
-				return string(token), nextIsSingleLineComment
+				return sb.String(), nextIsSingleLineComment
+			} else {
+				isCommentInitiator = true
 			}
 		case '*':
 			if isCommentInitiator {
-				token := _this.GetToken()
-				token = token[:len(token)-2]
+				completeStringPortion()
 				_this.EndToken()
-				return string(token), nextIsCommentBegin
+				return sb.String(), nextIsCommentBegin
+			} else {
+				sb.WriteByte(currentByte)
 			}
+		case '`':
+			completeStringPortion()
+			addSlashIfNeeded()
+			return sb.String(), nextIsVerbatimString
+		default:
+			completeStringPortion()
+			addSlashIfNeeded()
+			sb.WriteByte(currentByte)
 		}
-
-		isCommentInitiator = currentByte == '/'
 	}
 }
 
@@ -941,6 +978,7 @@ const (
 	nextIsCommentBegin nextType = iota
 	nextIsCommentEnd
 	nextIsSingleLineComment
+	nextIsVerbatimString
 	nextIsMarkupBegin
 	nextIsMarkupEnd
 )

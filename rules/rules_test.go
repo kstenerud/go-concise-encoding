@@ -320,11 +320,13 @@ func TestRulesReference(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(100) })
 
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertPanics(t, func() { rules.OnPositiveInt(5) })
+	test.AssertNoPanic(t, func() { rules.OnPositiveInt(5) })
 
 	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, true) })
-	test.AssertPanics(t, func() { rules.OnArrayData([]byte("test")) })
+	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("test")) })
+
+	test.AssertPanics(t, func() { rules.OnEndDocument() })
 }
 
 // ===========
@@ -2154,6 +2156,15 @@ func TestRulesErrorReferenceIDLength0(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnReference() })
 	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
 	test.AssertPanics(t, func() { rules.OnArrayChunk(0, true) })
+}
+
+func TestRulesErrorRefMissingMarker(t *testing.T) {
+	rules := newRulesWithMaxDepth(5)
+	test.AssertNoPanic(t, func() { rules.OnList() })
+	test.AssertNoPanic(t, func() { rules.OnReference() })
+	test.AssertNoPanic(t, func() { rules.OnString("test") })
+	test.AssertNoPanic(t, func() { rules.OnEnd() })
+	test.AssertPanics(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesURILength0_1(t *testing.T) {

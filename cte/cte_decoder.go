@@ -297,6 +297,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 			_this.buffer.Errorf("Unknown named value: %v", token)
 		}
 		_this.eventReceiver.OnFloat(math.Inf(-1))
+		_this.endObject()
 		return
 	}
 
@@ -546,6 +547,12 @@ func (_this *Decoder) handleMarkupContent() {
 	case nextIsCommentEnd:
 		_this.eventReceiver.OnEnd()
 		_this.unstackContainer()
+	case nextIsVerbatimString:
+		str := _this.buffer.DecodeVerbatimString()
+		if len(str) > 0 {
+			_this.eventReceiver.OnString(string(str))
+		}
+		_this.buffer.EndToken()
 	case nextIsSingleLineComment:
 		_this.eventReceiver.OnComment()
 		contents := _this.buffer.DecodeSingleLineComment()
@@ -620,6 +627,17 @@ func (_this *Decoder) handleVerbatimString() {
 func (_this *Decoder) handleReference() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnReference()
+	if _this.buffer.PeekByteNoEOD() == 'u' {
+		_this.buffer.AdvanceByte()
+		if _this.buffer.PeekByteNoEOD() != '"' {
+			_this.buffer.UnexpectedChar("reference (uri)")
+		}
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnURI(string(_this.buffer.DecodeQuotedString()))
+		_this.endObject()
+		return
+	}
+
 	asString, asUint := _this.buffer.DecodeMarkerID()
 	if len(asString) > 0 {
 		_this.eventReceiver.OnString(asString)

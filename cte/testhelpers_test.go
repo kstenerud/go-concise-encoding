@@ -26,6 +26,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/rules"
+
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
@@ -73,10 +77,20 @@ func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
 
-func decodeToEvents(document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTER()
-	err = Decode(bytes.NewBuffer(document), receiver, nil)
-	events = receiver.Events
+var DebugPrintEvents = false
+
+func decodeToEvents(document []byte, withRules bool) (evts []*test.TEvent, err error) {
+	var topLevelReceiver events.DataEventReceiver
+	ter := test.NewTER()
+	topLevelReceiver = ter
+	if withRules {
+		topLevelReceiver = rules.NewRules(topLevelReceiver, nil)
+	}
+	if DebugPrintEvents {
+		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
+	}
+	err = Decode(bytes.NewBuffer(document), topLevelReceiver, nil)
+	evts = ter.Events
 	return
 }
 
@@ -88,7 +102,25 @@ func encodeEvents(events ...*test.TEvent) []byte {
 }
 
 func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document))
+	actualEvents, err := decodeToEvents([]byte(document), false)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if len(expectedEvents) > 0 {
+		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
+			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
+			return
+		}
+	}
+	events = actualEvents
+	successful = true
+	return
+}
+
+func assertDecodeWithRules(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
+	actualEvents, err := decodeToEvents([]byte(document), true)
 	if err != nil {
 		t.Error(err)
 		return
@@ -106,7 +138,7 @@ func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent)
 }
 
 func assertDecodeFails(t *testing.T, document string) {
-	_, err := decodeToEvents([]byte(document))
+	_, err := decodeToEvents([]byte(document), false)
 	if err == nil {
 		t.Errorf("Expected decode to fail")
 	}

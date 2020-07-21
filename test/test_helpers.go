@@ -196,7 +196,6 @@ var TEventNames = []string{
 	"BF",
 	"DF",
 	"BDF",
-	"CPLX",
 	"NAN",
 	"SNAN",
 	"UUID",
@@ -460,6 +459,196 @@ func EventForValue(value interface{}) *TEvent {
 	panic(fmt.Errorf("TEST CODE BUG: Unhandled kind: %v", rv.Kind()))
 }
 
+type TEventPrinter struct {
+	Next  events.DataEventReceiver
+	Print func(event *TEvent)
+}
+
+func NewStdoutTEventPrinter(next events.DataEventReceiver) *TEventPrinter {
+	return &TEventPrinter{
+		Next: next,
+		Print: func(event *TEvent) {
+			fmt.Printf("EVENT %v\n", event)
+		},
+	}
+}
+
+func (h *TEventPrinter) OnVersion(version uint64) {
+	h.Print(V(version))
+	h.Next.OnVersion(version)
+}
+func (h *TEventPrinter) OnPadding(count int) {
+	h.Print(PAD(count))
+	h.Next.OnPadding(count)
+}
+func (h *TEventPrinter) OnNil() {
+	h.Print(N())
+	h.Next.OnNil()
+}
+func (h *TEventPrinter) OnBool(value bool) {
+	h.Print(B(value))
+	h.Next.OnBool(value)
+}
+func (h *TEventPrinter) OnTrue() {
+	h.Print(TT())
+	h.Next.OnTrue()
+}
+func (h *TEventPrinter) OnFalse() {
+	h.Print(FF())
+	h.Next.OnFalse()
+}
+func (h *TEventPrinter) OnPositiveInt(value uint64) {
+	h.Print(PI(value))
+	h.Next.OnPositiveInt(value)
+}
+func (h *TEventPrinter) OnNegativeInt(value uint64) {
+	h.Print(NI(value))
+	h.Next.OnNegativeInt(value)
+}
+func (h *TEventPrinter) OnInt(value int64) {
+	h.Print(I(value))
+	h.Next.OnInt(value)
+}
+func (h *TEventPrinter) OnBigInt(value *big.Int) {
+	h.Print(BI(value))
+	h.Next.OnBigInt(value)
+}
+func (h *TEventPrinter) OnFloat(value float64) {
+	if math.IsNaN(value) {
+		if common.IsSignalingNan(value) {
+			h.Print(SNAN())
+		} else {
+			h.Print(NAN())
+		}
+	} else {
+		h.Print(F(value))
+	}
+	h.Next.OnFloat(value)
+}
+func (h *TEventPrinter) OnBigFloat(value *big.Float) {
+	h.Print(newTEvent(TEventBigFloat, value, nil))
+	h.Next.OnBigFloat(value)
+}
+func (h *TEventPrinter) OnDecimalFloat(value compact_float.DFloat) {
+	if value.IsNan() {
+		if value.IsSignalingNan() {
+			h.Print(SNAN())
+		} else {
+			h.Print(NAN())
+		}
+	} else {
+		h.Print(DF(value))
+	}
+	h.Next.OnDecimalFloat(value)
+}
+func (h *TEventPrinter) OnBigDecimalFloat(value *apd.Decimal) {
+	switch value.Form {
+	case apd.NaN:
+		h.Print(NAN())
+	case apd.NaNSignaling:
+		h.Print(SNAN())
+	default:
+		h.Print(BDF(value))
+	}
+	h.Next.OnBigDecimalFloat(value)
+}
+func (h *TEventPrinter) OnUUID(value []byte) {
+	h.Print(UUID(value))
+	h.Next.OnUUID(value)
+}
+func (h *TEventPrinter) OnTime(value time.Time) {
+	h.Print(GT(value))
+	h.Next.OnTime(value)
+}
+func (h *TEventPrinter) OnCompactTime(value *compact_time.Time) {
+	h.Print(CT(value))
+	h.Next.OnCompactTime(value)
+}
+func (h *TEventPrinter) OnBytes(value []byte) {
+	h.Print(BIN(value))
+	h.Next.OnBytes(value)
+}
+func (h *TEventPrinter) OnString(value string) {
+	h.Print(S(value))
+	h.Next.OnString(value)
+}
+func (h *TEventPrinter) OnURI(value string) {
+	h.Print(URI((value)))
+	h.Next.OnURI(value)
+}
+func (h *TEventPrinter) OnCustom(value []byte) {
+	h.Print(CUST(value))
+	h.Next.OnCustom(value)
+}
+func (h *TEventPrinter) OnBytesBegin() {
+	h.Print(BB())
+	h.Next.OnBytesBegin()
+}
+func (h *TEventPrinter) OnStringBegin() {
+	h.Print(SB())
+	h.Next.OnStringBegin()
+}
+func (h *TEventPrinter) OnURIBegin() {
+	h.Print(UB())
+	h.Next.OnURIBegin()
+}
+func (h *TEventPrinter) OnCustomBegin() {
+	h.Print(CB())
+	h.Next.OnCustomBegin()
+}
+func (h *TEventPrinter) OnArrayChunk(l uint64, final bool) {
+	h.Print(AC(l, final))
+	h.Next.OnArrayChunk(l, final)
+}
+func (h *TEventPrinter) OnArrayData(data []byte) {
+	h.Print(AD(data))
+	h.Next.OnArrayData(data)
+}
+func (h *TEventPrinter) OnList() {
+	h.Print(L())
+	h.Next.OnList()
+}
+func (h *TEventPrinter) OnMap() {
+	h.Print(M())
+	h.Next.OnMap()
+}
+func (h *TEventPrinter) OnMarkup() {
+	h.Print(MUP())
+	h.Next.OnMarkup()
+}
+func (h *TEventPrinter) OnMetadata() {
+	h.Print(META())
+	h.Next.OnMetadata()
+}
+func (h *TEventPrinter) OnComment() {
+	h.Print(CMT())
+	h.Next.OnComment()
+}
+func (h *TEventPrinter) OnEnd() {
+	h.Print(E())
+	h.Next.OnEnd()
+}
+func (h *TEventPrinter) OnMarker() {
+	h.Print(MARK())
+	h.Next.OnMarker()
+}
+func (h *TEventPrinter) OnReference() {
+	h.Print(REF())
+	h.Next.OnReference()
+}
+func (h *TEventPrinter) OnEndDocument() {
+	h.Print(ED())
+	h.Next.OnEndDocument()
+}
+func (h *TEventPrinter) OnNan(signaling bool) {
+	if signaling {
+		h.Print(SNAN())
+	} else {
+		h.Print(NAN())
+	}
+	h.Next.OnNan(signaling)
+}
+
 type TER struct {
 	Events []*TEvent
 }
@@ -695,7 +884,6 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F8", BDF(NewBDF("1.1")))
 		ane("F9", N())
 		ane("F10", BI(NewBigInt("1000")))
-		// ane("F11", cplx(1+1i))
 		ane("F12", NAN())
 		ane("F13", SNAN())
 		ane("F14", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
@@ -718,7 +906,6 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			BDF(NewBDF("1.1")),
 			N(),
 			BI(NewBigInt("1000")),
-			// cplx(1+1i),
 			NAN(),
 			SNAN(),
 			UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
