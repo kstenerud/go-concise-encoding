@@ -104,13 +104,23 @@ func (_this *stringBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.SetString(value)
 }
 
+func (_this *stringBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	dst.SetString(value)
+}
+
 func (_this *stringBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Bytes")
 }
 
-func (_this *stringBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *stringBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *stringBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 

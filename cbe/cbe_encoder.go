@@ -258,8 +258,16 @@ func (_this *Encoder) OnString(value string) {
 	copy(dst, bytes)
 }
 
-func (_this *Encoder) OnCustom(value []byte) {
-	_this.encodeTypedBytes(cbeTypeCustom, value)
+func (_this *Encoder) OnVerbatimString(value string) {
+	_this.encodeTypedBytes(cbeTypeVerbatimString, []byte(value))
+}
+
+func (_this *Encoder) OnCustomBinary(value []byte) {
+	_this.encodeTypedBytes(cbeTypeCustomBinary, value)
+}
+
+func (_this *Encoder) OnCustomText(value string) {
+	_this.encodeTypedBytes(cbeTypeCustomText, []byte(value))
 }
 
 func (_this *Encoder) OnBytesBegin() {
@@ -270,12 +278,20 @@ func (_this *Encoder) OnStringBegin() {
 	_this.encodeTypeOnly(cbeTypeString)
 }
 
+func (_this *Encoder) OnVerbatimStringBegin() {
+	_this.encodeTypeOnly(cbeTypeVerbatimString)
+}
+
 func (_this *Encoder) OnURIBegin() {
 	_this.encodeTypeOnly(cbeTypeURI)
 }
 
-func (_this *Encoder) OnCustomBegin() {
-	_this.encodeTypeOnly(cbeTypeCustom)
+func (_this *Encoder) OnCustomBinaryBegin() {
+	_this.encodeTypeOnly(cbeTypeCustomBinary)
+}
+
+func (_this *Encoder) OnCustomTextBegin() {
+	_this.encodeTypeOnly(cbeTypeCustomText)
 }
 
 func (_this *Encoder) OnArrayChunk(length uint64, isFinalChunk bool) {

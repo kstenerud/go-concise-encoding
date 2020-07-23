@@ -120,14 +120,24 @@ func (_this *topLevelBuilder) BuildFromString(value string, dst reflect.Value) {
 	_this.builder.BuildFromString(value, dst)
 }
 
+func (_this *topLevelBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromVerbatimString(value, dst)
+}
+
 func (_this *topLevelBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
 	_this.builder.BuildFromBytes(value, dst)
 }
 
-func (_this *topLevelBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+func (_this *topLevelBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromCustom(value, dst)
+	_this.builder.BuildFromCustomBinary(value, dst)
+}
+
+func (_this *topLevelBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	_this.root.SetCurrentBuilder(_this.builder)
+	_this.builder.BuildFromCustomText(value, dst)
 }
 
 func (_this *topLevelBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

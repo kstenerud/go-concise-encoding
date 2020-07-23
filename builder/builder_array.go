@@ -89,58 +89,63 @@ func (_this *arrayBuilder) currentElem() reflect.Value {
 	return _this.container.Index(_this.index)
 }
 
-func (_this *arrayBuilder) BuildFromNil(ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromNil(_ reflect.Value) {
 	_this.elemBuilder.BuildFromNil(_this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromBool(value bool, _ reflect.Value) {
 	_this.elemBuilder.BuildFromBool(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	_this.elemBuilder.BuildFromInt(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 	_this.elemBuilder.BuildFromUint(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	_this.elemBuilder.BuildFromBigInt(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromFloat(value float64, _ reflect.Value) {
 	_this.elemBuilder.BuildFromFloat(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
 	_this.elemBuilder.BuildFromBigFloat(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
 	_this.elemBuilder.BuildFromDecimalFloat(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
 	_this.elemBuilder.BuildFromBigDecimalFloat(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.elemBuilder.BuildFromUUID(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromString(value string, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromString(value string, _ reflect.Value) {
 	_this.elemBuilder.BuildFromString(value, _this.currentElem())
+	_this.index++
+}
+
+func (_this *arrayBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+	_this.elemBuilder.BuildFromVerbatimString(value, _this.currentElem())
 	_this.index++
 }
 
@@ -149,22 +154,27 @@ func (_this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	_this.elemBuilder.BuildFromCustom(value, _this.currentElem())
+func (_this *arrayBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	_this.elemBuilder.BuildFromCustomBinary(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	_this.elemBuilder.BuildFromCustomText(value, _this.currentElem())
+	_this.index++
+}
+
+func (_this *arrayBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
 	_this.elemBuilder.BuildFromURI(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
 	_this.elemBuilder.BuildFromTime(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+func (_this *arrayBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
 	_this.elemBuilder.BuildFromCompactTime(value, _this.currentElem())
 	_this.index++
 }
@@ -241,48 +251,52 @@ func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent Obje
 func (_this *bytesArrayBuilder) SetParent(parent ObjectBuilder) {
 }
 
-func (_this *bytesArrayBuilder) BuildFromNil(ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromNil(_ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromNil")
 }
 
-func (_this *bytesArrayBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromBool(value bool, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBool")
 }
 
-func (_this *bytesArrayBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromInt")
 }
 
-func (_this *bytesArrayBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromUint")
 }
 
-func (_this *bytesArrayBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBigInt")
 }
 
-func (_this *bytesArrayBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromFloat(value float64, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromFloat")
 }
 
-func (_this *bytesArrayBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBigFloat")
 }
 
-func (_this *bytesArrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromDecimalFloat")
 }
 
-func (_this *bytesArrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBigDecimalFloat")
 }
 
-func (_this *bytesArrayBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromUUID")
 }
 
-func (_this *bytesArrayBuilder) BuildFromString(value string, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromString(value string, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromString")
+}
+
+func (_this *bytesArrayBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromVerbatimString")
 }
 
 func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
@@ -293,19 +307,23 @@ func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) 
 	}
 }
 
-func (_this *bytesArrayBuilder) BuildFromCustom(value []byte, ignored reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustom")
+func (_this *bytesArrayBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustomBinary")
 }
 
-func (_this *bytesArrayBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromCustomText(value string, _ reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustomText")
+}
+
+func (_this *bytesArrayBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromURI")
 }
 
-func (_this *bytesArrayBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromTime")
 }
 
-func (_this *bytesArrayBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCompactTime")
 }
 

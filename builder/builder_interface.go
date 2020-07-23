@@ -122,13 +122,23 @@ func (_this *intfBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
+func (_this *intfBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
 func (_this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *intfBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *intfBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 

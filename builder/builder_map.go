@@ -133,93 +133,105 @@ func (_this *mapBuilder) newElem() reflect.Value {
 	return reflect.New(_this.kvTypes[_this.builderIndex]).Elem()
 }
 
-func (_this *mapBuilder) BuildFromNil(ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromNil(_ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromNil(object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromBool(value bool, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromBool(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromInt(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromUint(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromBigInt(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromFloat(value float64, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromFloat(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromBigFloat(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromDecimalFloat(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromBigDecimalFloat(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromUUID(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromString(value string, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromString(value string, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromString(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+	object := _this.newElem()
+	_this.nextBuilder.BuildFromVerbatimString(value, object)
+	_this.store(object)
+}
+
+func (_this *mapBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromBytes(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+func (_this *mapBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromBytes(value, object)
+	_this.nextBuilder.BuildFromCustomBinary(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	object := _this.newElem()
+	_this.nextBuilder.BuildFromCustomText(value, object)
+	_this.store(object)
+}
+
+func (_this *mapBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
 	_this.store(reflect.ValueOf(value))
 }
 
-func (_this *mapBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
 	_this.store(reflect.ValueOf(value))
 }
 
-func (_this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+func (_this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
 	_this.store(reflect.ValueOf(value))
 }
 

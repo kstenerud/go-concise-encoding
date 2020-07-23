@@ -117,57 +117,57 @@ func (_this *structBuilder) swapKeyValue() {
 	_this.nextIsKey = !_this.nextIsKey
 }
 
-func (_this *structBuilder) BuildFromNil(ignored reflect.Value) {
+func (_this *structBuilder) BuildFromNil(_ reflect.Value) {
 	_this.nextBuilder.BuildFromNil(_this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromBool(value bool, _ reflect.Value) {
 	_this.nextBuilder.BuildFromBool(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	_this.nextBuilder.BuildFromInt(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 	_this.nextBuilder.BuildFromUint(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	_this.nextBuilder.BuildFromBigInt(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromFloat(value float64, _ reflect.Value) {
 	_this.nextBuilder.BuildFromFloat(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
 	_this.nextBuilder.BuildFromBigFloat(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
 	_this.nextBuilder.BuildFromDecimalFloat(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
 	_this.nextBuilder.BuildFromBigDecimalFloat(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.nextBuilder.BuildFromUUID(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromString(value string, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromString(value string, _ reflect.Value) {
 	if _this.nextIsKey {
 		if builderDesc, ok := _this.builderDescs[value]; ok {
 			_this.nextBuilder = builderDesc.builder
@@ -185,27 +185,50 @@ func (_this *structBuilder) BuildFromString(value string, ignored reflect.Value)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+	if _this.nextIsKey {
+		if builderDesc, ok := _this.builderDescs[value]; ok {
+			_this.nextBuilder = builderDesc.builder
+			_this.nextValue = _this.container.Field(builderDesc.index)
+		} else {
+			_this.root.SetCurrentBuilder(_this.ignoreBuilder)
+			_this.nextBuilder = _this.ignoreBuilder
+			_this.nextIsIgnored = true
+			return
+		}
+	} else {
+		_this.nextBuilder.BuildFromVerbatimString(value, _this.nextValue)
+	}
+
+	_this.swapKeyValue()
+}
+
+func (_this *structBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
 	_this.nextBuilder.BuildFromBytes(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromCustom(value []byte, ignored reflect.Value) {
-	_this.nextBuilder.BuildFromCustom(value, _this.nextValue)
+func (_this *structBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
+	_this.nextBuilder.BuildFromCustomBinary(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromCustomText(value string, _ reflect.Value) {
+	_this.nextBuilder.BuildFromCustomText(value, _this.nextValue)
+	_this.swapKeyValue()
+}
+
+func (_this *structBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
 	_this.nextBuilder.BuildFromURI(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
 	_this.nextBuilder.BuildFromTime(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+func (_this *structBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
 	_this.nextBuilder.BuildFromCompactTime(value, _this.nextValue)
 	_this.swapKeyValue()
 }

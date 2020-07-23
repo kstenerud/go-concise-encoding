@@ -65,12 +65,16 @@ type DataEventReceiver interface {
 	OnCompactTime(value *compact_time.Time)
 	OnBytes(value []byte)
 	OnString(value string)
+	OnVerbatimString(value string)
 	OnURI(value string)
-	OnCustom(value []byte)
+	OnCustomBinary(value []byte)
+	OnCustomText(value string)
 	OnBytesBegin()
 	OnStringBegin()
+	OnVerbatimStringBegin()
 	OnURIBegin()
-	OnCustomBegin()
+	OnCustomBinaryBegin()
+	OnCustomTextBegin()
 	OnArrayChunk(length uint64, isFinalChunk bool)
 	OnArrayData(data []byte)
 	OnList()
@@ -110,12 +114,16 @@ func (_this *NullEventReceiver) OnTime(value time.Time)                        {
 func (_this *NullEventReceiver) OnCompactTime(value *compact_time.Time)        {}
 func (_this *NullEventReceiver) OnBytes(value []byte)                          {}
 func (_this *NullEventReceiver) OnString(value string)                         {}
+func (_this *NullEventReceiver) OnVerbatimString(value string)                 {}
 func (_this *NullEventReceiver) OnURI(value string)                            {}
-func (_this *NullEventReceiver) OnCustom(value []byte)                         {}
+func (_this *NullEventReceiver) OnCustomBinary(value []byte)                   {}
+func (_this *NullEventReceiver) OnCustomText(value string)                     {}
 func (_this *NullEventReceiver) OnBytesBegin()                                 {}
 func (_this *NullEventReceiver) OnStringBegin()                                {}
+func (_this *NullEventReceiver) OnVerbatimStringBegin()                        {}
 func (_this *NullEventReceiver) OnURIBegin()                                   {}
-func (_this *NullEventReceiver) OnCustomBegin()                                {}
+func (_this *NullEventReceiver) OnCustomBinaryBegin()                          {}
+func (_this *NullEventReceiver) OnCustomTextBegin()                            {}
 func (_this *NullEventReceiver) OnArrayChunk(length uint64, isFinalChunk bool) {}
 func (_this *NullEventReceiver) OnArrayData(data []byte)                       {}
 func (_this *NullEventReceiver) OnList()                                       {}

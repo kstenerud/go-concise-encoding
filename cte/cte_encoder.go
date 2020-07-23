@@ -288,11 +288,23 @@ func (_this *Encoder) OnString(value string) {
 	}
 }
 
-func (_this *Encoder) OnCustom(value []byte) {
+func (_this *Encoder) OnVerbatimString(value string) {
+	panic("TODO: OnVerbatimString")
+}
+
+func (_this *Encoder) OnCustomBinary(value []byte) {
 	_this.addPrefix()
 	_this.encodeHex('c', value)
 	_this.addSuffix()
 	_this.transitionState()
+}
+
+func (_this *Encoder) OnCustomText(value string) {
+	panic("TODO: OnCustomText")
+	// _this.addPrefix()
+	// _this.encodeHex('c', value)
+	// _this.addSuffix()
+	// _this.transitionState()
 }
 
 func (_this *Encoder) OnBytesBegin() {
@@ -305,14 +317,26 @@ func (_this *Encoder) OnStringBegin() {
 	_this.stackState(cteEncoderStateAwaitQuotedString, `"`)
 }
 
+func (_this *Encoder) OnVerbatimStringBegin() {
+	panic("TODO: OnVerbatimStringBegin")
+	// _this.addPrefix()
+	// _this.stackState(cteEncoderStateAwaitQuotedString, `"`)
+}
+
 func (_this *Encoder) OnURIBegin() {
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitURI, `u"`)
 }
 
-func (_this *Encoder) OnCustomBegin() {
+func (_this *Encoder) OnCustomBinaryBegin() {
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitCustom, `c"`)
+}
+
+func (_this *Encoder) OnCustomTextBegin() {
+	panic("TODO: OnCustomTextBegin")
+	// _this.addPrefix()
+	// _this.stackState(cteEncoderStateAwaitCustom, `c"`)
 }
 
 func (_this *Encoder) OnArrayChunk(length uint64, isFinalChunk bool) {

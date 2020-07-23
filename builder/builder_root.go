@@ -154,11 +154,17 @@ func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromString(_ string, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "String")
 }
+func (_this *RootBuilder) BuildFromVerbatimString(_ string, _ reflect.Value) {
+	BuilderPanicBadEvent(_this, "VerbatimString")
+}
 func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Bytes")
 }
-func (_this *RootBuilder) BuildFromCustom(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Custom")
+func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
+	BuilderPanicBadEvent(_this, "CustomBinary")
+}
+func (_this *RootBuilder) BuildFromCustomText(_ string, _ reflect.Value) {
+	BuilderPanicBadEvent(_this, "CustomText")
 }
 func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "URI")
@@ -264,6 +270,9 @@ func (_this *RootBuilder) OnBytes(value []byte) {
 func (_this *RootBuilder) OnString(value string) {
 	_this.currentBuilder.BuildFromString(value, _this.object)
 }
+func (_this *RootBuilder) OnVerbatimString(value string) {
+	_this.currentBuilder.BuildFromVerbatimString(value, _this.object)
+}
 func (_this *RootBuilder) OnURI(value string) {
 	u, err := url.Parse(value)
 	if err != nil {
@@ -271,8 +280,11 @@ func (_this *RootBuilder) OnURI(value string) {
 	}
 	_this.currentBuilder.BuildFromURI(u, _this.object)
 }
-func (_this *RootBuilder) OnCustom(value []byte) {
-	_this.currentBuilder.BuildFromCustom(value, _this.object)
+func (_this *RootBuilder) OnCustomBinary(value []byte) {
+	_this.currentBuilder.BuildFromCustomBinary(value, _this.object)
+}
+func (_this *RootBuilder) OnCustomText(value string) {
+	_this.currentBuilder.BuildFromCustomText(value, _this.object)
 }
 func (_this *RootBuilder) OnBytesBegin() {
 	panic("TODO: RootBuilder.OnBytesBegin")
@@ -280,11 +292,17 @@ func (_this *RootBuilder) OnBytesBegin() {
 func (_this *RootBuilder) OnStringBegin() {
 	panic("TODO: RootBuilder.OnStringBegin")
 }
+func (_this *RootBuilder) OnVerbatimStringBegin() {
+	panic("TODO: RootBuilder.OnVerbatimStringBegin")
+}
 func (_this *RootBuilder) OnURIBegin() {
 	panic("TODO: RootBuilder.OnURIBegin")
 }
-func (_this *RootBuilder) OnCustomBegin() {
-	panic("TODO: RootBuilder.OnCustomBegin")
+func (_this *RootBuilder) OnCustomBinaryBegin() {
+	panic("TODO: RootBuilder.OnCustomBinaryBegin")
+}
+func (_this *RootBuilder) OnCustomTextBegin() {
+	panic("TODO: RootBuilder.OnCustomTextBegin")
 }
 func (_this *RootBuilder) OnArrayChunk(length uint64, isFinalChunk bool) {
 	panic("TODO: RootBuilder.OnArrayChunk")

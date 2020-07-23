@@ -76,7 +76,7 @@ func TestCTENoWSAfterVersion(t *testing.T) {
 func TestCTEUnquotedString(t *testing.T) {
 	assertDecodeEncode(t, "c1 a", V(1), S("a"), ED())
 	assertDecodeEncode(t, "c1 abcd", V(1), S("abcd"), ED())
-	assertDecodeEncode(t, "c1 _-.:/123aF", V(1), S("_-.:/123aF"), ED())
+	assertDecodeEncode(t, "c1 _-.:123aF", V(1), S("_-.:123aF"), ED())
 	assertDecodeEncode(t, "c1 新しい", V(1), S("新しい"), ED())
 }
 
@@ -358,8 +358,8 @@ func TestCTEBytes(t *testing.T) {
 }
 
 func TestCTECustom(t *testing.T) {
-	assertDecodeEncode(t, `c1 c"a9"`, V(1), CUST([]byte{0xa9}), ED())
-	assertDecode(t, "c1 c\"\n8 f 1 9a 7c\td  \"", V(1), CUST([]byte{0x8f, 0x19, 0xa7, 0xcd}), ED())
+	assertDecodeEncode(t, `c1 c"a9"`, V(1), CUB([]byte{0xa9}), ED())
+	assertDecode(t, "c1 c\"\n8 f 1 9a 7c\td  \"", V(1), CUB([]byte{0x8f, 0x19, 0xa7, 0xcd}), ED())
 }
 
 func TestCTEBadArrayType(t *testing.T) {

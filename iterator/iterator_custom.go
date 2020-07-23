@@ -45,5 +45,5 @@ func (_this *customIterator) IterateObject(v reflect.Value, eventReceiver events
 	if err != nil {
 		panic(fmt.Errorf("Error converting type %v to custom bytes: %v", v.Type(), err))
 	}
-	eventReceiver.OnCustom(asBytes)
+	eventReceiver.OnCustomBinary(asBytes)
 }

@@ -151,8 +151,8 @@ func (_this *Decoder) Decode() (err error) {
 			_this.nextReceiver.OnString(string(_this.decodeArray()))
 		case cbeTypeBytes:
 			_this.nextReceiver.OnBytes(_this.decodeArray())
-		case cbeTypeCustom:
-			_this.nextReceiver.OnCustom(_this.decodeArray())
+		case cbeTypeCustomBinary:
+			_this.nextReceiver.OnCustomBinary(_this.decodeArray())
 		case cbeTypeURI:
 			_this.nextReceiver.OnURI(string(_this.decodeArray()))
 		case cbeTypeMarker:

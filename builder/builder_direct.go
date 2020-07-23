@@ -111,13 +111,23 @@ func (_this *directBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.SetString(value)
 }
 
+func (_this *directBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	dst.SetString(value)
+}
+
 func (_this *directBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bytes")
 }
 
-func (_this *directBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *directBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *directBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
@@ -244,12 +254,22 @@ func (_this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) 
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "String")
 }
 
+func (_this *directPtrBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	// String needs special handling since there's no such thing as a nil string
+	// in go.
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "VerbatimString")
+}
+
 func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	dst.SetBytes(value)
 }
 
-func (_this *directPtrBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Custom")
+func (_this *directPtrBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "CustomBinary")
+}
+
+func (_this *directPtrBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, _this.dstType, "CustomText")
 }
 
 func (_this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {

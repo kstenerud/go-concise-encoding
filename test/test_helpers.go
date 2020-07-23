@@ -162,12 +162,16 @@ const (
 	TEventCompactTime
 	TEventBytes
 	TEventString
+	TEventVerbatimString
 	TEventURI
-	TEventCustom
+	TEventCustomBinary
+	TEventCustomText
 	TEventBytesBegin
 	TEventStringBegin
+	TEventVerbatimStringBegin
 	TEventURIBegin
-	TEventCustomBegin
+	TEventCustomBinaryBegin
+	TEventCustomTextBegin
 	TEventArrayChunk
 	TEventArrayData
 	TEventList
@@ -203,12 +207,16 @@ var TEventNames = []string{
 	"CT",
 	"BIN",
 	"S",
+	"VS",
 	"URI",
-	"CUST",
+	"CUB",
+	"CUT",
 	"BB",
 	"SB",
+	"VB",
 	"UB",
-	"CB",
+	"CBB",
+	"CTB",
 	"AC",
 	"AD",
 	"L",
@@ -300,18 +308,26 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnBytes(_this.V1.([]byte))
 	case TEventString:
 		receiver.OnString(_this.V1.(string))
+	case TEventVerbatimString:
+		receiver.OnVerbatimString(_this.V1.(string))
 	case TEventURI:
 		receiver.OnURI(_this.V1.(string))
-	case TEventCustom:
-		receiver.OnCustom(_this.V1.([]byte))
+	case TEventCustomBinary:
+		receiver.OnCustomBinary(_this.V1.([]byte))
+	case TEventCustomText:
+		receiver.OnCustomText(_this.V1.(string))
 	case TEventBytesBegin:
 		receiver.OnBytesBegin()
 	case TEventStringBegin:
 		receiver.OnStringBegin()
+	case TEventVerbatimStringBegin:
+		receiver.OnVerbatimStringBegin()
 	case TEventURIBegin:
 		receiver.OnURIBegin()
-	case TEventCustomBegin:
-		receiver.OnCustomBegin()
+	case TEventCustomBinaryBegin:
+		receiver.OnCustomBinaryBegin()
+	case TEventCustomTextBegin:
+		receiver.OnCustomTextBegin()
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
 	case TEventArrayData:
@@ -375,12 +391,16 @@ func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
 func CT(v *compact_time.Time) *TEvent   { return EventOrNil(TEventCompactTime, v) }
 func BIN(v []byte) *TEvent              { return newTEvent(TEventBytes, v, nil) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
+func VS(v string) *TEvent               { return newTEvent(TEventVerbatimString, v, nil) }
 func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
-func CUST(v []byte) *TEvent             { return newTEvent(TEventCustom, v, nil) }
+func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
+func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
 func BB() *TEvent                       { return newTEvent(TEventBytesBegin, nil, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
+func VB() *TEvent                       { return newTEvent(TEventVerbatimStringBegin, nil, nil) }
 func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
-func CB() *TEvent                       { return newTEvent(TEventCustomBegin, nil, nil) }
+func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
+func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
 func AC(l uint64, term bool) *TEvent    { return newTEvent(TEventArrayChunk, l, term) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
@@ -572,13 +592,21 @@ func (h *TEventPrinter) OnString(value string) {
 	h.Print(S(value))
 	h.Next.OnString(value)
 }
+func (h *TEventPrinter) OnVerbatimString(value string) {
+	h.Print(VS(value))
+	h.Next.OnVerbatimString(value)
+}
 func (h *TEventPrinter) OnURI(value string) {
 	h.Print(URI((value)))
 	h.Next.OnURI(value)
 }
-func (h *TEventPrinter) OnCustom(value []byte) {
-	h.Print(CUST(value))
-	h.Next.OnCustom(value)
+func (h *TEventPrinter) OnCustomBinary(value []byte) {
+	h.Print(CUB(value))
+	h.Next.OnCustomBinary(value)
+}
+func (h *TEventPrinter) OnCustomText(value string) {
+	h.Print(CUT(value))
+	h.Next.OnCustomText(value)
 }
 func (h *TEventPrinter) OnBytesBegin() {
 	h.Print(BB())
@@ -588,13 +616,21 @@ func (h *TEventPrinter) OnStringBegin() {
 	h.Print(SB())
 	h.Next.OnStringBegin()
 }
+func (h *TEventPrinter) OnVerbatimStringBegin() {
+	h.Print(VB())
+	h.Next.OnVerbatimStringBegin()
+}
 func (h *TEventPrinter) OnURIBegin() {
 	h.Print(UB())
 	h.Next.OnURIBegin()
 }
-func (h *TEventPrinter) OnCustomBegin() {
-	h.Print(CB())
-	h.Next.OnCustomBegin()
+func (h *TEventPrinter) OnCustomBinaryBegin() {
+	h.Print(CBB())
+	h.Next.OnCustomBinaryBegin()
+}
+func (h *TEventPrinter) OnCustomTextBegin() {
+	h.Print(CTB())
+	h.Next.OnCustomTextBegin()
 }
 func (h *TEventPrinter) OnArrayChunk(l uint64, final bool) {
 	h.Print(AC(l, final))
@@ -707,12 +743,16 @@ func (h *TER) OnTime(value time.Time)                 { h.add(GT(value)) }
 func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(CT(value)) }
 func (h *TER) OnBytes(value []byte)                   { h.add(BIN(value)) }
 func (h *TER) OnString(value string)                  { h.add(S(value)) }
+func (h *TER) OnVerbatimString(value string)          { h.add(VS(value)) }
 func (h *TER) OnURI(value string)                     { h.add(URI((value))) }
-func (h *TER) OnCustom(value []byte)                  { h.add(CUST(value)) }
+func (h *TER) OnCustomBinary(value []byte)            { h.add(CUB(value)) }
+func (h *TER) OnCustomText(value string)              { h.add(CUT(value)) }
 func (h *TER) OnBytesBegin()                          { h.add(BB()) }
 func (h *TER) OnStringBegin()                         { h.add(SB()) }
+func (h *TER) OnVerbatimStringBegin()                 { h.add(VB()) }
 func (h *TER) OnURIBegin()                            { h.add(UB()) }
-func (h *TER) OnCustomBegin()                         { h.add(CB()) }
+func (h *TER) OnCustomBinaryBegin()                   { h.add(CBB()) }
+func (h *TER) OnCustomTextBegin()                     { h.add(CTB()) }
 func (h *TER) OnArrayChunk(l uint64, final bool)      { h.add(AC(l, final)) }
 func (h *TER) OnArrayData(data []byte)                { h.add(AD(data)) }
 func (h *TER) OnList()                                { h.add(L()) }

@@ -105,13 +105,23 @@ func (_this *timeBuilder) BuildFromString(value string, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "String")
 }
 
+func (_this *timeBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "VerbatimString")
+}
+
 func (_this *timeBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Bytes")
 }
 
-func (_this *timeBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *timeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *timeBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
@@ -233,13 +243,23 @@ func (_this *compactTimeBuilder) BuildFromString(value string, dst reflect.Value
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "String")
 }
 
+func (_this *compactTimeBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "VerbatimString")
+}
+
 func (_this *compactTimeBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Bytes")
 }
 
-func (_this *compactTimeBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *compactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *compactTimeBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
@@ -357,13 +377,23 @@ func (_this *pCompactTimeBuilder) BuildFromString(value string, dst reflect.Valu
 	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "String")
 }
 
+func (_this *pCompactTimeBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "VerbatimString")
+}
+
 func (_this *pCompactTimeBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Bytes")
 }
 
-func (_this *pCompactTimeBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *pCompactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *pCompactTimeBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 

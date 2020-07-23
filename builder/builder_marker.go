@@ -110,12 +110,20 @@ func (_this *markerIDBuilder) BuildFromString(value string, dst reflect.Value) {
 	_this.onID(value)
 }
 
+func (_this *markerIDBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderPanicBadEvent(_this, "VerbatimString")
+}
+
 func (_this *markerIDBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderPanicBadEvent(_this, "Bytes")
 }
 
-func (_this *markerIDBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	BuilderPanicBadEvent(_this, "Custom")
+func (_this *markerIDBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	BuilderPanicBadEvent(_this, "CustomBinary")
+}
+
+func (_this *markerIDBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	BuilderPanicBadEvent(_this, "CustomText")
 }
 
 func (_this *markerIDBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
@@ -250,13 +258,23 @@ func (_this *markerObjectBuilder) BuildFromString(value string, dst reflect.Valu
 	_this.onObjectComplete(dst)
 }
 
+func (_this *markerObjectBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	_this.child.BuildFromVerbatimString(value, dst)
+	_this.onObjectComplete(dst)
+}
+
 func (_this *markerObjectBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	_this.child.BuildFromBytes(value, dst)
 	_this.onObjectComplete(dst)
 }
 
-func (_this *markerObjectBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	_this.child.BuildFromCustom(value, dst)
+func (_this *markerObjectBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	_this.child.BuildFromCustomBinary(value, dst)
+	_this.onObjectComplete(dst)
+}
+
+func (_this *markerObjectBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	_this.child.BuildFromCustomText(value, dst)
 	_this.onObjectComplete(dst)
 }
 

@@ -96,97 +96,109 @@ func (_this *sliceBuilder) storeValue(value reflect.Value) {
 	**_this.ppContainer = reflect.Append(**_this.ppContainer, value)
 }
 
-func (_this *sliceBuilder) BuildFromNil(ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromNil(_ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromNil(object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromBool(value bool, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromBool(value bool, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromBool(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromInt(value int64, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromInt(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromUint(value uint64, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromUint(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromBigInt(value *big.Int, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromBigInt(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromFloat(value float64, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromFloat(value float64, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromFloat(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromBigFloat(value *big.Float, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromBigFloat(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromDecimalFloat(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromBigDecimalFloat(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromUUID(value []byte, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromUUID(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromString(value string, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromString(value string, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromString(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromBytes(value []byte, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromVerbatimString(value, object)
+	_this.storeValue(object)
+}
+
+func (_this *sliceBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromBytes(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromCustom(value []byte, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromCustom(value, object)
+	_this.elemBuilder.BuildFromCustomBinary(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromURI(value *url.URL, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromCustomText(value string, _ reflect.Value) {
+	object := _this.newElem()
+	_this.elemBuilder.BuildFromCustomText(value, object)
+	_this.storeValue(object)
+}
+
+func (_this *sliceBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromURI(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromTime(value time.Time, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromTime(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, ignored reflect.Value) {
+func (_this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromCompactTime(value, object)
 	_this.storeValue(object)

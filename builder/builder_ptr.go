@@ -140,15 +140,27 @@ func (_this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
 	dst.Set(ptr)
 }
 
+func (_this *ptrBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromVerbatimString(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
 func (_this *ptrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
 	_this.elemBuilder.BuildFromBytes(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromCustom(value, ptr.Elem())
+	_this.elemBuilder.BuildFromCustomBinary(value, ptr.Elem())
+	dst.Set(ptr)
+}
+
+func (_this *ptrBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	ptr := _this.newElem()
+	_this.elemBuilder.BuildFromCustomText(value, ptr.Elem())
 	dst.Set(ptr)
 }
 

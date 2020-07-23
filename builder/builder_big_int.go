@@ -109,13 +109,23 @@ func (_this *bigIntBuilder) BuildFromString(value string, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "String")
 }
 
+func (_this *bigIntBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "VerbatimString")
+}
+
 func (_this *bigIntBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "Bytes")
 }
 
-func (_this *bigIntBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *bigIntBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *bigIntBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
@@ -239,13 +249,23 @@ func (_this *pBigIntBuilder) BuildFromString(value string, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "String")
 }
 
+func (_this *pBigIntBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "VerbatimString")
+}
+
 func (_this *pBigIntBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "Bytes")
 }
 
-func (_this *pBigIntBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *pBigIntBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *pBigIntBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 

@@ -53,8 +53,10 @@ type ObjectBuilder interface {
 	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
 	BuildFromUUID(value []byte, dst reflect.Value)
 	BuildFromString(value string, dst reflect.Value)
+	BuildFromVerbatimString(value string, dst reflect.Value)
 	BuildFromBytes(value []byte, dst reflect.Value)
-	BuildFromCustom(value []byte, dst reflect.Value)
+	BuildFromCustomBinary(value []byte, dst reflect.Value)
+	BuildFromCustomText(value string, dst reflect.Value)
 	BuildFromURI(value *url.URL, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
 	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
@@ -89,7 +91,8 @@ type ObjectBuilder interface {
 //
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
-type CustomBuildFunction func(src []byte, dst reflect.Value) error
+type CustomBinaryBuildFunction func(src []byte, dst reflect.Value) error
+type CustomTextBuildFunction func(src string, dst reflect.Value) error
 
 // Error reporting
 
@@ -123,8 +126,14 @@ func BuilderPanicErrorConverting(value interface{}, dstType reflect.Type, err er
 	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
 }
 
-// Report that an error occurred while building from custom data.
+// Report that an error occurred while building from custom binary data.
 // This normally indicates a bug in your custom builder.
-func BuilderPanicBuildFromCustom(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("Error converting custom data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
+func BuilderPanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("Error converting custom binary data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
+}
+
+// Report that an error occurred while building from custom text data.
+// This normally indicates a bug in your custom builder.
+func BuilderPanicBuildFromCustomText(builder ObjectBuilder, src string, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("Error converting custom text data [%v] to type %v (via %v): %v", src, dstType, reflect.TypeOf(builder), err))
 }

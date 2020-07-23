@@ -140,7 +140,7 @@ func TestEncodeDecodeBytes(t *testing.T) {
 }
 
 func TestEncodeDecodeCustom(t *testing.T) {
-	assertEncodeDecode(t, V(1), CUST([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
+	assertEncodeDecode(t, V(1), CUB([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
 func TestEncodeDecodeURI(t *testing.T) {

@@ -220,7 +220,7 @@ func (_this *Decoder) handleStringish() {
 			_this.endObject()
 			return
 		case 'c':
-			_this.eventReceiver.OnCustom(_this.buffer.DecodeHexBytes())
+			_this.eventReceiver.OnCustomBinary(_this.buffer.DecodeHexBytes())
 			_this.endObject()
 			return
 		case 'u':
@@ -836,7 +836,6 @@ func init() {
 	cteByteProperties['+'] |= ctePropertyUnquotedMid | ctePropertyAreaLocation
 	cteByteProperties['.'] |= ctePropertyUnquotedMid
 	cteByteProperties[':'] |= ctePropertyUnquotedMid
-	cteByteProperties['/'] |= ctePropertyUnquotedMid
 	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation | ctePropertyMarkerID | ctePropertyNumericWhitespace
 	for i := '0'; i <= '9'; i++ {
 		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyAreaLocation | ctePropertyMarkerID

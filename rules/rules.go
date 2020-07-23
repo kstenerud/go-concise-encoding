@@ -267,6 +267,15 @@ func (_this *Rules) OnString(value string) {
 	_this.nextReceiver.OnString(value)
 }
 
+func (_this *Rules) OnVerbatimString(value string) {
+	_this.onVerbatimStringBegin()
+	_this.onArrayChunk(uint64(len(value)), true)
+	if len(value) > 0 {
+		_this.onArrayData([]byte(value))
+	}
+	_this.nextReceiver.OnVerbatimString(value)
+}
+
 func (_this *Rules) OnURI(value string) {
 	_this.onURIBegin()
 	_this.onArrayChunk(uint64(len(value)), true)
@@ -276,13 +285,22 @@ func (_this *Rules) OnURI(value string) {
 	_this.nextReceiver.OnURI(value)
 }
 
-func (_this *Rules) OnCustom(value []byte) {
-	_this.onCustomBegin()
+func (_this *Rules) OnCustomBinary(value []byte) {
+	_this.onCustomBinaryBegin()
 	_this.onArrayChunk(uint64(len(value)), true)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
-	_this.nextReceiver.OnCustom(value)
+	_this.nextReceiver.OnCustomBinary(value)
+}
+
+func (_this *Rules) OnCustomText(value string) {
+	_this.onCustomTextBegin()
+	_this.onArrayChunk(uint64(len(value)), true)
+	if len(value) > 0 {
+		_this.onArrayData([]byte(value))
+	}
+	_this.nextReceiver.OnCustomText(value)
 }
 
 func (_this *Rules) OnBytesBegin() {
@@ -295,14 +313,24 @@ func (_this *Rules) OnStringBegin() {
 	_this.nextReceiver.OnStringBegin()
 }
 
+func (_this *Rules) OnVerbatimStringBegin() {
+	_this.onVerbatimStringBegin()
+	_this.nextReceiver.OnVerbatimStringBegin()
+}
+
 func (_this *Rules) OnURIBegin() {
 	_this.onURIBegin()
 	_this.nextReceiver.OnURIBegin()
 }
 
-func (_this *Rules) OnCustomBegin() {
-	_this.onCustomBegin()
-	_this.nextReceiver.OnCustomBegin()
+func (_this *Rules) OnCustomBinaryBegin() {
+	_this.onCustomBinaryBegin()
+	_this.nextReceiver.OnCustomBinaryBegin()
+}
+
+func (_this *Rules) OnCustomTextBegin() {
+	_this.onCustomTextBegin()
+	_this.nextReceiver.OnCustomTextBegin()
 }
 
 func (_this *Rules) OnArrayChunk(length uint64, isFinalChunk bool) {
@@ -414,12 +442,20 @@ func (_this *Rules) onStringBegin() {
 	_this.beginArray(eventTypeString)
 }
 
+func (_this *Rules) onVerbatimStringBegin() {
+	_this.beginArray(eventTypeVerbatimString)
+}
+
 func (_this *Rules) onURIBegin() {
 	_this.beginArray(eventTypeURI)
 }
 
-func (_this *Rules) onCustomBegin() {
-	_this.beginArray(eventTypeCustom)
+func (_this *Rules) onCustomBinaryBegin() {
+	_this.beginArray(eventTypeCustomBinary)
+}
+
+func (_this *Rules) onCustomTextBegin() {
+	_this.beginArray(eventTypeCustomText)
 }
 
 func (_this *Rules) onArrayChunk(length uint64, isFinalChunk bool) {
@@ -718,8 +754,10 @@ const (
 	eventIDEndContainer
 	eventIDBytes
 	eventIDString
+	eventIDVerbatimString
 	eventIDURI
-	eventIDCustom
+	eventIDCustomBinary
+	eventIDCustomText
 	eventIDAChunk
 	eventIDAData
 	eventIDEndDocument
@@ -747,8 +785,10 @@ var ruleEventNames = [...]string{
 	"end container",
 	"bytes",
 	"string",
+	"verbatim string",
 	"URI",
-	"Custom",
+	"custom (binary)",
+	"custom (text)",
 	"array chunk",
 	"array data",
 	"end document",
@@ -832,8 +872,10 @@ const (
 	eventEndContainer
 	eventBeginBytes
 	eventBeginString
+	eventBeginVerbatimString
 	eventBeginURI
-	eventBeginCustom
+	eventBeginCustomBinary
+	eventBeginCustomText
 	eventArrayChunk
 	eventArrayData
 	eventEndDocument
@@ -849,38 +891,40 @@ const (
 )
 
 const (
-	eventTypeNothing      = eventIDNothing
-	eventTypeVersion      = eventIDVersion | eventVersion
-	eventTypePadding      = eventIDPadding | eventPadding
-	eventTypeNil          = eventIDNil | eventNil
-	eventTypeBool         = eventIDBool | eventScalar
-	eventTypePInt         = eventIDPInt | eventPositiveInt
-	eventTypeNInt         = eventIDNInt | eventScalar
-	eventTypeFloat        = eventIDFloat | eventScalar
-	eventTypeNan          = eventIDNan | eventNan
-	eventTypeUUID         = eventIDUUID | eventScalar
-	eventTypeTime         = eventIDTime | eventScalar
-	eventTypeList         = eventIDList | eventBeginList
-	eventTypeMap          = eventIDMap | eventBeginMap
-	eventTypeMarkup       = eventIDMarkup | eventBeginMarkup
-	eventTypeMetadata     = eventIDMetadata | eventBeginMetadata
-	eventTypeComment      = eventIDComment | eventBeginComment
-	eventTypeMarker       = eventIDMarker | eventBeginMarker
-	eventTypeReference    = eventIDReference | eventBeginReference
-	eventTypeEndContainer = eventIDEndContainer | eventEndContainer
-	eventTypeBytes        = eventIDBytes | eventBeginBytes
-	eventTypeString       = eventIDString | eventBeginString
-	eventTypeURI          = eventIDURI | eventBeginURI
-	eventTypeCustom       = eventIDCustom | eventBeginCustom
-	eventTypeAChunk       = eventIDAChunk | eventArrayChunk
-	eventTypeAData        = eventIDAData | eventArrayData
-	eventTypeEndDocument  = eventIDEndDocument | eventEndDocument
-	eventTypeAny          = ruleEventsMask
+	eventTypeNothing        = eventIDNothing
+	eventTypeVersion        = eventIDVersion | eventVersion
+	eventTypePadding        = eventIDPadding | eventPadding
+	eventTypeNil            = eventIDNil | eventNil
+	eventTypeBool           = eventIDBool | eventScalar
+	eventTypePInt           = eventIDPInt | eventPositiveInt
+	eventTypeNInt           = eventIDNInt | eventScalar
+	eventTypeFloat          = eventIDFloat | eventScalar
+	eventTypeNan            = eventIDNan | eventNan
+	eventTypeUUID           = eventIDUUID | eventScalar
+	eventTypeTime           = eventIDTime | eventScalar
+	eventTypeList           = eventIDList | eventBeginList
+	eventTypeMap            = eventIDMap | eventBeginMap
+	eventTypeMarkup         = eventIDMarkup | eventBeginMarkup
+	eventTypeMetadata       = eventIDMetadata | eventBeginMetadata
+	eventTypeComment        = eventIDComment | eventBeginComment
+	eventTypeMarker         = eventIDMarker | eventBeginMarker
+	eventTypeReference      = eventIDReference | eventBeginReference
+	eventTypeEndContainer   = eventIDEndContainer | eventEndContainer
+	eventTypeBytes          = eventIDBytes | eventBeginBytes
+	eventTypeString         = eventIDString | eventBeginString
+	eventTypeVerbatimString = eventIDVerbatimString | eventBeginVerbatimString
+	eventTypeURI            = eventIDURI | eventBeginURI
+	eventTypeCustomBinary   = eventIDCustomBinary | eventBeginCustomBinary
+	eventTypeCustomText     = eventIDCustomText | eventBeginCustomText
+	eventTypeAChunk         = eventIDAChunk | eventArrayChunk
+	eventTypeAData          = eventIDAData | eventArrayData
+	eventTypeEndDocument    = eventIDEndDocument | eventEndDocument
+	eventTypeAny            = ruleEventsMask
 )
 
 // Primary rules
 const (
-	eventsArray         = eventBeginBytes | eventBeginString | eventBeginURI | eventBeginCustom
+	eventsArray         = eventBeginBytes | eventBeginString | eventBeginVerbatimString | eventBeginURI | eventBeginCustomBinary | eventBeginCustomText
 	eventsInvisible     = eventPadding | eventBeginComment | eventBeginMetadata
 	eventsKeyableObject = eventsInvisible | eventScalar | eventPositiveInt | eventsArray | eventBeginMarker
 	eventsAnyObject     = eventsKeyableObject | eventNil | eventNan | eventBeginList | eventBeginMap | eventBeginMarkup | eventBeginReference
@@ -891,7 +935,7 @@ const (
 	allowMapValue       = allowAny
 	allowCommentItem    = ruleState(eventBeginString | eventBeginComment | eventEndContainer | eventPadding)
 	allowMarkupName     = ruleState(eventPositiveInt | eventBeginString | eventPadding)
-	allowMarkupContents = ruleState(eventBeginString | eventBeginComment | eventBeginMarkup | eventEndContainer | eventPadding)
+	allowMarkupContents = ruleState(eventBeginString | eventBeginVerbatimString | eventBeginComment | eventBeginMarkup | eventEndContainer | eventPadding)
 	allowMarkerID       = ruleState(eventPositiveInt | eventBeginString | eventPadding)
 	allowReferenceID    = ruleState(eventPositiveInt | eventBeginString | eventBeginURI | eventPadding)
 	allowArrayChunk     = ruleState(eventArrayChunk)
@@ -945,6 +989,7 @@ var childEndRuleStateChanges = [...]ruleState{
 }
 
 func validateRulesCommentCharacter(ch int) {
+	// TODO Fetch from unicode data instead
 	switch ch {
 	case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 /*, 0x09, 0x0a*/, 0x0b, 0x0c /*, 0x0d*/, 0x0e, 0x0f,
 		0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,

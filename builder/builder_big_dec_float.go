@@ -103,13 +103,23 @@ func (_this *bigDecimalFloatBuilder) BuildFromString(value string, dst reflect.V
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigDecimalFloat, "String")
 }
 
+func (_this *bigDecimalFloatBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypeBigDecimalFloat, "VerbatimString")
+}
+
 func (_this *bigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigDecimalFloat, "Bytes")
 }
 
-func (_this *bigDecimalFloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *bigDecimalFloatBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *bigDecimalFloatBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
@@ -227,13 +237,23 @@ func (_this *pBigDecimalFloatBuilder) BuildFromString(value string, dst reflect.
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigDecimalFloat, "String")
 }
 
+func (_this *pBigDecimalFloatBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+	BuilderWithTypePanicBadEvent(_this, common.TypePBigDecimalFloat, "VerbatimString")
+}
+
 func (_this *pBigDecimalFloatBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigDecimalFloat, "Bytes")
 }
 
-func (_this *pBigDecimalFloatBuilder) BuildFromCustom(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustom(_this, value, dst.Type(), err)
+func (_this *pBigDecimalFloatBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+	}
+}
+
+func (_this *pBigDecimalFloatBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
