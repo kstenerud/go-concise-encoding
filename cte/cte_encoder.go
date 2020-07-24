@@ -64,7 +64,7 @@ func NewEncoder(writer io.Writer, options *options.CTEEncoderOptions) *Encoder {
 // to writer. If options is nil, default options will be used.
 func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions) {
 	_this.options = *options.WithDefaultsApplied()
-	_this.buff.Init(writer, options.BufferSize)
+	_this.buff.Init(writer, _this.options.BufferSize)
 }
 
 // ============================================================================
