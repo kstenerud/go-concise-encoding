@@ -300,11 +300,13 @@ func (_this *Encoder) OnCustomBinary(value []byte) {
 }
 
 func (_this *Encoder) OnCustomText(value string) {
-	panic("TODO: OnCustomText")
-	// _this.addPrefix()
-	// _this.encodeHex('c', value)
-	// _this.addSuffix()
-	// _this.transitionState()
+	// TODO: OnCustomText: escapes \ and "
+	_this.addPrefix()
+	_this.addString("t\"")
+	_this.addString(value)
+	_this.addString("\"")
+	_this.addSuffix()
+	_this.transitionState()
 }
 
 func (_this *Encoder) OnBytesBegin() {

@@ -25,6 +25,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -66,7 +67,7 @@ const (
 
 // First piece: functions to convert from complex type to custom bytes.
 // These functions each handle a single type only.
-func convertComplex64ToCustom(rv reflect.Value) (asBytes []byte, err error) {
+func convertComplex64ToCustomBinary(rv reflect.Value) (asBytes []byte, err error) {
 	cplx := complex64(rv.Complex())
 
 	buff := bytes.Buffer{}
@@ -83,7 +84,7 @@ func convertComplex64ToCustom(rv reflect.Value) (asBytes []byte, err error) {
 	return
 }
 
-func convertComplex128ToCustom(rv reflect.Value) (asBytes []byte, err error) {
+func convertComplex128ToCustomBinary(rv reflect.Value) (asBytes []byte, err error) {
 	cplx := rv.Complex()
 
 	buff := bytes.Buffer{}
@@ -102,7 +103,7 @@ func convertComplex128ToCustom(rv reflect.Value) (asBytes []byte, err error) {
 
 // Second piece: converter function to fill in an object from custom data.
 // This same function will be used for ALL custom types.
-func convertFromCustom(src []byte, dst reflect.Value) error {
+func convertFromCustomBinary(src []byte, dst reflect.Value) error {
 	buff := bytes.NewBuffer(src)
 
 	customType, _ := buff.ReadByte()
@@ -136,15 +137,15 @@ func convertFromCustom(src []byte, dst reflect.Value) error {
 
 // ============================================================================
 
-func assertCBEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
+func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	marshalOpts := options.DefaultCBEMarshalerOptions()
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustom
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustom
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
 	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
-	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustom
+	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
 	marshaler := cbe.NewMarshaler(marshalOpts, unmarshalOpts)
@@ -167,15 +168,15 @@ func assertCBEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	}
 }
 
-func assertCTEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
+func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	marshalOpts := options.DefaultCTEMarshalerOptions()
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustom
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustom
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
 	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
-	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustom
+	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
 	marshaler := cte.NewMarshaler(marshalOpts, unmarshalOpts)
@@ -198,16 +199,105 @@ func assertCTEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	}
 }
 
-func assertMarshalUnmarshalComplex(t *testing.T, value interface{}) {
-	assertCBEMarshalUnmarshalComplex(t, value)
-	assertCTEMarshalUnmarshalComplex(t, value)
+func assertMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
+	assertCBEMarshalUnmarshalComplexFromBinary(t, value)
+	assertCTEMarshalUnmarshalComplexFromBinary(t, value)
 }
 
 // ============================================================================
+
+func convertComplexToCustomText(rv reflect.Value) (asString string, err error) {
+	cplx := rv.Complex()
+	builder := strings.Builder{}
+	builder.WriteString(fmt.Sprintf("cplx(%g+%gi)", real(cplx), imag(cplx)))
+	return builder.String(), nil
+}
+
+func convertFromCustomText(src string, dst reflect.Value) error {
+	var r, i float64
+	if _, err := fmt.Sscanf(src, "cplx(%f+%fi)", &r, &i); err != nil {
+		return err
+	}
+
+	dst.SetComplex(complex(r, i))
+	return nil
+}
+
+func assertCBEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+
+	marshalOpts := options.DefaultCBEMarshalerOptions()
+	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
+	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
+	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
+	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+
+	marshaler := cbe.NewMarshaler(marshalOpts, unmarshalOpts)
+
+	document, err := marshaler.MarshalToBytes(value)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	template := value
+	actual, err := marshaler.UnmarshalFromBytes(document, template)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !equivalence.IsEquivalent(actual, value) {
+		t.Errorf("Expected %v but got %v", describe.D(value), describe.D(actual))
+	}
+}
+
+func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+
+	marshalOpts := options.DefaultCTEMarshalerOptions()
+	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
+	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
+	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
+	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+
+	marshaler := cte.NewMarshaler(marshalOpts, unmarshalOpts)
+
+	document, err := marshaler.MarshalToBytes(value)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	template := value
+	actual, err := marshaler.UnmarshalFromBytes(document, template)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !equivalence.IsEquivalent(actual, value) {
+		t.Errorf("Expected %v but got %v", describe.D(value), describe.D(actual))
+	}
+}
+
+func assertMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
+	assertCBEMarshalUnmarshalComplexFromText(t, value)
+	assertCTEMarshalUnmarshalComplexFromText(t, value)
+}
+
+// ============================================================================
+
+func assertMarshalUnmarshalComplex(t *testing.T, value interface{}) {
+	assertMarshalUnmarshalComplexFromBinary(t, value)
+	assertMarshalUnmarshalComplexFromText(t, value)
+}
 
 func TestCustomBuildIter(t *testing.T) {
 	assertMarshalUnmarshalComplex(t, complex(1, 1))
 	assertMarshalUnmarshalComplex(t, complex(float64(1.0000000000000000000000000001), float64(1)))
 }
-
-// TODO: custom text

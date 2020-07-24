@@ -91,12 +91,12 @@ func TestCTEVerbatimString(t *testing.T) {
 	assertDecodeFails(t, "c1 `A ")
 	assertDecodeFails(t, "c1 `A xyz")
 	assertDecodeFails(t, "c1 `A xyzAx")
-	assertDecode(t, "c1 `A \n\n\n\n\n\n\n\n\n\nA", V(1), S("\n\n\n\n\n\n\n\n\n\n"), ED())
-	assertDecode(t, "c1 `A aA", V(1), S("a"), ED())
-	assertDecode(t, "c1 `A\taA", V(1), S("a"), ED())
-	assertDecode(t, "c1 `A\naA", V(1), S("a"), ED())
-	assertDecode(t, "c1 `A\r\naA", V(1), S("a"), ED())
-	assertDecode(t, "c1 `#ENDOFSTRING a test\nwith `stuff`#ENDOFSTRING ", V(1), S("a test\nwith `stuff`"), ED())
+	assertDecode(t, "c1 `A \n\n\n\n\n\n\n\n\n\nA", V(1), VS("\n\n\n\n\n\n\n\n\n\n"), ED())
+	assertDecode(t, "c1 `A aA", V(1), VS("a"), ED())
+	assertDecode(t, "c1 `A\taA", V(1), VS("a"), ED())
+	assertDecode(t, "c1 `A\naA", V(1), VS("a"), ED())
+	assertDecode(t, "c1 `A\r\naA", V(1), VS("a"), ED())
+	assertDecode(t, "c1 `#ENDOFSTRING a test\nwith `stuff`#ENDOFSTRING ", V(1), VS("a test\nwith `stuff`"), ED())
 }
 
 func TestCTEDecimalInt(t *testing.T) {

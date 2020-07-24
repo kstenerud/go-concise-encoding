@@ -223,6 +223,10 @@ func (_this *Decoder) handleStringish() {
 			_this.eventReceiver.OnCustomBinary(_this.buffer.DecodeHexBytes())
 			_this.endObject()
 			return
+		case 't':
+			_this.eventReceiver.OnCustomText(string(_this.buffer.DecodeQuotedString()))
+			_this.endObject()
+			return
 		case 'u':
 			_this.eventReceiver.OnURI(string(_this.buffer.DecodeQuotedString()))
 			_this.endObject()
@@ -620,7 +624,7 @@ func (_this *Decoder) handleNamedValue() {
 
 func (_this *Decoder) handleVerbatimString() {
 	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnString(string(_this.buffer.DecodeVerbatimString()))
+	_this.eventReceiver.OnVerbatimString(string(_this.buffer.DecodeVerbatimString()))
 	_this.endObject()
 }
 
