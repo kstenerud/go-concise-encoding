@@ -83,7 +83,7 @@ func NewRules(nextReceiver events.DataEventReceiver, options *options.RuleOption
 
 // Initialize a rules set. If options = nil, defaults are used.
 func (_this *Rules) Init(nextReceiver events.DataEventReceiver, options *options.RuleOptions) {
-	_this.options = *options.ApplyDefaults()
+	_this.options = *options.WithDefaultsApplied()
 	_this.realMaxContainerDepth = _this.options.MaxContainerDepth + rulesMaxDepthAdjust
 	_this.stateStack = make([]ruleState, 0, _this.realMaxContainerDepth)
 	_this.nextReceiver = nextReceiver

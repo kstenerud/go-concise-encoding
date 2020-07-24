@@ -71,7 +71,7 @@ func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, options *
 	_this.dstType = dstType
 	_this.object = reflect.New(dstType).Elem()
 
-	builder := session.GetBuilderForType(dstType).CloneFromTemplate(_this, _this, options.ApplyDefaults())
+	builder := session.GetBuilderForType(dstType).CloneFromTemplate(_this, _this, options.WithDefaultsApplied())
 	_this.currentBuilder = newTopLevelBuilder(_this, builder)
 	_this.referenceFiller.Init()
 }

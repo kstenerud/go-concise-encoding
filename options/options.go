@@ -23,6 +23,9 @@
 package options
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
@@ -58,6 +61,7 @@ const (
 )
 
 // ============================================================================
+// CBE Decoder
 
 type CBEDecoderOptions struct {
 	ShouldZeroCopy bool
@@ -68,20 +72,15 @@ type CBEDecoderOptions struct {
 	BufferSize         int
 }
 
-var defaultCBEDecoderOptions = CBEDecoderOptions{
-	BufferSize: 2048,
-}
-
 func DefaultCBEDecoderOptions() *CBEDecoderOptions {
-	options := defaultCBEDecoderOptions
-	return &options
+	return &CBEDecoderOptions{
+		BufferSize: 2048,
+	}
 }
 
-func (_this *CBEDecoderOptions) ApplyDefaults() *CBEDecoderOptions {
-	defaults := &defaultCBEDecoderOptions
+func (_this *CBEDecoderOptions) WithDefaultsApplied() *CBEDecoderOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCBEDecoderOptions()
 	}
 
 	if _this.BufferSize < 64 {
@@ -92,20 +91,21 @@ func (_this *CBEDecoderOptions) ApplyDefaults() *CBEDecoderOptions {
 }
 
 // ============================================================================
+// CBE Encoder
 
 type CBEEncoderOptions struct {
 	BufferSize int
 }
 
-var defaultCBEEncoderOptions = CBEEncoderOptions{
-	BufferSize: 1024,
+func DefaultCBEEncoderOptions() *CBEEncoderOptions {
+	return &CBEEncoderOptions{
+		BufferSize: 1024,
+	}
 }
 
-func (_this *CBEEncoderOptions) ApplyDefaults() *CBEEncoderOptions {
-	defaults := &defaultCBEEncoderOptions
+func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCBEEncoderOptions()
 	}
 
 	if _this.BufferSize < 64 {
@@ -115,75 +115,69 @@ func (_this *CBEEncoderOptions) ApplyDefaults() *CBEEncoderOptions {
 	return _this
 }
 
-func DefaultCBEEncoderOptions() *CBEEncoderOptions {
-	options := defaultCBEEncoderOptions
-	return &options
-}
-
 // ============================================================================
+// CBE Marshaler
 
 type CBEMarshalerOptions struct {
 	Encoder  CBEEncoderOptions
 	Iterator IteratorOptions
-}
-
-var defaultCBEMarshalerOptions = CBEMarshalerOptions{
-	Encoder:  defaultCBEEncoderOptions,
-	Iterator: defaultIteratorOptions,
+	Session  IteratorSessionOptions
 }
 
 func DefaultCBEMarshalerOptions() *CBEMarshalerOptions {
-	options := defaultCBEMarshalerOptions
-	return &options
+	return &CBEMarshalerOptions{
+		Encoder:  *DefaultCBEEncoderOptions(),
+		Iterator: *DefaultIteratorOptions(),
+		Session:  *DefaultIteratorSessionOptions(),
+	}
 }
 
-func (_this *CBEMarshalerOptions) ApplyDefaults() *CBEMarshalerOptions {
-	defaults := &defaultCBEMarshalerOptions
+func (_this *CBEMarshalerOptions) WithDefaultsApplied() *CBEMarshalerOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCBEMarshalerOptions()
 	}
 
-	_this.Encoder.ApplyDefaults()
-	_this.Iterator.ApplyDefaults()
+	_this.Encoder.WithDefaultsApplied()
+	_this.Iterator.WithDefaultsApplied()
+	_this.Session.WithDefaultsApplied()
 
 	return _this
 }
 
 // ============================================================================
+// CBE Unmarshaler
 
 type CBEUnmarshalerOptions struct {
 	Decoder CBEDecoderOptions
 	Builder BuilderOptions
+	Session BuilderSessionOptions
 	Rules   RuleOptions
 }
 
-var defaultCBEUnmarshalerOptions = CBEUnmarshalerOptions{
-	Decoder: defaultCBEDecoderOptions,
-	Builder: defaultBuilderOptions,
-	Rules:   defaultRuleOptions,
-}
-
 func DefaultCBEUnmarshalerOptions() *CBEUnmarshalerOptions {
-	options := defaultCBEUnmarshalerOptions
-	return &options
+	return &CBEUnmarshalerOptions{
+		Decoder: *DefaultCBEDecoderOptions(),
+		Builder: *DefaultBuilderOptions(),
+		Session: *DefaultBuilderSessionOptions(),
+		Rules:   *DefaultRuleOptions(),
+	}
 }
 
-func (_this *CBEUnmarshalerOptions) ApplyDefaults() *CBEUnmarshalerOptions {
-	defaults := &defaultCBEUnmarshalerOptions
+func (_this *CBEUnmarshalerOptions) WithDefaultsApplied() *CBEUnmarshalerOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCBEUnmarshalerOptions()
 	}
 
-	_this.Decoder.ApplyDefaults()
-	_this.Builder.ApplyDefaults()
-	_this.Rules.ApplyDefaults()
+	_this.Decoder.WithDefaultsApplied()
+	_this.Builder.WithDefaultsApplied()
+	_this.Session.WithDefaultsApplied()
+	_this.Rules.WithDefaultsApplied()
 
 	return _this
 }
 
 // ============================================================================
+// CTE Decoder
 
 type CTEDecoderOptions struct {
 	// TODO: ShouldZeroCopy option
@@ -195,20 +189,15 @@ type CTEDecoderOptions struct {
 	BufferSize         int
 }
 
-var defaultCTEDecoderOptions = CTEDecoderOptions{
-	BufferSize: 4096,
-}
-
 func DefaultCTEDecoderOptions() *CTEDecoderOptions {
-	options := defaultCTEDecoderOptions
-	return &options
+	return &CTEDecoderOptions{
+		BufferSize: 4096,
+	}
 }
 
-func (_this *CTEDecoderOptions) ApplyDefaults() *CTEDecoderOptions {
-	defaults := &defaultCTEDecoderOptions
+func (_this *CTEDecoderOptions) WithDefaultsApplied() *CTEDecoderOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCTEDecoderOptions()
 	}
 
 	if _this.BufferSize < 64 {
@@ -219,6 +208,7 @@ func (_this *CTEDecoderOptions) ApplyDefaults() *CTEDecoderOptions {
 }
 
 // ============================================================================
+// CTE Encoder
 
 type CTEEncoderOptions struct {
 	BufferSize int
@@ -227,20 +217,15 @@ type CTEEncoderOptions struct {
 	BinaryFloatEncoding BinaryFloatEncodeAs
 }
 
-var defaultCTEEncoderOptions = CTEEncoderOptions{
-	BufferSize: 1024,
-}
-
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {
-	opts := defaultCTEEncoderOptions
-	return &opts
+	return &CTEEncoderOptions{
+		BufferSize: 1024,
+	}
 }
 
-func (_this *CTEEncoderOptions) ApplyDefaults() *CTEEncoderOptions {
-	defaults := &defaultCTEEncoderOptions
+func (_this *CTEEncoderOptions) WithDefaultsApplied() *CTEEncoderOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCTEEncoderOptions()
 	}
 
 	// TODO: Check for default individual options
@@ -249,69 +234,127 @@ func (_this *CTEEncoderOptions) ApplyDefaults() *CTEEncoderOptions {
 }
 
 // ============================================================================
+// CTE Marshaler
 
 type CTEMarshalerOptions struct {
 	Encoder  CTEEncoderOptions
 	Iterator IteratorOptions
-}
-
-var defaultCTEMarshalerOptions = CTEMarshalerOptions{
-	Encoder:  defaultCTEEncoderOptions,
-	Iterator: defaultIteratorOptions,
+	Session  IteratorSessionOptions
 }
 
 func DefaultCTEMarshalerOptions() *CTEMarshalerOptions {
-	options := defaultCTEMarshalerOptions
-	return &options
+	return &CTEMarshalerOptions{
+		Encoder:  *DefaultCTEEncoderOptions(),
+		Iterator: *DefaultIteratorOptions(),
+		Session:  *DefaultIteratorSessionOptions(),
+	}
 }
 
-func (_this *CTEMarshalerOptions) ApplyDefaults() *CTEMarshalerOptions {
-	defaults := &defaultCTEMarshalerOptions
+func (_this *CTEMarshalerOptions) WithDefaultsApplied() *CTEMarshalerOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCTEMarshalerOptions()
 	}
 
-	_this.Encoder.ApplyDefaults()
-	_this.Iterator.ApplyDefaults()
+	_this.Encoder.WithDefaultsApplied()
+	_this.Iterator.WithDefaultsApplied()
+	_this.Session.WithDefaultsApplied()
 
 	return _this
 }
 
 // ============================================================================
+// CTE Unmarshaler
 
 type CTEUnmarshalerOptions struct {
 	Decoder CTEDecoderOptions
 	Builder BuilderOptions
+	Session BuilderSessionOptions
 	Rules   RuleOptions
 }
 
-var defaultCTEUnmarshalerOptions = CTEUnmarshalerOptions{
-	Decoder: defaultCTEDecoderOptions,
-	Builder: defaultBuilderOptions,
-	Rules:   defaultRuleOptions,
-}
-
 func DefaultCTEUnmarshalerOptions() *CTEUnmarshalerOptions {
-	options := defaultCTEUnmarshalerOptions
-	return &options
+	return &CTEUnmarshalerOptions{
+		Decoder: *DefaultCTEDecoderOptions(),
+		Builder: *DefaultBuilderOptions(),
+		Session: *DefaultBuilderSessionOptions(),
+		Rules:   *DefaultRuleOptions(),
+	}
 }
 
-func (_this *CTEUnmarshalerOptions) ApplyDefaults() *CTEUnmarshalerOptions {
-	defaults := &defaultCTEUnmarshalerOptions
+func (_this *CTEUnmarshalerOptions) WithDefaultsApplied() *CTEUnmarshalerOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultCTEUnmarshalerOptions()
 	}
 
-	_this.Decoder.ApplyDefaults()
-	_this.Builder.ApplyDefaults()
-	_this.Rules.ApplyDefaults()
+	_this.Decoder.WithDefaultsApplied()
+	_this.Builder.WithDefaultsApplied()
+	_this.Session.WithDefaultsApplied()
+	_this.Rules.WithDefaultsApplied()
 
 	return _this
 }
 
 // ============================================================================
+// Builder Session
+
+// Fills out a value from custom binary data.
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
+type CustomBinaryBuildFunction func(src []byte, dst reflect.Value) error
+
+// Fills out a value from custom text data.
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
+type CustomTextBuildFunction func(src string, dst reflect.Value) error
+
+type BuilderSessionOptions struct {
+	// Specifies which types will be built using custom text/binary build
+	// functions. You must also set one or both of CustomBinaryBuildFunction
+	// and CustomTextBuildFunction in order to use this feature.
+	// Both CBE and CTE will attempt to use either the binary or text version
+	// depending on the data type (custom binary, custom text) encoded in the
+	// source document.
+	CustomBuiltTypes []reflect.Type
+
+	// Build function to use when building from a custom binary source.
+	CustomBinaryBuildFunction CustomBinaryBuildFunction
+
+	// Build function to use when building from a custom text source.
+	CustomTextBuildFunction CustomTextBuildFunction
+}
+
+func DefaultBuilderSessionOptions() *BuilderSessionOptions {
+	return &BuilderSessionOptions{
+		CustomBinaryBuildFunction: (func(src []byte, dst reflect.Value) error {
+			return fmt.Errorf("No builder has been registered to handle custom binary data")
+		}),
+		CustomTextBuildFunction: (func(src string, dst reflect.Value) error {
+			return fmt.Errorf("No builder has been registered to handle custom text data")
+		}),
+	}
+}
+
+func (_this *BuilderSessionOptions) WithDefaultsApplied() *BuilderSessionOptions {
+	defaults := DefaultBuilderSessionOptions()
+	if _this == nil {
+		return defaults
+	}
+
+	if _this.CustomBinaryBuildFunction == nil {
+		_this.CustomBinaryBuildFunction = defaults.CustomBinaryBuildFunction
+	}
+	if _this.CustomTextBuildFunction == nil {
+		_this.CustomTextBuildFunction = defaults.CustomTextBuildFunction
+	}
+	if _this.CustomBuiltTypes == nil {
+		_this.CustomBuiltTypes = []reflect.Type{}
+	}
+
+	return _this
+}
+
+// ============================================================================
+// Builder
 
 type BuilderOptions struct {
 	FloatToBigIntMaxBase10Exponent int
@@ -322,21 +365,16 @@ type BuilderOptions struct {
 	// TODO: Error on unknown field
 }
 
-var defaultBuilderOptions = BuilderOptions{
-	FloatToBigIntMaxBase10Exponent: 300,
-	FloatToBigIntMaxBase2Exponent:  300 * 10 / 3,
-}
-
 func DefaultBuilderOptions() *BuilderOptions {
-	options := defaultBuilderOptions
-	return &options
+	return &BuilderOptions{
+		FloatToBigIntMaxBase10Exponent: 300,
+		FloatToBigIntMaxBase2Exponent:  300 * 10 / 3,
+	}
 }
 
-func (_this *BuilderOptions) ApplyDefaults() *BuilderOptions {
-	defaults := &defaultBuilderOptions
+func (_this *BuilderOptions) WithDefaultsApplied() *BuilderOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultBuilderOptions()
 	}
 
 	// TODO: Check for default individual options
@@ -345,6 +383,56 @@ func (_this *BuilderOptions) ApplyDefaults() *BuilderOptions {
 }
 
 // ============================================================================
+// Iterator Session
+
+// Converts a value to custom binary data.
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
+type ConvertToCustomBinaryFunction func(v reflect.Value) (asBytes []byte, err error)
+
+// Converts a value to custom text data.
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
+type ConvertToCustomTextFunction func(v reflect.Value) (asText string, err error)
+
+type IteratorSessionOptions struct {
+	// Specifies which types to convert to custom binary data, and how to do it.
+	// Note: You should only fill out one of these maps, depending on your
+	// indended encoding (binary or text). The iterator session will consult
+	// the binary map first and the text map second, choosing the first match.
+	CustomBinaryConverters map[reflect.Type]ConvertToCustomBinaryFunction
+
+	// Specifies which types to convert to custom text data, and how to do it
+	// Note: You should only fill out one of these maps, depending on your
+	// indended encoding (binary or text). The iterator session will consult
+	// the binary map first and the text map second, choosing the first match.
+	CustomTextConverters map[reflect.Type]ConvertToCustomTextFunction
+}
+
+func DefaultIteratorSessionOptions() *IteratorSessionOptions {
+	return &IteratorSessionOptions{
+		CustomBinaryConverters: make(map[reflect.Type]ConvertToCustomBinaryFunction),
+		CustomTextConverters:   make(map[reflect.Type]ConvertToCustomTextFunction),
+	}
+}
+
+func (_this *IteratorSessionOptions) WithDefaultsApplied() *IteratorSessionOptions {
+	if _this == nil {
+		return DefaultIteratorSessionOptions()
+	}
+
+	if _this.CustomBinaryConverters == nil {
+		_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomBinaryFunction)
+	}
+	if _this.CustomTextConverters == nil {
+		_this.CustomTextConverters = make(map[reflect.Type]ConvertToCustomTextFunction)
+	}
+
+	return _this
+}
+
+// ============================================================================
+// Iterator
 
 type IteratorOptions struct {
 	ConciseEncodingVersion uint64
@@ -357,30 +445,26 @@ type IteratorOptions struct {
 	OmitNilPointers bool
 }
 
-var defaultIteratorOptions = IteratorOptions{
-	ConciseEncodingVersion: version.ConciseEncodingVersion,
-}
-
 func DefaultIteratorOptions() *IteratorOptions {
-	opts := defaultIteratorOptions
-	return &opts
+	return &IteratorOptions{
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
+	}
 }
 
-func (_this *IteratorOptions) ApplyDefaults() *IteratorOptions {
-	defaults := &defaultIteratorOptions
+func (_this *IteratorOptions) WithDefaultsApplied() *IteratorOptions {
 	if _this == nil {
-		options := *defaults
-		return &options
+		return DefaultIteratorOptions()
 	}
 
 	if _this.ConciseEncodingVersion < 1 {
-		_this.ConciseEncodingVersion = defaults.ConciseEncodingVersion
+		_this.ConciseEncodingVersion = DefaultIteratorOptions().ConciseEncodingVersion
 	}
 
 	return _this
 }
 
 // ============================================================================
+// Rules
 
 type RuleOptions struct {
 	depthHasBeenAdjusted bool
@@ -399,29 +483,25 @@ type RuleOptions struct {
 	// Max bytes total for all array types
 }
 
-var defaultRuleOptions = RuleOptions{
-	ConciseEncodingVersion: version.ConciseEncodingVersion,
-	MaxBytesLength:         1000000000,
-	MaxStringLength:        100000000,
-	MaxURILength:           10000,
-	MaxIDLength:            100,
-	MaxMarkupNameLength:    100,
-	MaxContainerDepth:      1000,
-	MaxObjectCount:         10000000,
-	MaxReferenceCount:      100000,
-	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
-}
-
 func DefaultRuleOptions() *RuleOptions {
-	options := defaultRuleOptions
-	return &options
+	return &RuleOptions{
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
+		MaxBytesLength:         1000000000,
+		MaxStringLength:        100000000,
+		MaxURILength:           10000,
+		MaxIDLength:            100,
+		MaxMarkupNameLength:    100,
+		MaxContainerDepth:      1000,
+		MaxObjectCount:         10000000,
+		MaxReferenceCount:      100000,
+		// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
+	}
 }
 
-func (_this *RuleOptions) ApplyDefaults() *RuleOptions {
-	defaults := &defaultRuleOptions
+func (_this *RuleOptions) WithDefaultsApplied() *RuleOptions {
+	defaults := DefaultRuleOptions()
 	if _this == nil {
-		options := *defaults
-		return &options
+		return defaults
 	}
 
 	if _this.ConciseEncodingVersion < 1 {

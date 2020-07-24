@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/kstenerud/go-concise-encoding/cte"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
@@ -138,11 +140,14 @@ func assertCBEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
-	marshaler := cbe.NewMarshaler(nil, nil)
-	marshaler.BuilderSession.SetCustomBuildFunction(convertFromCustom)
-	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(value))
-	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float32(0), float32(0))), convertComplex64ToCustom)
-	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float64(0), float64(0))), convertComplex128ToCustom)
+	marshalOpts := options.DefaultCBEMarshalerOptions()
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustom
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustom
+	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustom
+	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+
+	marshaler := cbe.NewMarshaler(marshalOpts, unmarshalOpts)
 
 	document, err := marshaler.MarshalToBytes(value)
 	if err != nil {
@@ -166,11 +171,14 @@ func assertCTEMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
-	marshaler := cte.NewMarshaler(nil, nil)
-	marshaler.BuilderSession.SetCustomBuildFunction(convertFromCustom)
-	marshaler.BuilderSession.UseCustomBuildFunctionForType(reflect.TypeOf(value))
-	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float32(0), float32(0))), convertComplex64ToCustom)
-	marshaler.IteratorSession.RegisterCustomConverterForType(reflect.TypeOf(complex(float64(0), float64(0))), convertComplex128ToCustom)
+	marshalOpts := options.DefaultCTEMarshalerOptions()
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustom
+	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustom
+	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustom
+	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+
+	marshaler := cte.NewMarshaler(marshalOpts, unmarshalOpts)
 
 	document, err := marshaler.MarshalToBytes(value)
 	if err != nil {
@@ -201,3 +209,5 @@ func TestCustomBuildIter(t *testing.T) {
 	assertMarshalUnmarshalComplex(t, complex(1, 1))
 	assertMarshalUnmarshalComplex(t, complex(float64(1.0000000000000000000000000001), float64(1)))
 }
+
+// TODO: custom text

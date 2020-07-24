@@ -29,12 +29,16 @@ import (
 )
 
 // Iterate over an object (recursively), calling the eventReceiver as data is
-// encountered. If options is nil, default options will be used.
+// encountered. If an options object is nil, default options will be used.
 //
 // Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
 // to recover() at an appropriate location when calling this function.
-func IterateObject(object interface{}, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
-	iter := NewRootObjectIterator(NewSession(), eventReceiver, options)
+func IterateObject(object interface{},
+	eventReceiver events.DataEventReceiver,
+	sessionOptions *options.IteratorSessionOptions,
+	iteratorOptions *options.IteratorOptions) {
+
+	iter := NewRootObjectIterator(NewSession(nil, sessionOptions), eventReceiver, iteratorOptions)
 	iter.Iterate(object)
 }
 
@@ -48,11 +52,3 @@ type ObjectIterator interface {
 	// cache but before use, so that lookups succeed on cyclic type references.
 	PostCacheInitIterator(session *Session)
 }
-
-// ConvertToCustomBytesFunction converts a value to a custom array of bytes.
-// This allows fully user-configurable converting to custom Concise Encoding
-// data.
-//
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
-type ConvertToCustomBytesFunction func(v reflect.Value) (asBytes []byte, err error)

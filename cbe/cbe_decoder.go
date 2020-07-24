@@ -53,7 +53,7 @@ func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, option
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If options is nil, default options will be used.
 func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) {
-	_this.options = *options.ApplyDefaults()
+	_this.options = *options.WithDefaultsApplied()
 	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
 	_this.nextReceiver = eventReceiver
 }

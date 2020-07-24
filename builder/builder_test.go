@@ -80,7 +80,7 @@ func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
 
 func runBuild(template interface{}, events ...*test.TEvent) interface{} {
-	session := NewSession()
+	session := NewSession(nil, nil)
 	builder := session.NewBuilderFor(template, nil)
 	test.InvokeEvents(builder, events...)
 	return builder.GetBuiltObject()

@@ -39,37 +39,37 @@ import (
 // only in their own session, and don't pollute the base mapping and cause
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
-	builders                  sync.Map
-	customBinaryBuildFunction CustomBinaryBuildFunction
+	builders sync.Map
+	options  options.BuilderSessionOptions
 }
 
-// Start a new builder session. It will begin with the basic builders registered,
-// and any further builders will only be registered to this session.
-func NewSession() *Session {
-	return baseSession.Clone()
+// Start a new builder session. It will inherit the builders of its parent.
+// If parent is nil, it will inherit from the root session, which has builders
+// for all basic go types.
+// If options is nil, default options will be used.
+func NewSession(parent *Session, options *options.BuilderSessionOptions) *Session {
+	_this := &Session{}
+	_this.Init(parent, options)
+	return _this
 }
 
-func (_this *Session) Init() {
-	_this.customBinaryBuildFunction = (func(src []byte, dst reflect.Value) error {
-		return fmt.Errorf("No builder has been registered to handle custom data")
-	})
-}
-
-// Make a clone of the current session, with all registered builders of this
-// session.
-func (_this *Session) Clone() *Session {
-	newSession := &Session{}
-	newSession.CopyFrom(_this)
-	return newSession
-}
-
-// Copy all registered builders from another session.
-func (_this *Session) CopyFrom(session *Session) {
-	_this.customBinaryBuildFunction = session.customBinaryBuildFunction
-	session.builders.Range(func(k interface{}, v interface{}) bool {
+// Initialize a builder session. It will inherit the builders of its parent.
+// If parent is nil, it will inherit from the root session, which has builders
+// for all basic go types.
+// If options is nil, default options will be used.
+func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions) {
+	if parent == nil {
+		parent = &rootSession
+	}
+	parent.builders.Range(func(k interface{}, v interface{}) bool {
 		_this.builders.Store(k, v)
 		return true
 	})
+
+	_this.options = *opts.WithDefaultsApplied()
+	for _, t := range _this.options.CustomBuiltTypes {
+		_this.RegisterBuilderForType(t, newCustomBuilder(_this))
+	}
 }
 
 // NewBuilderFor creates a new builder that builds objects of the same type as
@@ -106,30 +106,12 @@ func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
 	return builder.(ObjectBuilder)
 }
 
-// TODO: Register custom builders and iterators via options instead.
-// Register a type to be built using your custom build function. You must also
-// call SetCustomBuildFunction() to register the function that will do the
-// actual building from the source bytes.
-func (_this *Session) UseCustomBuildFunctionForType(dstType reflect.Type) {
-	_this.RegisterBuilderForType(dstType, newCustomBuilder(_this))
+func (_this *Session) GetCustomBinaryBuildFunction() options.CustomBinaryBuildFunction {
+	return _this.options.CustomBinaryBuildFunction
 }
 
-// Choose the function that will handle all building from custom data in the
-// document. Any types registered via UseCustomBuildFunctionForType() will be
-// built using this function.
-//
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
-func (_this *Session) SetCustomBuildFunction(customBuilder CustomBinaryBuildFunction) {
-	_this.customBinaryBuildFunction = customBuilder
-}
-
-func (_this *Session) GetCustomBinaryBuildFunction() CustomBinaryBuildFunction {
-	return _this.customBinaryBuildFunction
-}
-
-func (_this *Session) GetCustomTextBuildFunction() CustomTextBuildFunction {
-	panic("TODO: custom text build function")
+func (_this *Session) GetCustomTextBuildFunction() options.CustomTextBuildFunction {
+	return _this.options.CustomTextBuildFunction
 }
 
 // ============================================================================
@@ -207,26 +189,26 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 
 // The base session caches the most common builders. All sessions inherit
 // these cached values.
-var baseSession Session
+var rootSession Session
 
 func init() {
-	baseSession.Init()
+	rootSession.Init(nil, nil)
 
 	for _, t := range common.KeyableTypes {
-		baseSession.GetBuilderForType(t)
-		baseSession.GetBuilderForType(reflect.PtrTo(t))
-		baseSession.GetBuilderForType(reflect.SliceOf(t))
+		rootSession.GetBuilderForType(t)
+		rootSession.GetBuilderForType(reflect.PtrTo(t))
+		rootSession.GetBuilderForType(reflect.SliceOf(t))
 		for _, u := range common.KeyableTypes {
-			baseSession.GetBuilderForType(reflect.MapOf(t, u))
+			rootSession.GetBuilderForType(reflect.MapOf(t, u))
 		}
 		for _, u := range common.NonKeyableTypes {
-			baseSession.GetBuilderForType(reflect.MapOf(t, u))
+			rootSession.GetBuilderForType(reflect.MapOf(t, u))
 		}
 	}
 
 	for _, t := range common.NonKeyableTypes {
-		baseSession.GetBuilderForType(t)
-		baseSession.GetBuilderForType(reflect.PtrTo(t))
-		baseSession.GetBuilderForType(reflect.SliceOf(t))
+		rootSession.GetBuilderForType(t)
+		rootSession.GetBuilderForType(reflect.PtrTo(t))
+		rootSession.GetBuilderForType(reflect.SliceOf(t))
 	}
 }

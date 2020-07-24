@@ -56,14 +56,14 @@ type Encoder struct {
 // to writer. If options is nil, default options will be used.
 func NewEncoder(writer io.Writer, options *options.CTEEncoderOptions) *Encoder {
 	_this := &Encoder{}
-	_this.Init(writer, options.ApplyDefaults())
+	_this.Init(writer, options)
 	return _this
 }
 
 // Initialize this encoder, which will receive data events and write a document
 // to writer. If options is nil, default options will be used.
 func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions) {
-	_this.options = *options.ApplyDefaults()
+	_this.options = *options.WithDefaultsApplied()
 	_this.buff.Init(writer, options.BufferSize)
 }
 

@@ -25,25 +25,47 @@ import (
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type customIterator struct {
-	convertFunction ConvertToCustomBytesFunction
+type customBinaryIterator struct {
+	convertFunction options.ConvertToCustomBinaryFunction
 }
 
-func newCustomIterator(convertFunction ConvertToCustomBytesFunction) ObjectIterator {
-	return &customIterator{
+func newCustomBinaryIterator(convertFunction options.ConvertToCustomBinaryFunction) ObjectIterator {
+	return &customBinaryIterator{
 		convertFunction: convertFunction,
 	}
 }
 
-func (_this *customIterator) PostCacheInitIterator(session *Session) {
+func (_this *customBinaryIterator) PostCacheInitIterator(session *Session) {
 }
 
-func (_this *customIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *customBinaryIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	asBytes, err := _this.convertFunction(v)
 	if err != nil {
 		panic(fmt.Errorf("Error converting type %v to custom bytes: %v", v.Type(), err))
 	}
 	eventReceiver.OnCustomBinary(asBytes)
+}
+
+type customTextIterator struct {
+	convertFunction options.ConvertToCustomTextFunction
+}
+
+func newCustomTextIterator(convertFunction options.ConvertToCustomTextFunction) ObjectIterator {
+	return &customTextIterator{
+		convertFunction: convertFunction,
+	}
+}
+
+func (_this *customTextIterator) PostCacheInitIterator(session *Session) {
+}
+
+func (_this *customTextIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+	asString, err := _this.convertFunction(v)
+	if err != nil {
+		panic(fmt.Errorf("Error converting type %v to custom text: %v", v.Type(), err))
+	}
+	eventReceiver.OnCustomText(asString)
 }

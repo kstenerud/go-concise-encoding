@@ -56,7 +56,7 @@ func NewRootObjectIterator(session *Session, eventReceiver events.DataEventRecei
 // Initialize this iterator to send data events to eventReceiver.
 // If options is nil, default options will be used.
 func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
-	_this.options = *options.ApplyDefaults()
+	_this.options = *options.WithDefaultsApplied()
 	_this.session = session
 	_this.eventReceiver = eventReceiver
 }

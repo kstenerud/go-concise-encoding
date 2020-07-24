@@ -60,7 +60,7 @@ func NewEncoder(writer io.Writer, options *options.CBEEncoderOptions) *Encoder {
 // Initialize this encoder, which will receive data events and write a document
 // to writer. If options is nil, default options will be used.
 func (_this *Encoder) Init(writer io.Writer, options *options.CBEEncoderOptions) {
-	_this.options = *options.ApplyDefaults()
+	_this.options = *options.WithDefaultsApplied()
 	_this.buff.Init(writer, _this.options.BufferSize)
 }
 

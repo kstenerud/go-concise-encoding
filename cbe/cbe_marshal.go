@@ -86,10 +86,10 @@ func NewMarshaler(marshalOpts *options.CBEMarshalerOptions, unmarshalOpts *optio
 // Init a marshaler with the specified options.
 // If options is nil, default options will be used.
 func (_this *Marshaler) Init(marshalOpts *options.CBEMarshalerOptions, unmarshalOpts *options.CBEUnmarshalerOptions) {
-	_this.MarshalOpts = *marshalOpts.ApplyDefaults()
-	_this.UnmarshalOpts = *unmarshalOpts.ApplyDefaults()
-	_this.BuilderSession = builder.NewSession()
-	_this.IteratorSession = iterator.NewSession()
+	_this.MarshalOpts = *marshalOpts.WithDefaultsApplied()
+	_this.UnmarshalOpts = *unmarshalOpts.WithDefaultsApplied()
+	_this.BuilderSession = builder.NewSession(nil, &_this.UnmarshalOpts.Session)
+	_this.IteratorSession = iterator.NewSession(nil, &_this.MarshalOpts.Session)
 }
 
 // Marshal a go object into a CBE document, written to writer.

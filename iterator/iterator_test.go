@@ -82,9 +82,10 @@ func ED() *test.TEvent                       { return test.ED() }
 func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
 	expected := append([]*test.TEvent{V(1)}, events...)
 	expected = append(expected, ED())
-	options := options.IteratorOptions{}
+	sessionOptions := options.DefaultIteratorSessionOptions()
+	iteratorOptions := options.DefaultIteratorOptions()
 	receiver := test.NewTER()
-	IterateObject(obj, receiver, &options)
+	IterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
@@ -200,7 +201,7 @@ func TestIterateStruct(t *testing.T) {
 func TestIterateNilOpts(t *testing.T) {
 	expected := []*test.TEvent{V(1), I(1), ED()}
 	receiver := test.NewTER()
-	IterateObject(1, receiver, nil)
+	IterateObject(1, receiver, nil, nil)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
@@ -219,11 +220,11 @@ func TestIterateRecurse(t *testing.T) {
 	obj.R = obj
 
 	expected := []*test.TEvent{V(1), MARK(), I(0), M(), S("I"), I(50), S("R"), REF(), I(0), E(), ED()}
-	options := options.IteratorOptions{
-		UseReferences: true,
-	}
+	sessionOptions := options.DefaultIteratorSessionOptions()
+	iteratorOptions := options.DefaultIteratorOptions()
+	iteratorOptions.UseReferences = true
 	receiver := test.NewTER()
-	IterateObject(obj, receiver, &options)
+	IterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)

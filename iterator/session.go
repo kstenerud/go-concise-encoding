@@ -37,29 +37,41 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	iterators sync.Map
+	options   options.IteratorSessionOptions
 }
 
-// Start a new iterator session. It will begin with the basic iteartors
-// registered, and any further iterators will only be registered to this
-// session.
-func NewSession() *Session {
-	return baseSession.Clone()
+// Start a new iterator session. It will inherit the iterators of its parent.
+// If parent is nil, it will inherit from the root session, which has iterators
+// for all basic go types.
+// If options is nil, default options will be used.
+func NewSession(parent *Session, opts *options.IteratorSessionOptions) *Session {
+	_this := &Session{}
+	_this.Init(parent, opts)
+	return _this
 }
 
-// Make a clone of the current session, with all registered iterators of this
-// session.
-func (_this *Session) Clone() *Session {
-	newSession := &Session{}
-	newSession.CopyFrom(_this)
-	return newSession
-}
+// Initialize an iterator session. It will inherit the iterators of its parent.
+// If parent is nil, it will inherit from the root session, which has iterators
+// for all basic go types.
+// If options is nil, default options will be used.
+func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions) {
+	if parent == nil {
+		parent = &rootSession
+	}
 
-// Copy all registered iterators from another session.
-func (_this *Session) CopyFrom(session *Session) {
-	session.iterators.Range(func(k interface{}, v interface{}) bool {
+	parent.iterators.Range(func(k interface{}, v interface{}) bool {
 		_this.iterators.Store(k, v)
 		return true
 	})
+
+	_this.options = *opts.WithDefaultsApplied()
+
+	for t, converter := range _this.options.CustomBinaryConverters {
+		_this.RegisterIteratorForType(t, newCustomBinaryIterator(converter))
+	}
+	for t, converter := range _this.options.CustomTextConverters {
+		_this.RegisterIteratorForType(t, newCustomTextIterator(converter))
+	}
 }
 
 // Creates a new iterator that sends data events to eventReceiver.
@@ -73,15 +85,6 @@ func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, option
 // This function is thread-safe.
 func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator ObjectIterator) {
 	_this.iterators.Store(t, iterator)
-}
-
-// Register a conversion function to convert the specified type to a Concise
-// Encoding custom byte array. This will register a new interator for that type.
-//
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
-func (_this *Session) RegisterCustomConverterForType(t reflect.Type, convertFunction ConvertToCustomBytesFunction) {
-	_this.RegisterIteratorForType(t, newCustomIterator(convertFunction))
 }
 
 // Get an iterator for the specified type. If a registered iterator doesn't yet
@@ -103,22 +106,24 @@ func (_this *Session) GetIteratorForType(t reflect.Type) ObjectIterator {
 
 // The base session caches the most common iterators. All sessions inherit
 // these cached values.
-var baseSession Session
+var rootSession Session
 
 func init() {
+	rootSession.Init(nil, nil)
+
 	for _, t := range common.KeyableTypes {
-		baseSession.GetIteratorForType(t)
-		baseSession.GetIteratorForType(reflect.PtrTo(t))
-		baseSession.GetIteratorForType(reflect.SliceOf(t))
+		rootSession.GetIteratorForType(t)
+		rootSession.GetIteratorForType(reflect.PtrTo(t))
+		rootSession.GetIteratorForType(reflect.SliceOf(t))
 		for _, u := range common.KeyableTypes {
-			baseSession.GetIteratorForType(reflect.MapOf(t, u))
+			rootSession.GetIteratorForType(reflect.MapOf(t, u))
 		}
 	}
 
 	for _, t := range common.NonKeyableTypes {
-		baseSession.GetIteratorForType(t)
-		baseSession.GetIteratorForType(reflect.PtrTo(t))
-		baseSession.GetIteratorForType(reflect.SliceOf(t))
+		rootSession.GetIteratorForType(t)
+		rootSession.GetIteratorForType(reflect.PtrTo(t))
+		rootSession.GetIteratorForType(reflect.SliceOf(t))
 	}
 }
 
