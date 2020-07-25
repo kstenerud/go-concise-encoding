@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-// _ - . : / are allowed in unquoted strings
+// _ - . : are allowed in unquoted strings
 // Whitespace, control chars disallowed in unquoted strings
 // 0-9 disallowed as first char of unquoted strings
 // " \ and control chars must be escaped in quoted strings
@@ -41,17 +41,28 @@ func main() {
 
 	properties := CharProperties{}
 
-	properties.Add(CharIsQuoteUnsafe, '"', '\\')
-	properties.Add(CharIsCustomTextUnsafe, '"', '\\')
-	properties.Add(CharIsURIUnsafe, '"', '%')
-	properties.Add(CharIsMarkupUnsafe, '<', '>', '\\', '`')
-	properties.AddRange(CharIsNumeralOrLookalike, '0', '9')
+	charIsNumeralOrLookalike := CharIsUnquotedFirstCharUnsafe | CharIsPrintable
+	charIsWhitespace := CharIsUnquotedUnsafe | CharIsPrintable
+	charIsLowSymbolOrLookalike := CharIsUnquotedFirstCharUnsafe | CharIsUnquotedUnsafe | CharIsPrintable
+	charIsControl := CharIsUnquotedFirstCharUnsafe | CharIsUnquotedUnsafe |
+		CharIsQuotedUnsafe | CharIsMarkupUnsafe | CharIsCustomTextUnsafe
+	charIsReserved := CharIsUnquotedFirstCharUnsafe | CharIsUnquotedUnsafe |
+		CharIsQuotedUnsafe | CharIsMarkupUnsafe | CharIsCustomTextUnsafe
 
-	properties.Add(CharIsWhitespace, db.GetRunesWithCriteria(func(char *Char) bool {
+	properties.Add(CharIsQuotedUnsafe, '"', '\\')
+	properties.Add(CharIsCustomTextUnsafe, '"', '\\')
+	properties.Add(CharIsMarkupUnsafe, '<', '>', '\\', '`')
+	properties.AddRange(charIsNumeralOrLookalike, '0', '9')
+
+	properties.Add(charIsWhitespace, db.GetRunesWithCriteria(func(char *Char) bool {
 		switch char.Codepoint {
 		case '\r', '\n', '\t':
 			return true
-		case 0x1680:
+		case 0x2028: // Line separator
+			return false
+		case 0x2029: // Paragraph separator
+			return false
+		case 0x1680: // Ogham space mark
 			return false
 		}
 		if char.Codepoint < 0x20 {
@@ -60,75 +71,83 @@ func main() {
 		return char.Category == "Zs" || char.Category == "Zl" || char.Category == "Zp"
 	})...)
 
-	properties.Add(CharIsControl, db.GetRunesWithCriteria(func(char *Char) bool {
+	properties.Add(charIsControl, db.GetRunesWithCriteria(func(char *Char) bool {
+		switch char.Codepoint {
+		case '\r', '\n', '\t':
+			return false
+		case 0x2028: // Line separator
+			return true
+		case 0x2029: // Paragraph separator
+			return true
+		}
 		return char.Category == "Cc" || char.Category == "Cf"
 	})...)
 
-	properties.Add(CharIsLowSymbolOrLookalike,
+	properties.Add(charIsLowSymbolOrLookalike,
 		'!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', ';', '<',
 		'=', '>', '?', '@', '[', '\\', ']', '^', '`', '{', '|', '}', '~')
 
 	properties.Clear('-', '.', ':', '_') // Unquoted safe
 
 	// Latin punctuation https://unicode.org/charts/PDF/U0080.pdf
-	properties.Add(CharIsLowSymbolOrLookalike,
+	properties.Add(charIsLowSymbolOrLookalike,
 		0x00a6, // |
 		0x00b4, // '
 	)
 
 	// General punctuation https://unicode.org/charts/PDF/U2000.pdf
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0x2018, 0x201f) // "
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0x2032, 0x2037) // "
-	properties.Add(CharIsLowSymbolOrLookalike,
+	properties.AddRange(charIsLowSymbolOrLookalike, 0x2018, 0x201f) // "
+	properties.AddRange(charIsLowSymbolOrLookalike, 0x2032, 0x2037) // "
+	properties.Add(charIsLowSymbolOrLookalike,
 		0x2039, // <
 		0x203a, // >
 		0x203c, // !
 	)
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0x2047, 0x2049) // !?
-	properties.Add(CharIsLowSymbolOrLookalike,
+	properties.AddRange(charIsLowSymbolOrLookalike, 0x2047, 0x2049) // !?
+	properties.Add(charIsLowSymbolOrLookalike,
 		0x204e, 0x2055, // *
 		0x2052, // %
 		0x2057, // "
 	)
 
 	// Mathematical operators https://unicode.org/charts/PDF/U2200.pdf
-	properties.Add(CharIsLowSymbolOrLookalike,
+	properties.Add(charIsLowSymbolOrLookalike,
 		0x2217, // *
 		0x2223, // |
 		0x223c, // ~
 	)
 
 	// Miscellaneous technical https://unicode.org/charts/PDF/U2300.pdf
-	properties.Add(CharIsLowSymbolOrLookalike,
+	properties.Add(charIsLowSymbolOrLookalike,
 		0x239c, 0x239f, 0x23a2, 0x23a5, 0x23aa, 0x23b8, 0x23b9, 0x23d0, 0x23fd, // |
 	)
 
 	// CJK vertical forms https://unicode.org/charts/PDF/UFE10.pdf
-	properties.Add(CharIsLowSymbolOrLookalike, 0xfe10, 0xfe11)      // '
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0xfe14, 0xfe16) // ;!?
+	properties.Add(charIsLowSymbolOrLookalike, 0xfe10, 0xfe11)      // '
+	properties.AddRange(charIsLowSymbolOrLookalike, 0xfe14, 0xfe16) // ;!?
 
 	// CJK compatibility https://unicode.org/charts/PDF/UFE30.pdf
-	properties.Add(CharIsLowSymbolOrLookalike, 0xfe31, 0xfe33) // |
-	properties.Add(CharIsLowSymbolOrLookalike, 0xfe45, 0xfe46) // '
+	properties.Add(charIsLowSymbolOrLookalike, 0xfe31, 0xfe33) // |
+	properties.Add(charIsLowSymbolOrLookalike, 0xfe45, 0xfe46) // '
 
 	// CJK small form variants https://unicode.org/charts/PDF/UFE50.pdf
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0xfe50, 0xfe6b) // symbols
+	properties.AddRange(charIsLowSymbolOrLookalike, 0xfe50, 0xfe6b) // symbols
+	properties.Set(charIsReserved, 0xfe53, 0xfe67)
 	properties.Clear(
 		0xfe52, // .
-		0xfe53, // reserved
 		0xfe55, // :
 		0xfe58, // -
 		0xfe63, // -
-		0xfe67, // reserved
 	)
 
 	// CJK halfwidth, fullwidth https://unicode.org/charts/PDF/UFF00.pdf
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0xff00, 0xff0f) // symbols
-	properties.AddRange(CharIsNumeralOrLookalike, 0xff10, 0xff19)   // 0-9
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0xff1a, 0xff20) // symbols
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0xff3b, 0xff40) // symbols
-	properties.AddRange(CharIsLowSymbolOrLookalike, 0xff5b, 0xff5e) // symbols
-	properties.Add(CharIsLowSymbolOrLookalike, 0xffe4, 0xffe8)      // |
+	properties.AddRange(charIsLowSymbolOrLookalike, 0xff00, 0xff0f) // symbols
+	properties.AddRange(charIsNumeralOrLookalike, 0xff10, 0xff19)   // 0-9
+	properties.AddRange(charIsLowSymbolOrLookalike, 0xff1a, 0xff20) // symbols
+	properties.AddRange(charIsLowSymbolOrLookalike, 0xff3b, 0xff40) // symbols
+	properties.AddRange(charIsLowSymbolOrLookalike, 0xff5b, 0xff5e) // symbols
+	properties.Add(charIsLowSymbolOrLookalike, 0xffe4, 0xffe8)      // |
+	properties.Set(charIsReserved, 0xff00)
 	properties.Clear(
 		0xff0d, // -
 		0xff0e, // .
@@ -137,16 +156,21 @@ func main() {
 	)
 
 	// Ancient symbols https://unicode.org/charts/PDF/U10190.pdf
-	properties.Add(CharIsLowSymbolOrLookalike, 0x10190) // =
+	properties.Add(charIsLowSymbolOrLookalike, 0x10190) // =
 
 	// Ideopgraphic punctuation https://unicode.org/charts/PDF/U16FE0.pdf
-	properties.Add(CharIsControl, 0x16fe4) // invisible
+	properties.Add(charIsControl, 0x16fe4) // invisible
 
 	// Musical notation https://unicode.org/charts/PDF/U1D100.pdf
-	properties.Add(CharIsLowSymbolOrLookalike, 0x1d1c1, 0x1d1c2) // |
+	properties.Add(charIsLowSymbolOrLookalike, 0x1d1c1, 0x1d1c2) // |
 
 	// Mathematical alphanumeric symbols https://unicode.org/charts/PDF/U1D400.pdf
-	properties.Add(CharIsNumeralOrLookalike, 0x1d7ce, 0x1d7ff) // 0-9
+	properties.AddRange(charIsNumeralOrLookalike, 0x1d7ce, 0x1d7ff) // 0-9
+
+	// Escape sequences
+	properties.Add(CharIsCustomTextEscapeChar, '"', '\\')
+	properties.Add(CharIsQuotedEscapeChar, '\n', '\r', 't', 'n', 'r', '"', '*', '/', '\\', 'u')
+	properties.Add(CharIsMarkupEscapeChar, '*', '/', '<', '>', '`', '_', 'u')
 
 	outPath := getExeRelativePath("../../internal/common/unicode-generated.go")
 	writer, err := os.Create(outPath)
@@ -185,23 +209,48 @@ func exportProperties(properties CharProperties, writer io.Writer) {
 }
 
 func exportHeader(writer io.Writer) {
-	fmt.Fprintf(writer, "package common\n\n")
-	fmt.Fprintf(writer, "// Generated by github.com/kstenerud/go-concise-encoding/build-tools/unicode-gen\n")
-	fmt.Fprintf(writer, "// DO NOT EDIT\n\n")
-	fmt.Fprintln(writer, `type CharProperty uint8
+	fmt.Fprintln(writer, `package common
+
+// Generated by github.com/kstenerud/go-concise-encoding/build-tools/unicode-gen/unicode-gen
+  // DO NOT EDIT
+  // IF THIS LINE SHOWS IN THE GIT DIFF, YOU HAVE EDITED THIS FILE
+
+type CharProperty uint8
 
 const (
-	/*  1 */ CharIsControl CharProperty = 1 << iota
-	/*  2 */ CharIsWhitespace
-	/*  4 */ CharIsNumeralOrLookalike
-	/*  8 */ CharIsLowSymbolOrLookalike
-	/* 10 */ CharIsURIUnsafe
-	/* 20 */ CharIsQuoteUnsafe
-	/* 40 */ CharIsMarkupUnsafe
-	/* 80 */ CharIsCustomTextUnsafe
+	CharIsUnquotedUnsafe CharProperty = 1 << iota
+	CharIsUnquotedFirstCharUnsafe
+	CharIsQuotedUnsafe
+	CharIsMarkupUnsafe
+	CharIsCustomTextUnsafe
+	CharIsQuotedEscapeChar
+	CharIsMarkupEscapeChar
+	CharIsCustomTextEscapeChar
 	CharNoProperties CharProperty = 0
 )
 `)
+}
+
+func charValue(char rune, properties CharProperty) string {
+	switch char {
+	case '\r':
+		return `'\r':`
+	case '\n':
+		return `'\n':`
+	case '\t':
+		return `'\t':`
+	case '\'':
+		return `'\'':`
+	case '\\':
+		return `'\\':`
+	}
+	if char >= 0x20 && char < 0x7f {
+		return fmt.Sprintf(`'%c':`, char)
+	}
+	if properties&CharIsPrintable != 0 {
+		return fmt.Sprintf(`'%c':`, char)
+	}
+	return fmt.Sprintf("0x%04x:", char)
 }
 
 func exportCharProperties(properties CharProperties, writer io.Writer) {
@@ -213,8 +262,10 @@ func exportCharProperties(properties CharProperties, writer io.Writer) {
 
 	fmt.Fprintf(writer, "var charProperties = map[rune]CharProperty{\n")
 	for _, k := range runes {
-		key := fmt.Sprintf("0x%04x:", k)
-		fmt.Fprintf(writer, "\t%-8s %v,\n", key, properties[rune(k)])
+		ch := rune(k)
+		props := properties[ch]
+		value := fmt.Sprintf("%02x", ch)
+		fmt.Fprintf(writer, "\t/* %5s */ %-8s %v,\n", value, charValue(ch, props), props)
 	}
 	fmt.Fprintf(writer, "}\n")
 }
@@ -229,7 +280,9 @@ func exportAsciiProperties(properties CharProperties, writer io.Writer) {
 	fmt.Fprintf(writer, "var asciiProperties = [256]CharProperty{\n")
 	for _, k := range runes {
 		if k < 128 {
-			fmt.Fprintf(writer, "\t0x%04x: %v,\n", k, properties[rune(k)])
+			ch := rune(k)
+			props := properties[ch]
+			fmt.Fprintf(writer, "\t/* %02x */ %-7s %v,\n", ch, charValue(ch, props), props)
 		}
 	}
 	fmt.Fprintf(writer, "}\n")
@@ -237,33 +290,36 @@ func exportAsciiProperties(properties CharProperties, writer io.Writer) {
 
 // ----------------------------------------------------------------------------
 
-type CharProperty uint8
+type CharProperty uint16
 
 const (
-	/*  1 */ CharIsControl CharProperty = 1 << iota
-	/*  2 */ CharIsWhitespace
-	/*  4 */ CharIsNumeralOrLookalike
-	/*  8 */ CharIsLowSymbolOrLookalike
-	/* 10 */ CharIsURIUnsafe
-	/* 20 */ CharIsQuoteUnsafe
-	/* 40 */ CharIsMarkupUnsafe
-	/* 80 */ CharIsCustomTextUnsafe
+	CharIsUnquotedUnsafe CharProperty = 1 << iota
+	CharIsUnquotedFirstCharUnsafe
+	CharIsQuotedUnsafe
+	CharIsMarkupUnsafe
+	CharIsCustomTextUnsafe
+	CharIsQuotedEscapeChar
+	CharIsMarkupEscapeChar
+	CharIsCustomTextEscapeChar
+	CharIsPrintable
 	CharNoProperties CharProperty = 0
 )
 
+const GeneratorOnlyBits = CharIsPrintable
+
 var charPropertyNames = []string{
-	"CharIsControl",
-	"CharIsWhitespace",
-	"CharIsNumeralOrLookalike",
-	"CharIsLowSymbolOrLookalike",
-	"CharIsURIUnsafe",
-	"CharIsQuoteUnsafe",
+	"CharIsUnquotedUnsafe",
+	"CharIsUnquotedFirstCharUnsafe",
+	"CharIsQuotedUnsafe",
 	"CharIsMarkupUnsafe",
 	"CharIsCustomTextUnsafe",
+	"CharIsQuotedEscapeChar",
+	"CharIsMarkupEscapeChar",
+	"CharIsCustomTextEscapeChar",
 }
 
 func (_this CharProperty) String() string {
-	if _this == CharNoProperties {
+	if _this&^GeneratorOnlyBits == CharNoProperties {
 		return "CharNoProperties"
 	}
 
@@ -286,13 +342,19 @@ type CharProperties map[rune]CharProperty
 
 func (_this CharProperties) Clear(chars ...rune) {
 	for _, char := range chars {
-		_this[char] = 0
+		_this[char] &= GeneratorOnlyBits
 	}
 }
 
 func (_this CharProperties) Add(properties CharProperty, chars ...rune) {
 	for _, char := range chars {
 		_this[char] |= properties
+	}
+}
+
+func (_this CharProperties) Set(properties CharProperty, chars ...rune) {
+	for _, char := range chars {
+		_this[char] = properties
 	}
 }
 

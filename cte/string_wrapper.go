@@ -33,23 +33,20 @@ func wrapString(str string) (finalString string) {
 	if str == "" {
 		return `""`
 	}
-	unquotedUnsafe := common.CharIsControl | common.CharIsWhitespace | common.CharIsLowSymbolOrLookalike
-	unquotedUnsafeFirstChar := unquotedUnsafe | common.CharIsNumeralOrLookalike
-	quotedUnsafe := common.CharIsControl | common.CharIsQuoteUnsafe
 
 	requiresQuotes := false
 	escapeCount := 0
 
-	if common.GetCharProperty([]rune(str)[0])&unquotedUnsafeFirstChar != 0 {
+	if common.GetCharProperty([]rune(str)[0])&common.CharIsUnquotedFirstCharUnsafe != 0 {
 		requiresQuotes = true
 	}
 
 	for _, ch := range str {
 		props := common.GetCharProperty(ch)
-		if props&unquotedUnsafe != 0 {
+		if props&common.CharIsUnquotedUnsafe != 0 {
 			requiresQuotes = true
 		}
-		if props&quotedUnsafe != 0 {
+		if props&common.CharIsQuotedUnsafe != 0 {
 			escapeCount++
 		}
 	}
@@ -70,7 +67,6 @@ func wrapString(str string) (finalString string) {
 }
 
 func escapedQuoted(str string, escapeCount int) string {
-	quotedUnsafe := common.CharIsControl | common.CharIsQuoteUnsafe
 	var sb strings.Builder
 	// Worst case scenario: All characters that require escaping need a unicode
 	// sequence `\uxxxx`. In this case, we'd need at least 6 bytes per escaped
@@ -78,7 +74,7 @@ func escapedQuoted(str string, escapeCount int) string {
 	sb.Grow(len([]byte(str)) + escapeCount*5 + 2)
 	sb.WriteByte('"')
 	for _, ch := range str {
-		if common.GetCharProperty(ch)&quotedUnsafe == 0 {
+		if common.GetCharProperty(ch)&common.CharIsQuotedUnsafe == 0 {
 			// Note: WriteRune always returns a nil error
 			sb.WriteRune(ch)
 		} else {
