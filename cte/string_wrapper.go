@@ -158,9 +158,16 @@ func generateVerbatimSentinel(str string) string {
 	panic(fmt.Errorf("Could not generate verbatim sentinel for malicious string [%v]", str))
 }
 
-var verbatimIdentifierChars = []rune{}
-
 func convertToVerbatimString(str string) string {
 	sentinel := generateVerbatimSentinel(str)
 	return "`" + sentinel + str + sentinel
+}
+
+func containsEscapes(str string) bool {
+	for _, b := range []byte(str) {
+		if b == '\\' {
+			return true
+		}
+	}
+	return false
 }
