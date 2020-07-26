@@ -230,6 +230,7 @@ func TestCTETimestamp(t *testing.T) {
 
 func TestCTEURI(t *testing.T) {
 	assertDecodeEncode(t, `c1 u"http://example.com"`, V(1), URI("http://example.com"), ED())
+	assertEncode(t, `c1 u"http://x.com/%22quoted%22"`, V(1), URI(`http://x.com/"quoted"`), ED())
 }
 
 func TestCTEQuotedString(t *testing.T) {

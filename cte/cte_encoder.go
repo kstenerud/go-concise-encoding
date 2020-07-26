@@ -259,7 +259,12 @@ func (_this *Encoder) OnBytes(value []byte) {
 
 func (_this *Encoder) OnURI(value string) {
 	_this.addPrefix()
-	// TODO: URL escaping
+	for _, ch := range value {
+		if ch == '"' {
+			value = strings.ReplaceAll(value, "\"", "%22")
+			break
+		}
+	}
 	_this.addFmt(`u"%v"`, value)
 	_this.addSuffix()
 	_this.transitionState()
