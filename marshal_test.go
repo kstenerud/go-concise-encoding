@@ -210,11 +210,6 @@ type SomeStruct struct {
 }
 
 func TestDemonstrateRecursiveStructInMap(t *testing.T) {
-	x := &SomeStruct{
-		A: 100,
-		B: "test",
-	}
-
 	document := "c1 {my-value = &1:{A=100 B=test C=#1}}"
 	template := map[string]*SomeStruct{}
 	result, err := cte.UnmarshalFromBytes([]byte(document), template, nil)
