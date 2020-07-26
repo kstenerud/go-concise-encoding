@@ -202,3 +202,27 @@ func TestDemonstrate(t *testing.T) {
 	demonstrateCBEMarshal()
 	demonstrateCBEUnmarshal()
 }
+
+type SomeStruct struct {
+	A int
+	B string
+	C *SomeStruct
+}
+
+func TestDemonstrateRecursiveStructInMap(t *testing.T) {
+	x := &SomeStruct{
+		A: 100,
+		B: "test",
+	}
+
+	document := "c1 {my-value = &1:{A=100 B=test C=#1}}"
+	template := map[string]*SomeStruct{}
+	result, err := cte.UnmarshalFromBytes([]byte(document), template, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	v := result.(map[string]*SomeStruct)
+	s := v["my-value"]
+	// Can't naively print a recursive structure in go, so we print each piece manually.
+	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
+}
