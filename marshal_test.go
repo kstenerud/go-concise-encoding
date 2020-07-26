@@ -218,7 +218,7 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	}
 	v := result.(map[string]*SomeStruct)
 	s := v["my-value"]
-	// Can't naively print a recursive structure in go, so we print each piece manually.
+	// Can't naively print a recursive structure in go (Printf will stack overflow), so we print each piece manually.
 	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
 	// Prints: A: 100, B: test, Ptr to C: 0xc0001f4600, ptr to s: 0xc0001f4600
 
@@ -226,6 +226,13 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("Re-encoded: %v\n", string(encodedDocument))
-	// Prints: Re-encoded: c1 {my-value=&0:{A=100 B=test C=#0}}
+	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
+	// Prints: Re-encoded CTE: c1 {my-value=&0:{A=100 B=test C=#0}}
+
+	encodedDocument, err = cbe.MarshalToBytes(v, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
+	// Prints: Re-encoded CBE: [1 121 136 109 121 45 118 97 108 117 101 151 0 121 129 65 100 129 66 132 116 101 115 116 129 67 152 0 123 123]
 }
