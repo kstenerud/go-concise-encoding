@@ -220,4 +220,12 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	s := v["my-value"]
 	// Can't naively print a recursive structure in go, so we print each piece manually.
 	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
+
+	opts := options.DefaultCTEMarshalerOptions()
+	opts.Iterator.UseReferences = true
+	encodedDocument, err := cte.MarshalToBytes(v, opts)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Re-encoded: %v\n", string(encodedDocument))
 }
