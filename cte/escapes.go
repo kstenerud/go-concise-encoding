@@ -89,6 +89,18 @@ func asCustomText(str string) string {
 	return `t"` + str + `"`
 }
 
+// Wraps markup content destined for a CTE document.
+func asMarkupContent(str string) string {
+	for _, ch := range str {
+		props := unicode.GetCharProperty(ch)
+		if props.HasProperty(unicode.MarkupUnsafe) {
+			return escapedMarkupText(str)
+		}
+	}
+
+	return str
+}
+
 // ============================================================================
 
 func escapedQuoted(str string, escapeCount int) string {
@@ -153,8 +165,50 @@ func escapeCharCustomText(ch rune) string {
 		return `\"`
 	case '\\':
 		return `\\`
+	case '\t':
+		return `\t`
+	case '\r':
+		return `\r`
+	case '\n':
+		return `\n`
 	}
-	panic(fmt.Errorf("BUG: Incorrectly attempted to escape [%c] for custom text", ch))
+	return fmt.Sprintf(`\u%04x`, ch)
+}
+
+func escapedMarkupText(str string) string {
+	var sb strings.Builder
+	sb.Grow(len([]byte(str)))
+	// Note: StringBuilder's WriteXYZ() always return nil errors
+	for _, ch := range str {
+		if unicode.CharHasProperty(ch, unicode.MarkupUnsafe) {
+			sb.WriteString(escapeCharMarkup(ch))
+		} else {
+			sb.WriteRune(ch)
+		}
+	}
+	return sb.String()
+}
+
+func escapeCharMarkup(ch rune) string {
+	switch ch {
+	case '*':
+		// TODO: Check ahead for /* */ instead of blindly escaping
+		return `\*`
+	case '/':
+		// TODO: Check ahead for /* */ instead of blindly escaping
+		return `\/`
+	case '<':
+		return `\<`
+	case '>':
+		return `\>`
+	case '`':
+		return "\\`"
+	case 0xa0:
+		return `\_`
+	case '\\':
+		return `\\`
+	}
+	return fmt.Sprintf(`\u%04x`, ch)
 }
 
 // Ordered from least common to most common, chosen to not be confused by

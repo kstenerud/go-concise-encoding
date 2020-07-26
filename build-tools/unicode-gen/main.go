@@ -48,11 +48,14 @@ func main() {
 		QuotedUnsafe | MarkupUnsafe | CustomTextUnsafe
 	charIsReserved := UnquotedFirstCharUnsafe | UnquotedUnsafe |
 		QuotedUnsafe | MarkupUnsafe | CustomTextUnsafe
+	charIsRNT := UnquotedFirstCharUnsafe | UnquotedUnsafe | CustomTextUnsafe
 
 	properties.Add(QuotedUnsafe, '"', '\\')
 	properties.Add(CustomTextUnsafe, '"', '\\')
 	properties.Add(MarkupUnsafe, '<', '>', '\\', '`')
 	properties.AddRange(charIsNumeralOrLookalike, '0', '9')
+
+	properties.Add(charIsRNT, '\r', '\n', '\t')
 
 	properties.Add(charIsWhitespace, db.GetRunesWithCriteria(func(char *Char) bool {
 		switch char.Codepoint {

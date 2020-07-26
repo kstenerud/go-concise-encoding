@@ -251,6 +251,7 @@ string"`, V(1), S("teststring"), ED())
 func TestCTECustomText(t *testing.T) {
 	assertDecodeEncode(t, `c1 t"something(123)"`, V(1), CUT("something(123)"), ED())
 	assertDecodeEncode(t, `c1 t"some\\thing(\"123\")"`, V(1), CUT("some\\thing(\"123\")"), ED())
+	assertDecodeEncode(t, `c1 t"some\nthing\u0001(123)"`, V(1), CUT("some\nthing\u0001(123)"), ED())
 }
 
 func TestCTEList(t *testing.T) {
@@ -318,6 +319,9 @@ func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, `c1 <a 1=2|a>`, V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a"), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2|<a>>`, V(1), MUP(), S("a"), PI(1), PI(2), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2|a <a>>`, V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a "), MUP(), S("a"), E(), E(), E(), ED())
+
+	assertDecodeEncode(t, `c1 <a|\\>`, V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
+	assertDecodeEncode(t, `c1 <a|\u0010>`, V(1), MUP(), S("a"), E(), S("\u0010"), E(), ED())
 }
 
 func TestCTEMarkupMarkup(t *testing.T) {

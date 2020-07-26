@@ -429,22 +429,7 @@ func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 			case '\\':
 				sb.WriteByte('\\')
 			case 'u':
-				var codepoint rune
-				for i := 0; i < 4; i++ {
-					_this.AdvanceByte()
-					b := _this.PeekByteNoEOD()
-					switch {
-					case hasProperty(b, cteProperty09):
-						codepoint = (codepoint << 4) | (rune(b) - '0')
-					case hasProperty(b, ctePropertyLowercaseAF):
-						codepoint = (codepoint << 4) | (rune(b) - 'a' + 10)
-					case hasProperty(b, ctePropertyUppercaseAF):
-						codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
-					default:
-						_this.UnexpectedChar("unicode sequence")
-					}
-				}
-				sb.WriteRune(codepoint)
+				sb.WriteRune(_this.decodeUnicodeEscapeSequence())
 			default:
 				_this.UnexpectedChar("quoted string escape sequence")
 			}
@@ -454,6 +439,24 @@ func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 			_this.AdvanceByte()
 		}
 	}
+}
+
+func (_this *CTEReadBuffer) decodeUnicodeEscapeSequence() (codepoint rune) {
+	for i := 0; i < 4; i++ {
+		_this.AdvanceByte()
+		b := _this.PeekByteNoEOD()
+		switch {
+		case hasProperty(b, cteProperty09):
+			codepoint = (codepoint << 4) | (rune(b) - '0')
+		case hasProperty(b, ctePropertyLowercaseAF):
+			codepoint = (codepoint << 4) | (rune(b) - 'a' + 10)
+		case hasProperty(b, ctePropertyUppercaseAF):
+			codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
+		default:
+			_this.UnexpectedChar("unicode sequence")
+		}
+	}
+	return
 }
 
 func (_this *CTEReadBuffer) DecodeQuotedString() []byte {
@@ -554,6 +557,14 @@ func (_this *CTEReadBuffer) DecodeCustomTextWithEscapes() []byte {
 				sb.WriteByte('"')
 			case '\\':
 				sb.WriteByte('\\')
+			case 'r':
+				sb.WriteByte('\r')
+			case 'n':
+				sb.WriteByte('\n')
+			case 't':
+				sb.WriteByte('\t')
+			case 'u':
+				sb.WriteRune(_this.decodeUnicodeEscapeSequence())
 			default:
 				_this.UnexpectedChar("custom text escape sequence")
 			}
@@ -953,7 +964,33 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
 		case '\r', '\n', '\t', ' ':
 			wsCount++
 		case '\\':
-			panic("TODO: Escape sequences")
+			completeStringPortion()
+			escape := _this.PeekByteNoEOD()
+			switch escape {
+			case 'r':
+				sb.WriteByte('\r')
+			case 'n':
+				sb.WriteByte('\n')
+			case 't':
+				sb.WriteByte('\t')
+			case '*':
+				sb.WriteByte('*')
+			case '/':
+				sb.WriteByte('/')
+			case '<':
+				sb.WriteByte('<')
+			case '>':
+				sb.WriteByte('>')
+			case '`':
+				sb.WriteByte('`')
+			case '\\':
+				sb.WriteByte('\\')
+			case 'u':
+				sb.WriteRune(_this.decodeUnicodeEscapeSequence())
+			default:
+				_this.UnexpectedChar("quoted string escape sequence")
+			}
+			_this.AdvanceByte()
 		case '<':
 			completeStringPortion()
 			addSlashIfNeeded()

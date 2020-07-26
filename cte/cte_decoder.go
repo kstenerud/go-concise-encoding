@@ -534,11 +534,6 @@ func (_this *Decoder) handleMarkupContentBegin() {
 	_this.buffer.EndToken()
 }
 
-func (_this *Decoder) handleMarkupWithEscapes(startPos, firstEscape int) string {
-	_this.buffer.Errorf("TODO: CTEDecoder: Markup with escape sequences, entity refs")
-	return ""
-}
-
 func (_this *Decoder) handleMarkupContent() {
 	str, next := _this.buffer.DecodeMarkupContent()
 	if len(str) > 0 {

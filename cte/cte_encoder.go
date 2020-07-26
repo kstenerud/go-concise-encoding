@@ -272,9 +272,8 @@ func (_this *Encoder) OnString(value string) {
 	} else if _this.currentState == cteEncoderStateAwaitMarkupItem ||
 		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPre ||
 		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPost {
-		// TODO: markup escaping
 		_this.addPrefix()
-		_this.addString(value)
+		_this.addString(asMarkupContent(value))
 		_this.addSuffix()
 		_this.transitionState()
 	} else if _this.currentState == cteEncoderStateAwaitCommentItem {
@@ -315,6 +314,7 @@ func (_this *Encoder) OnBytesBegin() {
 }
 
 func (_this *Encoder) OnStringBegin() {
+	// TODO: Follow same rules as OnString()
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitQuotedString, `"`)
 }
