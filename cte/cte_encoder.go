@@ -282,14 +282,17 @@ func (_this *Encoder) OnString(value string) {
 		_this.transitionState()
 	} else {
 		_this.addPrefix()
-		_this.addString(wrapString(value))
+		_this.addString(asString(value))
 		_this.addSuffix()
 		_this.transitionState()
 	}
 }
 
 func (_this *Encoder) OnVerbatimString(value string) {
-	panic("TODO: OnVerbatimString")
+	_this.addPrefix()
+	_this.addString(asVerbatimString(value))
+	_this.addSuffix()
+	_this.transitionState()
 }
 
 func (_this *Encoder) OnCustomBinary(value []byte) {
@@ -300,11 +303,8 @@ func (_this *Encoder) OnCustomBinary(value []byte) {
 }
 
 func (_this *Encoder) OnCustomText(value string) {
-	// TODO: OnCustomText: escapes \ and "
 	_this.addPrefix()
-	_this.addString("t\"")
-	_this.addString(value)
-	_this.addString("\"")
+	_this.addString(asCustomText(value))
 	_this.addSuffix()
 	_this.transitionState()
 }

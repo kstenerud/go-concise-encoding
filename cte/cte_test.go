@@ -248,6 +248,11 @@ string"`, V(1), S("teststring"), ED())
 	assertDecode(t, "c1 \"test\\\r\nstring\"", V(1), S("teststring"), ED())
 }
 
+func TestCTECustomText(t *testing.T) {
+	assertDecodeEncode(t, `c1 t"something(123)"`, V(1), CUT("something(123)"), ED())
+	assertDecodeEncode(t, `c1 t"some\\thing(\"123\")"`, V(1), CUT("some\\thing(\"123\")"), ED())
+}
+
 func TestCTEList(t *testing.T) {
 	assertDecodeEncode(t, `c1 []`, V(1), L(), E(), ED())
 	assertDecodeEncode(t, `c1 [123]`, V(1), L(), PI(123), E(), ED())

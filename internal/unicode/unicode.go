@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package common
+package unicode
 
 func StringCharsHaveProperty(str string, property CharProperty) bool {
 	for _, ch := range str {
@@ -40,4 +40,12 @@ func StringBytesHaveProperty(str []byte, property CharProperty) bool {
 
 func GetCharProperty(char rune) CharProperty {
 	return charProperties[char]
+}
+
+func CharHasProperty(char rune, property CharProperty) bool {
+	return GetCharProperty(char).HasProperty(property)
+}
+
+func (_this CharProperty) HasProperty(property CharProperty) bool {
+	return _this&property != 0
 }

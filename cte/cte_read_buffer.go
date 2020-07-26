@@ -446,7 +446,7 @@ func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 				}
 				sb.WriteRune(codepoint)
 			default:
-				_this.UnexpectedChar("escape sequence")
+				_this.UnexpectedChar("quoted string escape sequence")
 			}
 			_this.AdvanceByte()
 		default:
@@ -467,6 +467,21 @@ func (_this *CTEReadBuffer) DecodeQuotedString() []byte {
 			return token
 		case '\\':
 			return _this.DecodeQuotedStringWithEscapes()
+		default:
+			_this.AdvanceByte()
+		}
+	}
+}
+
+func (_this *CTEReadBuffer) DecodeURI() []byte {
+	_this.BeginSubtoken()
+	for {
+		b := _this.PeekByteNoEOD()
+		switch b {
+		case '"':
+			token := _this.GetSubtoken()
+			_this.AdvanceByte()
+			return token
 		default:
 			_this.AdvanceByte()
 		}
@@ -505,6 +520,50 @@ Outer:
 	}
 }
 
+func (_this *CTEReadBuffer) DecodeCustomText() []byte {
+	_this.BeginSubtoken()
+	for {
+		b := _this.PeekByteNoEOD()
+		switch b {
+		case '"':
+			token := _this.GetSubtoken()
+			_this.AdvanceByte()
+			return token
+		case '\\':
+			return _this.DecodeCustomTextWithEscapes()
+		default:
+			_this.AdvanceByte()
+		}
+	}
+}
+
+func (_this *CTEReadBuffer) DecodeCustomTextWithEscapes() []byte {
+	sb := strings.Builder{}
+	sb.Write(_this.GetSubtoken())
+	for {
+		b := _this.PeekByteNoEOD()
+		switch b {
+		case '"':
+			_this.AdvanceByte()
+			return []byte(sb.String())
+		case '\\':
+			_this.AdvanceByte()
+			escape := _this.PeekByteNoEOD()
+			switch escape {
+			case '"':
+				sb.WriteByte('"')
+			case '\\':
+				sb.WriteByte('\\')
+			default:
+				_this.UnexpectedChar("custom text escape sequence")
+			}
+			_this.AdvanceByte()
+		default:
+			sb.WriteByte(b)
+			_this.AdvanceByte()
+		}
+	}
+}
 func (_this *CTEReadBuffer) DecodeHexBytes() []byte {
 	bytes := make([]byte, 0, 8)
 	firstNybble := true

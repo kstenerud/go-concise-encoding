@@ -224,11 +224,11 @@ func (_this *Decoder) handleStringish() {
 			_this.endObject()
 			return
 		case 't':
-			_this.eventReceiver.OnCustomText(string(_this.buffer.DecodeQuotedString()))
+			_this.eventReceiver.OnCustomText(string(_this.buffer.DecodeCustomText()))
 			_this.endObject()
 			return
 		case 'u':
-			_this.eventReceiver.OnURI(string(_this.buffer.DecodeQuotedString()))
+			_this.eventReceiver.OnURI(string(_this.buffer.DecodeURI()))
 			_this.endObject()
 			return
 		default:

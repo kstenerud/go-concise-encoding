@@ -24,12 +24,21 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/internal/unicode"
 )
 
-// Examines a string destined for a CTE document, wrapping it in quotes,
-// escapes, or verbatim sequences as necessary.
-func wrapString(str string) (finalString string) {
+func containsEscapes(str string) bool {
+	for _, b := range []byte(str) {
+		if b == '\\' {
+			return true
+		}
+	}
+	return false
+}
+
+// Wraps a string destined for a CTE document, adding quotes or escapes as
+// necessary.
+func asString(str string) (finalString string) {
 	if str == "" {
 		return `""`
 	}
@@ -37,34 +46,50 @@ func wrapString(str string) (finalString string) {
 	requiresQuotes := false
 	escapeCount := 0
 
-	if common.GetCharProperty([]rune(str)[0])&common.CharIsUnquotedFirstCharUnsafe != 0 {
+	if unicode.CharHasProperty([]rune(str)[0], unicode.UnquotedFirstCharUnsafe) {
 		requiresQuotes = true
 	}
 
 	for _, ch := range str {
-		props := common.GetCharProperty(ch)
-		if props&common.CharIsUnquotedUnsafe != 0 {
+		props := unicode.GetCharProperty(ch)
+		if props.HasProperty(unicode.UnquotedUnsafe) {
 			requiresQuotes = true
 		}
-		if props&common.CharIsQuotedUnsafe != 0 {
+		if props.HasProperty(unicode.QuotedUnsafe) {
 			escapeCount++
 		}
 	}
 
-	// If more than 1/8 of the string requires escaping, use a verbatim string
-	if len(str) > 8 && (escapeCount<<3) > len(str) {
-		return convertToVerbatimString(str)
+	if !requiresQuotes {
+		return str
 	}
 
-	if requiresQuotes {
-		if escapeCount == 0 {
-			return `"` + str + `"`
-		}
-		return escapedQuoted(str, escapeCount)
+	if escapeCount == 0 {
+		return `"` + str + `"`
 	}
 
-	return str
+	return escapedQuoted(str, escapeCount)
 }
+
+// Wraps a verbatim string destined for a CTE document.
+func asVerbatimString(str string) string {
+	sentinel := generateVerbatimSentinel(str)
+	return "`" + sentinel + str + sentinel
+}
+
+// Wraps a custom text string destined for a CTE document.
+func asCustomText(str string) string {
+	for _, ch := range str {
+		props := unicode.GetCharProperty(ch)
+		if props.HasProperty(unicode.CustomTextUnsafe) {
+			return escapedCustomText(str)
+		}
+	}
+
+	return `t"` + str + `"`
+}
+
+// ============================================================================
 
 func escapedQuoted(str string, escapeCount int) string {
 	var sb strings.Builder
@@ -72,21 +97,20 @@ func escapedQuoted(str string, escapeCount int) string {
 	// sequence `\uxxxx`. In this case, we'd need at least 6 bytes per escaped
 	// character.
 	sb.Grow(len([]byte(str)) + escapeCount*5 + 2)
+	// Note: StringBuilder's WriteXYZ() always return nil errors
 	sb.WriteByte('"')
 	for _, ch := range str {
-		if common.GetCharProperty(ch)&common.CharIsQuotedUnsafe == 0 {
-			// Note: WriteRune always returns a nil error
-			sb.WriteRune(ch)
+		if unicode.CharHasProperty(ch, unicode.QuotedUnsafe) {
+			sb.WriteString(escapeCharQuoted(ch))
 		} else {
-			// Note: WriteString always returns a nil error
-			sb.WriteString(escapeChar(ch))
+			sb.WriteRune(ch)
 		}
 	}
 	sb.WriteByte('"')
 	return sb.String()
 }
 
-func escapeChar(ch rune) string {
+func escapeCharQuoted(ch rune) string {
 	switch ch {
 	case '\t':
 		return `\t`
@@ -106,13 +130,36 @@ func escapeChar(ch rune) string {
 	return fmt.Sprintf(`\u%04x`, ch)
 }
 
-func generateAlphabet() string {
-	// Ordered from least common to most common, chosen to not be confused by
-	// a human with other CTE document structural characters.
-	return "#$%&*+/:;=^_|~23456789ZQXJVKBPYGCFMWULDHSNOIRATE10zqxjvkbpygcfmwuldhsnoirate"
+func escapedCustomText(str string) string {
+	var sb strings.Builder
+	sb.Grow(len([]byte(str)))
+	// Note: StringBuilder's WriteXYZ() always return nil errors
+	sb.WriteByte('t')
+	sb.WriteByte('"')
+	for _, ch := range str {
+		if unicode.CharHasProperty(ch, unicode.CustomTextUnsafe) {
+			sb.WriteString(escapeCharCustomText(ch))
+		} else {
+			sb.WriteRune(ch)
+		}
+	}
+	sb.WriteByte('"')
+	return sb.String()
 }
 
-var alphabet = []byte(generateAlphabet())
+func escapeCharCustomText(ch rune) string {
+	switch ch {
+	case '"':
+		return `\"`
+	case '\\':
+		return `\\`
+	}
+	panic(fmt.Errorf("BUG: Incorrectly attempted to escape [%c] for custom text", ch))
+}
+
+// Ordered from least common to most common, chosen to not be confused by
+// a human with other CTE document structural characters.
+var verbatimSentinelAlphabet = []byte("#$%&*+/:;=^_|~23456789ZQXJVKBPYGCFMWULDHSNOIRATE10zqxjvkbpygcfmwuldhsnoirate")
 
 func generateVerbatimSentinel(str string) string {
 	// Try all 1, 2, and 3-character sequences picked from a safe alphabet.
@@ -122,14 +169,14 @@ func generateVerbatimSentinel(str string) string {
 		usedChars[ch] = true
 	}
 
-	for _, ch := range alphabet {
+	for _, ch := range verbatimSentinelAlphabet {
 		if !usedChars[ch] {
 			return fmt.Sprintf("%c", ch)
 		}
 	}
 
-	for _, ch0 := range alphabet {
-		for _, ch1 := range alphabet {
+	for _, ch0 := range verbatimSentinelAlphabet {
+		for _, ch1 := range verbatimSentinelAlphabet {
 			sentinel := fmt.Sprintf("%c%c", ch0, ch1)
 			if !strings.Contains(str, sentinel) {
 				return sentinel
@@ -137,9 +184,9 @@ func generateVerbatimSentinel(str string) string {
 		}
 	}
 
-	for _, ch0 := range alphabet {
-		for _, ch1 := range alphabet {
-			for _, ch2 := range alphabet {
+	for _, ch0 := range verbatimSentinelAlphabet {
+		for _, ch1 := range verbatimSentinelAlphabet {
+			for _, ch2 := range verbatimSentinelAlphabet {
 				sentinel := fmt.Sprintf("%c%c%c", ch0, ch1, ch2)
 				if !strings.Contains(str, sentinel) {
 					return sentinel
@@ -152,18 +199,4 @@ func generateVerbatimSentinel(str string) string {
 	// the string. At this point, we conclude that it's a specially crafted
 	// attack string, and not naturally occurring.
 	panic(fmt.Errorf("Could not generate verbatim sentinel for malicious string [%v]", str))
-}
-
-func convertToVerbatimString(str string) string {
-	sentinel := generateVerbatimSentinel(str)
-	return "`" + sentinel + str + sentinel
-}
-
-func containsEscapes(str string) bool {
-	for _, b := range []byte(str) {
-		if b == '\\' {
-			return true
-		}
-	}
-	return false
 }
