@@ -222,7 +222,7 @@ func TestIterateRecurse(t *testing.T) {
 	expected := []*test.TEvent{V(1), MARK(), I(0), M(), S("I"), I(50), S("R"), REF(), I(0), E(), ED()}
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
-	iteratorOptions.UseReferences = true
+	iteratorOptions.RecursionSupport = true
 	receiver := test.NewTER()
 	IterateObject(obj, receiver, sessionOptions, iteratorOptions)
 

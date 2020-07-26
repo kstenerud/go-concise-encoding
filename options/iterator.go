@@ -80,11 +80,14 @@ func (_this *IteratorSessionOptions) WithDefaultsApplied() *IteratorSessionOptio
 
 type IteratorOptions struct {
 	ConciseEncodingVersion uint64
-	// If useReferences is true, the iterator will also look for duplicate
+	// If RecursionSupport is true, the iterator will also look for duplicate
 	// pointers to data, generating marker and reference events rather than
 	// walking the object again. This is useful for cyclic or recursive data
 	// structures.
-	UseReferences bool
+	//
+	// Note: recursion support has a small performance cost, which is why
+	// it's optional.
+	RecursionSupport bool
 	// TODO
 	OmitNilPointers bool
 }
@@ -92,6 +95,7 @@ type IteratorOptions struct {
 func DefaultIteratorOptions() *IteratorOptions {
 	return &IteratorOptions{
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
+		RecursionSupport:       true,
 	}
 }
 

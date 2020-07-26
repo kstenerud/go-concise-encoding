@@ -40,7 +40,7 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	marshalOptions := options.DefaultCBEMarshalerOptions()
 	unmarshalOptions := options.DefaultCBEUnmarshalerOptions()
 	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
-	marshalOptions.Iterator.UseReferences = true
+	marshalOptions.Iterator.RecursionSupport = true
 	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 }
 
@@ -75,7 +75,7 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	marshalOptions := options.DefaultCTEMarshalerOptions()
 	unmarshalOptions := options.DefaultCTEUnmarshalerOptions()
 	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
-	marshalOptions.Iterator.UseReferences = true
+	marshalOptions.Iterator.RecursionSupport = true
 	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 }
 
@@ -220,12 +220,12 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	s := v["my-value"]
 	// Can't naively print a recursive structure in go, so we print each piece manually.
 	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
+	// Prints: A: 100, B: test, Ptr to C: 0xc0001f4600, ptr to s: 0xc0001f4600
 
-	opts := options.DefaultCTEMarshalerOptions()
-	opts.Iterator.UseReferences = true
-	encodedDocument, err := cte.MarshalToBytes(v, opts)
+	encodedDocument, err := cte.MarshalToBytes(v, nil)
 	if err != nil {
 		t.Error(err)
 	}
 	fmt.Printf("Re-encoded: %v\n", string(encodedDocument))
+	// Prints: Re-encoded: c1 {my-value=&0:{A=100 B=test C=#0}}
 }

@@ -79,7 +79,7 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 }
 
 func (_this *RootObjectIterator) AddReference(v reflect.Value) (didGenerateReferenceEvent bool) {
-	if !_this.options.UseReferences {
+	if !_this.options.RecursionSupport {
 		return false
 	}
 
@@ -108,7 +108,7 @@ func (_this *RootObjectIterator) AddReference(v reflect.Value) (didGenerateRefer
 // Internal
 
 func (_this *RootObjectIterator) findReferences(value interface{}) {
-	if _this.options.UseReferences {
+	if _this.options.RecursionSupport {
 		_this.foundReferences = duplicates.FindDuplicatePointers(value)
 		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
 	}
