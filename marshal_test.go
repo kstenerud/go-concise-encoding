@@ -236,3 +236,18 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
 	// Prints: Re-encoded CBE: [1 121 136 109 121 45 118 97 108 117 101 151 0 121 129 65 100 129 66 132 116 101 115 116 129 67 152 0 123 123]
 }
+
+func TestEmptyListWithIndents(t *testing.T) {
+	v := []interface{}{}
+	opts := options.DefaultCTEMarshalerOptions()
+	opts.Encoder.Indent = "    "
+	encodedDocument, err := cte.MarshalToBytes(v, opts)
+	if err != nil {
+		t.Error(err)
+	}
+	expected := "c1 []"
+	actual := string(encodedDocument)
+	if actual != expected {
+		t.Errorf("Expected %v but got %v", expected, actual)
+	}
+}

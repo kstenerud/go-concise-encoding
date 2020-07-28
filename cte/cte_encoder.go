@@ -45,11 +45,13 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	buff           buffer.StreamingWriteBuffer
-	containerState []cteEncoderState
-	currentState   cteEncoderState
-	options        options.CTEEncoderOptions
-	nextPrefix     string
+	buff               buffer.StreamingWriteBuffer
+	containerState     []cteEncoderState
+	containerItemCount []int
+	currentState       cteEncoderState
+	currentItemCount   int
+	options            options.CTEEncoderOptions
+	nextPrefix         string
 }
 
 // Create a new CTE encoder, which will receive data events and write a document
@@ -82,6 +84,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 func (_this *Encoder) OnNil() {
 	_this.addPrefix()
 	_this.addString("@nil")
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -97,6 +100,7 @@ func (_this *Encoder) OnBool(value bool) {
 func (_this *Encoder) OnTrue() {
 	_this.addPrefix()
 	_this.addString("@true")
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -104,6 +108,7 @@ func (_this *Encoder) OnTrue() {
 func (_this *Encoder) OnFalse() {
 	_this.addPrefix()
 	_this.addString("@false")
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -118,6 +123,7 @@ func (_this *Encoder) OnInt(value int64) {
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
 	_this.addFmt("%v", value)
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -129,6 +135,7 @@ func (_this *Encoder) OnPositiveInt(value uint64) {
 	} else {
 		_this.addPrefix()
 		_this.addFmt("%d", value)
+		_this.currentItemCount++
 		_this.addSuffix()
 		_this.transitionState()
 	}
@@ -137,6 +144,7 @@ func (_this *Encoder) OnPositiveInt(value uint64) {
 func (_this *Encoder) OnNegativeInt(value uint64) {
 	_this.addPrefix()
 	_this.addFmt("-%d", value)
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -153,12 +161,14 @@ func (_this *Encoder) OnFloat(value float64) {
 		} else {
 			_this.addString("@inf")
 		}
+		_this.currentItemCount++
 		_this.addSuffix()
 		_this.transitionState()
 		return
 	}
 	// TODO: Hex float?
 	_this.addFmt("%g", value)
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -166,6 +176,7 @@ func (_this *Encoder) OnFloat(value float64) {
 func (_this *Encoder) OnBigFloat(value *big.Float) {
 	_this.addPrefix()
 	_this.addString(conversions.BigFloatToString(value))
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -173,6 +184,7 @@ func (_this *Encoder) OnBigFloat(value *big.Float) {
 func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
 	_this.addPrefix()
 	_this.addString(value.Text('g'))
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -180,6 +192,7 @@ func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
 func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
 	_this.addPrefix()
 	_this.addString(value.Text('g'))
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -191,6 +204,7 @@ func (_this *Encoder) OnNan(signaling bool) {
 	} else {
 		_this.addString("@nan")
 	}
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -202,6 +216,7 @@ func (_this *Encoder) OnUUID(v []byte) {
 	_this.addPrefix()
 	_this.addFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -246,6 +261,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	default:
 		panic(fmt.Errorf("Unknown compact time type %v", value.TimeIs))
 	}
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -253,6 +269,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 func (_this *Encoder) OnBytes(value []byte) {
 	_this.addPrefix()
 	_this.encodeHex('b', value)
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -266,6 +283,7 @@ func (_this *Encoder) OnURI(value string) {
 		}
 	}
 	_this.addFmt(`u"%v"`, value)
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -279,6 +297,7 @@ func (_this *Encoder) OnString(value string) {
 		_this.currentState == cteEncoderStateAwaitMarkupFirstItemPost {
 		_this.addPrefix()
 		_this.addString(asMarkupContent(value))
+		_this.currentItemCount++
 		_this.addSuffix()
 		_this.transitionState()
 	} else if _this.currentState == cteEncoderStateAwaitCommentItem {
@@ -287,6 +306,7 @@ func (_this *Encoder) OnString(value string) {
 	} else {
 		_this.addPrefix()
 		_this.addString(asString(value))
+		_this.currentItemCount++
 		_this.addSuffix()
 		_this.transitionState()
 	}
@@ -295,6 +315,7 @@ func (_this *Encoder) OnString(value string) {
 func (_this *Encoder) OnVerbatimString(value string) {
 	_this.addPrefix()
 	_this.addString(asVerbatimString(value))
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -302,6 +323,7 @@ func (_this *Encoder) OnVerbatimString(value string) {
 func (_this *Encoder) OnCustomBinary(value []byte) {
 	_this.addPrefix()
 	_this.encodeHex('c', value)
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -309,6 +331,7 @@ func (_this *Encoder) OnCustomBinary(value []byte) {
 func (_this *Encoder) OnCustomText(value string) {
 	_this.addPrefix()
 	_this.addString(asCustomText(value))
+	_this.currentItemCount++
 	_this.addSuffix()
 	_this.transitionState()
 }
@@ -348,6 +371,7 @@ func (_this *Encoder) OnCustomTextBegin() {
 
 func (_this *Encoder) OnArrayChunk(length uint64, isFinalChunk bool) {
 	panic("TODO: CTEEncoder.OnArrayChunk")
+	// _this.currentItemCount++
 }
 
 func (_this *Encoder) OnArrayData(data []byte) {
@@ -383,7 +407,9 @@ func (_this *Encoder) OnComment() {
 }
 
 func (_this *Encoder) OnEnd() {
-	_this.applyIndentation(-1)
+	if _this.currentItemCount > 0 {
+		_this.applyIndentation(-1)
+	}
 	// TODO: Make this nicer
 	isInvisible := _this.currentState == cteEncoderStateAwaitMetaKey ||
 		_this.currentState == cteEncoderStateAwaitMetaFirstKey ||
@@ -392,6 +418,7 @@ func (_this *Encoder) OnEnd() {
 	if isInvisible {
 		_this.currentState |= cteEncoderStateWithInvisibleItem
 	} else {
+		_this.currentItemCount++
 		_this.addSuffix()
 		_this.transitionState()
 	}
@@ -416,7 +443,9 @@ func (_this *Encoder) OnEndDocument() {
 
 func (_this *Encoder) stackState(newState cteEncoderState, prefix string) {
 	_this.containerState = append(_this.containerState, _this.currentState)
+	_this.containerItemCount = append(_this.containerItemCount, 0)
 	_this.currentState = newState
+	_this.currentItemCount = 0
 	_this.addString(prefix)
 }
 
@@ -424,6 +453,8 @@ func (_this *Encoder) unstackState() {
 	_this.addString(cteEncoderTerminators[_this.currentState])
 	_this.currentState = _this.containerState[len(_this.containerState)-1]
 	_this.containerState = _this.containerState[:len(_this.containerState)-1]
+	_this.currentItemCount = _this.containerItemCount[len(_this.containerItemCount)-1]
+	_this.containerItemCount = _this.containerItemCount[:len(_this.containerItemCount)-1]
 }
 
 func (_this *Encoder) transitionState() {

@@ -36,11 +36,14 @@ const (
 type CTEDecoderOptions struct {
 	// TODO: ShouldZeroCopy option
 	ShouldZeroCopy bool
+
+	// The size of the underlying buffer to use when decoding a document.
+	BufferSize int
+
 	// TODO: ImpliedVersion option
 	ImpliedVersion uint
 	// TODO: ImpliedTLContainer option
 	ImpliedTLContainer TLContainerType
-	BufferSize         int
 }
 
 func DefaultCTEDecoderOptions() *CTEDecoderOptions {

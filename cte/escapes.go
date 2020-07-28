@@ -36,6 +36,14 @@ func containsEscapes(str string) bool {
 	return false
 }
 
+const (
+	quotedUnsafe            = unicode.Control | unicode.TabReturnNewline | unicode.Reserved | unicode.QuotedOrCustomTextDelimiter
+	unquotedUnsafe          = quotedUnsafe | unicode.Whitespace | unicode.LowSymbolOrLookalike
+	unquotedFirstCharUnsafe = unquotedUnsafe | unicode.NumeralOrLookalike
+	markupUnsafe            = unicode.Control | unicode.Reserved | unicode.MarkupDelimiter
+	customTextUnsafe        = unicode.Control | unicode.TabReturnNewline | unicode.Reserved | unicode.QuotedOrCustomTextDelimiter
+)
+
 // Wraps a string destined for a CTE document, adding quotes or escapes as
 // necessary.
 func asString(str string) (finalString string) {
@@ -46,16 +54,16 @@ func asString(str string) (finalString string) {
 	requiresQuotes := false
 	escapeCount := 0
 
-	if unicode.CharHasProperty([]rune(str)[0], unicode.UnquotedFirstCharUnsafe) {
+	if unicode.CharHasProperty([]rune(str)[0], unquotedFirstCharUnsafe) {
 		requiresQuotes = true
 	}
 
 	for _, ch := range str {
 		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(unicode.UnquotedUnsafe) {
+		if props.HasProperty(unquotedUnsafe) {
 			requiresQuotes = true
 		}
-		if props.HasProperty(unicode.QuotedUnsafe) {
+		if props.HasProperty(quotedUnsafe) {
 			escapeCount++
 		}
 	}
@@ -81,7 +89,7 @@ func asVerbatimString(str string) string {
 func asCustomText(str string) string {
 	for _, ch := range str {
 		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(unicode.CustomTextUnsafe) {
+		if props.HasProperty(customTextUnsafe) {
 			return escapedCustomText(str)
 		}
 	}
@@ -93,7 +101,7 @@ func asCustomText(str string) string {
 func asMarkupContent(str string) string {
 	for _, ch := range str {
 		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(unicode.MarkupUnsafe) {
+		if props.HasProperty(markupUnsafe) {
 			return escapedMarkupText(str)
 		}
 	}
@@ -112,7 +120,7 @@ func escapedQuoted(str string, escapeCount int) string {
 	// Note: StringBuilder's WriteXYZ() always return nil errors
 	sb.WriteByte('"')
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, unicode.QuotedUnsafe) {
+		if unicode.CharHasProperty(ch, quotedUnsafe) {
 			sb.WriteString(escapeCharQuoted(ch))
 		} else {
 			sb.WriteRune(ch)
@@ -149,7 +157,7 @@ func escapedCustomText(str string) string {
 	sb.WriteByte('t')
 	sb.WriteByte('"')
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, unicode.CustomTextUnsafe) {
+		if unicode.CharHasProperty(ch, customTextUnsafe) {
 			sb.WriteString(escapeCharCustomText(ch))
 		} else {
 			sb.WriteRune(ch)
@@ -180,7 +188,7 @@ func escapedMarkupText(str string) string {
 	sb.Grow(len([]byte(str)))
 	// Note: StringBuilder's WriteXYZ() always return nil errors
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, unicode.MarkupUnsafe) {
+		if unicode.CharHasProperty(ch, markupUnsafe) {
 			sb.WriteString(escapeCharMarkup(ch))
 		} else {
 			sb.WriteRune(ch)

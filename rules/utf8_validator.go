@@ -26,7 +26,7 @@ import "fmt"
 // UTF-8 character.
 type UTF8Validator struct {
 	bytesRemaining int
-	accumulator    int
+	accumulator    rune
 }
 
 func (_this *UTF8Validator) Reset() {
@@ -38,7 +38,7 @@ func (_this *UTF8Validator) Reset() {
 // complete. IsCompleteCharacter() will return true.
 //
 // This method panics if the UTF-8 sequence is invalid.
-func (_this *UTF8Validator) AddByte(byteValue int) {
+func (_this *UTF8Validator) AddByte(byteValue byte) {
 	const continuationMask = 0xc0
 	const continuationMatch = 0x80
 	if _this.bytesRemaining > 0 {
@@ -46,7 +46,7 @@ func (_this *UTF8Validator) AddByte(byteValue int) {
 			panic(fmt.Errorf("UTF-8 encoding: expected continuation bit (0x80) in byte [0x%02x]", byteValue))
 		}
 		_this.bytesRemaining--
-		_this.accumulator = (_this.accumulator << 6) | (byteValue & ^continuationMask)
+		_this.accumulator = (_this.accumulator << 6) | (rune(byteValue) & ^continuationMask)
 		return
 	}
 
@@ -54,7 +54,7 @@ func (_this *UTF8Validator) AddByte(byteValue int) {
 	const initiator1ByteMatch = 0x80
 	if byteValue&initiator1ByteMask != initiator1ByteMatch {
 		_this.bytesRemaining = 0
-		_this.accumulator = byteValue
+		_this.accumulator = rune(byteValue)
 		if byteValue == 0 {
 			panic(fmt.Errorf("UTF-8 encoding: NUL byte is not allowed"))
 		}
@@ -66,7 +66,7 @@ func (_this *UTF8Validator) AddByte(byteValue int) {
 	const firstByte2ByteMask = 0x1f
 	if (byteValue & initiator2ByteMask) == initiator2ByteMatch {
 		_this.bytesRemaining = 1
-		_this.accumulator = byteValue & firstByte2ByteMask
+		_this.accumulator = rune(byteValue) & firstByte2ByteMask
 		return
 	}
 
@@ -75,7 +75,7 @@ func (_this *UTF8Validator) AddByte(byteValue int) {
 	const firstByte3ByteMask = 0x0f
 	if (byteValue & initiator3ByteMask) == initiator3ByteMatch {
 		_this.bytesRemaining = 2
-		_this.accumulator = byteValue & firstByte3ByteMask
+		_this.accumulator = rune(byteValue) & firstByte3ByteMask
 		return
 	}
 
@@ -84,7 +84,7 @@ func (_this *UTF8Validator) AddByte(byteValue int) {
 	const firstByte4ByteMask = 0x07
 	if (byteValue & initiator4ByteMask) == initiator4ByteMatch {
 		_this.bytesRemaining = 3
-		_this.accumulator = byteValue & firstByte4ByteMask
+		_this.accumulator = rune(byteValue) & firstByte4ByteMask
 		return
 	}
 
@@ -98,6 +98,6 @@ func (_this *UTF8Validator) IsCompleteCharacter() bool {
 
 // Get the fully built UTF-8 character. Don't call this until
 // IsCompleteCharacter() returns true.
-func (_this *UTF8Validator) GetCharacter() int {
+func (_this *UTF8Validator) GetCharacter() rune {
 	return _this.accumulator
 }

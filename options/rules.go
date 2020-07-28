@@ -28,7 +28,6 @@ import (
 // Rules
 
 type RuleOptions struct {
-	depthHasBeenAdjusted bool
 	// Concise encoding spec version to adhere to
 	ConciseEncodingVersion uint64
 
@@ -41,7 +40,9 @@ type RuleOptions struct {
 	MaxContainerDepth   uint64
 	MaxObjectCount      uint64
 	MaxReferenceCount   uint64
-	// Max bytes total for all array types
+	// TODO: Max bytes total for all array types
+
+	depthHasBeenAdjusted bool
 }
 
 func DefaultRuleOptions() *RuleOptions {

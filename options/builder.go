@@ -88,8 +88,13 @@ func (_this *BuilderSessionOptions) WithDefaultsApplied() *BuilderSessionOptions
 // Builder
 
 type BuilderOptions struct {
+	// Max base-10 exponent allowed when converting from floating point to big integer.
+	// As exponents get very large, it takes geometrically more CPU to convert.
 	FloatToBigIntMaxBase10Exponent int
-	FloatToBigIntMaxBase2Exponent  int
+
+	// Max base-2 exponent allowed when converting from floating point to big integer.
+	FloatToBigIntMaxBase2Exponent int
+
 	// TODO: ErrorOnLossyFloatConversion option
 	ErrorOnLossyFloatConversion bool
 	// TODO: Something for decimal floats?
@@ -97,9 +102,10 @@ type BuilderOptions struct {
 }
 
 func DefaultBuilderOptions() *BuilderOptions {
+	const maxBase10Exp = 50
 	return &BuilderOptions{
-		FloatToBigIntMaxBase10Exponent: 300,
-		FloatToBigIntMaxBase2Exponent:  300 * 10 / 3,
+		FloatToBigIntMaxBase10Exponent: maxBase10Exp,
+		FloatToBigIntMaxBase2Exponent:  maxBase10Exp * 10 / 3,
 	}
 }
 

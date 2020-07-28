@@ -88,6 +88,7 @@ type IteratorOptions struct {
 	// Note: recursion support has a small performance cost, which is why
 	// it's optional.
 	RecursionSupport bool
+
 	// TODO
 	OmitNilPointers bool
 }
