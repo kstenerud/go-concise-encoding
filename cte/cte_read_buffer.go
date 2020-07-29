@@ -428,8 +428,8 @@ func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 				sb.WriteByte('/')
 			case '\\':
 				sb.WriteByte('\\')
-			case 'u':
-				sb.WriteRune(_this.decodeUnicodeEscapeSequence())
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				sb.WriteRune(_this.decodeUnicodeEscapeSequence(int(escape - '0')))
 			default:
 				_this.UnexpectedChar("quoted string escape sequence")
 			}
@@ -441,8 +441,8 @@ func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 	}
 }
 
-func (_this *CTEReadBuffer) decodeUnicodeEscapeSequence() (codepoint rune) {
-	for i := 0; i < 4; i++ {
+func (_this *CTEReadBuffer) decodeUnicodeEscapeSequence(length int) (codepoint rune) {
+	for i := 0; i < length; i++ {
 		_this.AdvanceByte()
 		b := _this.PeekByteNoEOD()
 		switch {
@@ -563,8 +563,8 @@ func (_this *CTEReadBuffer) DecodeCustomTextWithEscapes() []byte {
 				sb.WriteByte('\n')
 			case 't':
 				sb.WriteByte('\t')
-			case 'u':
-				sb.WriteRune(_this.decodeUnicodeEscapeSequence())
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				sb.WriteRune(_this.decodeUnicodeEscapeSequence(int(escape - '0')))
 			default:
 				_this.UnexpectedChar("custom text escape sequence")
 			}
@@ -985,8 +985,8 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
 				sb.WriteByte('`')
 			case '\\':
 				sb.WriteByte('\\')
-			case 'u':
-				sb.WriteRune(_this.decodeUnicodeEscapeSequence())
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				sb.WriteRune(_this.decodeUnicodeEscapeSequence(int(escape - '0')))
 			default:
 				_this.UnexpectedChar("quoted string escape sequence")
 			}

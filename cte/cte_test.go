@@ -242,8 +242,8 @@ func TestCTEQuotedString(t *testing.T) {
 	assertDecode(t, `c1 "test\*string"`, V(1), S("test*string"), ED())
 	assertDecode(t, `c1 "test\/string"`, V(1), S("test/string"), ED())
 	assertDecodeEncode(t, `c1 "test\\string"`, V(1), S("test\\string"), ED())
-	assertDecodeEncode(t, `c1 "test\u0001string"`, V(1), S("test\u0001string"), ED())
-	assertDecodeEncode(t, `c1 "test\u206dstring"`, V(1), S("test\u206dstring"), ED())
+	assertDecodeEncode(t, `c1 "test\11string"`, V(1), S("test\u0001string"), ED())
+	assertDecodeEncode(t, `c1 "test\4206dstring"`, V(1), S("test\u206dstring"), ED())
 	assertDecode(t, `c1 "test\
 string"`, V(1), S("teststring"), ED())
 	assertDecode(t, "c1 \"test\\\r\nstring\"", V(1), S("teststring"), ED())
@@ -252,7 +252,7 @@ string"`, V(1), S("teststring"), ED())
 func TestCTECustomText(t *testing.T) {
 	assertDecodeEncode(t, `c1 t"something(123)"`, V(1), CUT("something(123)"), ED())
 	assertDecodeEncode(t, `c1 t"some\\thing(\"123\")"`, V(1), CUT("some\\thing(\"123\")"), ED())
-	assertDecodeEncode(t, `c1 t"some\nthing\u0001(123)"`, V(1), CUT("some\nthing\u0001(123)"), ED())
+	assertDecodeEncode(t, `c1 t"some\nthing\11(123)"`, V(1), CUT("some\nthing\u0001(123)"), ED())
 }
 
 func TestCTEList(t *testing.T) {
@@ -322,7 +322,7 @@ func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, `c1 <a 1=2|a <a>>`, V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a "), MUP(), S("a"), E(), E(), E(), ED())
 
 	assertDecodeEncode(t, `c1 <a|\\>`, V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
-	assertDecodeEncode(t, `c1 <a|\u0010>`, V(1), MUP(), S("a"), E(), S("\u0010"), E(), ED())
+	assertDecodeEncode(t, `c1 <a|\210>`, V(1), MUP(), S("a"), E(), S("\u0010"), E(), ED())
 }
 
 func TestCTEMarkupMarkup(t *testing.T) {

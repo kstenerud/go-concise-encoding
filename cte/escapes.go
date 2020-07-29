@@ -114,9 +114,8 @@ func asMarkupContent(str string) string {
 func escapedQuoted(str string, escapeCount int) string {
 	var sb strings.Builder
 	// Worst case scenario: All characters that require escaping need a unicode
-	// sequence `\uxxxx`. In this case, we'd need at least 6 bytes per escaped
-	// character.
-	sb.Grow(len([]byte(str)) + escapeCount*5 + 2)
+	// sequence. In this case, we'd need at least 7 bytes per escaped character.
+	sb.Grow(len([]byte(str)) + escapeCount*6 + 2)
 	// Note: StringBuilder's WriteXYZ() always return nil errors
 	sb.WriteByte('"')
 	for _, ch := range str {
@@ -147,7 +146,7 @@ func escapeCharQuoted(ch rune) string {
 	case '\\':
 		return `\\`
 	}
-	return fmt.Sprintf(`\u%04x`, ch)
+	return unicodeEscape(ch)
 }
 
 func escapedCustomText(str string) string {
@@ -167,6 +166,11 @@ func escapedCustomText(str string) string {
 	return sb.String()
 }
 
+func unicodeEscape(ch rune) string {
+	hex := fmt.Sprintf("%x", ch)
+	return fmt.Sprintf("\\%d%s", len(hex), hex)
+}
+
 func escapeCharCustomText(ch rune) string {
 	switch ch {
 	case '"':
@@ -180,7 +184,7 @@ func escapeCharCustomText(ch rune) string {
 	case '\n':
 		return `\n`
 	}
-	return fmt.Sprintf(`\u%04x`, ch)
+	return unicodeEscape(ch)
 }
 
 func escapedMarkupText(str string) string {
@@ -216,7 +220,7 @@ func escapeCharMarkup(ch rune) string {
 	case '\\':
 		return `\\`
 	}
-	return fmt.Sprintf(`\u%04x`, ch)
+	return unicodeEscape(ch)
 }
 
 // Ordered from least common to most common, chosen to not be confused by
