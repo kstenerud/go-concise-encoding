@@ -245,7 +245,7 @@ func TestEmptyListWithIndents(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expected := "c1 []"
+	expected := "c1\n[]"
 	actual := string(encodedDocument)
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)

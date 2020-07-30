@@ -118,9 +118,9 @@ func (_this *Decoder) endObject() {
 
 // State
 
-func (_this *Decoder) stackContainer(newState cteDecoderState) {
+func (_this *Decoder) stackContainer(nextState cteDecoderState) {
 	_this.containerState = append(_this.containerState, _this.currentState)
-	_this.currentState = newState
+	_this.currentState = nextState
 }
 
 func (_this *Decoder) unstackContainer() {
