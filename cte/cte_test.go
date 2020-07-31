@@ -579,98 +579,108 @@ case is three Z characters, specified earlier as a sentinel.ZZZ
 `)
 }
 
-// func TestX(t *testing.T) {
-// 	debug.DebugOptions.PassThroughPanics = true
-// 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-// 	// DebugPrintEvents = true
-
-// 	document := []byte(`c1
-// (
-//     _ct = 2019-9-1/22:14:01
-// )
-// {
-//     (
-//         info = "something interesting about a_list"
-//     )
-//     a_list = [
-//         1
-//         2
-//         "a string"
-//     ]
-//     map = {
-//         2=two
-//         3=3000
-//         1=one
-//     }
-//     string = "A string value"
-//     boolean = @true
-//     "binary int" = -0b10001011
-//     "octal int" = 0o644
-//     "regular int" = -10000000
-//     "hex int" = 0xfffe0001
-//     "decimal float" = -14.125
-//     "hex float" = 0x5.1ec4p20
-//     uuid = @f1ce4567-e89b-12d3-a456-426655440000
-//     date = 2019-7-1
-//     time = 18:04:00.940231541/E/Prague
-//     timestamp = 2010-7-15/13:28:15.415942344/Z
-//     nil = @nil
-//     bytes = b"10ff389add004f4f91"
-//     url = u"https://example.com/"
-//     email = u"mailto:me@somewhere.com"
-//     1.5 = "Keys don't have to be strings"
-//     long-string = ` + "`" + `ZZZ
-// A backtick induces verbatim processing, which in this case will continue
-// until three Z characters are encountered, similar to how here documents in
-// bash work.
-// You can put anything in here, including double-quote ("), or even more
-// backticks (` + "`" + `). Verbatim processing stops at the end sequence, which in this
-// case is three Z characters, specified earlier as a sentinel.ZZZ
-//     marked_object = &tag1:{
-//         description = "This map will be referenced later using #tag1"
-//         value = -@inf
-//         child_elements = @nil
-//         recursive = #tag1
-//     }
-//     ref1 = #tag1
-//     ref2 = #tag1
-//     outside_ref = #u"https://somewhere.else.com/path/to/document.cte#some_tag"
-//     html_compatible  = <html xmlns=u"http://www.w3.org/1999/xhtml" xml:lang=en |
-//         <body|
-//             Please choose from the following widgets:
-//             <div id=parent style=normal ref-id=1 |
-//                 <script| ` + "`" + `##
-//                     document.getElementById('parent').insertAdjacentHTML('beforeend',
-//                         '<div id="idChild"> content </div>');
-//                 ##>
-//             >
-//         >
-//     >
-// }
-// `)
-
-// 	encoded := &bytes.Buffer{}
-// 	encOpts := options.DefaultCTEEncoderOptions()
-// 	encOpts.Indent = "    "
-// 	encoder := NewEncoder(encoded, encOpts)
-// 	decoder := NewDecoder(bytes.NewBuffer(document), encoder, nil)
-// 	err := decoder.Decode()
-// 	if err != nil {
-// 		t.Error(err)
-// 		return
-// 	}
-// 	fmt.Printf("%v\n", string(encoded.Bytes()))
-// }
-
 func TestX(t *testing.T) {
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	// DebugPrintEvents = true
 
 	document := []byte(`c1
-{	// some stuff
+// _ct is the creation time, in this case referring to the entire document
+(
+    _ct = 2019-9-1/22:14:01
+)
+{
+    /* Comments look very C-like, except:
+       /* Nested comments are allowed! */
+    */
+    // Notice that there are no commas in maps and lists
+    (
+        info = "something interesting about a_list"
+    )
+    a_list = [
+        1
+        2
+        "a string"
+    ]
+    map = {
+        2=two
+        3=3000
+        1=one
+    }
+    string = "A string value"
+    boolean = @true
+    "binary int" = -0b10001011
+    "octal int" = 0o644
+    "regular int" = -10000000
+    "hex int" = 0xfffe0001
+    "decimal float" = -14.125
+    "hex float" = 0x5.1ec4p20
+    uuid = @f1ce4567-e89b-12d3-a456-426655440000
+    date = 2019-7-1
+    time = 18:04:00.940231541/E/Prague
+    timestamp = 2010-7-15/13:28:15.415942344/Z
+    nil = @nil
+    bytes = b"10ff389add004f4f91"
+    url = u"https://example.com/"
+    email = u"mailto:me@somewhere.com"
+    1.5 = "Keys don't have to be strings"
+    long-string = ` + "`" + `ZZZ
+A backtick induces verbatim processing, which in this case will continue
+until three Z characters are encountered, similar to how here documents in
+bash work.
+You can put anything in here, including double-quote ("), or even more
+backticks (` + "`" + `). Verbatim processing stops at the end sequence, which in this
+case is three Z characters, specified earlier as a sentinel.ZZZ
+    marked_object = &tag1:{
+        description = "This map will be referenced later using #tag1"
+        value = -@inf
+        child_elements = @nil
+        recursive = #tag1
+    }
+    ref1 = #tag1
+    ref2 = #tag1
+    outside_ref = #u"https://somewhere.else.com/path/to/document.cte#some_tag"
+    // The markup type is good for presentation data
+    html_compatible  = <html xmlns=u"http://www.w3.org/1999/xhtml" xml:lang=en |
+        <body|
+            Please choose from the following widgets:
+            <div id=parent style=normal ref-id=1 |
+                /* Here we use a backtick to induce verbatim processing.
+                 * In this case, "##" is chosen as the ending sequence
+                 */
+                <script| ` + "`" + `##
+                    document.getElementById('parent').insertAdjacentHTML('beforeend',
+                        '<div id="idChild"> content </div>');
+                ##>
+            >
+        >
+    >
+}
+`)
 
-1=()a}
+	encoded := &bytes.Buffer{}
+	encOpts := options.DefaultCTEEncoderOptions()
+	encOpts.Indent = "    "
+	encoder := NewEncoder(encoded, encOpts)
+	decoder := NewDecoder(bytes.NewBuffer(document), encoder, nil)
+	err := decoder.Decode()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Printf("%v\n", string(encoded.Bytes()))
+}
+
+func TestDecodeEncodeExample(t *testing.T) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+	// DebugPrintEvents = true
+
+	document := []byte(`c1
+/* a
+   /* b */
+*/
+c
 `)
 
 	encoded := &bytes.Buffer{}

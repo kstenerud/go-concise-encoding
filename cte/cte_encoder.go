@@ -297,7 +297,7 @@ func (_this *Encoder) OnURI(value string) {
 func (_this *Encoder) OnString(value string) {
 	_this.addPrefix()
 
-	switch _this.currentState {
+	switch _this.currentState &^ cteEncoderStateWithInvisibleItem {
 	case cteEncoderStateAwaitMarkerID:
 		_this.unstackState()
 		_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, value)
@@ -422,15 +422,23 @@ func (_this *Encoder) OnEnd() {
 		_this.applyIndentation(-1)
 	}
 	// TODO: Make this nicer
-	isInvisible := _this.currentState == cteEncoderStateAwaitMetaKey ||
-		_this.currentState == cteEncoderStateAwaitMetaFirstKey ||
-		_this.currentState == cteEncoderStateAwaitCommentItem
+	oldState := _this.currentState &^ cteEncoderStateWithInvisibleItem
+	isInvisible := oldState == cteEncoderStateAwaitMetaKey ||
+		oldState == cteEncoderStateAwaitMetaFirstKey ||
+		oldState == cteEncoderStateAwaitCommentItem
 	_this.unstackState()
 	if isInvisible {
 		_this.currentState |= cteEncoderStateWithInvisibleItem
 		_this.currentItemCount++
-		_this.nextPrefix = ""
-		// TODO: Should probably CR/indent when pretty printing when ending a comment
+		if _this.currentState&cteEncoderStateAwaitCommentItem != 0 {
+			return
+		}
+
+		if len(_this.options.Indent) > 0 {
+			_this.nextPrefix = _this.generateIndentation(0)
+		} else {
+			_this.nextPrefix = ""
+		}
 	} else {
 		_this.currentItemCount++
 		_this.transitionState()
