@@ -430,11 +430,11 @@ func (_this *Encoder) OnEnd() {
 	if isInvisible {
 		_this.currentState |= cteEncoderStateWithInvisibleItem
 		_this.currentItemCount++
-		if _this.currentState&cteEncoderStateAwaitCommentItem != 0 {
-			return
-		}
 
 		if len(_this.options.Indent) > 0 {
+			if _this.currentState&cteEncoderStateAwaitCommentItem != 0 {
+				return
+			}
 			_this.nextPrefix = _this.generateIndentation(0)
 		} else {
 			_this.nextPrefix = ""
