@@ -70,7 +70,7 @@ func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions)
 	_this.buff.Init(writer, _this.options.BufferSize)
 	_this.prefixGenerators = cteEncoderPrefixGenerators[:]
 	if len(_this.options.Indent) > 0 {
-		_this.prefixGenerators = cteEncoderPPPPrettyHandlers[:]
+		_this.prefixGenerators = cteEncoderPrettyPrefixHandlers[:]
 	}
 }
 
@@ -418,11 +418,11 @@ func (_this *Encoder) OnEnd() {
 		return
 	}
 
-	if _this.currentItemCount > 0 {
+	oldState := _this.currentState &^ cteEncoderStateWithInvisibleItem
+	if _this.currentItemCount > 0 && oldState != cteEncoderStateAwaitCommentItem {
 		_this.applyIndentation(-1)
 	}
 	// TODO: Make this nicer
-	oldState := _this.currentState &^ cteEncoderStateWithInvisibleItem
 	isInvisible := oldState == cteEncoderStateAwaitMetaKey ||
 		oldState == cteEncoderStateAwaitMetaFirstKey ||
 		oldState == cteEncoderStateAwaitCommentItem
@@ -681,30 +681,36 @@ func init() {
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix
+	for i := 0; i < int(cteEncoderStateCount); i += 2 {
+		cteEncoderPrefixGenerators[i+1] = cteEncoderPrefixGenerators[i]
+	}
 }
 
-var cteEncoderPPPPrettyHandlers [cteEncoderStateCount]cteEncoderPrefixGenerator
+var cteEncoderPrettyPrefixHandlers [cteEncoderStateCount]cteEncoderPrefixGenerator
 
 func init() {
 	for i := 0; i < int(cteEncoderStateCount); i++ {
-		cteEncoderPPPPrettyHandlers[i] = (*Encoder).generateNoPrefix
+		cteEncoderPrettyPrefixHandlers[i] = (*Encoder).generateNoPrefix
 	}
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitTLO] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitListFirstItem] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitListItem] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMapFirstKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMapKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMapValue] = (*Encoder).generateSpaceEqualsPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMetaFirstKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMetaKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMetaValue] = (*Encoder).generateSpaceEqualsPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMarkupName] = (*Encoder).generateNoPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMarkupKey] = (*Encoder).generateSpacePrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMarkupValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generatePipeIndentPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
-	cteEncoderPPPPrettyHandlers[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitTLO] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitListFirstItem] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitListItem] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMapFirstKey] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMapKey] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMapValue] = (*Encoder).generateSpaceEqualsPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMetaFirstKey] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMetaKey] = (*Encoder).generateIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMetaValue] = (*Encoder).generateSpaceEqualsPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupName] = (*Encoder).generateNoPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupKey] = (*Encoder).generateSpacePrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupValue] = (*Encoder).generateEqualsPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generatePipeIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix
+	for i := 0; i < int(cteEncoderStateCount); i += 2 {
+		cteEncoderPrettyPrefixHandlers[i+1] = cteEncoderPrettyPrefixHandlers[i]
+	}
 }
 
 var cteEncoderStateTransitions [cteEncoderStateCount]cteEncoderState
