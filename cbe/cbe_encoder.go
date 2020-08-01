@@ -294,9 +294,9 @@ func (_this *Encoder) OnCustomTextBegin() {
 	_this.encodeTypeOnly(cbeTypeCustomText)
 }
 
-func (_this *Encoder) OnArrayChunk(length uint64, isFinalChunk bool) {
+func (_this *Encoder) OnArrayChunk(length uint64, moreChunksFollow bool) {
 	continuationBit := uint64(0)
-	if isFinalChunk {
+	if moreChunksFollow {
 		continuationBit = 1
 	}
 	_this.encodeULEB((uint64(length) << 1) | continuationBit)

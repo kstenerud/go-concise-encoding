@@ -304,7 +304,7 @@ func (_this *RootBuilder) OnCustomBinaryBegin() {
 func (_this *RootBuilder) OnCustomTextBegin() {
 	panic("TODO: RootBuilder.OnCustomTextBegin")
 }
-func (_this *RootBuilder) OnArrayChunk(length uint64, isFinalChunk bool) {
+func (_this *RootBuilder) OnArrayChunk(length uint64, moreChunksFollow bool) {
 	panic("TODO: RootBuilder.OnArrayChunk")
 }
 func (_this *RootBuilder) OnArrayData(data []byte) {

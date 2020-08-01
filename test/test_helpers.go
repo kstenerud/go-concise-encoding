@@ -401,7 +401,7 @@ func VB() *TEvent                       { return newTEvent(TEventVerbatimStringB
 func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
 func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
-func AC(l uint64, term bool) *TEvent    { return newTEvent(TEventArrayChunk, l, term) }
+func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
 func M() *TEvent                        { return newTEvent(TEventMap, nil, nil) }
@@ -632,9 +632,9 @@ func (h *TEventPrinter) OnCustomTextBegin() {
 	h.Print(CTB())
 	h.Next.OnCustomTextBegin()
 }
-func (h *TEventPrinter) OnArrayChunk(l uint64, final bool) {
-	h.Print(AC(l, final))
-	h.Next.OnArrayChunk(l, final)
+func (h *TEventPrinter) OnArrayChunk(l uint64, moreChunksFollow bool) {
+	h.Print(AC(l, moreChunksFollow))
+	h.Next.OnArrayChunk(l, moreChunksFollow)
 }
 func (h *TEventPrinter) OnArrayData(data []byte) {
 	h.Print(AD(data))
@@ -753,7 +753,7 @@ func (h *TER) OnVerbatimStringBegin()                 { h.add(VB()) }
 func (h *TER) OnURIBegin()                            { h.add(UB()) }
 func (h *TER) OnCustomBinaryBegin()                   { h.add(CBB()) }
 func (h *TER) OnCustomTextBegin()                     { h.add(CTB()) }
-func (h *TER) OnArrayChunk(l uint64, final bool)      { h.add(AC(l, final)) }
+func (h *TER) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
 func (h *TER) OnArrayData(data []byte)                { h.add(AD(data)) }
 func (h *TER) OnList()                                { h.add(L()) }
 func (h *TER) OnMap()                                 { h.add(M()) }

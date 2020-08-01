@@ -46,6 +46,8 @@ import (
 // designed to panic).
 type Encoder struct {
 	buff               buffer.StreamingWriteBuffer
+	chunkBuffer        []byte
+	remainingChunkSize uint64
 	containerState     []cteEncoderState
 	containerItemCount []int
 	currentState       cteEncoderState
@@ -294,30 +296,52 @@ func (_this *Encoder) OnURI(value string) {
 	}
 }
 
-func (_this *Encoder) OnString(value string) {
+func (_this *Encoder) handleStringMarkerID(value string) {
 	_this.addPrefix()
+	_this.unstackState()
+	_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, value)
+}
 
+func (_this *Encoder) handleStringReferenceID(value string) {
+	_this.addPrefix()
+	_this.unstackState()
+	_this.addFmt("%v#%v", _this.nextPrefix, value)
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) handleStringMarkupItem(value string) {
+	_this.addPrefix()
+	_this.addString(asMarkupContent(value))
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) handleStringCommentItem(value string) {
+	_this.addPrefix()
+	_this.addString(value)
+	_this.transitionState()
+}
+
+func (_this *Encoder) handleStringNormal(value string) {
+	_this.addPrefix()
+	_this.addString(asString(value))
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) OnString(value string) {
 	switch _this.currentState &^ cteEncoderStateWithInvisibleItem {
 	case cteEncoderStateAwaitMarkerID:
-		_this.unstackState()
-		_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, value)
+		_this.handleStringMarkerID(value)
 	case cteEncoderStateAwaitReferenceID:
-		_this.unstackState()
-		_this.addFmt("%v#%v", _this.nextPrefix, value)
-		_this.currentItemCount++
-		_this.transitionState()
+		_this.handleStringReferenceID(value)
 	case cteEncoderStateAwaitMarkupItem, cteEncoderStateAwaitMarkupFirstItem:
-		_this.addString(asMarkupContent(value))
-		_this.currentItemCount++
-		_this.transitionState()
+		_this.handleStringMarkupItem(value)
 	case cteEncoderStateAwaitCommentItem:
-		_this.addString(value)
-		_this.transitionState()
+		_this.handleStringCommentItem(value)
 	default:
-		_this.addPrefix()
-		_this.addString(asString(value))
-		_this.currentItemCount++
-		_this.transitionState()
+		_this.handleStringNormal(value)
 	}
 }
 
@@ -343,47 +367,69 @@ func (_this *Encoder) OnCustomText(value string) {
 }
 
 func (_this *Encoder) OnBytesBegin() {
-	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitBytes, `b"`)
 }
 
 func (_this *Encoder) OnStringBegin() {
-	// TODO: Follow same rules as OnString()
-	_this.addPrefix()
-	_this.stackState(cteEncoderStateAwaitQuotedString, `"`)
+	_this.stackState(cteEncoderStateAwaitQuotedString, ``)
 }
 
 func (_this *Encoder) OnVerbatimStringBegin() {
-	panic("TODO: OnVerbatimStringBegin")
-	// _this.addPrefix()
-	// _this.stackState(cteEncoderStateAwaitQuotedString, `"`)
+	_this.stackState(cteEncoderStateAwaitVerbatimString, `"`)
 }
 
 func (_this *Encoder) OnURIBegin() {
-	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitURI, `u"`)
 }
 
 func (_this *Encoder) OnCustomBinaryBegin() {
-	_this.addPrefix()
-	_this.stackState(cteEncoderStateAwaitCustom, `c"`)
+	_this.stackState(cteEncoderStateAwaitCustomBinary, `c"`)
 }
 
 func (_this *Encoder) OnCustomTextBegin() {
-	panic("TODO: OnCustomTextBegin")
-	// _this.addPrefix()
-	// _this.stackState(cteEncoderStateAwaitCustom, `c"`)
+	_this.stackState(cteEncoderStateAwaitCustomText, `c"`)
 }
 
-func (_this *Encoder) OnArrayChunk(length uint64, isFinalChunk bool) {
-	panic("TODO: CTEEncoder.OnArrayChunk")
-	// _this.currentItemCount++
+func (_this *Encoder) finalizeArray() {
+	oldState := _this.currentState
+	_this.unstackState()
+	switch oldState {
+	case cteEncoderStateAwaitBytes:
+		_this.OnBytes(_this.chunkBuffer)
+	case cteEncoderStateAwaitQuotedString:
+		_this.OnString(string(_this.chunkBuffer))
+	case cteEncoderStateAwaitVerbatimString:
+		_this.OnVerbatimString(string(_this.chunkBuffer))
+	case cteEncoderStateAwaitURI:
+		_this.OnURI(string(_this.chunkBuffer))
+	case cteEncoderStateAwaitCustomBinary:
+		_this.OnCustomBinary(_this.chunkBuffer)
+	case cteEncoderStateAwaitCustomText:
+		_this.OnCustomText(string(_this.chunkBuffer))
+	}
+	_this.chunkBuffer = _this.chunkBuffer[:0]
+}
+
+func (_this *Encoder) OnArrayChunk(length uint64, moreChunksFollow bool) {
+	if moreChunksFollow {
+		return
+	}
+
+	if length == 0 {
+		_this.finalizeArray()
+		return
+	}
+
+	_this.remainingChunkSize = length
 }
 
 func (_this *Encoder) OnArrayData(data []byte) {
-	panic("TODO: CTEEncoder.OnArrayData")
-	dst := _this.buff.Allocate(len(data))
-	copy(dst, data)
+	// TODO: In future, don't buffer up the entire array; write it out as it arrives
+	_this.chunkBuffer = append(_this.chunkBuffer, data...)
+	_this.remainingChunkSize -= uint64(len(data))
+	if _this.remainingChunkSize == 0 {
+		_this.finalizeArray()
+	}
 }
 
 func (_this *Encoder) OnList() {
@@ -589,11 +635,13 @@ const (
 	cteEncoderStateAwaitReferenceID
 	cteEncoderStateAwaitQuotedString
 	cteEncoderStateAwaitQuotedStringLast
+	cteEncoderStateAwaitVerbatimString
 	cteEncoderStateAwaitBytes
 	cteEncoderStateAwaitBytesLast
 	cteEncoderStateAwaitURI
 	cteEncoderStateAwaitURILast
-	cteEncoderStateAwaitCustom
+	cteEncoderStateAwaitCustomBinary
+	cteEncoderStateAwaitCustomText
 	cteEncoderStateAwaitCustomLast
 	cteEncoderStateCount
 
@@ -639,6 +687,8 @@ var cteEncoderStateNames = []string{
 	"QuotedString",
 	"QuotedStringLast",
 	"QuotedStringLast",
+	"VerbatimString",
+	"VerbatimString",
 	"Bytes",
 	"Bytes",
 	"BytesLast",
@@ -647,8 +697,10 @@ var cteEncoderStateNames = []string{
 	"URI",
 	"URILast",
 	"URILast",
-	"Custom",
-	"Custom",
+	"CustomBinary",
+	"CustomBinary",
+	"CustomText",
+	"CustomText",
 	"CustomLast",
 	"CustomLast",
 }

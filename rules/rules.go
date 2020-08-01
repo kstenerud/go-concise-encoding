@@ -63,7 +63,7 @@ type Rules struct {
 	chunkByteCount        uint64
 	chunkBytesWritten     uint64
 	arrayBytesWritten     uint64
-	isFinalChunk          bool
+	moreChunksFollow      bool
 	objectCount           uint64
 	unassignedIDs         []interface{}
 	assignedIDs           map[interface{}]ruleEvent
@@ -107,7 +107,7 @@ func (_this *Rules) Reset() {
 	_this.chunkByteCount = 0
 	_this.chunkBytesWritten = 0
 	_this.arrayBytesWritten = 0
-	_this.isFinalChunk = false
+	_this.moreChunksFollow = false
 	_this.objectCount = 0
 }
 
@@ -253,7 +253,7 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 
 func (_this *Rules) OnBytes(value []byte) {
 	_this.onBytesBegin()
-	_this.onArrayChunk(uint64(len(value)), true)
+	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
@@ -262,7 +262,7 @@ func (_this *Rules) OnBytes(value []byte) {
 
 func (_this *Rules) OnString(value string) {
 	_this.onStringBegin()
-	_this.onArrayChunk(uint64(len(value)), true)
+	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
@@ -271,7 +271,7 @@ func (_this *Rules) OnString(value string) {
 
 func (_this *Rules) OnVerbatimString(value string) {
 	_this.onVerbatimStringBegin()
-	_this.onArrayChunk(uint64(len(value)), true)
+	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
@@ -280,7 +280,7 @@ func (_this *Rules) OnVerbatimString(value string) {
 
 func (_this *Rules) OnURI(value string) {
 	_this.onURIBegin()
-	_this.onArrayChunk(uint64(len(value)), true)
+	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
@@ -289,7 +289,7 @@ func (_this *Rules) OnURI(value string) {
 
 func (_this *Rules) OnCustomBinary(value []byte) {
 	_this.onCustomBinaryBegin()
-	_this.onArrayChunk(uint64(len(value)), true)
+	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
@@ -298,7 +298,7 @@ func (_this *Rules) OnCustomBinary(value []byte) {
 
 func (_this *Rules) OnCustomText(value string) {
 	_this.onCustomTextBegin()
-	_this.onArrayChunk(uint64(len(value)), true)
+	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData([]byte(value))
 	}
@@ -335,9 +335,9 @@ func (_this *Rules) OnCustomTextBegin() {
 	_this.nextReceiver.OnCustomTextBegin()
 }
 
-func (_this *Rules) OnArrayChunk(length uint64, isFinalChunk bool) {
-	_this.onArrayChunk(length, isFinalChunk)
-	_this.nextReceiver.OnArrayChunk(length, isFinalChunk)
+func (_this *Rules) OnArrayChunk(length uint64, moreChunksFollow bool) {
+	_this.onArrayChunk(length, moreChunksFollow)
+	_this.nextReceiver.OnArrayChunk(length, moreChunksFollow)
 }
 
 func (_this *Rules) OnArrayData(data []byte) {
@@ -460,12 +460,12 @@ func (_this *Rules) onCustomTextBegin() {
 	_this.beginArray(eventTypeCustomText)
 }
 
-func (_this *Rules) onArrayChunk(length uint64, isFinalChunk bool) {
+func (_this *Rules) onArrayChunk(length uint64, moreChunksFollow bool) {
 	_this.assertCurrentStateAllowsType(eventTypeAChunk)
 
 	_this.chunkByteCount = length
 	_this.chunkBytesWritten = 0
-	_this.isFinalChunk = isFinalChunk
+	_this.moreChunksFollow = moreChunksFollow
 	_this.changeState(stateAwaitingArrayData)
 
 	if length == 0 {
@@ -617,13 +617,13 @@ func (_this *Rules) beginArray(arrayType ruleEvent) {
 	_this.chunkByteCount = 0
 	_this.chunkBytesWritten = 0
 	_this.arrayBytesWritten = 0
-	_this.isFinalChunk = false
+	_this.moreChunksFollow = true
 
 	_this.stackState(stateAwaitingArrayChunk)
 }
 
 func (_this *Rules) onArrayChunkEnded() {
-	if !_this.isFinalChunk {
+	if _this.moreChunksFollow {
 		_this.changeState(stateAwaitingArrayChunk)
 		return
 	}

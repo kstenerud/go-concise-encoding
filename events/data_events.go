@@ -75,7 +75,7 @@ type DataEventReceiver interface {
 	OnURIBegin()
 	OnCustomBinaryBegin()
 	OnCustomTextBegin()
-	OnArrayChunk(length uint64, isFinalChunk bool)
+	OnArrayChunk(length uint64, moreChunksFollow bool)
 	OnArrayData(data []byte)
 	OnList()
 	OnMap()
@@ -94,44 +94,44 @@ type NullEventReceiver struct{}
 func NewNullEventReceiver() *NullEventReceiver {
 	return &NullEventReceiver{}
 }
-func (_this *NullEventReceiver) OnVersion(version uint64)                      {}
-func (_this *NullEventReceiver) OnPadding(count int)                           {}
-func (_this *NullEventReceiver) OnNil()                                        {}
-func (_this *NullEventReceiver) OnBool(value bool)                             {}
-func (_this *NullEventReceiver) OnTrue()                                       {}
-func (_this *NullEventReceiver) OnFalse()                                      {}
-func (_this *NullEventReceiver) OnPositiveInt(value uint64)                    {}
-func (_this *NullEventReceiver) OnNegativeInt(value uint64)                    {}
-func (_this *NullEventReceiver) OnInt(value int64)                             {}
-func (_this *NullEventReceiver) OnBigInt(value *big.Int)                       {}
-func (_this *NullEventReceiver) OnFloat(value float64)                         {}
-func (_this *NullEventReceiver) OnBigFloat(value *big.Float)                   {}
-func (_this *NullEventReceiver) OnDecimalFloat(value compact_float.DFloat)     {}
-func (_this *NullEventReceiver) OnBigDecimalFloat(value *apd.Decimal)          {}
-func (_this *NullEventReceiver) OnNan(signaling bool)                          {}
-func (_this *NullEventReceiver) OnUUID(value []byte)                           {}
-func (_this *NullEventReceiver) OnTime(value time.Time)                        {}
-func (_this *NullEventReceiver) OnCompactTime(value *compact_time.Time)        {}
-func (_this *NullEventReceiver) OnBytes(value []byte)                          {}
-func (_this *NullEventReceiver) OnString(value string)                         {}
-func (_this *NullEventReceiver) OnVerbatimString(value string)                 {}
-func (_this *NullEventReceiver) OnURI(value string)                            {}
-func (_this *NullEventReceiver) OnCustomBinary(value []byte)                   {}
-func (_this *NullEventReceiver) OnCustomText(value string)                     {}
-func (_this *NullEventReceiver) OnBytesBegin()                                 {}
-func (_this *NullEventReceiver) OnStringBegin()                                {}
-func (_this *NullEventReceiver) OnVerbatimStringBegin()                        {}
-func (_this *NullEventReceiver) OnURIBegin()                                   {}
-func (_this *NullEventReceiver) OnCustomBinaryBegin()                          {}
-func (_this *NullEventReceiver) OnCustomTextBegin()                            {}
-func (_this *NullEventReceiver) OnArrayChunk(length uint64, isFinalChunk bool) {}
-func (_this *NullEventReceiver) OnArrayData(data []byte)                       {}
-func (_this *NullEventReceiver) OnList()                                       {}
-func (_this *NullEventReceiver) OnMap()                                        {}
-func (_this *NullEventReceiver) OnMarkup()                                     {}
-func (_this *NullEventReceiver) OnMetadata()                                   {}
-func (_this *NullEventReceiver) OnComment()                                    {}
-func (_this *NullEventReceiver) OnEnd()                                        {}
-func (_this *NullEventReceiver) OnMarker()                                     {}
-func (_this *NullEventReceiver) OnReference()                                  {}
-func (_this *NullEventReceiver) OnEndDocument()                                {}
+func (_this *NullEventReceiver) OnVersion(_ uint64)                    {}
+func (_this *NullEventReceiver) OnPadding(_ int)                       {}
+func (_this *NullEventReceiver) OnNil()                                {}
+func (_this *NullEventReceiver) OnBool(_ bool)                         {}
+func (_this *NullEventReceiver) OnTrue()                               {}
+func (_this *NullEventReceiver) OnFalse()                              {}
+func (_this *NullEventReceiver) OnPositiveInt(_ uint64)                {}
+func (_this *NullEventReceiver) OnNegativeInt(_ uint64)                {}
+func (_this *NullEventReceiver) OnInt(_ int64)                         {}
+func (_this *NullEventReceiver) OnBigInt(_ *big.Int)                   {}
+func (_this *NullEventReceiver) OnFloat(_ float64)                     {}
+func (_this *NullEventReceiver) OnBigFloat(_ *big.Float)               {}
+func (_this *NullEventReceiver) OnDecimalFloat(_ compact_float.DFloat) {}
+func (_this *NullEventReceiver) OnBigDecimalFloat(_ *apd.Decimal)      {}
+func (_this *NullEventReceiver) OnNan(_ bool)                          {}
+func (_this *NullEventReceiver) OnUUID(_ []byte)                       {}
+func (_this *NullEventReceiver) OnTime(_ time.Time)                    {}
+func (_this *NullEventReceiver) OnCompactTime(_ *compact_time.Time)    {}
+func (_this *NullEventReceiver) OnBytes(value []byte)                  {}
+func (_this *NullEventReceiver) OnString(value string)                 {}
+func (_this *NullEventReceiver) OnVerbatimString(_ string)             {}
+func (_this *NullEventReceiver) OnURI(value string)                    {}
+func (_this *NullEventReceiver) OnCustomBinary(_ []byte)               {}
+func (_this *NullEventReceiver) OnCustomText(_ string)                 {}
+func (_this *NullEventReceiver) OnBytesBegin()                         {}
+func (_this *NullEventReceiver) OnStringBegin()                        {}
+func (_this *NullEventReceiver) OnVerbatimStringBegin()                {}
+func (_this *NullEventReceiver) OnURIBegin()                           {}
+func (_this *NullEventReceiver) OnCustomBinaryBegin()                  {}
+func (_this *NullEventReceiver) OnCustomTextBegin()                    {}
+func (_this *NullEventReceiver) OnArrayChunk(_ uint64, _ bool)         {}
+func (_this *NullEventReceiver) OnArrayData(_ []byte)                  {}
+func (_this *NullEventReceiver) OnList()                               {}
+func (_this *NullEventReceiver) OnMap()                                {}
+func (_this *NullEventReceiver) OnMarkup()                             {}
+func (_this *NullEventReceiver) OnMetadata()                           {}
+func (_this *NullEventReceiver) OnComment()                            {}
+func (_this *NullEventReceiver) OnEnd()                                {}
+func (_this *NullEventReceiver) OnMarker()                             {}
+func (_this *NullEventReceiver) OnReference()                          {}
+func (_this *NullEventReceiver) OnEndDocument()                        {}

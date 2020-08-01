@@ -102,6 +102,24 @@ func TestCTEVerbatimString(t *testing.T) {
 	assertDecode(t, "c1 `#ENDOFSTRING a test\nwith `stuff`#ENDOFSTRING ", V(1), VS("a test\nwith `stuff`"), ED())
 }
 
+func TestCTEChunkedString(t *testing.T) {
+	assertEncode(t, "c1 abcdefgh", V(1), SB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+
+	assertEncode(t, "c1 abcdefgh", V(1), SB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, false), AD([]byte("gh")),
+		ED())
+
+	assertEncode(t, "c1 abcdefgh", V(1), SB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, true), AD([]byte("gh")),
+		AC(0, false), ED())
+}
+
 func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 0", V(1), PI(0), ED())
 	assertDecodeEncode(t, "c1 123", V(1), PI(123), ED())
