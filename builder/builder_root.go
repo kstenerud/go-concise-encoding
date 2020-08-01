@@ -151,10 +151,10 @@ func (_this *RootBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Val
 func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "UUID")
 }
-func (_this *RootBuilder) BuildFromString(_ string, _ reflect.Value) {
+func (_this *RootBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "String")
 }
-func (_this *RootBuilder) BuildFromVerbatimString(_ string, _ reflect.Value) {
+func (_this *RootBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "VerbatimString")
 }
 func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
@@ -163,7 +163,7 @@ func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "CustomBinary")
 }
-func (_this *RootBuilder) BuildFromCustomText(_ string, _ reflect.Value) {
+func (_this *RootBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "CustomText")
 }
 func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
@@ -267,14 +267,14 @@ func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
 func (_this *RootBuilder) OnBytes(value []byte) {
 	_this.currentBuilder.BuildFromBytes(value, _this.object)
 }
-func (_this *RootBuilder) OnString(value string) {
+func (_this *RootBuilder) OnString(value []byte) {
 	_this.currentBuilder.BuildFromString(value, _this.object)
 }
-func (_this *RootBuilder) OnVerbatimString(value string) {
+func (_this *RootBuilder) OnVerbatimString(value []byte) {
 	_this.currentBuilder.BuildFromVerbatimString(value, _this.object)
 }
-func (_this *RootBuilder) OnURI(value string) {
-	u, err := url.Parse(value)
+func (_this *RootBuilder) OnURI(value []byte) {
+	u, err := url.Parse(string(value))
 	if err != nil {
 		panic(err)
 	}
@@ -283,7 +283,7 @@ func (_this *RootBuilder) OnURI(value string) {
 func (_this *RootBuilder) OnCustomBinary(value []byte) {
 	_this.currentBuilder.BuildFromCustomBinary(value, _this.object)
 }
-func (_this *RootBuilder) OnCustomText(value string) {
+func (_this *RootBuilder) OnCustomText(value []byte) {
 	_this.currentBuilder.BuildFromCustomText(value, _this.object)
 }
 func (_this *RootBuilder) OnBytesBegin() {

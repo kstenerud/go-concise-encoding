@@ -285,7 +285,7 @@ func TestRulesBytesOneshot(t *testing.T) {
 
 func TestRulesURIOneshot(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURI("http://example.com") })
+	test.AssertNoPanic(t, func() { rules.OnURI([]byte("http://example.com")) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -295,7 +295,7 @@ func TestRulesCustomOneshot(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomText("test") })
+	test.AssertNoPanic(t, func() { rules.OnCustomText([]byte("test")) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -327,7 +327,7 @@ func TestRulesReference(t *testing.T) {
 	assertRulesOnString(t, rules, "a")
 
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnURI("http://example.com") })
+	test.AssertNoPanic(t, func() { rules.OnURI([]byte("http://example.com")) })
 
 	test.AssertNoPanic(t, func() { rules.OnReference() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(100) })
@@ -423,11 +423,11 @@ func TestRulesString(t *testing.T) {
 
 func testRulesSingleString(t *testing.T, value string) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnString(value) })
+	test.AssertNoPanic(t, func() { rules.OnString([]byte(value)) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnVerbatimString(value) })
+	test.AssertNoPanic(t, func() { rules.OnVerbatimString([]byte(value)) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -2237,7 +2237,7 @@ func TestRulesErrorRefMissingMarker(t *testing.T) {
 	rules := newRulesWithMaxDepth(5)
 	test.AssertNoPanic(t, func() { rules.OnList() })
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnString("test") })
+	test.AssertNoPanic(t, func() { rules.OnString([]byte("test")) })
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 }

@@ -106,11 +106,11 @@ func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
 	return builder.(ObjectBuilder)
 }
 
-func (_this *Session) GetCustomBinaryBuildFunction() options.CustomBinaryBuildFunction {
+func (_this *Session) GetCustomBinaryBuildFunction() options.CustomBuildFunction {
 	return _this.options.CustomBinaryBuildFunction
 }
 
-func (_this *Session) GetCustomTextBuildFunction() options.CustomTextBuildFunction {
+func (_this *Session) GetCustomTextBuildFunction() options.CustomBuildFunction {
 	return _this.options.CustomTextBuildFunction
 }
 

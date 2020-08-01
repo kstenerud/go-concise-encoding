@@ -141,24 +141,24 @@ func (_this *Decoder) Decode() (err error) {
 		case cbeTypePadding:
 			_this.nextReceiver.OnPadding(1)
 		case cbeTypeString0:
-			_this.nextReceiver.OnString("")
+			_this.nextReceiver.OnString([]byte{})
 		case cbeTypeString1, cbeTypeString2, cbeTypeString3, cbeTypeString4,
 			cbeTypeString5, cbeTypeString6, cbeTypeString7, cbeTypeString8,
 			cbeTypeString9, cbeTypeString10, cbeTypeString11, cbeTypeString12,
 			cbeTypeString13, cbeTypeString14, cbeTypeString15:
 			_this.nextReceiver.OnString(_this.decodeSmallString(int(cbeType - cbeTypeString0)))
 		case cbeTypeString:
-			_this.nextReceiver.OnString(string(_this.decodeArray()))
+			_this.nextReceiver.OnString(_this.decodeArray())
 		case cbeTypeVerbatimString:
-			_this.nextReceiver.OnVerbatimString(string(_this.decodeArray()))
+			_this.nextReceiver.OnVerbatimString(_this.decodeArray())
 		case cbeTypeBytes:
 			_this.nextReceiver.OnBytes(_this.decodeArray())
 		case cbeTypeCustomBinary:
 			_this.nextReceiver.OnCustomBinary(_this.decodeArray())
 		case cbeTypeCustomText:
-			_this.nextReceiver.OnCustomText(string(_this.decodeArray()))
+			_this.nextReceiver.OnCustomText(_this.decodeArray())
 		case cbeTypeURI:
-			_this.nextReceiver.OnURI(string(_this.decodeArray()))
+			_this.nextReceiver.OnURI(_this.decodeArray())
 		case cbeTypeMarker:
 			_this.nextReceiver.OnMarker()
 		case cbeTypeReference:
@@ -203,8 +203,8 @@ func (_this *Decoder) possiblyZeroCopy(bytes []byte) []byte {
 	return bytesCopy
 }
 
-func (_this *Decoder) decodeSmallString(length int) string {
-	value := string(_this.possiblyZeroCopy(_this.buffer.DecodeBytes(length)))
+func (_this *Decoder) decodeSmallString(length int) []byte {
+	value := _this.possiblyZeroCopy(_this.buffer.DecodeBytes(length))
 	return value
 }
 

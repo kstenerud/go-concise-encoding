@@ -29,10 +29,10 @@ import (
 )
 
 type customBinaryIterator struct {
-	convertFunction options.ConvertToCustomBinaryFunction
+	convertFunction options.ConvertToCustomFunction
 }
 
-func newCustomBinaryIterator(convertFunction options.ConvertToCustomBinaryFunction) ObjectIterator {
+func newCustomBinaryIterator(convertFunction options.ConvertToCustomFunction) ObjectIterator {
 	return &customBinaryIterator{
 		convertFunction: convertFunction,
 	}
@@ -50,10 +50,10 @@ func (_this *customBinaryIterator) IterateObject(v reflect.Value, eventReceiver 
 }
 
 type customTextIterator struct {
-	convertFunction options.ConvertToCustomTextFunction
+	convertFunction options.ConvertToCustomFunction
 }
 
-func newCustomTextIterator(convertFunction options.ConvertToCustomTextFunction) ObjectIterator {
+func newCustomTextIterator(convertFunction options.ConvertToCustomFunction) ObjectIterator {
 	return &customTextIterator{
 		convertFunction: convertFunction,
 	}
@@ -67,5 +67,5 @@ func (_this *customTextIterator) IterateObject(v reflect.Value, eventReceiver ev
 	if err != nil {
 		panic(fmt.Errorf("Error converting type %v to custom text: %v", v.Type(), err))
 	}
-	eventReceiver.OnCustomText(asString)
+	eventReceiver.OnCustomText([]byte(asString))
 }

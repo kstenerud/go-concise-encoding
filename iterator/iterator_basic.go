@@ -124,7 +124,7 @@ func (_this *pURLIterator) IterateObject(v reflect.Value, eventReceiver events.D
 	if v.IsNil() {
 		eventReceiver.OnNil()
 	} else {
-		eventReceiver.OnURI(v.Interface().(*url.URL).String())
+		eventReceiver.OnURI([]byte(v.Interface().(*url.URL).String()))
 	}
 }
 
@@ -144,7 +144,7 @@ func (_this *urlIterator) PostCacheInitIterator(session *Session) {
 
 func (_this *urlIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	vCopy := v.Interface().(url.URL)
-	eventReceiver.OnURI((&vCopy).String())
+	eventReceiver.OnURI([]byte((&vCopy).String()))
 }
 
 // --------
@@ -375,5 +375,5 @@ func (_this *stringIterator) PostCacheInitIterator(session *Session) {
 }
 
 func (_this *stringIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
-	eventReceiver.OnString(v.String())
+	eventReceiver.OnString([]byte(v.String()))
 }

@@ -239,35 +239,34 @@ func (_this *Encoder) OnBytes(value []byte) {
 	_this.encodeTypedBytes(cbeTypeBytes, value)
 }
 
-func (_this *Encoder) OnURI(value string) {
-	_this.encodeTypedBytes(cbeTypeURI, []byte(value))
+func (_this *Encoder) OnURI(value []byte) {
+	_this.encodeTypedBytes(cbeTypeURI, value)
 }
 
-func (_this *Encoder) OnString(value string) {
-	bytes := []byte(value)
-	stringLength := len(bytes)
+func (_this *Encoder) OnString(value []byte) {
+	stringLength := len(value)
 
 	if stringLength > maxSmallStringLength {
-		_this.encodeTypedBytes(cbeTypeString, bytes)
+		_this.encodeTypedBytes(cbeTypeString, value)
 		return
 	}
 
 	dst := _this.buff.Allocate(stringLength + 1)
 	dst[0] = byte(cbeTypeString0 + cbeTypeField(stringLength))
 	dst = dst[1:]
-	copy(dst, bytes)
+	copy(dst, value)
 }
 
-func (_this *Encoder) OnVerbatimString(value string) {
-	_this.encodeTypedBytes(cbeTypeVerbatimString, []byte(value))
+func (_this *Encoder) OnVerbatimString(value []byte) {
+	_this.encodeTypedBytes(cbeTypeVerbatimString, value)
 }
 
 func (_this *Encoder) OnCustomBinary(value []byte) {
 	_this.encodeTypedBytes(cbeTypeCustomBinary, value)
 }
 
-func (_this *Encoder) OnCustomText(value string) {
-	_this.encodeTypedBytes(cbeTypeCustomText, []byte(value))
+func (_this *Encoder) OnCustomText(value []byte) {
+	_this.encodeTypedBytes(cbeTypeCustomText, value)
 }
 
 func (_this *Encoder) OnBytesBegin() {

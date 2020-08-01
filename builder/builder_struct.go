@@ -167,9 +167,9 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromString(value string, _ reflect.Value) {
+func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
-		if builderDesc, ok := _this.builderDescs[value]; ok {
+		if builderDesc, ok := _this.builderDescs[string(value)]; ok {
 			_this.nextBuilder = builderDesc.builder
 			_this.nextValue = _this.container.Field(builderDesc.index)
 		} else {
@@ -185,9 +185,9 @@ func (_this *structBuilder) BuildFromString(value string, _ reflect.Value) {
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+func (_this *structBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
-		if builderDesc, ok := _this.builderDescs[value]; ok {
+		if builderDesc, ok := _this.builderDescs[string(value)]; ok {
 			_this.nextBuilder = builderDesc.builder
 			_this.nextValue = _this.container.Field(builderDesc.index)
 		} else {
@@ -213,7 +213,7 @@ func (_this *structBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value)
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromCustomText(value string, _ reflect.Value) {
+func (_this *structBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.nextBuilder.BuildFromCustomText(value, _this.nextValue)
 	_this.swapKeyValue()
 }

@@ -156,13 +156,13 @@ func (_this *sliceBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromString(value string, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromString(value, object)
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromVerbatimString(value, object)
 	_this.storeValue(object)
@@ -180,7 +180,7 @@ func (_this *sliceBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) 
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromCustomText(value string, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.elemBuilder.BuildFromCustomText(value, object)
 	_this.storeValue(object)

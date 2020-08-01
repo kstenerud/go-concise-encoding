@@ -134,13 +134,13 @@ func (_this *ptrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
 	_this.elemBuilder.BuildFromString(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
 	_this.elemBuilder.BuildFromVerbatimString(value, ptr.Elem())
 	dst.Set(ptr)
@@ -158,7 +158,7 @@ func (_this *ptrBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) 
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
 	_this.elemBuilder.BuildFromCustomText(value, ptr.Elem())
 	dst.Set(ptr)

@@ -101,11 +101,11 @@ func (_this *intBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "UUID")
 }
 
-func (_this *intBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *intBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "String")
 }
 
-func (_this *intBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *intBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "VerbatimString")
 }
 
@@ -119,7 +119,7 @@ func (_this *intBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) 
 	}
 }
 
-func (_this *intBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *intBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}

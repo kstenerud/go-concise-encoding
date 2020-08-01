@@ -46,19 +46,20 @@ const (
 
 // Wraps a string destined for a CTE document, adding quotes or escapes as
 // necessary.
-func asString(str string) (finalString string) {
-	if str == "" {
+func asPotentialQuotedString(str []byte) (finalString string) {
+	asString := string(str)
+	if asString == "" {
 		return `""`
 	}
 
 	requiresQuotes := false
 	escapeCount := 0
 
-	if unicode.CharHasProperty([]rune(str)[0], unquotedFirstCharUnsafe) {
+	if unicode.CharHasProperty([]rune(asString)[0], unquotedFirstCharUnsafe) {
 		requiresQuotes = true
 	}
 
-	for _, ch := range str {
+	for _, ch := range asString {
 		props := unicode.GetCharProperty(ch)
 		if props.HasProperty(unquotedUnsafe) {
 			requiresQuotes = true
@@ -69,44 +70,46 @@ func asString(str string) (finalString string) {
 	}
 
 	if !requiresQuotes {
-		return str
+		return asString
 	}
 
 	if escapeCount == 0 {
-		return `"` + str + `"`
+		return `"` + asString + `"`
 	}
 
-	return escapedQuoted(str, escapeCount)
+	return escapedQuoted(asString, escapeCount)
 }
 
 // Wraps a verbatim string destined for a CTE document.
-func asVerbatimString(str string) string {
-	sentinel := generateVerbatimSentinel(str)
-	return "`" + sentinel + str + sentinel
+func asVerbatimString(str []byte) string {
+	asString := string(str)
+	sentinel := generateVerbatimSentinel(asString)
+	return "`" + sentinel + asString + sentinel
 }
 
 // Wraps a custom text string destined for a CTE document.
-func asCustomText(str string) string {
-	for _, ch := range str {
+func asCustomText(str []byte) string {
+	for _, ch := range string(str) {
 		props := unicode.GetCharProperty(ch)
 		if props.HasProperty(customTextUnsafe) {
-			return escapedCustomText(str)
+			return escapedCustomText(string(str))
 		}
 	}
 
-	return `t"` + str + `"`
+	return `t"` + string(str) + `"`
 }
 
 // Wraps markup content destined for a CTE document.
-func asMarkupContent(str string) string {
-	for _, ch := range str {
+func asMarkupContent(str []byte) string {
+	asString := string(str)
+	for _, ch := range asString {
 		props := unicode.GetCharProperty(ch)
 		if props.HasProperty(markupUnsafe) {
-			return escapedMarkupText(str)
+			return escapedMarkupText(asString)
 		}
 	}
 
-	return str
+	return asString
 }
 
 // ============================================================================

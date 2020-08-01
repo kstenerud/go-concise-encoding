@@ -205,7 +205,7 @@ func (_this *Decoder) handleStringish() {
 
 	// Unquoted string
 	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
-		_this.eventReceiver.OnString(string(_this.buffer.GetToken()))
+		_this.eventReceiver.OnString(_this.buffer.GetToken())
 		_this.endObject()
 		return
 	}
@@ -224,11 +224,11 @@ func (_this *Decoder) handleStringish() {
 			_this.endObject()
 			return
 		case 't':
-			_this.eventReceiver.OnCustomText(string(_this.buffer.DecodeCustomText()))
+			_this.eventReceiver.OnCustomText(_this.buffer.DecodeCustomText())
 			_this.endObject()
 			return
 		case 'u':
-			_this.eventReceiver.OnURI(string(_this.buffer.DecodeURI()))
+			_this.eventReceiver.OnURI(_this.buffer.DecodeURI())
 			_this.endObject()
 			return
 		default:
@@ -242,7 +242,7 @@ func (_this *Decoder) handleStringish() {
 
 func (_this *Decoder) handleQuotedString() {
 	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnString(string(_this.buffer.DecodeQuotedString()))
+	_this.eventReceiver.OnString(_this.buffer.DecodeQuotedString())
 	_this.endObject()
 }
 
@@ -549,7 +549,7 @@ func (_this *Decoder) handleMarkupContent() {
 	case nextIsVerbatimString:
 		str := _this.buffer.DecodeVerbatimString()
 		if len(str) > 0 {
-			_this.eventReceiver.OnString(string(str))
+			_this.eventReceiver.OnString(str)
 		}
 		_this.buffer.EndToken()
 	case nextIsSingleLineComment:
@@ -619,7 +619,7 @@ func (_this *Decoder) handleNamedValue() {
 
 func (_this *Decoder) handleVerbatimString() {
 	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnVerbatimString(string(_this.buffer.DecodeVerbatimString()))
+	_this.eventReceiver.OnVerbatimString(_this.buffer.DecodeVerbatimString())
 	_this.endObject()
 }
 
@@ -632,7 +632,7 @@ func (_this *Decoder) handleReference() {
 			_this.buffer.UnexpectedChar("reference (uri)")
 		}
 		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnURI(string(_this.buffer.DecodeQuotedString()))
+		_this.eventReceiver.OnURI(_this.buffer.DecodeQuotedString())
 		_this.endObject()
 		return
 	}

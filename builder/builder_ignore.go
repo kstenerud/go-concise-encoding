@@ -110,11 +110,11 @@ func (_this *ignoreBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
@@ -126,7 +126,7 @@ func (_this *ignoreBuilder) BuildFromCustomBinary(value []byte, dst reflect.Valu
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
@@ -254,11 +254,11 @@ func (_this *ignoreContainerBuilder) BuildFromUUID(value []byte, dst reflect.Val
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	// Ignore this directive
 }
 
@@ -270,7 +270,7 @@ func (_this *ignoreContainerBuilder) BuildFromCustomBinary(value []byte, dst ref
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	// Ignore this directive
 }
 

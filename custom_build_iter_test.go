@@ -206,16 +206,16 @@ func assertMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
 
 // ============================================================================
 
-func convertComplexToCustomText(rv reflect.Value) (asString string, err error) {
+func convertComplexToCustomText(rv reflect.Value) (asString []byte, err error) {
 	cplx := rv.Complex()
 	builder := strings.Builder{}
 	builder.WriteString(fmt.Sprintf("cplx(%g+%gi)", real(cplx), imag(cplx)))
-	return builder.String(), nil
+	return []byte(builder.String()), nil
 }
 
-func convertFromCustomText(src string, dst reflect.Value) error {
+func convertFromCustomText(src []byte, dst reflect.Value) error {
 	var r, i float64
-	if _, err := fmt.Sscanf(src, "cplx(%f+%fi)", &r, &i); err != nil {
+	if _, err := fmt.Sscanf(string(src), "cplx(%f+%fi)", &r, &i); err != nil {
 		return err
 	}
 

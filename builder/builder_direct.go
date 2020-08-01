@@ -107,12 +107,12 @@ func (_this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *directBuilder) BuildFromString(value string, dst reflect.Value) {
-	dst.SetString(value)
+func (_this *directBuilder) BuildFromString(value []byte, dst reflect.Value) {
+	dst.SetString(string(value))
 }
 
-func (_this *directBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
-	dst.SetString(value)
+func (_this *directBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
+	dst.SetString(string(value))
 }
 
 func (_this *directBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
@@ -125,7 +125,7 @@ func (_this *directBuilder) BuildFromCustomBinary(value []byte, dst reflect.Valu
 	}
 }
 
-func (_this *directBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *directBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
@@ -248,13 +248,13 @@ func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.SetBytes(value)
 }
 
-func (_this *directPtrBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	// String needs special handling since there's no such thing as a nil string
 	// in go.
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "String")
 }
 
-func (_this *directPtrBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	// String needs special handling since there's no such thing as a nil string
 	// in go.
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "VerbatimString")
@@ -268,7 +268,7 @@ func (_this *directPtrBuilder) BuildFromCustomBinary(value []byte, dst reflect.V
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "CustomBinary")
 }
 
-func (_this *directPtrBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "CustomText")
 }
 

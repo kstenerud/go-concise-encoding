@@ -260,29 +260,29 @@ func (_this *Rules) OnBytes(value []byte) {
 	_this.nextReceiver.OnBytes(value)
 }
 
-func (_this *Rules) OnString(value string) {
+func (_this *Rules) OnString(value []byte) {
 	_this.onStringBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
-		_this.onArrayData([]byte(value))
+		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnString(value)
 }
 
-func (_this *Rules) OnVerbatimString(value string) {
+func (_this *Rules) OnVerbatimString(value []byte) {
 	_this.onVerbatimStringBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
-		_this.onArrayData([]byte(value))
+		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnVerbatimString(value)
 }
 
-func (_this *Rules) OnURI(value string) {
+func (_this *Rules) OnURI(value []byte) {
 	_this.onURIBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
-		_this.onArrayData([]byte(value))
+		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnURI(value)
 }
@@ -296,11 +296,11 @@ func (_this *Rules) OnCustomBinary(value []byte) {
 	_this.nextReceiver.OnCustomBinary(value)
 }
 
-func (_this *Rules) OnCustomText(value string) {
+func (_this *Rules) OnCustomText(value []byte) {
 	_this.onCustomTextBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
-		_this.onArrayData([]byte(value))
+		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnCustomText(value)
 }

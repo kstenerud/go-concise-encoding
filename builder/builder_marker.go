@@ -106,11 +106,11 @@ func (_this *markerIDBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	BuilderPanicBadEvent(_this, "UUID")
 }
 
-func (_this *markerIDBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	_this.onID(value)
 }
 
-func (_this *markerIDBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderPanicBadEvent(_this, "VerbatimString")
 }
 
@@ -122,7 +122,7 @@ func (_this *markerIDBuilder) BuildFromCustomBinary(value []byte, dst reflect.Va
 	BuilderPanicBadEvent(_this, "CustomBinary")
 }
 
-func (_this *markerIDBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	BuilderPanicBadEvent(_this, "CustomText")
 }
 
@@ -253,12 +253,12 @@ func (_this *markerObjectBuilder) BuildFromUUID(value []byte, dst reflect.Value)
 	_this.onObjectComplete(dst)
 }
 
-func (_this *markerObjectBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *markerObjectBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	_this.child.BuildFromString(value, dst)
 	_this.onObjectComplete(dst)
 }
 
-func (_this *markerObjectBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *markerObjectBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	_this.child.BuildFromVerbatimString(value, dst)
 	_this.onObjectComplete(dst)
 }
@@ -273,7 +273,7 @@ func (_this *markerObjectBuilder) BuildFromCustomBinary(value []byte, dst reflec
 	_this.onObjectComplete(dst)
 }
 
-func (_this *markerObjectBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *markerObjectBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	_this.child.BuildFromCustomText(value, dst)
 	_this.onObjectComplete(dst)
 }

@@ -274,10 +274,11 @@ func (_this *Encoder) OnBytes(value []byte) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnURI(value string) {
+func (_this *Encoder) OnURI(value []byte) {
+	asString := string(value)
 	for _, ch := range value {
 		if ch == '"' {
-			value = strings.ReplaceAll(value, "\"", "%22")
+			asString = strings.ReplaceAll(asString, "\"", "%22")
 			break
 		}
 	}
@@ -285,52 +286,52 @@ func (_this *Encoder) OnURI(value string) {
 	switch _this.currentState {
 	case cteEncoderStateAwaitReferenceID:
 		_this.unstackState()
-		_this.addFmt(`%v#u"%v"`, _this.nextPrefix, value)
+		_this.addFmt(`%v#u"%v"`, _this.nextPrefix, asString)
 		_this.currentItemCount++
 		_this.transitionState()
 	default:
 		_this.addPrefix()
-		_this.addFmt(`u"%v"`, value)
+		_this.addFmt(`u"%v"`, asString)
 		_this.currentItemCount++
 		_this.transitionState()
 	}
 }
 
-func (_this *Encoder) handleStringMarkerID(value string) {
+func (_this *Encoder) handleStringMarkerID(value []byte) {
 	_this.addPrefix()
 	_this.unstackState()
-	_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, value)
+	_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, string(value))
 }
 
-func (_this *Encoder) handleStringReferenceID(value string) {
+func (_this *Encoder) handleStringReferenceID(value []byte) {
 	_this.addPrefix()
 	_this.unstackState()
-	_this.addFmt("%v#%v", _this.nextPrefix, value)
+	_this.addFmt("%v#%v", _this.nextPrefix, string(value))
 	_this.currentItemCount++
 	_this.transitionState()
 }
 
-func (_this *Encoder) handleStringMarkupItem(value string) {
+func (_this *Encoder) handleStringMarkupItem(value []byte) {
 	_this.addPrefix()
 	_this.addString(asMarkupContent(value))
 	_this.currentItemCount++
 	_this.transitionState()
 }
 
-func (_this *Encoder) handleStringCommentItem(value string) {
+func (_this *Encoder) handleStringCommentItem(value []byte) {
 	_this.addPrefix()
-	_this.addString(value)
+	_this.addString(string(value))
 	_this.transitionState()
 }
 
-func (_this *Encoder) handleStringNormal(value string) {
+func (_this *Encoder) handleStringNormal(value []byte) {
 	_this.addPrefix()
-	_this.addString(asString(value))
+	_this.addString(asPotentialQuotedString(value))
 	_this.currentItemCount++
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnString(value string) {
+func (_this *Encoder) OnString(value []byte) {
 	switch _this.currentState &^ cteEncoderStateWithInvisibleItem {
 	case cteEncoderStateAwaitMarkerID:
 		_this.handleStringMarkerID(value)
@@ -345,7 +346,7 @@ func (_this *Encoder) OnString(value string) {
 	}
 }
 
-func (_this *Encoder) OnVerbatimString(value string) {
+func (_this *Encoder) OnVerbatimString(value []byte) {
 	_this.addPrefix()
 	_this.addString(asVerbatimString(value))
 	_this.currentItemCount++
@@ -359,7 +360,7 @@ func (_this *Encoder) OnCustomBinary(value []byte) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnCustomText(value string) {
+func (_this *Encoder) OnCustomText(value []byte) {
 	_this.addPrefix()
 	_this.addString(asCustomText(value))
 	_this.currentItemCount++
@@ -397,15 +398,15 @@ func (_this *Encoder) finalizeArray() {
 	case cteEncoderStateAwaitBytes:
 		_this.OnBytes(_this.chunkBuffer)
 	case cteEncoderStateAwaitQuotedString:
-		_this.OnString(string(_this.chunkBuffer))
+		_this.OnString(_this.chunkBuffer)
 	case cteEncoderStateAwaitVerbatimString:
-		_this.OnVerbatimString(string(_this.chunkBuffer))
+		_this.OnVerbatimString(_this.chunkBuffer)
 	case cteEncoderStateAwaitURI:
-		_this.OnURI(string(_this.chunkBuffer))
+		_this.OnURI(_this.chunkBuffer)
 	case cteEncoderStateAwaitCustomBinary:
 		_this.OnCustomBinary(_this.chunkBuffer)
 	case cteEncoderStateAwaitCustomText:
-		_this.OnCustomText(string(_this.chunkBuffer))
+		_this.OnCustomText(_this.chunkBuffer)
 	}
 	_this.chunkBuffer = _this.chunkBuffer[:0]
 }

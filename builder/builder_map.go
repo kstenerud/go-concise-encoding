@@ -193,13 +193,13 @@ func (_this *mapBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromString(value string, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromString(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromVerbatimString(value, object)
 	_this.store(object)
@@ -217,7 +217,7 @@ func (_this *mapBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) 
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *mapBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromCustomText(value, object)
 	_this.store(object)

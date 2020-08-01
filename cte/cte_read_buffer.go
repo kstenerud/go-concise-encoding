@@ -894,7 +894,7 @@ func (_this *CTEReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coeff
 	return float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(exponent))
 }
 
-func (_this *CTEReadBuffer) DecodeSingleLineComment() string {
+func (_this *CTEReadBuffer) DecodeSingleLineComment() []byte {
 	// We're already past the "//" by this point
 	_this.BeginSubtoken()
 	_this.readUntilByte('\n')
@@ -904,10 +904,10 @@ func (_this *CTEReadBuffer) DecodeSingleLineComment() string {
 	}
 	_this.AdvanceByte()
 
-	return string(subtoken)
+	return subtoken
 }
 
-func (_this *CTEReadBuffer) DecodeMultilineComment() (string, nextType) {
+func (_this *CTEReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
 	lastByte := _this.ReadByte()
 
 	for {
@@ -918,19 +918,19 @@ func (_this *CTEReadBuffer) DecodeMultilineComment() (string, nextType) {
 			token := _this.GetToken()
 			token = token[:len(token)-2]
 			_this.EndToken()
-			return string(token), nextIsCommentEnd
+			return token, nextIsCommentEnd
 		}
 
 		if firstByte == '/' && lastByte == '*' {
 			token := _this.GetToken()
 			token = token[:len(token)-2]
 			_this.EndToken()
-			return string(token), nextIsCommentBegin
+			return token, nextIsCommentBegin
 		}
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
+func (_this *CTEReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
 	isInitialWS := true
 	wsCount := 0
 	isCommentInitiator := false
@@ -995,17 +995,17 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
 			completeStringPortion()
 			addSlashIfNeeded()
 			_this.EndToken()
-			return sb.String(), nextIsMarkupBegin
+			return []byte(sb.String()), nextIsMarkupBegin
 		case '>':
 			completeContentsPortion()
 			addSlashIfNeeded()
 			_this.EndToken()
-			return sb.String(), nextIsMarkupEnd
+			return []byte(sb.String()), nextIsMarkupEnd
 		case '/':
 			if isCommentInitiator {
 				completeStringPortion()
 				_this.EndToken()
-				return sb.String(), nextIsSingleLineComment
+				return []byte(sb.String()), nextIsSingleLineComment
 			} else {
 				isCommentInitiator = true
 			}
@@ -1013,14 +1013,14 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
 			if isCommentInitiator {
 				completeStringPortion()
 				_this.EndToken()
-				return sb.String(), nextIsCommentBegin
+				return []byte(sb.String()), nextIsCommentBegin
 			} else {
 				sb.WriteByte(currentByte)
 			}
 		case '`':
 			completeStringPortion()
 			addSlashIfNeeded()
-			return sb.String(), nextIsVerbatimString
+			return []byte(sb.String()), nextIsVerbatimString
 		default:
 			completeStringPortion()
 			addSlashIfNeeded()
@@ -1030,7 +1030,7 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() (string, nextType) {
 }
 
 // Decode a marker ID. asString will be empty if the result is an integer.
-func (_this *CTEReadBuffer) DecodeMarkerID() (asString string, asUint uint64) {
+func (_this *CTEReadBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
 	isInteger := true
 	_this.BeginSubtoken()
 Loop:
@@ -1059,7 +1059,7 @@ Loop:
 	}
 
 	if !isInteger {
-		asString = string(subtoken)
+		asString = subtoken
 	}
 	return
 }

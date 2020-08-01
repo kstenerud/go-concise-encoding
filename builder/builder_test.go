@@ -67,7 +67,7 @@ func VB() *test.TEvent                       { return test.VB() }
 func UB() *test.TEvent                       { return test.UB() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
-func AC(l uint64, term bool) *test.TEvent    { return test.AC(l, term) }
+func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
@@ -511,6 +511,11 @@ func TestBuilderString(t *testing.T) {
 	assertBuild(t, "", N())
 	assertBuild(t, "test", S("test"))
 }
+
+// func TestBuilderChunkedString(t *testing.T) {
+// 	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
+// 	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
+// }
 
 func TestBuilderStringFail(t *testing.T) {
 	assertBuildPanics(t, "", B(false))

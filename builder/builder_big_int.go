@@ -105,11 +105,11 @@ func (_this *bigIntBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "UUID")
 }
 
-func (_this *bigIntBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *bigIntBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "String")
 }
 
-func (_this *bigIntBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *bigIntBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBigInt, "VerbatimString")
 }
 
@@ -123,7 +123,7 @@ func (_this *bigIntBuilder) BuildFromCustomBinary(value []byte, dst reflect.Valu
 	}
 }
 
-func (_this *bigIntBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *bigIntBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
@@ -245,11 +245,11 @@ func (_this *pBigIntBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "UUID")
 }
 
-func (_this *pBigIntBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *pBigIntBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "String")
 }
 
-func (_this *pBigIntBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *pBigIntBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePBigInt, "VerbatimString")
 }
 
@@ -263,7 +263,7 @@ func (_this *pBigIntBuilder) BuildFromCustomBinary(value []byte, dst reflect.Val
 	}
 }
 
-func (_this *pBigIntBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *pBigIntBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}

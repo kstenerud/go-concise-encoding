@@ -52,11 +52,11 @@ type ObjectBuilder interface {
 	BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
 	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
 	BuildFromUUID(value []byte, dst reflect.Value)
-	BuildFromString(value string, dst reflect.Value)
-	BuildFromVerbatimString(value string, dst reflect.Value)
+	BuildFromString(value []byte, dst reflect.Value)
+	BuildFromVerbatimString(value []byte, dst reflect.Value)
 	BuildFromBytes(value []byte, dst reflect.Value)
 	BuildFromCustomBinary(value []byte, dst reflect.Value)
-	BuildFromCustomText(value string, dst reflect.Value)
+	BuildFromCustomText(value []byte, dst reflect.Value)
 	BuildFromURI(value *url.URL, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
 	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
@@ -134,6 +134,6 @@ func BuilderPanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstTyp
 
 // Report that an error occurred while building from custom text data.
 // This normally indicates a bug in your custom builder.
-func BuilderPanicBuildFromCustomText(builder ObjectBuilder, src string, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("Error converting custom text data [%v] to type %v (via %v): %v", src, dstType, reflect.TypeOf(builder), err))
+func BuilderPanicBuildFromCustomText(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("Error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
 }

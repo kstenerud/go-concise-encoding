@@ -307,15 +307,15 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventBytes:
 		receiver.OnBytes(_this.V1.([]byte))
 	case TEventString:
-		receiver.OnString(_this.V1.(string))
+		receiver.OnString([]byte(_this.V1.(string)))
 	case TEventVerbatimString:
-		receiver.OnVerbatimString(_this.V1.(string))
+		receiver.OnVerbatimString([]byte(_this.V1.(string)))
 	case TEventURI:
-		receiver.OnURI(_this.V1.(string))
+		receiver.OnURI([]byte(_this.V1.(string)))
 	case TEventCustomBinary:
 		receiver.OnCustomBinary(_this.V1.([]byte))
 	case TEventCustomText:
-		receiver.OnCustomText(_this.V1.(string))
+		receiver.OnCustomText([]byte(_this.V1.(string)))
 	case TEventBytesBegin:
 		receiver.OnBytesBegin()
 	case TEventStringBegin:
@@ -588,24 +588,24 @@ func (h *TEventPrinter) OnBytes(value []byte) {
 	h.Print(BIN(value))
 	h.Next.OnBytes(value)
 }
-func (h *TEventPrinter) OnString(value string) {
-	h.Print(S(value))
+func (h *TEventPrinter) OnString(value []byte) {
+	h.Print(S(string(value)))
 	h.Next.OnString(value)
 }
-func (h *TEventPrinter) OnVerbatimString(value string) {
-	h.Print(VS(value))
+func (h *TEventPrinter) OnVerbatimString(value []byte) {
+	h.Print(VS(string(value)))
 	h.Next.OnVerbatimString(value)
 }
-func (h *TEventPrinter) OnURI(value string) {
-	h.Print(URI((value)))
+func (h *TEventPrinter) OnURI(value []byte) {
+	h.Print(URI((string(value))))
 	h.Next.OnURI(value)
 }
 func (h *TEventPrinter) OnCustomBinary(value []byte) {
 	h.Print(CUB(value))
 	h.Next.OnCustomBinary(value)
 }
-func (h *TEventPrinter) OnCustomText(value string) {
-	h.Print(CUT(value))
+func (h *TEventPrinter) OnCustomText(value []byte) {
+	h.Print(CUT(string(value)))
 	h.Next.OnCustomText(value)
 }
 func (h *TEventPrinter) OnBytesBegin() {
@@ -742,11 +742,11 @@ func (h *TER) OnUUID(value []byte)                    { h.add(UUID(value)) }
 func (h *TER) OnTime(value time.Time)                 { h.add(GT(value)) }
 func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(CT(value)) }
 func (h *TER) OnBytes(value []byte)                   { h.add(BIN(value)) }
-func (h *TER) OnString(value string)                  { h.add(S(value)) }
-func (h *TER) OnVerbatimString(value string)          { h.add(VS(value)) }
-func (h *TER) OnURI(value string)                     { h.add(URI((value))) }
+func (h *TER) OnString(value []byte)                  { h.add(S(string(value))) }
+func (h *TER) OnVerbatimString(value []byte)          { h.add(VS(string(value))) }
+func (h *TER) OnURI(value []byte)                     { h.add(URI(string(value))) }
 func (h *TER) OnCustomBinary(value []byte)            { h.add(CUB(value)) }
-func (h *TER) OnCustomText(value string)              { h.add(CUT(value)) }
+func (h *TER) OnCustomText(value []byte)              { h.add(CUT(string(value))) }
 func (h *TER) OnBytesBegin()                          { h.add(BB()) }
 func (h *TER) OnStringBegin()                         { h.add(SB()) }
 func (h *TER) OnVerbatimStringBegin()                 { h.add(VB()) }

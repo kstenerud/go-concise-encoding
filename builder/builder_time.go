@@ -101,11 +101,11 @@ func (_this *timeBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "UUID")
 }
 
-func (_this *timeBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *timeBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "String")
 }
 
-func (_this *timeBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *timeBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "VerbatimString")
 }
 
@@ -119,7 +119,7 @@ func (_this *timeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *timeBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *timeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
@@ -239,11 +239,11 @@ func (_this *compactTimeBuilder) BuildFromUUID(value []byte, dst reflect.Value) 
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "UUID")
 }
 
-func (_this *compactTimeBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *compactTimeBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "String")
 }
 
-func (_this *compactTimeBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *compactTimeBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "VerbatimString")
 }
 
@@ -257,7 +257,7 @@ func (_this *compactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect
 	}
 }
 
-func (_this *compactTimeBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *compactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
@@ -373,11 +373,11 @@ func (_this *pCompactTimeBuilder) BuildFromUUID(value []byte, dst reflect.Value)
 	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "UUID")
 }
 
-func (_this *pCompactTimeBuilder) BuildFromString(value string, dst reflect.Value) {
+func (_this *pCompactTimeBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "String")
 }
 
-func (_this *pCompactTimeBuilder) BuildFromVerbatimString(value string, dst reflect.Value) {
+func (_this *pCompactTimeBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "VerbatimString")
 }
 
@@ -391,7 +391,7 @@ func (_this *pCompactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflec
 	}
 }
 
-func (_this *pCompactTimeBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *pCompactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
 		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}

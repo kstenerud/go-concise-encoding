@@ -28,15 +28,12 @@ import (
 // ============================================================================
 // Builder Session
 
-// Fills out a value from custom binary data.
+// Fills out a value from custom data.
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
-type CustomBinaryBuildFunction func(src []byte, dst reflect.Value) error
-
-// Fills out a value from custom text data.
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
-type CustomTextBuildFunction func(src string, dst reflect.Value) error
+type CustomBuildFunction func(src []byte, dst reflect.Value) error
 
 type BuilderSessionOptions struct {
 	// Specifies which types will be built using custom text/binary build
@@ -48,10 +45,10 @@ type BuilderSessionOptions struct {
 	CustomBuiltTypes []reflect.Type
 
 	// Build function to use when building from a custom binary source.
-	CustomBinaryBuildFunction CustomBinaryBuildFunction
+	CustomBinaryBuildFunction CustomBuildFunction
 
 	// Build function to use when building from a custom text source.
-	CustomTextBuildFunction CustomTextBuildFunction
+	CustomTextBuildFunction CustomBuildFunction
 }
 
 func DefaultBuilderSessionOptions() *BuilderSessionOptions {
@@ -59,7 +56,7 @@ func DefaultBuilderSessionOptions() *BuilderSessionOptions {
 		CustomBinaryBuildFunction: (func(src []byte, dst reflect.Value) error {
 			return fmt.Errorf("No builder has been registered to handle custom binary data")
 		}),
-		CustomTextBuildFunction: (func(src string, dst reflect.Value) error {
+		CustomTextBuildFunction: (func(src []byte, dst reflect.Value) error {
 			return fmt.Errorf("No builder has been registered to handle custom text data")
 		}),
 	}

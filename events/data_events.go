@@ -64,11 +64,11 @@ type DataEventReceiver interface {
 	OnTime(value time.Time)
 	OnCompactTime(value *compact_time.Time)
 	OnBytes(value []byte)
-	OnString(value string)
-	OnVerbatimString(value string)
-	OnURI(value string)
+	OnString(value []byte)
+	OnVerbatimString(value []byte)
+	OnURI(value []byte)
 	OnCustomBinary(value []byte)
-	OnCustomText(value string)
+	OnCustomText(value []byte)
 	OnBytesBegin()
 	OnStringBegin()
 	OnVerbatimStringBegin()
@@ -113,11 +113,11 @@ func (_this *NullEventReceiver) OnUUID(_ []byte)                       {}
 func (_this *NullEventReceiver) OnTime(_ time.Time)                    {}
 func (_this *NullEventReceiver) OnCompactTime(_ *compact_time.Time)    {}
 func (_this *NullEventReceiver) OnBytes(value []byte)                  {}
-func (_this *NullEventReceiver) OnString(value string)                 {}
-func (_this *NullEventReceiver) OnVerbatimString(_ string)             {}
-func (_this *NullEventReceiver) OnURI(value string)                    {}
+func (_this *NullEventReceiver) OnString(value []byte)                 {}
+func (_this *NullEventReceiver) OnVerbatimString(_ []byte)             {}
+func (_this *NullEventReceiver) OnURI(value []byte)                    {}
 func (_this *NullEventReceiver) OnCustomBinary(_ []byte)               {}
-func (_this *NullEventReceiver) OnCustomText(_ string)                 {}
+func (_this *NullEventReceiver) OnCustomText(_ []byte)                 {}
 func (_this *NullEventReceiver) OnBytesBegin()                         {}
 func (_this *NullEventReceiver) OnStringBegin()                        {}
 func (_this *NullEventReceiver) OnVerbatimStringBegin()                {}

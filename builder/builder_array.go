@@ -139,12 +139,12 @@ func (_this *arrayBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromString(value string, _ reflect.Value) {
+func (_this *arrayBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	_this.elemBuilder.BuildFromString(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+func (_this *arrayBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
 	_this.elemBuilder.BuildFromVerbatimString(value, _this.currentElem())
 	_this.index++
 }
@@ -159,7 +159,7 @@ func (_this *arrayBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromCustomText(value string, dst reflect.Value) {
+func (_this *arrayBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	_this.elemBuilder.BuildFromCustomText(value, _this.currentElem())
 	_this.index++
 }
@@ -291,11 +291,11 @@ func (_this *bytesArrayBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromUUID")
 }
 
-func (_this *bytesArrayBuilder) BuildFromString(value string, _ reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromString")
 }
 
-func (_this *bytesArrayBuilder) BuildFromVerbatimString(value string, _ reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromVerbatimString")
 }
 
@@ -311,7 +311,7 @@ func (_this *bytesArrayBuilder) BuildFromCustomBinary(value []byte, _ reflect.Va
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustomBinary")
 }
 
-func (_this *bytesArrayBuilder) BuildFromCustomText(value string, _ reflect.Value) {
+func (_this *bytesArrayBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustomText")
 }
 

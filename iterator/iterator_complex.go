@@ -261,7 +261,7 @@ func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events
 	eventReceiver.OnMap()
 
 	for _, iter := range _this.fieldIterators {
-		eventReceiver.OnString(iter.Name)
+		eventReceiver.OnString([]byte(iter.Name))
 		iter.Iterator.IterateObject(v.Field(iter.Index), eventReceiver, references)
 	}
 

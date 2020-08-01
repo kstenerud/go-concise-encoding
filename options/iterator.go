@@ -31,32 +31,29 @@ import (
 
 // Converts a value to custom binary data.
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
-type ConvertToCustomBinaryFunction func(v reflect.Value) (asBytes []byte, err error)
-
-// Converts a value to custom text data.
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
-type ConvertToCustomTextFunction func(v reflect.Value) (asText string, err error)
+type ConvertToCustomFunction func(v reflect.Value) (asBytes []byte, err error)
 
 type IteratorSessionOptions struct {
 	// Specifies which types to convert to custom binary data, and how to do it.
 	// Note: You should only fill out one of these maps, depending on your
 	// indended encoding (binary or text). The iterator session will consult
 	// the binary map first and the text map second, choosing the first match.
-	CustomBinaryConverters map[reflect.Type]ConvertToCustomBinaryFunction
+	CustomBinaryConverters map[reflect.Type]ConvertToCustomFunction
 
 	// Specifies which types to convert to custom text data, and how to do it
 	// Note: You should only fill out one of these maps, depending on your
 	// indended encoding (binary or text). The iterator session will consult
 	// the binary map first and the text map second, choosing the first match.
-	CustomTextConverters map[reflect.Type]ConvertToCustomTextFunction
+	CustomTextConverters map[reflect.Type]ConvertToCustomFunction
 }
 
 func DefaultIteratorSessionOptions() *IteratorSessionOptions {
 	return &IteratorSessionOptions{
-		CustomBinaryConverters: make(map[reflect.Type]ConvertToCustomBinaryFunction),
-		CustomTextConverters:   make(map[reflect.Type]ConvertToCustomTextFunction),
+		CustomBinaryConverters: make(map[reflect.Type]ConvertToCustomFunction),
+		CustomTextConverters:   make(map[reflect.Type]ConvertToCustomFunction),
 	}
 }
 
@@ -66,10 +63,10 @@ func (_this *IteratorSessionOptions) WithDefaultsApplied() *IteratorSessionOptio
 	}
 
 	if _this.CustomBinaryConverters == nil {
-		_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomBinaryFunction)
+		_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
 	}
 	if _this.CustomTextConverters == nil {
-		_this.CustomTextConverters = make(map[reflect.Type]ConvertToCustomTextFunction)
+		_this.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
 	}
 
 	return _this
