@@ -120,6 +120,92 @@ func TestCTEChunkedString(t *testing.T) {
 		AC(0, false), ED())
 }
 
+func TestCTEChunkedVerbatimString(t *testing.T) {
+	assertEncode(t, "c1 `#abcdefgh#", V(1), VB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+
+	assertEncode(t, "c1 `#abcdefgh#", V(1), VB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, false), AD([]byte("gh")),
+		ED())
+
+	assertEncode(t, "c1 `#abcdefgh#", V(1), VB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, true), AD([]byte("gh")),
+		AC(0, false), ED())
+}
+
+func TestCTEChunkedBytes(t *testing.T) {
+	assertEncode(t, `c1 b"123456789a"`, V(1), BB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
+
+	assertEncode(t, `c1 b"123456789a"`, V(1), BB(),
+		AC(1, true), AD([]byte{0x12}),
+		AC(2, true), AD([]byte{0x34, 0x56}),
+		AC(2, false), AD([]byte{0x78, 0x9a}),
+		ED())
+
+	assertEncode(t, `c1 b"123456789a"`, V(1), BB(),
+		AC(1, true), AD([]byte{0x12}),
+		AC(2, true), AD([]byte{0x34, 0x56}),
+		AC(2, true), AD([]byte{0x78, 0x9a}),
+		AC(0, false), ED())
+}
+
+func TestCTEChunkedURI(t *testing.T) {
+	assertEncode(t, `c1 u"abcdefgh"`, V(1), UB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+
+	assertEncode(t, `c1 u"abcdefgh"`, V(1), UB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, false), AD([]byte("gh")),
+		ED())
+
+	assertEncode(t, `c1 u"abcdefgh"`, V(1), UB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, true), AD([]byte("gh")),
+		AC(0, false), ED())
+}
+
+func TestCTEChunkedCustomBinary(t *testing.T) {
+	assertEncode(t, `c1 c"123456789a"`, V(1), CBB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
+
+	assertEncode(t, `c1 c"123456789a"`, V(1), CBB(),
+		AC(1, true), AD([]byte{0x12}),
+		AC(2, true), AD([]byte{0x34, 0x56}),
+		AC(2, false), AD([]byte{0x78, 0x9a}),
+		ED())
+
+	assertEncode(t, `c1 c"123456789a"`, V(1), CBB(),
+		AC(1, true), AD([]byte{0x12}),
+		AC(2, true), AD([]byte{0x34, 0x56}),
+		AC(2, true), AD([]byte{0x78, 0x9a}),
+		AC(0, false), ED())
+}
+
+func TestCTEChunkedCustomText(t *testing.T) {
+	assertEncode(t, `c1 t"abcdefgh"`, V(1), CTB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+
+	assertEncode(t, `c1 t"abcdefgh"`, V(1), CTB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, false), AD([]byte("gh")),
+		ED())
+
+	assertEncode(t, `c1 t"abcdefgh"`, V(1), CTB(),
+		AC(1, true), AD([]byte("a")),
+		AC(2, true), AD([]byte("bc")),
+		AC(3, true), AD([]byte("def")),
+		AC(2, true), AD([]byte("gh")),
+		AC(0, false), ED())
+}
+
 func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 0", V(1), PI(0), ED())
 	assertDecodeEncode(t, "c1 123", V(1), PI(123), ED())

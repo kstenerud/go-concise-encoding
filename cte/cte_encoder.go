@@ -367,7 +367,7 @@ func (_this *Encoder) OnCustomText(value string) {
 }
 
 func (_this *Encoder) OnBytesBegin() {
-	_this.stackState(cteEncoderStateAwaitBytes, `b"`)
+	_this.stackState(cteEncoderStateAwaitBytes, ``)
 }
 
 func (_this *Encoder) OnStringBegin() {
@@ -375,19 +375,19 @@ func (_this *Encoder) OnStringBegin() {
 }
 
 func (_this *Encoder) OnVerbatimStringBegin() {
-	_this.stackState(cteEncoderStateAwaitVerbatimString, `"`)
+	_this.stackState(cteEncoderStateAwaitVerbatimString, ``)
 }
 
 func (_this *Encoder) OnURIBegin() {
-	_this.stackState(cteEncoderStateAwaitURI, `u"`)
+	_this.stackState(cteEncoderStateAwaitURI, ``)
 }
 
 func (_this *Encoder) OnCustomBinaryBegin() {
-	_this.stackState(cteEncoderStateAwaitCustomBinary, `c"`)
+	_this.stackState(cteEncoderStateAwaitCustomBinary, ``)
 }
 
 func (_this *Encoder) OnCustomTextBegin() {
-	_this.stackState(cteEncoderStateAwaitCustomText, `c"`)
+	_this.stackState(cteEncoderStateAwaitCustomText, ``)
 }
 
 func (_this *Encoder) finalizeArray() {
