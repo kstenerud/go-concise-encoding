@@ -182,6 +182,12 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 	properties.UnmarkRange(0xf0000, 0xffffd)
 	properties.UnmarkRange(0x100000, 0x10fffd)
 
+	// Allowed in marker and reference IDs
+	properties.AddRange(CharIsMarkerIDSafe, '0', '9')
+	properties.AddRange(CharIsMarkerIDSafe, 'a', 'z')
+	properties.AddRange(CharIsMarkerIDSafe, 'A', 'Z')
+	properties.Add(CharIsMarkerIDSafe, '_')
+
 	return properties
 }
 
@@ -223,10 +229,10 @@ const (
 	LowSymbolOrLookalike
 	Whitespace
 	Control
-	Reserved
 	TabReturnNewline
 	QuotedOrCustomTextDelimiter
 	MarkupDelimiter
+	MarkerIDSafe
 	NoProperties CharProperty = 0
 )
 `)
@@ -234,7 +240,7 @@ const (
 }
 
 func charValue(char rune, properties CharProperty) string {
-	const printableProperties = ^(CharIsControl | CharIsReserved)
+	const printableProperties = ^(CharIsControl)
 
 	switch char {
 	case '\r':
@@ -306,10 +312,10 @@ const (
 	CharIsLowSymbolOrLookalike
 	CharIsWhitespace
 	CharIsControl
-	CharIsReserved
 	CharIsTabReturnNewline
 	CharIsQuotedOrCustomTextDelimiter
 	CharIsMarkupDelimiter
+	CharIsMarkerIDSafe
 	NoProperties CharProperty = 0
 )
 
@@ -318,10 +324,10 @@ var charPropertyNames = []string{
 	"LowSymbolOrLookalike",
 	"Whitespace",
 	"Control",
-	"Reserved",
 	"TabReturnNewline",
 	"QuotedOrCustomTextDelimiter",
 	"MarkupDelimiter",
+	"MarkerIDSafe",
 }
 
 func (_this CharProperty) String() string {

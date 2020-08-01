@@ -35,7 +35,6 @@ type RuleOptions struct {
 	MaxBytesLength      uint64
 	MaxStringLength     uint64
 	MaxURILength        uint64
-	MaxIDLength         uint64
 	MaxMarkupNameLength uint64
 	MaxContainerDepth   uint64
 	MaxObjectCount      uint64
@@ -51,7 +50,6 @@ func DefaultRuleOptions() *RuleOptions {
 		MaxBytesLength:         1000000000,
 		MaxStringLength:        100000000,
 		MaxURILength:           10000,
-		MaxIDLength:            100,
 		MaxMarkupNameLength:    100,
 		MaxContainerDepth:      1000,
 		MaxObjectCount:         10000000,
@@ -77,9 +75,6 @@ func (_this *RuleOptions) WithDefaultsApplied() *RuleOptions {
 	}
 	if _this.MaxURILength < 1 {
 		_this.MaxURILength = defaults.MaxURILength
-	}
-	if _this.MaxIDLength < 1 {
-		_this.MaxIDLength = defaults.MaxIDLength
 	}
 	if _this.MaxMarkupNameLength < 1 {
 		_this.MaxMarkupNameLength = defaults.MaxMarkupNameLength

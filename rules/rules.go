@@ -40,8 +40,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// TODO: Marker ID rules
-
 // Rules is a DataEventsReceiver passthrough object that constrains the order
 // and contents of events to ensure that they form a valid and complete Concise
 // Encoding document.
@@ -261,6 +259,7 @@ func (_this *Rules) OnBytes(value []byte) {
 }
 
 func (_this *Rules) OnString(value []byte) {
+	_this.validateString(value)
 	_this.onStringBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
@@ -473,6 +472,16 @@ func (_this *Rules) onArrayChunk(length uint64, moreChunksFollow bool) {
 	}
 }
 
+func (_this *Rules) validateString(data []byte) {
+	if _this.isStringInsideComment() {
+		_this.validateCommentContents(data)
+	} else if _this.isAwaitingID() {
+		_this.validateIDContents(data)
+	} else {
+		_this.validateStringContents(data)
+	}
+}
+
 func (_this *Rules) onArrayData(data []byte) {
 	_this.assertCurrentStateAllowsType(eventTypeAData)
 
@@ -491,11 +500,7 @@ func (_this *Rules) onArrayData(data []byte) {
 		if _this.arrayBytesWritten+dataLength > _this.options.MaxStringLength {
 			panic(fmt.Errorf("Max string length (%v) exceeded", _this.options.MaxStringLength))
 		}
-		if _this.isStringInsideComment() {
-			_this.validateCommentContents(data)
-		} else {
-			_this.validateStringContents(data)
-		}
+		_this.validateString(data)
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
 		}
@@ -588,6 +593,15 @@ func (_this *Rules) validateCommentContents(data []byte) {
 	}
 }
 
+func (_this *Rules) validateIDContents(data []byte) {
+	for _, ch := range data {
+		_this.charValidator.AddByte(ch)
+		if _this.charValidator.IsCompleteCharacter() {
+			validateRulesIDCharacter(_this.charValidator.GetCharacter())
+		}
+	}
+}
+
 func (_this *Rules) getFirstRealContainer() ruleState {
 	for i := len(_this.stateStack) - 1; i >= 0; i-- {
 		currentState := _this.stateStack[i]
@@ -642,11 +656,14 @@ func (_this *Rules) onArrayChunkEnded() {
 			}
 		}
 		if _this.isAwaitingID() {
-			if _this.arrayBytesWritten == 0 {
-				panic(fmt.Errorf("An ID cannot be length 0"))
+			if _this.arrayBytesWritten < minMarkerIDLength {
+				panic(fmt.Errorf("An ID cannot be less than %v characters", minMarkerIDLength))
 			}
-			if _this.arrayBytesWritten > _this.options.MaxIDLength {
-				panic(fmt.Errorf("ID length %v exceeds max of %v", _this.arrayBytesWritten, _this.options.MaxIDLength))
+			if _this.arrayBytesWritten > maxMarkerIDLength {
+				panic(fmt.Errorf("ID length %v exceeds max of %v", _this.arrayBytesWritten, maxMarkerIDLength))
+			}
+			if _this.arrayData[0] >= '0' && _this.arrayData[0] <= '9' {
+				panic(fmt.Errorf("ID first character cannot be a digit"))
 			}
 			_this.stackID(string(_this.arrayData))
 		}
@@ -852,6 +869,9 @@ func (_this ruleState) String() string {
 	return ruleStateNames[_this&ruleState(ruleIDFieldMask)]
 }
 
+const minMarkerIDLength = 1
+const maxMarkerIDLength = 30
+
 const (
 	ruleIDFieldEnd  ruleEvent = 1 << 5
 	ruleIDFieldMask           = ruleIDFieldEnd - 1
@@ -991,8 +1011,14 @@ var childEndRuleStateChanges = [...]ruleState{
 }
 
 func validateRulesCommentCharacter(ch rune) {
-	const commentUnsafe = unicode.Reserved | unicode.Control
+	const commentUnsafe = unicode.Control
 	if unicode.CharHasProperty(ch, commentUnsafe) {
 		panic(fmt.Errorf("0x%04x: Invalid comment character", ch))
+	}
+}
+
+func validateRulesIDCharacter(ch rune) {
+	if !unicode.CharHasProperty(ch, unicode.MarkerIDSafe) {
+		panic(fmt.Errorf("0x%04x: Invalid ID character", ch))
 	}
 }
