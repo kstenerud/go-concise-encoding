@@ -74,19 +74,10 @@ func NewBDF(str string) *apd.Decimal {
 	return v
 }
 
-func NewURL(str string) *url.URL {
-	v, err := url.Parse(str)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
 func NewURI(uriString string) *url.URL {
 	uri, err := url.Parse(uriString)
 	if err != nil {
-		fmt.Printf("TEST CODE BUG: Bad URL (%v): %v", uriString, err)
-		panic(err)
+		panic(fmt.Errorf("TEST CODE BUG: Bad URL (%v): %w", uriString, err))
 	}
 	return uri
 }

@@ -23,8 +23,12 @@ package builder
 import (
 	"math/big"
 	"net/url"
+	"reflect"
+	"strconv"
 	"testing"
 	"time"
+
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -79,15 +83,21 @@ func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func ED() *test.TEvent                       { return test.ED() }
 
-func runBuild(template interface{}, events ...*test.TEvent) interface{} {
-	session := NewSession(nil, nil)
+func runBuild(session *Session, template interface{}, events ...*test.TEvent) interface{} {
 	builder := session.NewBuilderFor(template, nil)
 	test.InvokeEvents(builder, events...)
 	return builder.GetBuiltObject()
 }
 
 func assertBuild(t *testing.T, expected interface{}, events ...*test.TEvent) {
-	actual := runBuild(expected, events...)
+	actual := runBuild(NewSession(nil, nil), expected, events...)
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
+	}
+}
+
+func assertBuildWithSession(t *testing.T, session *Session, expected interface{}, events ...*test.TEvent) {
+	actual := runBuild(session, expected, events...)
 	if !equivalence.IsEquivalent(expected, actual) {
 		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
 	}
@@ -95,7 +105,7 @@ func assertBuild(t *testing.T, expected interface{}, events ...*test.TEvent) {
 
 func assertBuildPanics(t *testing.T, template interface{}, events ...*test.TEvent) {
 	test.AssertPanics(t, func() {
-		runBuild(template, events...)
+		runBuild(NewSession(nil, nil), template, events...)
 	})
 }
 
@@ -103,7 +113,7 @@ func assertBuildPanics(t *testing.T, template interface{}, events ...*test.TEven
 
 func TestBuildUnknown(t *testing.T) {
 	expected := []interface{}{1}
-	actual := runBuild(nil, L(), I(1), E())
+	actual := runBuild(NewSession(nil, nil), nil, L(), I(1), E())
 
 	if !equivalence.IsEquivalent(expected, actual) {
 		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
@@ -119,7 +129,7 @@ func TestBuilderBasicTypes(t *testing.T) {
 	gTimeNow := time.Now()
 	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
 	pCTime := compact_time.NewTimeLatLong(10, 5, 59, 100, 506, 107)
-	pURL := test.NewURL("http://x.com")
+	pURL := test.NewURI("http://x.com")
 
 	assertBuild(t, true, B(true))
 	assertBuild(t, false, B(false))
@@ -512,11 +522,6 @@ func TestBuilderString(t *testing.T) {
 	assertBuild(t, "test", S("test"))
 }
 
-// func TestBuilderChunkedString(t *testing.T) {
-// 	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
-// 	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
-// }
-
 func TestBuilderStringFail(t *testing.T) {
 	assertBuildPanics(t, "", B(false))
 	assertBuildPanics(t, "", PI(1))
@@ -537,6 +542,65 @@ func TestBuilderStringFail(t *testing.T) {
 	assertBuildPanics(t, "", L())
 	assertBuildPanics(t, "", M())
 	assertBuildPanics(t, "", E())
+}
+
+func TestBuilderChunkedBytes(t *testing.T) {
+	assertBuild(t, []byte{1, 2, 3, 4}, BB(), AC(2, true), AD([]byte{1, 2}), AC(2, false), AD([]byte{3, 4}))
+	assertBuild(t, []byte{1, 2, 3, 4}, BB(), AC(2, true), AD([]byte{1, 2}), AC(2, true), AD([]byte{3, 4}), AC(0, false))
+}
+
+func TestBuilderChunkedString(t *testing.T) {
+	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
+	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
+}
+
+func TestBuilderChunkedVerbatimString(t *testing.T) {
+	assertBuild(t, "test", VB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
+	assertBuild(t, "test", VB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
+}
+
+func TestBuilderChunkedURI(t *testing.T) {
+	expected := test.NewURI("test")
+	assertBuild(t, expected, UB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
+	assertBuild(t, expected, UB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
+}
+
+type CustomBinaryExampleType uint32
+
+func TestBuilderChunkedCustomBinary(t *testing.T) {
+	opts := options.DefaultBuilderSessionOptions()
+	opts.CustomBinaryBuildFunction = func(src []byte, dst reflect.Value) error {
+		var accum CustomBinaryExampleType
+		for _, b := range src {
+			accum = (accum << 8) | CustomBinaryExampleType(b)
+		}
+		dst.SetUint(uint64(accum))
+		return nil
+	}
+	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
+	session := NewSession(nil, opts)
+	expected := CustomBinaryExampleType(0x01020304)
+	assertBuildWithSession(t, session, expected, CBB(), AC(2, true), AD([]byte{1, 2}), AC(2, false), AD([]byte{3, 4}))
+	assertBuildWithSession(t, session, expected, CBB(), AC(2, true), AD([]byte{1, 2}), AC(2, true), AD([]byte{3, 4}), AC(0, false))
+}
+
+type CustomTextExampleType uint32
+
+func TestBuilderChunkedCustomText(t *testing.T) {
+	opts := options.DefaultBuilderSessionOptions()
+	opts.CustomTextBuildFunction = func(src []byte, dst reflect.Value) error {
+		v, err := strconv.ParseUint(string(src), 16, 64)
+		if err != nil {
+			return err
+		}
+		dst.SetUint(v)
+		return nil
+	}
+	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
+	session := NewSession(nil, opts)
+	expected := CustomTextExampleType(0x1234)
+	assertBuildWithSession(t, session, expected, CTB(), AC(2, true), AD([]byte{'1', '2'}), AC(2, false), AD([]byte{'3', '4'}))
+	assertBuildWithSession(t, session, expected, CTB(), AC(2, true), AD([]byte{'1', '2'}), AC(2, true), AD([]byte{'3', '4'}), AC(0, false))
 }
 
 func TestBuilderGoTime(t *testing.T) {

@@ -45,11 +45,15 @@ import (
 // directly (with the exception of constructors, initializers, and
 // GetBuildObject(), which are not designed to panic).
 type RootBuilder struct {
-	dstType         reflect.Type
-	currentBuilder  ObjectBuilder
-	object          reflect.Value
-	referenceFiller ReferenceFiller
-	session         *Session
+	dstType              reflect.Type
+	currentBuilder       ObjectBuilder
+	object               reflect.Value
+	referenceFiller      ReferenceFiller
+	session              *Session
+	chunkedData          []byte
+	chunkedFunction      func([]byte)
+	chunkRemainingLength uint64
+	moreChunksFollow     bool
 }
 
 // -----------
@@ -287,28 +291,44 @@ func (_this *RootBuilder) OnCustomText(value []byte) {
 	_this.currentBuilder.BuildFromCustomText(value, _this.object)
 }
 func (_this *RootBuilder) OnBytesBegin() {
-	panic("TODO: RootBuilder.OnBytesBegin")
+	_this.chunkedFunction = _this.OnBytes
+	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnStringBegin() {
-	panic("TODO: RootBuilder.OnStringBegin")
+	_this.chunkedFunction = _this.OnString
+	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnVerbatimStringBegin() {
-	panic("TODO: RootBuilder.OnVerbatimStringBegin")
+	_this.chunkedFunction = _this.OnVerbatimString
+	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnURIBegin() {
-	panic("TODO: RootBuilder.OnURIBegin")
+	_this.chunkedFunction = _this.OnURI
+	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnCustomBinaryBegin() {
-	panic("TODO: RootBuilder.OnCustomBinaryBegin")
+	_this.chunkedFunction = _this.OnCustomBinary
+	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnCustomTextBegin() {
-	panic("TODO: RootBuilder.OnCustomTextBegin")
+	_this.chunkedFunction = _this.OnCustomText
+	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnArrayChunk(length uint64, moreChunksFollow bool) {
-	panic("TODO: RootBuilder.OnArrayChunk")
+	_this.chunkRemainingLength = length
+	_this.moreChunksFollow = moreChunksFollow
+	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
+		_this.chunkedFunction(_this.chunkedData)
+		_this.chunkedData = _this.chunkedData[:0]
+	}
 }
 func (_this *RootBuilder) OnArrayData(data []byte) {
-	panic("TODO: RootBuilder.OnArrayData")
+	_this.chunkedData = append(_this.chunkedData, data...)
+	_this.chunkRemainingLength -= uint64(len(data))
+	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
+		_this.chunkedFunction(_this.chunkedData)
+		_this.chunkedData = _this.chunkedData[:0]
+	}
 }
 func (_this *RootBuilder) OnList() {
 	_this.currentBuilder.BuildBeginList()

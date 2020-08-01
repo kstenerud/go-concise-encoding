@@ -104,7 +104,7 @@ func TestIterateBasic(t *testing.T) {
 	pBigDFloat := test.NewBDF("4.509e10000")
 	gTimeNow := time.Now()
 	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
-	pURL := test.NewURL("http://x.com")
+	pURL := test.NewURI("http://x.com")
 
 	assertIterate(t, nil, N())
 	assertIterate(t, true, B(true))
