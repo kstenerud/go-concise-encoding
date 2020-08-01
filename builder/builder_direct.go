@@ -261,7 +261,7 @@ func (_this *directPtrBuilder) BuildFromVerbatimString(value []byte, dst reflect
 }
 
 func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	dst.SetBytes(value)
+	dst.SetBytes(cloneBytes(value))
 }
 
 func (_this *directPtrBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {

@@ -194,18 +194,8 @@ func chooseLowWater(bufferSize int) int {
 	return lowWater
 }
 
-func (_this *Decoder) possiblyZeroCopy(bytes []byte) []byte {
-	if _this.options.ShouldZeroCopy {
-		return bytes
-	}
-	bytesCopy := make([]byte, len(bytes), len(bytes))
-	copy(bytesCopy, bytes)
-	return bytesCopy
-}
-
 func (_this *Decoder) decodeSmallString(length int) []byte {
-	value := _this.possiblyZeroCopy(_this.buffer.DecodeBytes(length))
-	return value
+	return _this.buffer.DecodeBytes(length)
 }
 
 func validateLength(length uint64) {
@@ -217,14 +207,10 @@ func validateLength(length uint64) {
 
 func (_this *Decoder) decodeUnichunkArray(length uint64) []byte {
 	validateLength(length)
-	// TODO: array chunk
-	// _this.nextReceiver.OnArrayChunk(length, false)
 	if length == 0 {
 		return []byte{}
 	}
-	bytes := _this.possiblyZeroCopy(_this.buffer.DecodeBytes(int(length)))
-	// _this.nextReceiver.OnArrayData(bytes)
-	return bytes
+	return _this.buffer.DecodeBytes(int(length))
 }
 
 func (_this *Decoder) decodeMultichunkArray(initialLength uint64) []byte {
@@ -233,7 +219,7 @@ func (_this *Decoder) decodeMultichunkArray(initialLength uint64) []byte {
 	bytes := []byte{}
 	for {
 		validateLength(length)
-		// TODO: array chunk
+		// TODO: array chunking instead of building a big slice
 		// _this.nextReceiver.OnArrayChunk(length, moreChunksFollow)
 		nextBytes := _this.buffer.DecodeBytes(int(length))
 		// _this.nextReceiver.OnArrayData(nextBytes)

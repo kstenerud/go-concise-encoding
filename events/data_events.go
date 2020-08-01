@@ -63,6 +63,8 @@ type DataEventReceiver interface {
 	OnUUID(value []byte)
 	OnTime(value time.Time)
 	OnCompactTime(value *compact_time.Time)
+	// Warning: Do not store a pointer to value! The underlying contents should
+	// be considered volatile and likely to change after this method returns!
 	OnBytes(value []byte)
 	OnString(value []byte)
 	OnVerbatimString(value []byte)

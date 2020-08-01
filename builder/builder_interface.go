@@ -127,7 +127,7 @@ func (_this *intfBuilder) BuildFromVerbatimString(value []byte, dst reflect.Valu
 }
 
 func (_this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(value))
+	dst.Set(reflect.ValueOf(cloneBytes(value)))
 }
 
 func (_this *intfBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {

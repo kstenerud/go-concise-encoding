@@ -137,3 +137,9 @@ func BuilderPanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstTyp
 func BuilderPanicBuildFromCustomText(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("Error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
 }
+
+func cloneBytes(bytes []byte) []byte {
+	bytesCopy := make([]byte, len(bytes), len(bytes))
+	copy(bytesCopy, bytes)
+	return bytesCopy
+}

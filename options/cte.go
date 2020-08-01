@@ -34,9 +34,6 @@ const (
 // CTE Decoder
 
 type CTEDecoderOptions struct {
-	// TODO: ShouldZeroCopy option
-	ShouldZeroCopy bool
-
 	// The size of the underlying buffer to use when decoding a document.
 	BufferSize int
 

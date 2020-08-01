@@ -24,10 +24,6 @@ package options
 // CBE Decoder
 
 type CBEDecoderOptions struct {
-	// If true, return pointers to the underlying buffer when returning data
-	// where possible.
-	ShouldZeroCopy bool
-
 	// The size of the underlying buffer to use when decoding a document.
 	BufferSize int
 

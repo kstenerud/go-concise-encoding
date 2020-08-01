@@ -212,6 +212,7 @@ func (_this *Decoder) handleStringish() {
 
 	// Bytes, Custom, URI
 	if _this.buffer.GetTokenLength() == 1 && _this.buffer.PeekByteNoEOD() == '"' {
+		// TODO: array chunking on big data instead of building a big slice
 		_this.buffer.AdvanceByte()
 		initiator := _this.buffer.GetTokenFirstByte()
 		switch initiator {
