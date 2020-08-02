@@ -208,6 +208,7 @@ func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 // ObjectIteratorCallbacks
 // -----------------------
 
+func (_this *RootBuilder) OnBeginDocument()         {}
 func (_this *RootBuilder) OnVersion(version uint64) {}
 func (_this *RootBuilder) OnPadding(count int)      {}
 func (_this *RootBuilder) OnNil() {

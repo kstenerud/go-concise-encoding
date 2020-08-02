@@ -95,7 +95,7 @@ func (_this *Rules) Init(nextReceiver events.DataEventReceiver, options *options
 func (_this *Rules) Reset() {
 	_this.stateStack = _this.stateStack[:0]
 	_this.stackState(stateAwaitingEndDocument)
-	_this.stackState(stateAwaitingVersion)
+	_this.stackState(stateAwaitingBeginDocument)
 	_this.unassignedIDs = _this.unassignedIDs[:0]
 	_this.assignedIDs = make(map[interface{}]ruleEvent)
 	_this.unmatchedIDs = make(map[interface{}]bool)
@@ -112,6 +112,12 @@ func (_this *Rules) Reset() {
 // ============================================================================
 
 // DataEventReceiver
+
+func (_this *Rules) OnBeginDocument() {
+	_this.assertCurrentStateAllowsType(eventTypeBeginDocument)
+	_this.changeState(stateAwaitingVersion)
+	_this.nextReceiver.OnBeginDocument()
+}
 
 func (_this *Rules) OnVersion(version uint64) {
 	_this.assertCurrentStateAllowsType(eventTypeVersion)
@@ -418,6 +424,7 @@ func (_this *Rules) OnEndDocument() {
 		}
 	}
 	_this.nextReceiver.OnEndDocument()
+	_this.Reset()
 }
 
 // ============================================================================
@@ -753,6 +760,7 @@ type ruleEvent int
 
 const (
 	eventIDNothing ruleEvent = iota
+	eventIDBeginDocument
 	eventIDVersion
 	eventIDPadding
 	eventIDNil
@@ -784,6 +792,7 @@ const (
 
 var ruleEventNames = [...]string{
 	"nothing",
+	"begin document",
 	"version",
 	"padding",
 	"nil",
@@ -821,6 +830,7 @@ type ruleState int
 
 const (
 	stateIDAwaitingNothing ruleState = iota
+	stateIDAwaitingBeginDocument
 	stateIDAwaitingVersion
 	stateIDAwaitingTLO
 	stateIDAwaitingListItem
@@ -844,6 +854,7 @@ const (
 
 var ruleStateNames = [...]string{
 	"nothing",
+	"begin document",
 	"version",
 	"top-level object",
 	"list item",
@@ -878,7 +889,8 @@ const (
 )
 
 const (
-	eventVersion = ruleEvent(ruleIDFieldEnd) << iota
+	eventBeginDocument = ruleEvent(ruleIDFieldEnd) << iota
+	eventVersion
 	eventPadding
 	eventScalar
 	eventPositiveInt
@@ -914,6 +926,7 @@ const (
 
 const (
 	eventTypeNothing        = eventIDNothing
+	eventTypeBeginDocument  = eventIDBeginDocument | eventBeginDocument
 	eventTypeVersion        = eventIDVersion | eventVersion
 	eventTypePadding        = eventIDPadding | eventPadding
 	eventTypeNil            = eventIDNil | eventNil
@@ -962,10 +975,12 @@ const (
 	allowReferenceID    = ruleState(eventPositiveInt | eventBeginString | eventBeginURI | eventPadding)
 	allowArrayChunk     = ruleState(eventArrayChunk)
 	allowArrayData      = ruleState(eventArrayData)
+	allowBeginDocument  = ruleState(eventBeginDocument)
 	allowVersion        = ruleState(eventVersion)
 	allowEndDocument    = ruleState(eventEndDocument | eventBeginComment | eventPadding)
 
 	stateAwaitingNothing        = stateIDAwaitingNothing
+	stateAwaitingBeginDocument  = stateIDAwaitingBeginDocument | allowBeginDocument
 	stateAwaitingVersion        = stateIDAwaitingVersion | allowVersion
 	stateAwaitingTLO            = stateIDAwaitingTLO | allowTLO | ruleFlagRealContainer
 	stateAwaitingEndDocument    = stateIDAwaitingEndDocument | allowEndDocument
@@ -989,6 +1004,7 @@ const (
 
 var childEndRuleStateChanges = [...]ruleState{
 	/* stateIDAwaitingNothing                */ stateAwaitingNothing,
+	/* stateIDAwaitingBeginDocument        > */ stateAwaitingVersion,
 	/* stateIDAwaitingVersion              > */ stateAwaitingTLO,
 	/* stateIDAwaitingTLO                  > */ stateAwaitingEndDocument,
 	/* stateIDAwaitingListItem               */ stateAwaitingListItem,

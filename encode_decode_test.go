@@ -71,95 +71,95 @@ func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 // Tests
 
 func TestEncodeDecodeVersion(t *testing.T) {
-	assertEncodeDecode(t, V(1), ED())
+	assertEncodeDecode(t, BD(), V(1), ED())
 }
 
 func TestEncodeDecodeNil(t *testing.T) {
-	assertEncodeDecode(t, V(1), N(), ED())
+	assertEncodeDecode(t, BD(), V(1), N(), ED())
 }
 
 func TestEncodeDecodeTrue(t *testing.T) {
-	assertEncodeDecode(t, V(1), TT(), ED())
+	assertEncodeDecode(t, BD(), V(1), TT(), ED())
 }
 
 func TestEncodeDecodeFalse(t *testing.T) {
-	assertEncodeDecode(t, V(1), FF(), ED())
+	assertEncodeDecode(t, BD(), V(1), FF(), ED())
 }
 
 func TestEncodeDecodePositiveInt(t *testing.T) {
-	assertEncodeDecode(t, V(1), PI(0), ED())
-	assertEncodeDecode(t, V(1), PI(1), ED())
-	assertEncodeDecode(t, V(1), PI(104), ED())
-	assertEncodeDecode(t, V(1), PI(10405), ED())
-	assertEncodeDecode(t, V(1), PI(999999), ED())
-	assertEncodeDecode(t, V(1), PI(7234859234423), ED())
+	assertEncodeDecode(t, BD(), V(1), PI(0), ED())
+	assertEncodeDecode(t, BD(), V(1), PI(1), ED())
+	assertEncodeDecode(t, BD(), V(1), PI(104), ED())
+	assertEncodeDecode(t, BD(), V(1), PI(10405), ED())
+	assertEncodeDecode(t, BD(), V(1), PI(999999), ED())
+	assertEncodeDecode(t, BD(), V(1), PI(7234859234423), ED())
 }
 
 func TestEncodeDecodeNegativeInt(t *testing.T) {
-	assertEncodeDecode(t, V(1), NI(1), ED())
-	assertEncodeDecode(t, V(1), NI(104), ED())
-	assertEncodeDecode(t, V(1), NI(10405), ED())
-	assertEncodeDecode(t, V(1), NI(999999), ED())
-	assertEncodeDecode(t, V(1), NI(7234859234423), ED())
+	assertEncodeDecode(t, BD(), V(1), NI(1), ED())
+	assertEncodeDecode(t, BD(), V(1), NI(104), ED())
+	assertEncodeDecode(t, BD(), V(1), NI(10405), ED())
+	assertEncodeDecode(t, BD(), V(1), NI(999999), ED())
+	assertEncodeDecode(t, BD(), V(1), NI(7234859234423), ED())
 }
 
 func TestEncodeDecodeFloat(t *testing.T) {
 	// CTE will convert to decimal float
-	assertEncodeDecodeCBE(t, V(1), F(1.5), ED())
-	assertEncodeDecode(t, V(1), DF(test.NewDFloat("1.5")), ED())
-	assertEncodeDecodeCBE(t, V(1), F(-51.455e-16), ED())
-	assertEncodeDecode(t, V(1), DF(test.NewDFloat("-51.455e-16")), ED())
+	assertEncodeDecodeCBE(t, BD(), V(1), F(1.5), ED())
+	assertEncodeDecode(t, BD(), V(1), DF(test.NewDFloat("1.5")), ED())
+	assertEncodeDecodeCBE(t, BD(), V(1), F(-51.455e-16), ED())
+	assertEncodeDecode(t, BD(), V(1), DF(test.NewDFloat("-51.455e-16")), ED())
 }
 
 func TestEncodeDecodeNan(t *testing.T) {
-	assertEncodeDecode(t, V(1), NAN(), ED())
-	assertEncodeDecode(t, V(1), SNAN(), ED())
+	assertEncodeDecode(t, BD(), V(1), NAN(), ED())
+	assertEncodeDecode(t, BD(), V(1), SNAN(), ED())
 }
 
 func TestEncodeDecodeUUID(t *testing.T) {
-	assertEncodeDecode(t, V(1), UUID([]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}), ED())
+	assertEncodeDecode(t, BD(), V(1), UUID([]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}), ED())
 }
 
 func TestEncodeDecodeTime(t *testing.T) {
-	assertEncodeDecode(t, V(1), CT(compact_time.NewDate(2000, 1, 1)), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewDate(2000, 1, 1)), ED())
 
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTime(23, 59, 59, 101000000, "")), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8992, 110)), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 0, 0)), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 100, 100)), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTime(23, 59, 59, 101000000, "")), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8992, 110)), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 0, 0)), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 100, 100)), ED())
 
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTimestamp(2000, 1, 1, 19, 31, 44, 901554000, "")), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTimestamp(-50000, 12, 29, 1, 1, 1, 305, "Etc/UTC")), ED())
-	assertEncodeDecode(t, V(1), CT(compact_time.NewTimestampLatLong(2954, 8, 31, 12, 31, 15, 335523, 3154, 16004)), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTimestamp(2000, 1, 1, 19, 31, 44, 901554000, "")), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTimestamp(-50000, 12, 29, 1, 1, 1, 305, "Etc/UTC")), ED())
+	assertEncodeDecode(t, BD(), V(1), CT(compact_time.NewTimestampLatLong(2954, 8, 31, 12, 31, 15, 335523, 3154, 16004)), ED())
 }
 
 func TestEncodeDecodeBytes(t *testing.T) {
-	assertEncodeDecode(t, V(1), BIN([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
+	assertEncodeDecode(t, BD(), V(1), BIN([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
 func TestEncodeDecodeCustom(t *testing.T) {
-	assertEncodeDecode(t, V(1), CUB([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
+	assertEncodeDecode(t, BD(), V(1), CUB([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
 func TestEncodeDecodeURI(t *testing.T) {
 	// TODO: More complex
-	assertEncodeDecode(t, V(1), URI("http://example.com"), ED())
+	assertEncodeDecode(t, BD(), V(1), URI("http://example.com"), ED())
 }
 
 func TestEncodeDecodeString(t *testing.T) {
 	// TODO: More complex
-	assertEncodeDecode(t, V(1), S("A string"), ED())
+	assertEncodeDecode(t, BD(), V(1), S("A string"), ED())
 }
 
 func TestEncodeDecodeList(t *testing.T) {
-	assertEncodeDecode(t, V(1), L(), E(), ED())
-	assertEncodeDecode(t, V(1), L(), PI(1), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), L(), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), L(), PI(1), E(), ED())
 }
 
 func TestEncodeDecodeMap(t *testing.T) {
-	assertEncodeDecode(t, V(1), M(), E(), ED())
-	assertEncodeDecode(t, V(1), M(), S("a"), NI(1), E(), ED())
-	assertEncodeDecode(t, V(1), M(), S("some nil"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), M(), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), M(), S("a"), NI(1), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), M(), S("some nil"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }

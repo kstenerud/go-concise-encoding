@@ -64,8 +64,9 @@ func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.Dat
 // Iterates over an object, sending events to the root iterator's
 // DataEventReceiver as it visits all elements of the value.
 func (_this *RootObjectIterator) Iterate(object interface{}) {
+	_this.eventReceiver.OnBeginDocument()
+	_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
 	if object == nil {
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
 		_this.eventReceiver.OnNil()
 		_this.eventReceiver.OnEndDocument()
 		return
@@ -73,7 +74,6 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	_this.findReferences(object)
 	rv := reflect.ValueOf(object)
 	iterator := _this.session.GetIteratorForType(rv.Type())
-	_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
 	iterator.IterateObject(rv, _this.eventReceiver, _this)
 	_this.eventReceiver.OnEndDocument()
 }

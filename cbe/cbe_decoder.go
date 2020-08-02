@@ -69,6 +69,8 @@ func (_this *Decoder) Decode() (err error) {
 		}
 	}()
 
+	_this.nextReceiver.OnBeginDocument()
+
 	_this.buffer.RefillIfNecessary()
 
 	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())

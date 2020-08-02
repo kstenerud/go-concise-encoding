@@ -80,6 +80,10 @@ func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions)
 
 // DataEventReceiver
 
+func (_this *Encoder) OnBeginDocument() {
+	// TODO: Implied structures
+}
+
 func (_this *Encoder) OnPadding(count int) {
 	// Nothing to do
 }

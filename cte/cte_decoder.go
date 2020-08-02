@@ -78,6 +78,8 @@ func (_this *Decoder) Decode() (err error) {
 		}
 	}()
 
+	_this.eventReceiver.OnBeginDocument()
+
 	_this.buffer.RefillIfNecessary()
 
 	_this.currentState = cteDecoderStateAwaitObject

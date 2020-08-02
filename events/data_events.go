@@ -45,6 +45,11 @@ import (
 // (https://go.googlesource.com/proposal/+/refs/heads/master/design/34481-opencoded-defers.md)
 // (https://github.com/golang/go/commit/be64a19d99918c843f8555aad580221207ea35bc)
 type DataEventReceiver interface {
+	// Must be called before any other event.
+	OnBeginDocument()
+	// Must be called last of all. No other events may be sent after this call.
+	OnEndDocument()
+
 	OnVersion(version uint64)
 	OnPadding(count int)
 	OnNil()
@@ -87,7 +92,6 @@ type DataEventReceiver interface {
 	OnEnd()
 	OnMarker()
 	OnReference()
-	OnEndDocument()
 }
 
 // NullEventReceiver receives events and does nothing with them.
@@ -96,6 +100,7 @@ type NullEventReceiver struct{}
 func NewNullEventReceiver() *NullEventReceiver {
 	return &NullEventReceiver{}
 }
+func (_this *NullEventReceiver) OnBeginDocument()                      {}
 func (_this *NullEventReceiver) OnVersion(_ uint64)                    {}
 func (_this *NullEventReceiver) OnPadding(_ int)                       {}
 func (_this *NullEventReceiver) OnNil()                                {}

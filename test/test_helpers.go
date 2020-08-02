@@ -132,7 +132,8 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
 type TEventType int
 
 const (
-	TEventVersion TEventType = iota
+	TEventBeginDocument TEventType = iota
+	TEventVersion
 	TEventPadding
 	TEventNil
 	TEventBool
@@ -177,6 +178,7 @@ const (
 )
 
 var TEventNames = []string{
+	"BD",
 	"V",
 	"PAD",
 	"N",
@@ -252,6 +254,8 @@ func (_this *TEvent) String() string {
 
 func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	switch _this.Type {
+	case TEventBeginDocument:
+		receiver.OnBeginDocument()
 	case TEventVersion:
 		receiver.OnVersion(_this.V1.(uint64))
 	case TEventPadding:
@@ -402,6 +406,7 @@ func CMT() *TEvent                      { return newTEvent(TEventComment, nil, n
 func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func MARK() *TEvent                     { return newTEvent(TEventMarker, nil, nil) }
 func REF() *TEvent                      { return newTEvent(TEventReference, nil, nil) }
+func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
 
 func EventForValue(value interface{}) *TEvent {
@@ -484,6 +489,10 @@ func NewStdoutTEventPrinter(next events.DataEventReceiver) *TEventPrinter {
 	}
 }
 
+func (h *TEventPrinter) OnBeginDocument() {
+	h.Print(BD())
+	h.Next.OnBeginDocument()
+}
 func (h *TEventPrinter) OnVersion(version uint64) {
 	h.Print(V(version))
 	h.Next.OnVersion(version)
@@ -754,6 +763,7 @@ func (h *TER) OnComment()                             { h.add(CMT()) }
 func (h *TER) OnEnd()                                 { h.add(E()) }
 func (h *TER) OnMarker()                              { h.add(MARK()) }
 func (h *TER) OnReference()                           { h.add(REF()) }
+func (h *TER) OnBeginDocument()                       { h.add(BD()) }
 func (h *TER) OnEndDocument()                         { h.add(ED()) }
 func (h *TER) OnNan(signaling bool) {
 	if signaling {

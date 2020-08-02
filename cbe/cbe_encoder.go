@@ -75,6 +75,10 @@ func (_this *Encoder) OnPadding(count int) {
 	}
 }
 
+func (_this *Encoder) OnBeginDocument() {
+	// TODO: Implied structures
+}
+
 func (_this *Encoder) OnVersion(version uint64) {
 	_this.encodeULEB(version)
 }

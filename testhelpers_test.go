@@ -109,4 +109,5 @@ func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
+func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }

@@ -96,6 +96,7 @@ func assertRulesNotInArray(t *testing.T, rules *Rules) {
 
 func newRulesAfterVersion(options *options.RuleOptions) *Rules {
 	rules := NewRules(events.NewNullEventReceiver(), options)
+	rules.OnBeginDocument()
 	rules.OnVersion(options.ConciseEncodingVersion)
 	return rules
 }
@@ -114,10 +115,20 @@ func newRulesWithMaxDepth(maxDepth int) *Rules {
 // Basic Types
 // ===========
 
+func TestRulesBeginDocument(t *testing.T) {
+	options := options.DefaultRuleOptions()
+	options.ConciseEncodingVersion = 1
+	rules := NewRules(events.NewNullEventReceiver(), options)
+	test.AssertPanics(t, func() { rules.OnVersion(1) })
+	test.AssertNoPanic(t, func() { rules.OnBeginDocument() })
+	test.AssertNoPanic(t, func() { rules.OnVersion(1) })
+}
+
 func TestRulesVersion(t *testing.T) {
 	options := options.DefaultRuleOptions()
 	options.ConciseEncodingVersion = 1
 	rules := NewRules(events.NewNullEventReceiver(), options)
+	test.AssertNoPanic(t, func() { rules.OnBeginDocument() })
 	test.AssertPanics(t, func() { rules.OnVersion(2) })
 	test.AssertNoPanic(t, func() { rules.OnVersion(1) })
 	test.AssertPanics(t, func() { rules.OnVersion(1) })

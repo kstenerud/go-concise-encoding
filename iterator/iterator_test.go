@@ -77,10 +77,11 @@ func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
+func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
 func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
-	expected := append([]*test.TEvent{V(1)}, events...)
+	expected := append([]*test.TEvent{BD(), V(1)}, events...)
 	expected = append(expected, ED())
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
@@ -199,7 +200,7 @@ func TestIterateStruct(t *testing.T) {
 }
 
 func TestIterateNilOpts(t *testing.T) {
-	expected := []*test.TEvent{V(1), I(1), ED()}
+	expected := []*test.TEvent{BD(), V(1), I(1), ED()}
 	receiver := test.NewTER()
 	IterateObject(1, receiver, nil, nil)
 
@@ -219,7 +220,7 @@ func TestIterateRecurse(t *testing.T) {
 	}
 	obj.R = obj
 
-	expected := []*test.TEvent{V(1), MARK(), I(0), M(), S("I"), I(50), S("R"), REF(), I(0), E(), ED()}
+	expected := []*test.TEvent{BD(), V(1), MARK(), I(0), M(), S("I"), I(50), S("R"), REF(), I(0), E(), ED()}
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true
