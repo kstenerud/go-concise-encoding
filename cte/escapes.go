@@ -37,11 +37,11 @@ func containsEscapes(str string) bool {
 }
 
 const (
-	quotedUnsafe            = unicode.Control | unicode.TabReturnNewline | unicode.Reserved | unicode.QuotedOrCustomTextDelimiter
+	quotedUnsafe            = unicode.Control | unicode.TabReturnNewline | unicode.QuotedOrCustomTextDelimiter
 	unquotedUnsafe          = quotedUnsafe | unicode.Whitespace | unicode.LowSymbolOrLookalike
 	unquotedFirstCharUnsafe = unquotedUnsafe | unicode.NumeralOrLookalike
-	markupUnsafe            = unicode.Control | unicode.Reserved | unicode.MarkupDelimiter
-	customTextUnsafe        = unicode.Control | unicode.TabReturnNewline | unicode.Reserved | unicode.QuotedOrCustomTextDelimiter
+	markupUnsafe            = unicode.Control | unicode.MarkupDelimiter
+	customTextUnsafe        = unicode.Control | unicode.TabReturnNewline | unicode.QuotedOrCustomTextDelimiter
 )
 
 // Wraps a string destined for a CTE document, adding quotes or escapes as

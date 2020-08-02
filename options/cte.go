@@ -37,10 +37,13 @@ type CTEDecoderOptions struct {
 	// The size of the underlying buffer to use when decoding a document.
 	BufferSize int
 
-	// TODO: ImpliedVersion option
-	ImpliedVersion uint
-	// TODO: ImpliedTLContainer option
-	ImpliedTLContainer TLContainerType
+	// Concise encoding spec version to adhere to.
+	ConciseEncodingVersion uint
+
+	// The implied structure that this decoder will assume.
+	// Any implied structure will be automatically reported without being
+	// present in the document.
+	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCTEDecoderOptions() *CTEDecoderOptions {
@@ -69,6 +72,13 @@ type CTEEncoderOptions struct {
 	Indent     string
 	// TODO: BinaryFloatEncoding option
 	BinaryFloatEncoding BinaryFloatEncodeAs
+
+	// Concise encoding spec version to adhere to.
+	ConciseEncodingVersion uint
+
+	// The implied structure that this encoder will assume.
+	// Any implied structure will not actually be written to the document.
+	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {

@@ -24,21 +24,25 @@ package options
 
 // TODO: Opt: Convert line endings to escapes
 // TODO: Opt: Don't convert escapes
-// TODO: Don't use marker/ref on empty containers
 // TODO: Builder that converts to string
 // TODO: Iterator that converts from string to smaller type (numeric)
 // TODO: Some method to notify that a string field should be encoded as a different type
-// TODO: Optional spaces around `=` in maps
 
-// The type of top-level container to assume is already opened (for implied
-// structure documents). For normal operation, use TLContainerTypeNone.
-type TLContainerType int
+// Defines what (if any) implied structure forms the Concise Encoding document takes.
+type ImpliedStructure int
 
 const (
-	// Assume that no top-level container has already been opened.
-	TLContainerTypeNone = iota
-	// Assume that a list has already been opened.
-	TLContainerTypeList
-	// Assume that a map has already been opened.
-	TLContainerTypeMap
+	// Assume no implied structure
+	ImpliedStructureNone = iota
+
+	//Assume that the Concise Encoding version has already been specified.
+	ImpliedStructureVersion
+
+	// Assume that the version has been specified AND that the top-level object
+	// has already been opened as a list.
+	ImpliedStructureList
+
+	// Assume that the version has been specified AND that the top-level object
+	// has already been opened as a map.
+	ImpliedStructureMap
 )

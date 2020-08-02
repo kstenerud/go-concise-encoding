@@ -27,10 +27,13 @@ type CBEDecoderOptions struct {
 	// The size of the underlying buffer to use when decoding a document.
 	BufferSize int
 
-	// TODO: ImpliedVersion option
-	ImpliedVersion uint
-	// TODO: ImpliedTLContainer option
-	ImpliedTLContainer TLContainerType
+	// Concise encoding spec version to adhere to.
+	ConciseEncodingVersion uint
+
+	// The implied structure that this decoder will assume.
+	// Any implied structure will be automatically reported without being
+	// present in the document.
+	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCBEDecoderOptions() *CBEDecoderOptions {
@@ -55,7 +58,15 @@ func (_this *CBEDecoderOptions) WithDefaultsApplied() *CBEDecoderOptions {
 // CBE Encoder
 
 type CBEEncoderOptions struct {
+	// The size of the underlying buffer to use when encoding a document.
 	BufferSize int
+
+	// Concise encoding spec version to adhere to.
+	ConciseEncodingVersion uint
+
+	// The implied structure that this encoder will assume.
+	// Any implied structure will not actually be written to the document.
+	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCBEEncoderOptions() *CBEEncoderOptions {
