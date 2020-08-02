@@ -92,13 +92,31 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	_this.buffer.SkipWhitespace()
 	_this.buffer.EndToken()
 
-	// TODO: Inline containers etc
-	_this.handleVersion()
+	switch _this.options.ImpliedStructure {
+	case options.ImpliedStructureVersion:
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+	case options.ImpliedStructureList:
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnList()
+		_this.stackContainer(cteDecoderStateAwaitListItem)
+	case options.ImpliedStructureMap:
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnMap()
+		_this.stackContainer(cteDecoderStateAwaitMapKey)
+	default:
+		_this.handleVersion()
+	}
 
 	for !_this.buffer.IsEndOfDocument() {
 		_this.handleNextState()
 		_this.buffer.RefillIfNecessary()
 	}
+
+	switch _this.options.ImpliedStructure {
+	case options.ImpliedStructureList, options.ImpliedStructureMap:
+		_this.eventReceiver.OnEnd()
+	}
+
 	_this.eventReceiver.OnEndDocument()
 	return
 }

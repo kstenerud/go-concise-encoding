@@ -55,6 +55,9 @@ type Encoder struct {
 	nextPrefix         string
 	prefixGenerators   []cteEncoderPrefixGenerator
 	options            options.CTEEncoderOptions
+	skipFirstMap       bool
+	skipFirstList      bool
+	containerDepth     int
 }
 
 // Create a new CTE encoder, which will receive data events and write a document
@@ -75,6 +78,8 @@ func (_this *Encoder) Init(opts *options.CTEEncoderOptions) {
 	if len(_this.options.Indent) > 0 {
 		_this.prefixGenerators = cteEncoderPrettyPrefixHandlers[:]
 	}
+	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
@@ -92,6 +97,9 @@ func (_this *Encoder) Reset() {
 	_this.currentState = 0
 	_this.currentItemCount = 0
 	_this.nextPrefix = ""
+	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
+	_this.containerDepth = 0
 }
 
 // ============================================================================
@@ -99,7 +107,12 @@ func (_this *Encoder) Reset() {
 // DataEventReceiver
 
 func (_this *Encoder) OnBeginDocument() {
-	// TODO: Implied structures
+	switch _this.options.ImpliedStructure {
+	case options.ImpliedStructureList:
+		_this.stackState(cteEncoderStateAwaitListFirstItem, "")
+	case options.ImpliedStructureMap:
+		_this.stackState(cteEncoderStateAwaitMapFirstKey, "")
+	}
 }
 
 func (_this *Encoder) OnPadding(count int) {
@@ -107,6 +120,9 @@ func (_this *Encoder) OnPadding(count int) {
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
+	if _this.options.ImpliedStructure != options.ImpliedStructureNone {
+		return
+	}
 	_this.addFmt("c%d", version)
 	_this.setState(cteEncoderStateAwaitTLO)
 }
@@ -456,32 +472,52 @@ func (_this *Encoder) OnArrayData(data []byte) {
 }
 
 func (_this *Encoder) OnList() {
+	if _this.skipFirstList {
+		_this.skipFirstList = false
+		return
+	}
+
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitListFirstItem, "[")
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnMap() {
+	if _this.skipFirstMap {
+		_this.skipFirstMap = false
+		return
+	}
+
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitMapFirstKey, "{")
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnMarkup() {
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitMarkupFirstItem, "")
 	_this.stackState(cteEncoderStateAwaitMarkupName, "<")
+	_this.containerDepth += 2
 }
 
 func (_this *Encoder) OnMetadata() {
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitMetaFirstKey, "(")
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnComment() {
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitCommentItem, "/*")
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnEnd() {
+	if _this.containerDepth <= 0 {
+		return
+	}
+	_this.containerDepth--
+
 	if _this.currentState == cteEncoderStateAwaitMarkupKey {
 		_this.unstackState()
 		return

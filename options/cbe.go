@@ -28,7 +28,7 @@ type CBEDecoderOptions struct {
 	BufferSize int
 
 	// Concise encoding spec version to adhere to.
-	ConciseEncodingVersion uint
+	ConciseEncodingVersion uint64
 
 	// The implied structure that this decoder will assume.
 	// Any implied structure will be automatically reported without being
@@ -62,7 +62,7 @@ type CBEEncoderOptions struct {
 	BufferSize int
 
 	// Concise encoding spec version to adhere to.
-	ConciseEncodingVersion uint
+	ConciseEncodingVersion uint64
 
 	// The implied structure that this encoder will assume.
 	// Any implied structure will not actually be written to the document.

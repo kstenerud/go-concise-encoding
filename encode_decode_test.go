@@ -23,6 +23,8 @@ package concise_encoding
 import (
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-compact-time"
@@ -124,4 +126,25 @@ func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), M(), E(), ED())
 	assertEncodeDecode(t, BD(), V(1), M(), S("a"), NI(1), E(), ED())
 	assertEncodeDecode(t, BD(), V(1), M(), S("some nil"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
+}
+
+func TestImpliedVersion(t *testing.T) {
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "1", BD(), V(1), PI(1), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "{a=1}", BD(), V(1), M(), S("a"), PI(1), E(), ED())
+}
+
+func TestImpliedList(t *testing.T) {
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "1 2 3",
+		BD(), V(1), L(), PI(1), PI(2), PI(3), E(), ED())
+
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "{a=1} {b=1}",
+		BD(), V(1), L(), M(), S("a"), PI(1), E(), M(), S("b"), PI(1), E(), E(), ED())
+}
+
+func TestImpliedMap(t *testing.T) {
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1=2 3=xyz",
+		BD(), V(1), M(), PI(1), PI(2), PI(3), S("xyz"), E(), ED())
+
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1={a=1} 2={b=1}",
+		BD(), V(1), M(), PI(1), M(), S("a"), PI(1), E(), PI(2), M(), S("b"), PI(1), E(), E(), ED())
 }

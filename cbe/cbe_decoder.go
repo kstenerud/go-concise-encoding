@@ -75,7 +75,18 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	_this.buffer.RefillIfNecessary()
 
-	_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
+	switch _this.options.ImpliedStructure {
+	case options.ImpliedStructureVersion:
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+	case options.ImpliedStructureList:
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnList()
+	case options.ImpliedStructureMap:
+		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnMap()
+	default:
+		_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
+	}
 
 	for _this.buffer.HasUnreadData() {
 		_this.buffer.RefillIfNecessary()
@@ -180,6 +191,11 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			}
 			_this.eventReceiver.OnInt(asSmallInt)
 		}
+	}
+
+	switch _this.options.ImpliedStructure {
+	case options.ImpliedStructureList, options.ImpliedStructureMap:
+		_this.eventReceiver.OnEnd()
 	}
 
 	_this.eventReceiver.OnEndDocument()

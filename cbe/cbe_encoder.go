@@ -45,8 +45,11 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	buff    buffer.StreamingWriteBuffer
-	options options.CBEEncoderOptions
+	buff           buffer.StreamingWriteBuffer
+	options        options.CBEEncoderOptions
+	skipFirstMap   bool
+	skipFirstList  bool
+	containerDepth int
 }
 
 // Create a new CBE encoder.
@@ -63,6 +66,8 @@ func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.options = *opts
 	_this.buff.Init(_this.options.BufferSize)
+	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
@@ -73,6 +78,9 @@ func (_this *Encoder) PrepareToEncode(writer io.Writer) {
 
 func (_this *Encoder) Reset() {
 	_this.buff.Reset()
+	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
+	_this.containerDepth = 0
 }
 
 // ============================================================================
@@ -87,10 +95,12 @@ func (_this *Encoder) OnPadding(count int) {
 }
 
 func (_this *Encoder) OnBeginDocument() {
-	// TODO: Implied structures
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
+	if _this.options.ImpliedStructure != options.ImpliedStructureNone {
+		return
+	}
 	_this.encodeULEB(version)
 }
 
@@ -322,26 +332,45 @@ func (_this *Encoder) OnArrayData(data []byte) {
 }
 
 func (_this *Encoder) OnList() {
+	if _this.skipFirstList {
+		_this.skipFirstList = false
+		return
+	}
+
 	_this.encodeTypeOnly(cbeTypeList)
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnMap() {
+	if _this.skipFirstMap {
+		_this.skipFirstMap = false
+		return
+	}
+
 	_this.encodeTypeOnly(cbeTypeMap)
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnMarkup() {
 	_this.encodeTypeOnly(cbeTypeMarkup)
+	_this.containerDepth += 2
 }
 
 func (_this *Encoder) OnMetadata() {
 	_this.encodeTypeOnly(cbeTypeMetadata)
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnComment() {
 	_this.encodeTypeOnly(cbeTypeComment)
+	_this.containerDepth++
 }
 
 func (_this *Encoder) OnEnd() {
+	if _this.containerDepth <= 0 {
+		return
+	}
+	_this.containerDepth--
 	_this.encodeTypeOnly(cbeTypeEndContainer)
 }
 

@@ -29,6 +29,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
@@ -38,40 +39,52 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
-func cbeDecode(document []byte) (events []*test.TEvent, err error) {
+func cbeDecode(opts *options.CBEDecoderOptions, document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
-	err = ce.NewCBEDecoder(nil).Decode(bytes.NewBuffer(document), receiver)
+	r := rules.NewRules(receiver, nil)
+	err = ce.NewCBEDecoder(opts).Decode(bytes.NewBuffer(document), r)
 	events = receiver.Events
 	return
 }
 
-func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error) {
+func cbeEncode(encodeOpts *options.CBEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := ce.NewCBEEncoder(nil)
+	encoder := ce.NewCBEEncoder(encodeOpts)
+	r := rules.NewRules(encoder, nil)
 	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(encoder, expected...)
-	document := buffer.Bytes()
-
-	return cbeDecode(document)
-}
-
-func cteDecode(document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTER()
-	err = ce.NewCTEDecoder(nil).Decode(bytes.NewBuffer(document), receiver)
-	events = receiver.Events
-	return
-}
-
-func cteEncode(events ...*test.TEvent) []byte {
-	buffer := &bytes.Buffer{}
-	encoder := ce.NewCTEEncoder(nil)
-	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(encoder, events...)
+	test.InvokeEvents(r, events...)
 	return buffer.Bytes()
 }
 
-func cteEncodeDecode(events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
-	return cteDecode(cteEncode(events...))
+func cbeEncodeDecode(encodeOpts *options.CBEEncoderOptions,
+	decodeOpts *options.CBEDecoderOptions,
+	expected ...*test.TEvent) (events []*test.TEvent, err error) {
+
+	return cbeDecode(decodeOpts, cbeEncode(encodeOpts, expected...))
+}
+
+func cteDecode(opts *options.CTEDecoderOptions, document []byte) (events []*test.TEvent, err error) {
+	receiver := test.NewTER()
+	r := rules.NewRules(receiver, nil)
+	err = ce.NewCTEDecoder(opts).Decode(bytes.NewBuffer(document), r)
+	events = receiver.Events
+	return
+}
+
+func cteEncode(encodeOpts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
+	buffer := &bytes.Buffer{}
+	encoder := ce.NewCTEEncoder(encodeOpts)
+	r := rules.NewRules(encoder, nil)
+	encoder.PrepareToEncode(buffer)
+	test.InvokeEvents(r, events...)
+	return buffer.Bytes()
+}
+
+func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
+	decodeOpts *options.CTEDecoderOptions,
+	events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
+
+	return cteDecode(decodeOpts, cteEncode(encodeOpts, events...))
 }
 
 func TT() *test.TEvent                       { return test.TT() }
@@ -121,12 +134,16 @@ func ED() *test.TEvent                       { return test.ED() }
 // ============================================================================
 // Encode/Decode
 
-func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
+func assertEncodeDecodeCBEOpts(t *testing.T,
+	encodeOpts *options.CBEEncoderOptions,
+	decodeOpts *options.CBEDecoderOptions,
+	expected ...*test.TEvent) {
+
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() {
 		debug.DebugOptions.PassThroughPanics = false
 	}()
-	actual, err := cbeEncodeDecode(expected...)
+	actual, err := cbeEncodeDecode(encodeOpts, decodeOpts, expected...)
 	if err != nil {
 		t.Error(err)
 		return
@@ -137,11 +154,19 @@ func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
 	}
 }
 
-func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
+func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
+	assertEncodeDecodeCBEOpts(t, nil, nil, expected...)
+}
+
+func assertEncodeDecodeCTEOpts(t *testing.T,
+	encodeOpts *options.CTEEncoderOptions,
+	decodeOpts *options.CTEDecoderOptions,
+	expected ...*test.TEvent) {
+
 	debug.DebugOptions.PassThroughPanics = true
 	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
-	actual, err := cteEncodeDecode(expected...)
+	actual, err := cteEncodeDecode(encodeOpts, decodeOpts, expected...)
 	if err != nil {
 		t.Error(err)
 		return
@@ -152,9 +177,68 @@ func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
 	}
 }
 
+func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
+	assertEncodeDecodeCTEOpts(t, nil, nil, expected...)
+}
+
+func assertEncodeDecodeOpts(t *testing.T,
+	cbeEncodeOpts *options.CBEEncoderOptions,
+	cbeDecodeOpts *options.CBEDecoderOptions,
+	cteEncodeOpts *options.CTEEncoderOptions,
+	cteDecodeOpts *options.CTEDecoderOptions,
+	expected ...*test.TEvent) {
+
+	assertEncodeDecodeCBEOpts(t, cbeEncodeOpts, cbeDecodeOpts, expected...)
+	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, expected...)
+}
+
 func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
-	assertEncodeDecodeCBE(t, expected...)
-	assertEncodeDecodeCTE(t, expected...)
+	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
+}
+
+func assertEncodeDecodeImpliedStructure(t *testing.T,
+	impliedStruct options.ImpliedStructure,
+	version uint64,
+	cteDocument string,
+	expected ...*test.TEvent) {
+
+	cteEncodeOpts := options.DefaultCTEEncoderOptions()
+	cteEncodeOpts.ConciseEncodingVersion = version
+	cteEncodeOpts.ImpliedStructure = impliedStruct
+	cteDecodeOpts := options.DefaultCTEDecoderOptions()
+	cteDecodeOpts.ConciseEncodingVersion = version
+	cteDecodeOpts.ImpliedStructure = impliedStruct
+	cbeEncodeOpts := options.DefaultCBEEncoderOptions()
+	cbeEncodeOpts.ConciseEncodingVersion = version
+	cbeEncodeOpts.ImpliedStructure = impliedStruct
+	cbeDecodeOpts := options.DefaultCBEDecoderOptions()
+	cbeDecodeOpts.ConciseEncodingVersion = version
+	cbeDecodeOpts.ImpliedStructure = impliedStruct
+
+	events, err := cteDecode(cteDecodeOpts, []byte(cteDocument))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(expected, events) {
+		t.Errorf("CTE: Expected %v but got %v", expected, events)
+		return
+	}
+	actualCTEDoc := string(cteEncode(cteEncodeOpts, expected...))
+	if actualCTEDoc != cteDocument {
+		t.Errorf("CTE: Expected doc [%v] but got [%v]", cteDocument, actualCTEDoc)
+	}
+
+	actualCBEDoc := cbeEncode(cbeEncodeOpts, expected...)
+	events, err = cbeDecode(cbeDecodeOpts, actualCBEDoc)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(expected, events) {
+		t.Errorf("CBE: Expected %v but got %v", expected, events)
+		return
+	}
 }
 
 // ============================================================================
