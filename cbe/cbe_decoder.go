@@ -29,39 +29,38 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-// Decode a CBE document from reader, sending all data events to eventReceiver.
-// If options is nil, default options will be used.
-func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) (err error) {
-	return NewDecoder(reader, eventReceiver, options).Decode()
-}
-
 // Decodes CBE documents.
 type Decoder struct {
-	buffer       CBEReadBuffer
-	nextReceiver events.DataEventReceiver
-	options      options.CBEDecoderOptions
+	buffer        CBEReadBuffer
+	eventReceiver events.DataEventReceiver
+	options       options.CBEDecoderOptions
 }
 
 // Create a new CBE decoder, which will read from reader and send data events
-// to nextReceiver. If options is nil, default options will be used.
-func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) *Decoder {
+// to nextReceiver. If opts is nil, default options will be used.
+func NewDecoder(opts *options.CBEDecoderOptions) *Decoder {
 	_this := &Decoder{}
-	_this.Init(reader, eventReceiver, options)
+	_this.Init(opts)
 	return _this
 }
 
 // Initialize this decoder, which will read from reader and send data events
-// to nextReceiver. If options is nil, default options will be used.
-func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CBEDecoderOptions) {
-	_this.options = *options.WithDefaultsApplied()
-	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
-	_this.nextReceiver = eventReceiver
+// to nextReceiver. If opts is nil, default options will be used.
+func (_this *Decoder) Init(opts *options.CBEDecoderOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
+}
+
+func (_this *Decoder) reset() {
+	_this.buffer.Reset()
+	_this.eventReceiver = nil
 }
 
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
-func (_this *Decoder) Decode() (err error) {
+func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
+		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				err = r.(error)
@@ -69,11 +68,14 @@ func (_this *Decoder) Decode() (err error) {
 		}
 	}()
 
-	_this.nextReceiver.OnBeginDocument()
+	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
+	_this.eventReceiver = eventReceiver
+
+	_this.eventReceiver.OnBeginDocument()
 
 	_this.buffer.RefillIfNecessary()
 
-	_this.nextReceiver.OnVersion(_this.buffer.DecodeVersion())
+	_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
 
 	for _this.buffer.HasUnreadData() {
 		_this.buffer.RefillIfNecessary()
@@ -82,105 +84,105 @@ func (_this *Decoder) Decode() (err error) {
 		case cbeTypeDecimal:
 			value, bigValue := _this.buffer.DecodeDecimalFloat()
 			if bigValue != nil {
-				_this.nextReceiver.OnBigDecimalFloat(bigValue)
+				_this.eventReceiver.OnBigDecimalFloat(bigValue)
 			} else {
-				_this.nextReceiver.OnDecimalFloat(value)
+				_this.eventReceiver.OnDecimalFloat(value)
 			}
 		case cbeTypePosInt:
 			asUint, asBig := _this.buffer.DecodeUint()
 			if asBig != nil {
-				_this.nextReceiver.OnBigInt(asBig)
+				_this.eventReceiver.OnBigInt(asBig)
 			} else {
-				_this.nextReceiver.OnPositiveInt(asUint)
+				_this.eventReceiver.OnPositiveInt(asUint)
 			}
 		case cbeTypeNegInt:
 			asUint, asBig := _this.buffer.DecodeUint()
 			if asBig != nil {
-				_this.nextReceiver.OnBigInt(asBig.Neg(asBig))
+				_this.eventReceiver.OnBigInt(asBig.Neg(asBig))
 			} else {
-				_this.nextReceiver.OnNegativeInt(asUint)
+				_this.eventReceiver.OnNegativeInt(asUint)
 			}
 		case cbeTypePosInt8:
-			_this.nextReceiver.OnPositiveInt(uint64(_this.buffer.DecodeUint8()))
+			_this.eventReceiver.OnPositiveInt(uint64(_this.buffer.DecodeUint8()))
 		case cbeTypeNegInt8:
-			_this.nextReceiver.OnNegativeInt(uint64(_this.buffer.DecodeUint8()))
+			_this.eventReceiver.OnNegativeInt(uint64(_this.buffer.DecodeUint8()))
 		case cbeTypePosInt16:
-			_this.nextReceiver.OnPositiveInt(uint64(_this.buffer.DecodeUint16()))
+			_this.eventReceiver.OnPositiveInt(uint64(_this.buffer.DecodeUint16()))
 		case cbeTypeNegInt16:
-			_this.nextReceiver.OnNegativeInt(uint64(_this.buffer.DecodeUint16()))
+			_this.eventReceiver.OnNegativeInt(uint64(_this.buffer.DecodeUint16()))
 		case cbeTypePosInt32:
-			_this.nextReceiver.OnPositiveInt(uint64(_this.buffer.DecodeUint32()))
+			_this.eventReceiver.OnPositiveInt(uint64(_this.buffer.DecodeUint32()))
 		case cbeTypeNegInt32:
-			_this.nextReceiver.OnNegativeInt(uint64(_this.buffer.DecodeUint32()))
+			_this.eventReceiver.OnNegativeInt(uint64(_this.buffer.DecodeUint32()))
 		case cbeTypePosInt64:
-			_this.nextReceiver.OnPositiveInt(_this.buffer.DecodeUint64())
+			_this.eventReceiver.OnPositiveInt(_this.buffer.DecodeUint64())
 		case cbeTypeNegInt64:
-			_this.nextReceiver.OnNegativeInt(_this.buffer.DecodeUint64())
+			_this.eventReceiver.OnNegativeInt(_this.buffer.DecodeUint64())
 		case cbeTypeFloat32:
-			_this.nextReceiver.OnFloat(float64(_this.buffer.DecodeFloat32()))
+			_this.eventReceiver.OnFloat(float64(_this.buffer.DecodeFloat32()))
 		case cbeTypeFloat64:
-			_this.nextReceiver.OnFloat(_this.buffer.DecodeFloat64())
+			_this.eventReceiver.OnFloat(_this.buffer.DecodeFloat64())
 		case cbeTypeUUID:
-			_this.nextReceiver.OnUUID(_this.buffer.DecodeBytes(16))
+			_this.eventReceiver.OnUUID(_this.buffer.DecodeBytes(16))
 		case cbeTypeComment:
-			_this.nextReceiver.OnComment()
+			_this.eventReceiver.OnComment()
 		case cbeTypeMetadata:
-			_this.nextReceiver.OnMetadata()
+			_this.eventReceiver.OnMetadata()
 		case cbeTypeMarkup:
-			_this.nextReceiver.OnMarkup()
+			_this.eventReceiver.OnMarkup()
 		case cbeTypeMap:
-			_this.nextReceiver.OnMap()
+			_this.eventReceiver.OnMap()
 		case cbeTypeList:
-			_this.nextReceiver.OnList()
+			_this.eventReceiver.OnList()
 		case cbeTypeEndContainer:
-			_this.nextReceiver.OnEnd()
+			_this.eventReceiver.OnEnd()
 		case cbeTypeFalse:
-			_this.nextReceiver.OnFalse()
+			_this.eventReceiver.OnFalse()
 		case cbeTypeTrue:
-			_this.nextReceiver.OnTrue()
+			_this.eventReceiver.OnTrue()
 		case cbeTypeNil:
-			_this.nextReceiver.OnNil()
+			_this.eventReceiver.OnNil()
 		case cbeTypePadding:
-			_this.nextReceiver.OnPadding(1)
+			_this.eventReceiver.OnPadding(1)
 		case cbeTypeString0:
-			_this.nextReceiver.OnString([]byte{})
+			_this.eventReceiver.OnString([]byte{})
 		case cbeTypeString1, cbeTypeString2, cbeTypeString3, cbeTypeString4,
 			cbeTypeString5, cbeTypeString6, cbeTypeString7, cbeTypeString8,
 			cbeTypeString9, cbeTypeString10, cbeTypeString11, cbeTypeString12,
 			cbeTypeString13, cbeTypeString14, cbeTypeString15:
-			_this.nextReceiver.OnString(_this.decodeSmallString(int(cbeType - cbeTypeString0)))
+			_this.eventReceiver.OnString(_this.decodeSmallString(int(cbeType - cbeTypeString0)))
 		case cbeTypeString:
-			_this.nextReceiver.OnString(_this.decodeArray())
+			_this.eventReceiver.OnString(_this.decodeArray())
 		case cbeTypeVerbatimString:
-			_this.nextReceiver.OnVerbatimString(_this.decodeArray())
+			_this.eventReceiver.OnVerbatimString(_this.decodeArray())
 		case cbeTypeBytes:
-			_this.nextReceiver.OnBytes(_this.decodeArray())
+			_this.eventReceiver.OnBytes(_this.decodeArray())
 		case cbeTypeCustomBinary:
-			_this.nextReceiver.OnCustomBinary(_this.decodeArray())
+			_this.eventReceiver.OnCustomBinary(_this.decodeArray())
 		case cbeTypeCustomText:
-			_this.nextReceiver.OnCustomText(_this.decodeArray())
+			_this.eventReceiver.OnCustomText(_this.decodeArray())
 		case cbeTypeURI:
-			_this.nextReceiver.OnURI(_this.decodeArray())
+			_this.eventReceiver.OnURI(_this.decodeArray())
 		case cbeTypeMarker:
-			_this.nextReceiver.OnMarker()
+			_this.eventReceiver.OnMarker()
 		case cbeTypeReference:
-			_this.nextReceiver.OnReference()
+			_this.eventReceiver.OnReference()
 		case cbeTypeDate:
-			_this.nextReceiver.OnCompactTime(_this.buffer.DecodeDate())
+			_this.eventReceiver.OnCompactTime(_this.buffer.DecodeDate())
 		case cbeTypeTime:
-			_this.nextReceiver.OnCompactTime(_this.buffer.DecodeTime())
+			_this.eventReceiver.OnCompactTime(_this.buffer.DecodeTime())
 		case cbeTypeTimestamp:
-			_this.nextReceiver.OnCompactTime(_this.buffer.DecodeTimestamp())
+			_this.eventReceiver.OnCompactTime(_this.buffer.DecodeTimestamp())
 		default:
 			asSmallInt := int64(int8(cbeType))
 			if asSmallInt < cbeSmallIntMin || asSmallInt > cbeSmallIntMax {
 				panic(fmt.Errorf("Unknown type code 0x%02x", cbeType))
 			}
-			_this.nextReceiver.OnInt(asSmallInt)
+			_this.eventReceiver.OnInt(asSmallInt)
 		}
 	}
 
-	_this.nextReceiver.OnEndDocument()
+	_this.eventReceiver.OnEndDocument()
 	return
 }
 

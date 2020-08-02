@@ -52,28 +52,46 @@ type Encoder struct {
 	containerItemCount []int
 	currentState       cteEncoderState
 	currentItemCount   int
-	options            options.CTEEncoderOptions
 	nextPrefix         string
 	prefixGenerators   []cteEncoderPrefixGenerator
+	options            options.CTEEncoderOptions
 }
 
 // Create a new CTE encoder, which will receive data events and write a document
-// to writer. If options is nil, default options will be used.
-func NewEncoder(writer io.Writer, options *options.CTEEncoderOptions) *Encoder {
+// to writer. If opts is nil, default options will be used.
+func NewEncoder(opts *options.CTEEncoderOptions) *Encoder {
 	_this := &Encoder{}
-	_this.Init(writer, options)
+	_this.Init(opts)
 	return _this
 }
 
 // Initialize this encoder, which will receive data events and write a document
-// to writer. If options is nil, default options will be used.
-func (_this *Encoder) Init(writer io.Writer, options *options.CTEEncoderOptions) {
-	_this.options = *options.WithDefaultsApplied()
-	_this.buff.Init(writer, _this.options.BufferSize)
+// to writer. If opts is nil, default options will be used.
+func (_this *Encoder) Init(opts *options.CTEEncoderOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
+	_this.buff.Init(_this.options.BufferSize)
 	_this.prefixGenerators = cteEncoderPrefixGenerators[:]
 	if len(_this.options.Indent) > 0 {
 		_this.prefixGenerators = cteEncoderPrettyPrefixHandlers[:]
 	}
+}
+
+// Prepare the encoder for encoding. All events will be encoded to writer.
+// PrepareToEncode MUST be called before using the encoder.
+func (_this *Encoder) PrepareToEncode(writer io.Writer) {
+	_this.buff.SetWriter(writer)
+}
+
+func (_this *Encoder) Reset() {
+	_this.buff.Reset()
+	_this.chunkBuffer = _this.chunkBuffer[:0]
+	_this.remainingChunkSize = 0
+	_this.containerState = _this.containerState[:0]
+	_this.containerItemCount = _this.containerItemCount[:0]
+	_this.currentState = 0
+	_this.currentItemCount = 0
+	_this.nextPrefix = ""
 }
 
 // ============================================================================

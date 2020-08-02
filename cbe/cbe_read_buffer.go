@@ -60,6 +60,10 @@ func (_this *CBEReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterBy
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
+func (_this *CBEReadBuffer) Reset() {
+	_this.buffer.Reset()
+}
+
 // Refill the buffer from the reader if we've hit the "low water" of unread
 // bytes.
 func (_this *CBEReadBuffer) RefillIfNecessary() {

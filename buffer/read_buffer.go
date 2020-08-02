@@ -47,9 +47,18 @@ func NewStreamingReadBuffer(reader io.Reader, bufferSize int, minFreeBytes int) 
 // Initialize the buffer. Note that the buffer will be empty until a refill,
 // request, or require method is called.
 func (_this *StreamingReadBuffer) Init(reader io.Reader, bufferSize int, minFreeBytes int) {
-	_this.Buffer = make([]byte, 0, bufferSize)
+	if len(_this.Buffer) < bufferSize {
+		_this.Buffer = make([]byte, 0, bufferSize)
+	}
 	_this.reader = reader
 	_this.minFreeBytes = minFreeBytes
+}
+
+// Remove all references that won't be needed for re-use so that the GC can reclaim them.
+// Note: This won't free the internal document buffer.
+func (_this *StreamingReadBuffer) Reset() {
+	_this.reader = nil
+	_this.Buffer = _this.Buffer[:0]
 }
 
 func (_this *StreamingReadBuffer) ByteAtOffset(offset int) byte {

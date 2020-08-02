@@ -1,29 +1,29 @@
-Concise Encoding
-================
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
 
-A go implementation of [concise encoding](https://github.com/kstenerud/concise-encoding).
-
-Convenience like JSON, in a twin text/binary format with full datatype support.
-
- * **No schema necessary.** The simplicity of ad-hoc data, like in JSON & XML.
- * **Rich type support.** No more special code for dates, bytes, large values, etc.
- * **Edit text, transmit binary.** Twin binary and text formats are 1:1 compatible.
- * **Plug and play.** No extra compilation phase or descriptor files.
- * **Metadata.** Out-of-band data? Not a problem!
- * **Recursive/cyclic data.** Recursive structures? Also not a problem!
- * **Fully specified.** No more ambiguities in implementations.
-
-
-
-Library Usage
--------------
-
-```golang
-package main
+package concise_encoding
 
 import (
 	"bytes"
 	"fmt"
+	"testing"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
@@ -85,10 +85,9 @@ func demonstrateCBEUnmarshal() {
 	// Prints: Unmarshaled CBE: map[a key:2.5 900:2020-01-15/13:41:00.000599]
 }
 
-func main() {
+func TestDemonstrate(t *testing.T) {
 	demonstrateCTEMarshal()
 	demonstrateCTEUnmarshal()
 	demonstrateCBEMarshal()
 	demonstrateCBEUnmarshal()
 }
-```

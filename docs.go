@@ -1,8 +1,8 @@
 // Codecs and marshalers to produce and consume Concise Binary Encoding and
 // Concise Text Encoding documents (https://github.com/kstenerud/concise-encoding).
 //
-// Most people will only care about the codecs or marshalers in the cbe and cte
-// packages.
+// Most people will only care about the highest level APIs for mashaling in
+// package ce.
 //
 // If all you're interested in is (de)serializing to go objects, the marshaler
 // API is sufficient. The codecs provide more control over the process, and
@@ -16,17 +16,20 @@
 // that is to be built). All software components are designed around this
 // principle to promote interchangeability.
 //
-// High Level API
+//
+// High Level API (package ce)
 //
 // * Marshalers: (de)serializes to/from go objects.
 //
-// Medium Level API
+//
+// Medium Level API (package ce)
 //
 // * Encoder: Accepts data events and generates a CBE or CTE encoded document.
 //
 // * Decoder: Decodes a CBE or CTE document, generating data events
 //
-// Low Level API
+//
+// Low Level API (packages builder, events, iterator, rules)
 //
 // * Iterator: Iterates through an object, generating data events.
 //

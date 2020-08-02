@@ -36,47 +36,51 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-// Decode a CTE document from reader, sending all data events to eventReceiver.
-// If options is nil, default options will be used.
-func Decode(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) (err error) {
-	return NewDecoder(reader, eventReceiver, options).Decode()
-}
-
 // Decodes CTE documents.
 type Decoder struct {
-	eventReceiver  events.DataEventReceiver
 	buffer         CTEReadBuffer
+	eventReceiver  events.DataEventReceiver
 	containerState []cteDecoderState
 	currentState   cteDecoderState
 	options        options.CTEDecoderOptions
 }
 
 // Create a new CTE decoder, which will read from reader and send data events
-// to nextReceiver. If options is nil, default options will be used.
-func NewDecoder(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) *Decoder {
+// to nextReceiver. If opts is nil, default options will be used.
+func NewDecoder(opts *options.CTEDecoderOptions) *Decoder {
 	_this := &Decoder{}
-	_this.Init(reader, eventReceiver, options)
+	_this.Init(opts)
 	return _this
 }
 
 // Initialize this decoder, which will read from reader and send data events
-// to nextReceiver. If options is nil, default options will be used.
-func (_this *Decoder) Init(reader io.Reader, eventReceiver events.DataEventReceiver, options *options.CTEDecoderOptions) {
-	_this.options = *options.WithDefaultsApplied()
-	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
-	_this.eventReceiver = eventReceiver
+// to nextReceiver. If opts is nil, default options will be used.
+func (_this *Decoder) Init(opts *options.CTEDecoderOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
+}
+
+func (_this *Decoder) reset() {
+	_this.buffer.Reset()
+	_this.eventReceiver = nil
+	_this.containerState = _this.containerState[:0]
+	_this.currentState = 0
 }
 
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
-func (_this *Decoder) Decode() (err error) {
+func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
+		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				err = r.(error)
 			}
 		}
 	}()
+
+	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
+	_this.eventReceiver = eventReceiver
 
 	_this.eventReceiver.OnBeginDocument()
 

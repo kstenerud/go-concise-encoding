@@ -28,12 +28,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kstenerud/go-concise-encoding/options"
-
-	"github.com/kstenerud/go-concise-encoding/cte"
-
-	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/debug"
+	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
@@ -148,16 +145,16 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := cbe.NewMarshaler(marshalOpts, unmarshalOpts)
-
-	document, err := marshaler.MarshalToBytes(value)
+	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	template := value
-	actual, err := marshaler.UnmarshalFromBytes(document, template)
+	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
 		return
@@ -179,16 +176,16 @@ func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := cte.NewMarshaler(marshalOpts, unmarshalOpts)
-
-	document, err := marshaler.MarshalToBytes(value)
+	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	template := value
-	actual, err := marshaler.UnmarshalFromBytes(document, template)
+	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
 		return
@@ -234,16 +231,16 @@ func assertCBEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := cbe.NewMarshaler(marshalOpts, unmarshalOpts)
-
-	document, err := marshaler.MarshalToBytes(value)
+	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	template := value
-	actual, err := marshaler.UnmarshalFromBytes(document, template)
+	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
 		return
@@ -265,16 +262,16 @@ func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := cte.NewMarshaler(marshalOpts, unmarshalOpts)
-
-	document, err := marshaler.MarshalToBytes(value)
+	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	template := value
-	actual, err := marshaler.UnmarshalFromBytes(document, template)
+	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
 		return

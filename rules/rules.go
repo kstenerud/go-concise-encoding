@@ -74,16 +74,19 @@ type Rules struct {
 // The initial rule state comes pre-stacked. This value accounts for it in calculations.
 const rulesMaxDepthAdjust = 2
 
-// Create a new rules set. If options = nil, defaults are used.
-func NewRules(nextReceiver events.DataEventReceiver, options *options.RuleOptions) *Rules {
+// Create a new rules set.
+// If opts = nil, defaults are used.
+func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) *Rules {
 	_this := new(Rules)
-	_this.Init(nextReceiver, options)
+	_this.Init(nextReceiver, opts)
 	return _this
 }
 
-// Initialize a rules set. If options = nil, defaults are used.
-func (_this *Rules) Init(nextReceiver events.DataEventReceiver, options *options.RuleOptions) {
-	_this.options = *options.WithDefaultsApplied()
+// Initialize a rules set.
+// If opts = nil, defaults are used.
+func (_this *Rules) Init(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
 	_this.realMaxContainerDepth = _this.options.MaxContainerDepth + rulesMaxDepthAdjust
 	_this.stateStack = make([]ruleState, 0, _this.realMaxContainerDepth)
 	_this.nextReceiver = nextReceiver

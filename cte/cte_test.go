@@ -333,6 +333,8 @@ func TestCTETime(t *testing.T) {
 
 func TestCTETimestamp(t *testing.T) {
 	assertDecodeEncode(t, "c1 2000-01-01/19:31:44.901554/Z", BD(), V(1), CT(compact_time.NewTimestamp(2000, 1, 1, 19, 31, 44, 901554000, "Z")), ED())
+	assertDecodeEncode(t, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
+	assertDecode(t, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 }
 
 func TestCTEURI(t *testing.T) {
@@ -836,9 +838,10 @@ case is three Z characters, specified earlier as a sentinel.#
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()
 	encOpts.Indent = "    "
-	encoder := NewEncoder(encoded, encOpts)
-	decoder := NewDecoder(bytes.NewBuffer(document), encoder, nil)
-	err := decoder.Decode()
+	encoder := NewEncoder(encOpts)
+	encoder.PrepareToEncode(encoded)
+	decoder := NewDecoder(nil)
+	err := decoder.Decode(bytes.NewBuffer(document), encoder)
 	if err != nil {
 		t.Error(err)
 		return

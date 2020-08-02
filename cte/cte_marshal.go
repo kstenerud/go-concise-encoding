@@ -32,69 +32,39 @@ import (
 	"github.com/kstenerud/go-concise-encoding/rules"
 )
 
-// Marshal a go object into a CTE document, written to writer.
-// If options is nil, default options will be used.
-func Marshal(object interface{}, writer io.Writer, opts *options.CTEMarshalerOptions) (err error) {
-	var marshaler Marshaler
-	marshaler.Init(opts, nil)
-	return marshaler.Marshal(object, writer)
-}
+// ============================================================================
+// Marshaler
 
-// Marshal a go object into a CTE document, returned as a byte slice.
-// If options is nil, default options will be used.
-func MarshalToBytes(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
-	var marshaler Marshaler
-	marshaler.Init(opts, nil)
-	return marshaler.MarshalToBytes(object)
-}
-
-// Unmarshal a CTE document, creating an object of the same type as the template.
-// If options is nil, default options will be used.
-func Unmarshal(reader io.Reader, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
-	var marshaler Marshaler
-	marshaler.Init(nil, opts)
-	return marshaler.Unmarshal(reader, template)
-}
-
-// Unmarshal CTE from a byte slice, creating an object of the same type as the template.
-// If options is nil, default options will be used.
-func UnmarshalFromBytes(document []byte, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
-	var marshaler Marshaler
-	marshaler.Init(nil, opts)
-	return marshaler.UnmarshalFromBytes(document, template)
-}
-
-// A marshaler keeps builder and iterator sessions so that cached builder &
-// iterator information is not lost between multiple calls to marshal/unmarshal.
-//
-// If all you want is a one-off marshal or unmarshal, use the standalone functions.
+// Marshaler is the top-level API for serializing objects. It maintains an
+// iterator session so that cached iterator information is not lost between
+// multiple calls to marshal.
 type Marshaler struct {
-	BuilderSession  *builder.Session
-	IteratorSession *iterator.Session
-	MarshalOpts     options.CTEMarshalerOptions
-	UnmarshalOpts   options.CTEUnmarshalerOptions
+	options options.CTEMarshalerOptions
+	Session *iterator.Session
+	encoder Encoder
 }
 
 // Create a new marshaler with the specified options.
-// If options is nil, default options will be used.
-func NewMarshaler(marshalOpts *options.CTEMarshalerOptions, unmarshalOpts *options.CTEUnmarshalerOptions) *Marshaler {
+// If opts is nil, default options will be used.
+func NewMarshaler(opts *options.CTEMarshalerOptions) *Marshaler {
 	_this := &Marshaler{}
-	_this.Init(marshalOpts, unmarshalOpts)
+	_this.Init(opts)
 	return _this
 }
 
 // Init a marshaler with the specified options.
-// If options is nil, default options will be used.
-func (_this *Marshaler) Init(marshalOpts *options.CTEMarshalerOptions, unmarshalOpts *options.CTEUnmarshalerOptions) {
-	_this.MarshalOpts = *marshalOpts.WithDefaultsApplied()
-	_this.UnmarshalOpts = *unmarshalOpts.WithDefaultsApplied()
-	_this.BuilderSession = builder.NewSession(nil, &_this.UnmarshalOpts.Session)
-	_this.IteratorSession = iterator.NewSession(nil, &_this.MarshalOpts.Session)
+// If opts is nil, default options will be used.
+func (_this *Marshaler) Init(opts *options.CTEMarshalerOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
+	_this.Session = iterator.NewSession(nil, &_this.options.Session)
+	_this.encoder.Init(&_this.options.Encoder)
 }
 
 // Marshal a go object into a CTE document, written to writer.
 func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error) {
 	defer func() {
+		_this.encoder.Reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
@@ -106,22 +76,52 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 		}
 	}()
 
-	encoder := NewEncoder(writer, &_this.MarshalOpts.Encoder)
-	iterator := _this.IteratorSession.NewIterator(encoder, &_this.MarshalOpts.Iterator)
+	_this.encoder.PrepareToEncode(writer)
+	iterator := _this.Session.NewIterator(&_this.encoder, &_this.options.Iterator)
 	iterator.Iterate(object)
 	return
 }
 
 // Marshal a go object into a CTE document, returning the document as a byte slice.
-func (_this *Marshaler) MarshalToBytes(object interface{}) (document []byte, err error) {
+func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, err error) {
 	var buff bytes.Buffer
 	err = _this.Marshal(object, &buff)
 	document = buff.Bytes()
 	return
 }
 
+// ============================================================================
+// Unmarshaler
+
+// Unmarshaler is the top-level API for deserializing objects. It maintains a
+// builder session so that cached builder information is not lost between
+// multiple calls to unmarshal.
+type Unmarshaler struct {
+	options options.CTEUnmarshalerOptions
+	Session *builder.Session
+	decoder Decoder
+}
+
+// Create a new unmarshaler with the specified options.
+// If options is nil, default options will be used.
+func NewUnmarshaler(opts *options.CTEUnmarshalerOptions) *Unmarshaler {
+	_this := &Unmarshaler{}
+	_this.Init(opts)
+	return _this
+}
+
+// Init an unmarshaler with the specified options.
+// If options is nil, default options will be used.
+func (_this *Unmarshaler) Init(opts *options.CTEUnmarshalerOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
+	_this.Session = builder.NewSession(nil, &_this.options.Session)
+	_this.decoder.Init(&_this.options.Decoder)
+}
+
 // Unmarshal a CTE document, creating an object of the same type as the template.
-func (_this *Marshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
+// If template is nil, an interface type will be returned.
+func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
@@ -134,10 +134,9 @@ func (_this *Marshaler) Unmarshal(reader io.Reader, template interface{}) (decod
 		}
 	}()
 
-	builder := _this.BuilderSession.NewBuilderFor(template, &_this.UnmarshalOpts.Builder)
-	rules := rules.NewRules(builder, &_this.UnmarshalOpts.Rules)
-	decoder := NewDecoder(reader, rules, &_this.UnmarshalOpts.Decoder)
-	if err = decoder.Decode(); err != nil {
+	builder := _this.Session.NewBuilderFor(template, &_this.options.Builder)
+	rules := rules.NewRules(builder, &_this.options.Rules)
+	if err = _this.decoder.Decode(reader, rules); err != nil {
 		return
 	}
 	decoded = builder.GetBuiltObject()
@@ -145,6 +144,7 @@ func (_this *Marshaler) Unmarshal(reader io.Reader, template interface{}) (decod
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
-func (_this *Marshaler) UnmarshalFromBytes(document []byte, template interface{}) (decoded interface{}, err error) {
+// If template is nil, an interface type will be returned.
+func (_this *Unmarshaler) UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error) {
 	return _this.Unmarshal(bytes.NewBuffer(document), template)
 }

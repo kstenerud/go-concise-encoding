@@ -43,7 +43,7 @@ type Session struct {
 // Start a new iterator session. It will inherit the iterators of its parent.
 // If parent is nil, it will inherit from the root session, which has iterators
 // for all basic go types.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func NewSession(parent *Session, opts *options.IteratorSessionOptions) *Session {
 	_this := &Session{}
 	_this.Init(parent, opts)
@@ -53,8 +53,9 @@ func NewSession(parent *Session, opts *options.IteratorSessionOptions) *Session 
 // Initialize an iterator session. It will inherit the iterators of its parent.
 // If parent is nil, it will inherit from the root session, which has iterators
 // for all basic go types.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions) {
+	opts = opts.WithDefaultsApplied()
 	if parent == nil {
 		parent = &rootSession
 	}
@@ -64,7 +65,7 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 		return true
 	})
 
-	_this.options = *opts.WithDefaultsApplied()
+	_this.options = *opts
 
 	for t, converter := range _this.options.CustomBinaryConverters {
 		_this.RegisterIteratorForType(t, newCustomBinaryIterator(converter))

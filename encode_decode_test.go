@@ -21,50 +21,12 @@
 package concise_encoding
 
 import (
-	"reflect"
 	"testing"
 
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-compact-time"
 )
-
-func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() {
-		debug.DebugOptions.PassThroughPanics = false
-	}()
-	actual, err := cbeEncodeDecode(expected...)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("CBE: Expected %v but got %v", expected, actual)
-	}
-}
-
-func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-
-	actual, err := cteEncodeDecode(expected...)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("CTE: Expected %v but got %v", expected, actual)
-	}
-}
-
-func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
-	assertEncodeDecodeCBE(t, expected...)
-	assertEncodeDecodeCTE(t, expected...)
-}
 
 // ============================================================================
 

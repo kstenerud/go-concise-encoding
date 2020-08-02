@@ -94,14 +94,15 @@ func decodeToEvents(document []byte, withRules bool) (evts []*test.TEvent, err e
 	if DebugPrintEvents {
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
 	}
-	err = Decode(bytes.NewBuffer(document), topLevelReceiver, nil)
+	err = NewDecoder(nil).Decode(bytes.NewBuffer(document), topLevelReceiver)
 	evts = ter.Events
 	return
 }
 
 func encodeEvents(events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(buffer, nil)
+	encoder := NewEncoder(nil)
+	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(encoder, events...)
 	return buffer.Bytes()
 }
@@ -168,7 +169,7 @@ func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.T
 }
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
-	document, err := MarshalToBytes(value, nil)
+	document, err := NewMarshaler(nil).MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
 		return
@@ -183,7 +184,7 @@ func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (su
 }
 
 func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
-	actualValue, err := UnmarshalFromBytes([]byte(document), expectedValue, nil)
+	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
 	if err != nil {
 		t.Error(err)
 		return

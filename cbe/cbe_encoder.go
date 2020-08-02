@@ -49,19 +49,30 @@ type Encoder struct {
 	options options.CBEEncoderOptions
 }
 
-// Create a new CBE encoder, which will receive data events and write a document
-// to writer. If options is nil, default options will be used.
-func NewEncoder(writer io.Writer, options *options.CBEEncoderOptions) *Encoder {
+// Create a new CBE encoder.
+// If opts is nil, default options will be used.
+func NewEncoder(opts *options.CBEEncoderOptions) *Encoder {
 	_this := &Encoder{}
-	_this.Init(writer, options)
+	_this.Init(opts)
 	return _this
 }
 
-// Initialize this encoder, which will receive data events and write a document
-// to writer. If options is nil, default options will be used.
-func (_this *Encoder) Init(writer io.Writer, options *options.CBEEncoderOptions) {
-	_this.options = *options.WithDefaultsApplied()
-	_this.buff.Init(writer, _this.options.BufferSize)
+// Initialize this encoder.
+// If opts is nil, default options will be used.
+func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
+	_this.buff.Init(_this.options.BufferSize)
+}
+
+// Prepare the encoder for encoding. All events will be encoded to writer.
+// PrepareToEncode MUST be called before using the encoder.
+func (_this *Encoder) PrepareToEncode(writer io.Writer) {
+	_this.buff.SetWriter(writer)
+}
+
+func (_this *Encoder) Reset() {
+	_this.buff.Reset()
 }
 
 // ============================================================================

@@ -46,17 +46,18 @@ type RootObjectIterator struct {
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
-// If options is nil, default options will be used.
-func NewRootObjectIterator(session *Session, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) *RootObjectIterator {
+// If opts is nil, default options will be used.
+func NewRootObjectIterator(session *Session, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
 	_this := &RootObjectIterator{}
-	_this.Init(session, eventReceiver, options)
+	_this.Init(session, eventReceiver, opts)
 	return _this
 }
 
 // Initialize this iterator to send data events to eventReceiver.
-// If options is nil, default options will be used.
-func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.DataEventReceiver, options *options.IteratorOptions) {
-	_this.options = *options.WithDefaultsApplied()
+// If opts is nil, default options will be used.
+func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) {
+	opts = opts.WithDefaultsApplied()
+	_this.options = *opts
 	_this.session = session
 	_this.eventReceiver = eventReceiver
 }

@@ -23,27 +23,32 @@ package concise_encoding
 import (
 	"bytes"
 	"math/big"
+	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/cbe"
-	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/debug"
+	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-describe"
+	"github.com/kstenerud/go-equivalence"
 )
 
 func cbeDecode(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
-	err = cbe.Decode(bytes.NewBuffer(document), receiver, nil)
+	err = ce.NewCBEDecoder(nil).Decode(bytes.NewBuffer(document), receiver)
 	events = receiver.Events
 	return
 }
 
 func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error) {
 	buffer := &bytes.Buffer{}
-	encoder := cbe.NewEncoder(buffer, nil)
+	encoder := ce.NewCBEEncoder(nil)
+	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(encoder, expected...)
 	document := buffer.Bytes()
 
@@ -52,14 +57,15 @@ func cbeEncodeDecode(expected ...*test.TEvent) (events []*test.TEvent, err error
 
 func cteDecode(document []byte) (events []*test.TEvent, err error) {
 	receiver := test.NewTER()
-	err = cte.Decode(bytes.NewBuffer(document), receiver, nil)
+	err = ce.NewCTEDecoder(nil).Decode(bytes.NewBuffer(document), receiver)
 	events = receiver.Events
 	return
 }
 
 func cteEncode(events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := cte.NewEncoder(buffer, nil)
+	encoder := ce.NewCTEEncoder(nil)
+	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(encoder, events...)
 	return buffer.Bytes()
 }
@@ -111,3 +117,135 @@ func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
+
+// ============================================================================
+// Encode/Decode
+
+func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() {
+		debug.DebugOptions.PassThroughPanics = false
+	}()
+	actual, err := cbeEncodeDecode(expected...)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("CBE: Expected %v but got %v", expected, actual)
+	}
+}
+
+func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+
+	actual, err := cteEncodeDecode(expected...)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("CTE: Expected %v but got %v", expected, actual)
+	}
+}
+
+func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
+	assertEncodeDecodeCBE(t, expected...)
+	assertEncodeDecodeCTE(t, expected...)
+}
+
+// ============================================================================
+// Marshal/Unmarshal
+
+func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
+	marshalOptions := options.DefaultCBEMarshalerOptions()
+	unmarshalOptions := options.DefaultCBEUnmarshalerOptions()
+	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
+	marshalOptions.Iterator.RecursionSupport = true
+	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
+}
+
+func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
+	marshalOptions *options.CBEMarshalerOptions,
+	unmarshalOptions *options.CBEUnmarshalerOptions,
+	expected interface{}) {
+
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() { debug.DebugOptions.PassThroughPanics = false }()
+	buffer := &bytes.Buffer{}
+	err := ce.MarshalCBE(expected, buffer, marshalOptions)
+	if err != nil {
+		t.Errorf("CBE Marshal error: %v", err)
+		return
+	}
+	document := buffer.Bytes()
+
+	var actual interface{}
+	actual, err = ce.UnmarshalCBE(buffer, expected, unmarshalOptions)
+	if err != nil {
+		t.Errorf("CBE Unmarshal error: %v\n- While unmarshaling %v", err, describe.D(document))
+		return
+	}
+
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("CBE Unmarshal: Expected %v but got %v", describe.D(expected), describe.D(actual))
+	}
+}
+
+func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
+	marshalOptions := options.DefaultCTEMarshalerOptions()
+	unmarshalOptions := options.DefaultCTEUnmarshalerOptions()
+	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
+	marshalOptions.Iterator.RecursionSupport = true
+	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
+}
+
+func assertCTEMarshalUnmarshalWithOptions(t *testing.T,
+	marshalOptions *options.CTEMarshalerOptions,
+	unmarshalOptions *options.CTEUnmarshalerOptions,
+	expected interface{}) {
+
+	debug.DebugOptions.PassThroughPanics = true
+	defer func() {
+		debug.DebugOptions.PassThroughPanics = false
+	}()
+	buffer := &bytes.Buffer{}
+	err := ce.MarshalCTE(expected, buffer, marshalOptions)
+	if err != nil {
+		t.Errorf("CTE Marshal error: %v", err)
+		return
+	}
+
+	var actual interface{}
+	actual, err = ce.UnmarshalCTE(buffer, expected, unmarshalOptions)
+	if err != nil {
+		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(buffer.Bytes()))
+		return
+	}
+
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("CTE Unmarshal: Expected %v but got %v\n- While unmarshaling %v", describe.D(expected), describe.D(actual), string(buffer.Bytes()))
+	}
+}
+
+func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
+	assertCBEMarshalUnmarshal(t, expected)
+	assertCTEMarshalUnmarshal(t, expected)
+}
+
+func assertMarshalUnmarshalWithBufferSize(t *testing.T, bufferSize int, expected interface{}) {
+	cbeMarshalOptions := options.DefaultCBEMarshalerOptions()
+	cbeMarshalOptions.Encoder.BufferSize = bufferSize
+	cbeUnmarshalOptions := options.DefaultCBEUnmarshalerOptions()
+	cbeUnmarshalOptions.Decoder.BufferSize = bufferSize
+	assertCBEMarshalUnmarshalWithOptions(t, cbeMarshalOptions, cbeUnmarshalOptions, expected)
+
+	cteMarshalOptions := options.DefaultCTEMarshalerOptions()
+	cteMarshalOptions.Encoder.BufferSize = bufferSize
+	cteUnmarshalOptions := options.DefaultCTEUnmarshalerOptions()
+	cteUnmarshalOptions.Decoder.BufferSize = bufferSize
+	assertCTEMarshalUnmarshalWithOptions(t, cteMarshalOptions, cteUnmarshalOptions, expected)
+}

@@ -69,6 +69,16 @@ func (_this *CTEReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterBy
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
+func (_this *CTEReadBuffer) Reset() {
+	_this.buffer.Reset()
+	_this.tokenStart = 0
+	_this.subtokenStart = 0
+	_this.tokenPos = 0
+	_this.tempBuffer.Reset()
+	_this.lineCount = 0
+	_this.colCount = 0
+}
+
 // Bytes
 
 func (_this *CTEReadBuffer) PeekByteNoEOD() byte {

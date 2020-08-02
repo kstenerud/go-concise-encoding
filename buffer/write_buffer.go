@@ -30,15 +30,23 @@ type StreamingWriteBuffer struct {
 	lastAllocatedSize int
 }
 
-func NewWriteBuffer(writer io.Writer, bufferSize int) *StreamingWriteBuffer {
+func NewWriteBuffer(bufferSize int) *StreamingWriteBuffer {
 	_this := &StreamingWriteBuffer{}
-	_this.Init(writer, bufferSize)
+	_this.Init(bufferSize)
 	return _this
 }
 
-func (_this *StreamingWriteBuffer) Init(writer io.Writer, bufferSize int) {
+func (_this *StreamingWriteBuffer) Init(bufferSize int) {
 	_this.bytes = make([]byte, 0, bufferSize)
+}
+
+func (_this *StreamingWriteBuffer) SetWriter(writer io.Writer) {
 	_this.writer = writer
+}
+
+func (_this *StreamingWriteBuffer) Reset() {
+	_this.writer = nil
+	_this.bytes = _this.bytes[:0]
 }
 
 func (_this *StreamingWriteBuffer) Allocate(byteCount int) []byte {

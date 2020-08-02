@@ -46,18 +46,19 @@ type Session struct {
 // Start a new builder session. It will inherit the builders of its parent.
 // If parent is nil, it will inherit from the root session, which has builders
 // for all basic go types.
-// If options is nil, default options will be used.
-func NewSession(parent *Session, options *options.BuilderSessionOptions) *Session {
+// If opts is nil, default options will be used.
+func NewSession(parent *Session, opts *options.BuilderSessionOptions) *Session {
 	_this := &Session{}
-	_this.Init(parent, options)
+	_this.Init(parent, opts)
 	return _this
 }
 
 // Initialize a builder session. It will inherit the builders of its parent.
 // If parent is nil, it will inherit from the root session, which has builders
 // for all basic go types.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions) {
+	opts = opts.WithDefaultsApplied()
 	if parent == nil {
 		parent = &rootSession
 	}
@@ -66,14 +67,16 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 		return true
 	})
 
-	_this.options = *opts.WithDefaultsApplied()
+	_this.options = *opts
 	for _, t := range _this.options.CustomBuiltTypes {
 		_this.RegisterBuilderForType(t, newCustomBuilder(_this))
 	}
 }
 
 // NewBuilderFor creates a new builder that builds objects of the same type as
-// the template object. If options is nil, default options will be used.
+// the template object.
+// If template is nil, a generic interface type will be used.
+// If options is nil, default options will be used.
 func (_this *Session) NewBuilderFor(template interface{}, options *options.BuilderOptions) *RootBuilder {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
