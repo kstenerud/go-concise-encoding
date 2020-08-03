@@ -20,6 +20,10 @@
 
 package options
 
+import (
+	"github.com/kstenerud/go-concise-encoding/version"
+)
+
 // ============================================================================
 // CBE Decoder
 
@@ -27,7 +31,9 @@ type CBEDecoderOptions struct {
 	// The size of the underlying buffer to use when decoding a document.
 	BufferSize int
 
-	// Concise encoding spec version to adhere to.
+	// Concise encoding spec version to adhere to. Uses latest if set to 0.
+	// This value is consulted if ImpliedStructure is anything other than
+	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
 
 	// The implied structure that this decoder will assume.
@@ -38,7 +44,8 @@ type CBEDecoderOptions struct {
 
 func DefaultCBEDecoderOptions() *CBEDecoderOptions {
 	return &CBEDecoderOptions{
-		BufferSize: 2048,
+		BufferSize:             2048,
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
 
@@ -51,6 +58,10 @@ func (_this *CBEDecoderOptions) WithDefaultsApplied() *CBEDecoderOptions {
 		_this.BufferSize = 64
 	}
 
+	if _this.ConciseEncodingVersion == 0 {
+		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
+	}
+
 	return _this
 }
 
@@ -61,7 +72,9 @@ type CBEEncoderOptions struct {
 	// The size of the underlying buffer to use when encoding a document.
 	BufferSize int
 
-	// Concise encoding spec version to adhere to.
+	// Concise encoding spec version to adhere to. Uses latest if set to 0.
+	// This value is consulted if ImpliedStructure is anything other than
+	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
 
 	// The implied structure that this encoder will assume.
@@ -71,7 +84,8 @@ type CBEEncoderOptions struct {
 
 func DefaultCBEEncoderOptions() *CBEEncoderOptions {
 	return &CBEEncoderOptions{
-		BufferSize: 1024,
+		BufferSize:             1024,
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
 
@@ -82,6 +96,10 @@ func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
 
 	if _this.BufferSize < 64 {
 		_this.BufferSize = 64
+	}
+
+	if _this.ConciseEncodingVersion == 0 {
+		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
 	}
 
 	return _this

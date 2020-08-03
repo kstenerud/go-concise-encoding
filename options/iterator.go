@@ -86,7 +86,7 @@ type IteratorOptions struct {
 	// it's optional.
 	RecursionSupport bool
 
-	// TODO
+	// TODO If true, don't write a nil object when a nil pointer is encountered.
 	OmitNilPointers bool
 }
 
@@ -94,6 +94,7 @@ func DefaultIteratorOptions() *IteratorOptions {
 	return &IteratorOptions{
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 		RecursionSupport:       true,
+		OmitNilPointers:        true,
 	}
 }
 

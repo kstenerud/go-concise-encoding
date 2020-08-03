@@ -20,14 +20,27 @@
 
 package options
 
+import (
+	"github.com/kstenerud/go-concise-encoding/version"
+)
+
 // How to encode binary floats
-type BinaryFloatEncodeAs int
+type FloatEncoding int
 
 const (
 	// Use decimal encoding (1.2e4)
-	BinaryFloatEncodeAsDecimal = iota
+	FloatEncodingDecimal = iota
 	// Use binary encoding (0x1.2p4)
-	BinaryFloatEncodeAsBinary
+	FloatEncodingBinary
+)
+
+type IntEncoding int
+
+const (
+	IntEncodingDecimal = iota
+	IntEncodingBinary
+	IntEncodingOctal
+	IntEncodingHexadecimal
 )
 
 // ============================================================================
@@ -37,7 +50,9 @@ type CTEDecoderOptions struct {
 	// The size of the underlying buffer to use when decoding a document.
 	BufferSize int
 
-	// Concise encoding spec version to adhere to.
+	// Concise encoding spec version to adhere to. Uses latest if set to 0.
+	// This value is consulted if ImpliedStructure is anything other than
+	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
 
 	// The implied structure that this decoder will assume.
@@ -48,7 +63,8 @@ type CTEDecoderOptions struct {
 
 func DefaultCTEDecoderOptions() *CTEDecoderOptions {
 	return &CTEDecoderOptions{
-		BufferSize: 4096,
+		BufferSize:             4096,
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
 
@@ -61,6 +77,10 @@ func (_this *CTEDecoderOptions) WithDefaultsApplied() *CTEDecoderOptions {
 		_this.BufferSize = 64
 	}
 
+	if _this.ConciseEncodingVersion == 0 {
+		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
+	}
+
 	return _this
 }
 
@@ -69,11 +89,25 @@ func (_this *CTEDecoderOptions) WithDefaultsApplied() *CTEDecoderOptions {
 
 type CTEEncoderOptions struct {
 	BufferSize int
-	Indent     string
-	// TODO: BinaryFloatEncoding option
-	BinaryFloatEncoding BinaryFloatEncodeAs
 
-	// Concise encoding spec version to adhere to.
+	// Indentation to use when pretty printing
+	Indent string
+
+	// TODO: Default encoding to use for floating point
+	DefaultFloatEncoding FloatEncoding
+
+	// TODO: Default encoding to use for integers
+	DefaultIntEncoding IntEncoding
+
+	// TODO: Max column before forcing a newline (if possible)
+	MaxColumn uint
+
+	// TODO: Convert line endings to escapes
+	EscapeLineEndings bool
+
+	// Concise encoding spec version to adhere to. Uses latest if set to 0.
+	// This value is consulted if ImpliedStructure is anything other than
+	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
 
 	// The implied structure that this encoder will assume.
@@ -83,7 +117,8 @@ type CTEEncoderOptions struct {
 
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {
 	return &CTEEncoderOptions{
-		BufferSize: 1024,
+		BufferSize:             1024,
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
 
@@ -92,7 +127,9 @@ func (_this *CTEEncoderOptions) WithDefaultsApplied() *CTEEncoderOptions {
 		return DefaultCTEEncoderOptions()
 	}
 
-	// TODO: Check for default individual options
+	if _this.ConciseEncodingVersion == 0 {
+		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
+	}
 
 	return _this
 }

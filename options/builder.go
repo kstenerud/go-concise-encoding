@@ -92,10 +92,11 @@ type BuilderOptions struct {
 	// Max base-2 exponent allowed when converting from floating point to big integer.
 	FloatToBigIntMaxBase2Exponent int
 
-	// TODO: ErrorOnLossyFloatConversion option
-	ErrorOnLossyFloatConversion bool
-	// TODO: Something for decimal floats?
-	// TODO: Error on unknown field
+	// TODO: If true, don't raise an error on a lossy floating point conversion.
+	AllowLossyFloatConversion bool
+
+	// TODO: If true, don't raise an error on unknown fields
+	IgnoreUnknownFields bool
 }
 
 func DefaultBuilderOptions() *BuilderOptions {
@@ -103,6 +104,8 @@ func DefaultBuilderOptions() *BuilderOptions {
 	return &BuilderOptions{
 		FloatToBigIntMaxBase10Exponent: maxBase10Exp,
 		FloatToBigIntMaxBase2Exponent:  maxBase10Exp * 10 / 3,
+		AllowLossyFloatConversion:      true,
+		IgnoreUnknownFields:            true,
 	}
 }
 
@@ -110,8 +113,6 @@ func (_this *BuilderOptions) WithDefaultsApplied() *BuilderOptions {
 	if _this == nil {
 		return DefaultBuilderOptions()
 	}
-
-	// TODO: Check for default individual options
 
 	return _this
 }

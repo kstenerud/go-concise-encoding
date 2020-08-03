@@ -108,12 +108,12 @@ func TestEncodeDecodeCustom(t *testing.T) {
 }
 
 func TestEncodeDecodeURI(t *testing.T) {
-	// TODO: More complex
+	// TODO: More complex tests
 	assertEncodeDecode(t, BD(), V(1), URI("http://example.com"), ED())
 }
 
 func TestEncodeDecodeString(t *testing.T) {
-	// TODO: More complex
+	// TODO: More complex tests
 	assertEncodeDecode(t, BD(), V(1), S("A string"), ED())
 }
 

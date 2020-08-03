@@ -22,12 +22,6 @@
 // this library.
 package options
 
-// TODO: Opt: Convert line endings to escapes
-// TODO: Opt: Don't convert escapes
-// TODO: Builder that converts to string
-// TODO: Iterator that converts from string to smaller type (numeric)
-// TODO: Some method to notify that a string field should be encoded as a different type
-
 // Defines what (if any) implied structure forms the Concise Encoding document takes.
 type ImpliedStructure int
 

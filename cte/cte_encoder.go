@@ -212,7 +212,6 @@ func (_this *Encoder) OnFloat(value float64) {
 		_this.transitionState()
 		return
 	}
-	// TODO: Hex float?
 	_this.addFmt("%g", value)
 	_this.currentItemCount++
 	_this.transitionState()
@@ -604,13 +603,11 @@ func (_this *Encoder) addPrefix() {
 
 func (_this *Encoder) addString(str string) {
 	// TODO: String continuation
-	// TODO: Max column option?
 	dst := _this.buff.Allocate(len(str))
 	copy(dst, str)
 }
 
 func (_this *Encoder) addFmt(format string, args ...interface{}) {
-	// TODO: Make something more efficient
 	_this.addString(fmt.Sprintf(format, args...))
 }
 

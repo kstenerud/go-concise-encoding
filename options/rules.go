@@ -39,7 +39,9 @@ type RuleOptions struct {
 	MaxContainerDepth   uint64
 	MaxObjectCount      uint64
 	MaxReferenceCount   uint64
+
 	// TODO: Max bytes total for all array types
+	MaxTotalArrayBytes uint64
 
 	depthHasBeenAdjusted bool
 }

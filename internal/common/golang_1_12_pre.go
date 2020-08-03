@@ -20,7 +20,6 @@
 
 // +build !go1.12
 
-// TODO: Can't use < 1.13 anymore due to hex float notation
 package common
 
 import (

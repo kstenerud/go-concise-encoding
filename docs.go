@@ -40,3 +40,12 @@
 // * Rules: DataEventReceiver that validates events, ensuring their contents
 // and order match a valid CBE/CTE document.
 package concise_encoding
+
+// TODO: Go tags:
+// - encoded name (following CTE string rules)
+// - float formatting: decimal / binary
+// - int formatting: binary, octal, decimal, hex
+// - float significant digits
+// - encode as different type? (only basic kinds will work)
+// - custom conversion function?
+// - force verbatim?
