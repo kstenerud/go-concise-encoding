@@ -42,10 +42,10 @@
 package concise_encoding
 
 // TODO: Go tags:
-// - encoded name (following CTE string rules)
-// - float formatting: decimal / binary
-// - int formatting: binary, octal, decimal, hex
-// - float significant digits
-// - encode as different type? (only basic kinds will work)
-// - custom conversion function?
-// - force verbatim?
+// - name=<value> (following CTE string rules)
+// - type=f32, f64, f10.x, i2, i8, i10, i16, string, vstring
+// - lossy/nolossy
+// - recurse/norecurse
+// - omit=<value>
+// - omitempty ==> nil pointer, nil interface value, empty array, slice, map, or string.
+// - omit
