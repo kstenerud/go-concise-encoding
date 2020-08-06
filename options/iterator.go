@@ -88,6 +88,9 @@ type IteratorOptions struct {
 
 	// TODO If true, don't write a nil object when a nil pointer is encountered.
 	OmitNilPointers bool
+
+	// TODO: use lowercase names in structs
+	LowercaseStructFieldNames bool
 }
 
 func DefaultIteratorOptions() *IteratorOptions {

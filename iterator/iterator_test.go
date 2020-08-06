@@ -231,3 +231,33 @@ func TestIterateRecurse(t *testing.T) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
 	}
 }
+
+type TagStruct struct {
+	Omit1 string `ce:"-"`
+	Omit2 string `ce:"omit"`
+	Named string `ce:"name=test"`
+}
+
+type TagStruct2 struct {
+	Omit1 string `ce:" - "`
+	Omit2 string `ce:" omit "`
+	Named string `ce:" name = test "`
+}
+
+func TestIterateTaggedStruct(t *testing.T) {
+	obj := &TagStruct{
+		Omit1: "Omit1 should be omitted",
+		Omit2: "Omit2 should be omitted",
+		Named: "Named should be present",
+	}
+
+	assertIterate(t, obj, M(), S("test"), S("Named should be present"), E())
+
+	obj2 := &TagStruct2{
+		Omit1: "Omit1 should be omitted",
+		Omit2: "Omit2 should be omitted",
+		Named: "Named should be present",
+	}
+
+	assertIterate(t, obj2, M(), S("test"), S("Named should be present"), E())
+}

@@ -1289,3 +1289,29 @@ func TestBuilderRefStruct(t *testing.T) {
 		S("S2"), REF(), PI(2),
 		E())
 }
+
+type TagStruct struct {
+	Omit1 string `ce:"-"`
+	Omit2 string `ce:"omit"`
+	Named string `ce:"name=test"`
+}
+
+type TagStruct2 struct {
+	Omit1 string `ce:"  - "`
+	Omit2 string `ce:"  omit "`
+	Named string `ce:" name = test "`
+}
+
+func TestBuilderStructTags(t *testing.T) {
+	assertBuild(t, &TagStruct{
+		Named: "Something",
+	}, M(),
+		S("test"), S("Something"),
+		E())
+
+	assertBuild(t, &TagStruct2{
+		Named: "Something",
+	}, M(),
+		S("test"), S("Something"),
+		E())
+}

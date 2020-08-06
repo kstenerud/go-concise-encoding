@@ -25,6 +25,7 @@ import (
 	"math/big"
 	"net/url"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -35,8 +36,47 @@ import (
 )
 
 type structBuilderDesc struct {
-	builder ObjectBuilder
-	index   int
+	Name      string
+	Builder   ObjectBuilder
+	Index     int
+	Omit      bool
+	OmitEmpty bool
+	OmitValue string
+}
+
+func (_this *structBuilderDesc) applyTags(tags string) {
+	if tags == "" {
+		return
+	}
+
+	requiresValue := func(kv []string, key string) {
+		if len(kv) != 2 {
+			panic(fmt.Errorf(`Tag key "%s" requires a value`, key))
+		}
+	}
+
+	for _, entry := range strings.Split(tags, ",") {
+		kv := strings.Split(entry, "=")
+		switch strings.TrimSpace(kv[0]) {
+		// TODO: lossy/nolossy
+		case "-":
+			_this.Omit = true
+		case "omit":
+			if len(kv) == 1 {
+				_this.Omit = true
+			} else {
+				_this.OmitValue = strings.TrimSpace(kv[1])
+			}
+		case "omitempty":
+			// TODO: Implement omitempty
+			_this.OmitEmpty = true
+		case "name":
+			requiresValue(kv, "name")
+			_this.Name = strings.TrimSpace(kv[1])
+		default:
+			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
+		}
+	}
 }
 
 type structBuilder struct {
@@ -79,10 +119,14 @@ func (_this *structBuilder) PostCacheInitBuilder(session *Session) {
 		field := _this.dstType.Field(i)
 		if field.PkgPath == "" {
 			builder := session.GetBuilderForType(field.Type)
-			_this.builderDescs[field.Name] = &structBuilderDesc{
-				builder: builder,
-				index:   i,
+			desc := &structBuilderDesc{
+				Name:    field.Name,
+				Builder: builder,
+				Index:   i,
 			}
+			desc.applyTags(field.Tag.Get("ce"))
+			_this.builderDescs[desc.Name] = desc
+			// TODO: case insensitive struct field name
 		}
 	}
 }
@@ -169,9 +213,10 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 
 func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
+		// TODO: case insensitive field name comparison
 		if builderDesc, ok := _this.builderDescs[string(value)]; ok {
-			_this.nextBuilder = builderDesc.builder
-			_this.nextValue = _this.container.Field(builderDesc.index)
+			_this.nextBuilder = builderDesc.Builder
+			_this.nextValue = _this.container.Field(builderDesc.Index)
 		} else {
 			_this.root.SetCurrentBuilder(_this.ignoreBuilder)
 			_this.nextBuilder = _this.ignoreBuilder
@@ -188,8 +233,8 @@ func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
 func (_this *structBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
 		if builderDesc, ok := _this.builderDescs[string(value)]; ok {
-			_this.nextBuilder = builderDesc.builder
-			_this.nextValue = _this.container.Field(builderDesc.index)
+			_this.nextBuilder = builderDesc.Builder
+			_this.nextValue = _this.container.Field(builderDesc.Index)
 		} else {
 			_this.root.SetCurrentBuilder(_this.ignoreBuilder)
 			_this.nextBuilder = _this.ignoreBuilder
@@ -271,8 +316,8 @@ func (_this *structBuilder) PrepareForMapContents() {
 
 	for k, builderElem := range _this.builderDescs {
 		builderDescs[k] = &structBuilderDesc{
-			builder: builderElem.builder.CloneFromTemplate(_this.root, _this, _this.options),
-			index:   builderElem.index,
+			Builder: builderElem.Builder.CloneFromTemplate(_this.root, _this, _this.options),
+			Index:   builderElem.Index,
 		}
 	}
 	_this.builderDescs = builderDescs

@@ -40,12 +40,3 @@
 // * Rules: DataEventReceiver that validates events, ensuring their contents
 // and order match a valid CBE/CTE document.
 package concise_encoding
-
-// TODO: Go tags:
-// - name=<value> (following CTE string rules)
-// - type=f32, f64, f10.x, i2, i8, i10, i16, string, vstring
-// - lossy/nolossy
-// - recurse/norecurse
-// - omit=<value>
-// - omitempty ==> nil pointer, nil interface value, empty array, slice, map, or string.
-// - omit

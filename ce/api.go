@@ -26,6 +26,24 @@
 //
 // Layers lower than this are probably not what you're looking for, but they
 // are described in ../docs.go
+//
+// Tags:
+// Concise Encoding supports struct tags, using the identifier "ce". Tag
+// contents are comma separated flags and key-value pairs:
+//
+// ce:"flag1,key1=value1,flag2,flag3,key2=value2"
+//
+// Note: Whitespace will be trimmed, so "flag1 , key1 = value1 " will work.
+//
+// The following tag values are recognized:
+//
+// omit: (flag) This struct field will not be written to a CE document, nor
+//       will it be read from a CE document.
+//
+// -:    Shorthand for omit.
+//
+// name: (k=v) Specifies the name to use when encoding/decoding to a document.
+//
 package ce
 
 import (

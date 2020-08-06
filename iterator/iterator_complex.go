@@ -21,7 +21,9 @@
 package iterator
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 
@@ -219,9 +221,13 @@ func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.Da
 // ------
 
 type structIteratorField struct {
-	Name     string
-	Index    int
-	Iterator ObjectIterator
+	Name      string
+	Index     int
+	Iterator  ObjectIterator
+	Omit      bool
+	OmitEmpty bool
+	// TODO: OmitValue
+	OmitValue string
 }
 
 func newStructIteratorField(name string, index int, iterator ObjectIterator) *structIteratorField {
@@ -229,6 +235,43 @@ func newStructIteratorField(name string, index int, iterator ObjectIterator) *st
 		Name:     name,
 		Index:    index,
 		Iterator: iterator,
+	}
+}
+
+func (_this *structIteratorField) applyTags(tags string) {
+	if tags == "" {
+		return
+	}
+
+	requiresValue := func(kv []string, key string) {
+		if len(kv) != 2 {
+			panic(fmt.Errorf(`Tag key "%s" requires a value`, key))
+		}
+	}
+
+	for _, entry := range strings.Split(tags, ",") {
+		kv := strings.Split(entry, "=")
+		switch strings.TrimSpace(kv[0]) {
+		// TODO: recurse/norecurse?
+		// TODO: nil?
+		// TODO: type=f16, f10.x, i2, i8, i10, i16, string, vstring
+		case "-":
+			_this.Omit = true
+		case "omit":
+			if len(kv) == 1 {
+				_this.Omit = true
+			} else {
+				_this.OmitValue = strings.TrimSpace(kv[1])
+			}
+		case "omitempty":
+			// TODO: Implement omitempty
+			_this.OmitEmpty = true
+		case "name":
+			requiresValue(kv, "name")
+			_this.Name = strings.TrimSpace(kv[1])
+		default:
+			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
+		}
 	}
 }
 
@@ -252,7 +295,11 @@ func (_this *structIterator) PostCacheInitIterator(session *Session) {
 				Index:    i,
 				Iterator: session.GetIteratorForType(field.Type),
 			}
-			_this.fieldIterators = append(_this.fieldIterators, iterator)
+			// TODO: case insensitive struct field name
+			iterator.applyTags(field.Tag.Get("ce"))
+			if !iterator.Omit {
+				_this.fieldIterators = append(_this.fieldIterators, iterator)
+			}
 		}
 	}
 }
