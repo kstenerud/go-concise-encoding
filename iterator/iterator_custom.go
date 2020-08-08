@@ -38,14 +38,17 @@ func newCustomBinaryIterator(convertFunction options.ConvertToCustomFunction) Ob
 	}
 }
 
-func (_this *customBinaryIterator) PostCacheInitIterator(session *Session) {
+func (_this *customBinaryIterator) InitTemplate(_ FetchIterator) {
 }
 
-func (_this *customBinaryIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+func (_this *customBinaryIterator) NewInstance() ObjectIterator {
 	return _this
 }
 
-func (_this *customBinaryIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *customBinaryIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {
+}
+
+func (_this *customBinaryIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	asBytes, err := _this.convertFunction(v)
 	if err != nil {
 		panic(fmt.Errorf("Error converting type %v to custom bytes: %v", v.Type(), err))
@@ -63,14 +66,17 @@ func newCustomTextIterator(convertFunction options.ConvertToCustomFunction) Obje
 	}
 }
 
-func (_this *customTextIterator) PostCacheInitIterator(session *Session) {
+func (_this *customTextIterator) InitTemplate(_ FetchIterator) {
 }
 
-func (_this *customTextIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+func (_this *customTextIterator) NewInstance() ObjectIterator {
 	return _this
 }
 
-func (_this *customTextIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *customTextIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {
+}
+
+func (_this *customTextIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	asString, err := _this.convertFunction(v)
 	if err != nil {
 		panic(fmt.Errorf("Error converting type %v to custom text: %v", v.Type(), err))

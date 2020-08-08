@@ -87,7 +87,7 @@ type IteratorOptions struct {
 	RecursionSupport bool
 
 	// Use lowercase names in structs
-	// LowercaseStructFieldNames bool
+	LowercaseStructFieldNames bool
 
 	// TODO If true, don't write a nil object when a nil pointer is encountered.
 	OmitNilPointers bool
@@ -98,7 +98,7 @@ func DefaultIteratorOptions() *IteratorOptions {
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 		RecursionSupport:       true,
 		OmitNilPointers:        true,
-		// TODO: Fix case insensitive
+		// TODO: Need to fix builder side before using this
 		// LowercaseStructFieldNames: true,
 	}
 }

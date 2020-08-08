@@ -42,24 +42,26 @@ type RootObjectIterator struct {
 	nextMarkerName  uint32
 	eventReceiver   events.DataEventReceiver
 	opts            options.IteratorOptions
-	session         *Session
+	fetchTemplate   FetchIterator
+	iterators       map[reflect.Type]ObjectIterator
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
 // If opts is nil, default options will be used.
-func NewRootObjectIterator(session *Session, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
+func NewRootObjectIterator(fetchTemplate FetchIterator, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
 	_this := &RootObjectIterator{}
-	_this.Init(session, eventReceiver, opts)
+	_this.Init(fetchTemplate, eventReceiver, opts)
 	return _this
 }
 
 // Initialize this iterator to send data events to eventReceiver.
 // If opts is nil, default options will be used.
-func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) {
+func (_this *RootObjectIterator) Init(fetchTemplate FetchIterator, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
-	_this.session = session
+	_this.fetchTemplate = fetchTemplate
 	_this.eventReceiver = eventReceiver
+	_this.iterators = make(map[reflect.Type]ObjectIterator)
 }
 
 // Iterates over an object, sending events to the root iterator's
@@ -79,12 +81,12 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	}
 
 	rv := reflect.ValueOf(object)
-	iterator := _this.session.GetIteratorForType(rv.Type()).CloneFromTemplate(&_this.opts)
-	iterator.IterateObject(rv, _this.eventReceiver, _this)
+	iterator := _this.getIteratorForType(rv.Type())
+	iterator.IterateObject(rv, _this.eventReceiver, _this.addReference)
 	_this.eventReceiver.OnEndDocument()
 }
 
-func (_this *RootObjectIterator) AddReference(v reflect.Value) (didGenerateReferenceEvent bool) {
+func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateReferenceEvent bool) {
 	if !_this.opts.RecursionSupport {
 		return false
 	}
@@ -107,4 +109,15 @@ func (_this *RootObjectIterator) AddReference(v reflect.Value) (didGenerateRefer
 	_this.eventReceiver.OnReference()
 	_this.eventReceiver.OnPositiveInt(uint64(name))
 	return true
+}
+
+func (_this *RootObjectIterator) getIteratorForType(t reflect.Type) ObjectIterator {
+	iterator := _this.iterators[t]
+	if iterator == nil {
+		template := _this.fetchTemplate(t)
+		iterator = template.NewInstance()
+		_this.iterators[t] = iterator
+		iterator.InitInstance(_this.getIteratorForType, &_this.opts)
+	}
+	return iterator
 }

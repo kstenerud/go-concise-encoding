@@ -106,3 +106,42 @@ var BigIntN1 = big.NewInt(-1)
 func IsBigIntNegative(value *big.Int) bool {
 	return value.Cmp(BigInt0) < 0
 }
+
+type KindProperty byte
+
+const (
+	KindPropertyPointer KindProperty = 1 << iota
+	KindPropertyNullable
+	KindPropertyLengthable
+)
+
+var kindProperties = [32]KindProperty{
+	reflect.Chan:          KindPropertyPointer | KindPropertyNullable | KindPropertyLengthable,
+	reflect.Func:          KindPropertyPointer | KindPropertyNullable,
+	reflect.Interface:     KindPropertyNullable,
+	reflect.Map:           KindPropertyPointer | KindPropertyNullable | KindPropertyLengthable,
+	reflect.Ptr:           KindPropertyPointer | KindPropertyNullable,
+	reflect.Slice:         KindPropertyPointer | KindPropertyNullable | KindPropertyLengthable,
+	reflect.String:        KindPropertyLengthable,
+	reflect.UnsafePointer: KindPropertyPointer,
+}
+
+func IsPointer(v reflect.Value) bool {
+	return kindProperties[v.Kind()]&KindPropertyPointer != 0
+}
+
+func IsLengthable(v reflect.Value) bool {
+	return kindProperties[v.Kind()]&KindPropertyLengthable != 0
+}
+
+func IsNullable(v reflect.Value) bool {
+	return kindProperties[v.Kind()]&KindPropertyNullable != 0
+}
+
+func IsNil(v reflect.Value) bool {
+	if !v.IsValid() {
+		return true
+	}
+
+	return IsNullable(v) && v.IsNil()
+}

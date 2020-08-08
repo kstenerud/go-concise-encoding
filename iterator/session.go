@@ -78,7 +78,7 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 // Creates a new iterator that sends data events to eventReceiver.
 // If options is nil, default options will be used.
 func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, options *options.IteratorOptions) *RootObjectIterator {
-	return NewRootObjectIterator(_this, eventReceiver, options)
+	return NewRootObjectIterator(_this.GetIteratorForType, eventReceiver, options)
 }
 
 // Register a specific iterator for a type.
@@ -92,13 +92,16 @@ func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator ObjectIte
 // exist, a new default iterator will be generated and registered.
 // This method is thread-safe.
 func (_this *Session) GetIteratorForType(t reflect.Type) ObjectIterator {
-	if iterator, ok := _this.iterators.Load(t); ok {
-		return iterator.(ObjectIterator)
+	if intf, loaded := _this.iterators.Load(t); loaded {
+		return intf.(ObjectIterator)
 	}
 
-	iterator, _ := _this.iterators.LoadOrStore(t, defaultIteratorForType(t))
-	iterator.(ObjectIterator).PostCacheInitIterator(_this)
-	return iterator.(ObjectIterator)
+	intf, loaded := _this.iterators.LoadOrStore(t, defaultIteratorForType(t))
+	iterator := intf.(ObjectIterator)
+	if !loaded {
+		iterator.InitTemplate(_this.GetIteratorForType)
+	}
+	return iterator
 }
 
 // ============================================================================

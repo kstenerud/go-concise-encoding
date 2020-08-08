@@ -25,11 +25,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/options"
-
 	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // ---------
@@ -37,33 +35,32 @@ import (
 // ---------
 
 type interfaceIterator struct {
-	session *Session
-	opts    *options.IteratorOptions
+	// Instance Data
+	fetchInstance FetchIterator
 }
 
-func newInterfaceIterator(srcType reflect.Type) ObjectIterator {
+func newInterfaceIterator(_ reflect.Type) ObjectIterator {
 	return &interfaceIterator{}
 }
 
-func (_this *interfaceIterator) PostCacheInitIterator(session *Session) {
-	_this.session = session
+func (_this *interfaceIterator) InitTemplate(_ FetchIterator) {
 }
 
-func (_this *interfaceIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+func (_this *interfaceIterator) NewInstance() ObjectIterator {
 	return _this
-	// return &interfaceIterator{
-	// 	session: _this.session,
-	// 	opts:    opts,
-	// }
 }
 
-func (_this *interfaceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *interfaceIterator) InitInstance(fetchInstance FetchIterator, _ *options.IteratorOptions) {
+	_this.fetchInstance = fetchInstance
+}
+
+func (_this *interfaceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
 		eventReceiver.OnNil()
 	} else {
 		elem := v.Elem()
-		iter := _this.session.GetIteratorForType(elem.Type()).CloneFromTemplate(_this.opts)
-		iter.IterateObject(elem, eventReceiver, references)
+		iter := _this.fetchInstance(elem.Type())
+		iter.IterateObject(elem, eventReceiver, addReference)
 	}
 }
 
@@ -72,35 +69,41 @@ func (_this *interfaceIterator) IterateObject(v reflect.Value, eventReceiver eve
 // -------
 
 type pointerIterator struct {
-	srcType  reflect.Type
+	// Template Data
+	pointerType reflect.Type
+
+	// Instance Data
 	elemIter ObjectIterator
 }
 
-func newPointerIterator(srcType reflect.Type) ObjectIterator {
-	return &pointerIterator{srcType: srcType}
+func newPointerIterator(pointerType reflect.Type) ObjectIterator {
+	return &pointerIterator{pointerType: pointerType}
 }
 
-func (_this *pointerIterator) PostCacheInitIterator(session *Session) {
-	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
+func (_this *pointerIterator) InitTemplate(fetchTemplate FetchIterator) {
+	// Fetch to cache the template.
+	fetchTemplate(_this.pointerType.Elem())
 }
 
-func (_this *pointerIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
-	return _this
-	// return &pointerIterator{
-	// 	srcType:  _this.srcType,
-	// 	elemIter: _this.elemIter.CloneFromTemplate(opts),
-	// }
+func (_this *pointerIterator) NewInstance() ObjectIterator {
+	return &pointerIterator{
+		pointerType: _this.pointerType,
+	}
 }
 
-func (_this *pointerIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *pointerIterator) InitInstance(fetchInstance FetchIterator, _ *options.IteratorOptions) {
+	_this.elemIter = fetchInstance(_this.pointerType.Elem())
+}
+
+func (_this *pointerIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
 		eventReceiver.OnNil()
 		return
 	}
-	if references.AddReference(v) {
+	if addReference(v) {
 		return
 	}
-	_this.elemIter.IterateObject(v.Elem(), eventReceiver, references)
+	_this.elemIter.IterateObject(v.Elem(), eventReceiver, addReference)
 }
 
 // -----------
@@ -114,14 +117,17 @@ func newUInt8ArrayIterator() ObjectIterator {
 	return &uint8ArrayIterator{}
 }
 
-func (_this *uint8ArrayIterator) PostCacheInitIterator(session *Session) {
+func (_this *uint8ArrayIterator) InitTemplate(fetchTemplate FetchIterator) {
 }
 
-func (_this *uint8ArrayIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+func (_this *uint8ArrayIterator) NewInstance() ObjectIterator {
 	return _this
 }
 
-func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *uint8ArrayIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {
+}
+
+func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.CanAddr() {
 		eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
 	} else {
@@ -139,41 +145,47 @@ func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver ev
 // -----
 
 type sliceIterator struct {
-	srcType  reflect.Type
+	// Template Data
+	sliceType reflect.Type
+
+	// Instance Data
 	elemIter ObjectIterator
 }
 
-func newSliceIterator(srcType reflect.Type) ObjectIterator {
+func newSliceIterator(sliceType reflect.Type) ObjectIterator {
 	return &sliceIterator{
-		srcType: srcType,
+		sliceType: sliceType,
 	}
 }
 
-func (_this *sliceIterator) PostCacheInitIterator(session *Session) {
-	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
+func (_this *sliceIterator) InitTemplate(fetchTemplate FetchIterator) {
+	// Fetch to cache the template.
+	fetchTemplate(_this.sliceType.Elem())
 }
 
-func (_this *sliceIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
-	return _this
-	// return &sliceIterator{
-	// 	srcType:  _this.srcType,
-	// 	elemIter: _this.elemIter.CloneFromTemplate(opts),
-	// }
+func (_this *sliceIterator) NewInstance() ObjectIterator {
+	return &sliceIterator{
+		sliceType: _this.sliceType,
+	}
 }
 
-func (_this *sliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *sliceIterator) InitInstance(fetchInstance FetchIterator, _ *options.IteratorOptions) {
+	_this.elemIter = fetchInstance(_this.sliceType.Elem())
+}
+
+func (_this *sliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
 		eventReceiver.OnNil()
 		return
 	}
-	if references.AddReference(v) {
+	if addReference(v) {
 		return
 	}
 
 	eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
-		_this.elemIter.IterateObject(v.Index(i), eventReceiver, references)
+		_this.elemIter.IterateObject(v.Index(i), eventReceiver, addReference)
 	}
 	eventReceiver.OnEnd()
 }
@@ -183,33 +195,39 @@ func (_this *sliceIterator) IterateObject(v reflect.Value, eventReceiver events.
 // -----
 
 type arrayIterator struct {
-	srcType  reflect.Type
+	// Template Data
+	arrayType reflect.Type
+
+	// Instance Data
 	elemIter ObjectIterator
 }
 
-func newArrayIterator(srcType reflect.Type) ObjectIterator {
+func newArrayIterator(arrayType reflect.Type) ObjectIterator {
 	return &arrayIterator{
-		srcType: srcType,
+		arrayType: arrayType,
 	}
 }
 
-func (_this *arrayIterator) PostCacheInitIterator(session *Session) {
-	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
+func (_this *arrayIterator) InitTemplate(fetchTemplate FetchIterator) {
+	// Fetch to cache the template.
+	fetchTemplate(_this.arrayType.Elem())
 }
 
-func (_this *arrayIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
-	return _this
-	// return &arrayIterator{
-	// 	srcType:  _this.srcType,
-	// 	elemIter: _this.elemIter.CloneFromTemplate(opts),
-	// }
+func (_this *arrayIterator) NewInstance() ObjectIterator {
+	return &arrayIterator{
+		arrayType: _this.arrayType,
+	}
 }
 
-func (_this *arrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *arrayIterator) InitInstance(fetchInstance FetchIterator, _ *options.IteratorOptions) {
+	_this.elemIter = fetchInstance(_this.arrayType.Elem())
+}
+
+func (_this *arrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	eventReceiver.OnList()
 	length := v.Len()
 	for i := 0; i < length; i++ {
-		_this.elemIter.IterateObject(v.Index(i), eventReceiver, references)
+		_this.elemIter.IterateObject(v.Index(i), eventReceiver, addReference)
 	}
 	eventReceiver.OnEnd()
 }
@@ -219,37 +237,43 @@ func (_this *arrayIterator) IterateObject(v reflect.Value, eventReceiver events.
 // ---
 
 type mapIterator struct {
-	srcType   reflect.Type
+	// Template Data
+	mapType reflect.Type
+
+	// Instance Data
 	keyIter   ObjectIterator
 	valueIter ObjectIterator
 }
 
-func newMapIterator(srcType reflect.Type) ObjectIterator {
+func newMapIterator(mapType reflect.Type) ObjectIterator {
 	return &mapIterator{
-		srcType: srcType,
+		mapType: mapType,
 	}
 }
 
-func (_this *mapIterator) PostCacheInitIterator(session *Session) {
-	_this.keyIter = session.GetIteratorForType(_this.srcType.Key())
-	_this.valueIter = session.GetIteratorForType(_this.srcType.Elem())
+func (_this *mapIterator) InitTemplate(fetchTemplate FetchIterator) {
+	// Fetch to cache the template.
+	fetchTemplate(_this.mapType.Key())
+	fetchTemplate(_this.mapType.Elem())
 }
 
-func (_this *mapIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
-	return _this
-	// return &mapIterator{
-	// 	srcType:   _this.srcType,
-	// 	keyIter:   _this.keyIter.CloneFromTemplate(opts),
-	// 	valueIter: _this.valueIter.CloneFromTemplate(opts),
-	// }
+func (_this *mapIterator) NewInstance() ObjectIterator {
+	return &mapIterator{
+		mapType: _this.mapType,
+	}
 }
 
-func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *mapIterator) InitInstance(fetchInstance FetchIterator, _ *options.IteratorOptions) {
+	_this.keyIter = fetchInstance(_this.mapType.Key())
+	_this.valueIter = fetchInstance(_this.mapType.Elem())
+}
+
+func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
 		eventReceiver.OnNil()
 		return
 	}
-	if references.AddReference(v) {
+	if addReference(v) {
 		return
 	}
 
@@ -257,8 +281,8 @@ func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.Da
 
 	iter := common.MapRange(v)
 	for iter.Next() {
-		_this.keyIter.IterateObject(iter.Key(), eventReceiver, references)
-		_this.valueIter.IterateObject(iter.Value(), eventReceiver, references)
+		_this.keyIter.IterateObject(iter.Key(), eventReceiver, addReference)
+		_this.valueIter.IterateObject(iter.Value(), eventReceiver, addReference)
 	}
 
 	eventReceiver.OnEnd()
@@ -270,6 +294,7 @@ func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.Da
 
 type structField struct {
 	Name      string
+	Type      reflect.Type
 	Index     int
 	Omit      bool
 	OmitEmpty bool
@@ -277,9 +302,10 @@ type structField struct {
 	OmitValue string
 }
 
-func newStructField(name string, index int) *structField {
+func newStructField(name string, t reflect.Type, index int) *structField {
 	return &structField{
 		Name:  name,
+		Type:  t,
 		Index: index,
 	}
 }
@@ -323,62 +349,60 @@ func (_this *structField) applyTags(tags string) {
 }
 
 type structIterator struct {
-	srcType   reflect.Type
-	fields    []*structField
+	// Template Data
+	structType reflect.Type
+	fields     []*structField
+
+	// Instance Data
 	iterators []ObjectIterator
 	opts      *options.IteratorOptions
 }
 
-func newStructIterator(srcType reflect.Type) ObjectIterator {
+func newStructIterator(structType reflect.Type) ObjectIterator {
 	return &structIterator{
-		srcType: srcType,
+		structType: structType,
 	}
 }
 
-func (_this *structIterator) PostCacheInitIterator(session *Session) {
-	for i := 0; i < _this.srcType.NumField(); i++ {
-		reflectField := _this.srcType.Field(i)
+func (_this *structIterator) InitTemplate(fetchTemplate FetchIterator) {
+	for i := 0; i < _this.structType.NumField(); i++ {
+		reflectField := _this.structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {
-			field := &structField{
-				Name:  reflectField.Name,
-				Index: i,
-			}
+			field := newStructField(reflectField.Name, reflectField.Type, i)
 			field.applyTags(reflectField.Tag.Get("ce"))
 
 			if !field.Omit {
 				_this.fields = append(_this.fields, field)
-				_this.iterators = append(_this.iterators, session.GetIteratorForType(reflectField.Type))
 			}
 		}
 	}
 }
 
-func (_this *structIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
-	return _this
-	// iterators := make([]ObjectIterator, len(_this.iterators))
-	// for i, v := range _this.iterators {
-	// 	iterators[i] = v.CloneFromTemplate(opts)
-	// }
-
-	// return &structIterator{
-	// 	srcType:   _this.srcType,
-	// 	fields:    _this.fields,
-	// 	iterators: iterators,
-	// 	opts:      opts,
-	// }
+func (_this *structIterator) NewInstance() ObjectIterator {
+	return &structIterator{
+		structType: _this.structType,
+		fields:     _this.fields,
+	}
 }
 
-func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
+func (_this *structIterator) InitInstance(fetchInstance FetchIterator, opts *options.IteratorOptions) {
+	for _, field := range _this.fields {
+		_this.iterators = append(_this.iterators, fetchInstance(field.Type))
+	}
+	_this.opts = opts
+}
+
+func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	eventReceiver.OnMap()
 
 	for i, field := range _this.fields {
 		name := field.Name
-		// if _this.opts.LowercaseStructFieldNames {
-		// 	name = strings.ToLower(name)
-		// }
+		if _this.opts.LowercaseStructFieldNames {
+			name = strings.ToLower(name)
+		}
 		eventReceiver.OnString([]byte(name))
 		iterator := _this.iterators[i]
-		iterator.IterateObject(v.Field(field.Index), eventReceiver, references)
+		iterator.IterateObject(v.Field(field.Index), eventReceiver, addReference)
 	}
 
 	eventReceiver.OnEnd()
