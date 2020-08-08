@@ -51,4 +51,7 @@ type ObjectIterator interface {
 	// PostCacheInitIterator is called after the iterator template is saved to
 	// cache but before use, so that lookups succeed on cyclic type references.
 	PostCacheInitIterator(session *Session)
+
+	// Clone from this builder as a template, adding contextual data
+	CloneFromTemplate(options *options.IteratorOptions) ObjectIterator
 }

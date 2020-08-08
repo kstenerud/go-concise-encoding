@@ -59,6 +59,7 @@ func (_this *structBuilderDesc) applyTags(tags string) {
 		kv := strings.Split(entry, "=")
 		switch strings.TrimSpace(kv[0]) {
 		// TODO: lossy/nolossy
+		// TODO: lowercase/origcase
 		case "-":
 			_this.Omit = true
 		case "omit":
@@ -126,15 +127,22 @@ func (_this *structBuilder) PostCacheInitBuilder(session *Session) {
 			}
 			desc.applyTags(field.Tag.Get("ce"))
 			_this.builderDescs[desc.Name] = desc
-			// TODO: case insensitive struct field name
 		}
 	}
 }
 
 func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+	builderDescs := _this.builderDescs
+	// if options.CaseInsensitiveStructFieldNames {
+	// 	builderDescs = make(map[string]*structBuilderDesc)
+	// 	for name, desc := range _this.builderDescs {
+	// 		builderDescs[strings.ToLower(name)] = desc
+	// 	}
+	// }
+
 	that := &structBuilder{
 		dstType:      _this.dstType,
-		builderDescs: _this.builderDescs,
+		builderDescs: builderDescs,
 		parent:       parent,
 		root:         root,
 		options:      options,
@@ -213,8 +221,12 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 
 func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
-		// TODO: case insensitive field name comparison
-		if builderDesc, ok := _this.builderDescs[string(value)]; ok {
+		name := string(value)
+		// if _this.options.CaseInsensitiveStructFieldNames {
+		// 	name = strings.ToLower(name)
+		// }
+
+		if builderDesc, ok := _this.builderDescs[name]; ok {
 			_this.nextBuilder = builderDesc.Builder
 			_this.nextValue = _this.container.Field(builderDesc.Index)
 		} else {

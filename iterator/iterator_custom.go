@@ -41,6 +41,10 @@ func newCustomBinaryIterator(convertFunction options.ConvertToCustomFunction) Ob
 func (_this *customBinaryIterator) PostCacheInitIterator(session *Session) {
 }
 
+func (_this *customBinaryIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+}
+
 func (_this *customBinaryIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	asBytes, err := _this.convertFunction(v)
 	if err != nil {
@@ -60,6 +64,10 @@ func newCustomTextIterator(convertFunction options.ConvertToCustomFunction) Obje
 }
 
 func (_this *customTextIterator) PostCacheInitIterator(session *Session) {
+}
+
+func (_this *customTextIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
 }
 
 func (_this *customTextIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {

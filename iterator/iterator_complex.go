@@ -25,6 +25,8 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -36,6 +38,7 @@ import (
 
 type interfaceIterator struct {
 	session *Session
+	opts    *options.IteratorOptions
 }
 
 func newInterfaceIterator(srcType reflect.Type) ObjectIterator {
@@ -46,12 +49,20 @@ func (_this *interfaceIterator) PostCacheInitIterator(session *Session) {
 	_this.session = session
 }
 
+func (_this *interfaceIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+	// return &interfaceIterator{
+	// 	session: _this.session,
+	// 	opts:    opts,
+	// }
+}
+
 func (_this *interfaceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
 		eventReceiver.OnNil()
 	} else {
 		elem := v.Elem()
-		iter := _this.session.GetIteratorForType(elem.Type())
+		iter := _this.session.GetIteratorForType(elem.Type()).CloneFromTemplate(_this.opts)
 		iter.IterateObject(elem, eventReceiver, references)
 	}
 }
@@ -71,6 +82,14 @@ func newPointerIterator(srcType reflect.Type) ObjectIterator {
 
 func (_this *pointerIterator) PostCacheInitIterator(session *Session) {
 	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
+}
+
+func (_this *pointerIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+	// return &pointerIterator{
+	// 	srcType:  _this.srcType,
+	// 	elemIter: _this.elemIter.CloneFromTemplate(opts),
+	// }
 }
 
 func (_this *pointerIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
@@ -96,6 +115,10 @@ func newUInt8ArrayIterator() ObjectIterator {
 }
 
 func (_this *uint8ArrayIterator) PostCacheInitIterator(session *Session) {
+}
+
+func (_this *uint8ArrayIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
 }
 
 func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
@@ -128,6 +151,14 @@ func newSliceIterator(srcType reflect.Type) ObjectIterator {
 
 func (_this *sliceIterator) PostCacheInitIterator(session *Session) {
 	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
+}
+
+func (_this *sliceIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+	// return &sliceIterator{
+	// 	srcType:  _this.srcType,
+	// 	elemIter: _this.elemIter.CloneFromTemplate(opts),
+	// }
 }
 
 func (_this *sliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
@@ -166,6 +197,14 @@ func (_this *arrayIterator) PostCacheInitIterator(session *Session) {
 	_this.elemIter = session.GetIteratorForType(_this.srcType.Elem())
 }
 
+func (_this *arrayIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+	// return &arrayIterator{
+	// 	srcType:  _this.srcType,
+	// 	elemIter: _this.elemIter.CloneFromTemplate(opts),
+	// }
+}
+
 func (_this *arrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	eventReceiver.OnList()
 	length := v.Len()
@@ -196,6 +235,15 @@ func (_this *mapIterator) PostCacheInitIterator(session *Session) {
 	_this.valueIter = session.GetIteratorForType(_this.srcType.Elem())
 }
 
+func (_this *mapIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+	// return &mapIterator{
+	// 	srcType:   _this.srcType,
+	// 	keyIter:   _this.keyIter.CloneFromTemplate(opts),
+	// 	valueIter: _this.valueIter.CloneFromTemplate(opts),
+	// }
+}
+
 func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	if v.IsNil() {
 		eventReceiver.OnNil()
@@ -220,25 +268,23 @@ func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.Da
 // Struct
 // ------
 
-type structIteratorField struct {
+type structField struct {
 	Name      string
 	Index     int
-	Iterator  ObjectIterator
 	Omit      bool
 	OmitEmpty bool
 	// TODO: OmitValue
 	OmitValue string
 }
 
-func newStructIteratorField(name string, index int, iterator ObjectIterator) *structIteratorField {
-	return &structIteratorField{
-		Name:     name,
-		Index:    index,
-		Iterator: iterator,
+func newStructField(name string, index int) *structField {
+	return &structField{
+		Name:  name,
+		Index: index,
 	}
 }
 
-func (_this *structIteratorField) applyTags(tags string) {
+func (_this *structField) applyTags(tags string) {
 	if tags == "" {
 		return
 	}
@@ -252,6 +298,7 @@ func (_this *structIteratorField) applyTags(tags string) {
 	for _, entry := range strings.Split(tags, ",") {
 		kv := strings.Split(entry, "=")
 		switch strings.TrimSpace(kv[0]) {
+		// TODO: lowercase/origcase
 		// TODO: recurse/norecurse?
 		// TODO: nil?
 		// TODO: type=f16, f10.x, i2, i8, i10, i16, string, vstring
@@ -276,8 +323,10 @@ func (_this *structIteratorField) applyTags(tags string) {
 }
 
 type structIterator struct {
-	srcType        reflect.Type
-	fieldIterators []*structIteratorField
+	srcType   reflect.Type
+	fields    []*structField
+	iterators []ObjectIterator
+	opts      *options.IteratorOptions
 }
 
 func newStructIterator(srcType reflect.Type) ObjectIterator {
@@ -288,28 +337,48 @@ func newStructIterator(srcType reflect.Type) ObjectIterator {
 
 func (_this *structIterator) PostCacheInitIterator(session *Session) {
 	for i := 0; i < _this.srcType.NumField(); i++ {
-		field := _this.srcType.Field(i)
-		if common.IsFieldExported(field.Name) {
-			iterator := &structIteratorField{
-				Name:     field.Name,
-				Index:    i,
-				Iterator: session.GetIteratorForType(field.Type),
+		reflectField := _this.srcType.Field(i)
+		if common.IsFieldExported(reflectField.Name) {
+			field := &structField{
+				Name:  reflectField.Name,
+				Index: i,
 			}
-			// TODO: case insensitive struct field name
-			iterator.applyTags(field.Tag.Get("ce"))
-			if !iterator.Omit {
-				_this.fieldIterators = append(_this.fieldIterators, iterator)
+			field.applyTags(reflectField.Tag.Get("ce"))
+
+			if !field.Omit {
+				_this.fields = append(_this.fields, field)
+				_this.iterators = append(_this.iterators, session.GetIteratorForType(reflectField.Type))
 			}
 		}
 	}
 }
 
+func (_this *structIterator) CloneFromTemplate(opts *options.IteratorOptions) ObjectIterator {
+	return _this
+	// iterators := make([]ObjectIterator, len(_this.iterators))
+	// for i, v := range _this.iterators {
+	// 	iterators[i] = v.CloneFromTemplate(opts)
+	// }
+
+	// return &structIterator{
+	// 	srcType:   _this.srcType,
+	// 	fields:    _this.fields,
+	// 	iterators: iterators,
+	// 	opts:      opts,
+	// }
+}
+
 func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, references ReferenceEventGenerator) {
 	eventReceiver.OnMap()
 
-	for _, iter := range _this.fieldIterators {
-		eventReceiver.OnString([]byte(iter.Name))
-		iter.Iterator.IterateObject(v.Field(iter.Index), eventReceiver, references)
+	for i, field := range _this.fields {
+		name := field.Name
+		// if _this.opts.LowercaseStructFieldNames {
+		// 	name = strings.ToLower(name)
+		// }
+		eventReceiver.OnString([]byte(name))
+		iterator := _this.iterators[i]
+		iterator.IterateObject(v.Field(field.Index), eventReceiver, references)
 	}
 
 	eventReceiver.OnEnd()

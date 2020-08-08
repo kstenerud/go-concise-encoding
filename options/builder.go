@@ -92,6 +92,9 @@ type BuilderOptions struct {
 	// Max base-2 exponent allowed when converting from floating point to big integer.
 	FloatToBigIntMaxBase2Exponent int
 
+	// Match struct field names in a case insensitive manner
+	// CaseInsensitiveStructFieldNames bool
+
 	// TODO: If true, don't raise an error on a lossy floating point conversion.
 	AllowLossyFloatConversion bool
 
@@ -106,6 +109,8 @@ func DefaultBuilderOptions() *BuilderOptions {
 		FloatToBigIntMaxBase2Exponent:  maxBase10Exp * 10 / 3,
 		AllowLossyFloatConversion:      true,
 		IgnoreUnknownFields:            true,
+		// TODO: Fix case insensitive
+		// CaseInsensitiveStructFieldNames:    true,
 	}
 }
 

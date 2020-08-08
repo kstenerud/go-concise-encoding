@@ -41,7 +41,7 @@ type RootObjectIterator struct {
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
 	eventReceiver   events.DataEventReceiver
-	options         options.IteratorOptions
+	opts            options.IteratorOptions
 	session         *Session
 }
 
@@ -57,7 +57,7 @@ func NewRootObjectIterator(session *Session, eventReceiver events.DataEventRecei
 // If opts is nil, default options will be used.
 func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
+	_this.opts = *opts
 	_this.session = session
 	_this.eventReceiver = eventReceiver
 }
@@ -66,21 +66,26 @@ func (_this *RootObjectIterator) Init(session *Session, eventReceiver events.Dat
 // DataEventReceiver as it visits all elements of the value.
 func (_this *RootObjectIterator) Iterate(object interface{}) {
 	_this.eventReceiver.OnBeginDocument()
-	_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+	_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 	if object == nil {
 		_this.eventReceiver.OnNil()
 		_this.eventReceiver.OnEndDocument()
 		return
 	}
-	_this.findReferences(object)
+
+	if _this.opts.RecursionSupport {
+		_this.foundReferences = duplicates.FindDuplicatePointers(object)
+		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
+	}
+
 	rv := reflect.ValueOf(object)
-	iterator := _this.session.GetIteratorForType(rv.Type())
+	iterator := _this.session.GetIteratorForType(rv.Type()).CloneFromTemplate(&_this.opts)
 	iterator.IterateObject(rv, _this.eventReceiver, _this)
 	_this.eventReceiver.OnEndDocument()
 }
 
 func (_this *RootObjectIterator) AddReference(v reflect.Value) (didGenerateReferenceEvent bool) {
-	if !_this.options.RecursionSupport {
+	if !_this.opts.RecursionSupport {
 		return false
 	}
 
@@ -102,15 +107,4 @@ func (_this *RootObjectIterator) AddReference(v reflect.Value) (didGenerateRefer
 	_this.eventReceiver.OnReference()
 	_this.eventReceiver.OnPositiveInt(uint64(name))
 	return true
-}
-
-// ============================================================================
-
-// Internal
-
-func (_this *RootObjectIterator) findReferences(value interface{}) {
-	if _this.options.RecursionSupport {
-		_this.foundReferences = duplicates.FindDuplicatePointers(value)
-		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
-	}
 }
