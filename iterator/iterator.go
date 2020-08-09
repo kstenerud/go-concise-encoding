@@ -33,7 +33,7 @@ import (
 type ObjectIterator interface {
 
 	// Iterate over an object (recursively), calling the eventReceiver as data is
-	// encountered. If an options object is nil, default options will be used.
+	// encountered.
 	//
 	// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
 	// to recover() at an appropriate location when calling this function.

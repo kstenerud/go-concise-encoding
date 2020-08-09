@@ -33,7 +33,7 @@ import (
 type Decoder struct {
 	buffer        CBEReadBuffer
 	eventReceiver events.DataEventReceiver
-	options       options.CBEDecoderOptions
+	opts          options.CBEDecoderOptions
 }
 
 // Create a new CBE decoder, which will read from reader and send data events
@@ -48,7 +48,7 @@ func NewDecoder(opts *options.CBEDecoderOptions) *Decoder {
 // to nextReceiver. If opts is nil, default options will be used.
 func (_this *Decoder) Init(opts *options.CBEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
+	_this.opts = *opts
 }
 
 func (_this *Decoder) reset() {
@@ -68,21 +68,21 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		}
 	}()
 
-	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
+	_this.buffer.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
 	_this.eventReceiver = eventReceiver
 
 	_this.eventReceiver.OnBeginDocument()
 
 	_this.buffer.RefillIfNecessary()
 
-	switch _this.options.ImpliedStructure {
+	switch _this.opts.ImpliedStructure {
 	case options.ImpliedStructureVersion:
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 	case options.ImpliedStructureList:
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 		_this.eventReceiver.OnList()
 	case options.ImpliedStructureMap:
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 		_this.eventReceiver.OnMap()
 	default:
 		_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
@@ -193,7 +193,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		}
 	}
 
-	switch _this.options.ImpliedStructure {
+	switch _this.opts.ImpliedStructure {
 	case options.ImpliedStructureList, options.ImpliedStructureMap:
 		_this.eventReceiver.OnEnd()
 	}

@@ -52,16 +52,16 @@ func (_this *topLevelBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.builder)
 }
 
-func (_this *topLevelBuilder) InitTemplate(session *Session) {
+func (_this *topLevelBuilder) InitTemplate(_ *Session) {
 	BuilderPanicBadEvent(_this, "InitTemplate")
 }
 
-func (_this *topLevelBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *topLevelBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	BuilderPanicBadEvent(_this, "NewInstance")
 	return nil
 }
 
-func (_this *topLevelBuilder) SetParent(parent ObjectBuilder) {
+func (_this *topLevelBuilder) SetParent(_ ObjectBuilder) {
 	BuilderPanicBadEvent(_this, "SetParent")
 }
 
@@ -183,11 +183,10 @@ func (_this *topLevelBuilder) BuildBeginMarker(id interface{}) {
 	origBuilder := _this.builder
 	_this.builder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
 		_this.builder = origBuilder
-		_this.root.GetMarkerRegistry().NotifyMarker(id, object)
+		_this.root.NotifyMarker(id, object)
 	})
 }
 
-func (_this *topLevelBuilder) BuildFromReference(id interface{}) {
-
+func (_this *topLevelBuilder) BuildFromReference(_ interface{}) {
 	BuilderPanicBadEvent(_this, "BuildFromReference")
 }

@@ -37,16 +37,14 @@ import (
 const defaultSliceCap = 4
 
 type sliceBuilder struct {
-	// Static data
-	dstType reflect.Type
-
-	// Cloned data (must be populated)
+	// Template Data
+	dstType     reflect.Type
 	elemBuilder ObjectBuilder
 
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *options.BuilderOptions
+	// Instance Data
+	root   *RootBuilder
+	parent ObjectBuilder
+	opts   *options.BuilderOptions
 
 	// Variable data (must be reset)
 	ppContainer **reflect.Value
@@ -66,13 +64,13 @@ func (_this *sliceBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *sliceBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *sliceBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	that := &sliceBuilder{
 		dstType:     _this.dstType,
 		elemBuilder: _this.elemBuilder,
 		parent:      parent,
 		root:        root,
-		options:     options,
+		opts:        opts,
 	}
 	that.reset()
 	return that
@@ -222,7 +220,7 @@ func (_this *sliceBuilder) BuildBeginMarker(id interface{}) {
 	origBuilder := _this.elemBuilder
 	_this.elemBuilder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
 		_this.elemBuilder = origBuilder
-		_this.root.GetMarkerRegistry().NotifyMarker(id, object)
+		_this.root.NotifyMarker(id, object)
 	})
 }
 
@@ -231,13 +229,13 @@ func (_this *sliceBuilder) BuildFromReference(id interface{}) {
 	index := (**ppContainer).Len()
 	elem := _this.newElem()
 	_this.storeValue(elem)
-	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
+	_this.root.NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, (**ppContainer).Index(index))
 	})
 }
 
 func (_this *sliceBuilder) PrepareForListContents() {
-	_this.elemBuilder = _this.elemBuilder.NewInstance(_this.root, _this, _this.options)
+	_this.elemBuilder = _this.elemBuilder.NewInstance(_this.root, _this, _this.opts)
 	_this.root.SetCurrentBuilder(_this)
 }
 

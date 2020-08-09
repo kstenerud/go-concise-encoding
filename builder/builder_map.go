@@ -40,18 +40,16 @@ const (
 )
 
 type mapBuilder struct {
-	// Static data
-	session *Session
-	dstType reflect.Type
-	kvTypes [2]reflect.Type
-
-	// Cloned data (must be populated)
+	// Template Data
+	session    *Session
+	dstType    reflect.Type
+	kvTypes    [2]reflect.Type
 	kvBuilders [2]ObjectBuilder
 
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *options.BuilderOptions
+	// Instance Data
+	root   *RootBuilder
+	parent ObjectBuilder
+	opts   *options.BuilderOptions
 
 	// Variable data (must be reset)
 	container       reflect.Value
@@ -78,16 +76,16 @@ func (_this *mapBuilder) InitTemplate(session *Session) {
 	_this.kvBuilders[kvBuilderValue] = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *mapBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *mapBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	that := &mapBuilder{
 		session: _this.session,
 		dstType: _this.dstType,
 		kvTypes: _this.kvTypes,
 		parent:  parent,
 		root:    root,
-		options: options,
+		opts:    opts,
 	}
-	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].NewInstance(root, that, options)
+	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].NewInstance(root, that, opts)
 	that.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue]
 	that.reset()
 	return that
@@ -252,7 +250,7 @@ func (_this *mapBuilder) BuildEndContainer() {
 func (_this *mapBuilder) BuildBeginMarker(id interface{}) {
 	root := _this.root
 	_this.nextBuilder = newMarkerObjectBuilder(_this, _this.nextBuilder, func(object reflect.Value) {
-		root.GetMarkerRegistry().NotifyMarker(id, object)
+		root.NotifyMarker(id, object)
 	})
 }
 
@@ -261,7 +259,7 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 	key := _this.key
 	tempValue := _this.newElem()
 	_this.swapKeyValue()
-	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
+	_this.root.NotifyReference(id, func(object reflect.Value) {
 		if container.Type().Elem().Kind() == reflect.Interface || object.Type() == container.Type().Elem() {
 			// In case of self-referencing pointers, we need to pass the original container, not a copy.
 			container.SetMapIndex(key, object)
@@ -277,7 +275,7 @@ func (_this *mapBuilder) PrepareForListContents() {
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {
-	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].NewInstance(_this.root, _this, _this.options)
+	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].NewInstance(_this.root, _this, _this.opts)
 	_this.root.SetCurrentBuilder(_this)
 }
 

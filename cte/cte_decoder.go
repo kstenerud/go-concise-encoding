@@ -42,7 +42,7 @@ type Decoder struct {
 	eventReceiver  events.DataEventReceiver
 	containerState []cteDecoderState
 	currentState   cteDecoderState
-	options        options.CTEDecoderOptions
+	opts           options.CTEDecoderOptions
 }
 
 // Create a new CTE decoder, which will read from reader and send data events
@@ -57,7 +57,7 @@ func NewDecoder(opts *options.CTEDecoderOptions) *Decoder {
 // to nextReceiver. If opts is nil, default options will be used.
 func (_this *Decoder) Init(opts *options.CTEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
+	_this.opts = *opts
 }
 
 func (_this *Decoder) reset() {
@@ -79,7 +79,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		}
 	}()
 
-	_this.buffer.Init(reader, _this.options.BufferSize, chooseLowWater(_this.options.BufferSize))
+	_this.buffer.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
 	_this.eventReceiver = eventReceiver
 
 	_this.eventReceiver.OnBeginDocument()
@@ -92,15 +92,15 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	_this.buffer.SkipWhitespace()
 	_this.buffer.EndToken()
 
-	switch _this.options.ImpliedStructure {
+	switch _this.opts.ImpliedStructure {
 	case options.ImpliedStructureVersion:
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 	case options.ImpliedStructureList:
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 		_this.eventReceiver.OnList()
 		_this.stackContainer(cteDecoderStateAwaitListItem)
 	case options.ImpliedStructureMap:
-		_this.eventReceiver.OnVersion(_this.options.ConciseEncodingVersion)
+		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 		_this.eventReceiver.OnMap()
 		_this.stackContainer(cteDecoderStateAwaitMapKey)
 	default:
@@ -112,7 +112,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		_this.buffer.RefillIfNecessary()
 	}
 
-	switch _this.options.ImpliedStructure {
+	switch _this.opts.ImpliedStructure {
 	case options.ImpliedStructureList, options.ImpliedStructureMap:
 		_this.eventReceiver.OnEnd()
 	}

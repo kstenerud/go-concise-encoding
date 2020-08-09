@@ -81,18 +81,16 @@ func (_this *structBuilderDesc) applyTags(tags string) {
 }
 
 type structBuilder struct {
-	// Static data
-	dstType reflect.Type
-
-	// Cloned data (must be populated)
+	// Template Data
+	dstType       reflect.Type
 	builderDescs  map[string]*structBuilderDesc
 	nameBuilder   ObjectBuilder
 	ignoreBuilder ObjectBuilder
 
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *options.BuilderOptions
+	// Instance Data
+	root   *RootBuilder
+	parent ObjectBuilder
+	opts   *options.BuilderOptions
 
 	// Variable data (must be reset)
 	nextBuilder   ObjectBuilder
@@ -131,7 +129,7 @@ func (_this *structBuilder) InitTemplate(session *Session) {
 	}
 }
 
-func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	builderDescs := _this.builderDescs
 	// if options.CaseInsensitiveStructFieldNames {
 	// 	builderDescs = make(map[string]*structBuilderDesc)
@@ -145,10 +143,10 @@ func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder,
 		builderDescs: builderDescs,
 		parent:       parent,
 		root:         root,
-		options:      options,
+		opts:         opts,
 	}
-	that.nameBuilder = _this.nameBuilder.NewInstance(root, that, options)
-	that.ignoreBuilder = _this.ignoreBuilder.NewInstance(root, that, options)
+	that.nameBuilder = _this.nameBuilder.NewInstance(root, that, opts)
+	that.ignoreBuilder = _this.ignoreBuilder.NewInstance(root, that, opts)
 	that.reset()
 	return that
 }
@@ -307,14 +305,14 @@ func (_this *structBuilder) BuildEndContainer() {
 func (_this *structBuilder) BuildBeginMarker(id interface{}) {
 	root := _this.root
 	_this.nextBuilder = newMarkerObjectBuilder(_this, _this.nextBuilder, func(object reflect.Value) {
-		root.GetMarkerRegistry().NotifyMarker(id, object)
+		root.NotifyMarker(id, object)
 	})
 }
 
 func (_this *structBuilder) BuildFromReference(id interface{}) {
 	nextValue := _this.nextValue
 	_this.swapKeyValue()
-	_this.root.GetMarkerRegistry().NotifyReference(id, func(object reflect.Value) {
+	_this.root.NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, nextValue)
 	})
 }
@@ -328,7 +326,7 @@ func (_this *structBuilder) PrepareForMapContents() {
 
 	for k, builderElem := range _this.builderDescs {
 		builderDescs[k] = &structBuilderDesc{
-			Builder: builderElem.Builder.NewInstance(_this.root, _this, _this.options),
+			Builder: builderElem.Builder.NewInstance(_this.root, _this, _this.opts),
 			Index:   builderElem.Index,
 		}
 	}

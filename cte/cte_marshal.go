@@ -39,9 +39,9 @@ import (
 // iterator session so that cached iterator information is not lost between
 // multiple calls to marshal.
 type Marshaler struct {
-	options options.CTEMarshalerOptions
 	Session *iterator.Session
 	encoder Encoder
+	opts    options.CTEMarshalerOptions
 }
 
 // Create a new marshaler with the specified options.
@@ -56,9 +56,9 @@ func NewMarshaler(opts *options.CTEMarshalerOptions) *Marshaler {
 // If opts is nil, default options will be used.
 func (_this *Marshaler) Init(opts *options.CTEMarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
-	_this.Session = iterator.NewSession(nil, &_this.options.Session)
-	_this.encoder.Init(&_this.options.Encoder)
+	_this.opts = *opts
+	_this.Session = iterator.NewSession(nil, &_this.opts.Session)
+	_this.encoder.Init(&_this.opts.Encoder)
 }
 
 // Marshal a go object into a CTE document, written to writer.
@@ -77,7 +77,7 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 	}()
 
 	_this.encoder.PrepareToEncode(writer)
-	iterator := _this.Session.NewIterator(&_this.encoder, &_this.options.Iterator)
+	iterator := _this.Session.NewIterator(&_this.encoder, &_this.opts.Iterator)
 	iterator.Iterate(object)
 	return
 }
@@ -97,13 +97,13 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 // builder session so that cached builder information is not lost between
 // multiple calls to unmarshal.
 type Unmarshaler struct {
-	options options.CTEUnmarshalerOptions
 	Session *builder.Session
 	decoder Decoder
+	opts    options.CTEUnmarshalerOptions
 }
 
 // Create a new unmarshaler with the specified options.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func NewUnmarshaler(opts *options.CTEUnmarshalerOptions) *Unmarshaler {
 	_this := &Unmarshaler{}
 	_this.Init(opts)
@@ -111,12 +111,12 @@ func NewUnmarshaler(opts *options.CTEUnmarshalerOptions) *Unmarshaler {
 }
 
 // Init an unmarshaler with the specified options.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func (_this *Unmarshaler) Init(opts *options.CTEUnmarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
-	_this.Session = builder.NewSession(nil, &_this.options.Session)
-	_this.decoder.Init(&_this.options.Decoder)
+	_this.opts = *opts
+	_this.Session = builder.NewSession(nil, &_this.opts.Session)
+	_this.decoder.Init(&_this.opts.Decoder)
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
@@ -134,8 +134,8 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 		}
 	}()
 
-	builder := _this.Session.NewBuilderFor(template, &_this.options.Builder)
-	rules := rules.NewRules(builder, &_this.options.Rules)
+	builder := _this.Session.NewBuilderFor(template, &_this.opts.Builder)
+	rules := rules.NewRules(builder, &_this.opts.Rules)
 	if err = _this.decoder.Decode(reader, rules); err != nil {
 		return
 	}

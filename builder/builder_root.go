@@ -85,8 +85,12 @@ func (_this *RootBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.currentBuilder)
 }
 
-func (_this *RootBuilder) GetMarkerRegistry() *ReferenceFiller {
-	return &_this.referenceFiller
+func (_this *RootBuilder) NotifyMarker(id interface{}, value reflect.Value) {
+	_this.referenceFiller.NotifyMarker(id, value)
+}
+
+func (_this *RootBuilder) NotifyReference(lookingForID interface{}, valueSetter func(value reflect.Value)) {
+	_this.referenceFiller.NotifyReference(lookingForID, valueSetter)
 }
 
 // Get the object that was built after using this root builder as a DataEventReceiver.
@@ -123,7 +127,7 @@ func (_this *RootBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *option
 	BuilderPanicBadEvent(_this, "NewInstance")
 	return nil
 }
-func (_this *RootBuilder) SetParent(parent ObjectBuilder) {
+func (_this *RootBuilder) SetParent(_ ObjectBuilder) {
 	BuilderPanicBadEvent(_this, "SetParent")
 }
 func (_this *RootBuilder) BuildFromNil(_ reflect.Value) {

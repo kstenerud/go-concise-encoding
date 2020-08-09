@@ -44,13 +44,13 @@ var (
 )
 
 type intfBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *options.BuilderOptions
+	// Instance Data
+	root   *RootBuilder
+	parent ObjectBuilder
+	opts   *options.BuilderOptions
 }
 
 func newInterfaceBuilder() ObjectBuilder {
@@ -65,12 +65,12 @@ func (_this *intfBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *intfBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *intfBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	return &intfBuilder{
 		session: _this.session,
 		parent:  parent,
 		root:    root,
-		options: options,
+		opts:    opts,
 	}
 }
 
@@ -156,13 +156,13 @@ func (_this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst ref
 
 func (_this *intfBuilder) BuildBeginList() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) BuildBeginMap() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForMapContents()
 }
 
@@ -180,13 +180,13 @@ func (_this *intfBuilder) BuildFromReference(id interface{}) {
 
 func (_this *intfBuilder) PrepareForListContents() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) PrepareForMapContents() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceMap)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForMapContents()
 }
 

@@ -54,7 +54,7 @@ type Encoder struct {
 	currentItemCount   int
 	nextPrefix         string
 	prefixGenerators   []cteEncoderPrefixGenerator
-	options            options.CTEEncoderOptions
+	opts               options.CTEEncoderOptions
 	skipFirstMap       bool
 	skipFirstList      bool
 	containerDepth     int
@@ -72,14 +72,14 @@ func NewEncoder(opts *options.CTEEncoderOptions) *Encoder {
 // to writer. If opts is nil, default options will be used.
 func (_this *Encoder) Init(opts *options.CTEEncoderOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
-	_this.buff.Init(_this.options.BufferSize)
+	_this.opts = *opts
+	_this.buff.Init(_this.opts.BufferSize)
 	_this.prefixGenerators = cteEncoderPrefixGenerators[:]
-	if len(_this.options.Indent) > 0 {
+	if len(_this.opts.Indent) > 0 {
 		_this.prefixGenerators = cteEncoderPrettyPrefixHandlers[:]
 	}
-	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
+	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
@@ -97,8 +97,8 @@ func (_this *Encoder) Reset() {
 	_this.currentState = 0
 	_this.currentItemCount = 0
 	_this.nextPrefix = ""
-	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
+	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
 	_this.containerDepth = 0
 }
 
@@ -107,7 +107,7 @@ func (_this *Encoder) Reset() {
 // DataEventReceiver
 
 func (_this *Encoder) OnBeginDocument() {
-	switch _this.options.ImpliedStructure {
+	switch _this.opts.ImpliedStructure {
 	case options.ImpliedStructureList:
 		_this.stackState(cteEncoderStateAwaitListFirstItem, "")
 	case options.ImpliedStructureMap:
@@ -120,7 +120,7 @@ func (_this *Encoder) OnPadding(count int) {
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
-	if _this.options.ImpliedStructure != options.ImpliedStructureNone {
+	if _this.opts.ImpliedStructure != options.ImpliedStructureNone {
 		return
 	}
 	_this.addFmt("c%d", version)
@@ -535,7 +535,7 @@ func (_this *Encoder) OnEnd() {
 		_this.currentState |= cteEncoderStateWithInvisibleItem
 		_this.currentItemCount++
 
-		if len(_this.options.Indent) > 0 {
+		if len(_this.opts.Indent) > 0 {
 			if _this.currentState&cteEncoderStateAwaitCommentItem != 0 {
 				return
 			}
@@ -629,16 +629,16 @@ func (_this *Encoder) encodeHex(prefix byte, value []byte) {
 }
 
 func (_this *Encoder) applyIndentation(levelOffset int) {
-	if len(_this.options.Indent) > 0 {
+	if len(_this.opts.Indent) > 0 {
 		level := len(_this.containerState) + levelOffset
-		indent := strings.Repeat(_this.options.Indent, level)
+		indent := strings.Repeat(_this.opts.Indent, level)
 		_this.addString("\n" + indent)
 	}
 }
 
 func (_this *Encoder) generateIndentation(levelOffset int) string {
 	level := len(_this.containerState) + levelOffset
-	return "\n" + strings.Repeat(_this.options.Indent, level)
+	return "\n" + strings.Repeat(_this.opts.Indent, level)
 }
 
 func (_this *Encoder) generateNoPrefix() string {

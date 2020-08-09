@@ -46,7 +46,7 @@ import (
 // designed to panic).
 type Encoder struct {
 	buff           buffer.StreamingWriteBuffer
-	options        options.CBEEncoderOptions
+	opts           options.CBEEncoderOptions
 	skipFirstMap   bool
 	skipFirstList  bool
 	containerDepth int
@@ -64,10 +64,10 @@ func NewEncoder(opts *options.CBEEncoderOptions) *Encoder {
 // If opts is nil, default options will be used.
 func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
-	_this.buff.Init(_this.options.BufferSize)
-	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
+	_this.opts = *opts
+	_this.buff.Init(_this.opts.BufferSize)
+	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
@@ -78,8 +78,8 @@ func (_this *Encoder) PrepareToEncode(writer io.Writer) {
 
 func (_this *Encoder) Reset() {
 	_this.buff.Reset()
-	_this.skipFirstList = _this.options.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.options.ImpliedStructure == options.ImpliedStructureMap
+	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
 	_this.containerDepth = 0
 }
 
@@ -98,7 +98,7 @@ func (_this *Encoder) OnBeginDocument() {
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
-	if _this.options.ImpliedStructure != options.ImpliedStructureNone {
+	if _this.opts.ImpliedStructure != options.ImpliedStructureNone {
 		return
 	}
 	_this.encodeULEB(version)

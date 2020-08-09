@@ -36,6 +36,7 @@ import (
 )
 
 type markerIDBuilder struct {
+	// Template Data
 	onID func(interface{})
 }
 
@@ -49,92 +50,91 @@ func (_this *markerIDBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *markerIDBuilder) InitTemplate(session *Session) {
+func (_this *markerIDBuilder) InitTemplate(_ *Session) {
 }
 
-func (_this *markerIDBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "NewInstance")
-	return nil
+func (_this *markerIDBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
+	return _this
 }
 
-func (_this *markerIDBuilder) SetParent(parent ObjectBuilder) {
+func (_this *markerIDBuilder) SetParent(_ ObjectBuilder) {
 }
 
-func (_this *markerIDBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromNil(_ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Nil")
 }
 
-func (_this *markerIDBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromBool(_ bool, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Bool")
 }
 
-func (_this *markerIDBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	if value < 0 {
 		BuilderPanicBadEvent(_this, "Int")
 	}
 	_this.onID(value)
 }
 
-func (_this *markerIDBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 	_this.onID(value)
 }
 
-func (_this *markerIDBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	if common.IsBigIntNegative(value) || !value.IsUint64() {
 		BuilderPanicBadEvent(_this, "BigInt")
 	}
 	_this.onID(value.Uint64())
 }
 
-func (_this *markerIDBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Float")
 }
 
-func (_this *markerIDBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "BigFloat")
 }
 
-func (_this *markerIDBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "DecimalFloat")
 }
 
-func (_this *markerIDBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "BigDecimalFloat")
 }
 
-func (_this *markerIDBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "UUID")
 }
 
-func (_this *markerIDBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	_this.onID(value)
 }
 
-func (_this *markerIDBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "VerbatimString")
 }
 
-func (_this *markerIDBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Bytes")
 }
 
-func (_this *markerIDBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "CustomBinary")
 }
 
-func (_this *markerIDBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "CustomText")
 }
 
-func (_this *markerIDBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "URI")
 }
 
-func (_this *markerIDBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "Time")
 }
 
-func (_this *markerIDBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *markerIDBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
 	BuilderPanicBadEvent(_this, "CompactTime")
 }
 
@@ -150,11 +150,11 @@ func (_this *markerIDBuilder) BuildEndContainer() {
 	BuilderPanicBadEvent(_this, "End")
 }
 
-func (_this *markerIDBuilder) BuildBeginMarker(id interface{}) {
+func (_this *markerIDBuilder) BuildBeginMarker(_ interface{}) {
 	BuilderPanicBadEvent(_this, "Marker")
 }
 
-func (_this *markerIDBuilder) BuildFromReference(id interface{}) {
+func (_this *markerIDBuilder) BuildFromReference(_ interface{}) {
 	BuilderPanicBadEvent(_this, "Reference")
 }
 
@@ -166,14 +166,14 @@ func (_this *markerIDBuilder) PrepareForMapContents() {
 	BuilderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
-func (_this *markerIDBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *markerIDBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 	BuilderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
 
 type markerObjectBuilder struct {
-	// Clone inserted data
+	// Instance Data
 	parent           ObjectBuilder
 	child            ObjectBuilder
 	onObjectComplete func(reflect.Value)
@@ -191,12 +191,15 @@ func (_this *markerObjectBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.child)
 }
 
-func (_this *markerObjectBuilder) InitTemplate(session *Session) {
+func (_this *markerObjectBuilder) InitTemplate(_ *Session) {
 }
 
-func (_this *markerObjectBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "NewInstance")
-	return nil
+func (_this *markerObjectBuilder) NewInstance(_ *RootBuilder, parent ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
+	return &markerObjectBuilder{
+		parent:           parent,
+		child:            _this.child,
+		onObjectComplete: _this.onObjectComplete,
+	}
 }
 
 func (_this *markerObjectBuilder) SetParent(parent ObjectBuilder) {

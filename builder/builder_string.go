@@ -36,7 +36,7 @@ import (
 )
 
 type stringBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 }
 
@@ -52,11 +52,11 @@ func (_this *stringBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *stringBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *stringBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *stringBuilder) SetParent(parent ObjectBuilder) {
+func (_this *stringBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
@@ -64,39 +64,39 @@ func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
 	dst.SetString("")
 }
 
-func (_this *stringBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromBool(_ bool, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Bool")
 }
 
-func (_this *stringBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromInt(_ int64, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Int")
 }
 
-func (_this *stringBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Uint")
 }
 
-func (_this *stringBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "BigInt")
 }
 
-func (_this *stringBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Float")
 }
 
-func (_this *stringBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "BigFloat")
 }
 
-func (_this *stringBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "DecimalFloat")
 }
 
-func (_this *stringBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "BigDecimalFloat")
 }
 
-func (_this *stringBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "UUID")
 }
 
@@ -108,7 +108,7 @@ func (_this *stringBuilder) BuildFromVerbatimString(value []byte, dst reflect.Va
 	dst.SetString(string(value))
 }
 
-func (_this *stringBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Bytes")
 }
 
@@ -124,15 +124,15 @@ func (_this *stringBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *stringBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "URI")
 }
 
-func (_this *stringBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Time")
 }
 
-func (_this *stringBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *stringBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "CompactTime")
 }
 
@@ -148,11 +148,11 @@ func (_this *stringBuilder) BuildEndContainer() {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "ContainerEnd")
 }
 
-func (_this *stringBuilder) BuildBeginMarker(id interface{}) {
+func (_this *stringBuilder) BuildBeginMarker(_ interface{}) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Marker")
 }
 
-func (_this *stringBuilder) BuildFromReference(id interface{}) {
+func (_this *stringBuilder) BuildFromReference(_ interface{}) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "Reference")
 }
 
@@ -164,6 +164,6 @@ func (_this *stringBuilder) PrepareForMapContents() {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "PrepareForMapContents")
 }
 
-func (_this *stringBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *stringBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeString, "NotifyChildContainerFinished")
 }

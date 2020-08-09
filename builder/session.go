@@ -40,7 +40,7 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	builders sync.Map
-	options  options.BuilderSessionOptions
+	opts     options.BuilderSessionOptions
 }
 
 // Start a new builder session. It will inherit the builders of its parent.
@@ -67,8 +67,8 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 		return true
 	})
 
-	_this.options = *opts
-	for _, t := range _this.options.CustomBuiltTypes {
+	_this.opts = *opts
+	for _, t := range _this.opts.CustomBuiltTypes {
 		_this.RegisterBuilderForType(t, newCustomBuilder(_this))
 	}
 }
@@ -76,8 +76,8 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 // NewBuilderFor creates a new builder that builds objects of the same type as
 // the template object.
 // If template is nil, a generic interface type will be used.
-// If options is nil, default options will be used.
-func (_this *Session) NewBuilderFor(template interface{}, options *options.BuilderOptions) *RootBuilder {
+// If opts is nil, default options will be used.
+func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderOptions) *RootBuilder {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
 	if rv.IsValid() {
@@ -86,7 +86,7 @@ func (_this *Session) NewBuilderFor(template interface{}, options *options.Build
 		t = common.TypeInterface
 	}
 
-	return NewRootBuilder(_this, t, options)
+	return NewRootBuilder(_this, t, opts)
 }
 
 // Register a specific builder for a type.
@@ -110,14 +110,15 @@ func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
 }
 
 func (_this *Session) GetCustomBinaryBuildFunction() options.CustomBuildFunction {
-	return _this.options.CustomBinaryBuildFunction
+	return _this.opts.CustomBinaryBuildFunction
 }
 
 func (_this *Session) GetCustomTextBuildFunction() options.CustomBuildFunction {
-	return _this.options.CustomTextBuildFunction
+	return _this.opts.CustomTextBuildFunction
 }
 
 // ============================================================================
+// Internal
 
 func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder {
 	switch dstType.Kind() {
@@ -188,9 +189,7 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 	}
 }
 
-// ============================================================================
-
-// The base session caches the most common builders. All sessions inherit
+// The root session caches the most common builders. All sessions inherit
 // these cached values.
 var rootSession Session
 

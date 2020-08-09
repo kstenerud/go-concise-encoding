@@ -58,27 +58,27 @@ import (
 // One-shot marshal/unmarshal API (binary format)
 
 // Marshal a go object into a CBE document, written to writer.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func MarshalCBE(object interface{}, writer io.Writer, opts *options.CBEMarshalerOptions) (err error) {
 	return NewCBEMarshaler(opts).Marshal(object, writer)
 }
 
 // Marshal a go object into a CBE document, returned as a byte slice.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func MarshalCBEToDocument(object interface{}, opts *options.CBEMarshalerOptions) (document []byte, err error) {
 	return NewCBEMarshaler(opts).MarshalToDocument(object)
 }
 
 // Unmarshal a CBE document from a reader, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func UnmarshalCBE(reader io.Reader, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).Unmarshal(reader, template)
 }
 
 // Unmarshal a CBE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func UnmarshalCBEFromDocument(document []byte, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).UnmarshalFromDocument(document, template)
 }
@@ -87,13 +87,13 @@ func UnmarshalCBEFromDocument(document []byte, template interface{}, opts *optio
 // One-shot marshal/unmarshal API (text format)
 
 // Marshal a go object into a CTE document, written to writer.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func MarshalCTE(object interface{}, writer io.Writer, opts *options.CTEMarshalerOptions) (err error) {
 	return NewCTEMarshaler(opts).Marshal(object, writer)
 }
 
 // Marshal a go object into a CTE document, returned as a byte slice.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func MarshalCTEToDocument(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
 	return NewCTEMarshaler(opts).MarshalToDocument(object)
 
@@ -101,14 +101,14 @@ func MarshalCTEToDocument(object interface{}, opts *options.CTEMarshalerOptions)
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func UnmarshalCTE(reader io.Reader, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).Unmarshal(reader, template)
 }
 
 // Unmarshal a CTE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
-// If options is nil, default options will be used.
+// If opts is nil, default options will be used.
 func UnmarshalCTEFromDocument(document []byte, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).UnmarshalFromDocument(document, template)
 }

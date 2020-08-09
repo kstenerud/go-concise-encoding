@@ -35,7 +35,7 @@ import (
 )
 
 type uintBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 	dstType reflect.Type
 }
@@ -54,18 +54,18 @@ func (_this *uintBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *uintBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *uintBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *uintBuilder) SetParent(parent ObjectBuilder) {
+func (_this *uintBuilder) SetParent(_ ObjectBuilder) {
 }
 
-func (_this *uintBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *uintBuilder) BuildFromNil(_ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Nil")
 }
 
-func (_this *uintBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromBool(_ bool, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bool")
 }
 
@@ -97,19 +97,19 @@ func (_this *uintBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst refle
 	setUintFromBigDecimalFloat(value, dst)
 }
 
-func (_this *uintBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "UUID")
 }
 
-func (_this *uintBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "String")
 }
 
-func (_this *uintBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "VerbatimString")
 }
 
-func (_this *uintBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bytes")
 }
 
@@ -125,15 +125,15 @@ func (_this *uintBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	}
 }
 
-func (_this *uintBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "URI")
 }
 
-func (_this *uintBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Time")
 }
 
-func (_this *uintBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "CompactTime")
 }
 
@@ -149,11 +149,11 @@ func (_this *uintBuilder) BuildEndContainer() {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "ContainerEnd")
 }
 
-func (_this *uintBuilder) BuildBeginMarker(id interface{}) {
+func (_this *uintBuilder) BuildBeginMarker(_ interface{}) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Marker")
 }
 
-func (_this *uintBuilder) BuildFromReference(id interface{}) {
+func (_this *uintBuilder) BuildFromReference(_ interface{}) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Reference")
 }
 
@@ -165,6 +165,6 @@ func (_this *uintBuilder) PrepareForMapContents() {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
 }
 
-func (_this *uintBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *uintBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
 }

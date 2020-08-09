@@ -35,13 +35,11 @@ import (
 )
 
 type ptrBuilder struct {
-	// Static data
-	dstType reflect.Type
-
-	// Cloned data (must be populated)
+	// Template Data
+	dstType     reflect.Type
 	elemBuilder ObjectBuilder
 
-	// Clone inserted data
+	// Instance Data
 	parent ObjectBuilder
 }
 
@@ -59,12 +57,12 @@ func (_this *ptrBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *ptrBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *ptrBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	that := &ptrBuilder{
 		dstType: _this.dstType,
 		parent:  parent,
 	}
-	that.elemBuilder = _this.elemBuilder.NewInstance(root, that, options)
+	that.elemBuilder = _this.elemBuilder.NewInstance(root, that, opts)
 	return that
 }
 

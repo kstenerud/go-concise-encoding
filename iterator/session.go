@@ -37,7 +37,7 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	iterators sync.Map
-	options   options.IteratorSessionOptions
+	opts      options.IteratorSessionOptions
 }
 
 // Start a new iterator session. It will inherit the iterators of its parent.
@@ -65,20 +65,20 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 		return true
 	})
 
-	_this.options = *opts
+	_this.opts = *opts
 
-	for t, converter := range _this.options.CustomBinaryConverters {
+	for t, converter := range _this.opts.CustomBinaryConverters {
 		_this.RegisterIteratorForType(t, newCustomBinaryIterator(converter))
 	}
-	for t, converter := range _this.options.CustomTextConverters {
+	for t, converter := range _this.opts.CustomTextConverters {
 		_this.RegisterIteratorForType(t, newCustomTextIterator(converter))
 	}
 }
 
 // Creates a new iterator that sends data events to eventReceiver.
-// If options is nil, default options will be used.
-func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, options *options.IteratorOptions) *RootObjectIterator {
-	return NewRootObjectIterator(_this.GetIteratorForType, eventReceiver, options)
+// If opts is nil, default options will be used.
+func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
+	return NewRootObjectIterator(_this.GetIteratorTemplateForType, eventReceiver, opts)
 }
 
 // Register a specific iterator for a type.
@@ -88,10 +88,10 @@ func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator ObjectIte
 	_this.iterators.Store(t, iterator)
 }
 
-// Get an iterator for the specified type. If a registered iterator doesn't yet
-// exist, a new default iterator will be generated and registered.
+// Get an iterator template for the specified type. If a registered template
+// doesn't yet exist, a new default template will be generated and registered.
 // This method is thread-safe.
-func (_this *Session) GetIteratorForType(t reflect.Type) ObjectIterator {
+func (_this *Session) GetIteratorTemplateForType(t reflect.Type) ObjectIterator {
 	if intf, loaded := _this.iterators.Load(t); loaded {
 		return intf.(ObjectIterator)
 	}
@@ -99,7 +99,7 @@ func (_this *Session) GetIteratorForType(t reflect.Type) ObjectIterator {
 	intf, loaded := _this.iterators.LoadOrStore(t, defaultIteratorForType(t))
 	iterator := intf.(ObjectIterator)
 	if !loaded {
-		iterator.InitTemplate(_this.GetIteratorForType)
+		iterator.InitTemplate(_this.GetIteratorTemplateForType)
 	}
 	return iterator
 }
@@ -115,18 +115,18 @@ func init() {
 	rootSession.Init(nil, nil)
 
 	for _, t := range common.KeyableTypes {
-		rootSession.GetIteratorForType(t)
-		rootSession.GetIteratorForType(reflect.PtrTo(t))
-		rootSession.GetIteratorForType(reflect.SliceOf(t))
+		rootSession.GetIteratorTemplateForType(t)
+		rootSession.GetIteratorTemplateForType(reflect.PtrTo(t))
+		rootSession.GetIteratorTemplateForType(reflect.SliceOf(t))
 		for _, u := range common.KeyableTypes {
-			rootSession.GetIteratorForType(reflect.MapOf(t, u))
+			rootSession.GetIteratorTemplateForType(reflect.MapOf(t, u))
 		}
 	}
 
 	for _, t := range common.NonKeyableTypes {
-		rootSession.GetIteratorForType(t)
-		rootSession.GetIteratorForType(reflect.PtrTo(t))
-		rootSession.GetIteratorForType(reflect.SliceOf(t))
+		rootSession.GetIteratorTemplateForType(t)
+		rootSession.GetIteratorTemplateForType(reflect.PtrTo(t))
+		rootSession.GetIteratorTemplateForType(reflect.SliceOf(t))
 	}
 }
 

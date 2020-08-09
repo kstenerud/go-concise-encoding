@@ -35,10 +35,10 @@ import (
 )
 
 type ignoreBuilder struct {
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *options.BuilderOptions
+	// Instance Data
+	root   *RootBuilder
+	parent ObjectBuilder
+	opts   *options.BuilderOptions
 }
 
 var globalIgnoreBuilder = &ignoreBuilder{}
@@ -51,18 +51,14 @@ func (_this *ignoreBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *ignoreBuilder) IsContainerOnly() bool {
-	return false
+func (_this *ignoreBuilder) InitTemplate(_ *Session) {
 }
 
-func (_this *ignoreBuilder) InitTemplate(session *Session) {
-}
-
-func (_this *ignoreBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *ignoreBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	return &ignoreBuilder{
-		parent:  parent,
-		root:    root,
-		options: options,
+		parent: parent,
+		root:   root,
+		opts:   opts,
 	}
 }
 
@@ -70,85 +66,85 @@ func (_this *ignoreBuilder) SetParent(parent ObjectBuilder) {
 	_this.parent = parent
 }
 
-func (_this *ignoreBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromNil(_ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromBool(_ bool, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromInt(_ int64, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *ignoreBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
 func (_this *ignoreBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForListContents()
 }
 
 func (_this *ignoreBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForMapContents()
 }
 
@@ -160,7 +156,7 @@ func (_this *ignoreBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: ignoreBuilder.Marker")
 }
 
-func (_this *ignoreBuilder) BuildFromReference(id interface{}) {
+func (_this *ignoreBuilder) BuildFromReference(_ interface{}) {
 	// Ignore this directive
 }
 
@@ -172,17 +168,17 @@ func (_this *ignoreBuilder) PrepareForMapContents() {
 	BuilderPanicBadEvent(_this, "PrepareForMapContents")
 }
 
-func (_this *ignoreBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *ignoreBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 	BuilderPanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
 
 type ignoreContainerBuilder struct {
-	// Clone inserted data
-	root    *RootBuilder
-	parent  ObjectBuilder
-	options *options.BuilderOptions
+	// Instance Data
+	root   *RootBuilder
+	parent ObjectBuilder
+	opts   *options.BuilderOptions
 }
 
 var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
@@ -195,18 +191,14 @@ func (_this *ignoreContainerBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *ignoreContainerBuilder) IsContainerOnly() bool {
-	return true
+func (_this *ignoreContainerBuilder) InitTemplate(_ *Session) {
 }
 
-func (_this *ignoreContainerBuilder) InitTemplate(session *Session) {
-}
-
-func (_this *ignoreContainerBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *ignoreContainerBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	return &ignoreContainerBuilder{
-		parent:  parent,
-		root:    root,
-		options: options,
+		parent: parent,
+		root:   root,
+		opts:   opts,
 	}
 }
 
@@ -214,85 +206,85 @@ func (_this *ignoreContainerBuilder) SetParent(parent ObjectBuilder) {
 	_this.parent = parent
 }
 
-func (_this *ignoreContainerBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromNil(_ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBool(_ bool, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromInt(_ int64, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
 	// Ignore this directive
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.opts)
 	builder.PrepareForListContents()
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.opts)
 	builder.PrepareForMapContents()
 }
 
@@ -304,7 +296,7 @@ func (_this *ignoreContainerBuilder) BuildBeginMarker(id interface{}) {
 	panic("TODO: ignoreContainerBuilder.Marker")
 }
 
-func (_this *ignoreContainerBuilder) BuildFromReference(id interface{}) {
+func (_this *ignoreContainerBuilder) BuildFromReference(_ interface{}) {
 	// Ignore this directive
 }
 
@@ -316,5 +308,5 @@ func (_this *ignoreContainerBuilder) PrepareForMapContents() {
 	_this.root.SetCurrentBuilder(_this)
 }
 
-func (_this *ignoreContainerBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *ignoreContainerBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 }

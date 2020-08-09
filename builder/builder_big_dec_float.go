@@ -36,7 +36,7 @@ import (
 )
 
 type bigDecimalFloatBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 }
 
@@ -52,11 +52,11 @@ func (_this *bigDecimalFloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *bigDecimalFloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *bigDecimalFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *bigDecimalFloatBuilder) SetParent(parent ObjectBuilder) {
+func (_this *bigDecimalFloatBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *bigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
@@ -170,7 +170,7 @@ func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(value reflect.
 // ============================================================================
 
 type pBigDecimalFloatBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 }
 
@@ -186,11 +186,11 @@ func (_this *pBigDecimalFloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *pBigDecimalFloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *pBigDecimalFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *pBigDecimalFloatBuilder) SetParent(parent ObjectBuilder) {
+func (_this *pBigDecimalFloatBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {

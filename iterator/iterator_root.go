@@ -84,7 +84,7 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	}
 
 	rv := reflect.ValueOf(object)
-	iterator := _this.getIteratorForType(rv.Type())
+	iterator := _this.getIteratorInstanceForType(rv.Type())
 	iterator.IterateObject(rv, _this.eventReceiver, _this.addReference)
 	_this.eventReceiver.OnEndDocument()
 }
@@ -117,13 +117,13 @@ func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateRefer
 	return true
 }
 
-func (_this *RootObjectIterator) getIteratorForType(t reflect.Type) ObjectIterator {
+func (_this *RootObjectIterator) getIteratorInstanceForType(t reflect.Type) ObjectIterator {
 	iterator := _this.iterators[t]
 	if iterator == nil {
 		template := _this.fetchTemplate(t)
 		iterator = template.NewInstance()
 		_this.iterators[t] = iterator
-		iterator.InitInstance(_this.getIteratorForType, &_this.opts)
+		iterator.InitInstance(_this.getIteratorInstanceForType, &_this.opts)
 	}
 	return iterator
 }

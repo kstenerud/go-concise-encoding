@@ -36,7 +36,7 @@ import (
 )
 
 type dfloatBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 }
 
@@ -52,18 +52,18 @@ func (_this *dfloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *dfloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *dfloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *dfloatBuilder) SetParent(parent ObjectBuilder) {
+func (_this *dfloatBuilder) SetParent(_ ObjectBuilder) {
 }
 
-func (_this *dfloatBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromNil(_ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Nil")
 }
 
-func (_this *dfloatBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromBool(_ bool, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Bool")
 }
 
@@ -123,15 +123,15 @@ func (_this *dfloatBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *dfloatBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "URI")
 }
 
-func (_this *dfloatBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Time")
 }
 
-func (_this *dfloatBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *dfloatBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "CompactTime")
 }
 
@@ -147,11 +147,11 @@ func (_this *dfloatBuilder) BuildEndContainer() {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "ContainerEnd")
 }
 
-func (_this *dfloatBuilder) BuildBeginMarker(id interface{}) {
+func (_this *dfloatBuilder) BuildBeginMarker(_ interface{}) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Marker")
 }
 
-func (_this *dfloatBuilder) BuildFromReference(id interface{}) {
+func (_this *dfloatBuilder) BuildFromReference(_ interface{}) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "Reference")
 }
 
@@ -163,6 +163,6 @@ func (_this *dfloatBuilder) PrepareForMapContents() {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "PrepareForMapContents")
 }
 
-func (_this *dfloatBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *dfloatBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 	BuilderWithTypePanicBadEvent(_this, common.TypeDFloat, "NotifyChildContainerFinished")
 }

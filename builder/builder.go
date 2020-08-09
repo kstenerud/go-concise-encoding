@@ -80,11 +80,15 @@ type ObjectBuilder interface {
 	// cached in order to support recursive object graphs.
 	InitTemplate(session *Session)
 
-	// Create an instance using this object as a template
-	NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder
+	// Create an instance using this object as a template.
+	// opts must not be nil.
+	NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder
 
 	SetParent(newParent ObjectBuilder)
 }
+
+// Fetches a builder for the specified type, building and caching one as needed.
+type FetchBuilder func(reflect.Type) ObjectBuilder
 
 // ============================================================================
 // Error reporting

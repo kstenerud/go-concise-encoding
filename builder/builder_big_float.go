@@ -36,7 +36,7 @@ import (
 )
 
 type bigFloatBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 }
 
@@ -52,11 +52,11 @@ func (_this *bigFloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *bigFloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *bigFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *bigFloatBuilder) SetParent(parent ObjectBuilder) {
+func (_this *bigFloatBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *bigFloatBuilder) BuildFromNil(dst reflect.Value) {
@@ -170,7 +170,7 @@ func (_this *bigFloatBuilder) NotifyChildContainerFinished(value reflect.Value) 
 // ============================================================================
 
 type pBigFloatBuilder struct {
-	// Static data
+	// Template Data
 	session *Session
 }
 
@@ -186,11 +186,11 @@ func (_this *pBigFloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *pBigFloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *pBigFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
-func (_this *pBigFloatBuilder) SetParent(parent ObjectBuilder) {
+func (_this *pBigFloatBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *pBigFloatBuilder) BuildFromNil(dst reflect.Value) {

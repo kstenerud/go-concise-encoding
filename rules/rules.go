@@ -52,7 +52,7 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Rules struct {
-	options               options.RuleOptions
+	opts               options.RuleOptions
 	charValidator         UTF8Validator
 	maxDepth              int
 	stateStack            []ruleState
@@ -86,8 +86,8 @@ func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) 
 // If opts = nil, defaults are used.
 func (_this *Rules) Init(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) {
 	opts = opts.WithDefaultsApplied()
-	_this.options = *opts
-	_this.realMaxContainerDepth = _this.options.MaxContainerDepth + rulesMaxDepthAdjust
+	_this.opts = *opts
+	_this.realMaxContainerDepth = _this.opts.MaxContainerDepth + rulesMaxDepthAdjust
 	_this.stateStack = make([]ruleState, 0, _this.realMaxContainerDepth)
 	_this.nextReceiver = nextReceiver
 
@@ -124,8 +124,8 @@ func (_this *Rules) OnBeginDocument() {
 
 func (_this *Rules) OnVersion(version uint64) {
 	_this.assertCurrentStateAllowsType(eventTypeVersion)
-	if version != _this.options.ConciseEncodingVersion {
-		panic(fmt.Errorf("Expected version %v but got version %v", _this.options.ConciseEncodingVersion, version))
+	if version != _this.opts.ConciseEncodingVersion {
+		panic(fmt.Errorf("Expected version %v but got version %v", _this.opts.ConciseEncodingVersion, version))
 	}
 	_this.changeState(stateAwaitingTLO)
 	_this.nextReceiver.OnVersion(version)
@@ -406,8 +406,8 @@ func (_this *Rules) OnEnd() {
 }
 
 func (_this *Rules) OnMarker() {
-	if uint64(len(_this.assignedIDs)) >= _this.options.MaxReferenceCount {
-		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", _this.options.MaxReferenceCount))
+	if uint64(len(_this.assignedIDs)) >= _this.opts.MaxReferenceCount {
+		panic(fmt.Errorf("Max number of marker IDs (%v) exceeded", _this.opts.MaxReferenceCount))
 	}
 	_this.beginContainer(eventTypeMarker, stateAwaitingMarkerID)
 	_this.nextReceiver.OnMarker()
@@ -503,20 +503,20 @@ func (_this *Rules) onArrayData(data []byte) {
 
 	switch _this.arrayType {
 	case eventTypeBytes:
-		if _this.arrayBytesWritten+dataLength > _this.options.MaxBytesLength {
-			panic(fmt.Errorf("Max byte array length (%v) exceeded", _this.options.MaxBytesLength))
+		if _this.arrayBytesWritten+dataLength > _this.opts.MaxBytesLength {
+			panic(fmt.Errorf("Max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
 		}
 	case eventTypeString:
-		if _this.arrayBytesWritten+dataLength > _this.options.MaxStringLength {
-			panic(fmt.Errorf("Max string length (%v) exceeded", _this.options.MaxStringLength))
+		if _this.arrayBytesWritten+dataLength > _this.opts.MaxStringLength {
+			panic(fmt.Errorf("Max string length (%v) exceeded", _this.opts.MaxStringLength))
 		}
 		_this.validateString(data)
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
 		}
 	case eventTypeURI:
-		if _this.arrayBytesWritten+dataLength > _this.options.MaxURILength {
-			panic(fmt.Errorf("Max URI length (%v) exceeded", _this.options.MaxURILength))
+		if _this.arrayBytesWritten+dataLength > _this.opts.MaxURILength {
+			panic(fmt.Errorf("Max URI length (%v) exceeded", _this.opts.MaxURILength))
 		}
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
@@ -661,8 +661,8 @@ func (_this *Rules) onArrayChunkEnded() {
 			if _this.arrayBytesWritten == 0 {
 				panic(fmt.Errorf("Markup name cannot be length 0"))
 			}
-			if _this.arrayBytesWritten > _this.options.MaxMarkupNameLength {
-				panic(fmt.Errorf("Markup name length %v exceeds max of %v", _this.arrayBytesWritten, _this.options.MaxMarkupNameLength))
+			if _this.arrayBytesWritten > _this.opts.MaxMarkupNameLength {
+				panic(fmt.Errorf("Markup name length %v exceeds max of %v", _this.arrayBytesWritten, _this.opts.MaxMarkupNameLength))
 			}
 		}
 		if _this.isAwaitingID() {
@@ -696,8 +696,8 @@ func (_this *Rules) onArrayChunkEnded() {
 
 func (_this *Rules) incrementObjectCount() {
 	_this.objectCount++
-	if _this.objectCount > _this.options.MaxObjectCount {
-		panic(fmt.Errorf("Max object count of %v exceeded", _this.options.MaxObjectCount))
+	if _this.objectCount > _this.opts.MaxObjectCount {
+		panic(fmt.Errorf("Max object count of %v exceeded", _this.opts.MaxObjectCount))
 	}
 }
 
