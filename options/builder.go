@@ -93,7 +93,7 @@ type BuilderOptions struct {
 	FloatToBigIntMaxBase2Exponent int
 
 	// Match struct field names in a case insensitive manner
-	// CaseInsensitiveStructFieldNames bool
+	CaseInsensitiveStructFieldNames bool
 
 	// TODO: If true, don't raise an error on a lossy floating point conversion.
 	AllowLossyFloatConversion bool
@@ -105,12 +105,11 @@ type BuilderOptions struct {
 func DefaultBuilderOptions() *BuilderOptions {
 	const maxBase10Exp = 50
 	return &BuilderOptions{
-		FloatToBigIntMaxBase10Exponent: maxBase10Exp,
-		FloatToBigIntMaxBase2Exponent:  maxBase10Exp * 10 / 3,
-		AllowLossyFloatConversion:      true,
-		IgnoreUnknownFields:            true,
-		// TODO: Fix case insensitive
-		// CaseInsensitiveStructFieldNames:    true,
+		FloatToBigIntMaxBase10Exponent:  maxBase10Exp,
+		FloatToBigIntMaxBase2Exponent:   maxBase10Exp * 10 / 3,
+		AllowLossyFloatConversion:       true,
+		IgnoreUnknownFields:             true,
+		CaseInsensitiveStructFieldNames: true,
 	}
 }
 

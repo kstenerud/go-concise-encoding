@@ -82,13 +82,10 @@ type IteratorOptions struct {
 	// If RecursionSupport is true, the iterator will also look for duplicate
 	// pointers to data, generating marker and reference events rather than
 	// walking the object again. This is useful for cyclic or recursive data
-	// structures.
-	//
-	// Note: recursion support has a small performance cost, which is why
-	// it's optional.
+	// structures, but has a performance cost.
 	RecursionSupport bool
 
-	// Use lowercase names in structs
+	// Use lowercase struct field names
 	LowercaseStructFieldNames bool
 
 	// TODO If true, don't write a nil object when a nil pointer is encountered.
@@ -97,11 +94,10 @@ type IteratorOptions struct {
 
 func DefaultIteratorOptions() *IteratorOptions {
 	return &IteratorOptions{
-		ConciseEncodingVersion: version.ConciseEncodingVersion,
-		RecursionSupport:       true,
-		OmitNilPointers:        true,
-		// TODO: Need to fix builder side before using this
-		// LowercaseStructFieldNames: true,
+		ConciseEncodingVersion:    version.ConciseEncodingVersion,
+		RecursionSupport:          true,
+		OmitNilPointers:           true,
+		LowercaseStructFieldNames: true,
 	}
 }
 

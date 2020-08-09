@@ -50,7 +50,7 @@ type SomeStruct struct {
 }
 
 func TestDemonstrateRecursiveStructInMap(t *testing.T) {
-	document := "c1 {my-value = &1:{A=100 B=test C=#1}}"
+	document := "c1 {my-value = &1:{a=100 b=test c=#1}}"
 	template := map[string]*SomeStruct{}
 	result, err := ce.UnmarshalCTEFromDocument([]byte(document), template, nil)
 	if err != nil {
@@ -74,7 +74,7 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
-	// Prints: Re-encoded CBE: [1 121 136 109 121 45 118 97 108 117 101 151 0 121 129 65 100 129 66 132 116 101 115 116 129 67 152 0 123 123]
+	// Prints: Re-encoded CBE: [1 121 136 109 121 45 118 97 108 117 101 151 0 121 129 97 100 129 98 132 116 101 115 116 129 99 152 0 123 123]
 }
 
 func TestEmptyListWithIndents(t *testing.T) {

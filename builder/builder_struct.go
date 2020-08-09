@@ -131,12 +131,12 @@ func (_this *structBuilder) InitTemplate(session *Session) {
 
 func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
 	builderDescs := _this.builderDescs
-	// if options.CaseInsensitiveStructFieldNames {
-	// 	builderDescs = make(map[string]*structBuilderDesc)
-	// 	for name, desc := range _this.builderDescs {
-	// 		builderDescs[strings.ToLower(name)] = desc
-	// 	}
-	// }
+	if opts.CaseInsensitiveStructFieldNames {
+		builderDescs = make(map[string]*structBuilderDesc)
+		for name, desc := range _this.builderDescs {
+			builderDescs[strings.ToLower(name)] = desc
+		}
+	}
 
 	that := &structBuilder{
 		dstType:      _this.dstType,
@@ -220,9 +220,9 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
 		name := string(value)
-		// if _this.options.CaseInsensitiveStructFieldNames {
-		// 	name = strings.ToLower(name)
-		// }
+		if _this.opts.CaseInsensitiveStructFieldNames {
+			name = strings.ToLower(name)
+		}
 
 		if builderDesc, ok := _this.builderDescs[name]; ok {
 			_this.nextBuilder = builderDesc.Builder

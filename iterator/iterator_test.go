@@ -92,17 +92,28 @@ func iterateObject(object interface{},
 	iter.Iterate(object)
 }
 
-func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
+func assertIterateWithOptions(t *testing.T,
+	sessionOptions *options.IteratorSessionOptions,
+	iteratorOptions *options.IteratorOptions,
+	obj interface{},
+	events ...*test.TEvent) {
+
 	expected := append([]*test.TEvent{BD(), V(1)}, events...)
 	expected = append(expected, ED())
-	sessionOptions := options.DefaultIteratorSessionOptions()
-	iteratorOptions := options.DefaultIteratorOptions()
 	receiver := test.NewTER()
 	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
 	}
+}
+
+func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
+	assertIterateWithOptions(t,
+		options.DefaultIteratorSessionOptions(),
+		options.DefaultIteratorOptions(),
+		obj,
+		events...)
 }
 
 // ============================================================================
@@ -207,7 +218,12 @@ type StructTestIterate struct {
 }
 
 func TestIterateStruct(t *testing.T) {
-	assertIterate(t, new(StructTestIterate), M(), S("A"), I(0), E())
+	sOpts := options.DefaultIteratorSessionOptions()
+	iOpts := options.DefaultIteratorOptions()
+	iOpts.LowercaseStructFieldNames = false
+
+	assertIterate(t, new(StructTestIterate), M(), S("a"), I(0), E())
+	assertIterateWithOptions(t, sOpts, iOpts, new(StructTestIterate), M(), S("A"), I(0), E())
 	assertIterate(t, (*StructTestIterate)(nil), N())
 }
 
@@ -232,7 +248,7 @@ func TestIterateRecurse(t *testing.T) {
 	}
 	obj.R = obj
 
-	expected := []*test.TEvent{BD(), V(1), MARK(), I(0), M(), S("I"), I(50), S("R"), REF(), I(0), E(), ED()}
+	expected := []*test.TEvent{BD(), V(1), MARK(), I(0), M(), S("i"), I(50), S("r"), REF(), I(0), E(), ED()}
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true

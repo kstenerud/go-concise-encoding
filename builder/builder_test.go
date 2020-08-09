@@ -943,6 +943,24 @@ type BuilderTestStruct struct {
 	ASlice   []string
 }
 
+func TestBuilderStructCaseInsensitive(t *testing.T) {
+	assertBuild(t,
+		&BuilderTestStruct{
+			AString: "test",
+			AnInt:   1,
+			ABool:   true,
+			AMap:    map[int]int8{1: 50},
+			ASlice:  []string{"the slice"},
+		},
+		M(),
+		S("astring"), S("test"),
+		S("AMAP"), M(), I(1), I(50), E(),
+		S("AnINT"), I(1),
+		S("Aslice"), L(), S("the slice"), E(),
+		S("abool"), B(true),
+		E())
+}
+
 func TestBuilderStructIgnored(t *testing.T) {
 	assertBuild(t, BuilderTestStruct{
 		AString: "test",
