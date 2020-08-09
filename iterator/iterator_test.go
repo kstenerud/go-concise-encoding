@@ -26,6 +26,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -80,13 +82,23 @@ func REF() *test.TEvent                      { return test.REF() }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
+func iterateObject(object interface{},
+	eventReceiver events.DataEventReceiver,
+	sessionOptions *options.IteratorSessionOptions,
+	iteratorOptions *options.IteratorOptions) {
+
+	session := NewSession(nil, sessionOptions)
+	iter := session.NewIterator(eventReceiver, iteratorOptions)
+	iter.Iterate(object)
+}
+
 func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
 	expected := append([]*test.TEvent{BD(), V(1)}, events...)
 	expected = append(expected, ED())
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	receiver := test.NewTER()
-	IterateObject(obj, receiver, sessionOptions, iteratorOptions)
+	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
@@ -202,7 +214,7 @@ func TestIterateStruct(t *testing.T) {
 func TestIterateNilOpts(t *testing.T) {
 	expected := []*test.TEvent{BD(), V(1), I(1), ED()}
 	receiver := test.NewTER()
-	IterateObject(1, receiver, nil, nil)
+	iterateObject(1, receiver, nil, nil)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)
@@ -225,7 +237,7 @@ func TestIterateRecurse(t *testing.T) {
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true
 	receiver := test.NewTER()
-	IterateObject(obj, receiver, sessionOptions, iteratorOptions)
+	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)

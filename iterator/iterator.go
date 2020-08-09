@@ -28,25 +28,15 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-// Iterate over an object (recursively), calling the eventReceiver as data is
-// encountered. If an options object is nil, default options will be used.
-//
-// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
-// to recover() at an appropriate location when calling this function.
-func IterateObject(object interface{},
-	eventReceiver events.DataEventReceiver,
-	sessionOptions *options.IteratorSessionOptions,
-	iteratorOptions *options.IteratorOptions) {
-
-	session := NewSession(nil, sessionOptions)
-	iter := session.NewIterator(eventReceiver, iteratorOptions)
-	iter.Iterate(object)
-}
-
 // ObjectIterator iterates through an object, calling DataEventReceiver callback
 // methods as it encounters data.
 type ObjectIterator interface {
-	// Iterate over an object.
+
+	// Iterate over an object (recursively), calling the eventReceiver as data is
+	// encountered. If an options object is nil, default options will be used.
+	//
+	// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
+	// to recover() at an appropriate location when calling this function.
 	IterateObject(object reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference)
 
 	// Initialize as a template. This is called after the template has been

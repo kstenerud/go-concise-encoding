@@ -105,10 +105,9 @@ func (_this *Session) GetIteratorForType(t reflect.Type) ObjectIterator {
 }
 
 // ============================================================================
-
 // Internal
 
-// The base session caches the most common iterators. All sessions inherit
+// The root session caches the most common iterators. All sessions inherit
 // these cached values.
 var rootSession Session
 

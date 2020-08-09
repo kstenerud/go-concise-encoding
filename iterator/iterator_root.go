@@ -66,6 +66,9 @@ func (_this *RootObjectIterator) Init(fetchTemplate FetchIterator, eventReceiver
 
 // Iterates over an object, sending events to the root iterator's
 // DataEventReceiver as it visits all elements of the value.
+//
+// Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
+// to recover() at an appropriate location when calling this function.
 func (_this *RootObjectIterator) Iterate(object interface{}) {
 	_this.eventReceiver.OnBeginDocument()
 	_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
@@ -85,6 +88,9 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	iterator.IterateObject(rv, _this.eventReceiver, _this.addReference)
 	_this.eventReceiver.OnEndDocument()
 }
+
+// ============================================================================
+// Internal
 
 func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateReferenceEvent bool) {
 	if !_this.opts.RecursionSupport {

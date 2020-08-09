@@ -37,6 +37,7 @@ import (
 type ConvertToCustomFunction func(v reflect.Value) (asBytes []byte, err error)
 
 type IteratorSessionOptions struct {
+
 	// Specifies which types to convert to custom binary data, and how to do it.
 	// Note: You should only fill out one of these maps, depending on your
 	// indended encoding (binary or text). The iterator session will consult
@@ -77,6 +78,7 @@ func (_this *IteratorSessionOptions) WithDefaultsApplied() *IteratorSessionOptio
 
 type IteratorOptions struct {
 	ConciseEncodingVersion uint64
+
 	// If RecursionSupport is true, the iterator will also look for duplicate
 	// pointers to data, generating marker and reference events rather than
 	// walking the object again. This is useful for cyclic or recursive data
