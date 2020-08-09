@@ -49,11 +49,11 @@ func (_this *markerIDBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *markerIDBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *markerIDBuilder) InitTemplate(session *Session) {
 }
 
-func (_this *markerIDBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "CloneFromTemplate")
+func (_this *markerIDBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+	BuilderPanicBadEvent(_this, "NewInstance")
 	return nil
 }
 
@@ -191,11 +191,11 @@ func (_this *markerObjectBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.child)
 }
 
-func (_this *markerObjectBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *markerObjectBuilder) InitTemplate(session *Session) {
 }
 
-func (_this *markerObjectBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "CloneFromTemplate")
+func (_this *markerObjectBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+	BuilderPanicBadEvent(_this, "NewInstance")
 	return nil
 }
 

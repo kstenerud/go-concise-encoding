@@ -72,13 +72,13 @@ func (_this *mapBuilder) String() string {
 	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvBuilders[0], _this.kvBuilders[1])
 }
 
-func (_this *mapBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *mapBuilder) InitTemplate(session *Session) {
 	_this.session = session
 	_this.kvBuilders[kvBuilderKey] = session.GetBuilderForType(_this.dstType.Key())
 	_this.kvBuilders[kvBuilderValue] = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *mapBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &mapBuilder{
 		session: _this.session,
 		dstType: _this.dstType,
@@ -87,7 +87,7 @@ func (_this *mapBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuild
 		root:    root,
 		options: options,
 	}
-	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].CloneFromTemplate(root, that, options)
+	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].NewInstance(root, that, options)
 	that.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue]
 	that.reset()
 	return that
@@ -277,7 +277,7 @@ func (_this *mapBuilder) PrepareForListContents() {
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {
-	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].CloneFromTemplate(_this.root, _this, _this.options)
+	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].NewInstance(_this.root, _this, _this.options)
 	_this.root.SetCurrentBuilder(_this)
 }
 

@@ -61,11 +61,11 @@ func (_this *intfBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *intfBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *intfBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *intfBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *intfBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &intfBuilder{
 		session: _this.session,
 		parent:  parent,
@@ -127,7 +127,7 @@ func (_this *intfBuilder) BuildFromVerbatimString(value []byte, dst reflect.Valu
 }
 
 func (_this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(cloneBytes(value)))
+	dst.Set(reflect.ValueOf(common.CloneBytes(value)))
 }
 
 func (_this *intfBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -156,13 +156,13 @@ func (_this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst ref
 
 func (_this *intfBuilder) BuildBeginList() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) BuildBeginMap() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
 
@@ -180,13 +180,13 @@ func (_this *intfBuilder) BuildFromReference(id interface{}) {
 
 func (_this *intfBuilder) PrepareForListContents() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *intfBuilder) PrepareForMapContents() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceMap)
-	builder = builder.CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder = builder.NewInstance(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
 

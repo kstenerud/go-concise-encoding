@@ -52,12 +52,12 @@ func (_this *topLevelBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.builder)
 }
 
-func (_this *topLevelBuilder) PostCacheInitBuilder(session *Session) {
-	BuilderPanicBadEvent(_this, "PostCacheInitBuilder")
+func (_this *topLevelBuilder) InitTemplate(session *Session) {
+	BuilderPanicBadEvent(_this, "InitTemplate")
 }
 
-func (_this *topLevelBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "CloneFromTemplate")
+func (_this *topLevelBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+	BuilderPanicBadEvent(_this, "NewInstance")
 	return nil
 }
 

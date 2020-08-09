@@ -49,11 +49,11 @@ func (_this *customBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *customBuilder) PostCacheInitBuilder(session *Session) {
-	BuilderPanicBadEvent(_this, "PostCacheInitBuilder")
+func (_this *customBuilder) InitTemplate(session *Session) {
+	BuilderPanicBadEvent(_this, "InitTemplate")
 }
 
-func (_this *customBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *customBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

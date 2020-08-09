@@ -60,11 +60,11 @@ func (_this *arrayBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *arrayBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *arrayBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *arrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *arrayBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &arrayBuilder{
 		dstType:     _this.dstType,
 		elemBuilder: _this.elemBuilder,
@@ -211,7 +211,7 @@ func (_this *arrayBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *arrayBuilder) PrepareForListContents() {
-	_this.elemBuilder = _this.elemBuilder.CloneFromTemplate(_this.root, _this, _this.options)
+	_this.elemBuilder = _this.elemBuilder.NewInstance(_this.root, _this, _this.options)
 	_this.root.SetCurrentBuilder(_this)
 }
 
@@ -240,11 +240,11 @@ func (_this *bytesArrayBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *bytesArrayBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *bytesArrayBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *bytesArrayBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *bytesArrayBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

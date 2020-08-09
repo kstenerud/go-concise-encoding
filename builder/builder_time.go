@@ -50,11 +50,11 @@ func (_this *timeBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *timeBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *timeBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *timeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *timeBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
@@ -188,11 +188,11 @@ func (_this *compactTimeBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *compactTimeBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *compactTimeBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *compactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *compactTimeBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
@@ -322,11 +322,11 @@ func (_this *pCompactTimeBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *pCompactTimeBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *pCompactTimeBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *pCompactTimeBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *pCompactTimeBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

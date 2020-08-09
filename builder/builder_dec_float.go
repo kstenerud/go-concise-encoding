@@ -48,11 +48,11 @@ func (_this *dfloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *dfloatBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *dfloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *dfloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *dfloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

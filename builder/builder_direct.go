@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -56,11 +58,11 @@ func (_this *directBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *directBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *directBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *directBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *directBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
@@ -198,10 +200,10 @@ func (_this *directPtrBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *directPtrBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *directPtrBuilder) InitTemplate(session *Session) {
 }
 
-func (_this *directPtrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *directPtrBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
@@ -261,7 +263,7 @@ func (_this *directPtrBuilder) BuildFromVerbatimString(value []byte, dst reflect
 }
 
 func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	dst.SetBytes(cloneBytes(value))
+	dst.SetBytes(common.CloneBytes(value))
 }
 
 func (_this *directPtrBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {

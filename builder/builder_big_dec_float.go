@@ -48,11 +48,11 @@ func (_this *bigDecimalFloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *bigDecimalFloatBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *bigDecimalFloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *bigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *bigDecimalFloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 
@@ -182,11 +182,11 @@ func (_this *pBigDecimalFloatBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *pBigDecimalFloatBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *pBigDecimalFloatBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *pBigDecimalFloatBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *pBigDecimalFloatBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return _this
 }
 

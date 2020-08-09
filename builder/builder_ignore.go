@@ -55,10 +55,10 @@ func (_this *ignoreBuilder) IsContainerOnly() bool {
 	return false
 }
 
-func (_this *ignoreBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *ignoreBuilder) InitTemplate(session *Session) {
 }
 
-func (_this *ignoreBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *ignoreBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &ignoreBuilder{
 		parent:  parent,
 		root:    root,
@@ -143,12 +143,12 @@ func (_this *ignoreBuilder) BuildFromCompactTime(value *compact_time.Time, dst r
 }
 
 func (_this *ignoreBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *ignoreBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this.parent, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.options)
 	builder.PrepareForMapContents()
 }
 
@@ -199,10 +199,10 @@ func (_this *ignoreContainerBuilder) IsContainerOnly() bool {
 	return true
 }
 
-func (_this *ignoreContainerBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *ignoreContainerBuilder) InitTemplate(session *Session) {
 }
 
-func (_this *ignoreContainerBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *ignoreContainerBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &ignoreContainerBuilder{
 		parent:  parent,
 		root:    root,
@@ -287,12 +287,12 @@ func (_this *ignoreContainerBuilder) BuildFromCompactTime(value *compact_time.Ti
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.options)
 	builder.PrepareForListContents()
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().CloneFromTemplate(_this.root, _this, _this.options)
+	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.options)
 	builder.PrepareForMapContents()
 }
 

@@ -41,6 +41,7 @@ import (
 
 // ObjectBuilder responds to external events to progressively build an object.
 type ObjectBuilder interface {
+
 	// External data and structure events
 	BuildFromNil(dst reflect.Value)
 	BuildFromBool(value bool, dst reflect.Value)
@@ -75,25 +76,17 @@ type ObjectBuilder interface {
 	// Notify that a child builder has finished building a container
 	NotifyChildContainerFinished(container reflect.Value)
 
-	// Called after the builder template is saved to cache but before use, so
-	// that lookups succeed on cyclic builder references
-	PostCacheInitBuilder(session *Session)
+	// Initialize as a template. This is called after the template has been
+	// cached in order to support recursive object graphs.
+	InitTemplate(session *Session)
 
-	// Clone from this builder as a template, adding contextual data
-	CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder
+	// Create an instance using this object as a template
+	NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder
 
 	SetParent(newParent ObjectBuilder)
 }
 
-// CustomBuilderFunction fills out a value from a custom byte array source.
-// This allows fully user-configurable building of types from custom Concise
-// Encoding data.
-//
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
-type CustomBinaryBuildFunction func(src []byte, dst reflect.Value) error
-type CustomTextBuildFunction func(src string, dst reflect.Value) error
-
+// ============================================================================
 // Error reporting
 
 // Report that a builder was given an event that it can't handle.
@@ -136,10 +129,4 @@ func BuilderPanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstTyp
 // This normally indicates a bug in your custom builder.
 func BuilderPanicBuildFromCustomText(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("Error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
-}
-
-func cloneBytes(bytes []byte) []byte {
-	bytesCopy := make([]byte, len(bytes), len(bytes))
-	copy(bytesCopy, bytes)
-	return bytesCopy
 }

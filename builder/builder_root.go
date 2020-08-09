@@ -76,7 +76,7 @@ func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *opt
 	_this.dstType = dstType
 	_this.object = reflect.New(dstType).Elem()
 
-	builder := session.GetBuilderForType(dstType).CloneFromTemplate(_this, _this, opts)
+	builder := session.GetBuilderForType(dstType).NewInstance(_this, _this, opts)
 	_this.currentBuilder = newTopLevelBuilder(_this, builder)
 	_this.referenceFiller.Init()
 }
@@ -116,11 +116,11 @@ func (_this *RootBuilder) SetCurrentBuilder(builder ObjectBuilder) {
 // ObjectBuilder
 // -------------
 
-func (_this *RootBuilder) PostCacheInitBuilder(_ *Session) {
-	BuilderPanicBadEvent(_this, "PostCacheInitBuilder")
+func (_this *RootBuilder) InitTemplate(_ *Session) {
+	BuilderPanicBadEvent(_this, "InitTemplate")
 }
-func (_this *RootBuilder) CloneFromTemplate(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "CloneFromTemplate")
+func (_this *RootBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
+	BuilderPanicBadEvent(_this, "NewInstance")
 	return nil
 }
 func (_this *RootBuilder) SetParent(parent ObjectBuilder) {

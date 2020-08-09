@@ -51,11 +51,11 @@ func (_this *bigIntBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *bigIntBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *bigIntBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *bigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *bigIntBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &bigIntBuilder{
 		session: _this.session,
 		options: options,
@@ -191,11 +191,11 @@ func (_this *pBigIntBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *pBigIntBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *pBigIntBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *pBigIntBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *pBigIntBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	return &pBigIntBuilder{
 		session: _this.session,
 		options: options,

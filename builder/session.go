@@ -105,7 +105,7 @@ func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
 	}
 
 	builder, _ := _this.builders.LoadOrStore(dstType, _this.defaultBuilderForType(dstType))
-	builder.(ObjectBuilder).PostCacheInitBuilder(_this)
+	builder.(ObjectBuilder).InitTemplate(_this)
 	return builder.(ObjectBuilder)
 }
 

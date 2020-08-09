@@ -145,3 +145,9 @@ func IsNil(v reflect.Value) bool {
 
 	return IsNullable(v) && v.IsNil()
 }
+
+func CloneBytes(bytes []byte) []byte {
+	bytesCopy := make([]byte, len(bytes), len(bytes))
+	copy(bytesCopy, bytes)
+	return bytesCopy
+}

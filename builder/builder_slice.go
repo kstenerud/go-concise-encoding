@@ -62,11 +62,11 @@ func (_this *sliceBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *sliceBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *sliceBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *sliceBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *sliceBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &sliceBuilder{
 		dstType:     _this.dstType,
 		elemBuilder: _this.elemBuilder,
@@ -237,7 +237,7 @@ func (_this *sliceBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *sliceBuilder) PrepareForListContents() {
-	_this.elemBuilder = _this.elemBuilder.CloneFromTemplate(_this.root, _this, _this.options)
+	_this.elemBuilder = _this.elemBuilder.NewInstance(_this.root, _this, _this.options)
 	_this.root.SetCurrentBuilder(_this)
 }
 

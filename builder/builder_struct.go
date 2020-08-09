@@ -112,7 +112,7 @@ func (_this *structBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
-func (_this *structBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *structBuilder) InitTemplate(session *Session) {
 	_this.nameBuilder = session.GetBuilderForType(reflect.TypeOf(""))
 	_this.builderDescs = make(map[string]*structBuilderDesc)
 	_this.ignoreBuilder = newIgnoreBuilder()
@@ -131,7 +131,7 @@ func (_this *structBuilder) PostCacheInitBuilder(session *Session) {
 	}
 }
 
-func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	builderDescs := _this.builderDescs
 	// if options.CaseInsensitiveStructFieldNames {
 	// 	builderDescs = make(map[string]*structBuilderDesc)
@@ -147,8 +147,8 @@ func (_this *structBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBu
 		root:         root,
 		options:      options,
 	}
-	that.nameBuilder = _this.nameBuilder.CloneFromTemplate(root, that, options)
-	that.ignoreBuilder = _this.ignoreBuilder.CloneFromTemplate(root, that, options)
+	that.nameBuilder = _this.nameBuilder.NewInstance(root, that, options)
+	that.ignoreBuilder = _this.ignoreBuilder.NewInstance(root, that, options)
 	that.reset()
 	return that
 }
@@ -328,7 +328,7 @@ func (_this *structBuilder) PrepareForMapContents() {
 
 	for k, builderElem := range _this.builderDescs {
 		builderDescs[k] = &structBuilderDesc{
-			Builder: builderElem.Builder.CloneFromTemplate(_this.root, _this, _this.options),
+			Builder: builderElem.Builder.NewInstance(_this.root, _this, _this.options),
 			Index:   builderElem.Index,
 		}
 	}

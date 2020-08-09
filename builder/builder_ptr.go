@@ -55,16 +55,16 @@ func (_this *ptrBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
-func (_this *ptrBuilder) PostCacheInitBuilder(session *Session) {
+func (_this *ptrBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
 
-func (_this *ptrBuilder) CloneFromTemplate(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
+func (_this *ptrBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, options *options.BuilderOptions) ObjectBuilder {
 	that := &ptrBuilder{
 		dstType: _this.dstType,
 		parent:  parent,
 	}
-	that.elemBuilder = _this.elemBuilder.CloneFromTemplate(root, that, options)
+	that.elemBuilder = _this.elemBuilder.NewInstance(root, that, options)
 	return that
 }
 
