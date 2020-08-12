@@ -143,7 +143,7 @@ func (_this *StreamingReadBuffer) RequestBytes(position int, byteCount int) (pos
 // UnexpectedEOD.
 func (_this *StreamingReadBuffer) RequireBytes(position int, byteCount int) (positionOffset int) {
 	positionOffset = _this.RequestBytes(position, byteCount)
-	if byteCount > len(_this.Buffer) {
+	if byteCount+position+positionOffset > len(_this.Buffer) {
 		panic(UnexpectedEOD)
 	}
 	return

@@ -26,6 +26,8 @@ import (
 	"math"
 	"math/big"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -74,25 +76,15 @@ func (_this *CBEReadBuffer) HasUnreadData() bool {
 	return _this.position < len(_this.buffer.Buffer)
 }
 
-func (_this *CBEReadBuffer) DecodeVersion() uint64 {
-	asUint, asBig := _this.DecodeUint()
-	if asBig != nil {
-		_this.errorf("Version too big")
-	}
-	return asUint
-}
-
-func (_this *CBEReadBuffer) DecodeType() cbeTypeField {
-	return cbeTypeField(_this.DecodeUint8())
-}
-
 func (_this *CBEReadBuffer) DecodeUint8() uint8 {
+	_this.buffer.RequireBytes(_this.position, 1)
 	value := uint8(_this.byteAtPositionOffset(0))
 	_this.markBytesRead(1)
 	return value
 }
 
 func (_this *CBEReadBuffer) DecodeUint16() uint16 {
+	_this.buffer.RequireBytes(_this.position, 2)
 	value := uint16(_this.byteAtPositionOffset(0)) |
 		uint16(_this.byteAtPositionOffset(1))<<8
 	_this.markBytesRead(2)
@@ -100,6 +92,7 @@ func (_this *CBEReadBuffer) DecodeUint16() uint16 {
 }
 
 func (_this *CBEReadBuffer) DecodeUint32() uint32 {
+	_this.buffer.RequireBytes(_this.position, 4)
 	value := uint32(_this.byteAtPositionOffset(0)) |
 		uint32(_this.byteAtPositionOffset(1))<<8 |
 		uint32(_this.byteAtPositionOffset(2))<<16 |
@@ -109,6 +102,7 @@ func (_this *CBEReadBuffer) DecodeUint32() uint32 {
 }
 
 func (_this *CBEReadBuffer) DecodeUint64() uint64 {
+	_this.buffer.RequireBytes(_this.position, 8)
 	value := uint64(_this.byteAtPositionOffset(0)) |
 		uint64(_this.byteAtPositionOffset(1))<<8 |
 		uint64(_this.byteAtPositionOffset(2))<<16 |
@@ -121,13 +115,92 @@ func (_this *CBEReadBuffer) DecodeUint64() uint64 {
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeUint() (asUint uint64, asBig *big.Int) {
+func (_this *CBEReadBuffer) DecodeVersion() uint64 {
+	return _this.DecodeSmallULEB128("version", 0xffffffffffffffff)
+}
+
+func (_this *CBEReadBuffer) DecodeType() cbeTypeField {
+	return cbeTypeField(_this.DecodeUint8())
+}
+
+func (_this *CBEReadBuffer) DecodeULEB128() (asUint uint64, asBig *big.Int) {
 	asUint, asBig, bytesDecoded, isComplete := uleb128.Decode(0, 0, _this.allUnreadBytes())
+	if isComplete {
+		goto complete
+	}
+	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+		_this.position += positionOffset
+		asUint, asBig, bytesDecoded, isComplete = uleb128.Decode(0, 0, _this.allUnreadBytes())
+	})
 	if !isComplete {
 		_this.unexpectedEOD()
 	}
+
+complete:
 	_this.markBytesRead(bytesDecoded)
 	return
+}
+
+func (_this *CBEReadBuffer) DecodeSmallULEB128(name string, maxValue uint64) uint64 {
+	asUint, asBig, bytesDecoded, isComplete := uleb128.Decode(0, 0, _this.allUnreadBytes())
+	if isComplete {
+		goto complete
+	}
+	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+		_this.position += positionOffset
+		asUint, asBig, bytesDecoded, isComplete = uleb128.Decode(0, 0, _this.allUnreadBytes())
+	})
+	if !isComplete {
+		_this.unexpectedEOD()
+	}
+
+complete:
+	if asBig != nil {
+		panic(fmt.Errorf("%v: %v is too big", asBig, name))
+	}
+	if asUint > maxValue {
+		panic(fmt.Errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue))
+	}
+	_this.markBytesRead(bytesDecoded)
+	return asUint
+}
+
+// TODO: Check max big.int bit count
+const maxBigIntBitCount = 8192
+
+func (_this *CBEReadBuffer) DecodeUint() (asUint uint64, asBig *big.Int) {
+	byteCount := _this.DecodeSmallULEB128("uint length field", maxBigIntBitCount/8)
+	bytes := _this.DecodeBytes(int(byteCount))
+	if byteCount <= 8 {
+		for i := 0; i < len(bytes); i++ {
+			asUint |= uint64(bytes[i]) << (i * 8)
+		}
+		return
+	}
+	bytesPerWord := common.BytesPerInt()
+	wordCount := len(bytes) / bytesPerWord
+	if len(bytes)%bytesPerWord != 0 {
+		wordCount++
+	}
+	words := make([]big.Word, wordCount, wordCount)
+	iWord := 0
+	for iByte := 0; iByte < len(bytes); {
+		word := big.Word(0)
+		for iPart := 0; iPart < bytesPerWord && iByte < len(bytes); iPart++ {
+			word |= big.Word(bytes[iByte]) << (iPart * 8)
+			iByte++
+		}
+		words[iWord] = word
+		iWord++
+		word = 0
+	}
+	asBig = big.NewInt(0)
+	asBig.SetBits(words)
+	return
+}
+
+func (_this *CBEReadBuffer) DecodeFloat16() float32 {
+	return math.Float32frombits(uint32(_this.DecodeUint16()) << 16)
 }
 
 func (_this *CBEReadBuffer) DecodeFloat32() float32 {
@@ -140,36 +213,42 @@ func (_this *CBEReadBuffer) DecodeFloat64() float64 {
 
 func (_this *CBEReadBuffer) DecodeDecimalFloat() (compact_float.DFloat, *apd.Decimal) {
 	value, bigValue, bytesDecoded, err := compact_float.Decode(_this.allUnreadBytes())
-	if err != nil {
-		if err == compact_float.ErrorIncomplete {
-			_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-				_this.position += positionOffset
-				value, bigValue, bytesDecoded, err = compact_float.Decode(_this.allUnreadBytes())
-			})
-			if err == compact_float.ErrorIncomplete {
-				_this.unexpectedEOD()
-			}
-		}
+	if err == nil {
+		goto complete
+	}
+	if err != compact_float.ErrorIncomplete {
 		_this.unexpectedError(err)
 	}
+	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+		_this.position += positionOffset
+		value, bigValue, bytesDecoded, err = compact_float.Decode(_this.allUnreadBytes())
+	})
+	if err == compact_float.ErrorIncomplete {
+		_this.unexpectedEOD()
+	}
+
+complete:
 	_this.markBytesRead(bytesDecoded)
 	return value, bigValue
 }
 
 func (_this *CBEReadBuffer) DecodeDate() *compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeDate(_this.allUnreadBytes())
-	if err != nil {
-		if err == compact_time.ErrorIncomplete {
-			_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-				_this.position += positionOffset
-				value, bytesDecoded, err = compact_time.DecodeDate(_this.allUnreadBytes())
-			})
-			if err == compact_time.ErrorIncomplete {
-				_this.unexpectedEOD()
-			}
-		}
+	if err == nil {
+		goto complete
+	}
+	if err != compact_time.ErrorIncomplete {
 		_this.unexpectedError(err)
 	}
+	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+		_this.position += positionOffset
+		value, bytesDecoded, err = compact_time.DecodeDate(_this.allUnreadBytes())
+	})
+	if err == compact_time.ErrorIncomplete {
+		_this.unexpectedEOD()
+	}
+
+complete:
 	if err := value.Validate(); err != nil {
 		_this.unexpectedError(err)
 	}
@@ -182,36 +261,42 @@ func (_this *CBEReadBuffer) DecodeTime() *compact_time.Time {
 	if err := value.Validate(); err != nil {
 		_this.unexpectedError(err)
 	}
-	if !isComplete {
-		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-			_this.position += positionOffset
-			value, bytesDecoded, isComplete = compact_time.DecodeTime(_this.allUnreadBytes())
-			if err := value.Validate(); err != nil {
-				_this.unexpectedError(err)
-			}
-		})
-		if !isComplete {
-			_this.unexpectedEOD()
-		}
+	if isComplete {
+		goto complete
 	}
+	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+		_this.position += positionOffset
+		value, bytesDecoded, isComplete = compact_time.DecodeTime(_this.allUnreadBytes())
+		if err := value.Validate(); err != nil {
+			_this.unexpectedError(err)
+		}
+	})
+	if !isComplete {
+		_this.unexpectedEOD()
+	}
+
+complete:
 	_this.markBytesRead(bytesDecoded)
 	return value
 }
 
 func (_this *CBEReadBuffer) DecodeTimestamp() *compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeTimestamp(_this.allUnreadBytes())
-	if err != nil {
-		if err == compact_time.ErrorIncomplete {
-			_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-				_this.position += positionOffset
-				value, bytesDecoded, err = compact_time.DecodeTimestamp(_this.allUnreadBytes())
-			})
-			if err == compact_time.ErrorIncomplete {
-				_this.unexpectedEOD()
-			}
-		}
+	if err == nil {
+		goto complete
+	}
+	if err != compact_time.ErrorIncomplete {
 		_this.unexpectedError(err)
 	}
+	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+		_this.position += positionOffset
+		value, bytesDecoded, err = compact_time.DecodeTimestamp(_this.allUnreadBytes())
+	})
+	if err == compact_time.ErrorIncomplete {
+		_this.unexpectedEOD()
+	}
+
+complete:
 	if err := value.Validate(); err != nil {
 		_this.unexpectedError(err)
 	}
@@ -220,7 +305,7 @@ func (_this *CBEReadBuffer) DecodeTimestamp() *compact_time.Time {
 }
 
 func (_this *CBEReadBuffer) DecodeChunkHeader() (length uint64, isFinalChunk bool) {
-	asUint, asBig := _this.DecodeUint()
+	asUint, asBig := _this.DecodeULEB128()
 	if asBig != nil {
 		_this.errorf("Chunk header length field is too big")
 	}

@@ -140,11 +140,9 @@ func (_this *Encoder) OnPositiveInt(value uint64) {
 		_this.encodeTyped8Bits(cbeTypePosInt8, uint8(value))
 	case fitsInUint16(value):
 		_this.encodeTyped16Bits(cbeTypePosInt16, uint16(value))
-	case fitsInUint21(value):
-		_this.encodeUint(cbeTypePosInt, value)
 	case fitsInUint32(value):
 		_this.encodeTyped32Bits(cbeTypePosInt32, uint32(value))
-	case fitsInUint49(value):
+	case fitsInUint48(value):
 		_this.encodeUint(cbeTypePosInt, value)
 	default:
 		_this.encodeTyped64Bits(cbeTypePosInt64, value)
@@ -160,11 +158,9 @@ func (_this *Encoder) OnNegativeInt(value uint64) {
 		_this.encodeTyped8Bits(cbeTypeNegInt8, uint8(value))
 	case fitsInUint16(value):
 		_this.encodeTyped16Bits(cbeTypeNegInt16, uint16(value))
-	case fitsInUint21(value):
-		_this.encodeUint(cbeTypeNegInt, value)
 	case fitsInUint32(value):
 		_this.encodeTyped32Bits(cbeTypeNegInt32, uint32(value))
-	case fitsInUint49(value):
+	case fitsInUint48(value):
 		_this.encodeUint(cbeTypeNegInt, value)
 	default:
 		_this.encodeTyped64Bits(cbeTypeNegInt64, value)
@@ -173,10 +169,19 @@ func (_this *Encoder) OnNegativeInt(value uint64) {
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
 	if common.IsBigIntNegative(value) {
+		if value.IsInt64() {
+			_this.OnNegativeInt(uint64(-value.Int64()))
+			return
+		}
 		_this.encodeTypedBigInt(cbeTypeNegInt, value)
-	} else {
-		_this.encodeTypedBigInt(cbeTypePosInt, value)
+		return
 	}
+
+	if value.IsUint64() {
+		_this.OnPositiveInt(value.Uint64())
+		return
+	}
+	_this.encodeTypedBigInt(cbeTypePosInt, value)
 }
 
 func (_this *Encoder) OnFloat(value float64) {
@@ -204,6 +209,13 @@ func (_this *Encoder) OnFloat(value float64) {
 	}
 
 	asfloat32 := float32(value)
+	asFloat16 := math.Float32frombits(math.Float32bits(asfloat32) & 0xffff0000)
+
+	if float64(asFloat16) == value {
+		_this.encodeFloat16(asFloat16)
+		return
+	}
+
 	if float64(asfloat32) == value {
 		_this.encodeFloat32(asfloat32)
 		return
@@ -393,8 +405,7 @@ func (_this *Encoder) OnEndDocument() {
 const (
 	maxSmallStringLength = 15
 
-	bitMask21 = uint64((1 << 21) - 1)
-	bitMask49 = uint64((1 << 49) - 1)
+	bitMask48 = uint64((1 << 48) - 1)
 )
 
 func fitsInSmallint(value uint64) bool {
@@ -409,16 +420,12 @@ func fitsInUint16(value uint64) bool {
 	return value <= math.MaxUint16
 }
 
-func fitsInUint21(value uint64) bool {
-	return value == (value & bitMask21)
-}
-
 func fitsInUint32(value uint64) bool {
 	return value <= math.MaxUint32
 }
 
-func fitsInUint49(value uint64) bool {
-	return value == (value & bitMask49)
+func fitsInUint48(value uint64) bool {
+	return value == (value & bitMask48)
 }
 
 func (_this *Encoder) encodeVersion(version uint64) {
@@ -435,12 +442,20 @@ func (_this *Encoder) encodeULEB(value uint64) {
 	_this.buff.CorrectAllocation(byteCount)
 }
 
-func (_this *Encoder) encodeTypedULEB(cbeType cbeTypeField, value uint64) {
-	dst := _this.buff.Allocate(uleb128.EncodedSizeUint64(value) + 1)
+func (_this *Encoder) encodeTypedInt(cbeType cbeTypeField, value uint64) {
+	byteCount := 0
+	for accum := value; accum > 0; byteCount++ {
+		accum >>= 8
+	}
+	dst := _this.buff.Allocate(byteCount + 2)
 	dst[0] = byte(cbeType)
-	dst = dst[1:]
-	byteCount, _ := uleb128.EncodeUint64(value, dst)
-	_this.buff.CorrectAllocation(byteCount + 1)
+	dst[1] = byte(byteCount)
+	dst = dst[2:]
+
+	for i := 0; value > 0; i++ {
+		dst[i] = byte(value)
+		value >>= 8
+	}
 }
 
 func (_this *Encoder) encodeTypedBigInt(cbeType cbeTypeField, value *big.Int) {
@@ -448,11 +463,29 @@ func (_this *Encoder) encodeTypedBigInt(cbeType cbeTypeField, value *big.Int) {
 		_this.encodeTypeOnly(cbeTypeNil)
 		return
 	}
-	dst := _this.buff.Allocate(uleb128.EncodedSize(value) + 1)
-	dst[0] = byte(cbeType)
-	dst = dst[1:]
-	byteCount, _ := uleb128.Encode(value, dst)
-	_this.buff.CorrectAllocation(byteCount + 1)
+	words := value.Bits()
+	lastWordByteCount := 0
+	lastWord := words[len(words)-1]
+	for lastWord != 0 {
+		lastWordByteCount++
+		lastWord >>= 8
+	}
+	bytesPerWord := common.BytesPerInt()
+	byteCount := (len(words)-1)*bytesPerWord + lastWordByteCount
+	_this.encodeTypeOnly(cbeType)
+	_this.encodeULEB(uint64(byteCount))
+	dst := _this.buff.Allocate(byteCount)
+	iDst := 0
+	for _, word := range words {
+		for iPart := 0; iPart < bytesPerWord; iPart++ {
+			dst[iDst] = byte(word)
+			iDst++
+			word >>= 8
+			if iDst >= byteCount {
+				break
+			}
+		}
+	}
 }
 
 func (_this *Encoder) encodeTypedBytes(cbeType cbeTypeField, bytes []byte) {
@@ -503,7 +536,11 @@ func (_this *Encoder) encodeTyped64Bits(typeValue cbeTypeField, value uint64) {
 }
 
 func (_this *Encoder) encodeUint(typeValue cbeTypeField, value uint64) {
-	_this.encodeTypedULEB(typeValue, value)
+	_this.encodeTypedInt(typeValue, value)
+}
+
+func (_this *Encoder) encodeFloat16(value float32) {
+	_this.encodeTyped16Bits(cbeTypeFloat16, uint16(math.Float32bits(value)>>16))
 }
 
 func (_this *Encoder) encodeFloat32(value float32) {

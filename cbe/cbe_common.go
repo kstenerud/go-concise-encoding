@@ -43,10 +43,10 @@ const (
 	cbeTypeNegInt32       cbeTypeField = 0x6d
 	cbeTypePosInt64       cbeTypeField = 0x6e
 	cbeTypeNegInt64       cbeTypeField = 0x6f
-	cbeTypeFloat32        cbeTypeField = 0x70
-	cbeTypeFloat64        cbeTypeField = 0x71
-	cbeTypeUUID           cbeTypeField = 0x72
-	cbeTypeReserved73     cbeTypeField = 0x73
+	cbeTypeFloat16        cbeTypeField = 0x70
+	cbeTypeFloat32        cbeTypeField = 0x72
+	cbeTypeFloat64        cbeTypeField = 0x73
+	cbeTypeUUID           cbeTypeField = 0x74
 	cbeTypeReserved74     cbeTypeField = 0x74
 	cbeTypeReserved75     cbeTypeField = 0x75
 	cbeTypeComment        cbeTypeField = 0x76

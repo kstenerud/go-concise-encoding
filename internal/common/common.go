@@ -151,3 +151,12 @@ func CloneBytes(bytes []byte) []byte {
 	copy(bytesCopy, bytes)
 	return bytesCopy
 }
+
+const Is64BitUintptr = uint64(^uintptr(0)) == ^uint64(0)
+
+func BytesPerInt() int {
+	if Is64BitUintptr {
+		return 8
+	}
+	return 4
+}

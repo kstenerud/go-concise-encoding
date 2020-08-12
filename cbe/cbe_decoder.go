@@ -129,6 +129,8 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnPositiveInt(_this.buffer.DecodeUint64())
 		case cbeTypeNegInt64:
 			_this.eventReceiver.OnNegativeInt(_this.buffer.DecodeUint64())
+		case cbeTypeFloat16:
+			_this.eventReceiver.OnFloat(float64(_this.buffer.DecodeFloat16()))
 		case cbeTypeFloat32:
 			_this.eventReceiver.OnFloat(float64(_this.buffer.DecodeFloat32()))
 		case cbeTypeFloat64:
