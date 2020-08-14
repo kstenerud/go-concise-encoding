@@ -272,19 +272,15 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	_this.buff.CorrectAllocation(byteCount + 1)
 }
 
-func (_this *Encoder) OnBytes(value []byte) {
-	_this.encodeTypedBytes(cbeTypeBytes, value)
-}
-
 func (_this *Encoder) OnURI(value []byte) {
-	_this.encodeTypedBytes(cbeTypeURI, value)
+	_this.encodeTypedByteArray(cbeTypeURI, value)
 }
 
 func (_this *Encoder) OnString(value []byte) {
 	stringLength := len(value)
 
 	if stringLength > maxSmallStringLength {
-		_this.encodeTypedBytes(cbeTypeString, value)
+		_this.encodeTypedByteArray(cbeTypeString, value)
 		return
 	}
 
@@ -295,19 +291,19 @@ func (_this *Encoder) OnString(value []byte) {
 }
 
 func (_this *Encoder) OnVerbatimString(value []byte) {
-	_this.encodeTypedBytes(cbeTypeVerbatimString, value)
+	_this.encodeTypedByteArray(cbeTypeVerbatimString, value)
 }
 
 func (_this *Encoder) OnCustomBinary(value []byte) {
-	_this.encodeTypedBytes(cbeTypeCustomBinary, value)
+	_this.encodeTypedByteArray(cbeTypeCustomBinary, value)
 }
 
 func (_this *Encoder) OnCustomText(value []byte) {
-	_this.encodeTypedBytes(cbeTypeCustomText, value)
+	_this.encodeTypedByteArray(cbeTypeCustomText, value)
 }
 
-func (_this *Encoder) OnBytesBegin() {
-	_this.encodeTypeOnly(cbeTypeBytes)
+func (_this *Encoder) OnBytes(value []byte) {
+	_this.encodeArrayUint8(value)
 }
 
 func (_this *Encoder) OnStringBegin() {
@@ -328,6 +324,11 @@ func (_this *Encoder) OnCustomBinaryBegin() {
 
 func (_this *Encoder) OnCustomTextBegin() {
 	_this.encodeTypeOnly(cbeTypeCustomText)
+}
+
+func (_this *Encoder) OnBytesBegin() {
+	_this.encodeTypeOnly(cbeTypeArray)
+	_this.encodeTypeOnly(cbeTypePosInt8)
 }
 
 func (_this *Encoder) OnArrayChunk(length uint64, moreChunksFollow bool) {
@@ -488,16 +489,32 @@ func (_this *Encoder) encodeTypedBigInt(cbeType cbeTypeField, value *big.Int) {
 	}
 }
 
-func (_this *Encoder) encodeTypedBytes(cbeType cbeTypeField, bytes []byte) {
-	bytesLength := len(bytes)
-	lengthField := uint64(bytesLength<<1) | 1
-	dst := _this.buff.Allocate(uleb128.EncodedSizeUint64(lengthField) + bytesLength + 1)
+func (_this *Encoder) beginArrayChunk(byteCount int, dataOffset int, moreChunksFollow uint64) (bytes []byte, dataBegin int) {
+	lengthField := uint64(byteCount<<1) | moreChunksFollow
+	lengthFieldLength := uleb128.EncodedSizeUint64(lengthField)
+	bytes = _this.buff.Allocate(lengthFieldLength + byteCount + dataOffset)
+	encodedCount, _ := uleb128.EncodeUint64(lengthField, bytes[dataOffset:])
+	dataBegin = dataOffset + encodedCount
+	return
+}
+
+func (_this *Encoder) beginTypedArray(elemType cbeTypeField, firstChunkLength int, moreChunksFollow uint64) (dst []byte) {
+	dst, dataBegin := _this.beginArrayChunk(firstChunkLength, 2, 0)
+	dst[0] = byte(cbeTypeArray)
+	dst[1] = byte(elemType)
+	return dst[dataBegin:]
+}
+
+func (_this *Encoder) encodeArrayUint8(data []uint8) {
+	dst := _this.beginTypedArray(cbeTypePosInt8, len(data), 0)
+	copy(dst, data)
+}
+
+func (_this *Encoder) encodeTypedByteArray(cbeType cbeTypeField, data []byte) {
+	dst, dataBegin := _this.beginArrayChunk(len(data), 1, 0)
 	dst[0] = byte(cbeType)
-	dst = dst[1:]
-	byteCount, _ := uleb128.EncodeUint64(lengthField, dst)
-	dst = dst[byteCount:]
-	copy(dst, bytes)
-	_this.buff.CorrectAllocation(byteCount + bytesLength + 1)
+	dst = dst[dataBegin:]
+	copy(dst, data)
 }
 
 func (_this *Encoder) encodeTyped8Bits(typeValue cbeTypeField, value byte) {

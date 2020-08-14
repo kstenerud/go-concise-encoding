@@ -168,14 +168,14 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnString(_this.decodeArray())
 		case cbeTypeVerbatimString:
 			_this.eventReceiver.OnVerbatimString(_this.decodeArray())
-		case cbeTypeBytes:
-			_this.eventReceiver.OnBytes(_this.decodeArray())
+		case cbeTypeURI:
+			_this.eventReceiver.OnURI(_this.decodeArray())
 		case cbeTypeCustomBinary:
 			_this.eventReceiver.OnCustomBinary(_this.decodeArray())
 		case cbeTypeCustomText:
 			_this.eventReceiver.OnCustomText(_this.decodeArray())
-		case cbeTypeURI:
-			_this.eventReceiver.OnURI(_this.decodeArray())
+		case cbeTypeArray:
+			_this.decodeTypedArray()
 		case cbeTypeMarker:
 			_this.eventReceiver.OnMarker()
 		case cbeTypeReference:
@@ -208,6 +208,16 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 // Internal
 
+func (_this *Decoder) decodeTypedArray() {
+	cbeType := _this.buffer.DecodeType()
+	switch cbeType {
+	case cbeTypePosInt8:
+		_this.eventReceiver.OnBytes(_this.decodeArray())
+	default:
+		panic("TODO: Finish array types")
+	}
+}
+
 func chooseLowWater(bufferSize int) int {
 	lowWater := bufferSize / 50
 	if lowWater < 30 {
@@ -237,7 +247,7 @@ func (_this *Decoder) decodeUnichunkArray(length uint64) []byte {
 
 func (_this *Decoder) decodeMultichunkArray(initialLength uint64) []byte {
 	length := initialLength
-	isFinalChunk := false
+	moreChunksFollow := true
 	bytes := []byte{}
 	for {
 		validateLength(length)
@@ -246,18 +256,18 @@ func (_this *Decoder) decodeMultichunkArray(initialLength uint64) []byte {
 		nextBytes := _this.buffer.DecodeBytes(int(length))
 		// _this.nextReceiver.OnArrayData(nextBytes)
 		bytes = append(bytes, nextBytes...)
-		if isFinalChunk {
+		if !moreChunksFollow {
 			return bytes
 		}
-		length, isFinalChunk = _this.buffer.DecodeChunkHeader()
+		length, moreChunksFollow = _this.buffer.DecodeChunkHeader()
 	}
 }
 
 func (_this *Decoder) decodeArray() []byte {
-	length, isFinalChunk := _this.buffer.DecodeChunkHeader()
-	if isFinalChunk {
-		return _this.decodeUnichunkArray(length)
+	length, moreChunksFollow := _this.buffer.DecodeChunkHeader()
+	if moreChunksFollow {
+		return _this.decodeMultichunkArray(length)
 	}
 
-	return _this.decodeMultichunkArray(length)
+	return _this.decodeUnichunkArray(length)
 }

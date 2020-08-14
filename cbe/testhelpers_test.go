@@ -28,11 +28,8 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
-
-	"github.com/kstenerud/go-concise-encoding/rules"
-
 	"github.com/kstenerud/go-concise-encoding/events"
-
+	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
@@ -43,6 +40,8 @@ import (
 )
 
 const (
+	version = 1
+
 	typeDecimal        = 0x65
 	typePosInt         = 0x66
 	typeNegInt         = 0x67
@@ -88,10 +87,10 @@ const (
 	typeString15       = 0x8f
 	typeString         = 0x90
 	typeVerbatimString = 0x91
-	typeBytes          = 0x92
-	typeURI            = 0x93
-	typeCustomBinary   = 0x94
-	typeCustomText     = 0x95
+	typeURI            = 0x92
+	typeCustomBinary   = 0x93
+	typeCustomText     = 0x94
+	typeArray          = 0x95
 	typeReserved96     = 0x96
 	typeMarker         = 0x97
 	typeReference      = 0x98

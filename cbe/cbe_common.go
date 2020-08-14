@@ -77,10 +77,10 @@ const (
 	cbeTypeString15       cbeTypeField = 0x8f
 	cbeTypeString         cbeTypeField = 0x90
 	cbeTypeVerbatimString cbeTypeField = 0x91
-	cbeTypeBytes          cbeTypeField = 0x92
-	cbeTypeURI            cbeTypeField = 0x93
-	cbeTypeCustomBinary   cbeTypeField = 0x94
-	cbeTypeCustomText     cbeTypeField = 0x95
+	cbeTypeURI            cbeTypeField = 0x92
+	cbeTypeCustomBinary   cbeTypeField = 0x93
+	cbeTypeCustomText     cbeTypeField = 0x94
+	cbeTypeArray          cbeTypeField = 0x95
 	cbeTypeReserved96     cbeTypeField = 0x96
 	cbeTypeMarker         cbeTypeField = 0x97
 	cbeTypeReference      cbeTypeField = 0x98
