@@ -267,5 +267,5 @@ func generateVerbatimSentinel(str string) string {
 	// If we're here, all 450,000 three-character sequences have occurred in
 	// the string. At this point, we conclude that it's a specially crafted
 	// attack string, and not naturally occurring.
-	panic(fmt.Errorf("Could not generate verbatim sentinel for malicious string [%v]", str))
+	panic(fmt.Errorf("could not generate verbatim sentinel for malicious string [%v]", str))
 }

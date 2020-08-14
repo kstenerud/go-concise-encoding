@@ -51,7 +51,7 @@ func (_this *structBuilderDesc) applyTags(tags string) {
 
 	requiresValue := func(kv []string, key string) {
 		if len(kv) != 2 {
-			panic(fmt.Errorf(`Tag key "%s" requires a value`, key))
+			panic(fmt.Errorf(`tag key "%s" requires a value`, key))
 		}
 	}
 
@@ -318,7 +318,7 @@ func (_this *structBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *structBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForListContents")
+	PanicBadEventWithType(_this, _this.dstType, "PrepareForListContents")
 }
 
 func (_this *structBuilder) PrepareForMapContents() {

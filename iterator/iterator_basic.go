@@ -242,7 +242,7 @@ func (_this *bigIntIterator) InitInstance(_ FetchIterator, _ *options.IteratorOp
 
 func (_this *bigIntIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	vCopy := v.Interface().(big.Int)
-	eventReceiver.OnBigInt((&vCopy))
+	eventReceiver.OnBigInt(&vCopy)
 }
 
 // ----------
@@ -297,7 +297,7 @@ func (_this *bigFloatIterator) InitInstance(_ FetchIterator, _ *options.Iterator
 
 func (_this *bigFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	vCopy := v.Interface().(big.Float)
-	eventReceiver.OnBigFloat((&vCopy))
+	eventReceiver.OnBigFloat(&vCopy)
 }
 
 // ------------
@@ -352,7 +352,7 @@ func (_this *bigDecimalFloatIterator) InitInstance(_ FetchIterator, _ *options.I
 
 func (_this *bigDecimalFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	vCopy := v.Interface().(apd.Decimal)
-	eventReceiver.OnBigDecimalFloat((&vCopy))
+	eventReceiver.OnBigDecimalFloat(&vCopy)
 }
 
 // ------

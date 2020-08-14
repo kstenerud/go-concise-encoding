@@ -52,7 +52,7 @@ type ObjectIterator interface {
 	InitInstance(fetchInstance FetchIterator, opts *options.IteratorOptions)
 }
 
-// Fetches an interator for the specified type, building and caching one as needed.
+// Fetches an iterator for the specified type, building and caching one as needed.
 type FetchIterator func(reflect.Type) ObjectIterator
 
 // Attempt to add a reference for a possibly duplicate pointer (meaning

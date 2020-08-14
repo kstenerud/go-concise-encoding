@@ -45,7 +45,7 @@ func NewBigInt(str string) *big.Int {
 	bi := new(big.Int)
 	_, success := bi.SetString(str, 10)
 	if !success {
-		panic(fmt.Errorf("Cannot convert %v to big.Int", str))
+		panic(fmt.Errorf("cannot convert %v to big.Int", str))
 	}
 	return bi
 }
@@ -597,7 +597,7 @@ func (h *TEventPrinter) OnVerbatimString(value []byte) {
 	h.Next.OnVerbatimString(value)
 }
 func (h *TEventPrinter) OnURI(value []byte) {
-	h.Print(URI((string(value))))
+	h.Print(URI(string(value)))
 	h.Next.OnURI(value)
 }
 func (h *TEventPrinter) OnCustomBinary(value []byte) {

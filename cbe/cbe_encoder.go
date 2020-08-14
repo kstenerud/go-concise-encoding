@@ -227,7 +227,7 @@ func (_this *Encoder) OnFloat(value float64) {
 func (_this *Encoder) OnBigFloat(value *big.Float) {
 	v, _, err := apd.NewFromString(conversions.BigFloatToString(value))
 	if err != nil {
-		panic(fmt.Errorf("Could not convert %v to apd.Decimal", value))
+		panic(fmt.Errorf("could not convert %v to apd.Decimal", value))
 	}
 	_this.OnBigDecimalFloat(v)
 }
@@ -336,7 +336,7 @@ func (_this *Encoder) OnArrayChunk(length uint64, moreChunksFollow bool) {
 	if moreChunksFollow {
 		continuationBit = 1
 	}
-	_this.encodeULEB((uint64(length) << 1) | continuationBit)
+	_this.encodeULEB((length << 1) | continuationBit)
 }
 
 func (_this *Encoder) OnArrayData(data []byte) {
@@ -499,7 +499,7 @@ func (_this *Encoder) beginArrayChunk(byteCount int, dataOffset int, moreChunksF
 }
 
 func (_this *Encoder) beginTypedArray(elemType cbeTypeField, firstChunkLength int, moreChunksFollow uint64) (dst []byte) {
-	dst, dataBegin := _this.beginArrayChunk(firstChunkLength, 2, 0)
+	dst, dataBegin := _this.beginArrayChunk(firstChunkLength, 2, moreChunksFollow)
 	dst[0] = byte(cbeTypeArray)
 	dst[1] = byte(elemType)
 	return dst[dataBegin:]

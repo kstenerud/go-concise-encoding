@@ -31,7 +31,7 @@ import (
 
 // Decodes CBE documents.
 type Decoder struct {
-	buffer        CBEReadBuffer
+	buffer        ReadBuffer
 	eventReceiver events.DataEventReceiver
 	opts          options.CBEDecoderOptions
 }
@@ -189,7 +189,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		default:
 			asSmallInt := int64(int8(cbeType))
 			if asSmallInt < cbeSmallIntMin || asSmallInt > cbeSmallIntMax {
-				panic(fmt.Errorf("Unknown type code 0x%02x", cbeType))
+				panic(fmt.Errorf("unknown type code 0x%02x", cbeType))
 			}
 			_this.eventReceiver.OnInt(asSmallInt)
 		}
@@ -248,7 +248,7 @@ func (_this *Decoder) decodeUnichunkArray(length uint64) []byte {
 func (_this *Decoder) decodeMultichunkArray(initialLength uint64) []byte {
 	length := initialLength
 	moreChunksFollow := true
-	bytes := []byte{}
+	var bytes []byte
 	for {
 		validateLength(length)
 		// TODO: array chunking instead of building a big slice

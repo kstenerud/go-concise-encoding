@@ -38,7 +38,7 @@ import (
 
 // Decodes CTE documents.
 type Decoder struct {
-	buffer         CTEReadBuffer
+	buffer         ReadBuffer
 	eventReceiver  events.DataEventReceiver
 	containerState []cteDecoderState
 	currentState   cteDecoderState

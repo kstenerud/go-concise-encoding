@@ -95,42 +95,42 @@ type FetchBuilder func(reflect.Type) ObjectBuilder
 
 // Report that a builder was given an event that it can't handle.
 // This indicates a bug in the implementation.
-func BuilderPanicBadEvent(builder ObjectBuilder, event string) {
+func PanicBadEvent(builder ObjectBuilder, event string) {
 	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), event))
 }
 
 // Report that a builder with the specified type was given an event that it can't handle.
 // This indicates a bug in the implementation.
-func BuilderWithTypePanicBadEvent(builder ObjectBuilder, dstType reflect.Type, event string) {
+func PanicBadEventWithType(builder ObjectBuilder, dstType reflect.Type, event string) {
 	panic(fmt.Errorf(`BUG: %v with type %v cannot respond to %v`, reflect.TypeOf(builder), dstType, event))
 }
 
 // Report that a builder couldn't convert between types. This can happen if
 // source values are out of range, or incompatible with the destination type.
-func BuilderPanicCannotConvert(value interface{}, dstType reflect.Type) {
-	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", describe.D(value), reflect.TypeOf(value), dstType))
+func PanicCannotConvert(value interface{}, dstType reflect.Type) {
+	panic(fmt.Errorf("cannot convert %v (type %v) to type %v", describe.D(value), reflect.TypeOf(value), dstType))
 }
 
 // Report that a builder couldn't convert between types. This can happen if
 // source values are out of range, or incompatible with the destination type.
-func BuilderPanicCannotConvertRV(value reflect.Value, dstType reflect.Type) {
-	panic(fmt.Errorf("Cannot convert %v (type %v) to type %v", describe.D(value), value.Type(), dstType))
+func PanicCannotConvertRV(value reflect.Value, dstType reflect.Type) {
+	panic(fmt.Errorf("cannot convert %v (type %v) to type %v", describe.D(value), value.Type(), dstType))
 }
 
 // Report that an error occurred while converting between types.
 // This normally indicates a bug.
-func BuilderPanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("Error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
+func PanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("error converting %v (type %v) to type %v: %v", describe.D(value), reflect.TypeOf(value), dstType, err))
 }
 
 // Report that an error occurred while building from custom binary data.
 // This normally indicates a bug in your custom builder.
-func BuilderPanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("Error converting custom binary data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
+func PanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("error converting custom binary data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
 }
 
 // Report that an error occurred while building from custom text data.
 // This normally indicates a bug in your custom builder.
-func BuilderPanicBuildFromCustomText(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("Error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
+func PanicBuildFromCustomText(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
 }

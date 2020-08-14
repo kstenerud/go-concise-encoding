@@ -121,89 +121,89 @@ func (_this *RootBuilder) SetCurrentBuilder(builder ObjectBuilder) {
 // -------------
 
 func (_this *RootBuilder) InitTemplate(_ *Session) {
-	BuilderPanicBadEvent(_this, "InitTemplate")
+	PanicBadEvent(_this, "InitTemplate")
 }
 func (_this *RootBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "NewInstance")
+	PanicBadEvent(_this, "NewInstance")
 	return nil
 }
 func (_this *RootBuilder) SetParent(_ ObjectBuilder) {
-	BuilderPanicBadEvent(_this, "SetParent")
+	PanicBadEvent(_this, "SetParent")
 }
 func (_this *RootBuilder) BuildFromNil(_ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Nil")
+	PanicBadEvent(_this, "Nil")
 }
 func (_this *RootBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Bool")
+	PanicBadEvent(_this, "Bool")
 }
 func (_this *RootBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Int")
+	PanicBadEvent(_this, "Int")
 }
 func (_this *RootBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Uint")
+	PanicBadEvent(_this, "Uint")
 }
 func (_this *RootBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "BigInt")
+	PanicBadEvent(_this, "BigInt")
 }
 func (_this *RootBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Float")
+	PanicBadEvent(_this, "Float")
 }
 func (_this *RootBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "BigFloat")
+	PanicBadEvent(_this, "BigFloat")
 }
 func (_this *RootBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Float")
+	PanicBadEvent(_this, "Float")
 }
 func (_this *RootBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "DecimalFloat")
+	PanicBadEvent(_this, "DecimalFloat")
 }
 func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "UUID")
+	PanicBadEvent(_this, "UUID")
 }
 func (_this *RootBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "String")
+	PanicBadEvent(_this, "String")
 }
 func (_this *RootBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "VerbatimString")
+	PanicBadEvent(_this, "VerbatimString")
 }
 func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Bytes")
+	PanicBadEvent(_this, "Bytes")
 }
 func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "CustomBinary")
+	PanicBadEvent(_this, "CustomBinary")
 }
 func (_this *RootBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "CustomText")
+	PanicBadEvent(_this, "CustomText")
 }
 func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "URI")
+	PanicBadEvent(_this, "URI")
 }
 func (_this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Time")
+	PanicBadEvent(_this, "Time")
 }
 func (_this *RootBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "CompactTime")
+	PanicBadEvent(_this, "CompactTime")
 }
 func (_this *RootBuilder) BuildBeginList() {
-	BuilderPanicBadEvent(_this, "List")
+	PanicBadEvent(_this, "List")
 }
 func (_this *RootBuilder) BuildBeginMap() {
-	BuilderPanicBadEvent(_this, "Map")
+	PanicBadEvent(_this, "Map")
 }
 func (_this *RootBuilder) BuildEndContainer() {
-	BuilderPanicBadEvent(_this, "End")
+	PanicBadEvent(_this, "End")
 }
 func (_this *RootBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderPanicBadEvent(_this, "Marker")
+	PanicBadEvent(_this, "Marker")
 }
 func (_this *RootBuilder) BuildFromReference(_ interface{}) {
-	BuilderPanicBadEvent(_this, "Reference")
+	PanicBadEvent(_this, "Reference")
 }
 func (_this *RootBuilder) PrepareForListContents() {
-	BuilderPanicBadEvent(_this, "PrepareForListContents")
+	PanicBadEvent(_this, "PrepareForListContents")
 }
 func (_this *RootBuilder) PrepareForMapContents() {
-	BuilderPanicBadEvent(_this, "PrepareForMapContents")
+	PanicBadEvent(_this, "PrepareForMapContents")
 }
 func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.object = value
@@ -213,9 +213,9 @@ func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 // ObjectIteratorCallbacks
 // -----------------------
 
-func (_this *RootBuilder) OnBeginDocument()         {}
-func (_this *RootBuilder) OnVersion(version uint64) {}
-func (_this *RootBuilder) OnPadding(count int)      {}
+func (_this *RootBuilder) OnBeginDocument()   {}
+func (_this *RootBuilder) OnVersion(_ uint64) {}
+func (_this *RootBuilder) OnPadding(_ int)    {}
 func (_this *RootBuilder) OnNil() {
 	_this.currentBuilder.BuildFromNil(_this.object)
 }

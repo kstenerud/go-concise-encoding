@@ -86,8 +86,8 @@ var NonKeyableTypes = []reflect.Type{
 }
 
 func IsFieldExported(name string) bool {
-	rune, _ := utf8.DecodeRuneInString(name)
-	return unicode.IsUpper(rune)
+	ch, _ := utf8.DecodeRuneInString(name)
+	return unicode.IsUpper(ch)
 }
 
 const QuietNanBit = uint64(1 << 50)

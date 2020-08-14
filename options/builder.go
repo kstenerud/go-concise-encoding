@@ -53,12 +53,12 @@ type BuilderSessionOptions struct {
 
 func DefaultBuilderSessionOptions() *BuilderSessionOptions {
 	return &BuilderSessionOptions{
-		CustomBinaryBuildFunction: (func(src []byte, dst reflect.Value) error {
-			return fmt.Errorf("No builder has been registered to handle custom binary data")
-		}),
-		CustomTextBuildFunction: (func(src []byte, dst reflect.Value) error {
-			return fmt.Errorf("No builder has been registered to handle custom text data")
-		}),
+		CustomBinaryBuildFunction: func(src []byte, dst reflect.Value) error {
+			return fmt.Errorf("no builder has been registered to handle custom binary data")
+		},
+		CustomTextBuildFunction: func(src []byte, dst reflect.Value) error {
+			return fmt.Errorf("no builder has been registered to handle custom text data")
+		},
 	}
 }
 

@@ -240,7 +240,7 @@ func (_this *sliceBuilder) PrepareForListContents() {
 }
 
 func (_this *sliceBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
+	PanicBadEventWithType(_this, _this.dstType, "PrepareForMapContents")
 }
 
 func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {

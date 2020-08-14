@@ -61,16 +61,16 @@ func (_this *markerIDBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *markerIDBuilder) BuildFromNil(_ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Nil")
+	PanicBadEvent(_this, "Nil")
 }
 
 func (_this *markerIDBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Bool")
+	PanicBadEvent(_this, "Bool")
 }
 
 func (_this *markerIDBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	if value < 0 {
-		BuilderPanicBadEvent(_this, "Int")
+		PanicBadEvent(_this, "Int")
 	}
 	_this.onID(value)
 }
@@ -81,29 +81,29 @@ func (_this *markerIDBuilder) BuildFromUint(value uint64, _ reflect.Value) {
 
 func (_this *markerIDBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 	if common.IsBigIntNegative(value) || !value.IsUint64() {
-		BuilderPanicBadEvent(_this, "BigInt")
+		PanicBadEvent(_this, "BigInt")
 	}
 	_this.onID(value.Uint64())
 }
 
 func (_this *markerIDBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Float")
+	PanicBadEvent(_this, "Float")
 }
 
 func (_this *markerIDBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "BigFloat")
+	PanicBadEvent(_this, "BigFloat")
 }
 
 func (_this *markerIDBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "DecimalFloat")
+	PanicBadEvent(_this, "DecimalFloat")
 }
 
 func (_this *markerIDBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "BigDecimalFloat")
+	PanicBadEvent(_this, "BigDecimalFloat")
 }
 
 func (_this *markerIDBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "UUID")
+	PanicBadEvent(_this, "UUID")
 }
 
 func (_this *markerIDBuilder) BuildFromString(value []byte, _ reflect.Value) {
@@ -111,63 +111,63 @@ func (_this *markerIDBuilder) BuildFromString(value []byte, _ reflect.Value) {
 }
 
 func (_this *markerIDBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "VerbatimString")
+	PanicBadEvent(_this, "VerbatimString")
 }
 
 func (_this *markerIDBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Bytes")
+	PanicBadEvent(_this, "Bytes")
 }
 
 func (_this *markerIDBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "CustomBinary")
+	PanicBadEvent(_this, "CustomBinary")
 }
 
 func (_this *markerIDBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "CustomText")
+	PanicBadEvent(_this, "CustomText")
 }
 
 func (_this *markerIDBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "URI")
+	PanicBadEvent(_this, "URI")
 }
 
 func (_this *markerIDBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "Time")
+	PanicBadEvent(_this, "Time")
 }
 
 func (_this *markerIDBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	BuilderPanicBadEvent(_this, "CompactTime")
+	PanicBadEvent(_this, "CompactTime")
 }
 
 func (_this *markerIDBuilder) BuildBeginList() {
-	BuilderPanicBadEvent(_this, "List")
+	PanicBadEvent(_this, "List")
 }
 
 func (_this *markerIDBuilder) BuildBeginMap() {
-	BuilderPanicBadEvent(_this, "Map")
+	PanicBadEvent(_this, "Map")
 }
 
 func (_this *markerIDBuilder) BuildEndContainer() {
-	BuilderPanicBadEvent(_this, "End")
+	PanicBadEvent(_this, "End")
 }
 
 func (_this *markerIDBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderPanicBadEvent(_this, "Marker")
+	PanicBadEvent(_this, "Marker")
 }
 
 func (_this *markerIDBuilder) BuildFromReference(_ interface{}) {
-	BuilderPanicBadEvent(_this, "Reference")
+	PanicBadEvent(_this, "Reference")
 }
 
 func (_this *markerIDBuilder) PrepareForListContents() {
-	BuilderPanicBadEvent(_this, "PrepareForListContents")
+	PanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *markerIDBuilder) PrepareForMapContents() {
-	BuilderPanicBadEvent(_this, "PrepareForMapContents")
+	PanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *markerIDBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderPanicBadEvent(_this, "NotifyChildContainerFinished")
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -297,23 +297,23 @@ func (_this *markerObjectBuilder) BuildFromCompactTime(value *compact_time.Time,
 }
 
 func (_this *markerObjectBuilder) BuildBeginList() {
-	BuilderPanicBadEvent(_this, "List")
+	PanicBadEvent(_this, "List")
 }
 
 func (_this *markerObjectBuilder) BuildBeginMap() {
-	BuilderPanicBadEvent(_this, "Map")
+	PanicBadEvent(_this, "Map")
 }
 
 func (_this *markerObjectBuilder) BuildEndContainer() {
-	BuilderPanicBadEvent(_this, "End")
+	PanicBadEvent(_this, "End")
 }
 
-func (_this *markerObjectBuilder) BuildBeginMarker(id interface{}) {
-	BuilderPanicBadEvent(_this, "Marker")
+func (_this *markerObjectBuilder) BuildBeginMarker(_ interface{}) {
+	PanicBadEvent(_this, "Marker")
 }
 
-func (_this *markerObjectBuilder) BuildFromReference(id interface{}) {
-	BuilderPanicBadEvent(_this, "Reference")
+func (_this *markerObjectBuilder) BuildFromReference(_ interface{}) {
+	PanicBadEvent(_this, "Reference")
 }
 
 func (_this *markerObjectBuilder) PrepareForListContents() {

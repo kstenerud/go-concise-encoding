@@ -149,10 +149,10 @@ func (_this *ignoreBuilder) BuildBeginMap() {
 }
 
 func (_this *ignoreBuilder) BuildEndContainer() {
-	BuilderPanicBadEvent(_this, "End")
+	PanicBadEvent(_this, "End")
 }
 
-func (_this *ignoreBuilder) BuildBeginMarker(id interface{}) {
+func (_this *ignoreBuilder) BuildBeginMarker(_ interface{}) {
 	panic("TODO: ignoreBuilder.Marker")
 }
 
@@ -161,15 +161,15 @@ func (_this *ignoreBuilder) BuildFromReference(_ interface{}) {
 }
 
 func (_this *ignoreBuilder) PrepareForListContents() {
-	BuilderPanicBadEvent(_this, "PrepareForListContents")
+	PanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *ignoreBuilder) PrepareForMapContents() {
-	BuilderPanicBadEvent(_this, "PrepareForMapContents")
+	PanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *ignoreBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderPanicBadEvent(_this, "NotifyChildContainerFinished")
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -292,7 +292,7 @@ func (_this *ignoreContainerBuilder) BuildEndContainer() {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreContainerBuilder) BuildBeginMarker(id interface{}) {
+func (_this *ignoreContainerBuilder) BuildBeginMarker(_ interface{}) {
 	panic("TODO: ignoreContainerBuilder.Marker")
 }
 

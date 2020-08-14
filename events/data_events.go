@@ -119,10 +119,10 @@ func (_this *NullEventReceiver) OnNan(_ bool)                          {}
 func (_this *NullEventReceiver) OnUUID(_ []byte)                       {}
 func (_this *NullEventReceiver) OnTime(_ time.Time)                    {}
 func (_this *NullEventReceiver) OnCompactTime(_ *compact_time.Time)    {}
-func (_this *NullEventReceiver) OnBytes(value []byte)                  {}
-func (_this *NullEventReceiver) OnString(value []byte)                 {}
+func (_this *NullEventReceiver) OnBytes(_ []byte)                      {}
+func (_this *NullEventReceiver) OnString(_ []byte)                     {}
 func (_this *NullEventReceiver) OnVerbatimString(_ []byte)             {}
-func (_this *NullEventReceiver) OnURI(value []byte)                    {}
+func (_this *NullEventReceiver) OnURI(_ []byte)                        {}
 func (_this *NullEventReceiver) OnCustomBinary(_ []byte)               {}
 func (_this *NullEventReceiver) OnCustomText(_ []byte)                 {}
 func (_this *NullEventReceiver) OnBytesBegin()                         {}

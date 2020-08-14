@@ -115,7 +115,7 @@ func (_this *Encoder) OnBeginDocument() {
 	}
 }
 
-func (_this *Encoder) OnPadding(count int) {
+func (_this *Encoder) OnPadding(_ int) {
 	// Nothing to do
 }
 
@@ -251,7 +251,7 @@ func (_this *Encoder) OnNan(signaling bool) {
 
 func (_this *Encoder) OnUUID(v []byte) {
 	if len(v) != 16 {
-		panic(fmt.Errorf("Expected UUID length 16 but got %v", len(v)))
+		panic(fmt.Errorf("expected UUID length 16 but got %v", len(v)))
 	}
 	_this.addPrefix()
 	_this.addFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
@@ -274,7 +274,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 		case compact_time.TypeLatitudeLongitude:
 			return fmt.Sprintf("/%.2f/%.2f", float64(v.LatitudeHundredths)/100, float64(v.LongitudeHundredths)/100)
 		default:
-			panic(fmt.Errorf("Unknown compact time timezone type %v", value.TimezoneIs))
+			panic(fmt.Errorf("unknown compact time timezone type %v", value.TimezoneIs))
 		}
 	}
 	subsec := func(v *compact_time.Time) string {
@@ -298,7 +298,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 		_this.addFmt("%d-%02d-%02d/%02d:%02d:%02d%v%v",
 			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	default:
-		panic(fmt.Errorf("Unknown compact time type %v", value.TimeIs))
+		panic(fmt.Errorf("unknown compact time type %v", value.TimeIs))
 	}
 	_this.currentItemCount++
 	_this.transitionState()

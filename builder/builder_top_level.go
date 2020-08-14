@@ -53,16 +53,16 @@ func (_this *topLevelBuilder) String() string {
 }
 
 func (_this *topLevelBuilder) InitTemplate(_ *Session) {
-	BuilderPanicBadEvent(_this, "InitTemplate")
+	PanicBadEvent(_this, "InitTemplate")
 }
 
 func (_this *topLevelBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	BuilderPanicBadEvent(_this, "NewInstance")
+	PanicBadEvent(_this, "NewInstance")
 	return nil
 }
 
 func (_this *topLevelBuilder) SetParent(_ ObjectBuilder) {
-	BuilderPanicBadEvent(_this, "SetParent")
+	PanicBadEvent(_this, "SetParent")
 }
 
 func (_this *topLevelBuilder) BuildFromNil(dst reflect.Value) {
@@ -164,15 +164,15 @@ func (_this *topLevelBuilder) BuildBeginMap() {
 }
 
 func (_this *topLevelBuilder) BuildEndContainer() {
-	BuilderPanicBadEvent(_this, "End")
+	PanicBadEvent(_this, "End")
 }
 
 func (_this *topLevelBuilder) PrepareForListContents() {
-	BuilderPanicBadEvent(_this, "PrepareForListContents")
+	PanicBadEvent(_this, "PrepareForListContents")
 }
 
 func (_this *topLevelBuilder) PrepareForMapContents() {
-	BuilderPanicBadEvent(_this, "PrepareForMapContents")
+	PanicBadEvent(_this, "PrepareForMapContents")
 }
 
 func (_this *topLevelBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -188,5 +188,5 @@ func (_this *topLevelBuilder) BuildBeginMarker(id interface{}) {
 }
 
 func (_this *topLevelBuilder) BuildFromReference(_ interface{}) {
-	BuilderPanicBadEvent(_this, "BuildFromReference")
+	PanicBadEvent(_this, "BuildFromReference")
 }

@@ -26,7 +26,7 @@ import (
 	"io"
 )
 
-var UnexpectedEOD = fmt.Errorf("Unexpected end of document")
+var UnexpectedEOD = fmt.Errorf("unexpected end of document")
 
 // A read buffer that can dynamically resize and stream data in from a reader.
 type StreamingReadBuffer struct {

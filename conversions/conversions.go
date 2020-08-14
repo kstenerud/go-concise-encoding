@@ -108,10 +108,10 @@ func BigFloatToFloat(value *big.Float) (float64, error) {
 func BigFloatToInt(value *big.Float) (int64, error) {
 	i, accuracy := value.Int64()
 	if accuracy != big.Exact {
-		return 0, fmt.Errorf("Cannot convert %v to int", value)
+		return 0, fmt.Errorf("cannot convert %v to int", value)
 	}
 	if big.NewFloat(float64(i)).Cmp(value) != 0 {
-		return 0, fmt.Errorf("Cannot convert %v to int", value)
+		return 0, fmt.Errorf("cannot convert %v to int", value)
 	}
 	return i, nil
 }
@@ -119,10 +119,10 @@ func BigFloatToInt(value *big.Float) (int64, error) {
 func BigFloatToUint(value *big.Float) (uint64, error) {
 	u, accuracy := value.Uint64()
 	if accuracy != big.Exact {
-		return 0, fmt.Errorf("Cannot convert %v to uint", value)
+		return 0, fmt.Errorf("cannot convert %v to uint", value)
 	}
 	if big.NewFloat(float64(u)).Cmp(value) != 0 {
-		return 0, fmt.Errorf("Cannot convert %v to uint", value)
+		return 0, fmt.Errorf("cannot convert %v to uint", value)
 	}
 	return u, nil
 }
@@ -163,10 +163,10 @@ func BigIntToFloat(value *big.Int) (float64, error) {
 	}
 	asBigInt, accuracy := big.NewFloat(f).Int(nil)
 	if accuracy != big.Exact {
-		return 0, fmt.Errorf("Cannot convert %v to float", value)
+		return 0, fmt.Errorf("cannot convert %v to float", value)
 	}
 	if asBigInt.Cmp(value) != 0 {
-		return 0, fmt.Errorf("Cannot convert %v to float", value)
+		return 0, fmt.Errorf("cannot convert %v to float", value)
 	}
 	return f, nil
 }

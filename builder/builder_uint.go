@@ -62,11 +62,11 @@ func (_this *uintBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *uintBuilder) BuildFromNil(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Nil")
+	PanicBadEventWithType(_this, _this.dstType, "Nil")
 }
 
 func (_this *uintBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bool")
+	PanicBadEventWithType(_this, _this.dstType, "Bool")
 }
 
 func (_this *uintBuilder) BuildFromInt(value int64, dst reflect.Value) {
@@ -98,73 +98,73 @@ func (_this *uintBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst refle
 }
 
 func (_this *uintBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "UUID")
+	PanicBadEventWithType(_this, _this.dstType, "UUID")
 }
 
 func (_this *uintBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "String")
+	PanicBadEventWithType(_this, _this.dstType, "String")
 }
 
 func (_this *uintBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "VerbatimString")
+	PanicBadEventWithType(_this, _this.dstType, "VerbatimString")
 }
 
 func (_this *uintBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Bytes")
+	PanicBadEventWithType(_this, _this.dstType, "Bytes")
 }
 
 func (_this *uintBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *uintBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
+		PanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *uintBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "URI")
+	PanicBadEventWithType(_this, _this.dstType, "URI")
 }
 
 func (_this *uintBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Time")
+	PanicBadEventWithType(_this, _this.dstType, "Time")
 }
 
 func (_this *uintBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "CompactTime")
+	PanicBadEventWithType(_this, _this.dstType, "CompactTime")
 }
 
 func (_this *uintBuilder) BuildBeginList() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "List")
+	PanicBadEventWithType(_this, _this.dstType, "List")
 }
 
 func (_this *uintBuilder) BuildBeginMap() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Map")
+	PanicBadEventWithType(_this, _this.dstType, "Map")
 }
 
 func (_this *uintBuilder) BuildEndContainer() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "ContainerEnd")
+	PanicBadEventWithType(_this, _this.dstType, "ContainerEnd")
 }
 
 func (_this *uintBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Marker")
+	PanicBadEventWithType(_this, _this.dstType, "Marker")
 }
 
 func (_this *uintBuilder) BuildFromReference(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "Reference")
+	PanicBadEventWithType(_this, _this.dstType, "Reference")
 }
 
 func (_this *uintBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForListContents")
+	PanicBadEventWithType(_this, _this.dstType, "PrepareForListContents")
 }
 
 func (_this *uintBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
+	PanicBadEventWithType(_this, _this.dstType, "PrepareForMapContents")
 }
 
 func (_this *uintBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "NotifyChildContainerFinished")
+	PanicBadEventWithType(_this, _this.dstType, "NotifyChildContainerFinished")
 }

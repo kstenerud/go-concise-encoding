@@ -37,7 +37,7 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-type CTEReadBuffer struct {
+type ReadBuffer struct {
 	buffer        buffer.StreamingReadBuffer
 	tokenStart    int
 	subtokenStart int
@@ -53,8 +53,8 @@ type CTEReadBuffer struct {
 // readBufferSize determines the initial size of the buffer, and
 // loWaterByteCount determines when RefillIfNecessary() refills the buffer from
 // the reader.
-func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *CTEReadBuffer {
-	_this := &CTEReadBuffer{}
+func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *ReadBuffer {
+	_this := &ReadBuffer{}
 	_this.Init(reader, readBufferSize, loWaterByteCount)
 	return _this
 }
@@ -65,11 +65,11 @@ func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *
 // readBufferSize determines the initial size of the buffer, and
 // loWaterByteCount determines when RefillIfNecessary() refills the buffer from
 // the reader.
-func (_this *CTEReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
+func (_this *ReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
-func (_this *CTEReadBuffer) Reset() {
+func (_this *ReadBuffer) Reset() {
 	_this.buffer.Reset()
 	_this.tokenStart = 0
 	_this.subtokenStart = 0
@@ -81,7 +81,7 @@ func (_this *CTEReadBuffer) Reset() {
 
 // Bytes
 
-func (_this *CTEReadBuffer) PeekByteNoEOD() byte {
+func (_this *ReadBuffer) PeekByteNoEOD() byte {
 	_this.RefillIfNecessary()
 	if _this.IsEndOfDocument() {
 		_this.UnexpectedEOD()
@@ -89,7 +89,7 @@ func (_this *CTEReadBuffer) PeekByteNoEOD() byte {
 	return _this.buffer.ByteAtOffset(_this.tokenPos)
 }
 
-func (_this *CTEReadBuffer) PeekByteAllowEOD() cteByte {
+func (_this *ReadBuffer) PeekByteAllowEOD() cteByte {
 	_this.RefillIfNecessary()
 	if _this.IsEndOfDocument() {
 		return cteByteEndOfDocument
@@ -97,22 +97,22 @@ func (_this *CTEReadBuffer) PeekByteAllowEOD() cteByte {
 	return cteByte(_this.buffer.ByteAtOffset(_this.tokenPos))
 }
 
-func (_this *CTEReadBuffer) ReadByte() byte {
+func (_this *ReadBuffer) ReadByte() byte {
 	b := _this.PeekByteNoEOD()
 	_this.AdvanceByte()
 	return b
 }
 
-func (_this *CTEReadBuffer) SkipBytes(byteCount int) {
+func (_this *ReadBuffer) SkipBytes(byteCount int) {
 	_this.buffer.RequireBytes(_this.tokenPos, byteCount)
 	_this.tokenPos += byteCount
 }
 
-func (_this *CTEReadBuffer) AdvanceByte() {
+func (_this *ReadBuffer) AdvanceByte() {
 	_this.tokenPos++
 }
 
-func (_this *CTEReadBuffer) RefillIfNecessary() {
+func (_this *ReadBuffer) RefillIfNecessary() {
 	offset := _this.buffer.RefillIfNecessary(_this.tokenStart, _this.tokenPos)
 	if _this.tokenStart-offset < 0 {
 		panic(fmt.Errorf("TokenStart was %v, tokenPos was %v", _this.tokenStart-offset, _this.tokenPos))
@@ -122,19 +122,19 @@ func (_this *CTEReadBuffer) RefillIfNecessary() {
 	_this.subtokenStart += offset
 }
 
-func (_this *CTEReadBuffer) ReadUntilPropertyNoEOD(property cteByteProprty) {
+func (_this *ReadBuffer) ReadUntilPropertyNoEOD(property cteByteProprty) {
 	for !hasProperty(_this.PeekByteNoEOD(), property) {
 		_this.AdvanceByte()
 	}
 }
 
-func (_this *CTEReadBuffer) ReadWhilePropertyAllowEOD(property cteByteProprty) {
+func (_this *ReadBuffer) ReadWhilePropertyAllowEOD(property cteByteProprty) {
 	for _this.PeekByteAllowEOD().HasProperty(property) {
 		_this.AdvanceByte()
 	}
 }
 
-func (_this *CTEReadBuffer) GetCharBeginIndex(index int) int {
+func (_this *ReadBuffer) GetCharBeginIndex(index int) int {
 	i := index
 	// UTF-8 continuation characters have the form 10xxxxxx
 	for b := _this.buffer.Buffer[i]; b >= 0x80 && b <= 0xc0 && i >= 0; b = _this.buffer.Buffer[i] {
@@ -146,7 +146,7 @@ func (_this *CTEReadBuffer) GetCharBeginIndex(index int) int {
 	return i
 }
 
-func (_this *CTEReadBuffer) GetCharEndIndex(index int) int {
+func (_this *ReadBuffer) GetCharEndIndex(index int) int {
 	i := index
 	// UTF-8 continuation characters have the form 10xxxxxx
 	for b := _this.buffer.Buffer[i]; b >= 0x80 && b <= 0xc0 && i < len(_this.buffer.Buffer); b = _this.buffer.Buffer[i] {
@@ -155,27 +155,27 @@ func (_this *CTEReadBuffer) GetCharEndIndex(index int) int {
 	return i
 }
 
-func (_this *CTEReadBuffer) UngetByte() {
+func (_this *ReadBuffer) UngetByte() {
 	_this.tokenPos--
 }
 
-func (_this *CTEReadBuffer) UngetBytes(byteCount int) {
+func (_this *ReadBuffer) UngetBytes(byteCount int) {
 	_this.tokenPos -= byteCount
 }
 
-func (_this *CTEReadBuffer) UngetAll() {
+func (_this *ReadBuffer) UngetAll() {
 	_this.tokenPos = _this.tokenStart
 }
 
-func (_this *CTEReadBuffer) IsEndOfDocument() bool {
+func (_this *ReadBuffer) IsEndOfDocument() bool {
 	return _this.buffer.IsEOF() && !_this.hasUnreadByte()
 }
 
-func (_this *CTEReadBuffer) hasUnreadByte() bool {
+func (_this *ReadBuffer) hasUnreadByte() bool {
 	return _this.buffer.HasByteAtOffset(_this.tokenPos)
 }
 
-func (_this *CTEReadBuffer) readUntilByte(b byte) {
+func (_this *ReadBuffer) readUntilByte(b byte) {
 	for _this.PeekByteNoEOD() != b {
 		_this.AdvanceByte()
 	}
@@ -183,64 +183,63 @@ func (_this *CTEReadBuffer) readUntilByte(b byte) {
 
 // Tokens
 
-func (_this *CTEReadBuffer) GetToken() []byte {
+func (_this *ReadBuffer) GetToken() []byte {
 	return _this.buffer.Buffer[_this.tokenStart:_this.tokenPos]
 }
 
-func (_this *CTEReadBuffer) GetTokenLength() int {
+func (_this *ReadBuffer) GetTokenLength() int {
 	return _this.tokenPos - _this.tokenStart
 }
 
-func (_this *CTEReadBuffer) GetTokenFirstByte() byte {
+func (_this *ReadBuffer) GetTokenFirstByte() byte {
 	return _this.buffer.Buffer[_this.tokenStart]
 }
 
-func (_this *CTEReadBuffer) EndToken() {
+func (_this *ReadBuffer) EndToken() {
 	_this.lineCount, _this.colCount = _this.countLinesColsToIndex(_this.tokenPos)
 	_this.tokenStart = _this.tokenPos
 }
 
-func (_this *CTEReadBuffer) BeginSubtoken() {
+func (_this *ReadBuffer) BeginSubtoken() {
 	_this.subtokenStart = _this.tokenPos
 }
 
-func (_this *CTEReadBuffer) GetSubtoken() []byte {
+func (_this *ReadBuffer) GetSubtoken() []byte {
 	return _this.buffer.Buffer[_this.subtokenStart:_this.tokenPos]
 }
 
 // Errors
 
-func (_this *CTEReadBuffer) AssertAtObjectEnd(decoding string) {
+func (_this *ReadBuffer) AssertAtObjectEnd(decoding string) {
 	if !_this.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
 		_this.UnexpectedChar(decoding)
 	}
 }
 
-func (_this *CTEReadBuffer) UnexpectedEOD() {
-	_this.Errorf("Unexpected end of document")
+func (_this *ReadBuffer) UnexpectedEOD() {
+	_this.Errorf("unexpected end of document")
 }
 
-func (_this *CTEReadBuffer) ErrorAt(index int, format string, args ...interface{}) {
+func (_this *ReadBuffer) ErrorAt(index int, format string, args ...interface{}) {
 	lineCount, colCount := _this.countLinesColsToIndex(index)
 
 	msg := fmt.Sprintf(format, args...)
-	panic(fmt.Errorf("Offset %v (line %v, col %v): %v", index, lineCount+1, colCount+1, msg))
-	_this.Errorf(format, args...)
+	panic(fmt.Errorf("offset %v (line %v, col %v): %v", index, lineCount+1, colCount+1, msg))
 }
 
-func (_this *CTEReadBuffer) Errorf(format string, args ...interface{}) {
+func (_this *ReadBuffer) Errorf(format string, args ...interface{}) {
 	_this.ErrorAt(_this.tokenPos, format, args...)
 }
 
-func (_this *CTEReadBuffer) UnexpectedCharAt(index int, decoding string) {
-	_this.ErrorAt(index, "Unexpected [%v] while decoding %v", _this.DescribeCharAt(index), decoding)
+func (_this *ReadBuffer) UnexpectedCharAt(index int, decoding string) {
+	_this.ErrorAt(index, "unexpected [%v] while decoding %v", _this.DescribeCharAt(index), decoding)
 }
 
-func (_this *CTEReadBuffer) UnexpectedChar(decoding string) {
+func (_this *ReadBuffer) UnexpectedChar(decoding string) {
 	_this.UnexpectedCharAt(_this.tokenPos, decoding)
 }
 
-func (_this *CTEReadBuffer) DescribeCharAt(index int) string {
+func (_this *ReadBuffer) DescribeCharAt(index int) string {
 	if index >= len(_this.buffer.Buffer) {
 		return "EOD"
 	}
@@ -261,11 +260,11 @@ func (_this *CTEReadBuffer) DescribeCharAt(index int) string {
 	return fmt.Sprintf("0x%02x", b)
 }
 
-func (_this *CTEReadBuffer) DescribeCurrentChar() string {
+func (_this *ReadBuffer) DescribeCurrentChar() string {
 	return _this.DescribeCharAt(_this.tokenPos)
 }
 
-func (_this *CTEReadBuffer) countLinesColsToIndex(index int) (lineCount, colCount int) {
+func (_this *ReadBuffer) countLinesColsToIndex(index int) (lineCount, colCount int) {
 	lineCount = _this.lineCount
 	colCount = _this.colCount
 	for i := _this.tokenStart; i < index; i++ {
@@ -284,13 +283,13 @@ func (_this *CTEReadBuffer) countLinesColsToIndex(index int) (lineCount, colCoun
 
 // Decoders
 
-func (_this *CTEReadBuffer) SkipWhitespace() {
+func (_this *ReadBuffer) SkipWhitespace() {
 	_this.ReadWhilePropertyAllowEOD(ctePropertyWhitespace)
 }
 
 const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 
-func (_this *CTEReadBuffer) DecodeBinaryInteger() (value uint64) {
+func (_this *ReadBuffer) DecodeBinaryInteger() (value uint64) {
 	for {
 		b := _this.PeekByteAllowEOD()
 		if b.HasProperty(ctePropertyNumericWhitespace) {
@@ -311,7 +310,7 @@ func (_this *CTEReadBuffer) DecodeBinaryInteger() (value uint64) {
 
 const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 
-func (_this *CTEReadBuffer) DecodeOctalInteger() (value uint64) {
+func (_this *ReadBuffer) DecodeOctalInteger() (value uint64) {
 	for {
 		b := _this.PeekByteAllowEOD()
 		if b.HasProperty(ctePropertyNumericWhitespace) {
@@ -334,7 +333,7 @@ const maxPreShiftDecimal = uint64(0x1999999999999999)
 
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
-func (_this *CTEReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+func (_this *ReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
 	if bigStartValue == nil {
 		value = startValue
 		for {
@@ -375,7 +374,7 @@ func (_this *CTEReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValu
 
 const maxPreShiftHex = uint64(0x0fffffffffffffff)
 
-func (_this *CTEReadBuffer) DecodeHexInteger(startValue uint64) (value uint64, digitCount int) {
+func (_this *ReadBuffer) DecodeHexInteger(startValue uint64) (value uint64, digitCount int) {
 	value = startValue
 	for {
 		b := _this.PeekByteAllowEOD()
@@ -404,7 +403,7 @@ func (_this *CTEReadBuffer) DecodeHexInteger(startValue uint64) (value uint64, d
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
+func (_this *ReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 	sb := strings.Builder{}
 	sb.Write(_this.GetSubtoken())
 	for {
@@ -451,7 +450,7 @@ func (_this *CTEReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 	}
 }
 
-func (_this *CTEReadBuffer) decodeUnicodeEscapeSequence(length int) (codepoint rune) {
+func (_this *ReadBuffer) decodeUnicodeEscapeSequence(length int) (codepoint rune) {
 	for i := 0; i < length; i++ {
 		_this.AdvanceByte()
 		b := _this.PeekByteNoEOD()
@@ -469,7 +468,7 @@ func (_this *CTEReadBuffer) decodeUnicodeEscapeSequence(length int) (codepoint r
 	return
 }
 
-func (_this *CTEReadBuffer) DecodeQuotedString() []byte {
+func (_this *ReadBuffer) DecodeQuotedString() []byte {
 	_this.BeginSubtoken()
 	for {
 		b := _this.PeekByteNoEOD()
@@ -486,7 +485,7 @@ func (_this *CTEReadBuffer) DecodeQuotedString() []byte {
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeURI() []byte {
+func (_this *ReadBuffer) DecodeURI() []byte {
 	_this.BeginSubtoken()
 	for {
 		b := _this.PeekByteNoEOD()
@@ -501,7 +500,7 @@ func (_this *CTEReadBuffer) DecodeURI() []byte {
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeVerbatimString() []byte {
+func (_this *ReadBuffer) DecodeVerbatimString() []byte {
 	_this.BeginSubtoken()
 	_this.ReadUntilPropertyNoEOD(ctePropertyWhitespace)
 	sentinel := _this.GetSubtoken()
@@ -533,7 +532,7 @@ Outer:
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeCustomText() []byte {
+func (_this *ReadBuffer) DecodeCustomText() []byte {
 	_this.BeginSubtoken()
 	for {
 		b := _this.PeekByteNoEOD()
@@ -550,7 +549,7 @@ func (_this *CTEReadBuffer) DecodeCustomText() []byte {
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeCustomTextWithEscapes() []byte {
+func (_this *ReadBuffer) DecodeCustomTextWithEscapes() []byte {
 	sb := strings.Builder{}
 	sb.Write(_this.GetSubtoken())
 	for {
@@ -585,8 +584,8 @@ func (_this *CTEReadBuffer) DecodeCustomTextWithEscapes() []byte {
 		}
 	}
 }
-func (_this *CTEReadBuffer) DecodeHexBytes() []byte {
-	bytes := make([]byte, 0, 8)
+func (_this *ReadBuffer) DecodeHexBytes() []byte {
+	data := make([]byte, 0, 8)
 	firstNybble := true
 	nextByte := byte(0)
 	for {
@@ -606,12 +605,12 @@ func (_this *CTEReadBuffer) DecodeHexBytes() []byte {
 				_this.ErrorAt(_this.tokenPos, "Missing last hex digit")
 			}
 			_this.AdvanceByte()
-			return bytes
+			return data
 		default:
 			_this.UnexpectedCharAt(_this.tokenPos, "hex encoding")
 		}
 		if !firstNybble {
-			bytes = append(bytes, nextByte)
+			data = append(data, nextByte)
 			nextByte = 0
 		}
 		nextByte <<= 4
@@ -620,7 +619,7 @@ func (_this *CTEReadBuffer) DecodeHexBytes() []byte {
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeUUID() []byte {
+func (_this *ReadBuffer) DecodeUUID() []byte {
 	uuid := make([]byte, 0, 16)
 	dashCount := 0
 	firstNybble := true
@@ -665,7 +664,7 @@ Loop:
 	return uuid
 }
 
-func (_this *CTEReadBuffer) DecodeDate(year int64) *compact_time.Time {
+func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 	month, _, digitCount := _this.DecodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Month field is too long")
@@ -711,7 +710,7 @@ func (_this *CTEReadBuffer) DecodeDate(year int64) *compact_time.Time {
 		t.AreaLocation)
 }
 
-func (_this *CTEReadBuffer) DecodeTime(hour int) *compact_time.Time {
+func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 	minute, _, digitCount := _this.DecodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Minute field is too long")
@@ -766,7 +765,7 @@ func (_this *CTEReadBuffer) DecodeTime(hour int) *compact_time.Time {
 	return compact_time.NewTimeLatLong(hour, int(minute), int(second), nanosecond, lat, long)
 }
 
-func (_this *CTEReadBuffer) DecodeLatLongPortion(name string) (value int) {
+func (_this *ReadBuffer) DecodeLatLongPortion(name string) (value int) {
 	whole, _, digitCount := _this.DecodeDecimalInteger(0, nil)
 	switch digitCount {
 	case 1, 2, 3:
@@ -797,7 +796,7 @@ func (_this *CTEReadBuffer) DecodeLatLongPortion(name string) (value int) {
 	return int(whole*100 + fractional)
 }
 
-func (_this *CTEReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundredths int) {
+func (_this *ReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundredths int) {
 	latitudeHundredths = _this.DecodeLatLongPortion("latitude")
 
 	if _this.PeekByteNoEOD() != '/' {
@@ -810,7 +809,7 @@ func (_this *CTEReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundre
 	return
 }
 
-func (_this *CTEReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal) {
+func (_this *ReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal) {
 	exponent := int32(0)
 	fractionalDigitCount := 0
 	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeDecimalInteger(coefficient, bigCoefficient)
@@ -864,11 +863,11 @@ func (_this *CTEReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, b
 		return
 	}
 
-	value = compact_float.DFloatValue(int32(exponent), int64(coefficient)*int64(sign))
+	value = compact_float.DFloatValue(exponent, int64(coefficient)*sign)
 	return
 }
 
-func (_this *CTEReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coefficientDigitCount int) float64 {
+func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coefficientDigitCount int) float64 {
 	exponent := 0
 	fractionalDigitCount := 0
 	coefficient, fractionalDigitCount = _this.DecodeHexInteger(coefficient)
@@ -904,7 +903,7 @@ func (_this *CTEReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coeff
 	return float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(exponent))
 }
 
-func (_this *CTEReadBuffer) DecodeSingleLineComment() []byte {
+func (_this *ReadBuffer) DecodeSingleLineComment() []byte {
 	// We're already past the "//" by this point
 	_this.BeginSubtoken()
 	_this.readUntilByte('\n')
@@ -917,7 +916,7 @@ func (_this *CTEReadBuffer) DecodeSingleLineComment() []byte {
 	return subtoken
 }
 
-func (_this *CTEReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
+func (_this *ReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
 	lastByte := _this.ReadByte()
 
 	for {
@@ -940,7 +939,7 @@ func (_this *CTEReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
 	}
 }
 
-func (_this *CTEReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
+func (_this *ReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
 	isInitialWS := true
 	wsCount := 0
 	isCommentInitiator := false
@@ -1040,7 +1039,7 @@ func (_this *CTEReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
 }
 
 // Decode a marker ID. asString will be empty if the result is an integer.
-func (_this *CTEReadBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
+func (_this *ReadBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
 	isInteger := true
 	_this.BeginSubtoken()
 Loop:

@@ -117,7 +117,7 @@ func newUInt8ArrayIterator() ObjectIterator {
 	return &uint8ArrayIterator{}
 }
 
-func (_this *uint8ArrayIterator) InitTemplate(fetchTemplate FetchIterator) {
+func (_this *uint8ArrayIterator) InitTemplate(_ FetchIterator) {
 }
 
 func (_this *uint8ArrayIterator) NewInstance() ObjectIterator {
@@ -127,7 +127,7 @@ func (_this *uint8ArrayIterator) NewInstance() ObjectIterator {
 func (_this *uint8ArrayIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {
 }
 
-func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
+func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.CanAddr() {
 		eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
 	} else {
@@ -317,7 +317,7 @@ func (_this *structField) applyTags(tags string) {
 
 	requiresValue := func(kv []string, key string) {
 		if len(kv) != 2 {
-			panic(fmt.Errorf(`Tag key "%s" requires a value`, key))
+			panic(fmt.Errorf(`tag key "%s" requires a value`, key))
 		}
 	}
 
@@ -364,7 +364,7 @@ func newStructIterator(structType reflect.Type) ObjectIterator {
 	}
 }
 
-func (_this *structIterator) InitTemplate(fetchTemplate FetchIterator) {
+func (_this *structIterator) InitTemplate(_ FetchIterator) {
 	for i := 0; i < _this.structType.NumField(); i++ {
 		reflectField := _this.structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {

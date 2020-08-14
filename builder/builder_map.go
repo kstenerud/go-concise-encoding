@@ -209,13 +209,13 @@ func (_this *mapBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+func (_this *mapBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromCustomBinary(value, object)
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
+func (_this *mapBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	object := _this.newElem()
 	_this.nextBuilder.BuildFromCustomText(value, object)
 	_this.store(object)
@@ -271,7 +271,7 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *mapBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, builderIntfType, "PrepareForListContents")
+	PanicBadEventWithType(_this, builderIntfType, "PrepareForListContents")
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {

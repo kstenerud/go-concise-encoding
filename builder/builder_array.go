@@ -149,17 +149,17 @@ func (_this *arrayBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *arrayBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
 	_this.elemBuilder.BuildFromBytes(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
+func (_this *arrayBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
 	_this.elemBuilder.BuildFromCustomBinary(value, _this.currentElem())
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
+func (_this *arrayBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.elemBuilder.BuildFromCustomText(value, _this.currentElem())
 	_this.index++
 }
@@ -216,7 +216,7 @@ func (_this *arrayBuilder) PrepareForListContents() {
 }
 
 func (_this *arrayBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, _this.dstType, "PrepareForMapContents")
+	PanicBadEventWithType(_this, _this.dstType, "PrepareForMapContents")
 }
 
 func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
@@ -249,51 +249,51 @@ func (_this *bytesArrayBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *bytesArrayBuilder) BuildFromNil(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromNil")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromNil")
 }
 
 func (_this *bytesArrayBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBool")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromBool")
 }
 
 func (_this *bytesArrayBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromInt")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromInt")
 }
 
 func (_this *bytesArrayBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromUint")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromUint")
 }
 
 func (_this *bytesArrayBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBigInt")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromBigInt")
 }
 
 func (_this *bytesArrayBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromFloat")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromFloat")
 }
 
 func (_this *bytesArrayBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBigFloat")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromBigFloat")
 }
 
 func (_this *bytesArrayBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromDecimalFloat")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromDecimalFloat")
 }
 
 func (_this *bytesArrayBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromBigDecimalFloat")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromBigDecimalFloat")
 }
 
 func (_this *bytesArrayBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromUUID")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromUUID")
 }
 
 func (_this *bytesArrayBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromString")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromString")
 }
 
 func (_this *bytesArrayBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromVerbatimString")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromVerbatimString")
 }
 
 func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
@@ -305,53 +305,53 @@ func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) 
 }
 
 func (_this *bytesArrayBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustomBinary")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromCustomBinary")
 }
 
 func (_this *bytesArrayBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCustomText")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromCustomText")
 }
 
 func (_this *bytesArrayBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromURI")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromURI")
 }
 
 func (_this *bytesArrayBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromTime")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromTime")
 }
 
 func (_this *bytesArrayBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromCompactTime")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromCompactTime")
 }
 
 func (_this *bytesArrayBuilder) BuildBeginList() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildBeginList")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildBeginList")
 }
 
 func (_this *bytesArrayBuilder) BuildBeginMap() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildBeginMap")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildBeginMap")
 }
 
 func (_this *bytesArrayBuilder) BuildEndContainer() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildEndContainer")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildEndContainer")
 }
 
 func (_this *bytesArrayBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildBeginMarker")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildBeginMarker")
 }
 
 func (_this *bytesArrayBuilder) BuildFromReference(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "BuildFromReference")
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromReference")
 }
 
 func (_this *bytesArrayBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "PrepareForListContents")
+	PanicBadEventWithType(_this, common.TypeBytes, "PrepareForListContents")
 }
 
 func (_this *bytesArrayBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "PrepareForMapContents")
+	PanicBadEventWithType(_this, common.TypeBytes, "PrepareForMapContents")
 }
 
 func (_this *bytesArrayBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeBytes, "NotifyChildContainerFinished")
+	PanicBadEventWithType(_this, common.TypeBytes, "NotifyChildContainerFinished")
 }

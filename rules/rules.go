@@ -52,7 +52,7 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Rules struct {
-	opts               options.RuleOptions
+	opts                  options.RuleOptions
 	charValidator         UTF8Validator
 	maxDepth              int
 	stateStack            []ruleState
@@ -125,7 +125,7 @@ func (_this *Rules) OnBeginDocument() {
 func (_this *Rules) OnVersion(version uint64) {
 	_this.assertCurrentStateAllowsType(eventTypeVersion)
 	if version != _this.opts.ConciseEncodingVersion {
-		panic(fmt.Errorf("Expected version %v but got version %v", _this.opts.ConciseEncodingVersion, version))
+		panic(fmt.Errorf("expected version %v but got version %v", _this.opts.ConciseEncodingVersion, version))
 	}
 	_this.changeState(stateAwaitingTLO)
 	_this.nextReceiver.OnVersion(version)
@@ -262,7 +262,7 @@ func (_this *Rules) OnBytes(value []byte) {
 	_this.onBytesBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
-		_this.onArrayData([]byte(value))
+		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnBytes(value)
 }
@@ -299,7 +299,7 @@ func (_this *Rules) OnCustomBinary(value []byte) {
 	_this.onCustomBinaryBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
-		_this.onArrayData([]byte(value))
+		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnCustomBinary(value)
 }
@@ -420,10 +420,10 @@ func (_this *Rules) OnReference() {
 
 func (_this *Rules) OnEndDocument() {
 	_this.assertCurrentStateAllowsType(eventTypeEndDocument)
-	for markerID, _ := range _this.unmatchedIDs {
+	for markerID := range _this.unmatchedIDs {
 		_, ok := _this.assignedIDs[markerID]
 		if !ok {
-			panic(fmt.Errorf("Unmatched reference to marker ID %v", markerID))
+			panic(fmt.Errorf("unmatched reference to marker ID %v", markerID))
 		}
 	}
 	_this.nextReceiver.OnEndDocument()
@@ -497,18 +497,18 @@ func (_this *Rules) onArrayData(data []byte) {
 
 	dataLength := uint64(len(data))
 	if _this.chunkBytesWritten+dataLength > _this.chunkByteCount {
-		panic(fmt.Errorf("Chunk length %v exceeded by %v bytes",
+		panic(fmt.Errorf("chunk length %v exceeded by %v bytes",
 			_this.chunkByteCount, _this.chunkBytesWritten+dataLength-_this.chunkByteCount))
 	}
 
 	switch _this.arrayType {
 	case eventTypeBytes:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxBytesLength {
-			panic(fmt.Errorf("Max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
+			panic(fmt.Errorf("max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
 		}
 	case eventTypeString:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxStringLength {
-			panic(fmt.Errorf("Max string length (%v) exceeded", _this.opts.MaxStringLength))
+			panic(fmt.Errorf("max string length (%v) exceeded", _this.opts.MaxStringLength))
 		}
 		_this.validateString(data)
 		if _this.isAwaitingID() {
@@ -516,7 +516,7 @@ func (_this *Rules) onArrayData(data []byte) {
 		}
 	case eventTypeURI:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxURILength {
-			panic(fmt.Errorf("Max URI length (%v) exceeded", _this.opts.MaxURILength))
+			panic(fmt.Errorf("max URI length (%v) exceeded", _this.opts.MaxURILength))
 		}
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
@@ -553,7 +553,7 @@ func (_this *Rules) changeState(st ruleState) {
 
 func (_this *Rules) stackState(st ruleState) {
 	if uint64(len(_this.stateStack)) >= _this.realMaxContainerDepth {
-		panic(fmt.Errorf("Max depth of %v exceeded", _this.realMaxContainerDepth-rulesMaxDepthAdjust))
+		panic(fmt.Errorf("max depth of %v exceeded", _this.realMaxContainerDepth-rulesMaxDepthAdjust))
 	}
 	_this.stateStack = append(_this.stateStack, st)
 }
@@ -659,15 +659,15 @@ func (_this *Rules) onArrayChunkEnded() {
 		if _this.isAwaitingMarkupName() {
 
 			if _this.arrayBytesWritten == 0 {
-				panic(fmt.Errorf("Markup name cannot be length 0"))
+				panic(fmt.Errorf("markup name cannot be length 0"))
 			}
 			if _this.arrayBytesWritten > _this.opts.MaxMarkupNameLength {
-				panic(fmt.Errorf("Markup name length %v exceeds max of %v", _this.arrayBytesWritten, _this.opts.MaxMarkupNameLength))
+				panic(fmt.Errorf("markup name length %v exceeds max of %v", _this.arrayBytesWritten, _this.opts.MaxMarkupNameLength))
 			}
 		}
 		if _this.isAwaitingID() {
 			if _this.arrayBytesWritten < minMarkerIDLength {
-				panic(fmt.Errorf("An ID cannot be less than %v characters", minMarkerIDLength))
+				panic(fmt.Errorf("an ID cannot be less than %v characters", minMarkerIDLength))
 			}
 			if _this.arrayBytesWritten > maxMarkerIDLength {
 				panic(fmt.Errorf("ID length %v exceeds max of %v", _this.arrayBytesWritten, maxMarkerIDLength))
@@ -679,11 +679,11 @@ func (_this *Rules) onArrayChunkEnded() {
 		}
 	case eventTypeURI:
 		if _this.isAwaitingID() {
-			url, err := url.Parse(string(_this.arrayData))
+			uri, err := url.Parse(string(_this.arrayData))
 			if err != nil {
 				panic(fmt.Errorf("%v", err))
 			}
-			_this.stackID(url)
+			_this.stackID(uri)
 		}
 	case eventTypeBytes:
 		// Nothing to do
@@ -826,7 +826,7 @@ var ruleEventNames = [...]string{
 }
 
 func (_this ruleEvent) String() string {
-	return ruleEventNames[_this&ruleEvent(ruleIDFieldMask)]
+	return ruleEventNames[_this&ruleIDFieldMask]
 }
 
 type ruleState int
@@ -892,7 +892,7 @@ const (
 )
 
 const (
-	eventBeginDocument = ruleEvent(ruleIDFieldEnd) << iota
+	eventBeginDocument = ruleIDFieldEnd << iota
 	eventVersion
 	eventPadding
 	eventScalar

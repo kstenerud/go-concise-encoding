@@ -132,13 +132,13 @@ func (_this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
 
 func (_this *intfBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *intfBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
+		PanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
@@ -167,14 +167,14 @@ func (_this *intfBuilder) BuildBeginMap() {
 }
 
 func (_this *intfBuilder) BuildEndContainer() {
-	BuilderWithTypePanicBadEvent(_this, builderIntfType, "ContainerEnd")
+	PanicBadEventWithType(_this, builderIntfType, "ContainerEnd")
 }
 
-func (_this *intfBuilder) BuildBeginMarker(id interface{}) {
+func (_this *intfBuilder) BuildBeginMarker(_ interface{}) {
 	panic("TODO: intfBuilder.Marker")
 }
 
-func (_this *intfBuilder) BuildFromReference(id interface{}) {
+func (_this *intfBuilder) BuildFromReference(_ interface{}) {
 	panic("TODO: intfBuilder.Reference")
 }
 

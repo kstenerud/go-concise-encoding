@@ -62,71 +62,71 @@ func (_this *timeBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *timeBuilder) BuildFromNil(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Nil")
+	PanicBadEventWithType(_this, common.TypeTime, "Nil")
 }
 
 func (_this *timeBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Bool")
+	PanicBadEventWithType(_this, common.TypeTime, "Bool")
 }
 
 func (_this *timeBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Int")
+	PanicBadEventWithType(_this, common.TypeTime, "Int")
 }
 
 func (_this *timeBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Uint")
+	PanicBadEventWithType(_this, common.TypeTime, "Uint")
 }
 
 func (_this *timeBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "BigInt")
+	PanicBadEventWithType(_this, common.TypeTime, "BigInt")
 }
 
 func (_this *timeBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Float")
+	PanicBadEventWithType(_this, common.TypeTime, "Float")
 }
 
 func (_this *timeBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "BigFloat")
+	PanicBadEventWithType(_this, common.TypeTime, "BigFloat")
 }
 
 func (_this *timeBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "DecimalFloat")
+	PanicBadEventWithType(_this, common.TypeTime, "DecimalFloat")
 }
 
 func (_this *timeBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "BigDecimalFloat")
+	PanicBadEventWithType(_this, common.TypeTime, "BigDecimalFloat")
 }
 
 func (_this *timeBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "UUID")
+	PanicBadEventWithType(_this, common.TypeTime, "UUID")
 }
 
 func (_this *timeBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "String")
+	PanicBadEventWithType(_this, common.TypeTime, "String")
 }
 
 func (_this *timeBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "VerbatimString")
+	PanicBadEventWithType(_this, common.TypeTime, "VerbatimString")
 }
 
 func (_this *timeBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Bytes")
+	PanicBadEventWithType(_this, common.TypeTime, "Bytes")
 }
 
 func (_this *timeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *timeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
+		PanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *timeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "URI")
+	PanicBadEventWithType(_this, common.TypeTime, "URI")
 }
 
 func (_this *timeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -142,35 +142,35 @@ func (_this *timeBuilder) BuildFromCompactTime(value *compact_time.Time, dst ref
 }
 
 func (_this *timeBuilder) BuildBeginList() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "List")
+	PanicBadEventWithType(_this, common.TypeTime, "List")
 }
 
 func (_this *timeBuilder) BuildBeginMap() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Map")
+	PanicBadEventWithType(_this, common.TypeTime, "Map")
 }
 
 func (_this *timeBuilder) BuildEndContainer() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "ContainerEnd")
+	PanicBadEventWithType(_this, common.TypeTime, "ContainerEnd")
 }
 
 func (_this *timeBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Marker")
+	PanicBadEventWithType(_this, common.TypeTime, "Marker")
 }
 
 func (_this *timeBuilder) BuildFromReference(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "Reference")
+	PanicBadEventWithType(_this, common.TypeTime, "Reference")
 }
 
 func (_this *timeBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "PrepareForListContents")
+	PanicBadEventWithType(_this, common.TypeTime, "PrepareForListContents")
 }
 
 func (_this *timeBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "PrepareForMapContents")
+	PanicBadEventWithType(_this, common.TypeTime, "PrepareForMapContents")
 }
 
 func (_this *timeBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeTime, "NotifyChildContainerFinished")
+	PanicBadEventWithType(_this, common.TypeTime, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -200,71 +200,71 @@ func (_this *compactTimeBuilder) SetParent(_ ObjectBuilder) {
 }
 
 func (_this *compactTimeBuilder) BuildFromNil(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Nil")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Nil")
 }
 
 func (_this *compactTimeBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Bool")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Bool")
 }
 
 func (_this *compactTimeBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Int")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Int")
 }
 
 func (_this *compactTimeBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Uint")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Uint")
 }
 
 func (_this *compactTimeBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "BigInt")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "BigInt")
 }
 
 func (_this *compactTimeBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Float")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Float")
 }
 
 func (_this *compactTimeBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "BigFloat")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "BigFloat")
 }
 
 func (_this *compactTimeBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "DecimalFloat")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "DecimalFloat")
 }
 
 func (_this *compactTimeBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "BigDecimalFloat")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "BigDecimalFloat")
 }
 
 func (_this *compactTimeBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "UUID")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "UUID")
 }
 
 func (_this *compactTimeBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "String")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "String")
 }
 
 func (_this *compactTimeBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "VerbatimString")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "VerbatimString")
 }
 
 func (_this *compactTimeBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Bytes")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Bytes")
 }
 
 func (_this *compactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *compactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
+		PanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *compactTimeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "URI")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "URI")
 }
 
 func (_this *compactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -276,35 +276,35 @@ func (_this *compactTimeBuilder) BuildFromCompactTime(value *compact_time.Time, 
 }
 
 func (_this *compactTimeBuilder) BuildBeginList() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "List")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "List")
 }
 
 func (_this *compactTimeBuilder) BuildBeginMap() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Map")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Map")
 }
 
 func (_this *compactTimeBuilder) BuildEndContainer() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "ContainerEnd")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "ContainerEnd")
 }
 
 func (_this *compactTimeBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Marker")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Marker")
 }
 
 func (_this *compactTimeBuilder) BuildFromReference(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "Reference")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "Reference")
 }
 
 func (_this *compactTimeBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "PrepareForListContents")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "PrepareForListContents")
 }
 
 func (_this *compactTimeBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "PrepareForMapContents")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "PrepareForMapContents")
 }
 
 func (_this *compactTimeBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypeCompactTime, "NotifyChildContainerFinished")
+	PanicBadEventWithType(_this, common.TypeCompactTime, "NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -338,67 +338,67 @@ func (_this *pCompactTimeBuilder) BuildFromNil(dst reflect.Value) {
 }
 
 func (_this *pCompactTimeBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Bool")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Bool")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Int")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Int")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Uint")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Uint")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "BigInt")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "BigInt")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Float")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Float")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "BigFloat")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "BigFloat")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "DecimalFloat")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "DecimalFloat")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "BigDecimalFloat")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "BigDecimalFloat")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "UUID")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "UUID")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "String")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "String")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "VerbatimString")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "VerbatimString")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Bytes")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Bytes")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *pCompactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		BuilderPanicBuildFromCustomText(_this, value, dst.Type(), err)
+		PanicBuildFromCustomText(_this, value, dst.Type(), err)
 	}
 }
 
 func (_this *pCompactTimeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "URI")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "URI")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -410,33 +410,33 @@ func (_this *pCompactTimeBuilder) BuildFromCompactTime(value *compact_time.Time,
 }
 
 func (_this *pCompactTimeBuilder) BuildBeginList() {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "List")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "List")
 }
 
 func (_this *pCompactTimeBuilder) BuildBeginMap() {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Map")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Map")
 }
 
 func (_this *pCompactTimeBuilder) BuildEndContainer() {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "ContainerEnd")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "ContainerEnd")
 }
 
 func (_this *pCompactTimeBuilder) BuildBeginMarker(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Marker")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Marker")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromReference(_ interface{}) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "Reference")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "Reference")
 }
 
 func (_this *pCompactTimeBuilder) PrepareForListContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "PrepareForListContents")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "PrepareForListContents")
 }
 
 func (_this *pCompactTimeBuilder) PrepareForMapContents() {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "PrepareForMapContents")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "PrepareForMapContents")
 }
 
 func (_this *pCompactTimeBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	BuilderWithTypePanicBadEvent(_this, common.TypePCompactTime, "NotifyChildContainerFinished")
+	PanicBadEventWithType(_this, common.TypePCompactTime, "NotifyChildContainerFinished")
 }

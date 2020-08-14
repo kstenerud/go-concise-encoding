@@ -40,13 +40,13 @@ type IteratorSessionOptions struct {
 
 	// Specifies which types to convert to custom binary data, and how to do it.
 	// Note: You should only fill out one of these maps, depending on your
-	// indended encoding (binary or text). The iterator session will consult
+	// intended encoding (binary or text). The iterator session will consult
 	// the binary map first and the text map second, choosing the first match.
 	CustomBinaryConverters map[reflect.Type]ConvertToCustomFunction
 
 	// Specifies which types to convert to custom text data, and how to do it
 	// Note: You should only fill out one of these maps, depending on your
-	// indended encoding (binary or text). The iterator session will consult
+	// intended encoding (binary or text). The iterator session will consult
 	// the binary map first and the text map second, choosing the first match.
 	CustomTextConverters map[reflect.Type]ConvertToCustomFunction
 }

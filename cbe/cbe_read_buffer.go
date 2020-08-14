@@ -35,7 +35,7 @@ import (
 	"github.com/kstenerud/go-uleb128"
 )
 
-type CBEReadBuffer struct {
+type ReadBuffer struct {
 	buffer   buffer.StreamingReadBuffer
 	position int
 }
@@ -46,8 +46,8 @@ type CBEReadBuffer struct {
 // readBufferSize determines the initial size of the buffer, and
 // loWaterByteCount determines when RefillIfNecessary() refills the buffer from
 // the reader.
-func NewCBEReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *CBEReadBuffer {
-	_this := &CBEReadBuffer{}
+func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *ReadBuffer {
+	_this := &ReadBuffer{}
 	_this.Init(reader, readBufferSize, loWaterByteCount)
 	return _this
 }
@@ -58,32 +58,32 @@ func NewCBEReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int
 // readBufferSize determines the initial size of the buffer, and
 // loWaterByteCount determines when RefillIfNecessary() refills the buffer from
 // the reader.
-func (_this *CBEReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
+func (_this *ReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
-func (_this *CBEReadBuffer) Reset() {
+func (_this *ReadBuffer) Reset() {
 	_this.buffer.Reset()
 }
 
 // Refill the buffer from the reader if we've hit the "low water" of unread
 // bytes.
-func (_this *CBEReadBuffer) RefillIfNecessary() {
+func (_this *ReadBuffer) RefillIfNecessary() {
 	_this.position += _this.buffer.RefillIfNecessary(_this.position, _this.position)
 }
 
-func (_this *CBEReadBuffer) HasUnreadData() bool {
+func (_this *ReadBuffer) HasUnreadData() bool {
 	return _this.position < len(_this.buffer.Buffer)
 }
 
-func (_this *CBEReadBuffer) DecodeUint8() uint8 {
+func (_this *ReadBuffer) DecodeUint8() uint8 {
 	_this.buffer.RequireBytes(_this.position, 1)
-	value := uint8(_this.byteAtPositionOffset(0))
+	value := _this.byteAtPositionOffset(0)
 	_this.markBytesRead(1)
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeUint16() uint16 {
+func (_this *ReadBuffer) DecodeUint16() uint16 {
 	_this.buffer.RequireBytes(_this.position, 2)
 	value := uint16(_this.byteAtPositionOffset(0)) |
 		uint16(_this.byteAtPositionOffset(1))<<8
@@ -91,7 +91,7 @@ func (_this *CBEReadBuffer) DecodeUint16() uint16 {
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeUint32() uint32 {
+func (_this *ReadBuffer) DecodeUint32() uint32 {
 	_this.buffer.RequireBytes(_this.position, 4)
 	value := uint32(_this.byteAtPositionOffset(0)) |
 		uint32(_this.byteAtPositionOffset(1))<<8 |
@@ -101,7 +101,7 @@ func (_this *CBEReadBuffer) DecodeUint32() uint32 {
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeUint64() uint64 {
+func (_this *ReadBuffer) DecodeUint64() uint64 {
 	_this.buffer.RequireBytes(_this.position, 8)
 	value := uint64(_this.byteAtPositionOffset(0)) |
 		uint64(_this.byteAtPositionOffset(1))<<8 |
@@ -115,15 +115,15 @@ func (_this *CBEReadBuffer) DecodeUint64() uint64 {
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeVersion() uint64 {
+func (_this *ReadBuffer) DecodeVersion() uint64 {
 	return _this.DecodeSmallULEB128("version", 0xffffffffffffffff)
 }
 
-func (_this *CBEReadBuffer) DecodeType() cbeTypeField {
+func (_this *ReadBuffer) DecodeType() cbeTypeField {
 	return cbeTypeField(_this.DecodeUint8())
 }
 
-func (_this *CBEReadBuffer) DecodeULEB128() (asUint uint64, asBig *big.Int) {
+func (_this *ReadBuffer) DecodeULEB128() (asUint uint64, asBig *big.Int) {
 	asUint, asBig, bytesDecoded, isComplete := uleb128.Decode(0, 0, _this.allUnreadBytes())
 	if isComplete {
 		goto complete
@@ -141,7 +141,7 @@ complete:
 	return
 }
 
-func (_this *CBEReadBuffer) DecodeSmallULEB128(name string, maxValue uint64) uint64 {
+func (_this *ReadBuffer) DecodeSmallULEB128(name string, maxValue uint64) uint64 {
 	asUint, asBig, bytesDecoded, isComplete := uleb128.Decode(0, 0, _this.allUnreadBytes())
 	if isComplete {
 		goto complete
@@ -168,7 +168,7 @@ complete:
 // TODO: Check max big.int bit count
 const maxBigIntBitCount = 8192
 
-func (_this *CBEReadBuffer) DecodeUint() (asUint uint64, asBig *big.Int) {
+func (_this *ReadBuffer) DecodeUint() (asUint uint64, asBig *big.Int) {
 	byteCount := _this.DecodeSmallULEB128("uint length field", maxBigIntBitCount/8)
 	bytes := _this.DecodeBytes(int(byteCount))
 	if byteCount <= 8 {
@@ -199,19 +199,19 @@ func (_this *CBEReadBuffer) DecodeUint() (asUint uint64, asBig *big.Int) {
 	return
 }
 
-func (_this *CBEReadBuffer) DecodeFloat16() float32 {
+func (_this *ReadBuffer) DecodeFloat16() float32 {
 	return math.Float32frombits(uint32(_this.DecodeUint16()) << 16)
 }
 
-func (_this *CBEReadBuffer) DecodeFloat32() float32 {
+func (_this *ReadBuffer) DecodeFloat32() float32 {
 	return math.Float32frombits(_this.DecodeUint32())
 }
 
-func (_this *CBEReadBuffer) DecodeFloat64() float64 {
+func (_this *ReadBuffer) DecodeFloat64() float64 {
 	return math.Float64frombits(_this.DecodeUint64())
 }
 
-func (_this *CBEReadBuffer) DecodeDecimalFloat() (compact_float.DFloat, *apd.Decimal) {
+func (_this *ReadBuffer) DecodeDecimalFloat() (compact_float.DFloat, *apd.Decimal) {
 	value, bigValue, bytesDecoded, err := compact_float.Decode(_this.allUnreadBytes())
 	if err == nil {
 		goto complete
@@ -232,7 +232,7 @@ complete:
 	return value, bigValue
 }
 
-func (_this *CBEReadBuffer) DecodeDate() *compact_time.Time {
+func (_this *ReadBuffer) DecodeDate() *compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeDate(_this.allUnreadBytes())
 	if err == nil {
 		goto complete
@@ -256,7 +256,7 @@ complete:
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeTime() *compact_time.Time {
+func (_this *ReadBuffer) DecodeTime() *compact_time.Time {
 	value, bytesDecoded, isComplete := compact_time.DecodeTime(_this.allUnreadBytes())
 	if err := value.Validate(); err != nil {
 		_this.unexpectedError(err)
@@ -280,7 +280,7 @@ complete:
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeTimestamp() *compact_time.Time {
+func (_this *ReadBuffer) DecodeTimestamp() *compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeTimestamp(_this.allUnreadBytes())
 	if err == nil {
 		goto complete
@@ -304,7 +304,7 @@ complete:
 	return value
 }
 
-func (_this *CBEReadBuffer) DecodeChunkHeader() (length uint64, moreChunksFollow bool) {
+func (_this *ReadBuffer) DecodeChunkHeader() (length uint64, moreChunksFollow bool) {
 	asUint, asBig := _this.DecodeULEB128()
 	if asBig != nil {
 		_this.errorf("Chunk header length field is too big")
@@ -312,7 +312,7 @@ func (_this *CBEReadBuffer) DecodeChunkHeader() (length uint64, moreChunksFollow
 	return asUint >> 1, asUint&1 == 1
 }
 
-func (_this *CBEReadBuffer) DecodeBytes(byteCount int) []byte {
+func (_this *ReadBuffer) DecodeBytes(byteCount int) []byte {
 	_this.buffer.RequireBytes(_this.position, byteCount)
 	value := _this.buffer.Buffer[_this.position : _this.position+byteCount]
 	_this.markBytesRead(byteCount)
@@ -323,28 +323,28 @@ func (_this *CBEReadBuffer) DecodeBytes(byteCount int) []byte {
 
 // Internal
 
-func (_this *CBEReadBuffer) byteAtPositionOffset(offset int) byte {
+func (_this *ReadBuffer) byteAtPositionOffset(offset int) byte {
 	return _this.buffer.Buffer[_this.position+offset]
 }
 
-func (_this *CBEReadBuffer) markBytesRead(byteCount int) {
+func (_this *ReadBuffer) markBytesRead(byteCount int) {
 	_this.position += byteCount
 }
 
-func (_this *CBEReadBuffer) allUnreadBytes() []byte {
+func (_this *ReadBuffer) allUnreadBytes() []byte {
 	return _this.buffer.Buffer[_this.position:]
 }
 
-func (_this *CBEReadBuffer) unexpectedEOD() {
+func (_this *ReadBuffer) unexpectedEOD() {
 	_this.errorf("Unexpected end of document")
 }
 
-func (_this *CBEReadBuffer) unexpectedError(err error) {
+func (_this *ReadBuffer) unexpectedError(err error) {
 	// TODO: Diagnostics
 	panic(err)
 }
 
-func (_this *CBEReadBuffer) errorf(format string, args ...interface{}) {
+func (_this *ReadBuffer) errorf(format string, args ...interface{}) {
 	// TODO: Diagnostics
 	panic(fmt.Errorf(format, args...))
 }

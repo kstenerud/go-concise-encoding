@@ -128,7 +128,7 @@ func convertFromCustomBinary(src []byte, dst reflect.Value) error {
 		dst.SetComplex(complex(realPart, imagPart))
 		return nil
 	default:
-		return fmt.Errorf("Unknown custom type [0x%02x]", customType)
+		return fmt.Errorf("unknown custom type [0x%02x]", customType)
 	}
 }
 
