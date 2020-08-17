@@ -28,6 +28,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -134,7 +136,7 @@ func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder,
 	if opts.CaseInsensitiveStructFieldNames {
 		builderDescs = make(map[string]*structBuilderDesc)
 		for name, desc := range _this.builderDescs {
-			builderDescs[strings.ToLower(name)] = desc
+			builderDescs[common.ASCIIToLower(name)] = desc
 		}
 	}
 
@@ -219,10 +221,10 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 
 func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
 	if _this.nextIsKey {
-		name := string(value)
 		if _this.opts.CaseInsensitiveStructFieldNames {
-			name = strings.ToLower(name)
+			common.ASCIIBytesToLower(value)
 		}
+		name := string(value)
 
 		if builderDesc, ok := _this.builderDescs[name]; ok {
 			_this.nextBuilder = builderDesc.Builder
@@ -258,8 +260,8 @@ func (_this *structBuilder) BuildFromVerbatimString(value []byte, _ reflect.Valu
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
-	_this.nextBuilder.BuildFromBytes(value, _this.nextValue)
+func (_this *structBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
+	_this.nextBuilder.BuildFromURI(value, _this.nextValue)
 	_this.swapKeyValue()
 }
 
@@ -273,8 +275,8 @@ func (_this *structBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	_this.nextBuilder.BuildFromURI(value, _this.nextValue)
+func (_this *structBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, _ reflect.Value) {
+	_this.nextBuilder.BuildFromTypedArray(elemType, value, _this.nextValue)
 	_this.swapKeyValue()
 }
 

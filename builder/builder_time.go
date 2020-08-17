@@ -109,8 +109,8 @@ func (_this *timeBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	PanicBadEventWithType(_this, common.TypeTime, "VerbatimString")
 }
 
-func (_this *timeBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeTime, "Bytes")
+func (_this *timeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeTime, "URI")
 }
 
 func (_this *timeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -125,8 +125,8 @@ func (_this *timeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	}
 }
 
-func (_this *timeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeTime, "URI")
+func (_this *timeBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeTime, "TypedArray(%v)", elemType)
 }
 
 func (_this *timeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -247,8 +247,8 @@ func (_this *compactTimeBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Val
 	PanicBadEventWithType(_this, common.TypeCompactTime, "VerbatimString")
 }
 
-func (_this *compactTimeBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeCompactTime, "Bytes")
+func (_this *compactTimeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeCompactTime, "URI")
 }
 
 func (_this *compactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -263,8 +263,8 @@ func (_this *compactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.V
 	}
 }
 
-func (_this *compactTimeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeCompactTime, "URI")
+func (_this *compactTimeBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeCompactTime, "TypedArray(%v)", elemType)
 }
 
 func (_this *compactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -381,8 +381,8 @@ func (_this *pCompactTimeBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Va
 	PanicBadEventWithType(_this, common.TypePCompactTime, "VerbatimString")
 }
 
-func (_this *pCompactTimeBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePCompactTime, "Bytes")
+func (_this *pCompactTimeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePCompactTime, "URI")
 }
 
 func (_this *pCompactTimeBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -397,8 +397,8 @@ func (_this *pCompactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.
 	}
 }
 
-func (_this *pCompactTimeBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePCompactTime, "URI")
+func (_this *pCompactTimeBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePCompactTime, "TypedArray(%v)", elemType)
 }
 
 func (_this *pCompactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

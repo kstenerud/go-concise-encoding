@@ -125,9 +125,9 @@ func (_this *topLevelBuilder) BuildFromVerbatimString(value []byte, dst reflect.
 	_this.builder.BuildFromVerbatimString(value, dst)
 }
 
-func (_this *topLevelBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *topLevelBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromBytes(value, dst)
+	_this.builder.BuildFromURI(value, dst)
 }
 
 func (_this *topLevelBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -140,9 +140,9 @@ func (_this *topLevelBuilder) BuildFromCustomText(value []byte, dst reflect.Valu
 	_this.builder.BuildFromCustomText(value, dst)
 }
 
-func (_this *topLevelBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *topLevelBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromURI(value, dst)
+	_this.builder.BuildFromTypedArray(elemType, value, dst)
 }
 
 func (_this *topLevelBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

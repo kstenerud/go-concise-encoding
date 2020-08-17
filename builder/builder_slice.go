@@ -166,9 +166,9 @@ func (_this *sliceBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBytes(value, object)
+	_this.elemBuilder.BuildFromURI(value, object)
 	_this.storeValue(object)
 }
 
@@ -184,9 +184,9 @@ func (_this *sliceBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, _ reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromURI(value, object)
+	_this.elemBuilder.BuildFromTypedArray(elemType, value, object)
 	_this.storeValue(object)
 }
 

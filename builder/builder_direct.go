@@ -113,8 +113,8 @@ func (_this *directBuilder) BuildFromVerbatimString(value []byte, dst reflect.Va
 	dst.SetString(string(value))
 }
 
-func (_this *directBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, _this.dstType, "Bytes")
+func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value).Elem())
 }
 
 func (_this *directBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -129,8 +129,8 @@ func (_this *directBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(value).Elem())
+func (_this *directBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", elemType)
 }
 
 func (_this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -254,8 +254,8 @@ func (_this *directPtrBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value
 	PanicBadEventWithType(_this, _this.dstType, "VerbatimString")
 }
 
-func (_this *directPtrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	dst.SetBytes(common.CloneBytes(value))
+func (_this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
 }
 
 func (_this *directPtrBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
@@ -266,8 +266,9 @@ func (_this *directPtrBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEventWithType(_this, _this.dstType, "CustomText")
 }
 
-func (_this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(value))
+func (_this *directPtrBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
+	// TODO: Typed array support
+	dst.SetBytes(common.CloneBytes(value))
 }
 
 func (_this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

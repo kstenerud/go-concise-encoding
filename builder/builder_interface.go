@@ -126,8 +126,8 @@ func (_this *intfBuilder) BuildFromVerbatimString(value []byte, dst reflect.Valu
 	dst.Set(reflect.ValueOf(string(value)))
 }
 
-func (_this *intfBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(common.CloneBytes(value)))
+func (_this *intfBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
 }
 
 func (_this *intfBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -142,8 +142,9 @@ func (_this *intfBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	}
 }
 
-func (_this *intfBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(value))
+func (_this *intfBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
+	// TODO: Typed array support
+	dst.Set(reflect.ValueOf(common.CloneBytes(value)))
 }
 
 func (_this *intfBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

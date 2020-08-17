@@ -113,8 +113,8 @@ func (_this *bigIntBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	PanicBadEventWithType(_this, common.TypeBigInt, "VerbatimString")
 }
 
-func (_this *bigIntBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigInt, "Bytes")
+func (_this *bigIntBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigInt, "URI")
 }
 
 func (_this *bigIntBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -129,8 +129,8 @@ func (_this *bigIntBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *bigIntBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigInt, "URI")
+func (_this *bigIntBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigInt, "TypedArray(%v)", elemType)
 }
 
 func (_this *bigIntBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -253,8 +253,8 @@ func (_this *pBigIntBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) 
 	PanicBadEventWithType(_this, common.TypePBigInt, "VerbatimString")
 }
 
-func (_this *pBigIntBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigInt, "Bytes")
+func (_this *pBigIntBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigInt, "URI")
 }
 
 func (_this *pBigIntBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -269,8 +269,8 @@ func (_this *pBigIntBuilder) BuildFromCustomText(value []byte, dst reflect.Value
 	}
 }
 
-func (_this *pBigIntBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigInt, "URI")
+func (_this *pBigIntBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigInt, "TypedArray(%v)", elemType)
 }
 
 func (_this *pBigIntBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

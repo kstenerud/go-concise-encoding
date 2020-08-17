@@ -27,6 +27,7 @@ import (
 	"math"
 	"math/big"
 	"net/url"
+	"reflect"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/internal/unicode"
@@ -258,13 +259,14 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 	_this.nextReceiver.OnCompactTime(value)
 }
 
-func (_this *Rules) OnBytes(value []byte) {
+func (_this *Rules) OnTypedArray(elemType reflect.Type, value []byte) {
+	// TODO: Typed array support
 	_this.onBytesBegin()
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData(value)
 	}
-	_this.nextReceiver.OnBytes(value)
+	_this.nextReceiver.OnTypedArray(elemType, value)
 }
 
 func (_this *Rules) OnString(value []byte) {
@@ -313,11 +315,6 @@ func (_this *Rules) OnCustomText(value []byte) {
 	_this.nextReceiver.OnCustomText(value)
 }
 
-func (_this *Rules) OnBytesBegin() {
-	_this.onBytesBegin()
-	_this.nextReceiver.OnBytesBegin()
-}
-
 func (_this *Rules) OnStringBegin() {
 	_this.onStringBegin()
 	_this.nextReceiver.OnStringBegin()
@@ -341,6 +338,12 @@ func (_this *Rules) OnCustomBinaryBegin() {
 func (_this *Rules) OnCustomTextBegin() {
 	_this.onCustomTextBegin()
 	_this.nextReceiver.OnCustomTextBegin()
+}
+
+func (_this *Rules) OnTypedArrayBegin(elemType reflect.Type) {
+	// TODO: Typed array support
+	_this.onBytesBegin()
+	_this.nextReceiver.OnTypedArrayBegin(elemType)
 }
 
 func (_this *Rules) OnArrayChunk(length uint64, moreChunksFollow bool) {

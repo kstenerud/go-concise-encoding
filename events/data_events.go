@@ -27,6 +27,7 @@ package events
 
 import (
 	"math/big"
+	"reflect"
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
@@ -68,22 +69,6 @@ type DataEventReceiver interface {
 	OnUUID(value []byte)
 	OnTime(value time.Time)
 	OnCompactTime(value *compact_time.Time)
-	// Warning: Do not store a pointer to value! The underlying contents should
-	// be considered volatile and likely to change after this method returns!
-	OnBytes(value []byte)
-	OnString(value []byte)
-	OnVerbatimString(value []byte)
-	OnURI(value []byte)
-	OnCustomBinary(value []byte)
-	OnCustomText(value []byte)
-	OnBytesBegin()
-	OnStringBegin()
-	OnVerbatimStringBegin()
-	OnURIBegin()
-	OnCustomBinaryBegin()
-	OnCustomTextBegin()
-	OnArrayChunk(length uint64, moreChunksFollow bool)
-	OnArrayData(data []byte)
 	OnList()
 	OnMap()
 	OnMarkup()
@@ -92,6 +77,25 @@ type DataEventReceiver interface {
 	OnEnd()
 	OnMarker()
 	OnReference()
+
+	// Array types.
+	// WARNING: Do not directly store pointers to the data passed via array
+	// handlers! The underlying contents should be considered volatile and
+	// likely to change after the method returns.
+	OnString(value []byte)
+	OnVerbatimString(value []byte)
+	OnURI(value []byte)
+	OnCustomBinary(value []byte)
+	OnCustomText(value []byte)
+	OnTypedArray(elemType reflect.Type, value []uint8)
+	OnStringBegin()
+	OnVerbatimStringBegin()
+	OnURIBegin()
+	OnCustomBinaryBegin()
+	OnCustomTextBegin()
+	OnTypedArrayBegin(elemType reflect.Type)
+	OnArrayChunk(length uint64, moreChunksFollow bool)
+	OnArrayData(data []byte)
 }
 
 // NullEventReceiver receives events and does nothing with them.
@@ -119,18 +123,18 @@ func (_this *NullEventReceiver) OnNan(_ bool)                          {}
 func (_this *NullEventReceiver) OnUUID(_ []byte)                       {}
 func (_this *NullEventReceiver) OnTime(_ time.Time)                    {}
 func (_this *NullEventReceiver) OnCompactTime(_ *compact_time.Time)    {}
-func (_this *NullEventReceiver) OnBytes(_ []byte)                      {}
 func (_this *NullEventReceiver) OnString(_ []byte)                     {}
 func (_this *NullEventReceiver) OnVerbatimString(_ []byte)             {}
 func (_this *NullEventReceiver) OnURI(_ []byte)                        {}
 func (_this *NullEventReceiver) OnCustomBinary(_ []byte)               {}
 func (_this *NullEventReceiver) OnCustomText(_ []byte)                 {}
-func (_this *NullEventReceiver) OnBytesBegin()                         {}
+func (_this *NullEventReceiver) OnTypedArray(_ reflect.Type, _ []byte) {}
 func (_this *NullEventReceiver) OnStringBegin()                        {}
 func (_this *NullEventReceiver) OnVerbatimStringBegin()                {}
 func (_this *NullEventReceiver) OnURIBegin()                           {}
 func (_this *NullEventReceiver) OnCustomBinaryBegin()                  {}
 func (_this *NullEventReceiver) OnCustomTextBegin()                    {}
+func (_this *NullEventReceiver) OnTypedArrayBegin(_ reflect.Type)      {}
 func (_this *NullEventReceiver) OnArrayChunk(_ uint64, _ bool)         {}
 func (_this *NullEventReceiver) OnArrayData(_ []byte)                  {}
 func (_this *NullEventReceiver) OnList()                               {}

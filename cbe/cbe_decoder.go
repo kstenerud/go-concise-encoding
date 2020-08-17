@@ -23,6 +23,7 @@ package cbe
 import (
 	"fmt"
 	"io"
+	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -212,9 +213,9 @@ func (_this *Decoder) decodeTypedArray() {
 	cbeType := _this.buffer.DecodeType()
 	switch cbeType {
 	case cbeTypePosInt8:
-		_this.eventReceiver.OnBytes(_this.decodeArray())
+		_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), _this.decodeArray())
 	default:
-		panic("TODO: Finish array types")
+		panic("TODO: Typed array support")
 	}
 }
 

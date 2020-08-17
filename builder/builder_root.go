@@ -166,8 +166,8 @@ func (_this *RootBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "VerbatimString")
 }
-func (_this *RootBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "Bytes")
+func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEvent(_this, "URI")
 }
 func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "CustomBinary")
@@ -175,8 +175,8 @@ func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "CustomText")
 }
-func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEvent(_this, "URI")
+func (_this *RootBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEvent(_this, "TypedArray(%v)", elemType)
 }
 func (_this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	PanicBadEvent(_this, "Time")
@@ -274,8 +274,8 @@ func (_this *RootBuilder) OnTime(value time.Time) {
 func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
 	_this.currentBuilder.BuildFromCompactTime(value, _this.object)
 }
-func (_this *RootBuilder) OnBytes(value []byte) {
-	_this.currentBuilder.BuildFromBytes(value, _this.object)
+func (_this *RootBuilder) OnTypedArray(elemType reflect.Type, value []byte) {
+	_this.currentBuilder.BuildFromTypedArray(elemType, value, _this.object)
 }
 func (_this *RootBuilder) OnString(value []byte) {
 	_this.currentBuilder.BuildFromString(value, _this.object)
@@ -296,8 +296,10 @@ func (_this *RootBuilder) OnCustomBinary(value []byte) {
 func (_this *RootBuilder) OnCustomText(value []byte) {
 	_this.currentBuilder.BuildFromCustomText(value, _this.object)
 }
-func (_this *RootBuilder) OnBytesBegin() {
-	_this.chunkedFunction = _this.OnBytes
+func (_this *RootBuilder) OnTypedArrayBegin(elemType reflect.Type) {
+	_this.chunkedFunction = func(bytes []byte) {
+		_this.OnTypedArray(elemType, bytes)
+	}
 	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnStringBegin() {

@@ -56,7 +56,7 @@ func (_this *uint8SliceIterator) InitInstance(_ FetchIterator, _ *options.Iterat
 }
 
 func (_this *uint8SliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
-	eventReceiver.OnBytes(v.Bytes())
+	eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), v.Bytes())
 }
 
 // ----

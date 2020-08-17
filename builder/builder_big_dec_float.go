@@ -107,8 +107,8 @@ func (_this *bigDecimalFloatBuilder) BuildFromVerbatimString(_ []byte, _ reflect
 	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "VerbatimString")
 }
 
-func (_this *bigDecimalFloatBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "Bytes")
+func (_this *bigDecimalFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "URI")
 }
 
 func (_this *bigDecimalFloatBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -123,8 +123,8 @@ func (_this *bigDecimalFloatBuilder) BuildFromCustomText(value []byte, dst refle
 	}
 }
 
-func (_this *bigDecimalFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "URI")
+func (_this *bigDecimalFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "TypedArray(%v)", elemType)
 }
 
 func (_this *bigDecimalFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -241,8 +241,8 @@ func (_this *pBigDecimalFloatBuilder) BuildFromVerbatimString(_ []byte, _ reflec
 	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "VerbatimString")
 }
 
-func (_this *pBigDecimalFloatBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "Bytes")
+func (_this *pBigDecimalFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "URI")
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -257,8 +257,8 @@ func (_this *pBigDecimalFloatBuilder) BuildFromCustomText(value []byte, dst refl
 	}
 }
 
-func (_this *pBigDecimalFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "URI")
+func (_this *pBigDecimalFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "TypedArray(%v)", elemType)
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

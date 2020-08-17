@@ -114,7 +114,7 @@ func (_this *ignoreBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
+func (_this *ignoreBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
@@ -126,7 +126,7 @@ func (_this *ignoreBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+func (_this *ignoreBuilder) BuildFromTypedArray(_ reflect.Type, _ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
@@ -254,7 +254,7 @@ func (_this *ignoreContainerBuilder) BuildFromVerbatimString(_ []byte, _ reflect
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	// Ignore this directive
 }
 
@@ -266,7 +266,7 @@ func (_this *ignoreContainerBuilder) BuildFromCustomText(_ []byte, _ reflect.Val
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromTypedArray(_ reflect.Type, _ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 

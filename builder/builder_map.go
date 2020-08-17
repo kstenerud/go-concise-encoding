@@ -203,10 +203,8 @@ func (_this *mapBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) 
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.nextBuilder.BuildFromBytes(value, object)
-	_this.store(object)
+func (_this *mapBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
+	_this.store(reflect.ValueOf(value))
 }
 
 func (_this *mapBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
@@ -221,8 +219,10 @@ func (_this *mapBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	_this.store(reflect.ValueOf(value))
+func (_this *mapBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, _ reflect.Value) {
+	object := _this.newElem()
+	_this.nextBuilder.BuildFromTypedArray(elemType, value, object)
+	_this.store(object)
 }
 
 func (_this *mapBuilder) BuildFromTime(value time.Time, _ reflect.Value) {

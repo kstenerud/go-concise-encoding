@@ -25,6 +25,7 @@ import (
 	"io"
 	"math"
 	"math/big"
+	"reflect"
 	"strings"
 	"time"
 
@@ -304,13 +305,6 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnBytes(value []byte) {
-	_this.addPrefix()
-	_this.encodeHex('b', value)
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
 func (_this *Encoder) OnURI(value []byte) {
 	asString := string(value)
 	for _, ch := range value {
@@ -404,8 +398,12 @@ func (_this *Encoder) OnCustomText(value []byte) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnBytesBegin() {
-	_this.stackState(cteEncoderStateAwaitBytes, ``)
+func (_this *Encoder) OnTypedArray(elemType reflect.Type, value []byte) {
+	// TODO: Typed array support
+	_this.addPrefix()
+	_this.encodeHex('b', value)
+	_this.currentItemCount++
+	_this.transitionState()
 }
 
 func (_this *Encoder) OnStringBegin() {
@@ -428,12 +426,18 @@ func (_this *Encoder) OnCustomTextBegin() {
 	_this.stackState(cteEncoderStateAwaitCustomText, ``)
 }
 
+func (_this *Encoder) OnTypedArrayBegin(elemType reflect.Type) {
+	// TODO: Typed array support
+	_this.stackState(cteEncoderStateAwaitBytes, ``)
+}
+
 func (_this *Encoder) finalizeArray() {
 	oldState := _this.currentState
 	_this.unstackState()
 	switch oldState {
 	case cteEncoderStateAwaitBytes:
-		_this.OnBytes(_this.chunkBuffer)
+		// TODO: Typed array support
+		_this.OnTypedArray(reflect.TypeOf(uint8(0)), _this.chunkBuffer)
 	case cteEncoderStateAwaitQuotedString:
 		_this.OnString(_this.chunkBuffer)
 	case cteEncoderStateAwaitVerbatimString:

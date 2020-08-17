@@ -25,6 +25,7 @@ import (
 	"io"
 	"math"
 	"math/big"
+	"reflect"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/buffer"
@@ -302,7 +303,8 @@ func (_this *Encoder) OnCustomText(value []byte) {
 	_this.encodeTypedByteArray(cbeTypeCustomText, value)
 }
 
-func (_this *Encoder) OnBytes(value []byte) {
+func (_this *Encoder) OnTypedArray(elemType reflect.Type, value []byte) {
+	// TODO: Typed array support
 	_this.encodeArrayUint8(value)
 }
 
@@ -326,7 +328,8 @@ func (_this *Encoder) OnCustomTextBegin() {
 	_this.encodeTypeOnly(cbeTypeCustomText)
 }
 
-func (_this *Encoder) OnBytesBegin() {
+func (_this *Encoder) OnTypedArrayBegin(elemType reflect.Type) {
+	// TODO: Typed array support
 	_this.encodeTypeOnly(cbeTypeArray)
 	_this.encodeTypeOnly(cbeTypePosInt8)
 }

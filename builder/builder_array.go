@@ -149,8 +149,8 @@ func (_this *arrayBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromBytes(value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromBytes(value, _this.currentElem())
+func (_this *arrayBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
+	_this.elemBuilder.BuildFromURI(value, _this.currentElem())
 	_this.index++
 }
 
@@ -164,8 +164,8 @@ func (_this *arrayBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	_this.elemBuilder.BuildFromURI(value, _this.currentElem())
+func (_this *arrayBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, _ reflect.Value) {
+	_this.elemBuilder.BuildFromTypedArray(elemType, value, _this.currentElem())
 	_this.index++
 }
 
@@ -296,12 +296,8 @@ func (_this *bytesArrayBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Valu
 	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromVerbatimString")
 }
 
-func (_this *bytesArrayBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
-	// TODO: Is there a more efficient way?
-	for i := 0; i < len(value); i++ {
-		elem := dst.Index(i)
-		elem.SetUint(uint64(value[i]))
-	}
+func (_this *bytesArrayBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromURI")
 }
 
 func (_this *bytesArrayBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
@@ -312,8 +308,13 @@ func (_this *bytesArrayBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromCustomText")
 }
 
-func (_this *bytesArrayBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromURI")
+func (_this *bytesArrayBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
+	// TODO: Typed array support
+	// TODO: Is there a more efficient way?
+	for i := 0; i < len(value); i++ {
+		elem := dst.Index(i)
+		elem.SetUint(uint64(value[i]))
+	}
 }
 
 func (_this *bytesArrayBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

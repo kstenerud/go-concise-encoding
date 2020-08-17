@@ -129,14 +129,14 @@ func (_this *uint8ArrayIterator) InitInstance(_ FetchIterator, _ *options.Iterat
 
 func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.CanAddr() {
-		eventReceiver.OnBytes(v.Slice(0, v.Len()).Bytes())
+		eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), v.Slice(0, v.Len()).Bytes())
 	} else {
 		tempSlice := make([]byte, v.Len())
 		tempLen := v.Len()
 		for i := 0; i < tempLen; i++ {
 			tempSlice[i] = v.Index(i).Interface().(uint8)
 		}
-		eventReceiver.OnBytes(tempSlice)
+		eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), tempSlice)
 	}
 }
 
@@ -398,7 +398,7 @@ func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events
 	for i, field := range _this.fields {
 		name := field.Name
 		if _this.opts.LowercaseStructFieldNames {
-			name = strings.ToLower(name)
+			name = common.ASCIIToLower(name)
 		}
 		eventReceiver.OnString([]byte(name))
 		iterator := _this.iterators[i]

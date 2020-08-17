@@ -160,3 +160,32 @@ func BytesPerInt() int {
 	}
 	return 4
 }
+
+var requiresLowercaseAdjust [256]bool
+
+func init() {
+	for i := 'A'; i <= 'Z'; i++ {
+		requiresLowercaseAdjust[i] = true
+	}
+}
+
+// Convert ASCII characters A-Z to a-z, ignoring locale.
+func ASCIIBytesToLower(bytes []byte) (didChange bool) {
+	const lowercaseAdjust = byte('a' - 'A')
+
+	for i, b := range bytes {
+		if requiresLowercaseAdjust[b] {
+			bytes[i] += lowercaseAdjust
+			didChange = true
+		}
+	}
+	return
+}
+
+func ASCIIToLower(s string) string {
+	asBytes := []byte(s)
+	if ASCIIBytesToLower(asBytes) {
+		return string(asBytes)
+	}
+	return s
+}

@@ -108,8 +108,8 @@ func (_this *customBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "VerbatimString")
 }
 
-func (_this *customBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "Bytes")
+func (_this *customBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEvent(_this, "URI")
 }
 
 func (_this *customBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -124,8 +124,8 @@ func (_this *customBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *customBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEvent(_this, "URI")
+func (_this *customBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEvent(_this, "TypedArray(%v)", elemType)
 }
 
 func (_this *customBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

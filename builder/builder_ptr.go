@@ -144,9 +144,9 @@ func (_this *ptrBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromBytes(value []byte, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromBytes(value, ptr.Elem())
+	_this.elemBuilder.BuildFromURI(value, ptr.Elem())
 	dst.Set(ptr)
 }
 
@@ -162,9 +162,9 @@ func (_this *ptrBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromURI(value, ptr.Elem())
+	_this.elemBuilder.BuildFromTypedArray(elemType, value, ptr.Elem())
 	dst.Set(ptr)
 }
 

@@ -55,10 +55,10 @@ type ObjectBuilder interface {
 	BuildFromUUID(value []byte, dst reflect.Value)
 	BuildFromString(value []byte, dst reflect.Value)
 	BuildFromVerbatimString(value []byte, dst reflect.Value)
-	BuildFromBytes(value []byte, dst reflect.Value)
+	BuildFromURI(value *url.URL, dst reflect.Value)
 	BuildFromCustomBinary(value []byte, dst reflect.Value)
 	BuildFromCustomText(value []byte, dst reflect.Value)
-	BuildFromURI(value *url.URL, dst reflect.Value)
+	BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
 	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
 	BuildBeginList()
@@ -95,13 +95,15 @@ type FetchBuilder func(reflect.Type) ObjectBuilder
 
 // Report that a builder was given an event that it can't handle.
 // This indicates a bug in the implementation.
-func PanicBadEvent(builder ObjectBuilder, event string) {
+func PanicBadEvent(builder ObjectBuilder, eventFmt string, args ...interface{}) {
+	event := fmt.Sprintf(eventFmt, args...)
 	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), event))
 }
 
 // Report that a builder with the specified type was given an event that it can't handle.
 // This indicates a bug in the implementation.
-func PanicBadEventWithType(builder ObjectBuilder, dstType reflect.Type, event string) {
+func PanicBadEventWithType(builder ObjectBuilder, dstType reflect.Type, eventFmt string, args ...interface{}) {
+	event := fmt.Sprintf(eventFmt, args...)
 	panic(fmt.Errorf(`BUG: %v with type %v cannot respond to %v`, reflect.TypeOf(builder), dstType, event))
 }
 

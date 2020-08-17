@@ -28,7 +28,7 @@ package cte
 import (
 	"io"
 	"math"
-	"strings"
+	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -241,7 +241,8 @@ func (_this *Decoder) handleStringish() {
 		initiator := _this.buffer.GetTokenFirstByte()
 		switch initiator {
 		case 'b':
-			_this.eventReceiver.OnBytes(_this.buffer.DecodeHexBytes())
+			// TODO: Typed array support
+			_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), _this.buffer.DecodeHexBytes())
 			_this.endObject()
 			return
 		case 'c':
@@ -321,7 +322,9 @@ func (_this *Decoder) handleNegativeNumeric() {
 		_this.buffer.AdvanceByte()
 		_this.buffer.BeginSubtoken()
 		_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyAZ)
-		token := strings.ToLower(string(_this.buffer.GetSubtoken()))
+		subtoken := _this.buffer.GetSubtoken()
+		common.ASCIIBytesToLower(subtoken)
+		token := string(subtoken)
 		if token != "inf" {
 			_this.buffer.Errorf("Unknown named value: %v", token)
 		}
@@ -608,7 +611,9 @@ func (_this *Decoder) handleNamedValue() {
 	_this.buffer.AdvanceByte()
 	_this.buffer.BeginSubtoken()
 	_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyAZ)
-	token := strings.ToLower(string(_this.buffer.GetSubtoken()))
+	subtoken := _this.buffer.GetSubtoken()
+	common.ASCIIBytesToLower(subtoken)
+	token := string(subtoken)
 	switch token {
 	case "nil":
 		_this.eventReceiver.OnNil()

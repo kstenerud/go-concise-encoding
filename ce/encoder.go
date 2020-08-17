@@ -23,6 +23,7 @@ package ce
 import (
 	"io"
 	"math/big"
+	"reflect"
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
@@ -61,18 +62,18 @@ type Encoder interface {
 	OnCompactTime(value *compact_time.Time)
 	// Warning: Do not store a pointer to value! The underlying contents should
 	// be considered volatile and likely to change after this method returns!
-	OnBytes(value []byte)
 	OnString(value []byte)
 	OnVerbatimString(value []byte)
 	OnURI(value []byte)
 	OnCustomBinary(value []byte)
 	OnCustomText(value []byte)
-	OnBytesBegin()
+	OnTypedArray(elemType reflect.Type, value []byte)
 	OnStringBegin()
 	OnVerbatimStringBegin()
 	OnURIBegin()
 	OnCustomBinaryBegin()
 	OnCustomTextBegin()
+	OnTypedArrayBegin(elemType reflect.Type)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
 	OnArrayData(data []byte)
 	OnList()

@@ -107,8 +107,8 @@ func (_this *bigFloatBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value)
 	PanicBadEventWithType(_this, common.TypeBigFloat, "VerbatimString")
 }
 
-func (_this *bigFloatBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigFloat, "Bytes")
+func (_this *bigFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigFloat, "URI")
 }
 
 func (_this *bigFloatBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -123,8 +123,8 @@ func (_this *bigFloatBuilder) BuildFromCustomText(value []byte, dst reflect.Valu
 	}
 }
 
-func (_this *bigFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigFloat, "URI")
+func (_this *bigFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigFloat, "TypedArray(%v)", elemType)
 }
 
 func (_this *bigFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -241,8 +241,8 @@ func (_this *pBigFloatBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value
 	PanicBadEventWithType(_this, common.TypePBigFloat, "VerbatimString")
 }
 
-func (_this *pBigFloatBuilder) BuildFromBytes(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigFloat, "Bytes")
+func (_this *pBigFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigFloat, "URI")
 }
 
 func (_this *pBigFloatBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
@@ -257,8 +257,8 @@ func (_this *pBigFloatBuilder) BuildFromCustomText(value []byte, dst reflect.Val
 	}
 }
 
-func (_this *pBigFloatBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigFloat, "URI")
+func (_this *pBigFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigFloat, "TypedArray(%v)", elemType)
 }
 
 func (_this *pBigFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
