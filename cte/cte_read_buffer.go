@@ -128,6 +128,12 @@ func (_this *ReadBuffer) ReadUntilPropertyNoEOD(property cteByteProprty) {
 	}
 }
 
+func (_this *ReadBuffer) ReadWhilePropertyNoEOD(property cteByteProprty) {
+	for hasProperty(_this.PeekByteNoEOD(), property) {
+		_this.AdvanceByte()
+	}
+}
+
 func (_this *ReadBuffer) ReadWhilePropertyAllowEOD(property cteByteProprty) {
 	for _this.PeekByteAllowEOD().HasProperty(property) {
 		_this.AdvanceByte()

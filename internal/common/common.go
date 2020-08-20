@@ -115,7 +115,7 @@ const (
 	KindPropertyLengthable
 )
 
-var kindProperties = [32]KindProperty{
+var kindProperties = [64]KindProperty{
 	reflect.Chan:          KindPropertyPointer | KindPropertyNullable | KindPropertyLengthable,
 	reflect.Func:          KindPropertyPointer | KindPropertyNullable,
 	reflect.Interface:     KindPropertyNullable,

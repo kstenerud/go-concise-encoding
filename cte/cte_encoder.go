@@ -401,7 +401,7 @@ func (_this *Encoder) OnCustomText(value []byte) {
 func (_this *Encoder) OnTypedArray(elemType reflect.Type, value []byte) {
 	// TODO: Typed array support
 	_this.addPrefix()
-	_this.encodeHex('b', value)
+	_this.encodeUint8Array(value)
 	_this.currentItemCount++
 	_this.transitionState()
 }
@@ -632,6 +632,21 @@ func (_this *Encoder) encodeHex(prefix byte, value []byte) {
 	}
 }
 
+func (_this *Encoder) encodeUint8Array(value []uint8) {
+	header := []byte("|u8x")
+	dst := _this.buff.Allocate(len(value)*3 + len(header) + 1)
+	copy(dst, header)
+	dst = dst[len(header):]
+	base := 0
+	for _, b := range value {
+		dst[base] = ' '
+		dst[base+1] = hexToChar[b>>4]
+		dst[base+2] = hexToChar[b&15]
+		base += 3
+	}
+	dst[base] = '|'
+}
+
 func (_this *Encoder) applyIndentation(levelOffset int) {
 	if len(_this.opts.Indent) > 0 {
 		level := len(_this.containerState) + levelOffset
@@ -657,12 +672,12 @@ func (_this *Encoder) generateIndentPrefix() string {
 	return _this.generateIndentation(0)
 }
 
-func (_this *Encoder) generatePipePrefix() string {
-	return "|"
+func (_this *Encoder) generateMarkupContentsPrefix() string {
+	return ";"
 }
 
-func (_this *Encoder) generatePipeIndentPrefix() string {
-	return "|" + _this.generateIndentation(0)
+func (_this *Encoder) generateMarkupContentsIndentPrefix() string {
+	return ";" + _this.generateIndentation(0)
 }
 
 func (_this *Encoder) generateEqualsPrefix() string {
@@ -789,7 +804,7 @@ func init() {
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupName] = (*Encoder).generateNoPrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupKey] = (*Encoder).generateSpacePrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generatePipePrefix
+	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generateMarkupContentsPrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
 	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix
@@ -816,7 +831,7 @@ func init() {
 	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupName] = (*Encoder).generateNoPrefix
 	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupKey] = (*Encoder).generateSpacePrefix
 	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generatePipeIndentPrefix
+	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generateMarkupContentsIndentPrefix
 	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
 	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
 	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix

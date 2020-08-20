@@ -26,6 +26,7 @@
 package cte
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"reflect"
@@ -653,6 +654,57 @@ func (_this *Decoder) handleVerbatimString() {
 	_this.endObject()
 }
 
+func (_this *Decoder) handleU8X() {
+	// TODO: Optimize handleU8X
+	var data []uint8
+	for {
+		b := _this.buffer.PeekByteNoEOD()
+		if !hasProperty(b, ctePropertyWhitespace) {
+			if b == '|' {
+				_this.buffer.AdvanceByte()
+				break
+			}
+			panic(fmt.Errorf("Expected whitespace"))
+		}
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		b = _this.buffer.PeekByteNoEOD()
+		if b == '|' {
+			_this.buffer.AdvanceByte()
+			break
+		}
+
+		v, count := _this.buffer.DecodeHexInteger(0)
+		if count == 0 {
+			panic(fmt.Errorf("Expected hex digits"))
+		}
+		if count > 2 {
+			panic(fmt.Errorf("hex byte too long"))
+		}
+		data = append(data, uint8(v))
+	}
+	_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), data)
+	_this.endObject()
+}
+
+func (_this *Decoder) handleTypedArrayBegin() {
+	_this.buffer.AdvanceByte()
+	_this.buffer.BeginSubtoken()
+	_this.buffer.ReadUntilPropertyNoEOD(ctePropertyWhitespace)
+	subtoken := _this.buffer.GetSubtoken()
+	if len(subtoken) > 0 && subtoken[len(subtoken)-1] == '|' {
+		subtoken = subtoken[:len(subtoken)-1]
+		_this.buffer.UngetByte()
+	}
+	common.ASCIIBytesToLower(subtoken)
+	token := string(subtoken)
+	switch token {
+	case "u8x":
+		_this.handleU8X()
+	default:
+		panic(fmt.Errorf("%s: Unhandled array type", token))
+	}
+}
+
 func (_this *Decoder) handleReference() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnReference()
@@ -784,7 +836,7 @@ func init() {
 	}
 
 	charBasedHandlers[':'] = (*Decoder).handleInvalidChar
-	charBasedHandlers[';'] = (*Decoder).handleInvalidChar
+	charBasedHandlers[';'] = (*Decoder).handleMarkupContentBegin
 	charBasedHandlers['<'] = (*Decoder).handleMarkupBegin
 	charBasedHandlers['>'] = (*Decoder).handleMarkupEnd
 	charBasedHandlers['?'] = (*Decoder).handleInvalidChar
@@ -806,7 +858,7 @@ func init() {
 	}
 
 	charBasedHandlers['{'] = (*Decoder).handleMapBegin
-	charBasedHandlers['|'] = (*Decoder).handleMarkupContentBegin
+	charBasedHandlers['|'] = (*Decoder).handleTypedArrayBegin
 	charBasedHandlers['}'] = (*Decoder).handleMapEnd
 	charBasedHandlers['~'] = (*Decoder).handleInvalidChar
 
@@ -861,10 +913,10 @@ func init() {
 	cteByteProperties['\n'] |= ctePropertyWhitespace
 	cteByteProperties['\t'] |= ctePropertyWhitespace
 
-	cteByteProperties['-'] |= ctePropertyUnquotedMid | ctePropertyAreaLocation
-	cteByteProperties['+'] |= ctePropertyUnquotedMid | ctePropertyAreaLocation
-	cteByteProperties['.'] |= ctePropertyUnquotedMid
 	cteByteProperties[':'] |= ctePropertyUnquotedMid
+	cteByteProperties['-'] |= ctePropertyUnquotedMid | ctePropertyAreaLocation
+	cteByteProperties['+'] |= ctePropertyAreaLocation
+	cteByteProperties['.'] |= ctePropertyUnquotedMid
 	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation | ctePropertyMarkerID | ctePropertyNumericWhitespace
 	for i := '0'; i <= '9'; i++ {
 		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyAreaLocation | ctePropertyMarkerID
@@ -883,11 +935,17 @@ func init() {
 		// UTF-8 continuation
 		cteByteProperties[i] |= ctePropertyUnquotedMid
 	}
+	// TODO: Completely invalid bytes?
 
 	cteByteProperties['='] |= ctePropertyObjectEnd
+	cteByteProperties[';'] |= ctePropertyObjectEnd
+	cteByteProperties['['] |= ctePropertyObjectEnd
 	cteByteProperties[']'] |= ctePropertyObjectEnd
+	cteByteProperties['{'] |= ctePropertyObjectEnd
 	cteByteProperties['}'] |= ctePropertyObjectEnd
 	cteByteProperties[')'] |= ctePropertyObjectEnd
+	cteByteProperties['('] |= ctePropertyObjectEnd
+	cteByteProperties['<'] |= ctePropertyObjectEnd
 	cteByteProperties['>'] |= ctePropertyObjectEnd
 	cteByteProperties['|'] |= ctePropertyObjectEnd
 	cteByteProperties[' '] |= ctePropertyObjectEnd
