@@ -242,11 +242,6 @@ func (_this *Decoder) handleStringish() {
 		initiator := _this.buffer.GetTokenFirstByte()
 		switch initiator {
 		case 'b':
-			// TODO: Typed array support
-			_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), _this.buffer.DecodeHexBytes())
-			_this.endObject()
-			return
-		case 'c':
 			_this.eventReceiver.OnCustomBinary(_this.buffer.DecodeHexBytes())
 			_this.endObject()
 			return
@@ -701,6 +696,7 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	case "u8x":
 		_this.handleU8X()
 	default:
+		panic(fmt.Errorf("TODO: Typed array support for %s", token))
 		panic(fmt.Errorf("%s: Unhandled array type", token))
 	}
 }

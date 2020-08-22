@@ -84,7 +84,8 @@ func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
 	decodeOpts *options.CTEDecoderOptions,
 	events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
 
-	return cteDecode(decodeOpts, cteEncode(encodeOpts, events...))
+	document := cteEncode(encodeOpts, events...)
+	return cteDecode(decodeOpts, document)
 }
 
 func TT() *test.TEvent                       { return test.TT() }

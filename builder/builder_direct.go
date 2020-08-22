@@ -267,8 +267,12 @@ func (_this *directPtrBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 }
 
 func (_this *directPtrBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	// TODO: Typed array support
-	dst.SetBytes(common.CloneBytes(value))
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		dst.SetBytes(common.CloneBytes(value))
+	default:
+		panic(fmt.Errorf("TODO: Add typed array support for %v", elemType))
+	}
 }
 
 func (_this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

@@ -58,6 +58,7 @@ type Rules struct {
 	maxDepth              int
 	stateStack            []ruleState
 	arrayType             ruleEvent
+	arrayElementSize      int
 	arrayData             []byte
 	chunkByteCount        uint64
 	chunkBytesWritten     uint64
@@ -260,8 +261,7 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 }
 
 func (_this *Rules) OnTypedArray(elemType reflect.Type, value []byte) {
-	// TODO: Typed array support
-	_this.onBytesBegin()
+	_this.onTypedArrayBegin(elemType)
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData(value)
@@ -341,8 +341,7 @@ func (_this *Rules) OnCustomTextBegin() {
 }
 
 func (_this *Rules) OnTypedArrayBegin(elemType reflect.Type) {
-	// TODO: Typed array support
-	_this.onBytesBegin()
+	_this.onTypedArrayBegin(elemType)
 	_this.nextReceiver.OnTypedArrayBegin(elemType)
 }
 
@@ -448,34 +447,39 @@ func (_this *Rules) onNegativeInt() {
 	_this.addScalar(eventTypeNInt)
 }
 
-func (_this *Rules) onBytesBegin() {
-	_this.beginArray(eventTypeBytes)
+func (_this *Rules) onTypedArrayBegin(elemType reflect.Type) {
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		_this.beginArray(eventTypeArray, 1)
+	default:
+		panic(fmt.Errorf("TODO: Support typed array for %v", elemType))
+	}
 }
 
 func (_this *Rules) onStringBegin() {
-	_this.beginArray(eventTypeString)
+	_this.beginArray(eventTypeString, 1)
 }
 
 func (_this *Rules) onVerbatimStringBegin() {
-	_this.beginArray(eventTypeVerbatimString)
+	_this.beginArray(eventTypeVerbatimString, 1)
 }
 
 func (_this *Rules) onURIBegin() {
-	_this.beginArray(eventTypeURI)
+	_this.beginArray(eventTypeURI, 1)
 }
 
 func (_this *Rules) onCustomBinaryBegin() {
-	_this.beginArray(eventTypeCustomBinary)
+	_this.beginArray(eventTypeCustomBinary, 1)
 }
 
 func (_this *Rules) onCustomTextBegin() {
-	_this.beginArray(eventTypeCustomText)
+	_this.beginArray(eventTypeCustomText, 1)
 }
 
 func (_this *Rules) onArrayChunk(length uint64, moreChunksFollow bool) {
 	_this.assertCurrentStateAllowsType(eventTypeAChunk)
 
-	_this.chunkByteCount = length
+	_this.chunkByteCount = length * uint64(_this.arrayElementSize)
 	_this.chunkBytesWritten = 0
 	_this.moreChunksFollow = moreChunksFollow
 	_this.changeState(stateAwaitingArrayData)
@@ -505,7 +509,7 @@ func (_this *Rules) onArrayData(data []byte) {
 	}
 
 	switch _this.arrayType {
-	case eventTypeBytes:
+	case eventTypeArray:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxBytesLength {
 			panic(fmt.Errorf("max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
 		}
@@ -636,10 +640,11 @@ func (_this *Rules) assertCurrentStateAllowsType(objectType ruleEvent) {
 	assertStateAllowsType(_this.getCurrentState(), objectType)
 }
 
-func (_this *Rules) beginArray(arrayType ruleEvent) {
+func (_this *Rules) beginArray(arrayType ruleEvent, elementSize int) {
 	_this.assertCurrentStateAllowsType(arrayType)
 
 	_this.arrayType = arrayType
+	_this.arrayElementSize = elementSize
 	_this.arrayData = _this.arrayData[:0]
 	_this.chunkByteCount = 0
 	_this.chunkBytesWritten = 0
@@ -688,7 +693,7 @@ func (_this *Rules) onArrayChunkEnded() {
 			}
 			_this.stackID(uri)
 		}
-	case eventTypeBytes:
+	case eventTypeArray:
 		// Nothing to do
 	}
 
@@ -797,35 +802,35 @@ const (
 )
 
 var ruleEventNames = [...]string{
-	"nothing",
-	"begin document",
-	"version",
-	"padding",
-	"nil",
-	"bool",
-	"positive int",
-	"negative int",
-	"float",
-	"nan",
-	"UUID",
-	"time",
-	"list",
-	"map",
-	"markup",
-	"metadata",
-	"comment",
-	"marker",
-	"reference",
-	"end container",
-	"bytes",
-	"string",
-	"verbatim string",
-	"URI",
-	"custom (binary)",
-	"custom (text)",
-	"array chunk",
-	"array data",
-	"end document",
+	eventIDNothing:        "nothing",
+	eventIDBeginDocument:  "begin document",
+	eventIDVersion:        "version",
+	eventIDPadding:        "padding",
+	eventIDNil:            "nil",
+	eventIDBool:           "bool",
+	eventIDPInt:           "positive int",
+	eventIDNInt:           "negative int",
+	eventIDFloat:          "float",
+	eventIDNan:            "nan",
+	eventIDUUID:           "UUID",
+	eventIDTime:           "time",
+	eventIDList:           "list",
+	eventIDMap:            "map",
+	eventIDMarkup:         "markup",
+	eventIDMetadata:       "metadata",
+	eventIDComment:        "comment",
+	eventIDMarker:         "marker",
+	eventIDReference:      "reference",
+	eventIDEndContainer:   "end container",
+	eventIDBytes:          "bytes",
+	eventIDString:         "string",
+	eventIDVerbatimString: "verbatim string",
+	eventIDURI:            "URI",
+	eventIDCustomBinary:   "custom (binary)",
+	eventIDCustomText:     "custom (text)",
+	eventIDAChunk:         "array chunk",
+	eventIDAData:          "array data",
+	eventIDEndDocument:    "end document",
 }
 
 func (_this ruleEvent) String() string {
@@ -859,27 +864,27 @@ const (
 )
 
 var ruleStateNames = [...]string{
-	"nothing",
-	"begin document",
-	"version",
-	"top-level object",
-	"list item",
-	"comment contents",
-	"map key",
-	"map value",
-	"metadata key",
-	"metadata value",
-	"metadata object",
-	"markup name",
-	"markup attribute key",
-	"markup attribute value",
-	"markup contents",
-	"marker ID",
-	"marker object",
-	"reference id",
-	"array chunk",
-	"array data",
-	"end document",
+	stateIDAwaitingNothing:        "nothing",
+	stateIDAwaitingBeginDocument:  "begin document",
+	stateIDAwaitingVersion:        "version",
+	stateIDAwaitingTLO:            "top-level object",
+	stateIDAwaitingListItem:       "list item",
+	stateIDAwaitingCommentItem:    "comment contents",
+	stateIDAwaitingMapKey:         "map key",
+	stateIDAwaitingMapValue:       "map value",
+	stateIDAwaitingMetadataKey:    "metadata key",
+	stateIDAwaitingMetadataValue:  "metadata value",
+	stateIDAwaitingMetadataObject: "metadata object",
+	stateIDAwaitingMarkupName:     "markup name",
+	stateIDAwaitingMarkupKey:      "markup attribute key",
+	stateIDAwaitingMarkupValue:    "markup attribute value",
+	stateIDAwaitingMarkupContents: "markup contents",
+	stateIDAwaitingMarkerID:       "marker ID",
+	stateIDAwaitingMarkerObject:   "marker object",
+	stateIDAwaitingReferenceID:    "reference id",
+	stateIDAwaitingArrayChunk:     "array chunk",
+	stateIDAwaitingArrayData:      "array data",
+	stateIDAwaitingEndDocument:    "end document",
 }
 
 func (_this ruleState) String() string {
@@ -951,7 +956,7 @@ const (
 	eventTypeMarker         = eventIDMarker | eventBeginMarker
 	eventTypeReference      = eventIDReference | eventBeginReference
 	eventTypeEndContainer   = eventIDEndContainer | eventEndContainer
-	eventTypeBytes          = eventIDBytes | eventBeginBytes
+	eventTypeArray          = eventIDBytes | eventBeginBytes
 	eventTypeString         = eventIDString | eventBeginString
 	eventTypeVerbatimString = eventIDVerbatimString | eventBeginVerbatimString
 	eventTypeURI            = eventIDURI | eventBeginURI
@@ -1009,27 +1014,27 @@ const (
 )
 
 var childEndRuleStateChanges = [...]ruleState{
-	/* stateIDAwaitingNothing                */ stateAwaitingNothing,
-	/* stateIDAwaitingBeginDocument        > */ stateAwaitingVersion,
-	/* stateIDAwaitingVersion              > */ stateAwaitingTLO,
-	/* stateIDAwaitingTLO                  > */ stateAwaitingEndDocument,
-	/* stateIDAwaitingListItem               */ stateAwaitingListItem,
-	/* stateIDAwaitingCommentItem            */ stateAwaitingCommentItem,
-	/* stateIDAwaitingMapKey               > */ stateAwaitingMapValue,
-	/* stateIDAwaitingMapValue             > */ stateAwaitingMapKey,
-	/* stateIDAwaitingMetadataKey          > */ stateAwaitingMetadataValue,
-	/* stateIDAwaitingMetadataValue        > */ stateAwaitingMetadataKey,
-	/* stateIDAwaitingMetadataObject         */ stateIDAwaitingMetadataObject,
-	/* stateIDAwaitingMarkupName           > */ stateAwaitingMarkupKey,
-	/* stateIDAwaitingMarkupAttributeKey   > */ stateAwaitingMarkupValue,
-	/* stateIDAwaitingMarkupAttributeValue > */ stateAwaitingMarkupKey,
-	/* stateIDAwaitingMarkupContents         */ stateAwaitingMarkupContents,
-	/* stateIDAwaitingMarkerID             > */ stateAwaitingMarkerObject,
-	/* stateIDAwaitingMarkerObject           */ stateAwaitingMarkerObject,
-	/* stateIDAwaitingReferenceID            */ stateAwaitingReferenceID,
-	/* stateIDAwaitingArrayChunk             */ stateAwaitingArrayChunk,
-	/* stateIDAwaitingArrayData              */ stateAwaitingArrayData,
-	/* stateIDAwaitingEndDocument          > */ stateAwaitingNothing,
+	stateIDAwaitingNothing:        stateAwaitingNothing,
+	stateIDAwaitingBeginDocument:  stateAwaitingVersion,
+	stateIDAwaitingVersion:        stateAwaitingTLO,
+	stateIDAwaitingTLO:            stateAwaitingEndDocument,
+	stateIDAwaitingListItem:       stateAwaitingListItem,
+	stateIDAwaitingCommentItem:    stateAwaitingCommentItem,
+	stateIDAwaitingMapKey:         stateAwaitingMapValue,
+	stateIDAwaitingMapValue:       stateAwaitingMapKey,
+	stateIDAwaitingMetadataKey:    stateAwaitingMetadataValue,
+	stateIDAwaitingMetadataValue:  stateAwaitingMetadataKey,
+	stateIDAwaitingMetadataObject: stateIDAwaitingMetadataObject,
+	stateIDAwaitingMarkupName:     stateAwaitingMarkupKey,
+	stateIDAwaitingMarkupKey:      stateAwaitingMarkupValue,
+	stateIDAwaitingMarkupValue:    stateAwaitingMarkupKey,
+	stateIDAwaitingMarkupContents: stateAwaitingMarkupContents,
+	stateIDAwaitingMarkerID:       stateAwaitingMarkerObject,
+	stateIDAwaitingMarkerObject:   stateAwaitingMarkerObject,
+	stateIDAwaitingReferenceID:    stateAwaitingReferenceID,
+	stateIDAwaitingArrayChunk:     stateAwaitingArrayChunk,
+	stateIDAwaitingArrayData:      stateAwaitingArrayData,
+	stateIDAwaitingEndDocument:    stateAwaitingNothing,
 }
 
 func validateRulesCommentCharacter(ch rune) {

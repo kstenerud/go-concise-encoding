@@ -213,7 +213,7 @@ func (_this *Decoder) decodeTypedArray() {
 	cbeType := _this.buffer.DecodeType()
 	switch cbeType {
 	case cbeTypeTrue:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(true), _this.decodeArray())
+		panic("TODO: Typed array support: bool")
 	case cbeTypePosInt8:
 		_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), _this.decodeArray())
 	case cbeTypePosInt16:
@@ -231,13 +231,13 @@ func (_this *Decoder) decodeTypedArray() {
 	case cbeTypeNegInt64:
 		_this.eventReceiver.OnTypedArray(reflect.TypeOf(int64(0)), _this.decodeArray())
 	case cbeTypeFloat16:
-		panic("TODO: Float16 array support")
+		panic("TODO: Typed array support: float16")
 	case cbeTypeFloat32:
 		_this.eventReceiver.OnTypedArray(reflect.TypeOf(float32(0)), _this.decodeArray())
 	case cbeTypeFloat64:
 		_this.eventReceiver.OnTypedArray(reflect.TypeOf(float64(0)), _this.decodeArray())
 	case cbeTypeUUID:
-		panic("TODO: UUID array support")
+		panic("TODO: Typed array support: UUID")
 	default:
 		panic(fmt.Errorf("0x%x: Unsupported typed array type", cbeType))
 	}

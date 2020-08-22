@@ -304,8 +304,12 @@ func (_this *Encoder) OnCustomText(value []byte) {
 }
 
 func (_this *Encoder) OnTypedArray(elemType reflect.Type, value []byte) {
-	// TODO: Typed array support
-	_this.encodeArrayUint8(value)
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		_this.encodeArrayUint8(value)
+	default:
+		panic(fmt.Errorf("TODO: Add typed array support for %v", elemType))
+	}
 }
 
 func (_this *Encoder) OnStringBegin() {
@@ -329,9 +333,13 @@ func (_this *Encoder) OnCustomTextBegin() {
 }
 
 func (_this *Encoder) OnTypedArrayBegin(elemType reflect.Type) {
-	// TODO: Typed array support
 	_this.encodeTypeOnly(cbeTypeArray)
-	_this.encodeTypeOnly(cbeTypePosInt8)
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		_this.encodeTypeOnly(cbeTypePosInt8)
+	default:
+		panic(fmt.Errorf("TODO: Add typed array support for %v", elemType))
+	}
 }
 
 func (_this *Encoder) OnArrayChunk(length uint64, moreChunksFollow bool) {

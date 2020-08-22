@@ -309,11 +309,15 @@ func (_this *bytesArrayBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 }
 
 func (_this *bytesArrayBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	// TODO: Typed array support
-	// TODO: Is there a more efficient way?
-	for i := 0; i < len(value); i++ {
-		elem := dst.Index(i)
-		elem.SetUint(uint64(value[i]))
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		// TODO: Is there a more efficient way?
+		for i := 0; i < len(value); i++ {
+			elem := dst.Index(i)
+			elem.SetUint(uint64(value[i]))
+		}
+	default:
+		PanicBadEventWithType(_this, common.TypeBytes, "BuildFromTypedArray(%v)", elemType)
 	}
 }
 

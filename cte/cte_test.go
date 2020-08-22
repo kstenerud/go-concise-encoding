@@ -173,15 +173,15 @@ func TestCTEChunkedURI(t *testing.T) {
 }
 
 func TestCTEChunkedCustomBinary(t *testing.T) {
-	assertEncode(t, `c1 c"123456789a"`, BD(), V(1), CBB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
+	assertEncode(t, `c1 b"123456789a"`, BD(), V(1), CBB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
 
-	assertEncode(t, `c1 c"123456789a"`, BD(), V(1), CBB(),
+	assertEncode(t, `c1 b"123456789a"`, BD(), V(1), CBB(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, false), AD([]byte{0x78, 0x9a}),
 		ED())
 
-	assertEncode(t, `c1 c"123456789a"`, BD(), V(1), CBB(),
+	assertEncode(t, `c1 b"123456789a"`, BD(), V(1), CBB(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, true), AD([]byte{0x78, 0x9a}),
@@ -476,9 +476,9 @@ func TestCTEBytes(t *testing.T) {
 	assertDecode(t, `c1 |u8x  f9 C2 4F   10  |`, BD(), V(1), BIN([]byte{0xf9, 0xc2, 0x4f, 0x10}), ED())
 }
 
-func TestCTECustom(t *testing.T) {
-	assertDecodeEncode(t, `c1 c"a9"`, BD(), V(1), CUB([]byte{0xa9}), ED())
-	assertDecode(t, "c1 c\"\n8 f 1 9a 7c\td  \"", BD(), V(1), CUB([]byte{0x8f, 0x19, 0xa7, 0xcd}), ED())
+func TestCTECustomBinary(t *testing.T) {
+	assertDecodeEncode(t, `c1 b"a9"`, BD(), V(1), CUB([]byte{0xa9}), ED())
+	assertDecode(t, "c1 b\"\n8 f 1 9a 7c\td  \"", BD(), V(1), CUB([]byte{0x8f, 0x19, 0xa7, 0xcd}), ED())
 }
 
 func TestCTEBadArrayType(t *testing.T) {

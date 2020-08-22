@@ -113,6 +113,8 @@ func (_this *Encoder) OnBeginDocument() {
 		_this.stackState(cteEncoderStateAwaitListFirstItem, "")
 	case options.ImpliedStructureMap:
 		_this.stackState(cteEncoderStateAwaitMapFirstKey, "")
+	default:
+		_this.setState(cteEncoderStateAwaitVersion)
 	}
 }
 
@@ -125,7 +127,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 		return
 	}
 	_this.addFmt("c%d", version)
-	_this.setState(cteEncoderStateAwaitTLO)
+	_this.transitionState()
 }
 
 func (_this *Encoder) OnNil() {
@@ -328,33 +330,6 @@ func (_this *Encoder) OnURI(value []byte) {
 	}
 }
 
-func (_this *Encoder) handleStringMarkerID(value []byte) {
-	_this.addPrefix()
-	_this.unstackState()
-	_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, string(value))
-}
-
-func (_this *Encoder) handleStringReferenceID(value []byte) {
-	_this.addPrefix()
-	_this.unstackState()
-	_this.addFmt("%v#%v", _this.nextPrefix, string(value))
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
-func (_this *Encoder) handleStringMarkupItem(value []byte) {
-	_this.addPrefix()
-	_this.addString(asMarkupContent(value))
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
-func (_this *Encoder) handleStringCommentItem(value []byte) {
-	_this.addPrefix()
-	_this.addString(string(value))
-	_this.transitionState()
-}
-
 func (_this *Encoder) handleStringNormal(value []byte) {
 	_this.addPrefix()
 	_this.addString(asPotentialQuotedString(value))
@@ -365,15 +340,29 @@ func (_this *Encoder) handleStringNormal(value []byte) {
 func (_this *Encoder) OnString(value []byte) {
 	switch _this.currentState {
 	case cteEncoderStateAwaitMarkerID:
-		_this.handleStringMarkerID(value)
+		_this.addPrefix()
+		_this.unstackState()
+		_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, string(value))
 	case cteEncoderStateAwaitReferenceID:
-		_this.handleStringReferenceID(value)
+		_this.addPrefix()
+		_this.unstackState()
+		_this.addFmt("%v#%v", _this.nextPrefix, string(value))
+		_this.currentItemCount++
+		_this.transitionState()
 	case cteEncoderStateAwaitMarkupItem, cteEncoderStateAwaitMarkupFirstItem:
-		_this.handleStringMarkupItem(value)
+		_this.addPrefix()
+		_this.addString(asMarkupContent(value))
+		_this.currentItemCount++
+		_this.transitionState()
 	case cteEncoderStateAwaitCommentItem:
-		_this.handleStringCommentItem(value)
+		_this.addPrefix()
+		_this.addString(string(value))
+		_this.transitionState()
 	default:
-		_this.handleStringNormal(value)
+		_this.addPrefix()
+		_this.addString(asPotentialQuotedString(value))
+		_this.currentItemCount++
+		_this.transitionState()
 	}
 }
 
@@ -386,7 +375,7 @@ func (_this *Encoder) OnVerbatimString(value []byte) {
 
 func (_this *Encoder) OnCustomBinary(value []byte) {
 	_this.addPrefix()
-	_this.encodeHex('c', value)
+	_this.encodeHex('b', value)
 	_this.currentItemCount++
 	_this.transitionState()
 }
@@ -399,9 +388,13 @@ func (_this *Encoder) OnCustomText(value []byte) {
 }
 
 func (_this *Encoder) OnTypedArray(elemType reflect.Type, value []byte) {
-	// TODO: Typed array support
 	_this.addPrefix()
-	_this.encodeUint8Array(value)
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		_this.encodeUint8Array(value)
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", elemType.Kind()))
+	}
 	_this.currentItemCount++
 	_this.transitionState()
 }
@@ -427,16 +420,19 @@ func (_this *Encoder) OnCustomTextBegin() {
 }
 
 func (_this *Encoder) OnTypedArrayBegin(elemType reflect.Type) {
-	// TODO: Typed array support
-	_this.stackState(cteEncoderStateAwaitBytes, ``)
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		_this.stackState(cteEncoderStateAwaitArrayU8, ``)
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", elemType.Kind()))
+	}
 }
 
 func (_this *Encoder) finalizeArray() {
 	oldState := _this.currentState
 	_this.unstackState()
 	switch oldState {
-	case cteEncoderStateAwaitBytes:
-		// TODO: Typed array support
+	case cteEncoderStateAwaitArrayU8:
 		_this.OnTypedArray(reflect.TypeOf(uint8(0)), _this.chunkBuffer)
 	case cteEncoderStateAwaitQuotedString:
 		_this.OnString(_this.chunkBuffer)
@@ -448,6 +444,8 @@ func (_this *Encoder) finalizeArray() {
 		_this.OnCustomBinary(_this.chunkBuffer)
 	case cteEncoderStateAwaitCustomText:
 		_this.OnCustomText(_this.chunkBuffer)
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", oldState))
 	}
 	_this.chunkBuffer = _this.chunkBuffer[:0]
 }
@@ -690,7 +688,8 @@ func (_this *Encoder) generateSpaceEqualsPrefix() string {
 type cteEncoderState int64
 
 const (
-	cteEncoderStateAwaitTLO cteEncoderState = iota
+	cteEncoderStateAwaitVersion cteEncoderState = iota
+	cteEncoderStateAwaitTLO
 	cteEncoderStateAwaitListFirstItem
 	cteEncoderStateAwaitListItem
 	cteEncoderStateAwaitMapFirstKey
@@ -712,11 +711,24 @@ const (
 	cteEncoderStateAwaitURI
 	cteEncoderStateAwaitCustomBinary
 	cteEncoderStateAwaitCustomText
-	cteEncoderStateAwaitBytes
+	cteEncoderStateAwaitArrayBool
+	cteEncoderStateAwaitArrayU8
+	cteEncoderStateAwaitArrayU16
+	cteEncoderStateAwaitArrayU32
+	cteEncoderStateAwaitArrayU64
+	cteEncoderStateAwaitArrayI8
+	cteEncoderStateAwaitArrayI16
+	cteEncoderStateAwaitArrayI32
+	cteEncoderStateAwaitArrayI64
+	cteEncoderStateAwaitArrayF16
+	cteEncoderStateAwaitArrayF32
+	cteEncoderStateAwaitArrayF64
+	cteEncoderStateAwaitArrayUUID
 	cteEncoderStateCount
 )
 
 var cteEncoderStateNames = [cteEncoderStateCount]string{
+	cteEncoderStateAwaitVersion:         "Version",
 	cteEncoderStateAwaitTLO:             "TLO",
 	cteEncoderStateAwaitListFirstItem:   "ListFirstItem",
 	cteEncoderStateAwaitListItem:        "ListItem",
@@ -739,7 +751,19 @@ var cteEncoderStateNames = [cteEncoderStateCount]string{
 	cteEncoderStateAwaitURI:             "URI",
 	cteEncoderStateAwaitCustomBinary:    "CustomBinary",
 	cteEncoderStateAwaitCustomText:      "CustomText",
-	cteEncoderStateAwaitBytes:           "Bytes",
+	cteEncoderStateAwaitArrayBool:       "ArrayBool",
+	cteEncoderStateAwaitArrayU8:         "ArrayU8",
+	cteEncoderStateAwaitArrayU16:        "ArrayU16",
+	cteEncoderStateAwaitArrayU32:        "ArrayU32",
+	cteEncoderStateAwaitArrayU64:        "ArrayU64",
+	cteEncoderStateAwaitArrayI8:         "ArrayI8",
+	cteEncoderStateAwaitArrayI16:        "ArrayI16",
+	cteEncoderStateAwaitArrayI32:        "ArrayI32",
+	cteEncoderStateAwaitArrayI64:        "ArrayI64",
+	cteEncoderStateAwaitArrayF16:        "ArrayF16",
+	cteEncoderStateAwaitArrayF32:        "ArrayF32",
+	cteEncoderStateAwaitArrayF64:        "ArrayF64",
+	cteEncoderStateAwaitArrayUUID:       "ArrayUUID",
 }
 
 func (_this cteEncoderState) String() string {
@@ -749,6 +773,7 @@ func (_this cteEncoderState) String() string {
 type cteEncoderPrefixGenerator func(*Encoder) string
 
 var cteEncoderPrefixGenerators = [cteEncoderStateCount]cteEncoderPrefixGenerator{
+	cteEncoderStateAwaitVersion:         (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitTLO:             (*Encoder).generateSpacePrefix,
 	cteEncoderStateAwaitListFirstItem:   (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitListItem:        (*Encoder).generateSpacePrefix,
@@ -771,10 +796,23 @@ var cteEncoderPrefixGenerators = [cteEncoderStateCount]cteEncoderPrefixGenerator
 	cteEncoderStateAwaitURI:             (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitCustomBinary:    (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitCustomText:      (*Encoder).generateNoPrefix,
-	cteEncoderStateAwaitBytes:           (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayBool:       (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU8:         (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU16:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU32:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU64:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI8:         (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI16:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI32:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI64:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayF16:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayF32:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayF64:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayUUID:       (*Encoder).generateNoPrefix,
 }
 
 var cteEncoderPrettyPrefixHandlers = [cteEncoderStateCount]cteEncoderPrefixGenerator{
+	cteEncoderStateAwaitVersion:         (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitTLO:             (*Encoder).generateIndentPrefix,
 	cteEncoderStateAwaitListFirstItem:   (*Encoder).generateIndentPrefix,
 	cteEncoderStateAwaitListItem:        (*Encoder).generateIndentPrefix,
@@ -797,10 +835,23 @@ var cteEncoderPrettyPrefixHandlers = [cteEncoderStateCount]cteEncoderPrefixGener
 	cteEncoderStateAwaitURI:             (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitCustomBinary:    (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitCustomText:      (*Encoder).generateNoPrefix,
-	cteEncoderStateAwaitBytes:           (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayBool:       (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU8:         (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU16:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU32:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayU64:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI8:         (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI16:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI32:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayI64:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayF16:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayF32:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayF64:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitArrayUUID:       (*Encoder).generateNoPrefix,
 }
 
 var cteEncoderStateTransitions = [cteEncoderStateCount]cteEncoderState{
+	cteEncoderStateAwaitVersion:         cteEncoderStateAwaitTLO,
 	cteEncoderStateAwaitTLO:             cteEncoderStateAwaitTLO,
 	cteEncoderStateAwaitListFirstItem:   cteEncoderStateAwaitListItem,
 	cteEncoderStateAwaitListItem:        cteEncoderStateAwaitListItem,

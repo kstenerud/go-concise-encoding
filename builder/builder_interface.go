@@ -143,8 +143,12 @@ func (_this *intfBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 }
 
 func (_this *intfBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	// TODO: Typed array support
-	dst.Set(reflect.ValueOf(common.CloneBytes(value)))
+	switch elemType.Kind() {
+	case reflect.Uint8:
+		dst.Set(reflect.ValueOf(common.CloneBytes(value)))
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", elemType))
+	}
 }
 
 func (_this *intfBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
