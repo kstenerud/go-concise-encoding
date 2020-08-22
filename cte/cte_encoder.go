@@ -363,7 +363,7 @@ func (_this *Encoder) handleStringNormal(value []byte) {
 }
 
 func (_this *Encoder) OnString(value []byte) {
-	switch _this.currentState &^ cteEncoderStateWithInvisibleItem {
+	switch _this.currentState {
 	case cteEncoderStateAwaitMarkerID:
 		_this.handleStringMarkerID(value)
 	case cteEncoderStateAwaitReferenceID:
@@ -526,7 +526,7 @@ func (_this *Encoder) OnEnd() {
 		return
 	}
 
-	oldState := _this.currentState &^ cteEncoderStateWithInvisibleItem
+	oldState := _this.currentState
 	if _this.currentItemCount > 0 && oldState != cteEncoderStateAwaitCommentItem {
 		_this.applyIndentation(-1)
 	}
@@ -536,7 +536,6 @@ func (_this *Encoder) OnEnd() {
 		oldState == cteEncoderStateAwaitCommentItem
 	_this.unstackState()
 	if isInvisible {
-		_this.currentState |= cteEncoderStateWithInvisibleItem
 		_this.currentItemCount++
 
 		if len(_this.opts.Indent) > 0 {
@@ -691,7 +690,7 @@ func (_this *Encoder) generateSpaceEqualsPrefix() string {
 type cteEncoderState int64
 
 const (
-	cteEncoderStateAwaitTLO cteEncoderState = iota * 2
+	cteEncoderStateAwaitTLO cteEncoderState = iota
 	cteEncoderStateAwaitListFirstItem
 	cteEncoderStateAwaitListItem
 	cteEncoderStateAwaitMapFirstKey
@@ -709,75 +708,38 @@ const (
 	cteEncoderStateAwaitMarkerID
 	cteEncoderStateAwaitReferenceID
 	cteEncoderStateAwaitQuotedString
-	cteEncoderStateAwaitQuotedStringLast
 	cteEncoderStateAwaitVerbatimString
-	cteEncoderStateAwaitBytes
-	cteEncoderStateAwaitBytesLast
 	cteEncoderStateAwaitURI
-	cteEncoderStateAwaitURILast
 	cteEncoderStateAwaitCustomBinary
 	cteEncoderStateAwaitCustomText
-	cteEncoderStateAwaitCustomLast
+	cteEncoderStateAwaitBytes
 	cteEncoderStateCount
-
-	cteEncoderStateWithInvisibleItem cteEncoderState = 1
 )
 
-var cteEncoderStateNames = []string{
-	"TLO",
-	"TLO",
-	"ListFirstItem",
-	"ListFirstItem",
-	"ListItem",
-	"ListItem",
-	"MapFirstKey",
-	"MapFirstKey",
-	"MapKey",
-	"MapKey",
-	"MapValue",
-	"MapValue",
-	"MetaFirstKey",
-	"MetaFirstKey",
-	"MetaKey",
-	"MetaKey",
-	"MetaValue",
-	"MetaValue",
-	"MarkupName",
-	"MarkupName",
-	"MarkupKey",
-	"MarkupKey",
-	"MarkupValue",
-	"MarkupValue",
-	"MarkupFirstItem",
-	"MarkupFirstItem",
-	"MarkupItem",
-	"MarkupItem",
-	"CommentItem",
-	"CommentItem",
-	"MarkerID",
-	"MarkerID",
-	"ReferenceID",
-	"ReferenceID",
-	"QuotedString",
-	"QuotedString",
-	"QuotedStringLast",
-	"QuotedStringLast",
-	"VerbatimString",
-	"VerbatimString",
-	"Bytes",
-	"Bytes",
-	"BytesLast",
-	"BytesLast",
-	"URI",
-	"URI",
-	"URILast",
-	"URILast",
-	"CustomBinary",
-	"CustomBinary",
-	"CustomText",
-	"CustomText",
-	"CustomLast",
-	"CustomLast",
+var cteEncoderStateNames = [cteEncoderStateCount]string{
+	cteEncoderStateAwaitTLO:             "TLO",
+	cteEncoderStateAwaitListFirstItem:   "ListFirstItem",
+	cteEncoderStateAwaitListItem:        "ListItem",
+	cteEncoderStateAwaitMapFirstKey:     "MapFirstKey",
+	cteEncoderStateAwaitMapKey:          "MapKey",
+	cteEncoderStateAwaitMapValue:        "MapValue",
+	cteEncoderStateAwaitMetaFirstKey:    "MetaFirstKey",
+	cteEncoderStateAwaitMetaKey:         "MetaKey",
+	cteEncoderStateAwaitMetaValue:       "MetaValue",
+	cteEncoderStateAwaitMarkupName:      "MarkupName",
+	cteEncoderStateAwaitMarkupKey:       "MarkupKey",
+	cteEncoderStateAwaitMarkupValue:     "MarkupValue",
+	cteEncoderStateAwaitMarkupFirstItem: "MarkupFirstItem",
+	cteEncoderStateAwaitMarkupItem:      "MarkupItem",
+	cteEncoderStateAwaitCommentItem:     "CommentItem",
+	cteEncoderStateAwaitMarkerID:        "MarkerID",
+	cteEncoderStateAwaitReferenceID:     "ReferenceID",
+	cteEncoderStateAwaitQuotedString:    "QuotedString",
+	cteEncoderStateAwaitVerbatimString:  "VerbatimString",
+	cteEncoderStateAwaitURI:             "URI",
+	cteEncoderStateAwaitCustomBinary:    "CustomBinary",
+	cteEncoderStateAwaitCustomText:      "CustomText",
+	cteEncoderStateAwaitBytes:           "Bytes",
 }
 
 func (_this cteEncoderState) String() string {
@@ -786,127 +748,85 @@ func (_this cteEncoderState) String() string {
 
 type cteEncoderPrefixGenerator func(*Encoder) string
 
-var cteEncoderPrefixGenerators [cteEncoderStateCount]cteEncoderPrefixGenerator
-
-func init() {
-	for i := 0; i < int(cteEncoderStateCount); i++ {
-		cteEncoderPrefixGenerators[i] = (*Encoder).generateNoPrefix
-	}
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitTLO] = (*Encoder).generateSpacePrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitListFirstItem] = (*Encoder).generateNoPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitListItem] = (*Encoder).generateSpacePrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMapFirstKey] = (*Encoder).generateNoPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMapKey] = (*Encoder).generateSpacePrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMapValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMetaFirstKey] = (*Encoder).generateNoPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMetaKey] = (*Encoder).generateSpacePrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMetaValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupName] = (*Encoder).generateNoPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupKey] = (*Encoder).generateSpacePrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generateMarkupContentsPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
-	cteEncoderPrefixGenerators[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix
-	for i := 0; i < int(cteEncoderStateCount); i += 2 {
-		cteEncoderPrefixGenerators[i+1] = cteEncoderPrefixGenerators[i]
-	}
+var cteEncoderPrefixGenerators = [cteEncoderStateCount]cteEncoderPrefixGenerator{
+	cteEncoderStateAwaitTLO:             (*Encoder).generateSpacePrefix,
+	cteEncoderStateAwaitListFirstItem:   (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitListItem:        (*Encoder).generateSpacePrefix,
+	cteEncoderStateAwaitMapFirstKey:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMapKey:          (*Encoder).generateSpacePrefix,
+	cteEncoderStateAwaitMapValue:        (*Encoder).generateEqualsPrefix,
+	cteEncoderStateAwaitMetaFirstKey:    (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMetaKey:         (*Encoder).generateSpacePrefix,
+	cteEncoderStateAwaitMetaValue:       (*Encoder).generateEqualsPrefix,
+	cteEncoderStateAwaitMarkupName:      (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMarkupKey:       (*Encoder).generateSpacePrefix,
+	cteEncoderStateAwaitMarkupValue:     (*Encoder).generateEqualsPrefix,
+	cteEncoderStateAwaitMarkupFirstItem: (*Encoder).generateMarkupContentsPrefix,
+	cteEncoderStateAwaitMarkupItem:      (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitCommentItem:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMarkerID:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitReferenceID:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitQuotedString:    (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitVerbatimString:  (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitURI:             (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitCustomBinary:    (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitCustomText:      (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitBytes:           (*Encoder).generateNoPrefix,
 }
 
-var cteEncoderPrettyPrefixHandlers [cteEncoderStateCount]cteEncoderPrefixGenerator
-
-func init() {
-	for i := 0; i < int(cteEncoderStateCount); i++ {
-		cteEncoderPrettyPrefixHandlers[i] = (*Encoder).generateNoPrefix
-	}
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitTLO] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitListFirstItem] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitListItem] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMapFirstKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMapKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMapValue] = (*Encoder).generateSpaceEqualsPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMetaFirstKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMetaKey] = (*Encoder).generateIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMetaValue] = (*Encoder).generateSpaceEqualsPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupName] = (*Encoder).generateNoPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupKey] = (*Encoder).generateSpacePrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupValue] = (*Encoder).generateEqualsPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupFirstItem] = (*Encoder).generateMarkupContentsIndentPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkupItem] = (*Encoder).generateNoPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitCommentItem] = (*Encoder).generateNoPrefix
-	cteEncoderPrettyPrefixHandlers[cteEncoderStateAwaitMarkerID] = (*Encoder).generateNoPrefix
-	for i := 0; i < int(cteEncoderStateCount); i += 2 {
-		cteEncoderPrettyPrefixHandlers[i+1] = cteEncoderPrettyPrefixHandlers[i]
-	}
+var cteEncoderPrettyPrefixHandlers = [cteEncoderStateCount]cteEncoderPrefixGenerator{
+	cteEncoderStateAwaitTLO:             (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitListFirstItem:   (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitListItem:        (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitMapFirstKey:     (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitMapKey:          (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitMapValue:        (*Encoder).generateSpaceEqualsPrefix,
+	cteEncoderStateAwaitMetaFirstKey:    (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitMetaKey:         (*Encoder).generateIndentPrefix,
+	cteEncoderStateAwaitMetaValue:       (*Encoder).generateSpaceEqualsPrefix,
+	cteEncoderStateAwaitMarkupName:      (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMarkupKey:       (*Encoder).generateSpacePrefix,
+	cteEncoderStateAwaitMarkupValue:     (*Encoder).generateEqualsPrefix,
+	cteEncoderStateAwaitMarkupFirstItem: (*Encoder).generateMarkupContentsIndentPrefix,
+	cteEncoderStateAwaitMarkupItem:      (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitCommentItem:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMarkerID:        (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitReferenceID:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitQuotedString:    (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitVerbatimString:  (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitURI:             (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitCustomBinary:    (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitCustomText:      (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitBytes:           (*Encoder).generateNoPrefix,
 }
 
-var cteEncoderStateTransitions [cteEncoderStateCount]cteEncoderState
-
-func init() {
-	cteEncoderStateTransitions[cteEncoderStateAwaitTLO] = cteEncoderStateAwaitTLO
-	cteEncoderStateTransitions[cteEncoderStateAwaitListFirstItem] = cteEncoderStateAwaitListItem
-	cteEncoderStateTransitions[cteEncoderStateAwaitListItem] = cteEncoderStateAwaitListItem
-	cteEncoderStateTransitions[cteEncoderStateAwaitMapFirstKey] = cteEncoderStateAwaitMapValue
-	cteEncoderStateTransitions[cteEncoderStateAwaitMapKey] = cteEncoderStateAwaitMapValue
-	cteEncoderStateTransitions[cteEncoderStateAwaitMapValue] = cteEncoderStateAwaitMapKey
-	cteEncoderStateTransitions[cteEncoderStateAwaitMetaFirstKey] = cteEncoderStateAwaitMetaValue
-	cteEncoderStateTransitions[cteEncoderStateAwaitMetaKey] = cteEncoderStateAwaitMetaValue
-	cteEncoderStateTransitions[cteEncoderStateAwaitMetaValue] = cteEncoderStateAwaitMetaKey
-	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupName] = cteEncoderStateAwaitMarkupKey
-	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupKey] = cteEncoderStateAwaitMarkupValue
-	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupValue] = cteEncoderStateAwaitMarkupKey
-	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupFirstItem] = cteEncoderStateAwaitMarkupItem
-	cteEncoderStateTransitions[cteEncoderStateAwaitMarkupItem] = cteEncoderStateAwaitMarkupItem
-	cteEncoderStateTransitions[cteEncoderStateAwaitCommentItem] = cteEncoderStateAwaitCommentItem
-
-	// cteEncoderStateTransitions[cteEncoderStateAwaitQuotedString] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitQuotedStringLast] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitBytes] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitBytesLast] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitURI] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitURILast] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitCustom] = cteEncoderStateAwait
-	// cteEncoderStateTransitions[cteEncoderStateAwaitCustomLast] = cteEncoderStateAwait
-
-	for i := 0; i < int(cteEncoderStateCount); i += 2 {
-		cteEncoderStateTransitions[i+1] = cteEncoderStateTransitions[i]
-	}
-	// for i := cteEncoderState(0); i < cteEncoderStateCount; i += 2 {
-	// 	cteEncoderStateTransitions[i+1] = i
-	// }
+var cteEncoderStateTransitions = [cteEncoderStateCount]cteEncoderState{
+	cteEncoderStateAwaitTLO:             cteEncoderStateAwaitTLO,
+	cteEncoderStateAwaitListFirstItem:   cteEncoderStateAwaitListItem,
+	cteEncoderStateAwaitListItem:        cteEncoderStateAwaitListItem,
+	cteEncoderStateAwaitMapFirstKey:     cteEncoderStateAwaitMapValue,
+	cteEncoderStateAwaitMapKey:          cteEncoderStateAwaitMapValue,
+	cteEncoderStateAwaitMapValue:        cteEncoderStateAwaitMapKey,
+	cteEncoderStateAwaitMetaFirstKey:    cteEncoderStateAwaitMetaValue,
+	cteEncoderStateAwaitMetaKey:         cteEncoderStateAwaitMetaValue,
+	cteEncoderStateAwaitMetaValue:       cteEncoderStateAwaitMetaKey,
+	cteEncoderStateAwaitMarkupName:      cteEncoderStateAwaitMarkupKey,
+	cteEncoderStateAwaitMarkupKey:       cteEncoderStateAwaitMarkupValue,
+	cteEncoderStateAwaitMarkupValue:     cteEncoderStateAwaitMarkupKey,
+	cteEncoderStateAwaitMarkupFirstItem: cteEncoderStateAwaitMarkupItem,
+	cteEncoderStateAwaitMarkupItem:      cteEncoderStateAwaitMarkupItem,
+	cteEncoderStateAwaitCommentItem:     cteEncoderStateAwaitCommentItem,
 }
 
-var cteEncoderTerminators [cteEncoderStateCount]string
-
-func init() {
-	// cteEncoderTerminators[cteEncoderStateAwaitTLO] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitListFirstItem] = "]"
-	cteEncoderTerminators[cteEncoderStateAwaitListItem] = "]"
-	cteEncoderTerminators[cteEncoderStateAwaitMapFirstKey] = "}"
-	cteEncoderTerminators[cteEncoderStateAwaitMapKey] = "}"
-	// cteEncoderTerminators[cteEncoderStateAwaitMapValue] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitMetaFirstKey] = ")"
-	cteEncoderTerminators[cteEncoderStateAwaitMetaKey] = ")"
-	// cteEncoderTerminators[cteEncoderStateAwaitMetaValue] = ""
-	// cteEncoderTerminators[cteEncoderStateAwaitMarkupName] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitMarkupKey] = ""
-	// cteEncoderTerminators[cteEncoderStateAwaitMarkupValue] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitMarkupFirstItem] = ">"
-	cteEncoderTerminators[cteEncoderStateAwaitMarkupItem] = ">"
-	cteEncoderTerminators[cteEncoderStateAwaitCommentItem] = "*/"
-	// cteEncoderTerminators[cteEncoderStateAwaitMarkerID] = ""
-	// cteEncoderTerminators[cteEncoderStateAwaitMarkerItem] = ""
-	// cteEncoderTerminators[cteEncoderStateAwaitReferenceID] = ""
-	// cteEncoderTerminators[cteEncoderStateAwaitQuotedString] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitQuotedStringLast] = `"`
-	// cteEncoderTerminators[cteEncoderStateAwaitBytes] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitBytesLast] = `"`
-	// cteEncoderTerminators[cteEncoderStateAwaitURI] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitURILast] = `"`
-	// cteEncoderTerminators[cteEncoderStateAwaitCustom] = ""
-	cteEncoderTerminators[cteEncoderStateAwaitCustomLast] = `"`
-
-	for i := 0; i < int(cteEncoderStateCount); i += 2 {
-		cteEncoderTerminators[i+1] = cteEncoderTerminators[i]
-	}
+var cteEncoderTerminators = [cteEncoderStateCount]string{
+	cteEncoderStateAwaitListFirstItem:   "]",
+	cteEncoderStateAwaitListItem:        "]",
+	cteEncoderStateAwaitMapFirstKey:     "}",
+	cteEncoderStateAwaitMapKey:          "}",
+	cteEncoderStateAwaitMetaFirstKey:    ")",
+	cteEncoderStateAwaitMetaKey:         ")",
+	cteEncoderStateAwaitMarkupKey:       "",
+	cteEncoderStateAwaitMarkupFirstItem: ">",
+	cteEncoderStateAwaitMarkupItem:      ">",
+	cteEncoderStateAwaitCommentItem:     "*/",
 }
