@@ -23,8 +23,9 @@ package ce
 import (
 	"io"
 	"math/big"
-	"reflect"
 	"time"
+
+	"github.com/kstenerud/go-concise-encoding/events"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -67,13 +68,13 @@ type Encoder interface {
 	OnURI(value []byte)
 	OnCustomBinary(value []byte)
 	OnCustomText(value []byte)
-	OnTypedArray(elemType reflect.Type, value []byte)
+	OnTypedArray(arrayType events.ArrayType, value []byte)
 	OnStringBegin()
 	OnVerbatimStringBegin()
 	OnURIBegin()
 	OnCustomBinaryBegin()
 	OnCustomTextBegin()
-	OnTypedArrayBegin(elemType reflect.Type)
+	OnTypedArrayBegin(arrayType events.ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
 	OnArrayData(data []byte)
 	OnList()

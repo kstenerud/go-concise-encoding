@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -162,9 +163,9 @@ func (_this *ptrBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromTypedArray(elemType, value, ptr.Elem())
+	_this.elemBuilder.BuildFromTypedArray(arrayType, value, ptr.Elem())
 	dst.Set(ptr)
 }
 

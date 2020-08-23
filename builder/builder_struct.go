@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -275,8 +275,8 @@ func (_this *structBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, _ reflect.Value) {
-	_this.nextBuilder.BuildFromTypedArray(elemType, value, _this.nextValue)
+func (_this *structBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+	_this.nextBuilder.BuildFromTypedArray(arrayType, value, _this.nextValue)
 	_this.swapKeyValue()
 }
 

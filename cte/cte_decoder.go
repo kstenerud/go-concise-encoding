@@ -29,7 +29,6 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -677,7 +676,7 @@ func (_this *Decoder) handleU8X() {
 		}
 		data = append(data, uint8(v))
 	}
-	_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), data)
+	_this.eventReceiver.OnTypedArray(events.ArrayTypeUint8, data)
 	_this.endObject()
 }
 

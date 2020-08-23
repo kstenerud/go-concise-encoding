@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -142,12 +143,12 @@ func (_this *intfBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	}
 }
 
-func (_this *intfBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	switch elemType.Kind() {
-	case reflect.Uint8:
+func (_this *intfBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeUint8:
 		dst.Set(reflect.ValueOf(common.CloneBytes(value)))
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", elemType))
+		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 }
 

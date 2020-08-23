@@ -25,11 +25,11 @@ import (
 	"io"
 	"math"
 	"math/big"
-	"reflect"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/conversions"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -303,12 +303,12 @@ func (_this *Encoder) OnCustomText(value []byte) {
 	_this.encodeTypedByteArray(cbeTypeCustomText, value)
 }
 
-func (_this *Encoder) OnTypedArray(elemType reflect.Type, value []byte) {
-	switch elemType.Kind() {
-	case reflect.Uint8:
+func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, value []byte) {
+	switch arrayType {
+	case events.ArrayTypeUint8:
 		_this.encodeArrayUint8(value)
 	default:
-		panic(fmt.Errorf("TODO: Add typed array support for %v", elemType))
+		panic(fmt.Errorf("TODO: Add typed array support for %v", arrayType))
 	}
 }
 
@@ -332,13 +332,13 @@ func (_this *Encoder) OnCustomTextBegin() {
 	_this.encodeTypeOnly(cbeTypeCustomText)
 }
 
-func (_this *Encoder) OnTypedArrayBegin(elemType reflect.Type) {
+func (_this *Encoder) OnTypedArrayBegin(arrayType events.ArrayType) {
 	_this.encodeTypeOnly(cbeTypeArray)
-	switch elemType.Kind() {
-	case reflect.Uint8:
+	switch arrayType {
+	case events.ArrayTypeUint8:
 		_this.encodeTypeOnly(cbeTypePosInt8)
 	default:
-		panic(fmt.Errorf("TODO: Add typed array support for %v", elemType))
+		panic(fmt.Errorf("TODO: Add typed array support for %v", arrayType))
 	}
 }
 

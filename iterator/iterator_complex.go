@@ -129,14 +129,14 @@ func (_this *uint8ArrayIterator) InitInstance(_ FetchIterator, _ *options.Iterat
 
 func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.CanAddr() {
-		eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), v.Slice(0, v.Len()).Bytes())
+		eventReceiver.OnTypedArray(events.ArrayTypeUint8, v.Slice(0, v.Len()).Bytes())
 	} else {
 		tempSlice := make([]byte, v.Len())
 		tempLen := v.Len()
 		for i := 0; i < tempLen; i++ {
 			tempSlice[i] = v.Index(i).Interface().(uint8)
 		}
-		eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), tempSlice)
+		eventReceiver.OnTypedArray(events.ArrayTypeUint8, tempSlice)
 	}
 }
 

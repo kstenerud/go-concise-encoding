@@ -27,13 +27,11 @@ import (
 	"math"
 	"math/big"
 	"net/url"
-	"reflect"
 	"time"
-
-	"github.com/kstenerud/go-concise-encoding/internal/unicode"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/internal/unicode"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -260,13 +258,13 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 	_this.nextReceiver.OnCompactTime(value)
 }
 
-func (_this *Rules) OnTypedArray(elemType reflect.Type, value []byte) {
-	_this.onTypedArrayBegin(elemType)
+func (_this *Rules) OnTypedArray(arrayType events.ArrayType, value []byte) {
+	_this.onTypedArrayBegin(arrayType)
 	_this.onArrayChunk(uint64(len(value)), false)
 	if len(value) > 0 {
 		_this.onArrayData(value)
 	}
-	_this.nextReceiver.OnTypedArray(elemType, value)
+	_this.nextReceiver.OnTypedArray(arrayType, value)
 }
 
 func (_this *Rules) OnString(value []byte) {
@@ -340,9 +338,9 @@ func (_this *Rules) OnCustomTextBegin() {
 	_this.nextReceiver.OnCustomTextBegin()
 }
 
-func (_this *Rules) OnTypedArrayBegin(elemType reflect.Type) {
-	_this.onTypedArrayBegin(elemType)
-	_this.nextReceiver.OnTypedArrayBegin(elemType)
+func (_this *Rules) OnTypedArrayBegin(arrayType events.ArrayType) {
+	_this.onTypedArrayBegin(arrayType)
+	_this.nextReceiver.OnTypedArrayBegin(arrayType)
 }
 
 func (_this *Rules) OnArrayChunk(length uint64, moreChunksFollow bool) {
@@ -447,12 +445,12 @@ func (_this *Rules) onNegativeInt() {
 	_this.addScalar(eventTypeNInt)
 }
 
-func (_this *Rules) onTypedArrayBegin(elemType reflect.Type) {
-	switch elemType.Kind() {
-	case reflect.Uint8:
+func (_this *Rules) onTypedArrayBegin(arrayType events.ArrayType) {
+	switch arrayType {
+	case events.ArrayTypeUint8:
 		_this.beginArray(eventTypeArray, 1)
 	default:
-		panic(fmt.Errorf("TODO: Support typed array for %v", elemType))
+		panic(fmt.Errorf("TODO: Support typed array for %v", arrayType))
 	}
 }
 

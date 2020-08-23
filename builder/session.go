@@ -29,9 +29,8 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/kstenerud/go-concise-encoding/options"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // A builder session holds a cache of known mappings of types to builders.

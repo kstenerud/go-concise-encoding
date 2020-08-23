@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -164,8 +165,8 @@ func (_this *arrayBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromTypedArray(elemType, value, _this.currentElem())
+func (_this *arrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+	_this.elemBuilder.BuildFromTypedArray(arrayType, value, _this.currentElem())
 	_this.index++
 }
 
@@ -308,16 +309,16 @@ func (_this *bytesArrayBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEventWithType(_this, common.TypeBytes, "BuildFromCustomText")
 }
 
-func (_this *bytesArrayBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	switch elemType.Kind() {
-	case reflect.Uint8:
+func (_this *bytesArrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeUint8:
 		// TODO: Is there a more efficient way?
 		for i := 0; i < len(value); i++ {
 			elem := dst.Index(i)
 			elem.SetUint(uint64(value[i]))
 		}
 	default:
-		PanicBadEventWithType(_this, common.TypeBytes, "BuildFromTypedArray(%v)", elemType)
+		PanicBadEventWithType(_this, common.TypeBytes, "BuildFromTypedArray(%v)", arrayType)
 	}
 }
 

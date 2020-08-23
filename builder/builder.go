@@ -31,6 +31,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -58,7 +59,7 @@ type ObjectBuilder interface {
 	BuildFromURI(value *url.URL, dst reflect.Value)
 	BuildFromCustomBinary(value []byte, dst reflect.Value)
 	BuildFromCustomText(value []byte, dst reflect.Value)
-	BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value)
+	BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
 	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
 	BuildBeginList()

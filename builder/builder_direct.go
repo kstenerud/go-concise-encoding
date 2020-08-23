@@ -27,8 +27,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -129,8 +129,8 @@ func (_this *directBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *directBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", elemType)
+func (_this *directBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", arrayType)
 }
 
 func (_this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -266,12 +266,12 @@ func (_this *directPtrBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEventWithType(_this, _this.dstType, "CustomText")
 }
 
-func (_this *directPtrBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	switch elemType.Kind() {
-	case reflect.Uint8:
+func (_this *directPtrBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeUint8:
 		dst.SetBytes(common.CloneBytes(value))
 	default:
-		panic(fmt.Errorf("TODO: Add typed array support for %v", elemType))
+		panic(fmt.Errorf("TODO: Add typed array support for %v", arrayType))
 	}
 }
 

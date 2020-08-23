@@ -23,7 +23,6 @@ package cbe
 import (
 	"fmt"
 	"io"
-	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -213,31 +212,31 @@ func (_this *Decoder) decodeTypedArray() {
 	cbeType := _this.buffer.DecodeType()
 	switch cbeType {
 	case cbeTypeTrue:
-		panic("TODO: Typed array support: bool")
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeBoolean, _this.decodeArray())
 	case cbeTypePosInt8:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint8(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeUint8, _this.decodeArray())
 	case cbeTypePosInt16:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint16(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeUint16, _this.decodeArray())
 	case cbeTypePosInt32:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint32(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeUint32, _this.decodeArray())
 	case cbeTypePosInt64:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(uint64(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeUint64, _this.decodeArray())
 	case cbeTypeNegInt8:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(int8(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeInt8, _this.decodeArray())
 	case cbeTypeNegInt16:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(int16(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeInt16, _this.decodeArray())
 	case cbeTypeNegInt32:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(int32(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeInt32, _this.decodeArray())
 	case cbeTypeNegInt64:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(int64(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeInt64, _this.decodeArray())
 	case cbeTypeFloat16:
-		panic("TODO: Typed array support: float16")
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeFloat16, _this.decodeArray())
 	case cbeTypeFloat32:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(float32(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeFloat32, _this.decodeArray())
 	case cbeTypeFloat64:
-		_this.eventReceiver.OnTypedArray(reflect.TypeOf(float64(0)), _this.decodeArray())
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeFloat64, _this.decodeArray())
 	case cbeTypeUUID:
-		panic("TODO: Typed array support: UUID")
+		_this.eventReceiver.OnTypedArray(events.ArrayTypeUUID, _this.decodeArray())
 	default:
 		panic(fmt.Errorf("0x%x: Unsupported typed array type", cbeType))
 	}

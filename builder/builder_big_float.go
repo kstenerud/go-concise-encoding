@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -123,8 +124,8 @@ func (_this *bigFloatBuilder) BuildFromCustomText(value []byte, dst reflect.Valu
 	}
 }
 
-func (_this *bigFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigFloat, "TypedArray(%v)", elemType)
+func (_this *bigFloatBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigFloat, "TypedArray(%v)", arrayType)
 }
 
 func (_this *bigFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -257,8 +258,8 @@ func (_this *pBigFloatBuilder) BuildFromCustomText(value []byte, dst reflect.Val
 	}
 }
 
-func (_this *pBigFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigFloat, "TypedArray(%v)", elemType)
+func (_this *pBigFloatBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigFloat, "TypedArray(%v)", arrayType)
 }
 
 func (_this *pBigFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

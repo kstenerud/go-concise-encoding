@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -123,8 +124,8 @@ func (_this *bigDecimalFloatBuilder) BuildFromCustomText(value []byte, dst refle
 	}
 }
 
-func (_this *bigDecimalFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "TypedArray(%v)", elemType)
+func (_this *bigDecimalFloatBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeBigDecimalFloat, "TypedArray(%v)", arrayType)
 }
 
 func (_this *bigDecimalFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -257,8 +258,8 @@ func (_this *pBigDecimalFloatBuilder) BuildFromCustomText(value []byte, dst refl
 	}
 }
 
-func (_this *pBigDecimalFloatBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "TypedArray(%v)", elemType)
+func (_this *pBigDecimalFloatBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePBigDecimalFloat, "TypedArray(%v)", arrayType)
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -125,8 +126,8 @@ func (_this *timeBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	}
 }
 
-func (_this *timeBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeTime, "TypedArray(%v)", elemType)
+func (_this *timeBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeTime, "TypedArray(%v)", arrayType)
 }
 
 func (_this *timeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -263,8 +264,8 @@ func (_this *compactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.V
 	}
 }
 
-func (_this *compactTimeBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypeCompactTime, "TypedArray(%v)", elemType)
+func (_this *compactTimeBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypeCompactTime, "TypedArray(%v)", arrayType)
 }
 
 func (_this *compactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -397,8 +398,8 @@ func (_this *pCompactTimeBuilder) BuildFromCustomText(value []byte, dst reflect.
 	}
 }
 
-func (_this *pCompactTimeBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, common.TypePCompactTime, "TypedArray(%v)", elemType)
+func (_this *pCompactTimeBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, common.TypePCompactTime, "TypedArray(%v)", arrayType)
 }
 
 func (_this *pCompactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

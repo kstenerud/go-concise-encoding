@@ -29,7 +29,6 @@ import (
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/buffer"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 
 	"github.com/cockroachdb/apd/v2"

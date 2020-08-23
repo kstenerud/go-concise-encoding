@@ -294,7 +294,7 @@ func assertMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	assertMarshalUnmarshalComplexFromText(t, value)
 }
 
-// func TestCustomBuildIter(t *testing.T) {
-// 	assertMarshalUnmarshalComplex(t, complex(1, 1))
-// 	assertMarshalUnmarshalComplex(t, complex(float64(1.0000000000000000000000000001), float64(1)))
-// }
+func TestCustomBuildIter(t *testing.T) {
+	assertMarshalUnmarshalComplex(t, complex(1, 1))
+	assertMarshalUnmarshalComplex(t, complex(float64(1.0000000000000000000000000001), float64(1)))
+}

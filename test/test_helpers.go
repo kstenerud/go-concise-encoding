@@ -310,7 +310,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCustomText:
 		receiver.OnCustomText([]byte(_this.V1.(string)))
 	case TEventBytes:
-		receiver.OnTypedArray(reflect.TypeOf(uint8(0)), _this.V1.([]byte))
+		receiver.OnTypedArray(events.ArrayTypeUint8, _this.V1.([]byte))
 	case TEventStringBegin:
 		receiver.OnStringBegin()
 	case TEventVerbatimStringBegin:
@@ -322,7 +322,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCustomTextBegin:
 		receiver.OnCustomTextBegin()
 	case TEventBytesBegin:
-		receiver.OnTypedArrayBegin(reflect.TypeOf(uint8(0)))
+		receiver.OnTypedArrayBegin(events.ArrayTypeUint8)
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
 	case TEventArrayData:
@@ -604,10 +604,10 @@ func (h *TEventPrinter) OnCustomText(value []byte) {
 	h.Print(CUT(string(value)))
 	h.Next.OnCustomText(value)
 }
-func (h *TEventPrinter) OnTypedArray(elemType reflect.Type, value []byte) {
+func (h *TEventPrinter) OnTypedArray(arrayType events.ArrayType, value []byte) {
 	// TODO: Typed array support
 	h.Print(BIN(value))
-	h.Next.OnTypedArray(elemType, value)
+	h.Next.OnTypedArray(arrayType, value)
 }
 func (h *TEventPrinter) OnStringBegin() {
 	h.Print(SB())
@@ -629,10 +629,10 @@ func (h *TEventPrinter) OnCustomTextBegin() {
 	h.Print(CTB())
 	h.Next.OnCustomTextBegin()
 }
-func (h *TEventPrinter) OnTypedArrayBegin(elemType reflect.Type) {
+func (h *TEventPrinter) OnTypedArrayBegin(arrayType events.ArrayType) {
 	// TODO: Typed array support
 	h.Print(BB())
-	h.Next.OnTypedArrayBegin(elemType)
+	h.Next.OnTypedArrayBegin(arrayType)
 }
 func (h *TEventPrinter) OnArrayChunk(l uint64, moreChunksFollow bool) {
 	h.Print(AC(l, moreChunksFollow))
@@ -748,7 +748,7 @@ func (h *TER) OnVerbatimString(value []byte)          { h.add(VS(string(value)))
 func (h *TER) OnURI(value []byte)                     { h.add(URI(string(value))) }
 func (h *TER) OnCustomBinary(value []byte)            { h.add(CUB(value)) }
 func (h *TER) OnCustomText(value []byte)              { h.add(CUT(string(value))) }
-func (h *TER) OnTypedArray(elemType reflect.Type, value []byte) {
+func (h *TER) OnTypedArray(arrayType events.ArrayType, value []byte) {
 	// TODO: Typed array support
 	h.add(BIN(value))
 }
@@ -757,7 +757,7 @@ func (h *TER) OnVerbatimStringBegin() { h.add(VB()) }
 func (h *TER) OnURIBegin()            { h.add(UB()) }
 func (h *TER) OnCustomBinaryBegin()   { h.add(CBB()) }
 func (h *TER) OnCustomTextBegin()     { h.add(CTB()) }
-func (h *TER) OnTypedArrayBegin(elemType reflect.Type) {
+func (h *TER) OnTypedArrayBegin(arrayType events.ArrayType) {
 	// TODO: Typed array support
 	h.add(BB())
 }

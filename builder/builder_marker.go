@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -126,8 +127,8 @@ func (_this *markerIDBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "CustomText")
 }
 
-func (_this *markerIDBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "TypedArray(%v)", elemType)
+func (_this *markerIDBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 }
 
 func (_this *markerIDBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -281,8 +282,8 @@ func (_this *markerObjectBuilder) BuildFromCustomText(value []byte, dst reflect.
 	_this.onObjectComplete(dst)
 }
 
-func (_this *markerObjectBuilder) BuildFromTypedArray(elemType reflect.Type, value []byte, dst reflect.Value) {
-	_this.child.BuildFromTypedArray(elemType, value, dst)
+func (_this *markerObjectBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	_this.child.BuildFromTypedArray(arrayType, value, dst)
 	_this.onObjectComplete(dst)
 }
 

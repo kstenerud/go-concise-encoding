@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -125,8 +126,8 @@ func (_this *uintBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
 	}
 }
 
-func (_this *uintBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", elemType)
+func (_this *uintBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", arrayType)
 }
 
 func (_this *uintBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

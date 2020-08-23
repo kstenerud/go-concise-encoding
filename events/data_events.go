@@ -27,13 +27,50 @@ package events
 
 import (
 	"math/big"
-	"reflect"
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
+
+type ArrayType uint8
+
+const (
+	ArrayTypeBoolean ArrayType = iota
+	ArrayTypeUint8
+	ArrayTypeUint16
+	ArrayTypeUint32
+	ArrayTypeUint64
+	ArrayTypeInt8
+	ArrayTypeInt16
+	ArrayTypeInt32
+	ArrayTypeInt64
+	ArrayTypeFloat16
+	ArrayTypeFloat32
+	ArrayTypeFloat64
+	ArrayTypeUUID
+)
+
+func (_this ArrayType) String() string {
+	return arrayTypeNames[_this]
+}
+
+var arrayTypeNames = [...]string{
+	ArrayTypeBoolean: "Boolean",
+	ArrayTypeUint8:   "Uint8",
+	ArrayTypeUint16:  "Uint16",
+	ArrayTypeUint32:  "Uint32",
+	ArrayTypeUint64:  "Uint64",
+	ArrayTypeInt8:    "Int8",
+	ArrayTypeInt16:   "Int16",
+	ArrayTypeInt32:   "Int32",
+	ArrayTypeInt64:   "Int64",
+	ArrayTypeFloat16: "Float16",
+	ArrayTypeFloat32: "Float32",
+	ArrayTypeFloat64: "Float64",
+	ArrayTypeUUID:    "UUID",
+}
 
 // DataEventReceiver receives data events (int, string, etc) and performs
 // actions based on those events. Generally, this is used to drive complex
@@ -87,13 +124,13 @@ type DataEventReceiver interface {
 	OnURI(value []byte)
 	OnCustomBinary(value []byte)
 	OnCustomText(value []byte)
-	OnTypedArray(elemType reflect.Type, value []uint8)
+	OnTypedArray(arrayType ArrayType, value []uint8)
 	OnStringBegin()
 	OnVerbatimStringBegin()
 	OnURIBegin()
 	OnCustomBinaryBegin()
 	OnCustomTextBegin()
-	OnTypedArrayBegin(elemType reflect.Type)
+	OnTypedArrayBegin(arrayType ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
 	OnArrayData(data []byte)
 }
@@ -128,13 +165,13 @@ func (_this *NullEventReceiver) OnVerbatimString(_ []byte)             {}
 func (_this *NullEventReceiver) OnURI(_ []byte)                        {}
 func (_this *NullEventReceiver) OnCustomBinary(_ []byte)               {}
 func (_this *NullEventReceiver) OnCustomText(_ []byte)                 {}
-func (_this *NullEventReceiver) OnTypedArray(_ reflect.Type, _ []byte) {}
+func (_this *NullEventReceiver) OnTypedArray(_ ArrayType, _ []byte)    {}
 func (_this *NullEventReceiver) OnStringBegin()                        {}
 func (_this *NullEventReceiver) OnVerbatimStringBegin()                {}
 func (_this *NullEventReceiver) OnURIBegin()                           {}
 func (_this *NullEventReceiver) OnCustomBinaryBegin()                  {}
 func (_this *NullEventReceiver) OnCustomTextBegin()                    {}
-func (_this *NullEventReceiver) OnTypedArrayBegin(_ reflect.Type)      {}
+func (_this *NullEventReceiver) OnTypedArrayBegin(_ ArrayType)         {}
 func (_this *NullEventReceiver) OnArrayChunk(_ uint64, _ bool)         {}
 func (_this *NullEventReceiver) OnArrayData(_ []byte)                  {}
 func (_this *NullEventReceiver) OnList()                               {}

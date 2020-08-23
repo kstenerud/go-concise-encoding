@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -175,8 +176,8 @@ func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "CustomText")
 }
-func (_this *RootBuilder) BuildFromTypedArray(elemType reflect.Type, _ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "TypedArray(%v)", elemType)
+func (_this *RootBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+	PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 }
 func (_this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
 	PanicBadEvent(_this, "Time")
@@ -274,8 +275,8 @@ func (_this *RootBuilder) OnTime(value time.Time) {
 func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
 	_this.currentBuilder.BuildFromCompactTime(value, _this.object)
 }
-func (_this *RootBuilder) OnTypedArray(elemType reflect.Type, value []byte) {
-	_this.currentBuilder.BuildFromTypedArray(elemType, value, _this.object)
+func (_this *RootBuilder) OnTypedArray(arrayType events.ArrayType, value []byte) {
+	_this.currentBuilder.BuildFromTypedArray(arrayType, value, _this.object)
 }
 func (_this *RootBuilder) OnString(value []byte) {
 	_this.currentBuilder.BuildFromString(value, _this.object)
@@ -296,9 +297,9 @@ func (_this *RootBuilder) OnCustomBinary(value []byte) {
 func (_this *RootBuilder) OnCustomText(value []byte) {
 	_this.currentBuilder.BuildFromCustomText(value, _this.object)
 }
-func (_this *RootBuilder) OnTypedArrayBegin(elemType reflect.Type) {
+func (_this *RootBuilder) OnTypedArrayBegin(arrayType events.ArrayType) {
 	_this.chunkedFunction = func(bytes []byte) {
-		_this.OnTypedArray(elemType, bytes)
+		_this.OnTypedArray(arrayType, bytes)
 	}
 	_this.chunkedData = _this.chunkedData[:0]
 }

@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -126,7 +127,7 @@ func (_this *ignoreBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromTypedArray(_ reflect.Type, _ []byte, _ reflect.Value) {
+func (_this *ignoreBuilder) BuildFromTypedArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
@@ -266,7 +267,7 @@ func (_this *ignoreContainerBuilder) BuildFromCustomText(_ []byte, _ reflect.Val
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromTypedArray(_ reflect.Type, _ []byte, _ reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromTypedArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
