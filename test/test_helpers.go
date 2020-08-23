@@ -152,18 +152,18 @@ const (
 	TEventUUID
 	TEventTime
 	TEventCompactTime
-	TEventBytes
 	TEventString
 	TEventVerbatimString
 	TEventURI
 	TEventCustomBinary
 	TEventCustomText
-	TEventBytesBegin
+	TEventArrayUint8
 	TEventStringBegin
 	TEventVerbatimStringBegin
 	TEventURIBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
+	TEventArrayUint8Begin
 	TEventArrayChunk
 	TEventArrayData
 	TEventList
@@ -178,49 +178,49 @@ const (
 )
 
 var TEventNames = []string{
-	"BD",
-	"V",
-	"PAD",
-	"N",
-	"B",
-	"TT",
-	"FF",
-	"PI",
-	"NI",
-	"I",
-	"BI",
-	"F",
-	"BF",
-	"DF",
-	"BDF",
-	"NAN",
-	"SNAN",
-	"UUID",
-	"GT",
-	"CT",
-	"BIN",
-	"S",
-	"VS",
-	"URI",
-	"CUB",
-	"CUT",
-	"BB",
-	"SB",
-	"VB",
-	"UB",
-	"CBB",
-	"CTB",
-	"AC",
-	"AD",
-	"L",
-	"M",
-	"MUP",
-	"META",
-	"CMT",
-	"E",
-	"MARK",
-	"REF",
-	"ED",
+	TEventBeginDocument:       "BD",
+	TEventVersion:             "V",
+	TEventPadding:             "PAD",
+	TEventNil:                 "N",
+	TEventBool:                "B",
+	TEventTrue:                "TT",
+	TEventFalse:               "FF",
+	TEventPInt:                "PI",
+	TEventNInt:                "NI",
+	TEventInt:                 "I",
+	TEventBigInt:              "BI",
+	TEventFloat:               "F",
+	TEventBigFloat:            "BF",
+	TEventDecimalFloat:        "DF",
+	TEventBigDecimalFloat:     "BDF",
+	TEventNan:                 "NAN",
+	TEventSNan:                "SNAN",
+	TEventUUID:                "UUID",
+	TEventTime:                "GT",
+	TEventCompactTime:         "CT",
+	TEventString:              "S",
+	TEventVerbatimString:      "VS",
+	TEventURI:                 "URI",
+	TEventCustomBinary:        "CUB",
+	TEventCustomText:          "CUT",
+	TEventArrayUint8:          "AU8",
+	TEventStringBegin:         "SB",
+	TEventVerbatimStringBegin: "VB",
+	TEventURIBegin:            "UB",
+	TEventCustomBinaryBegin:   "CBB",
+	TEventCustomTextBegin:     "CTB",
+	TEventArrayUint8Begin:     "AU8B",
+	TEventArrayChunk:          "AC",
+	TEventArrayData:           "AD",
+	TEventList:                "L",
+	TEventMap:                 "M",
+	TEventMarkup:              "MUP",
+	TEventMetadata:            "META",
+	TEventComment:             "CMT",
+	TEventEnd:                 "E",
+	TEventMarker:              "MARK",
+	TEventReference:           "REF",
+	TEventEndDocument:         "ED",
 }
 
 func (_this TEventType) String() string {
@@ -309,7 +309,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnCustomBinary(_this.V1.([]byte))
 	case TEventCustomText:
 		receiver.OnCustomText([]byte(_this.V1.(string)))
-	case TEventBytes:
+	case TEventArrayUint8:
 		receiver.OnTypedArray(events.ArrayTypeUint8, _this.V1.([]byte))
 	case TEventStringBegin:
 		receiver.OnStringBegin()
@@ -321,7 +321,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnCustomBinaryBegin()
 	case TEventCustomTextBegin:
 		receiver.OnCustomTextBegin()
-	case TEventBytesBegin:
+	case TEventArrayUint8Begin:
 		receiver.OnTypedArrayBegin(events.ArrayTypeUint8)
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
@@ -384,18 +384,18 @@ func SNAN() *TEvent                     { return newTEvent(TEventSNan, nil, nil)
 func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
 func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
 func CT(v *compact_time.Time) *TEvent   { return EventOrNil(TEventCompactTime, v) }
-func BIN(v []byte) *TEvent              { return newTEvent(TEventBytes, v, nil) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
 func VS(v string) *TEvent               { return newTEvent(TEventVerbatimString, v, nil) }
 func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
-func BB() *TEvent                       { return newTEvent(TEventBytesBegin, nil, nil) }
+func AU8(v []byte) *TEvent              { return newTEvent(TEventArrayUint8, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
 func VB() *TEvent                       { return newTEvent(TEventVerbatimStringBegin, nil, nil) }
 func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
 func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
+func AU8B() *TEvent                     { return newTEvent(TEventArrayUint8Begin, nil, nil) }
 func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
@@ -428,7 +428,7 @@ func EventForValue(value interface{}) *TEvent {
 	case reflect.Slice:
 		switch rv.Type() {
 		case common.TypeBytes:
-			return BIN(rv.Bytes())
+			return AU8(rv.Bytes())
 		}
 	case reflect.Ptr:
 		if rv.IsNil() {
@@ -605,9 +605,13 @@ func (h *TEventPrinter) OnCustomText(value []byte) {
 	h.Next.OnCustomText(value)
 }
 func (h *TEventPrinter) OnTypedArray(arrayType events.ArrayType, value []byte) {
-	// TODO: Typed array support
-	h.Print(BIN(value))
-	h.Next.OnTypedArray(arrayType, value)
+	switch arrayType {
+	case events.ArrayTypeUint8:
+		h.Print(AU8(value))
+		h.Next.OnTypedArray(arrayType, value)
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+	}
 }
 func (h *TEventPrinter) OnStringBegin() {
 	h.Print(SB())
@@ -630,9 +634,13 @@ func (h *TEventPrinter) OnCustomTextBegin() {
 	h.Next.OnCustomTextBegin()
 }
 func (h *TEventPrinter) OnTypedArrayBegin(arrayType events.ArrayType) {
-	// TODO: Typed array support
-	h.Print(BB())
-	h.Next.OnTypedArrayBegin(arrayType)
+	switch arrayType {
+	case events.ArrayTypeUint8:
+		h.Print(AU8B())
+		h.Next.OnTypedArrayBegin(arrayType)
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+	}
 }
 func (h *TEventPrinter) OnArrayChunk(l uint64, moreChunksFollow bool) {
 	h.Print(AC(l, moreChunksFollow))
@@ -749,8 +757,12 @@ func (h *TER) OnURI(value []byte)                     { h.add(URI(string(value))
 func (h *TER) OnCustomBinary(value []byte)            { h.add(CUB(value)) }
 func (h *TER) OnCustomText(value []byte)              { h.add(CUT(string(value))) }
 func (h *TER) OnTypedArray(arrayType events.ArrayType, value []byte) {
-	// TODO: Typed array support
-	h.add(BIN(value))
+	switch arrayType {
+	case events.ArrayTypeUint8:
+		h.add(AU8(value))
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+	}
 }
 func (h *TER) OnStringBegin()         { h.add(SB()) }
 func (h *TER) OnVerbatimStringBegin() { h.add(VB()) }
@@ -758,8 +770,12 @@ func (h *TER) OnURIBegin()            { h.add(UB()) }
 func (h *TER) OnCustomBinaryBegin()   { h.add(CBB()) }
 func (h *TER) OnCustomTextBegin()     { h.add(CTB()) }
 func (h *TER) OnTypedArrayBegin(arrayType events.ArrayType) {
-	// TODO: Typed array support
-	h.add(BB())
+	switch arrayType {
+	case events.ArrayTypeUint8:
+		h.add(AU8B())
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+	}
 }
 func (h *TER) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
 func (h *TER) OnArrayData(data []byte)                { h.add(AD(data)) }
@@ -821,9 +837,9 @@ type TestingOuterStruct struct {
 	DF     compact_float.DFloat
 	BDF    apd.Decimal
 	PBDF   *apd.Decimal
-	Ar     [4]byte
 	St     string
-	Ba     []byte
+	Au8    [4]byte
+	Su8    []byte
 	Sl     []interface{}
 	M      map[interface{}]interface{}
 	IS     TestingInnerStruct
@@ -889,9 +905,9 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 	anv("DF", _this.DF)
 	anv("BDF", _this.BDF)
 	anv("PBDF", _this.PBDF)
-	ane("Ar", BIN(_this.Ar[:]))
 	anv("St", _this.St)
-	anv("Ba", _this.Ba)
+	ane("Au8", AU8(_this.Au8[:]))
+	anv("Su8", _this.Su8)
 
 	ane("Sl", L())
 	for _, v := range _this.Sl {
@@ -938,7 +954,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F14", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 		ane("F15", GT(_this.Time))
 		ane("F16", CT(_this.PCTime))
-		ane("F17", BIN([]byte{1}))
+		ane("F17", AU8([]byte{1}))
 		ane("F18", S("xyz"))
 		ane("F19", URI("http://example.com"))
 		// ane("F20", cust([]byte{1}))
@@ -960,7 +976,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 			GT(_this.Time),
 			CT(_this.PCTime),
-			BIN([]byte{1}),
+			AU8([]byte{1}),
 			S("xyz"),
 			URI("http://example.com"),
 			// cust([]byte{1}),
@@ -1021,12 +1037,12 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.DF = NewDFloat(fmt.Sprintf("-100000000000000%ve-1000000", unsafe.Offsetof(_this.DF)))
 	_this.PBDF = NewBDF("-1.234567890123456789777777777777777777771234e-10000")
 	_this.BDF = *_this.PBDF
-	_this.Ar[0] = byte(baseValue + int(unsafe.Offsetof(_this.Ar)))
-	_this.Ar[1] = byte(baseValue + int(unsafe.Offsetof(_this.Ar)+1))
-	_this.Ar[2] = byte(baseValue + int(unsafe.Offsetof(_this.Ar)+2))
-	_this.Ar[3] = byte(baseValue + int(unsafe.Offsetof(_this.Ar)+3))
 	_this.St = GenerateString(baseValue+5, baseValue)
-	_this.Ba = GenerateBytes(baseValue+1, baseValue)
+	_this.Au8[0] = byte(baseValue + int(unsafe.Offsetof(_this.Au8)))
+	_this.Au8[1] = byte(baseValue + int(unsafe.Offsetof(_this.Au8)+1))
+	_this.Au8[2] = byte(baseValue + int(unsafe.Offsetof(_this.Au8)+2))
+	_this.Au8[3] = byte(baseValue + int(unsafe.Offsetof(_this.Au8)+3))
+	_this.Su8 = GenerateBytes(baseValue+1, baseValue)
 	_this.M = make(map[interface{}]interface{})
 	for i := 0; i < baseValue+2; i++ {
 		_this.Sl = append(_this.Sl, i)

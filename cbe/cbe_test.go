@@ -122,6 +122,6 @@ func TestCBEUUID(t *testing.T) {
 }
 
 func TestCBEArrayUint8(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt8, 0x02, 0x01}, BD(), V(1), BIN([]byte{1}), ED())
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt8, 0x04, 0xfa, 0x11}, BD(), V(1), BIN([]byte{0xfa, 0x11}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt8, 0x02, 0x01}, BD(), V(1), AU8([]byte{1}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt8, 0x04, 0xfa, 0x11}, BD(), V(1), AU8([]byte{0xfa, 0x11}), ED())
 }

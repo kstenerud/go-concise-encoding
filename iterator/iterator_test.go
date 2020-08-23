@@ -26,98 +26,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
 )
-
-func TT() *test.TEvent                       { return test.TT() }
-func FF() *test.TEvent                       { return test.FF() }
-func I(v int64) *test.TEvent                 { return test.I(v) }
-func F(v float64) *test.TEvent               { return test.F(v) }
-func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
-func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
-func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
-func N() *test.TEvent                        { return test.N() }
-func PAD(v int) *test.TEvent                 { return test.PAD(v) }
-func B(v bool) *test.TEvent                  { return test.B(v) }
-func PI(v uint64) *test.TEvent               { return test.PI(v) }
-func NI(v uint64) *test.TEvent               { return test.NI(v) }
-func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func NAN() *test.TEvent                      { return test.NAN() }
-func SNAN() *test.TEvent                     { return test.SNAN() }
-func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
-func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v *compact_time.Time) *test.TEvent   { return test.CT(v) }
-func BIN(v []byte) *test.TEvent              { return test.BIN(v) }
-func S(v string) *test.TEvent                { return test.S(v) }
-func VS(v string) *test.TEvent               { return test.VS(v) }
-func URI(v string) *test.TEvent              { return test.URI(v) }
-func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
-func CUT(v string) *test.TEvent              { return test.CUT(v) }
-func BB() *test.TEvent                       { return test.BB() }
-func SB() *test.TEvent                       { return test.SB() }
-func VB() *test.TEvent                       { return test.VB() }
-func UB() *test.TEvent                       { return test.UB() }
-func CBB() *test.TEvent                      { return test.CBB() }
-func CTB() *test.TEvent                      { return test.CTB() }
-func AC(l uint64, term bool) *test.TEvent    { return test.AC(l, term) }
-func AD(v []byte) *test.TEvent               { return test.AD(v) }
-func L() *test.TEvent                        { return test.L() }
-func M() *test.TEvent                        { return test.M() }
-func MUP() *test.TEvent                      { return test.MUP() }
-func META() *test.TEvent                     { return test.META() }
-func CMT() *test.TEvent                      { return test.CMT() }
-func E() *test.TEvent                        { return test.E() }
-func MARK() *test.TEvent                     { return test.MARK() }
-func REF() *test.TEvent                      { return test.REF() }
-func BD() *test.TEvent                       { return test.BD() }
-func ED() *test.TEvent                       { return test.ED() }
-
-func iterateObject(object interface{},
-	eventReceiver events.DataEventReceiver,
-	sessionOptions *options.IteratorSessionOptions,
-	iteratorOptions *options.IteratorOptions) {
-
-	session := NewSession(nil, sessionOptions)
-	iter := session.NewIterator(eventReceiver, iteratorOptions)
-	iter.Iterate(object)
-}
-
-func assertIterateWithOptions(t *testing.T,
-	sessionOptions *options.IteratorSessionOptions,
-	iteratorOptions *options.IteratorOptions,
-	obj interface{},
-	events ...*test.TEvent) {
-
-	expected := append([]*test.TEvent{BD(), V(1)}, events...)
-	expected = append(expected, ED())
-	receiver := test.NewTER()
-	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
-
-	if !equivalence.IsEquivalent(expected, receiver.Events) {
-		t.Errorf("Expected %v but got %v", expected, receiver.Events)
-	}
-}
-
-func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
-	assertIterateWithOptions(t,
-		options.DefaultIteratorSessionOptions(),
-		options.DefaultIteratorOptions(),
-		obj,
-		events...)
-}
-
-// ============================================================================
-
-// Tests
 
 func TestIterateBasic(t *testing.T) {
 	pBigIntP := test.NewBigInt("12345678901234567890123456789")
@@ -163,7 +79,7 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, gTimeNow, GT(gTimeNow))
 	assertIterate(t, pCTimeNow, CT(pCTimeNow))
 	assertIterate(t, *pCTimeNow, CT(pCTimeNow))
-	assertIterate(t, []byte{1, 2, 3, 4}, BIN([]byte{1, 2, 3, 4}))
+	assertIterate(t, []byte{1, 2, 3, 4}, AU8([]byte{1, 2, 3, 4}))
 	assertIterate(t, "test", S("test"))
 	assertIterate(t, pURL, URI("http://x.com"))
 	assertIterate(t, *pURL, URI("http://x.com"))
@@ -192,8 +108,8 @@ func TestIterateArray(t *testing.T) {
 	assertIterate(t, a1, L(), I(1), I(2), E())
 	assertIterate(t, &a1, L(), I(1), I(2), E())
 	a2 := [2]byte{1, 2}
-	assertIterate(t, a2, BIN([]byte{1, 2}))
-	assertIterate(t, &a2, BIN([]byte{1, 2}))
+	assertIterate(t, a2, AU8([]byte{1, 2}))
+	assertIterate(t, &a2, AU8([]byte{1, 2}))
 }
 
 func TestIterateInterface(t *testing.T) {

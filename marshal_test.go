@@ -29,10 +29,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
-// ============================================================================
-
-// Tests
-
 func TestMarshalUnmarshal(t *testing.T) {
 	assertMarshalUnmarshal(t, 101)
 	assertMarshalUnmarshal(t, *test.NewTestingOuterStruct(1))

@@ -23,7 +23,6 @@ package rules
 import (
 	"math"
 	"math/big"
-	"reflect"
 	"testing"
 	"time"
 
@@ -35,84 +34,6 @@ import (
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
-
-const rulesCodecVersion = 1
-
-var uint8Type = reflect.TypeOf(uint8(0))
-
-func assertRulesOnString(t *testing.T, rules *Rules, value string) {
-	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(value)) })
-	}
-}
-
-func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
-	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
-	}
-}
-
-func assertRulesAddURI(t *testing.T, rules *Rules, uri string) {
-	length := len(uri)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(uri)) })
-	}
-}
-
-func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
-	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnCustomBinaryBegin() })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
-	}
-}
-
-func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
-	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnCustomTextBegin() })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
-	}
-}
-
-func assertRulesInArray(t *testing.T, rules *Rules) {
-	if rules.arrayType == eventTypeNothing {
-		t.Errorf("Expected to be in array")
-	}
-}
-
-func assertRulesNotInArray(t *testing.T, rules *Rules) {
-	if rules.arrayType != eventTypeNothing {
-		t.Errorf("Expected to not be in array")
-	}
-}
-
-func newRulesAfterVersion(opts *options.RuleOptions) *Rules {
-	rules := NewRules(events.NewNullEventReceiver(), opts)
-	rules.OnBeginDocument()
-	rules.OnVersion(opts.ConciseEncodingVersion)
-	return rules
-}
-
-func newRulesWithMaxDepth(maxDepth int) *Rules {
-	opts := options.DefaultRuleOptions()
-	opts.MaxContainerDepth = uint64(maxDepth)
-	return newRulesAfterVersion(opts)
-}
-
-// ============================================================================
-
-// Tests
 
 // ===========
 // Basic Types

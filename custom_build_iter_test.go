@@ -287,12 +287,14 @@ func assertMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	assertCTEMarshalUnmarshalComplexFromText(t, value)
 }
 
-// ============================================================================
-
 func assertMarshalUnmarshalComplex(t *testing.T, value interface{}) {
 	assertMarshalUnmarshalComplexFromBinary(t, value)
 	assertMarshalUnmarshalComplexFromText(t, value)
 }
+
+// ============================================================================
+
+// Tests
 
 func TestCustomBuildIter(t *testing.T) {
 	assertMarshalUnmarshalComplex(t, complex(1, 1))

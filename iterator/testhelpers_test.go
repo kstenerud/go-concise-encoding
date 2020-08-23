@@ -18,16 +18,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package cte
+package iterator
 
 import (
-	"bytes"
 	"math/big"
 	"testing"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/rules"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
@@ -67,7 +66,7 @@ func UB() *test.TEvent                       { return test.UB() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func AU8B() *test.TEvent                     { return test.AU8B() }
-func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
+func AC(l uint64, term bool) *test.TEvent    { return test.AC(l, term) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
@@ -80,125 +79,36 @@ func REF() *test.TEvent                      { return test.REF() }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
-var DebugPrintEvents = false
+func iterateObject(object interface{},
+	eventReceiver events.DataEventReceiver,
+	sessionOptions *options.IteratorSessionOptions,
+	iteratorOptions *options.IteratorOptions) {
 
-func decodeToEvents(document []byte, withRules bool) (evts []*test.TEvent, err error) {
-	var topLevelReceiver events.DataEventReceiver
-	ter := test.NewTER()
-	topLevelReceiver = ter
-	if withRules {
-		topLevelReceiver = rules.NewRules(topLevelReceiver, nil)
-	}
-	if DebugPrintEvents {
-		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
-	}
-	err = NewDecoder(nil).Decode(bytes.NewBuffer(document), topLevelReceiver)
-	evts = ter.Events
-	return
+	session := NewSession(nil, sessionOptions)
+	iter := session.NewIterator(eventReceiver, iteratorOptions)
+	iter.Iterate(object)
 }
 
-func encodeEvents(events ...*test.TEvent) []byte {
-	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(nil)
-	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(encoder, events...)
-	return buffer.Bytes()
-}
+func assertIterateWithOptions(t *testing.T,
+	sessionOptions *options.IteratorSessionOptions,
+	iteratorOptions *options.IteratorOptions,
+	obj interface{},
+	events ...*test.TEvent) {
 
-func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document), false)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	expected := append([]*test.TEvent{BD(), V(1)}, events...)
+	expected = append(expected, ED())
+	receiver := test.NewTER()
+	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
-	if len(expectedEvents) > 0 {
-		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
-			return
-		}
-	}
-	events = actualEvents
-	successful = true
-	return
-}
-
-func assertDecodeWithRules(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document), true)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if len(expectedEvents) > 0 {
-		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
-			return
-		}
-	}
-	events = actualEvents
-	successful = true
-	return
-}
-
-func assertDecodeFails(t *testing.T, document string) {
-	_, err := decodeToEvents([]byte(document), false)
-	if err == nil {
-		t.Errorf("Expected decode to fail")
+	if !equivalence.IsEquivalent(expected, receiver.Events) {
+		t.Errorf("Expected %v but got %v", expected, receiver.Events)
 	}
 }
 
-func assertEncode(t *testing.T, expectedDocument string, events ...*test.TEvent) (successful bool) {
-	actualDocument := string(encodeEvents(events...))
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
-		return
-	}
-	successful = true
-	return
-}
-
-func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool) {
-	successful, actualEvents := assertDecode(t, document, expectedEvents...)
-	if !successful {
-		return
-	}
-	return assertEncode(t, document, actualEvents...)
-}
-
-func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
-	document, err := NewMarshaler(nil).MarshalToDocument(value)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	actualDocument := string(document)
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
-		return
-	}
-	successful = true
-	return
-}
-
-func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
-	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !equivalence.IsEquivalent(actualValue, expectedValue) {
-		t.Errorf("Expected unmarshaled [%v] but got [%v]", expectedValue, actualValue)
-		return
-	}
-	successful = true
-	return
-}
-
-func assertMarshalUnmarshal(t *testing.T, expectedValue interface{}, expectedDocument string) (successful bool) {
-	if !assertMarshal(t, expectedValue, expectedDocument) {
-		return
-	}
-	return assertUnmarshal(t, expectedValue, expectedDocument)
+func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
+	assertIterateWithOptions(t,
+		options.DefaultIteratorSessionOptions(),
+		options.DefaultIteratorOptions(),
+		obj,
+		events...)
 }

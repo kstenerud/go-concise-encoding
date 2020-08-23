@@ -138,15 +138,15 @@ func TestCTEChunkedVerbatimString(t *testing.T) {
 }
 
 func TestCTEChunkedBytes(t *testing.T) {
-	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), BB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
+	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
 
-	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), BB(),
+	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, false), AD([]byte{0x78, 0x9a}),
 		ED())
 
-	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), BB(),
+	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, true), AD([]byte{0x78, 0x9a}),
@@ -470,9 +470,9 @@ func TestCTEMapMetadata(t *testing.T) {
 }
 
 func TestCTEBytes(t *testing.T) {
-	assertDecodeEncode(t, `c1 |u8x 01|`, BD(), V(1), BIN([]byte{0x01}), ED())
-	assertDecodeEncode(t, `c1 |u8x 01 ff|`, BD(), V(1), BIN([]byte{0x01, 0xff}), ED())
-	assertDecode(t, `c1 |u8x  f9 C2 4F   10  |`, BD(), V(1), BIN([]byte{0xf9, 0xc2, 0x4f, 0x10}), ED())
+	assertDecodeEncode(t, `c1 |u8x 01|`, BD(), V(1), AU8([]byte{0x01}), ED())
+	assertDecodeEncode(t, `c1 |u8x 01 ff|`, BD(), V(1), AU8([]byte{0x01, 0xff}), ED())
+	assertDecode(t, `c1 |u8x  f9 C2 4F   10  |`, BD(), V(1), AU8([]byte{0xf9, 0xc2, 0x4f, 0x10}), ED())
 }
 
 func TestCTECustomBinary(t *testing.T) {

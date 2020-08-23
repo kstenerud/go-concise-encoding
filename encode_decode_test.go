@@ -29,10 +29,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// ============================================================================
-
-// Tests
-
 func TestEncodeDecodeVersion(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), ED())
 }
@@ -99,7 +95,7 @@ func TestEncodeDecodeTime(t *testing.T) {
 }
 
 func TestEncodeDecodeBytes(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(1), BIN([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
+	assertEncodeDecode(t, BD(), V(1), AU8([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
 func TestEncodeDecodeCustom(t *testing.T) {

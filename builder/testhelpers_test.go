@@ -18,21 +18,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package cte
+package builder
 
 import (
-	"bytes"
 	"math/big"
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
 
@@ -77,128 +75,30 @@ func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
-func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
-var DebugPrintEvents = false
-
-func decodeToEvents(document []byte, withRules bool) (evts []*test.TEvent, err error) {
-	var topLevelReceiver events.DataEventReceiver
-	ter := test.NewTER()
-	topLevelReceiver = ter
-	if withRules {
-		topLevelReceiver = rules.NewRules(topLevelReceiver, nil)
-	}
-	if DebugPrintEvents {
-		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
-	}
-	err = NewDecoder(nil).Decode(bytes.NewBuffer(document), topLevelReceiver)
-	evts = ter.Events
-	return
+func runBuild(session *Session, template interface{}, events ...*test.TEvent) interface{} {
+	builder := session.NewBuilderFor(template, nil)
+	test.InvokeEvents(builder, events...)
+	return builder.GetBuiltObject()
 }
 
-func encodeEvents(events ...*test.TEvent) []byte {
-	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(nil)
-	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(encoder, events...)
-	return buffer.Bytes()
-}
-
-func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document), false)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if len(expectedEvents) > 0 {
-		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
-			return
-		}
-	}
-	events = actualEvents
-	successful = true
-	return
-}
-
-func assertDecodeWithRules(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document), true)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if len(expectedEvents) > 0 {
-		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
-			return
-		}
-	}
-	events = actualEvents
-	successful = true
-	return
-}
-
-func assertDecodeFails(t *testing.T, document string) {
-	_, err := decodeToEvents([]byte(document), false)
-	if err == nil {
-		t.Errorf("Expected decode to fail")
+func assertBuild(t *testing.T, expected interface{}, events ...*test.TEvent) {
+	actual := runBuild(NewSession(nil, nil), expected, events...)
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
 	}
 }
 
-func assertEncode(t *testing.T, expectedDocument string, events ...*test.TEvent) (successful bool) {
-	actualDocument := string(encodeEvents(events...))
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
-		return
+func assertBuildWithSession(t *testing.T, session *Session, expected interface{}, events ...*test.TEvent) {
+	actual := runBuild(session, expected, events...)
+	if !equivalence.IsEquivalent(expected, actual) {
+		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
 	}
-	successful = true
-	return
 }
 
-func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool) {
-	successful, actualEvents := assertDecode(t, document, expectedEvents...)
-	if !successful {
-		return
-	}
-	return assertEncode(t, document, actualEvents...)
-}
-
-func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
-	document, err := NewMarshaler(nil).MarshalToDocument(value)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	actualDocument := string(document)
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
-		return
-	}
-	successful = true
-	return
-}
-
-func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
-	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !equivalence.IsEquivalent(actualValue, expectedValue) {
-		t.Errorf("Expected unmarshaled [%v] but got [%v]", expectedValue, actualValue)
-		return
-	}
-	successful = true
-	return
-}
-
-func assertMarshalUnmarshal(t *testing.T, expectedValue interface{}, expectedDocument string) (successful bool) {
-	if !assertMarshal(t, expectedValue, expectedDocument) {
-		return
-	}
-	return assertUnmarshal(t, expectedValue, expectedDocument)
+func assertBuildPanics(t *testing.T, template interface{}, events ...*test.TEvent) {
+	test.AssertPanics(t, func() {
+		runBuild(NewSession(nil, nil), template, events...)
+	})
 }
