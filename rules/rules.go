@@ -56,7 +56,7 @@ type Rules struct {
 	maxDepth              int
 	stateStack            []ruleState
 	arrayType             ruleEvent
-	arrayElementSize      int
+	arrayElementBitCount  int
 	arrayData             []byte
 	chunkByteCount        uint64
 	chunkBytesWritten     uint64
@@ -258,15 +258,6 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 	_this.nextReceiver.OnCompactTime(value)
 }
 
-func (_this *Rules) OnTypedArray(arrayType events.ArrayType, value []byte) {
-	_this.onTypedArrayBegin(arrayType)
-	_this.onArrayChunk(uint64(len(value)), false)
-	if len(value) > 0 {
-		_this.onArrayData(value)
-	}
-	_this.nextReceiver.OnTypedArray(arrayType, value)
-}
-
 func (_this *Rules) OnString(value []byte) {
 	_this.validateString(value)
 	_this.onStringBegin()
@@ -311,6 +302,15 @@ func (_this *Rules) OnCustomText(value []byte) {
 		_this.onArrayData(value)
 	}
 	_this.nextReceiver.OnCustomText(value)
+}
+
+func (_this *Rules) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	_this.onTypedArrayBegin(arrayType)
+	_this.onArrayChunk(elementCount, false)
+	if len(value) > 0 {
+		_this.onArrayData(value)
+	}
+	_this.nextReceiver.OnTypedArray(arrayType, elementCount, value)
 }
 
 func (_this *Rules) OnStringBegin() {
@@ -446,43 +446,37 @@ func (_this *Rules) onNegativeInt() {
 }
 
 func (_this *Rules) onTypedArrayBegin(arrayType events.ArrayType) {
-	switch arrayType {
-	case events.ArrayTypeUint8:
-		_this.beginArray(eventTypeArray, 1)
-	default:
-		panic(fmt.Errorf("TODO: Support typed array for %v", arrayType))
-	}
+	_this.beginArray(eventTypeArray, arrayType.ElementSize())
 }
 
 func (_this *Rules) onStringBegin() {
-	_this.beginArray(eventTypeString, 1)
+	_this.beginArray(eventTypeString, 8)
 }
 
 func (_this *Rules) onVerbatimStringBegin() {
-	_this.beginArray(eventTypeVerbatimString, 1)
+	_this.beginArray(eventTypeVerbatimString, 8)
 }
 
 func (_this *Rules) onURIBegin() {
-	_this.beginArray(eventTypeURI, 1)
+	_this.beginArray(eventTypeURI, 8)
 }
 
 func (_this *Rules) onCustomBinaryBegin() {
-	_this.beginArray(eventTypeCustomBinary, 1)
+	_this.beginArray(eventTypeCustomBinary, 8)
 }
 
 func (_this *Rules) onCustomTextBegin() {
-	_this.beginArray(eventTypeCustomText, 1)
+	_this.beginArray(eventTypeCustomText, 8)
 }
 
-func (_this *Rules) onArrayChunk(length uint64, moreChunksFollow bool) {
+func (_this *Rules) onArrayChunk(elementCount uint64, moreChunksFollow bool) {
 	_this.assertCurrentStateAllowsType(eventTypeAChunk)
-
-	_this.chunkByteCount = length * uint64(_this.arrayElementSize)
+	_this.chunkByteCount = common.ElementCountToByteCount(_this.arrayElementBitCount, elementCount)
 	_this.chunkBytesWritten = 0
 	_this.moreChunksFollow = moreChunksFollow
 	_this.changeState(stateAwaitingArrayData)
 
-	if length == 0 {
+	if elementCount == 0 {
 		_this.onArrayChunkEnded()
 	}
 }
@@ -638,11 +632,11 @@ func (_this *Rules) assertCurrentStateAllowsType(objectType ruleEvent) {
 	assertStateAllowsType(_this.getCurrentState(), objectType)
 }
 
-func (_this *Rules) beginArray(arrayType ruleEvent, elementSize int) {
+func (_this *Rules) beginArray(arrayType ruleEvent, elementBitCount int) {
 	_this.assertCurrentStateAllowsType(arrayType)
 
 	_this.arrayType = arrayType
-	_this.arrayElementSize = elementSize
+	_this.arrayElementBitCount = elementBitCount
 	_this.arrayData = _this.arrayData[:0]
 	_this.chunkByteCount = 0
 	_this.chunkBytesWritten = 0

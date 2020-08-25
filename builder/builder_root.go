@@ -275,9 +275,6 @@ func (_this *RootBuilder) OnTime(value time.Time) {
 func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
 	_this.currentBuilder.BuildFromCompactTime(value, _this.object)
 }
-func (_this *RootBuilder) OnTypedArray(arrayType events.ArrayType, value []byte) {
-	_this.currentBuilder.BuildFromTypedArray(arrayType, value, _this.object)
-}
 func (_this *RootBuilder) OnString(value []byte) {
 	_this.currentBuilder.BuildFromString(value, _this.object)
 }
@@ -297,11 +294,8 @@ func (_this *RootBuilder) OnCustomBinary(value []byte) {
 func (_this *RootBuilder) OnCustomText(value []byte) {
 	_this.currentBuilder.BuildFromCustomText(value, _this.object)
 }
-func (_this *RootBuilder) OnTypedArrayBegin(arrayType events.ArrayType) {
-	_this.chunkedFunction = func(bytes []byte) {
-		_this.OnTypedArray(arrayType, bytes)
-	}
-	_this.chunkedData = _this.chunkedData[:0]
+func (_this *RootBuilder) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	_this.currentBuilder.BuildFromTypedArray(arrayType, value, _this.object)
 }
 func (_this *RootBuilder) OnStringBegin() {
 	_this.chunkedFunction = _this.OnString
@@ -321,6 +315,13 @@ func (_this *RootBuilder) OnCustomBinaryBegin() {
 }
 func (_this *RootBuilder) OnCustomTextBegin() {
 	_this.chunkedFunction = _this.OnCustomText
+	_this.chunkedData = _this.chunkedData[:0]
+}
+func (_this *RootBuilder) OnTypedArrayBegin(arrayType events.ArrayType) {
+	_this.chunkedFunction = func(bytes []byte) {
+		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
+		_this.OnTypedArray(arrayType, elementCount, bytes)
+	}
 	_this.chunkedData = _this.chunkedData[:0]
 }
 func (_this *RootBuilder) OnArrayChunk(length uint64, moreChunksFollow bool) {

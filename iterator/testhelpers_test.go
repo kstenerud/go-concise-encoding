@@ -60,12 +60,14 @@ func URI(v string) *test.TEvent              { return test.URI(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
+func AU16(v []byte) *test.TEvent             { return test.AU16(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func VB() *test.TEvent                       { return test.VB() }
 func UB() *test.TEvent                       { return test.UB() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func AU8B() *test.TEvent                     { return test.AU8B() }
+func AU16B() *test.TEvent                    { return test.AU16B() }
 func AC(l uint64, term bool) *test.TEvent    { return test.AC(l, term) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }

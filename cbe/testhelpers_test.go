@@ -27,7 +27,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -242,9 +241,6 @@ func assertEncode(t *testing.T, expectedDocument []byte, events ...*test.TEvent)
 }
 
 func assertDecodeEncode(t *testing.T, document []byte, expectedEvents ...*test.TEvent) (successful bool) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-
 	successful, actualEvents := assertDecode(t, document, expectedEvents...)
 	if !successful {
 		return

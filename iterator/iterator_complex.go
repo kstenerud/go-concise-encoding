@@ -106,40 +106,6 @@ func (_this *pointerIterator) IterateObject(v reflect.Value, eventReceiver event
 	_this.elemIter.IterateObject(v.Elem(), eventReceiver, addReference)
 }
 
-// -----------
-// uint8 array
-// -----------
-
-type uint8ArrayIterator struct {
-}
-
-func newUInt8ArrayIterator() ObjectIterator {
-	return &uint8ArrayIterator{}
-}
-
-func (_this *uint8ArrayIterator) InitTemplate(_ FetchIterator) {
-}
-
-func (_this *uint8ArrayIterator) NewInstance() ObjectIterator {
-	return _this
-}
-
-func (_this *uint8ArrayIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {
-}
-
-func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
-	if v.CanAddr() {
-		eventReceiver.OnTypedArray(events.ArrayTypeUint8, v.Slice(0, v.Len()).Bytes())
-	} else {
-		tempSlice := make([]byte, v.Len())
-		tempLen := v.Len()
-		for i := 0; i < tempLen; i++ {
-			tempSlice[i] = v.Index(i).Interface().(uint8)
-		}
-		eventReceiver.OnTypedArray(events.ArrayTypeUint8, tempSlice)
-	}
-}
-
 // -----
 // Slice
 // -----

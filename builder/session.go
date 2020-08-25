@@ -136,7 +136,7 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 	case reflect.Array:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
-			return newBytesArrayBuilder()
+			return newUint8ArrayBuilder()
 		default:
 			return newArrayBuilder(dstType)
 		}

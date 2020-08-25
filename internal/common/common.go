@@ -189,3 +189,15 @@ func ASCIIToLower(s string) string {
 	}
 	return s
 }
+
+func ByteCountToElementCount(elementBitWidth int, byteCount uint64) uint64 {
+	return (byteCount * 8) / uint64(elementBitWidth)
+}
+
+func ElementCountToByteCount(elementBitWidth int, elementCount uint64) uint64 {
+	byteCount := (elementCount * uint64(elementBitWidth)) / 8
+	if elementBitWidth == 1 && elementCount&7 != 0 {
+		byteCount++
+	}
+	return byteCount
+}

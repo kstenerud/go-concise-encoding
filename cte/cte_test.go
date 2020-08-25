@@ -25,15 +25,11 @@ import (
 	"math"
 	"testing"
 
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-compact-time"
 )
-
-// debug.DebugOptions.PassThroughPanics = true
-// defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 func TestCTEVersion(t *testing.T) {
 	assertDecodeEncode(t, "c1 ", BD(), V(1), ED())
@@ -571,8 +567,6 @@ func TestInf(t *testing.T) {
 
 func TestComment(t *testing.T) {
 	// TODO: Better comment formatting
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	assertDecodeEncode(t, `c1 {a=@inf /*test*/b=1}`)
 }
 
@@ -591,8 +585,6 @@ func TestMarkupVerbatimString(t *testing.T) {
 }
 
 func TestBufferEdge(t *testing.T) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	assertDecode(t, `c1
 {
      1  = <a;
@@ -605,8 +597,6 @@ func TestBufferEdge(t *testing.T) {
 }
 
 func TestBufferEdge2(t *testing.T) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	assertDecode(t, `c1
 {
     x  = <a;
@@ -619,8 +609,6 @@ func TestBufferEdge2(t *testing.T) {
 }
 
 func TestComplexExample(t *testing.T) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	// DebugPrintEvents = true
 	assertDecodeWithRules(t, `c1
 // Metadata: _ct is the creation time
@@ -684,8 +672,6 @@ case is three Z characters, specified earlier as a sentinel.ZZZ
 }
 
 func TestEncodeDecodeExample(t *testing.T) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	// DebugPrintEvents = true
 
 	document := []byte(`c1

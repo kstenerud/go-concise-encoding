@@ -32,6 +32,8 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/kstenerud/go-concise-encoding/debug"
+
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -40,6 +42,15 @@ import (
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
+
+// Usage: defer PassThroughPanics(true)()
+func PassThroughPanics(shouldPassThrough bool) func() {
+	oldValue := debug.DebugOptions.PassThroughPanics
+	debug.DebugOptions.PassThroughPanics = shouldPassThrough
+	return func() {
+		debug.DebugOptions.PassThroughPanics = oldValue
+	}
+}
 
 func NewBigInt(str string) *big.Int {
 	bi := new(big.Int)
@@ -98,8 +109,12 @@ func ReportPanic(function func()) (err error) {
 }
 
 func AssertNoPanic(t *testing.T, function func()) {
-	if err := ReportPanic(function); err != nil {
-		t.Errorf("Unexpected error: %v", err)
+	if debug.DebugOptions.PassThroughPanics {
+		function()
+	} else {
+		if err := ReportPanic(function); err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
 	}
 }
 
@@ -158,12 +173,14 @@ const (
 	TEventCustomBinary
 	TEventCustomText
 	TEventArrayUint8
+	TEventArrayUint16
 	TEventStringBegin
 	TEventVerbatimStringBegin
 	TEventURIBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
 	TEventArrayUint8Begin
+	TEventArrayUint16Begin
 	TEventArrayChunk
 	TEventArrayData
 	TEventList
@@ -204,12 +221,14 @@ var TEventNames = []string{
 	TEventCustomBinary:        "CUB",
 	TEventCustomText:          "CUT",
 	TEventArrayUint8:          "AU8",
+	TEventArrayUint16:         "AU16",
 	TEventStringBegin:         "SB",
 	TEventVerbatimStringBegin: "VB",
 	TEventURIBegin:            "UB",
 	TEventCustomBinaryBegin:   "CBB",
 	TEventCustomTextBegin:     "CTB",
 	TEventArrayUint8Begin:     "AU8B",
+	TEventArrayUint16Begin:    "AU16B",
 	TEventArrayChunk:          "AC",
 	TEventArrayData:           "AD",
 	TEventList:                "L",
@@ -310,7 +329,11 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCustomText:
 		receiver.OnCustomText([]byte(_this.V1.(string)))
 	case TEventArrayUint8:
-		receiver.OnTypedArray(events.ArrayTypeUint8, _this.V1.([]byte))
+		bytes := _this.V1.([]byte)
+		receiver.OnTypedArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
+	case TEventArrayUint16:
+		bytes := _this.V1.([]byte)
+		receiver.OnTypedArray(events.ArrayTypeUint16, uint64(len(bytes)/2), bytes)
 	case TEventStringBegin:
 		receiver.OnStringBegin()
 	case TEventVerbatimStringBegin:
@@ -323,6 +346,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnCustomTextBegin()
 	case TEventArrayUint8Begin:
 		receiver.OnTypedArrayBegin(events.ArrayTypeUint8)
+	case TEventArrayUint16Begin:
+		receiver.OnTypedArrayBegin(events.ArrayTypeUint16)
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
 	case TEventArrayData:
@@ -390,12 +415,14 @@ func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
 func AU8(v []byte) *TEvent              { return newTEvent(TEventArrayUint8, v, nil) }
+func AU16(v []byte) *TEvent             { return newTEvent(TEventArrayUint16, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
 func VB() *TEvent                       { return newTEvent(TEventVerbatimStringBegin, nil, nil) }
 func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
 func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
 func AU8B() *TEvent                     { return newTEvent(TEventArrayUint8Begin, nil, nil) }
+func AU16B() *TEvent                    { return newTEvent(TEventArrayUint16Begin, nil, nil) }
 func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
@@ -426,9 +453,12 @@ func EventForValue(value interface{}) *TEvent {
 	case reflect.String:
 		return S(rv.String())
 	case reflect.Slice:
-		switch rv.Type() {
-		case common.TypeBytes:
+		switch rv.Type().Elem().Kind() {
+		case reflect.Uint8:
 			return AU8(rv.Bytes())
+		case reflect.Uint16:
+			panic(fmt.Errorf("TODO: AU16"))
+			return AU16(rv.Bytes())
 		}
 	case reflect.Ptr:
 		if rv.IsNil() {
@@ -604,14 +634,14 @@ func (h *TEventPrinter) OnCustomText(value []byte) {
 	h.Print(CUT(string(value)))
 	h.Next.OnCustomText(value)
 }
-func (h *TEventPrinter) OnTypedArray(arrayType events.ArrayType, value []byte) {
+func (h *TEventPrinter) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeUint8:
 		h.Print(AU8(value))
-		h.Next.OnTypedArray(arrayType, value)
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
+	h.Next.OnTypedArray(arrayType, elementCount, value)
 }
 func (h *TEventPrinter) OnStringBegin() {
 	h.Print(SB())
@@ -756,10 +786,12 @@ func (h *TER) OnVerbatimString(value []byte)          { h.add(VS(string(value)))
 func (h *TER) OnURI(value []byte)                     { h.add(URI(string(value))) }
 func (h *TER) OnCustomBinary(value []byte)            { h.add(CUB(value)) }
 func (h *TER) OnCustomText(value []byte)              { h.add(CUT(string(value))) }
-func (h *TER) OnTypedArray(arrayType events.ArrayType, value []byte) {
+func (h *TER) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeUint8:
 		h.add(AU8(value))
+	case events.ArrayTypeUint16:
+		h.add(AU16(value))
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}

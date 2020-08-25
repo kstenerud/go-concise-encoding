@@ -303,7 +303,7 @@ func (_this *Encoder) OnCustomText(value []byte) {
 	_this.encodeTypedByteArray(cbeTypeCustomText, value)
 }
 
-func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, value []byte) {
+func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeUint8:
 		_this.encodeArrayUint8(value)

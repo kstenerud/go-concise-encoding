@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -140,10 +139,6 @@ func assertEncodeDecodeCBEOpts(t *testing.T,
 	decodeOpts *options.CBEDecoderOptions,
 	expected ...*test.TEvent) {
 
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() {
-		debug.DebugOptions.PassThroughPanics = false
-	}()
 	actual, err := cbeEncodeDecode(encodeOpts, decodeOpts, expected...)
 	if err != nil {
 		t.Error(err)
@@ -163,9 +158,6 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 	encodeOpts *options.CTEEncoderOptions,
 	decodeOpts *options.CTEDecoderOptions,
 	expected ...*test.TEvent) {
-
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 
 	actual, err := cteEncodeDecode(encodeOpts, decodeOpts, expected...)
 	if err != nil {
@@ -258,8 +250,6 @@ func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
 	unmarshalOptions *options.CBEUnmarshalerOptions,
 	expected interface{}) {
 
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
 	buffer := &bytes.Buffer{}
 	err := ce.MarshalCBE(expected, buffer, marshalOptions)
 	if err != nil {
@@ -293,10 +283,6 @@ func assertCTEMarshalUnmarshalWithOptions(t *testing.T,
 	unmarshalOptions *options.CTEUnmarshalerOptions,
 	expected interface{}) {
 
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() {
-		debug.DebugOptions.PassThroughPanics = false
-	}()
 	buffer := &bytes.Buffer{}
 	err := ce.MarshalCTE(expected, buffer, marshalOptions)
 	if err != nil {

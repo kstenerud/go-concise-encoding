@@ -145,15 +145,23 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 	case reflect.Interface:
 		return newInterfaceIterator(t)
 	case reflect.Array:
-		if t.Elem().Kind() == reflect.Uint8 {
-			return newUInt8ArrayIterator()
+		switch t.Elem().Kind() {
+		case reflect.Uint8:
+			return newUint8ArrayIterator()
+		case reflect.Uint16:
+			return newUint16ArrayIterator()
+		default:
+			return newArrayIterator(t)
 		}
-		return newArrayIterator(t)
 	case reflect.Slice:
-		if t.Elem().Kind() == reflect.Uint8 {
-			return newUInt8SliceIterator()
+		switch t.Elem().Kind() {
+		case reflect.Uint8:
+			return newUint8SliceIterator()
+		case reflect.Uint16:
+			return newUint16SliceIterator()
+		default:
+			return newSliceIterator(t)
 		}
-		return newSliceIterator(t)
 	case reflect.Map:
 		return newMapIterator(t)
 	case reflect.Struct:

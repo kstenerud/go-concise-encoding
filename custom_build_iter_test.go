@@ -29,7 +29,6 @@ import (
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-describe"
@@ -135,9 +134,6 @@ func convertFromCustomBinary(src []byte, dst reflect.Value) error {
 // ============================================================================
 
 func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
@@ -166,9 +162,6 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 }
 
 func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
@@ -221,9 +214,6 @@ func convertFromCustomText(src []byte, dst reflect.Value) error {
 }
 
 func assertCBEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
@@ -252,9 +242,6 @@ func assertCBEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 }
 
 func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
-	debug.DebugOptions.PassThroughPanics = true
-	defer func() { debug.DebugOptions.PassThroughPanics = false }()
-
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText

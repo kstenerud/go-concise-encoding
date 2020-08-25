@@ -212,9 +212,16 @@ func TestRulesCompactTime(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
-func TestRulesBytesOneshot(t *testing.T) {
+func TestRulesArrayUint8Oneshot(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArray(events.ArrayTypeUint8, []byte{1, 2, 3, 4}) })
+	test.AssertNoPanic(t, func() { rules.OnTypedArray(events.ArrayTypeUint8, 4, []byte{1, 2, 3, 4}) })
+	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
+}
+
+func TestRulesArrayUint16Oneshot(t *testing.T) {
+	defer test.PassThroughPanics(true)()
+	rules := newRulesWithMaxDepth(1)
+	test.AssertNoPanic(t, func() { rules.OnTypedArray(events.ArrayTypeUint16, 2, []byte{1, 2, 3, 4}) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 

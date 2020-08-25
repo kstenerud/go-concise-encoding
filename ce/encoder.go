@@ -68,7 +68,7 @@ type Encoder interface {
 	OnURI(value []byte)
 	OnCustomBinary(value []byte)
 	OnCustomText(value []byte)
-	OnTypedArray(arrayType events.ArrayType, value []byte)
+	OnTypedArray(arrayType events.ArrayType, elementCount uint64, data []byte)
 	OnStringBegin()
 	OnVerbatimStringBegin()
 	OnURIBegin()

@@ -18,16 +18,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// Globally settable options that are useful in debugging this library.
-package debug
+package builder
 
-// Settings to help with debugging
-type DebugOptionsStruct struct {
-	// Setting this to true will cause all panics to bubble up rather than
-	// being handled in the library.
-	PassThroughPanics bool
+import (
+	"reflect"
+
+	"github.com/kstenerud/go-concise-encoding/events"
+)
+
+// The matching generated code is in builder_generated.go
+
+func (_this *uint8ArrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeUint8:
+		// TODO: Is there a more efficient way?
+		for i := 0; i < len(value); i++ {
+			elem := dst.Index(i)
+			elem.SetUint(uint64(value[i]))
+		}
+	default:
+		_this.badEvent("BuildFromTypedArray(%v)", arrayType)
+	}
 }
 
-var DebugOptions = DebugOptionsStruct{
-	PassThroughPanics: false,
+func (_this *uint16ArrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	panic("TODO")
 }

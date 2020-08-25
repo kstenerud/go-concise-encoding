@@ -676,7 +676,7 @@ func (_this *Decoder) handleU8X() {
 		}
 		data = append(data, uint8(v))
 	}
-	_this.eventReceiver.OnTypedArray(events.ArrayTypeUint8, data)
+	_this.eventReceiver.OnTypedArray(events.ArrayTypeUint8, uint64(len(data)), data)
 	_this.endObject()
 }
 

@@ -34,31 +34,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// -------
-// []uint8
-// -------
-
-type uint8SliceIterator struct {
-}
-
-func newUInt8SliceIterator() ObjectIterator {
-	return &uint8SliceIterator{}
-}
-
-func (_this *uint8SliceIterator) InitTemplate(_ FetchIterator) {
-}
-
-func (_this *uint8SliceIterator) NewInstance() ObjectIterator {
-	return _this
-}
-
-func (_this *uint8SliceIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {
-}
-
-func (_this *uint8SliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
-	eventReceiver.OnTypedArray(events.ArrayTypeUint8, v.Bytes())
-}
-
 // ----
 // Time
 // ----

@@ -387,7 +387,7 @@ func (_this *Encoder) OnCustomText(value []byte) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, value []byte) {
+func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.addPrefix()
 	switch arrayType {
 	case events.ArrayTypeUint8:
@@ -433,7 +433,7 @@ func (_this *Encoder) finalizeArray() {
 	_this.unstackState()
 	switch oldState {
 	case cteEncoderStateAwaitArrayU8:
-		_this.OnTypedArray(events.ArrayTypeUint8, _this.chunkBuffer)
+		_this.OnTypedArray(events.ArrayTypeUint8, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
 	case cteEncoderStateAwaitQuotedString:
 		_this.OnString(_this.chunkBuffer)
 	case cteEncoderStateAwaitVerbatimString:
