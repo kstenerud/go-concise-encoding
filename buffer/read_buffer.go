@@ -151,14 +151,14 @@ func (_this *StreamingReadBuffer) RequireBytes(position int, byteCount int) (pos
 
 // Request more bytes and retry an operation.
 func (_this *StreamingReadBuffer) RequestAndRetry(position int, requestedByteCount int, operation func(positionOffset int)) {
-	_this.RequestBytes(position, requestedByteCount)
-	operation(-position)
+	offset := _this.RequestBytes(position, requestedByteCount)
+	operation(position + offset)
 }
 
 // Require more bytes and retry an operation.
 func (_this *StreamingReadBuffer) RequireAndRetry(position int, requiredByteCount int, operation func(positionOffset int)) {
-	_this.RequireBytes(position, requiredByteCount)
-	operation(-position)
+	offset := _this.RequireBytes(position, requiredByteCount)
+	operation(position + offset)
 }
 
 func (_this *StreamingReadBuffer) IsEOF() bool {

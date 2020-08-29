@@ -104,13 +104,13 @@ func TestCBEBinaryFloat(t *testing.T) {
 	assertDecodeEncode(t, []byte{version, typeFloat64, 0x00, 0x00, 0xc2, 0x99, 0x91, 0xfe, 0xb4, 0x20}, BD(), V(1), F(0x1.4fe9199c2p-500), ED())
 }
 
-// func TestCBEDecimalFloatEOF(t *testing.T) {
-// 	assertDecodeFails(t, []byte{version, typeDecimal, 0x04})
-// }
+func TestCBEDecimalFloatEOF(t *testing.T) {
+	assertDecodeFails(t, []byte{version, typeDecimal, 0x04})
+}
 
-// func TestCBEDecimalFloat(t *testing.T) {
-// 	assertDecodeEncode(t, []byte{version, typeDecimal, 0x00}, BD(), V(1), DF(NewDFloat("1.2")), ED())
-// }
+func TestCBEDecimalFloat(t *testing.T) {
+	assertDecodeEncode(t, []byte{version, typeDecimal, 0x06, 0x0c}, BD(), V(1), DF(NewDFloat("1.2")), ED())
+}
 
 func TestCBEUUIDEOF(t *testing.T) {
 	assertDecodeFails(t, []byte{version, typeUUID, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f})
