@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -116,34 +115,9 @@ func (_this *topLevelBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	_this.builder.BuildFromUUID(value, dst)
 }
 
-func (_this *topLevelBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *topLevelBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromString(value, dst)
-}
-
-func (_this *topLevelBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromVerbatimString(value, dst)
-}
-
-func (_this *topLevelBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromURI(value, dst)
-}
-
-func (_this *topLevelBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromCustomBinary(value, dst)
-}
-
-func (_this *topLevelBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromCustomText(value, dst)
-}
-
-func (_this *topLevelBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.builder)
-	_this.builder.BuildFromTypedArray(arrayType, value, dst)
+	_this.builder.BuildFromArray(arrayType, value, dst)
 }
 
 func (_this *topLevelBuilder) BuildFromTime(value time.Time, dst reflect.Value) {

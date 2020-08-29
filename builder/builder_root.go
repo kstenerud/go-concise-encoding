@@ -176,7 +176,7 @@ func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "CustomText")
 }
-func (_this *RootBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+func (_this *RootBuilder) BuildFromArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 }
 func (_this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
@@ -275,52 +275,13 @@ func (_this *RootBuilder) OnTime(value time.Time) {
 func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
 	_this.currentBuilder.BuildFromCompactTime(value, _this.object)
 }
-func (_this *RootBuilder) OnString(value []byte) {
-	_this.currentBuilder.BuildFromString(value, _this.object)
+func (_this *RootBuilder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	_this.currentBuilder.BuildFromArray(arrayType, value, _this.object)
 }
-func (_this *RootBuilder) OnVerbatimString(value []byte) {
-	_this.currentBuilder.BuildFromVerbatimString(value, _this.object)
-}
-func (_this *RootBuilder) OnURI(value []byte) {
-	u, err := url.Parse(string(value))
-	if err != nil {
-		panic(err)
-	}
-	_this.currentBuilder.BuildFromURI(u, _this.object)
-}
-func (_this *RootBuilder) OnCustomBinary(value []byte) {
-	_this.currentBuilder.BuildFromCustomBinary(value, _this.object)
-}
-func (_this *RootBuilder) OnCustomText(value []byte) {
-	_this.currentBuilder.BuildFromCustomText(value, _this.object)
-}
-func (_this *RootBuilder) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	_this.currentBuilder.BuildFromTypedArray(arrayType, value, _this.object)
-}
-func (_this *RootBuilder) OnStringBegin() {
-	_this.chunkedFunction = _this.OnString
-	_this.chunkedData = _this.chunkedData[:0]
-}
-func (_this *RootBuilder) OnVerbatimStringBegin() {
-	_this.chunkedFunction = _this.OnVerbatimString
-	_this.chunkedData = _this.chunkedData[:0]
-}
-func (_this *RootBuilder) OnURIBegin() {
-	_this.chunkedFunction = _this.OnURI
-	_this.chunkedData = _this.chunkedData[:0]
-}
-func (_this *RootBuilder) OnCustomBinaryBegin() {
-	_this.chunkedFunction = _this.OnCustomBinary
-	_this.chunkedData = _this.chunkedData[:0]
-}
-func (_this *RootBuilder) OnCustomTextBegin() {
-	_this.chunkedFunction = _this.OnCustomText
-	_this.chunkedData = _this.chunkedData[:0]
-}
-func (_this *RootBuilder) OnTypedArrayBegin(arrayType events.ArrayType) {
+func (_this *RootBuilder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.chunkedFunction = func(bytes []byte) {
 		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
-		_this.OnTypedArray(arrayType, elementCount, bytes)
+		_this.OnArray(arrayType, elementCount, bytes)
 	}
 	_this.chunkedData = _this.chunkedData[:0]
 }

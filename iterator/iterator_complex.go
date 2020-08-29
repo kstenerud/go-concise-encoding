@@ -366,7 +366,7 @@ func (_this *structIterator) IterateObject(v reflect.Value, eventReceiver events
 		if _this.opts.LowercaseStructFieldNames {
 			name = common.ASCIIToLower(name)
 		}
-		eventReceiver.OnString([]byte(name))
+		eventReceiver.OnArray(events.ArrayTypeString, uint64(len(name)), []byte(name))
 		iterator := _this.iterators[i]
 		iterator.IterateObject(v.Field(field.Index), eventReceiver, addReference)
 	}

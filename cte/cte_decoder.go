@@ -229,7 +229,8 @@ func (_this *Decoder) handleStringish() {
 
 	// Unquoted string
 	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
-		_this.eventReceiver.OnString(_this.buffer.GetToken())
+		bytes := _this.buffer.GetToken()
+		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 		_this.endObject()
 		return
 	}
@@ -241,15 +242,18 @@ func (_this *Decoder) handleStringish() {
 		initiator := _this.buffer.GetTokenFirstByte()
 		switch initiator {
 		case 'b':
-			_this.eventReceiver.OnCustomBinary(_this.buffer.DecodeHexBytes())
+			bytes := _this.buffer.DecodeHexBytes()
+			_this.eventReceiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
 			_this.endObject()
 			return
 		case 't':
-			_this.eventReceiver.OnCustomText(_this.buffer.DecodeCustomText())
+			bytes := _this.buffer.DecodeCustomText()
+			_this.eventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
 			_this.endObject()
 			return
 		case 'u':
-			_this.eventReceiver.OnURI(_this.buffer.DecodeURI())
+			bytes := _this.buffer.DecodeURI()
+			_this.eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
 			_this.endObject()
 			return
 		default:
@@ -263,7 +267,8 @@ func (_this *Decoder) handleStringish() {
 
 func (_this *Decoder) handleQuotedString() {
 	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnString(_this.buffer.DecodeQuotedString())
+	bytes := _this.buffer.DecodeQuotedString()
+	_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 	_this.endObject()
 }
 
@@ -514,7 +519,7 @@ func (_this *Decoder) handleComment() {
 		_this.eventReceiver.OnComment()
 		contents := _this.buffer.DecodeSingleLineComment()
 		if len(contents) > 0 {
-			_this.eventReceiver.OnString(contents)
+			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
 		_this.eventReceiver.OnEnd()
 		_this.buffer.EndToken()
@@ -531,7 +536,7 @@ func (_this *Decoder) handleComment() {
 func (_this *Decoder) handleCommentContent() {
 	str, next := _this.buffer.DecodeMultilineComment()
 	if len(str) > 0 {
-		_this.eventReceiver.OnString(str)
+		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
 	}
 	switch next {
 	case nextIsCommentBegin:
@@ -560,7 +565,7 @@ func (_this *Decoder) handleMarkupContentBegin() {
 func (_this *Decoder) handleMarkupContent() {
 	str, next := _this.buffer.DecodeMarkupContent()
 	if len(str) > 0 {
-		_this.eventReceiver.OnString(str)
+		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
 	}
 	switch next {
 	case nextIsCommentBegin:
@@ -572,14 +577,14 @@ func (_this *Decoder) handleMarkupContent() {
 	case nextIsVerbatimString:
 		str := _this.buffer.DecodeVerbatimString()
 		if len(str) > 0 {
-			_this.eventReceiver.OnString(str)
+			_this.eventReceiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(str)), str)
 		}
 		_this.buffer.EndToken()
 	case nextIsSingleLineComment:
 		_this.eventReceiver.OnComment()
 		contents := _this.buffer.DecodeSingleLineComment()
 		if len(contents) > 0 {
-			_this.eventReceiver.OnString(contents)
+			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
 		_this.eventReceiver.OnEnd()
 		_this.buffer.EndToken()
@@ -644,7 +649,8 @@ func (_this *Decoder) handleNamedValue() {
 
 func (_this *Decoder) handleVerbatimString() {
 	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnVerbatimString(_this.buffer.DecodeVerbatimString())
+	bytes := _this.buffer.DecodeVerbatimString()
+	_this.eventReceiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(bytes)), bytes)
 	_this.endObject()
 }
 
@@ -676,7 +682,7 @@ func (_this *Decoder) handleU8X() {
 		}
 		data = append(data, uint8(v))
 	}
-	_this.eventReceiver.OnTypedArray(events.ArrayTypeUint8, uint64(len(data)), data)
+	_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
 	_this.endObject()
 }
 
@@ -709,14 +715,15 @@ func (_this *Decoder) handleReference() {
 			_this.buffer.UnexpectedChar("reference (uri)")
 		}
 		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnURI(_this.buffer.DecodeQuotedString())
+		bytes := _this.buffer.DecodeQuotedString()
+		_this.eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
 		_this.endObject()
 		return
 	}
 
 	asString, asUint := _this.buffer.DecodeMarkerID()
 	if len(asString) > 0 {
-		_this.eventReceiver.OnString(asString)
+		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
 	} else {
 		_this.eventReceiver.OnPositiveInt(asUint)
 	}
@@ -732,7 +739,7 @@ func (_this *Decoder) handleMarker() {
 	}
 	_this.buffer.AdvanceByte()
 	if len(asString) > 0 {
-		_this.eventReceiver.OnString(asString)
+		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
 	} else {
 		_this.eventReceiver.OnPositiveInt(asUint)
 	}
@@ -812,8 +819,8 @@ func init() {
 
 	charBasedHandlers['!'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['"'] = (*Decoder).handleQuotedString
-	charBasedHandlers['#'] = (*Decoder).handleReference
-	charBasedHandlers['$'] = (*Decoder).handleInvalidChar
+	charBasedHandlers['#'] = (*Decoder).handleInvalidChar
+	charBasedHandlers['$'] = (*Decoder).handleReference
 	charBasedHandlers['%'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['&'] = (*Decoder).handleMarker
 	charBasedHandlers['\''] = (*Decoder).handleInvalidChar

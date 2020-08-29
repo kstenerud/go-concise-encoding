@@ -214,30 +214,30 @@ func TestRulesCompactTime(t *testing.T) {
 
 func TestRulesArrayUint8Oneshot(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArray(events.ArrayTypeUint8, 4, []byte{1, 2, 3, 4}) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeUint8, 4, []byte{1, 2, 3, 4}) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesArrayUint16Oneshot(t *testing.T) {
 	defer test.PassThroughPanics(true)()
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArray(events.ArrayTypeUint16, 2, []byte{1, 2, 3, 4}) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeUint16, 2, []byte{1, 2, 3, 4}) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesURIOneshot(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURI([]byte("http://example.com")) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeURI, 18, []byte("http://example.com")) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesCustomOneshot(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomBinary([]byte{1, 2, 3, 4}) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeCustomBinary, 4, []byte{1, 2, 3, 4}) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomText([]byte("test")) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeCustomText, 4, []byte("test")) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -269,7 +269,7 @@ func TestRulesReference(t *testing.T) {
 	assertRulesOnString(t, rules, "a")
 
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnURI([]byte("http://example.com")) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeURI, 18, []byte("http://example.com")) })
 
 	test.AssertNoPanic(t, func() { rules.OnReference() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(100) })
@@ -277,7 +277,7 @@ func TestRulesReference(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnReference() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(5) })
 
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("test")) })
 
@@ -290,7 +290,7 @@ func TestRulesReference(t *testing.T) {
 
 func testRulesBytes(t *testing.T, length int, byteCount ...int) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	lastIndex := len(byteCount) - 1
 	if lastIndex < 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
@@ -315,7 +315,7 @@ func TestRulesBytes(t *testing.T) {
 
 func TestRulesBytesMultiChunk(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(10, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(5, 0)) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(3, 0)) })
@@ -325,7 +325,7 @@ func TestRulesBytesMultiChunk(t *testing.T) {
 
 func testRulesString(t *testing.T, length int, byteCount ...int) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	lastIndex := len(byteCount) - 1
 	if lastIndex < 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
@@ -340,7 +340,7 @@ func testRulesString(t *testing.T, length int, byteCount ...int) {
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnVerbatimStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeVerbatimString) })
 	lastIndex = len(byteCount) - 1
 	if lastIndex < 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
@@ -365,11 +365,11 @@ func TestRulesString(t *testing.T) {
 
 func testRulesSingleString(t *testing.T, value string) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnString([]byte(value)) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeString, uint64(len(value)), []byte(value)) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnVerbatimString([]byte(value)) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeVerbatimString, uint64(len(value)), []byte(value)) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 }
 
@@ -379,7 +379,7 @@ func TestRulesStringNonComment(t *testing.T) {
 
 func TestRulesStringMultiChunk(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(20, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(5, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(3, 0))) })
@@ -387,7 +387,7 @@ func TestRulesStringMultiChunk(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnVerbatimStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeVerbatimString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(20, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(5, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(3, 0))) })
@@ -397,7 +397,7 @@ func TestRulesStringMultiChunk(t *testing.T) {
 
 func TestRulesURI(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(18, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("http://example.com")) })
 	test.AssertNoPanic(t, func() { rules.OnEndDocument() })
@@ -405,7 +405,7 @@ func TestRulesURI(t *testing.T) {
 
 func TestRulesURIMultiChunk(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(13, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("http:")) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("test")) })
@@ -415,7 +415,7 @@ func TestRulesURIMultiChunk(t *testing.T) {
 
 func testRulesCustomBinary(t *testing.T, length int, byteCount ...int) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomBinaryBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
 	lastIndex := len(byteCount) - 1
 	if lastIndex < 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
@@ -440,7 +440,7 @@ func TestRulesCustomBinary(t *testing.T) {
 
 func TestRulesCustomBinaryMultiChunk(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomBinaryBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(10, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(5, 0)) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(3, 0)) })
@@ -450,7 +450,7 @@ func TestRulesCustomBinaryMultiChunk(t *testing.T) {
 
 func testRulesCustomText(t *testing.T, length int, byteCount ...int) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomTextBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
 	lastIndex := len(byteCount) - 1
 	if lastIndex < 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
@@ -475,7 +475,7 @@ func TestRulesCustomText(t *testing.T) {
 
 func TestRulesCustomTextMultiChunk(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnCustomTextBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(10, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(5, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(3, 0))) })
@@ -486,7 +486,7 @@ func TestRulesCustomTextMultiChunk(t *testing.T) {
 func TestRulesInArrayBasic(t *testing.T) {
 	rules := newRulesWithMaxDepth(9)
 	assertRulesNotInArray(t, rules)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	assertRulesInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
 	assertRulesInArray(t, rules)
@@ -501,7 +501,7 @@ func TestRulesInArray(t *testing.T) {
 	assertRulesNotInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnList() })
 	assertRulesNotInArray(t, rules)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	assertRulesInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(10, true) })
 	assertRulesInArray(t, rules)
@@ -515,7 +515,7 @@ func TestRulesInArray(t *testing.T) {
 	assertRulesInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(5, 0))) })
 	assertRulesNotInArray(t, rules)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	assertRulesInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	assertRulesInArray(t, rules)
@@ -532,11 +532,11 @@ func TestRulesInArrayEmpty(t *testing.T) {
 	assertRulesNotInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnList() })
 	assertRulesNotInArray(t, rules)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	assertRulesInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
 	assertRulesNotInArray(t, rules)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	assertRulesInArray(t, rules)
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
 	assertRulesNotInArray(t, rules)
@@ -733,7 +733,7 @@ func TestRulesCommentInt(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	test.AssertNoPanic(t, func() { rules.OnComment() })
 	assertRulesOnString(t, rules, "blah\r\n\t\tblah")
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(1, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0x00}) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0x0b}) })
@@ -823,11 +823,11 @@ func TestRulesAllowedTypesTLO(t *testing.T) {
 	rules = newRulesWithMaxDepth(1)
 	test.AssertPanics(t, func() { rules.OnEnd() })
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(1)
 	test.AssertPanics(t, func() { rules.OnArrayChunk(1, false) })
 	rules = newRulesWithMaxDepth(1)
@@ -866,7 +866,7 @@ func TestRulesAllowedTypesList(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
 	assertRulesAddBytes(t, rules, []byte{})
 	assertRulesOnString(t, rules, "")
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(2, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("a:")) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0}) })
@@ -1217,9 +1217,9 @@ func TestRulesAllowedTypesComment(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnMetadata() })
 	test.AssertNoPanic(t, func() { rules.OnComment() })
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	assertRulesOnString(t, rules, "")
-	test.AssertPanics(t, func() { rules.OnURIBegin() })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0}) })
 	test.AssertPanics(t, func() { rules.OnArrayChunk(0, false) })
 	test.AssertPanics(t, func() { rules.OnMarker() })
@@ -1271,13 +1271,13 @@ func TestRulesAllowedTypesMarkupName(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnEnd() })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertPanics(t, func() { rules.OnURIBegin() })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0}) })
@@ -1354,15 +1354,15 @@ func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1459,17 +1459,17 @@ func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	test.AssertNoPanic(t, func() { rules.OnBool(true) })
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	test.AssertNoPanic(t, func() { rules.OnBool(true) })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	test.AssertNoPanic(t, func() { rules.OnBool(true) })
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1572,17 +1572,17 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
-	test.AssertPanics(t, func() { rules.OnURIBegin() })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1617,7 +1617,7 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 
 func TestRulesAllowedTypesArray(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertPanics(t, func() { rules.OnNil() })
 	test.AssertPanics(t, func() { rules.OnNan(false) })
 	test.AssertPanics(t, func() { rules.OnBool(true) })
@@ -1631,9 +1631,9 @@ func TestRulesAllowedTypesArray(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnMetadata() })
 	test.AssertPanics(t, func() { rules.OnComment() })
 	test.AssertPanics(t, func() { rules.OnEnd() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
-	test.AssertPanics(t, func() { rules.OnStringBegin() })
-	test.AssertPanics(t, func() { rules.OnURIBegin() })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0}) })
 	test.AssertPanics(t, func() { rules.OnMarker() })
 	test.AssertPanics(t, func() { rules.OnReference() })
@@ -1654,9 +1654,9 @@ func TestRulesAllowedTypesArray(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnMetadata() })
 	test.AssertPanics(t, func() { rules.OnComment() })
 	test.AssertPanics(t, func() { rules.OnEnd() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
-	test.AssertPanics(t, func() { rules.OnStringBegin() })
-	test.AssertPanics(t, func() { rules.OnURIBegin() })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertPanics(t, func() { rules.OnMarker() })
 	test.AssertPanics(t, func() { rules.OnReference() })
 	test.AssertPanics(t, func() { rules.OnPadding(1) })
@@ -1708,13 +1708,13 @@ func TestRulesAllowedTypesMarkerID(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnEnd() })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertPanics(t, func() { rules.OnURIBegin() })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0}) })
@@ -1791,15 +1791,15 @@ func TestRulesAllowedTypesMarkerValue(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
 	test.AssertNoPanic(t, func() { rules.OnPositiveInt(1) })
@@ -1873,13 +1873,13 @@ func TestRulesAllowedTypesReferenceID(t *testing.T) {
 	test.AssertPanics(t, func() { rules.OnEnd() })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertPanics(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertPanics(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte{0}) })
@@ -2042,50 +2042,50 @@ func TestRulesErrorUnendedContainer(t *testing.T) {
 
 func TestRulesErrorUnendedArray(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesErrorArrayTooManyBytes(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData(test.GenerateBytes(6, 0)) })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData(test.GenerateBytes(6, 0)) })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData(test.GenerateBytes(6, 0)) })
 }
 
 func TestRulesErrorArrayTooFewBytes(t *testing.T) {
 	rules := newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(4, 0)) })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(4, 0)) })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 
 	rules = newRulesWithMaxDepth(1)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(5, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(4, 0)) })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
@@ -2117,7 +2117,7 @@ func TestRulesErrorInvalidMapKey(t *testing.T) {
 
 	rules = newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(1, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(1, 0))) })
 	test.AssertPanics(t, func() { rules.OnArrayData(test.GenerateBytes(4, 0)) })
@@ -2149,14 +2149,14 @@ func TestRulesErrorMapMissingValue(t *testing.T) {
 func TestRulesErrorMarkupNameLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertPanics(t, func() { rules.OnArrayChunk(0, false) })
 }
 
 func TestRulesErrorMarkerIDLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertPanics(t, func() { rules.OnArrayChunk(0, false) })
 }
 
@@ -2171,7 +2171,7 @@ func TestRulesErrorMarkerFollowedByOnEnd(t *testing.T) {
 func TestRulesErrorReferenceIDLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertPanics(t, func() { rules.OnArrayChunk(0, false) })
 }
 
@@ -2179,18 +2179,18 @@ func TestRulesErrorRefMissingMarker(t *testing.T) {
 	rules := newRulesWithMaxDepth(5)
 	test.AssertNoPanic(t, func() { rules.OnList() })
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnString([]byte("test")) })
+	test.AssertNoPanic(t, func() { rules.OnArray(events.ArrayTypeString, 4, []byte("test")) })
 	test.AssertNoPanic(t, func() { rules.OnEnd() })
 	test.AssertPanics(t, func() { rules.OnEndDocument() })
 }
 
 func TestRulesURILength0_1(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(0, false) })
 
 	rules = newRulesWithMaxDepth(2)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(1, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte{0x40}) })
 }
@@ -2199,12 +2199,12 @@ func TestRulesErrorDuplicateMarkerID(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnList() })
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("test")) })
 	test.AssertNoPanic(t, func() { rules.OnBool(true) })
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("test")) })
 	test.AssertPanics(t, func() { rules.OnFloat(0.1) })
@@ -2222,9 +2222,9 @@ func TestRulesErrorDuplicateMarkerID(t *testing.T) {
 func TestRulesErrorInvalidMarkerID(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertPanics(t, func() { rules.OnString([]byte("")) })
-	test.AssertPanics(t, func() { rules.OnString([]byte("1z")) })
-	test.AssertPanics(t, func() { rules.OnString([]byte("a:z")) })
+	test.AssertPanics(t, func() { rules.OnArray(events.ArrayTypeString, 0, []byte("")) })
+	test.AssertPanics(t, func() { rules.OnArray(events.ArrayTypeString, 2, []byte("1z")) })
+	test.AssertPanics(t, func() { rules.OnArray(events.ArrayTypeString, 3, []byte("a:z")) })
 	for ch := 0; ch <= 0xff; ch++ {
 		if ch >= 'a' && ch <= 'z' {
 			continue
@@ -2235,7 +2235,7 @@ func TestRulesErrorInvalidMarkerID(t *testing.T) {
 		if ch == '_' {
 			continue
 		}
-		test.AssertPanics(t, func() { rules.OnString([]byte{byte(ch)}) })
+		test.AssertPanics(t, func() { rules.OnArray(events.ArrayTypeString, 1, []byte{byte(ch)}) })
 	}
 }
 
@@ -2247,12 +2247,12 @@ func TestRulesMaxBytesLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxBytesLength = 10
 	rules := newRulesAfterVersion(opts)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(11, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData(test.GenerateBytes(11, 0)) })
 
 	rules = newRulesAfterVersion(opts)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(8, true) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData(test.GenerateBytes(8, 0)) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
@@ -2263,12 +2263,12 @@ func TestRulesMaxStringLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxStringLength = 10
 	rules := newRulesAfterVersion(opts)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(11, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte(test.GenerateString(11, 0))) })
 
 	rules = newRulesAfterVersion(opts)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(8, true) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(8, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
@@ -2279,12 +2279,12 @@ func TestRulesMaxURILength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxURILength = 10
 	rules := newRulesAfterVersion(opts)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(11, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte("someuri:aaa")) })
 
 	rules = newRulesAfterVersion(opts)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(8, true) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte("someuri:")) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
@@ -2295,13 +2295,13 @@ func TestRulesMaxIDLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(31, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte(test.GenerateString(31, 0))) })
 
 	rules = newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(27, true) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(27, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
@@ -2309,13 +2309,13 @@ func TestRulesMaxIDLength(t *testing.T) {
 
 	rules = newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(31, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte(test.GenerateString(31, 0))) })
 
 	rules = newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnReference() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(27, true) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(27, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
@@ -2327,13 +2327,13 @@ func TestRulesMaxMarkupNameLength(t *testing.T) {
 	opts.MaxMarkupNameLength = 10
 	rules := newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(11, false) })
 	test.AssertPanics(t, func() { rules.OnArrayData([]byte(test.GenerateString(11, 0))) })
 
 	rules = newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnMarkup() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(8, true) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(8, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(4, false) })
@@ -2351,7 +2351,7 @@ func TestRulesMaxObjectCount(t *testing.T) {
 	opts.MaxObjectCount = 3
 	rules := newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnList() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(11, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(11, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnBool(true) })
@@ -2375,7 +2375,7 @@ func TestRulesMaxReferenceCount(t *testing.T) {
 	rules := newRulesAfterVersion(opts)
 	test.AssertNoPanic(t, func() { rules.OnList() })
 	test.AssertNoPanic(t, func() { rules.OnMarker() })
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(11, false) })
 	test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(test.GenerateString(11, 0))) })
 	test.AssertNoPanic(t, func() { rules.OnBool(true) })

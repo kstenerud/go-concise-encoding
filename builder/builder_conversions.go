@@ -22,6 +22,7 @@ package builder
 
 import (
 	"math/big"
+	"net/url"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -230,6 +231,10 @@ func setBigIntFromFloat(value float64, dst reflect.Value, maxBase2Exponent int) 
 	dst.Set(reflect.ValueOf(*bi))
 }
 
+func setBigIntFromBigInt(value *big.Int, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(*value))
+}
+
 func setBigIntFromBigFloat(value *big.Float, dst reflect.Value, maxBase2Exponent int) {
 	bi, err := conversions.BigFloatToBigInt(value, maxBase2Exponent)
 	if err != nil {
@@ -270,6 +275,10 @@ func setPBigIntFromFloat(value float64, dst reflect.Value, maxBase2Exponent int)
 		PanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bi))
+}
+
+func setPBigIntFromBigInt(value *big.Int, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
 }
 
 func setPBigIntFromBigFloat(value *big.Float, dst reflect.Value, maxBase2Exponent int) {
@@ -321,6 +330,10 @@ func setBigFloatFromBigInt(value *big.Int, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(*bf))
 }
 
+func setBigFloatFromBigFloat(value *big.Float, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(*value))
+}
+
 func setBigFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	bf := value.BigFloat()
 	dst.Set(reflect.ValueOf(*bf))
@@ -358,6 +371,10 @@ func setPBigFloatFromBigInt(value *big.Int, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(bf))
 }
 
+func setPBigFloatFromBigFloat(value *big.Float, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
 func setPBigFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value.BigFloat()))
 }
@@ -368,6 +385,36 @@ func setPBigFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 		PanicErrorConverting(value, dst.Type(), err)
 	}
 	dst.Set(reflect.ValueOf(bf))
+}
+
+// DecimalFloat
+
+func setDecimalFloatFromInt(value int64, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatValue(0, value)))
+}
+
+func setDecimalFloatFromUint(value uint64, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatFromUInt(value)))
+}
+
+func setDecimalFloatFromBigInt(value *big.Int, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigInt(value)))
+}
+
+func setDecimalFloatFromFloat(value float64, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatFromFloat64(value, 0)))
+}
+
+func setDecimalFloatFromBigFloat(value *big.Float, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigFloat(value)))
+}
+
+func setDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+func setDecimalFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(compact_float.DFloatFromAPD(value)))
 }
 
 // BigDecimalFloat
@@ -404,6 +451,10 @@ func setBigDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.
 	dst.Set(reflect.ValueOf(*value.APD()))
 }
 
+func setBigDecimalFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(*value))
+}
+
 // PBigDecimalFloat
 
 func setPBigDecimalFloatFromInt(value int64, dst reflect.Value) {
@@ -435,8 +486,32 @@ func setPBigDecimalFloatFromBigFloat(value *big.Float, dst reflect.Value) {
 }
 
 func setPBigDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(*value.APD()))
+	dst.Set(reflect.ValueOf(value.APD()))
 }
+
+func setPBigDecimalFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(value))
+}
+
+// URI
+
+func stringToURI(value string) *url.URL {
+	u, err := url.Parse(string(value))
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
+
+func setURIFromString(value string, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(stringToURI(value)).Elem())
+}
+
+func setPURIFromString(value string, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(stringToURI(value)))
+}
+
+// Anything
 
 func setUintFromAnything(src reflect.Value, dst reflect.Value) {
 	switch src.Kind() {

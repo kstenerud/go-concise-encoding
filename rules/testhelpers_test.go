@@ -35,7 +35,7 @@ var uint8Type = reflect.TypeOf(uint8(0))
 
 func assertRulesOnString(t *testing.T, rules *Rules, value string) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnStringBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(value)) })
@@ -44,7 +44,7 @@ func assertRulesOnString(t *testing.T, rules *Rules, value string) {
 
 func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnTypedArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
@@ -53,7 +53,7 @@ func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
 
 func assertRulesAddURI(t *testing.T, rules *Rules, uri string) {
 	length := len(uri)
-	test.AssertNoPanic(t, func() { rules.OnURIBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeURI) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(uri)) })
@@ -62,7 +62,7 @@ func assertRulesAddURI(t *testing.T, rules *Rules, uri string) {
 
 func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnCustomBinaryBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
@@ -71,7 +71,7 @@ func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
 
 func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnCustomTextBegin() })
+	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
 	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
 		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
@@ -79,13 +79,13 @@ func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
 }
 
 func assertRulesInArray(t *testing.T, rules *Rules) {
-	if rules.arrayType == eventTypeNothing {
+	if rules.arrayType == events.ArrayTypeInvalid {
 		t.Errorf("Expected to be in array")
 	}
 }
 
 func assertRulesNotInArray(t *testing.T, rules *Rules) {
-	if rules.arrayType != eventTypeNothing {
+	if rules.arrayType != events.ArrayTypeInvalid {
 		t.Errorf("Expected to not be in array")
 	}
 }

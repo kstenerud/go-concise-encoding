@@ -46,7 +46,7 @@ func GenerateCode(projectDir string, xmlPath string) {
 
 	properties := extractCharProperties(chars, reserveds)
 
-	outPath := filepath.Join(projectDir, "internal/unicode/unicode_generated.go")
+	outPath := filepath.Join(projectDir, "internal/unicode/generated_code.go")
 	writer, err := os.Create(outPath)
 	fatalIfError(err, "Error opening [%v] for writing: %v", outPath, err)
 	defer writer.Close()

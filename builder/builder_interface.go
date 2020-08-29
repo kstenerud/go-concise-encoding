@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -119,34 +118,22 @@ func (_this *intfBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromString(value []byte, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(string(value)))
-}
-
-func (_this *intfBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(string(value)))
-}
-
-func (_this *intfBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(value))
-}
-
-func (_this *intfBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
-	}
-}
-
-func (_this *intfBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		PanicBuildFromCustomText(_this, value, dst.Type(), err)
-	}
-}
-
-func (_this *intfBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *intfBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
+	case events.ArrayTypeCustomBinary:
+		if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+			PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		}
+	case events.ArrayTypeCustomText:
+		if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+			PanicBuildFromCustomText(_this, value, dst.Type(), err)
+		}
 	case events.ArrayTypeUint8:
 		dst.Set(reflect.ValueOf(common.CloneBytes(value)))
+	case events.ArrayTypeString:
+		dst.Set(reflect.ValueOf(string(value)))
+	case events.ArrayTypeURI:
+		setPURIFromString(string(value), dst)
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}

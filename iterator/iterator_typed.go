@@ -35,19 +35,19 @@ import (
 func (_this *uint8ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.CanAddr() {
 		bytes := v.Slice(0, v.Len()).Bytes()
-		eventReceiver.OnTypedArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
+		eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
 	} else {
 		byteCount := v.Len()
 		bytes := make([]byte, byteCount)
 		for i := 0; i < byteCount; i++ {
 			bytes[i] = v.Index(i).Interface().(uint8)
 		}
-		eventReceiver.OnTypedArray(events.ArrayTypeUint8, uint64(byteCount), bytes)
+		eventReceiver.OnArray(events.ArrayTypeUint8, uint64(byteCount), bytes)
 	}
 }
 
 func (_this *uint8SliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
-	eventReceiver.OnTypedArray(events.ArrayTypeUint8, uint64(v.Len()), v.Bytes())
+	eventReceiver.OnArray(events.ArrayTypeUint8, uint64(v.Len()), v.Bytes())
 }
 
 // -----
@@ -62,7 +62,7 @@ func iterateArrayUint16(v reflect.Value, eventReceiver events.DataEventReceiver)
 		data[i*2] = uint8(elem)
 		data[i*2+1] = uint8(elem >> 8)
 	}
-	eventReceiver.OnTypedArray(events.ArrayTypeUint16, uint64(elementCount), data)
+	eventReceiver.OnArray(events.ArrayTypeUint16, uint64(elementCount), data)
 }
 
 func (_this *uint16ArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {

@@ -26,9 +26,12 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
-// The matching generated code is in builder_generated.go
+// The matching generated code is in generated_code.go
 
-func (_this *uint8ArrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *uint8ArrayBuilder) BuildFromNil(dst reflect.Value) {
+	_this.badEvent("BuildFromNil")
+}
+func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
 	case events.ArrayTypeUint8:
 		// TODO: Is there a more efficient way?
@@ -37,10 +40,26 @@ func (_this *uint8ArrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, 
 			elem.SetUint(uint64(value[i]))
 		}
 	default:
-		_this.badEvent("BuildFromTypedArray(%v)", arrayType)
+		_this.badEvent("BuildFromArray(%v)", arrayType)
 	}
 }
 
-func (_this *uint16ArrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *uint16ArrayBuilder) BuildFromNil(dst reflect.Value) {
+	_this.badEvent("BuildFromNil")
+}
+func (_this *uint16ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	panic("TODO")
+}
+
+func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
+	// Go doesn't have the concept of a nil string.
+	dst.SetString("")
+}
+func (_this *stringBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+		dst.SetString(string(value))
+	default:
+		_this.badEvent("BuildFromArray(%v)", arrayType)
+	}
 }

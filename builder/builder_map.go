@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -192,37 +191,9 @@ func (_this *mapBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.store(object)
 }
 
-func (_this *mapBuilder) BuildFromString(value []byte, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromString(value, object)
-	_this.store(object)
-}
-
-func (_this *mapBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.nextBuilder.BuildFromVerbatimString(value, object)
-	_this.store(object)
-}
-
-func (_this *mapBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	_this.store(reflect.ValueOf(value))
-}
-
-func (_this *mapBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.nextBuilder.BuildFromCustomBinary(value, object)
-	_this.store(object)
-}
-
-func (_this *mapBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.nextBuilder.BuildFromCustomText(value, object)
-	_this.store(object)
-}
-
-func (_this *mapBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.nextBuilder.BuildFromTypedArray(arrayType, value, object)
+	_this.nextBuilder.BuildFromArray(arrayType, value, object)
 	_this.store(object)
 }
 

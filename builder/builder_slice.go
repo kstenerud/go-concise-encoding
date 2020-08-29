@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -155,39 +154,9 @@ func (_this *sliceBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.storeValue(object)
 }
 
-func (_this *sliceBuilder) BuildFromString(value []byte, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromString(value, object)
-	_this.storeValue(object)
-}
-
-func (_this *sliceBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.elemBuilder.BuildFromVerbatimString(value, object)
-	_this.storeValue(object)
-}
-
-func (_this *sliceBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	object := _this.newElem()
-	_this.elemBuilder.BuildFromURI(value, object)
-	_this.storeValue(object)
-}
-
-func (_this *sliceBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.elemBuilder.BuildFromCustomBinary(value, object)
-	_this.storeValue(object)
-}
-
-func (_this *sliceBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.elemBuilder.BuildFromCustomText(value, object)
-	_this.storeValue(object)
-}
-
-func (_this *sliceBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
-	object := _this.newElem()
-	_this.elemBuilder.BuildFromTypedArray(arrayType, value, object)
+	_this.elemBuilder.BuildFromArray(arrayType, value, object)
 	_this.storeValue(object)
 }
 

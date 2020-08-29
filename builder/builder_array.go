@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -139,33 +138,8 @@ func (_this *arrayBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.index++
 }
 
-func (_this *arrayBuilder) BuildFromString(value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromString(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromVerbatimString(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	_this.elemBuilder.BuildFromURI(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromCustomBinary(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromCustomText(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromTypedArray(arrayType, value, _this.currentElem())
+func (_this *arrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+	_this.elemBuilder.BuildFromArray(arrayType, value, _this.currentElem())
 	_this.index++
 }
 

@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -133,39 +132,9 @@ func (_this *ptrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromString(value, ptr.Elem())
-	dst.Set(ptr)
-}
-
-func (_this *ptrBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
-	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromVerbatimString(value, ptr.Elem())
-	dst.Set(ptr)
-}
-
-func (_this *ptrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromURI(value, ptr.Elem())
-	dst.Set(ptr)
-}
-
-func (_this *ptrBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
-	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromCustomBinary(value, ptr.Elem())
-	dst.Set(ptr)
-}
-
-func (_this *ptrBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
-	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromCustomText(value, ptr.Elem())
-	dst.Set(ptr)
-}
-
-func (_this *ptrBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromTypedArray(arrayType, value, ptr.Elem())
+	_this.elemBuilder.BuildFromArray(arrayType, value, ptr.Elem())
 	dst.Set(ptr)
 }
 

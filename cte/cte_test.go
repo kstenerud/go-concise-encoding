@@ -507,13 +507,13 @@ func TestCTEMarker(t *testing.T) {
 }
 
 func TestCTEReference(t *testing.T) {
-	assertDecode(t, `c1 #2`, BD(), V(1), REF(), PI(2), ED())
-	assertDecode(t, `c1 #a`, BD(), V(1), REF(), S("a"), ED())
-	assertDecodeFails(t, `c1 # 1`)
+	assertDecode(t, `c1 $2`, BD(), V(1), REF(), PI(2), ED())
+	assertDecode(t, `c1 $a`, BD(), V(1), REF(), S("a"), ED())
+	assertDecodeFails(t, `c1 $ 1`)
 }
 
 func TestCTEMarkerReference(t *testing.T) {
-	assertDecode(t, `c1 [&2:testing #2]`, BD(), V(1), L(), MARK(), PI(2), S("testing"), REF(), PI(2), E(), ED())
+	assertDecode(t, `c1 [&2:testing $2]`, BD(), V(1), L(), MARK(), PI(2), S("testing"), REF(), PI(2), E(), ED())
 }
 
 func TestCTECommentSingleLine(t *testing.T) {
@@ -551,7 +551,7 @@ func TestMapFloatKey(t *testing.T) {
 }
 
 func TestMarkerReference(t *testing.T) {
-	assertDecodeEncode(t, "c1 {first=&1:1000 second=#1}")
+	assertDecodeEncode(t, "c1 {first=&1:1000 second=$1}")
 }
 
 func TestDuplicateEmptySliceInSlice(t *testing.T) {
@@ -573,7 +573,7 @@ func TestComment(t *testing.T) {
 func TestURIReference(t *testing.T) {
 	assertDecode(t, `c1
 {
-    outside_ref      = #u"https://"
+    outside_ref      = $u"https://"
     // The markup type is good for presentation data
 }
 `)
@@ -644,14 +644,14 @@ You can put anything in here, including double-quote ("), or even more
 backticks (`+"`"+`). Verbatim processing stops at the end sequence, which in this
 case is three Z characters, specified earlier as a sentinel.ZZZ
     marked_object    = &tag1:{
-                                description = "This map will be referenced later using #tag1"
+                                description = "This map will be referenced later using $tag1"
                                 value = -@inf
                                 child_elements = @nil
-                                recursive = #tag1
+                                recursive = $tag1
                             }
-    ref1             = #tag1
-    ref2             = #tag1
-    outside_ref      = #u"https://somewhere.else.com/path/to/document.cte#some_tag"
+    ref1             = $tag1
+    ref2             = $tag1
+    outside_ref      = $u"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
     html_compatible  = <html xmlns=u"http://www.w3.org/1999/xhtml" xml:lang=en ;
                          <body;
@@ -722,14 +722,14 @@ You can put anything in here, including double-quote ("), or even more
 backticks (` + "`" + `). Verbatim processing stops at the end sequence, which in this
 case is three Z characters, specified earlier as a sentinel.ZZZ
     marked_object = &tag1:{
-        description = "This map will be referenced later using #tag1"
+        description = "This map will be referenced later using $tag1"
         value = -@inf
         child_elements = @nil
-        recursive = #tag1
+        recursive = $tag1
     }
-    ref1 = #tag1
-    ref2 = #tag1
-    outside_ref = #u"https://somewhere.else.com/path/to/document.cte#some_tag"
+    ref1 = $tag1
+    ref2 = $tag1
+    outside_ref = $u"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
     html_compatible  = <html xmlns=u"http://www.w3.org/1999/xhtml" xml:lang=en ;
         <body;
@@ -795,14 +795,14 @@ You can put anything in here, including double-quote ("), or even more
 backticks (` + "`" + `). Verbatim processing stops at the end sequence, which in this
 case is three Z characters, specified earlier as a sentinel.#
     marked_object = &tag1:{
-        description = "This map will be referenced later using #tag1"
+        description = "This map will be referenced later using $tag1"
         value = -@inf
         child_elements = @nil
-        recursive = #tag1
+        recursive = $tag1
     }
-    ref1 = #tag1
-    ref2 = #tag1
-    outside_ref = #u"https://somewhere.else.com/path/to/document.cte#some_tag"
+    ref1 = $tag1
+    ref2 = $tag1
+    outside_ref = $u"https://somewhere.else.com/path/to/document.cte#some_tag"
     /* The markup type is good for presentation data*/
     html_compatible = <html xmlns=u"http://www.w3.org/1999/xhtml" xml:lang=en;
         <body;
@@ -811,9 +811,9 @@ case is three Z characters, specified earlier as a sentinel.#
                  * In this case, "##" is chosen as the ending sequence
                  */;
                 <script;
-                                        document.getElementById('parent').insertAdjacentHTML('beforeend',
-                        '\<div id="idChild"\> content \</div\>');
-                
+                    ` + "`" + `#                    document.getElementById('parent').insertAdjacentHTML('beforeend',
+                        '<div id="idChild"> content </div>');
+                #
                 >
             >
         >

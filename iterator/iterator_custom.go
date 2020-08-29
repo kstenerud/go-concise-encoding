@@ -53,7 +53,7 @@ func (_this *customBinaryIterator) IterateObject(v reflect.Value, eventReceiver 
 	if err != nil {
 		panic(fmt.Errorf("error converting type %v to custom bytes: %v", v.Type(), err))
 	}
-	eventReceiver.OnCustomBinary(asBytes)
+	eventReceiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(asBytes)), asBytes)
 }
 
 type customTextIterator struct {
@@ -77,9 +77,9 @@ func (_this *customTextIterator) InitInstance(_ FetchIterator, _ *options.Iterat
 }
 
 func (_this *customTextIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
-	asString, err := _this.convertFunction(v)
+	asBytes, err := _this.convertFunction(v)
 	if err != nil {
 		panic(fmt.Errorf("error converting type %v to custom text: %v", v.Type(), err))
 	}
-	eventReceiver.OnCustomText(asString)
+	eventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(asBytes)), asBytes)
 }

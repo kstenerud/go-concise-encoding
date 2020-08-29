@@ -55,7 +55,7 @@ type Rules struct {
 	charValidator         UTF8Validator
 	maxDepth              int
 	stateStack            []ruleState
-	arrayType             ruleEvent
+	arrayType             events.ArrayType
 	arrayElementBitCount  int
 	arrayData             []byte
 	chunkByteCount        uint64
@@ -103,7 +103,7 @@ func (_this *Rules) Reset() {
 	_this.assignedIDs = make(map[interface{}]ruleEvent)
 	_this.unmatchedIDs = make(map[interface{}]bool)
 
-	_this.arrayType = eventTypeNothing
+	_this.arrayType = events.ArrayTypeInvalid
 	_this.arrayData = _this.arrayData[:0]
 	_this.chunkByteCount = 0
 	_this.chunkBytesWritten = 0
@@ -258,89 +258,22 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 	_this.nextReceiver.OnCompactTime(value)
 }
 
-func (_this *Rules) OnString(value []byte) {
-	_this.validateString(value)
-	_this.onStringBegin()
-	_this.onArrayChunk(uint64(len(value)), false)
-	if len(value) > 0 {
-		_this.onArrayData(value)
+func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	switch arrayType {
+	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+		_this.validateString(value)
 	}
-	_this.nextReceiver.OnString(value)
-}
-
-func (_this *Rules) OnVerbatimString(value []byte) {
-	_this.onVerbatimStringBegin()
-	_this.onArrayChunk(uint64(len(value)), false)
-	if len(value) > 0 {
-		_this.onArrayData(value)
-	}
-	_this.nextReceiver.OnVerbatimString(value)
-}
-
-func (_this *Rules) OnURI(value []byte) {
-	_this.onURIBegin()
-	_this.onArrayChunk(uint64(len(value)), false)
-	if len(value) > 0 {
-		_this.onArrayData(value)
-	}
-	_this.nextReceiver.OnURI(value)
-}
-
-func (_this *Rules) OnCustomBinary(value []byte) {
-	_this.onCustomBinaryBegin()
-	_this.onArrayChunk(uint64(len(value)), false)
-	if len(value) > 0 {
-		_this.onArrayData(value)
-	}
-	_this.nextReceiver.OnCustomBinary(value)
-}
-
-func (_this *Rules) OnCustomText(value []byte) {
-	_this.onCustomTextBegin()
-	_this.onArrayChunk(uint64(len(value)), false)
-	if len(value) > 0 {
-		_this.onArrayData(value)
-	}
-	_this.nextReceiver.OnCustomText(value)
-}
-
-func (_this *Rules) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	_this.onTypedArrayBegin(arrayType)
+	_this.beginArray(arrayType)
 	_this.onArrayChunk(elementCount, false)
 	if len(value) > 0 {
 		_this.onArrayData(value)
 	}
-	_this.nextReceiver.OnTypedArray(arrayType, elementCount, value)
+	_this.nextReceiver.OnArray(arrayType, elementCount, value)
 }
 
-func (_this *Rules) OnStringBegin() {
-	_this.onStringBegin()
-	_this.nextReceiver.OnStringBegin()
-}
-
-func (_this *Rules) OnVerbatimStringBegin() {
-	_this.onVerbatimStringBegin()
-	_this.nextReceiver.OnVerbatimStringBegin()
-}
-
-func (_this *Rules) OnURIBegin() {
-	_this.onURIBegin()
-	_this.nextReceiver.OnURIBegin()
-}
-
-func (_this *Rules) OnCustomBinaryBegin() {
-	_this.onCustomBinaryBegin()
-	_this.nextReceiver.OnCustomBinaryBegin()
-}
-
-func (_this *Rules) OnCustomTextBegin() {
-	_this.onCustomTextBegin()
-	_this.nextReceiver.OnCustomTextBegin()
-}
-
-func (_this *Rules) OnTypedArrayBegin(arrayType events.ArrayType) {
-	_this.onTypedArrayBegin(arrayType)
-	_this.nextReceiver.OnTypedArrayBegin(arrayType)
+func (_this *Rules) OnArrayBegin(arrayType events.ArrayType) {
+	_this.beginArray(arrayType)
+	_this.nextReceiver.OnArrayBegin(arrayType)
 }
 
 func (_this *Rules) OnArrayChunk(length uint64, moreChunksFollow bool) {
@@ -445,30 +378,6 @@ func (_this *Rules) onNegativeInt() {
 	_this.addScalar(eventTypeNInt)
 }
 
-func (_this *Rules) onTypedArrayBegin(arrayType events.ArrayType) {
-	_this.beginArray(eventTypeArray, arrayType.ElementSize())
-}
-
-func (_this *Rules) onStringBegin() {
-	_this.beginArray(eventTypeString, 8)
-}
-
-func (_this *Rules) onVerbatimStringBegin() {
-	_this.beginArray(eventTypeVerbatimString, 8)
-}
-
-func (_this *Rules) onURIBegin() {
-	_this.beginArray(eventTypeURI, 8)
-}
-
-func (_this *Rules) onCustomBinaryBegin() {
-	_this.beginArray(eventTypeCustomBinary, 8)
-}
-
-func (_this *Rules) onCustomTextBegin() {
-	_this.beginArray(eventTypeCustomText, 8)
-}
-
 func (_this *Rules) onArrayChunk(elementCount uint64, moreChunksFollow bool) {
 	_this.assertCurrentStateAllowsType(eventTypeAChunk)
 	_this.chunkByteCount = common.ElementCountToByteCount(_this.arrayElementBitCount, elementCount)
@@ -501,11 +410,7 @@ func (_this *Rules) onArrayData(data []byte) {
 	}
 
 	switch _this.arrayType {
-	case eventTypeArray:
-		if _this.arrayBytesWritten+dataLength > _this.opts.MaxBytesLength {
-			panic(fmt.Errorf("max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
-		}
-	case eventTypeString:
+	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxStringLength {
 			panic(fmt.Errorf("max string length (%v) exceeded", _this.opts.MaxStringLength))
 		}
@@ -513,7 +418,7 @@ func (_this *Rules) onArrayData(data []byte) {
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
 		}
-	case eventTypeURI:
+	case events.ArrayTypeURI:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxURILength {
 			panic(fmt.Errorf("max URI length (%v) exceeded", _this.opts.MaxURILength))
 		}
@@ -521,6 +426,10 @@ func (_this *Rules) onArrayData(data []byte) {
 			_this.arrayData = append(_this.arrayData, data...)
 		}
 		// Note: URI validation happens when the array is complete
+	default:
+		if _this.arrayBytesWritten+dataLength > _this.opts.MaxBytesLength {
+			panic(fmt.Errorf("max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
+		}
 	}
 
 	_this.arrayBytesWritten += dataLength
@@ -632,11 +541,11 @@ func (_this *Rules) assertCurrentStateAllowsType(objectType ruleEvent) {
 	assertStateAllowsType(_this.getCurrentState(), objectType)
 }
 
-func (_this *Rules) beginArray(arrayType ruleEvent, elementBitCount int) {
-	_this.assertCurrentStateAllowsType(arrayType)
+func (_this *Rules) beginArray(arrayType events.ArrayType) {
+	_this.assertCurrentStateAllowsType(arrayTypeToRuleEvent[arrayType])
 
 	_this.arrayType = arrayType
-	_this.arrayElementBitCount = elementBitCount
+	_this.arrayElementBitCount = arrayType.ElementSize()
 	_this.arrayData = _this.arrayData[:0]
 	_this.chunkByteCount = 0
 	_this.chunkBytesWritten = 0
@@ -655,7 +564,7 @@ func (_this *Rules) onArrayChunkEnded() {
 	_this.unstackState()
 
 	switch _this.arrayType {
-	case eventTypeString:
+	case events.ArrayTypeString:
 		if _this.isAwaitingMarkupName() {
 
 			if _this.arrayBytesWritten == 0 {
@@ -677,7 +586,7 @@ func (_this *Rules) onArrayChunkEnded() {
 			}
 			_this.stackID(string(_this.arrayData))
 		}
-	case eventTypeURI:
+	case events.ArrayTypeURI:
 		if _this.isAwaitingID() {
 			uri, err := url.Parse(string(_this.arrayData))
 			if err != nil {
@@ -685,13 +594,11 @@ func (_this *Rules) onArrayChunkEnded() {
 			}
 			_this.stackID(uri)
 		}
-	case eventTypeArray:
-		// Nothing to do
 	}
 
 	arrayType := _this.arrayType
-	_this.arrayType = eventTypeNothing
-	_this.onChildEnded(arrayType)
+	_this.arrayType = events.ArrayTypeInvalid
+	_this.onChildEnded(arrayTypeToRuleEvent[arrayType])
 }
 
 func (_this *Rules) incrementObjectCount() {
@@ -782,12 +689,10 @@ const (
 	eventIDMarker
 	eventIDReference
 	eventIDEndContainer
-	eventIDBytes
+	eventIDArray
 	eventIDString
 	eventIDVerbatimString
 	eventIDURI
-	eventIDCustomBinary
-	eventIDCustomText
 	eventIDAChunk
 	eventIDAData
 	eventIDEndDocument
@@ -814,12 +719,10 @@ var ruleEventNames = [...]string{
 	eventIDMarker:         "marker",
 	eventIDReference:      "reference",
 	eventIDEndContainer:   "end container",
-	eventIDBytes:          "bytes",
+	eventIDArray:          "array",
 	eventIDString:         "string",
 	eventIDVerbatimString: "verbatim string",
 	eventIDURI:            "URI",
-	eventIDCustomBinary:   "custom (binary)",
-	eventIDCustomText:     "custom (text)",
 	eventIDAChunk:         "array chunk",
 	eventIDAData:          "array data",
 	eventIDEndDocument:    "end document",
@@ -907,12 +810,10 @@ const (
 	eventBeginMarker
 	eventBeginReference
 	eventEndContainer
-	eventBeginBytes
+	eventBeginArray
 	eventBeginString
 	eventBeginVerbatimString
 	eventBeginURI
-	eventBeginCustomBinary
-	eventBeginCustomText
 	eventArrayChunk
 	eventArrayData
 	eventEndDocument
@@ -948,12 +849,10 @@ const (
 	eventTypeMarker         = eventIDMarker | eventBeginMarker
 	eventTypeReference      = eventIDReference | eventBeginReference
 	eventTypeEndContainer   = eventIDEndContainer | eventEndContainer
-	eventTypeArray          = eventIDBytes | eventBeginBytes
+	eventTypeArray          = eventIDArray | eventBeginArray
 	eventTypeString         = eventIDString | eventBeginString
 	eventTypeVerbatimString = eventIDVerbatimString | eventBeginVerbatimString
 	eventTypeURI            = eventIDURI | eventBeginURI
-	eventTypeCustomBinary   = eventIDCustomBinary | eventBeginCustomBinary
-	eventTypeCustomText     = eventIDCustomText | eventBeginCustomText
 	eventTypeAChunk         = eventIDAChunk | eventArrayChunk
 	eventTypeAData          = eventIDAData | eventArrayData
 	eventTypeEndDocument    = eventIDEndDocument | eventEndDocument
@@ -962,7 +861,7 @@ const (
 
 // Primary rules
 const (
-	eventsArray         = eventBeginBytes | eventBeginString | eventBeginVerbatimString | eventBeginURI | eventBeginCustomBinary | eventBeginCustomText
+	eventsArray         = eventBeginArray | eventBeginString | eventBeginVerbatimString | eventBeginURI
 	eventsInvisible     = eventPadding | eventBeginComment | eventBeginMetadata
 	eventsKeyableObject = eventsInvisible | eventScalar | eventPositiveInt | eventsArray | eventBeginMarker
 	eventsAnyObject     = eventsKeyableObject | eventNil | eventNan | eventBeginList | eventBeginMap | eventBeginMarkup | eventBeginReference
@@ -1027,6 +926,27 @@ var childEndRuleStateChanges = [...]ruleState{
 	stateIDAwaitingArrayChunk:     stateAwaitingArrayChunk,
 	stateIDAwaitingArrayData:      stateAwaitingArrayData,
 	stateIDAwaitingEndDocument:    stateAwaitingNothing,
+}
+
+var arrayTypeToRuleEvent = [...]ruleEvent{
+	events.ArrayTypeBoolean:        eventTypeArray,
+	events.ArrayTypeUint8:          eventTypeArray,
+	events.ArrayTypeUint16:         eventTypeArray,
+	events.ArrayTypeUint32:         eventTypeArray,
+	events.ArrayTypeUint64:         eventTypeArray,
+	events.ArrayTypeInt8:           eventTypeArray,
+	events.ArrayTypeInt16:          eventTypeArray,
+	events.ArrayTypeInt32:          eventTypeArray,
+	events.ArrayTypeInt64:          eventTypeArray,
+	events.ArrayTypeFloat16:        eventTypeArray,
+	events.ArrayTypeFloat32:        eventTypeArray,
+	events.ArrayTypeFloat64:        eventTypeArray,
+	events.ArrayTypeUUID:           eventTypeArray,
+	events.ArrayTypeString:         eventTypeString,
+	events.ArrayTypeVerbatimString: eventTypeString,
+	events.ArrayTypeURI:            eventTypeURI,
+	events.ArrayTypeCustomBinary:   eventTypeArray,
+	events.ArrayTypeCustomText:     eventTypeArray,
 }
 
 func validateRulesCommentCharacter(ch rune) {

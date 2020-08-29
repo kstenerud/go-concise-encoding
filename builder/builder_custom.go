@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -101,32 +100,10 @@ func (_this *customBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "UUID")
 }
 
-func (_this *customBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "String")
-}
-
-func (_this *customBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "VerbatimString")
-}
-
-func (_this *customBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEvent(_this, "URI")
-}
-
-func (_this *customBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+func (_this *customBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	if !_this.session.TryBuildFromCustom(_this, arrayType, value, dst) {
+		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 	}
-}
-
-func (_this *customBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		PanicBuildFromCustomText(_this, value, dst.Type(), err)
-	}
-}
-
-func (_this *customBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 }
 
 func (_this *customBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {

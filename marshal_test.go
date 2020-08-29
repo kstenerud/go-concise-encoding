@@ -46,7 +46,7 @@ type SomeStruct struct {
 }
 
 func TestDemonstrateRecursiveStructInMap(t *testing.T) {
-	document := "c1 {my-value = &1:{a=100 b=test c=#1}}"
+	document := "c1 {my-value = &1:{a=100 b=test c=$1}}"
 	template := map[string]*SomeStruct{}
 	result, err := ce.UnmarshalCTEFromDocument([]byte(document), template, nil)
 	if err != nil {

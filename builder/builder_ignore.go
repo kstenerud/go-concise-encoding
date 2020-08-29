@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -107,27 +106,7 @@ func (_this *ignoreBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
-func (_this *ignoreBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreBuilder) BuildFromTypedArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
+func (_this *ignoreBuilder) BuildFromArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
 	_this.root.SetCurrentBuilder(_this.parent)
 }
 
@@ -247,27 +226,7 @@ func (_this *ignoreContainerBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 
-func (_this *ignoreContainerBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromTypedArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
+func (_this *ignoreContainerBuilder) BuildFromArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
 	// Ignore this directive
 }
 

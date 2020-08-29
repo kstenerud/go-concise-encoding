@@ -29,6 +29,8 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
@@ -116,6 +118,23 @@ func (_this *Session) GetCustomTextBuildFunction() options.CustomBuildFunction {
 	return _this.opts.CustomTextBuildFunction
 }
 
+func (_this *Session) TryBuildFromCustom(builder ObjectBuilder, arrayType events.ArrayType, value []byte, dst reflect.Value) bool {
+	switch arrayType {
+	case events.ArrayTypeCustomBinary:
+		if err := _this.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+			PanicBuildFromCustomBinary(builder, value, dst.Type(), err)
+		}
+		return true
+	case events.ArrayTypeCustomText:
+		if err := _this.GetCustomTextBuildFunction()(value, dst); err != nil {
+			PanicBuildFromCustomText(builder, value, dst.Type(), err)
+		}
+		return true
+	default:
+		return false
+	}
+}
+
 // ============================================================================
 // Internal
 
@@ -158,13 +177,13 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 		case common.TypeURL:
 			return newDirectBuilder(dstType)
 		case common.TypeDFloat:
-			return newDFloatBuilder()
+			return newDecimalFloatBuilder(common.TypeDFloat)
 		case common.TypeBigInt:
-			return newBigIntBuilder()
+			return newBigIntBuilder(common.TypeBigInt)
 		case common.TypeBigFloat:
-			return newBigFloatBuilder()
+			return newBigFloatBuilder(common.TypeBigFloat)
 		case common.TypeBigDecimalFloat:
-			return newBigDecimalFloatBuilder()
+			return newBigDecimalFloatBuilder(common.TypeBigDecimalFloat)
 		default:
 			return newStructBuilder(dstType)
 		}
@@ -173,11 +192,11 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 		case common.TypePURL:
 			return newDirectPtrBuilder(dstType)
 		case common.TypePBigInt:
-			return newPBigIntBuilder()
+			return newPBigIntBuilder(common.TypePBigInt)
 		case common.TypePBigFloat:
-			return newPBigFloatBuilder()
+			return newPBigFloatBuilder(common.TypePBigFloat)
 		case common.TypePBigDecimalFloat:
-			return newPBigDecimalFloatBuilder()
+			return newPBigDecimalFloatBuilder(common.TypePBigDecimalFloat)
 		case common.TypePCompactTime:
 			return newPCompactTimeBuilder()
 		default:

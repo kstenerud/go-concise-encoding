@@ -34,6 +34,7 @@ import (
 var types = [...]string{
 	"uint8",
 	"uint16",
+	// TODO: Remaining typed arrays
 	// "uint32",
 	// "uint64",
 	// "int8",
@@ -53,11 +54,12 @@ func GenerateCode(projectDir string) {
 		panic(err)
 	}
 
-	generatedFilePath := filepath.Join(projectDir, "iterator/iterator_generated.go")
+	generatedFilePath := filepath.Join(projectDir, "iterator/generated_code.go")
 	writer, err := os.Create(generatedFilePath)
 	if err != nil {
 		panic(fmt.Errorf("could not open %s: %v", generatedFilePath, err))
 	}
+	defer writer.Close()
 
 	_, err = writer.WriteString(codeHeader)
 	if err != nil {

@@ -319,35 +319,40 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCompactTime:
 		receiver.OnCompactTime(_this.V1.(*compact_time.Time))
 	case TEventString:
-		receiver.OnString([]byte(_this.V1.(string)))
+		bytes := []byte(_this.V1.(string))
+		receiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 	case TEventVerbatimString:
-		receiver.OnVerbatimString([]byte(_this.V1.(string)))
+		bytes := []byte(_this.V1.(string))
+		receiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(bytes)), bytes)
 	case TEventURI:
-		receiver.OnURI([]byte(_this.V1.(string)))
+		bytes := []byte(_this.V1.(string))
+		receiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
 	case TEventCustomBinary:
-		receiver.OnCustomBinary(_this.V1.([]byte))
+		bytes := []byte(_this.V1.([]byte))
+		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
 	case TEventCustomText:
-		receiver.OnCustomText([]byte(_this.V1.(string)))
+		bytes := []byte(_this.V1.(string))
+		receiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
 	case TEventArrayUint8:
 		bytes := _this.V1.([]byte)
-		receiver.OnTypedArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
+		receiver.OnArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
 	case TEventArrayUint16:
 		bytes := _this.V1.([]byte)
-		receiver.OnTypedArray(events.ArrayTypeUint16, uint64(len(bytes)/2), bytes)
+		receiver.OnArray(events.ArrayTypeUint16, uint64(len(bytes)/2), bytes)
 	case TEventStringBegin:
-		receiver.OnStringBegin()
+		receiver.OnArrayBegin(events.ArrayTypeString)
 	case TEventVerbatimStringBegin:
-		receiver.OnVerbatimStringBegin()
+		receiver.OnArrayBegin(events.ArrayTypeVerbatimString)
 	case TEventURIBegin:
-		receiver.OnURIBegin()
+		receiver.OnArrayBegin(events.ArrayTypeURI)
 	case TEventCustomBinaryBegin:
-		receiver.OnCustomBinaryBegin()
+		receiver.OnArrayBegin(events.ArrayTypeCustomBinary)
 	case TEventCustomTextBegin:
-		receiver.OnCustomTextBegin()
+		receiver.OnArrayBegin(events.ArrayTypeCustomText)
 	case TEventArrayUint8Begin:
-		receiver.OnTypedArrayBegin(events.ArrayTypeUint8)
+		receiver.OnArrayBegin(events.ArrayTypeUint8)
 	case TEventArrayUint16Begin:
-		receiver.OnTypedArrayBegin(events.ArrayTypeUint16)
+		receiver.OnArrayBegin(events.ArrayTypeUint16)
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
 	case TEventArrayData:
@@ -614,63 +619,43 @@ func (h *TEventPrinter) OnCompactTime(value *compact_time.Time) {
 	h.Print(CT(value))
 	h.Next.OnCompactTime(value)
 }
-func (h *TEventPrinter) OnString(value []byte) {
-	h.Print(S(string(value)))
-	h.Next.OnString(value)
-}
-func (h *TEventPrinter) OnVerbatimString(value []byte) {
-	h.Print(VS(string(value)))
-	h.Next.OnVerbatimString(value)
-}
-func (h *TEventPrinter) OnURI(value []byte) {
-	h.Print(URI(string(value)))
-	h.Next.OnURI(value)
-}
-func (h *TEventPrinter) OnCustomBinary(value []byte) {
-	h.Print(CUB(value))
-	h.Next.OnCustomBinary(value)
-}
-func (h *TEventPrinter) OnCustomText(value []byte) {
-	h.Print(CUT(string(value)))
-	h.Next.OnCustomText(value)
-}
-func (h *TEventPrinter) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
+	case events.ArrayTypeString:
+		h.Print(S(string(value)))
+	case events.ArrayTypeVerbatimString:
+		h.Print(VS(string(value)))
+	case events.ArrayTypeURI:
+		h.Print(URI(string(value)))
+	case events.ArrayTypeCustomBinary:
+		h.Print(CUB(value))
+	case events.ArrayTypeCustomText:
+		h.Print(CUT(string(value)))
 	case events.ArrayTypeUint8:
 		h.Print(AU8(value))
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
-	h.Next.OnTypedArray(arrayType, elementCount, value)
+	h.Next.OnArray(arrayType, elementCount, value)
 }
-func (h *TEventPrinter) OnStringBegin() {
-	h.Print(SB())
-	h.Next.OnStringBegin()
-}
-func (h *TEventPrinter) OnVerbatimStringBegin() {
-	h.Print(VB())
-	h.Next.OnVerbatimStringBegin()
-}
-func (h *TEventPrinter) OnURIBegin() {
-	h.Print(UB())
-	h.Next.OnURIBegin()
-}
-func (h *TEventPrinter) OnCustomBinaryBegin() {
-	h.Print(CBB())
-	h.Next.OnCustomBinaryBegin()
-}
-func (h *TEventPrinter) OnCustomTextBegin() {
-	h.Print(CTB())
-	h.Next.OnCustomTextBegin()
-}
-func (h *TEventPrinter) OnTypedArrayBegin(arrayType events.ArrayType) {
+func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
+	case events.ArrayTypeString:
+		h.Print(SB())
+	case events.ArrayTypeVerbatimString:
+		h.Print(VB())
+	case events.ArrayTypeURI:
+		h.Print(UB())
+	case events.ArrayTypeCustomBinary:
+		h.Print(CBB())
+	case events.ArrayTypeCustomText:
+		h.Print(CTB())
 	case events.ArrayTypeUint8:
 		h.Print(AU8B())
-		h.Next.OnTypedArrayBegin(arrayType)
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
+	h.Next.OnArrayBegin(arrayType)
 }
 func (h *TEventPrinter) OnArrayChunk(l uint64, moreChunksFollow bool) {
 	h.Print(AC(l, moreChunksFollow))
@@ -781,13 +766,18 @@ func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
 func (h *TER) OnUUID(value []byte)                    { h.add(UUID(value)) }
 func (h *TER) OnTime(value time.Time)                 { h.add(GT(value)) }
 func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(CT(value)) }
-func (h *TER) OnString(value []byte)                  { h.add(S(string(value))) }
-func (h *TER) OnVerbatimString(value []byte)          { h.add(VS(string(value))) }
-func (h *TER) OnURI(value []byte)                     { h.add(URI(string(value))) }
-func (h *TER) OnCustomBinary(value []byte)            { h.add(CUB(value)) }
-func (h *TER) OnCustomText(value []byte)              { h.add(CUT(string(value))) }
-func (h *TER) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
+	case events.ArrayTypeString:
+		h.add(S(string(value)))
+	case events.ArrayTypeVerbatimString:
+		h.add(VS(string(value)))
+	case events.ArrayTypeURI:
+		h.add(URI(string(value)))
+	case events.ArrayTypeCustomBinary:
+		h.add(CUB(value))
+	case events.ArrayTypeCustomText:
+		h.add(CUT(string(value)))
 	case events.ArrayTypeUint8:
 		h.add(AU8(value))
 	case events.ArrayTypeUint16:
@@ -796,13 +786,18 @@ func (h *TER) OnTypedArray(arrayType events.ArrayType, elementCount uint64, valu
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 }
-func (h *TER) OnStringBegin()         { h.add(SB()) }
-func (h *TER) OnVerbatimStringBegin() { h.add(VB()) }
-func (h *TER) OnURIBegin()            { h.add(UB()) }
-func (h *TER) OnCustomBinaryBegin()   { h.add(CBB()) }
-func (h *TER) OnCustomTextBegin()     { h.add(CTB()) }
-func (h *TER) OnTypedArrayBegin(arrayType events.ArrayType) {
+func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
+	case events.ArrayTypeString:
+		h.add(SB())
+	case events.ArrayTypeVerbatimString:
+		h.add(VB())
+	case events.ArrayTypeURI:
+		h.add(UB())
+	case events.ArrayTypeCustomBinary:
+		h.add(CBB())
+	case events.ArrayTypeCustomText:
+		h.add(CTB())
 	case events.ArrayTypeUint8:
 		h.add(AU8B())
 	default:

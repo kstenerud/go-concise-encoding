@@ -27,7 +27,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -54,12 +53,7 @@ type ObjectBuilder interface {
 	BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
 	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
 	BuildFromUUID(value []byte, dst reflect.Value)
-	BuildFromString(value []byte, dst reflect.Value)
-	BuildFromVerbatimString(value []byte, dst reflect.Value)
-	BuildFromURI(value *url.URL, dst reflect.Value)
-	BuildFromCustomBinary(value []byte, dst reflect.Value)
-	BuildFromCustomText(value []byte, dst reflect.Value)
-	BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value)
+	BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value)
 	BuildFromTime(value time.Time, dst reflect.Value)
 	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
 	BuildBeginList()

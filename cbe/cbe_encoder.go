@@ -273,38 +273,28 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	_this.buff.CorrectAllocation(byteCount + 1)
 }
 
-func (_this *Encoder) OnURI(value []byte) {
-	_this.encodeTypedByteArray(cbeTypeURI, value)
-}
-
-func (_this *Encoder) OnString(value []byte) {
-	stringLength := len(value)
-
-	if stringLength > maxSmallStringLength {
-		_this.encodeTypedByteArray(cbeTypeString, value)
-		return
-	}
-
-	dst := _this.buff.Allocate(stringLength + 1)
-	dst[0] = byte(cbeTypeString0 + cbeTypeField(stringLength))
-	dst = dst[1:]
-	copy(dst, value)
-}
-
-func (_this *Encoder) OnVerbatimString(value []byte) {
-	_this.encodeTypedByteArray(cbeTypeVerbatimString, value)
-}
-
-func (_this *Encoder) OnCustomBinary(value []byte) {
-	_this.encodeTypedByteArray(cbeTypeCustomBinary, value)
-}
-
-func (_this *Encoder) OnCustomText(value []byte) {
-	_this.encodeTypedByteArray(cbeTypeCustomText, value)
-}
-
-func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
+	case events.ArrayTypeString:
+		stringLength := len(value)
+
+		if stringLength > maxSmallStringLength {
+			_this.encodeTypedByteArray(cbeTypeString, value)
+			return
+		}
+
+		dst := _this.buff.Allocate(stringLength + 1)
+		dst[0] = byte(cbeTypeString0 + cbeTypeField(stringLength))
+		dst = dst[1:]
+		copy(dst, value)
+	case events.ArrayTypeVerbatimString:
+		_this.encodeTypedByteArray(cbeTypeVerbatimString, value)
+	case events.ArrayTypeURI:
+		_this.encodeTypedByteArray(cbeTypeURI, value)
+	case events.ArrayTypeCustomBinary:
+		_this.encodeTypedByteArray(cbeTypeCustomBinary, value)
+	case events.ArrayTypeCustomText:
+		_this.encodeTypedByteArray(cbeTypeCustomText, value)
 	case events.ArrayTypeUint8:
 		_this.encodeArrayUint8(value)
 	default:
@@ -312,29 +302,19 @@ func (_this *Encoder) OnTypedArray(arrayType events.ArrayType, elementCount uint
 	}
 }
 
-func (_this *Encoder) OnStringBegin() {
-	_this.encodeTypeOnly(cbeTypeString)
-}
-
-func (_this *Encoder) OnVerbatimStringBegin() {
-	_this.encodeTypeOnly(cbeTypeVerbatimString)
-}
-
-func (_this *Encoder) OnURIBegin() {
-	_this.encodeTypeOnly(cbeTypeURI)
-}
-
-func (_this *Encoder) OnCustomBinaryBegin() {
-	_this.encodeTypeOnly(cbeTypeCustomBinary)
-}
-
-func (_this *Encoder) OnCustomTextBegin() {
-	_this.encodeTypeOnly(cbeTypeCustomText)
-}
-
-func (_this *Encoder) OnTypedArrayBegin(arrayType events.ArrayType) {
+func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.encodeTypeOnly(cbeTypeArray)
 	switch arrayType {
+	case events.ArrayTypeString:
+		_this.encodeTypeOnly(cbeTypeString)
+	case events.ArrayTypeVerbatimString:
+		_this.encodeTypeOnly(cbeTypeVerbatimString)
+	case events.ArrayTypeURI:
+		_this.encodeTypeOnly(cbeTypeURI)
+	case events.ArrayTypeCustomBinary:
+		_this.encodeTypeOnly(cbeTypeCustomBinary)
+	case events.ArrayTypeCustomText:
+		_this.encodeTypeOnly(cbeTypeCustomText)
 	case events.ArrayTypeUint8:
 		_this.encodeTypeOnly(cbeTypePosInt8)
 	default:

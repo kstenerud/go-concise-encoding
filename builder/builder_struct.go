@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"strings"
 	"time"
@@ -219,64 +218,30 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 	_this.swapKeyValue()
 }
 
-func (_this *structBuilder) BuildFromString(value []byte, _ reflect.Value) {
-	if _this.nextIsKey {
-		if _this.opts.CaseInsensitiveStructFieldNames {
-			common.ASCIIBytesToLower(value)
-		}
-		name := string(value)
+func (_this *structBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+		if _this.nextIsKey {
+			if _this.opts.CaseInsensitiveStructFieldNames {
+				common.ASCIIBytesToLower(value)
+			}
+			name := string(value)
 
-		if builderDesc, ok := _this.builderDescs[name]; ok {
-			_this.nextBuilder = builderDesc.Builder
-			_this.nextValue = _this.container.Field(builderDesc.Index)
+			if builderDesc, ok := _this.builderDescs[name]; ok {
+				_this.nextBuilder = builderDesc.Builder
+				_this.nextValue = _this.container.Field(builderDesc.Index)
+			} else {
+				_this.root.SetCurrentBuilder(_this.ignoreBuilder)
+				_this.nextBuilder = _this.ignoreBuilder
+				_this.nextIsIgnored = true
+				return
+			}
 		} else {
-			_this.root.SetCurrentBuilder(_this.ignoreBuilder)
-			_this.nextBuilder = _this.ignoreBuilder
-			_this.nextIsIgnored = true
-			return
+			_this.nextBuilder.BuildFromArray(arrayType, value, _this.nextValue)
 		}
-	} else {
-		_this.nextBuilder.BuildFromString(value, _this.nextValue)
+	default:
+		_this.nextBuilder.BuildFromArray(arrayType, value, _this.nextValue)
 	}
-
-	_this.swapKeyValue()
-}
-
-func (_this *structBuilder) BuildFromVerbatimString(value []byte, _ reflect.Value) {
-	if _this.nextIsKey {
-		if builderDesc, ok := _this.builderDescs[string(value)]; ok {
-			_this.nextBuilder = builderDesc.Builder
-			_this.nextValue = _this.container.Field(builderDesc.Index)
-		} else {
-			_this.root.SetCurrentBuilder(_this.ignoreBuilder)
-			_this.nextBuilder = _this.ignoreBuilder
-			_this.nextIsIgnored = true
-			return
-		}
-	} else {
-		_this.nextBuilder.BuildFromVerbatimString(value, _this.nextValue)
-	}
-
-	_this.swapKeyValue()
-}
-
-func (_this *structBuilder) BuildFromURI(value *url.URL, _ reflect.Value) {
-	_this.nextBuilder.BuildFromURI(value, _this.nextValue)
-	_this.swapKeyValue()
-}
-
-func (_this *structBuilder) BuildFromCustomBinary(value []byte, _ reflect.Value) {
-	_this.nextBuilder.BuildFromCustomBinary(value, _this.nextValue)
-	_this.swapKeyValue()
-}
-
-func (_this *structBuilder) BuildFromCustomText(value []byte, _ reflect.Value) {
-	_this.nextBuilder.BuildFromCustomText(value, _this.nextValue)
-	_this.swapKeyValue()
-}
-
-func (_this *structBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
-	_this.nextBuilder.BuildFromTypedArray(arrayType, value, _this.nextValue)
 	_this.swapKeyValue()
 }
 

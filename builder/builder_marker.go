@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -107,27 +106,7 @@ func (_this *markerIDBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "UUID")
 }
 
-func (_this *markerIDBuilder) BuildFromString(value []byte, _ reflect.Value) {
-	_this.onID(value)
-}
-
-func (_this *markerIDBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "VerbatimString")
-}
-
-func (_this *markerIDBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEvent(_this, "URI")
-}
-
-func (_this *markerIDBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "CustomBinary")
-}
-
-func (_this *markerIDBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "CustomText")
-}
-
-func (_this *markerIDBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
+func (_this *markerIDBuilder) BuildFromArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 }
 
@@ -257,33 +236,8 @@ func (_this *markerObjectBuilder) BuildFromUUID(value []byte, dst reflect.Value)
 	_this.onObjectComplete(dst)
 }
 
-func (_this *markerObjectBuilder) BuildFromString(value []byte, dst reflect.Value) {
-	_this.child.BuildFromString(value, dst)
-	_this.onObjectComplete(dst)
-}
-
-func (_this *markerObjectBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
-	_this.child.BuildFromVerbatimString(value, dst)
-	_this.onObjectComplete(dst)
-}
-
-func (_this *markerObjectBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	_this.child.BuildFromURI(value, dst)
-	_this.onObjectComplete(dst)
-}
-
-func (_this *markerObjectBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
-	_this.child.BuildFromCustomBinary(value, dst)
-	_this.onObjectComplete(dst)
-}
-
-func (_this *markerObjectBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
-	_this.child.BuildFromCustomText(value, dst)
-	_this.onObjectComplete(dst)
-}
-
-func (_this *markerObjectBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	_this.child.BuildFromTypedArray(arrayType, value, dst)
+func (_this *markerObjectBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	_this.child.BuildFromArray(arrayType, value, dst)
 	_this.onObjectComplete(dst)
 }
 

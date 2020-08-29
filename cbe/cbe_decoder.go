@@ -160,22 +160,28 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		case cbeTypePadding:
 			_this.eventReceiver.OnPadding(1)
 		case cbeTypeString0:
-			_this.eventReceiver.OnString([]byte{})
+			_this.eventReceiver.OnArray(events.ArrayTypeString, 0, []byte{})
 		case cbeTypeString1, cbeTypeString2, cbeTypeString3, cbeTypeString4,
 			cbeTypeString5, cbeTypeString6, cbeTypeString7, cbeTypeString8,
 			cbeTypeString9, cbeTypeString10, cbeTypeString11, cbeTypeString12,
 			cbeTypeString13, cbeTypeString14, cbeTypeString15:
-			_this.eventReceiver.OnString(_this.decodeSmallString(int(cbeType - cbeTypeString0)))
+			length := int(cbeType - cbeTypeString0)
+			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(length), _this.decodeSmallString(length))
 		case cbeTypeString:
-			_this.eventReceiver.OnString(_this.decodeArray(8))
+			bytes := _this.decodeArray(8)
+			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 		case cbeTypeVerbatimString:
-			_this.eventReceiver.OnVerbatimString(_this.decodeArray(8))
+			bytes := _this.decodeArray(8)
+			_this.eventReceiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(bytes)), bytes)
 		case cbeTypeURI:
-			_this.eventReceiver.OnURI(_this.decodeArray(8))
+			bytes := _this.decodeArray(8)
+			_this.eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
 		case cbeTypeCustomBinary:
-			_this.eventReceiver.OnCustomBinary(_this.decodeArray(8))
+			bytes := _this.decodeArray(8)
+			_this.eventReceiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
 		case cbeTypeCustomText:
-			_this.eventReceiver.OnCustomText(_this.decodeArray(8))
+			bytes := _this.decodeArray(8)
+			_this.eventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
 		case cbeTypeArray:
 			_this.decodeTypedArray()
 		case cbeTypeMarker:
@@ -245,7 +251,7 @@ func (_this *Decoder) decodeTypedArray() {
 	validateLength(elementCount)
 	if !moreChunksFollow {
 		bytes := _this.decodeUnichunkArray(elementBitWidth, elementCount)
-		_this.eventReceiver.OnTypedArray(arrayType, elementCount, bytes)
+		_this.eventReceiver.OnArray(arrayType, elementCount, bytes)
 		return
 	}
 

@@ -129,8 +129,13 @@ func (_this *directBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 	}
 }
 
-func (_this *directBuilder) BuildFromTypedArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", arrayType)
+func (_this *directBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+	switch arrayType {
+	case events.ArrayTypeURI:
+		setURIFromString(string(value), dst)
+	default:
+		PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", arrayType)
+	}
 }
 
 func (_this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
@@ -179,6 +184,7 @@ func (_this *directBuilder) NotifyChildContainerFinished(_ reflect.Value) {
 // a pointer destination type (for example, a *url is always a *url).
 type directPtrBuilder struct {
 	// Template Data
+	session *Session
 	dstType reflect.Type
 }
 
@@ -192,7 +198,8 @@ func (_this *directPtrBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
-func (_this *directPtrBuilder) InitTemplate(_ *Session) {
+func (_this *directPtrBuilder) InitTemplate(session *Session) {
+	_this.session = session
 }
 
 func (_this *directPtrBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
@@ -242,34 +249,22 @@ func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.SetBytes(value)
 }
 
-func (_this *directPtrBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	// String needs special handling since there's no such thing as a nil string
-	// in go.
-	PanicBadEventWithType(_this, _this.dstType, "String")
-}
-
-func (_this *directPtrBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	// String needs special handling since there's no such thing as a nil string
-	// in go.
-	PanicBadEventWithType(_this, _this.dstType, "VerbatimString")
-}
-
-func (_this *directPtrBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(value))
-}
-
-func (_this *directPtrBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, _this.dstType, "CustomBinary")
-}
-
-func (_this *directPtrBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	PanicBadEventWithType(_this, _this.dstType, "CustomText")
-}
-
-func (_this *directPtrBuilder) BuildFromTypedArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
+	case events.ArrayTypeCustomBinary:
+		if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+			PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
+		}
+	case events.ArrayTypeCustomText:
+		if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+			PanicBuildFromCustomText(_this, value, dst.Type(), err)
+		}
 	case events.ArrayTypeUint8:
 		dst.SetBytes(common.CloneBytes(value))
+	case events.ArrayTypeString:
+		dst.SetString(string(value))
+	case events.ArrayTypeURI:
+		setPURIFromString(string(value), dst)
 	default:
 		panic(fmt.Errorf("TODO: Add typed array support for %v", arrayType))
 	}
