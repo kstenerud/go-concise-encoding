@@ -304,7 +304,7 @@ complete:
 	return value
 }
 
-func (_this *ReadBuffer) DecodeChunkHeader() (length uint64, moreChunksFollow bool) {
+func (_this *ReadBuffer) DecodeArrayChunkHeader() (length uint64, moreChunksFollow bool) {
 	asUint, asBig := _this.DecodeULEB128()
 	if asBig != nil {
 		_this.errorf("Chunk header length field is too big")
