@@ -168,22 +168,22 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			length := int(cbeType - cbeTypeString0)
 			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(length), _this.decodeSmallString(length))
 		case cbeTypeString:
-			bytes := _this.decodeArray(8)
-			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+			_this.decodeArray(events.ArrayTypeString)
 		case cbeTypeVerbatimString:
-			bytes := _this.decodeArray(8)
-			_this.eventReceiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(bytes)), bytes)
+			_this.decodeArray(events.ArrayTypeVerbatimString)
 		case cbeTypeURI:
-			bytes := _this.decodeArray(8)
-			_this.eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
+			_this.decodeArray(events.ArrayTypeURI)
 		case cbeTypeCustomBinary:
-			bytes := _this.decodeArray(8)
-			_this.eventReceiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
+			_this.decodeArray(events.ArrayTypeCustomBinary)
 		case cbeTypeCustomText:
-			bytes := _this.decodeArray(8)
-			_this.eventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
+			_this.decodeArray(events.ArrayTypeCustomText)
 		case cbeTypeArray:
-			_this.decodeTypedArray()
+			cbeType := _this.buffer.DecodeType()
+			arrayType := cbeTypeToArrayType[cbeType]
+			if arrayType == events.ArrayTypeInvalid {
+				panic(fmt.Errorf("0x%02x: Unsupported typed array type", cbeType))
+			}
+			_this.decodeArray(arrayType)
 		case cbeTypeMarker:
 			_this.eventReceiver.OnMarker()
 		case cbeTypeReference:
@@ -197,7 +197,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		default:
 			asSmallInt := int64(int8(cbeType))
 			if asSmallInt < cbeSmallIntMin || asSmallInt > cbeSmallIntMax {
-				panic(fmt.Errorf("unknown type code 0x%02x", cbeType))
+				panic(fmt.Errorf("0x%02x: Unsupported type", cbeType))
 			}
 			_this.eventReceiver.OnInt(asSmallInt)
 		}
@@ -216,18 +216,18 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 // Internal
 
-func (_this *Decoder) decodeTypedArray() {
-	cbeType := _this.buffer.DecodeType()
-	arrayType := events.ArrayType(cbeTypeToArrayType[cbeType])
-	if arrayType == events.ArrayTypeInvalid {
-		panic(fmt.Errorf("0x%x: Unsupported typed array type", cbeType))
-	}
-
+func (_this *Decoder) decodeArray(arrayType events.ArrayType) {
 	elementBitWidth := arrayType.ElementSize()
 	elementCount, moreChunksFollow := _this.buffer.DecodeArrayChunkHeader()
 	validateLength(elementCount)
+
 	if !moreChunksFollow {
-		bytes := _this.decodeUnichunkArray(elementBitWidth, elementCount)
+		if elementCount == 0 {
+			_this.eventReceiver.OnArray(arrayType, elementCount, []byte{})
+			return
+		}
+		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
+		bytes := _this.buffer.DecodeBytes(int(byteCount))
 		_this.eventReceiver.OnArray(arrayType, elementCount, bytes)
 		return
 	}
@@ -262,39 +262,4 @@ func validateLength(length uint64) {
 	if length > maxDefaultInt {
 		panic(fmt.Errorf("%v > max int value (%v)", length, maxDefaultInt))
 	}
-}
-
-func (_this *Decoder) decodeUnichunkArray(elementBitWidth int, elementCount uint64) []byte {
-	validateLength(elementCount)
-	if elementCount == 0 {
-		return []byte{}
-	}
-	byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
-	return _this.buffer.DecodeBytes(int(byteCount))
-}
-
-func (_this *Decoder) decodeMultichunkArray(elementBitWidth int, firstChunkElementCount uint64) []byte {
-	elementCount := firstChunkElementCount
-	moreChunksFollow := true
-	var bytes []byte
-	for {
-		validateLength(elementCount)
-		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
-		nextBytes := _this.buffer.DecodeBytes(int(byteCount))
-		bytes = append(bytes, nextBytes...)
-		if !moreChunksFollow {
-			return bytes
-		}
-		elementCount, moreChunksFollow = _this.buffer.DecodeArrayChunkHeader()
-	}
-}
-
-func (_this *Decoder) decodeArray(elementBitWidth int) []byte {
-	// TODO: Array chunking for string array types
-	elementCount, moreChunksFollow := _this.buffer.DecodeArrayChunkHeader()
-	if moreChunksFollow {
-		return _this.decodeMultichunkArray(elementBitWidth, elementCount)
-	}
-
-	return _this.decodeUnichunkArray(elementBitWidth, elementCount)
 }
