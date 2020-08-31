@@ -25,6 +25,10 @@
 // consumes data events to produce a document.
 package cbe
 
+import (
+	"github.com/kstenerud/go-concise-encoding/events"
+)
+
 // ============================================================================
 
 // Internal
@@ -93,3 +97,66 @@ const (
 	cbeSmallIntMin int64 = -100
 	cbeSmallIntMax int64 = 100
 )
+
+var isTypedArray = []bool{
+	events.ArrayTypeBoolean:        true,
+	events.ArrayTypeUint8:          true,
+	events.ArrayTypeUint16:         true,
+	events.ArrayTypeUint32:         true,
+	events.ArrayTypeUint64:         true,
+	events.ArrayTypeInt8:           true,
+	events.ArrayTypeInt16:          true,
+	events.ArrayTypeInt32:          true,
+	events.ArrayTypeInt64:          true,
+	events.ArrayTypeFloat16:        true,
+	events.ArrayTypeFloat32:        true,
+	events.ArrayTypeFloat64:        true,
+	events.ArrayTypeUUID:           true,
+	events.ArrayTypeString:         false,
+	events.ArrayTypeVerbatimString: false,
+	events.ArrayTypeURI:            false,
+	events.ArrayTypeCustomBinary:   false,
+	events.ArrayTypeCustomText:     false,
+}
+
+var arrayTypeToCBEType = []cbeTypeField{
+	events.ArrayTypeBoolean:        cbeTypeTrue,
+	events.ArrayTypeUint8:          cbeTypePosInt8,
+	events.ArrayTypeUint16:         cbeTypePosInt16,
+	events.ArrayTypeUint32:         cbeTypePosInt32,
+	events.ArrayTypeUint64:         cbeTypePosInt64,
+	events.ArrayTypeInt8:           cbeTypeNegInt8,
+	events.ArrayTypeInt16:          cbeTypeNegInt16,
+	events.ArrayTypeInt32:          cbeTypeNegInt32,
+	events.ArrayTypeInt64:          cbeTypeNegInt64,
+	events.ArrayTypeFloat16:        cbeTypeFloat16,
+	events.ArrayTypeFloat32:        cbeTypeFloat32,
+	events.ArrayTypeFloat64:        cbeTypeFloat64,
+	events.ArrayTypeUUID:           cbeTypeUUID,
+	events.ArrayTypeString:         cbeTypeString,
+	events.ArrayTypeVerbatimString: cbeTypeVerbatimString,
+	events.ArrayTypeURI:            cbeTypeURI,
+	events.ArrayTypeCustomBinary:   cbeTypeCustomBinary,
+	events.ArrayTypeCustomText:     cbeTypeCustomText,
+}
+
+var cbeTypeToArrayType = [256]events.ArrayType{
+	cbeTypeTrue:           events.ArrayTypeBoolean,
+	cbeTypePosInt8:        events.ArrayTypeUint8,
+	cbeTypePosInt16:       events.ArrayTypeUint16,
+	cbeTypePosInt32:       events.ArrayTypeUint32,
+	cbeTypePosInt64:       events.ArrayTypeUint64,
+	cbeTypeNegInt8:        events.ArrayTypeInt8,
+	cbeTypeNegInt16:       events.ArrayTypeInt16,
+	cbeTypeNegInt32:       events.ArrayTypeInt32,
+	cbeTypeNegInt64:       events.ArrayTypeInt64,
+	cbeTypeFloat16:        events.ArrayTypeFloat16,
+	cbeTypeFloat32:        events.ArrayTypeFloat32,
+	cbeTypeFloat64:        events.ArrayTypeFloat64,
+	cbeTypeUUID:           events.ArrayTypeUUID,
+	cbeTypeString:         events.ArrayTypeString,
+	cbeTypeVerbatimString: events.ArrayTypeVerbatimString,
+	cbeTypeURI:            events.ArrayTypeURI,
+	cbeTypeCustomBinary:   events.ArrayTypeCustomBinary,
+	cbeTypeCustomText:     events.ArrayTypeCustomText,
+}

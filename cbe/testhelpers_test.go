@@ -143,6 +143,7 @@ func URI(v string) *test.TEvent              { return test.URI(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
+func AU16(v []byte) *test.TEvent             { return test.AU16(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func VB() *test.TEvent                       { return test.VB() }
 func UB() *test.TEvent                       { return test.UB() }

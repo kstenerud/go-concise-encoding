@@ -121,7 +121,20 @@ func TestCBEUUID(t *testing.T) {
 		BD(), V(1), UUID([]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10}), ED())
 }
 
+func TestCBEArrayUint8EOF(t *testing.T) {
+	assertDecodeFails(t, []byte{version, typeArray, typePosInt8, 0x04, 0xfa})
+}
+
 func TestCBEArrayUint8(t *testing.T) {
 	assertDecodeEncode(t, []byte{version, typeArray, typePosInt8, 0x02, 0x01}, BD(), V(1), AU8([]byte{1}), ED())
 	assertDecodeEncode(t, []byte{version, typeArray, typePosInt8, 0x04, 0xfa, 0x11}, BD(), V(1), AU8([]byte{0xfa, 0x11}), ED())
+}
+
+func TestCBEArrayUint16EOF(t *testing.T) {
+	assertDecodeFails(t, []byte{version, typeArray, typePosInt16, 0x02, 0xfa})
+}
+
+func TestCBEArrayUint16(t *testing.T) {
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt16, 0x02, 0x01, 0x02}, BD(), V(1), AU16([]byte{0x01, 0x02}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt16, 0x04, 0xfa, 0x11, 0x01, 0x02}, BD(), V(1), AU16([]byte{0xfa, 0x11, 0x01, 0x02}), ED())
 }
