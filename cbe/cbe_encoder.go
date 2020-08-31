@@ -51,7 +51,6 @@ type Encoder struct {
 	skipFirstMap   bool
 	skipFirstList  bool
 	containerDepth int
-	arrayType      events.ArrayType
 }
 
 // Create a new CBE encoder.
