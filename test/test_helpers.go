@@ -1254,7 +1254,7 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PI16 = &_this.I16
 	_this.I32 = int32(1000000000 + baseValue + int(unsafe.Offsetof(_this.I32)))
 	_this.PI32 = &_this.I32
-	_this.I64 = int64(1000000000000000 + baseValue + int(unsafe.Offsetof(_this.I64)))
+	_this.I64 = int64(1000000000000000) + int64(baseValue+int(unsafe.Offsetof(_this.I64)))
 	_this.PI64 = &_this.I64
 	_this.U = uint(1000000 + baseValue + int(unsafe.Offsetof(_this.U)))
 	_this.PU = &_this.U
@@ -1264,13 +1264,13 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PU16 = &_this.U16
 	_this.U32 = uint32(100000000 + baseValue + int(unsafe.Offsetof(_this.U32)))
 	_this.PU32 = &_this.U32
-	_this.U64 = uint64(1000000000000 + baseValue + int(unsafe.Offsetof(_this.U64)))
+	_this.U64 = uint64(1000000000000) + uint64(baseValue+int(unsafe.Offsetof(_this.U64)))
 	_this.PU64 = &_this.U64
 	_this.PBI = NewBigInt(fmt.Sprintf("-10000000000000000000000000000000000000%v", unsafe.Offsetof(_this.PBI)))
 	_this.BI = *_this.PBI
 	_this.F32 = float32(1000000+baseValue+int(unsafe.Offsetof(_this.F32))) + 0.5
 	_this.PF32 = &_this.F32
-	_this.F64 = float64(1000000000000+baseValue+int(unsafe.Offsetof(_this.F64))) + 0.5
+	_this.F64 = float64(1000000000000) + float64(baseValue+int(unsafe.Offsetof(_this.F64))) + 0.5
 	_this.PF64 = &_this.F64
 	_this.PBF = NewBigFloat("12345678901234567890123.1234567", 30)
 	_this.BF = *_this.PBF

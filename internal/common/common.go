@@ -152,14 +152,13 @@ func CloneBytes(bytes []byte) []byte {
 	return bytesCopy
 }
 
-const Is64BitUintptr = uint64(^uintptr(0)) == ^uint64(0)
+const oneIf64Bit = ((uint64(^uintptr(0)) >> 32) & 1)
 
-func BytesPerInt() int {
-	if Is64BitUintptr {
-		return 8
-	}
-	return 4
-}
+// The address space on this machine. This is a conservative value based on:
+// * cmd/compile/internal/amd64/galign.go:  arch.MAXWIDTH = 1 << 50
+// * cmd/compile/internal/mips/galign.go:   arch.MAXWIDTH = (1 << 31) - 1
+const AddressSpace = int((((1 << (oneIf64Bit * 50)) - 1) * oneIf64Bit) + (((^uint64(^uintptr(0))) >> 32) & ((1 << 31) - 1)))
+const BytesPerInt = int(oneIf64Bit*4 + 4)
 
 var requiresLowercaseAdjust [256]bool
 

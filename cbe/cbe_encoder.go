@@ -470,7 +470,7 @@ func (_this *Encoder) encodeTypedBigInt(cbeType cbeTypeField, value *big.Int) {
 		lastWordByteCount++
 		lastWord >>= 8
 	}
-	bytesPerWord := common.BytesPerInt()
+	bytesPerWord := common.BytesPerInt
 	byteCount := (len(words)-1)*bytesPerWord + lastWordByteCount
 	_this.encodeType(cbeType)
 	_this.encodeULEB(uint64(byteCount))

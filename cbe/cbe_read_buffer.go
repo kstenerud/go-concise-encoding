@@ -177,7 +177,7 @@ func (_this *ReadBuffer) DecodeUint() (asUint uint64, asBig *big.Int) {
 		}
 		return
 	}
-	bytesPerWord := common.BytesPerInt()
+	bytesPerWord := common.BytesPerInt
 	wordCount := len(bytes) / bytesPerWord
 	if len(bytes)%bytesPerWord != 0 {
 		wordCount++
