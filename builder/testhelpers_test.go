@@ -58,13 +58,29 @@ func VS(v string) *test.TEvent               { return test.VS(v) }
 func URI(v string) *test.TEvent              { return test.URI(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
+func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
 func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
+func AU16(v []byte) *test.TEvent             { return test.AU16(v) }
+func AU32(v []byte) *test.TEvent             { return test.AU32(v) }
+func AU64(v []byte) *test.TEvent             { return test.AU64(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func VB() *test.TEvent                       { return test.VB() }
 func UB() *test.TEvent                       { return test.UB() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
+func ABB() *test.TEvent                      { return test.ABB() }
 func AU8B() *test.TEvent                     { return test.AU8B() }
+func AU16B() *test.TEvent                    { return test.AU16B() }
+func AU32B() *test.TEvent                    { return test.AU32B() }
+func AU64B() *test.TEvent                    { return test.AU64B() }
+func AI8B() *test.TEvent                     { return test.AI8B() }
+func AI16B() *test.TEvent                    { return test.AI16B() }
+func AI32B() *test.TEvent                    { return test.AI32B() }
+func AI64B() *test.TEvent                    { return test.AI64B() }
+func AF16B() *test.TEvent                    { return test.AF16B() }
+func AF32B() *test.TEvent                    { return test.AF32B() }
+func AF64B() *test.TEvent                    { return test.AF64B() }
+func AUUB() *test.TEvent                     { return test.AUUB() }
 func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
@@ -75,6 +91,7 @@ func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
+func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
 func runBuild(session *Session, template interface{}, events ...*test.TEvent) interface{} {

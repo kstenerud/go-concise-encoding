@@ -172,15 +172,37 @@ const (
 	TEventURI
 	TEventCustomBinary
 	TEventCustomText
+	TEventArrayBoolean
+	TEventArrayInt8
+	TEventArrayInt16
+	TEventArrayInt32
+	TEventArrayInt64
 	TEventArrayUint8
 	TEventArrayUint16
+	TEventArrayUint32
+	TEventArrayUint64
+	TEventArrayFloat16
+	TEventArrayFloat32
+	TEventArrayFloat64
+	TEventArrayUUID
 	TEventStringBegin
 	TEventVerbatimStringBegin
 	TEventURIBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
+	TEventArrayBooleanBegin
+	TEventArrayInt8Begin
+	TEventArrayInt16Begin
+	TEventArrayInt32Begin
+	TEventArrayInt64Begin
 	TEventArrayUint8Begin
 	TEventArrayUint16Begin
+	TEventArrayUint32Begin
+	TEventArrayUint64Begin
+	TEventArrayFloat16Begin
+	TEventArrayFloat32Begin
+	TEventArrayFloat64Begin
+	TEventArrayUUIDBegin
 	TEventArrayChunk
 	TEventArrayData
 	TEventList
@@ -220,15 +242,37 @@ var TEventNames = []string{
 	TEventURI:                 "URI",
 	TEventCustomBinary:        "CUB",
 	TEventCustomText:          "CUT",
+	TEventArrayBoolean:        "AB",
+	TEventArrayInt8:           "AI8",
+	TEventArrayInt16:          "AI16",
+	TEventArrayInt32:          "AI32",
+	TEventArrayInt64:          "AI64",
 	TEventArrayUint8:          "AU8",
 	TEventArrayUint16:         "AU16",
+	TEventArrayUint32:         "AU32",
+	TEventArrayUint64:         "AU64",
+	TEventArrayFloat16:        "AF16",
+	TEventArrayFloat32:        "AF32",
+	TEventArrayFloat64:        "AF64",
+	TEventArrayUUID:           "AUU",
 	TEventStringBegin:         "SB",
 	TEventVerbatimStringBegin: "VB",
 	TEventURIBegin:            "UB",
 	TEventCustomBinaryBegin:   "CBB",
 	TEventCustomTextBegin:     "CTB",
+	TEventArrayBooleanBegin:   "ABB",
+	TEventArrayInt8Begin:      "AI8B",
+	TEventArrayInt16Begin:     "AI16B",
+	TEventArrayInt32Begin:     "AI32B",
+	TEventArrayInt64Begin:     "AI64B",
 	TEventArrayUint8Begin:     "AU8B",
 	TEventArrayUint16Begin:    "AU16B",
+	TEventArrayUint32Begin:    "AU32B",
+	TEventArrayUint64Begin:    "AU64B",
+	TEventArrayFloat16Begin:   "AF16B",
+	TEventArrayFloat32Begin:   "AF32B",
+	TEventArrayFloat64Begin:   "AF64B",
+	TEventArrayUUIDBegin:      "AUUB",
 	TEventArrayChunk:          "AC",
 	TEventArrayData:           "AD",
 	TEventList:                "L",
@@ -333,12 +377,46 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCustomText:
 		bytes := []byte(_this.V1.(string))
 		receiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
+	case TEventArrayBoolean:
+		bitCount := _this.V1.(uint64)
+		bytes := _this.V2.([]byte)
+		receiver.OnArray(events.ArrayTypeBoolean, bitCount, bytes)
+	case TEventArrayInt8:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeInt8, uint64(len(bytes)), bytes)
+	case TEventArrayInt16:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeInt16, uint64(len(bytes)/2), bytes)
+	case TEventArrayInt32:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeInt32, uint64(len(bytes)/4), bytes)
+	case TEventArrayInt64:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeInt64, uint64(len(bytes)/8), bytes)
 	case TEventArrayUint8:
 		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
 	case TEventArrayUint16:
 		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeUint16, uint64(len(bytes)/2), bytes)
+	case TEventArrayUint32:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeUint32, uint64(len(bytes)/4), bytes)
+	case TEventArrayUint64:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeUint64, uint64(len(bytes)/8), bytes)
+	case TEventArrayFloat16:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeFloat16, uint64(len(bytes)/2), bytes)
+	case TEventArrayFloat32:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeFloat32, uint64(len(bytes)/4), bytes)
+	case TEventArrayFloat64:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeFloat64, uint64(len(bytes)/8), bytes)
+	case TEventArrayUUID:
+		bytes := _this.V1.([]byte)
+		receiver.OnArray(events.ArrayTypeUUID, uint64(len(bytes)/16), bytes)
 	case TEventStringBegin:
 		receiver.OnArrayBegin(events.ArrayTypeString)
 	case TEventVerbatimStringBegin:
@@ -349,10 +427,32 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArrayBegin(events.ArrayTypeCustomBinary)
 	case TEventCustomTextBegin:
 		receiver.OnArrayBegin(events.ArrayTypeCustomText)
+	case TEventArrayBooleanBegin:
+		receiver.OnArrayBegin(events.ArrayTypeBoolean)
+	case TEventArrayInt8Begin:
+		receiver.OnArrayBegin(events.ArrayTypeInt8)
+	case TEventArrayInt16Begin:
+		receiver.OnArrayBegin(events.ArrayTypeInt16)
+	case TEventArrayInt32Begin:
+		receiver.OnArrayBegin(events.ArrayTypeInt32)
+	case TEventArrayInt64Begin:
+		receiver.OnArrayBegin(events.ArrayTypeInt64)
 	case TEventArrayUint8Begin:
 		receiver.OnArrayBegin(events.ArrayTypeUint8)
 	case TEventArrayUint16Begin:
 		receiver.OnArrayBegin(events.ArrayTypeUint16)
+	case TEventArrayUint32Begin:
+		receiver.OnArrayBegin(events.ArrayTypeUint32)
+	case TEventArrayUint64Begin:
+		receiver.OnArrayBegin(events.ArrayTypeUint64)
+	case TEventArrayFloat16Begin:
+		receiver.OnArrayBegin(events.ArrayTypeFloat16)
+	case TEventArrayFloat32Begin:
+		receiver.OnArrayBegin(events.ArrayTypeFloat32)
+	case TEventArrayFloat64Begin:
+		receiver.OnArrayBegin(events.ArrayTypeFloat64)
+	case TEventArrayUUIDBegin:
+		receiver.OnArrayBegin(events.ArrayTypeUUID)
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
 	case TEventArrayData:
@@ -419,15 +519,37 @@ func VS(v string) *TEvent               { return newTEvent(TEventVerbatimString,
 func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
+func AB(l uint64, v []byte) *TEvent     { return newTEvent(TEventArrayBoolean, l, v) }
+func AI8(v []byte) *TEvent              { return newTEvent(TEventArrayInt8, v, nil) }
+func AI16(v []byte) *TEvent             { return newTEvent(TEventArrayInt16, v, nil) }
+func AI32(v []byte) *TEvent             { return newTEvent(TEventArrayInt32, v, nil) }
+func AI64(v []byte) *TEvent             { return newTEvent(TEventArrayInt64, v, nil) }
 func AU8(v []byte) *TEvent              { return newTEvent(TEventArrayUint8, v, nil) }
 func AU16(v []byte) *TEvent             { return newTEvent(TEventArrayUint16, v, nil) }
+func AU32(v []byte) *TEvent             { return newTEvent(TEventArrayUint32, v, nil) }
+func AU64(v []byte) *TEvent             { return newTEvent(TEventArrayUint64, v, nil) }
+func AF16(v []byte) *TEvent             { return newTEvent(TEventArrayFloat16, v, nil) }
+func AF32(v []byte) *TEvent             { return newTEvent(TEventArrayFloat32, v, nil) }
+func AF64(v []byte) *TEvent             { return newTEvent(TEventArrayFloat64, v, nil) }
+func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUUID, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
 func VB() *TEvent                       { return newTEvent(TEventVerbatimStringBegin, nil, nil) }
 func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
 func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
+func ABB() *TEvent                      { return newTEvent(TEventArrayBooleanBegin, nil, nil) }
+func AI8B() *TEvent                     { return newTEvent(TEventArrayInt8Begin, nil, nil) }
+func AI16B() *TEvent                    { return newTEvent(TEventArrayInt16Begin, nil, nil) }
+func AI32B() *TEvent                    { return newTEvent(TEventArrayInt32Begin, nil, nil) }
+func AI64B() *TEvent                    { return newTEvent(TEventArrayInt64Begin, nil, nil) }
 func AU8B() *TEvent                     { return newTEvent(TEventArrayUint8Begin, nil, nil) }
 func AU16B() *TEvent                    { return newTEvent(TEventArrayUint16Begin, nil, nil) }
+func AU32B() *TEvent                    { return newTEvent(TEventArrayUint32Begin, nil, nil) }
+func AU64B() *TEvent                    { return newTEvent(TEventArrayUint64Begin, nil, nil) }
+func AF16B() *TEvent                    { return newTEvent(TEventArrayFloat16Begin, nil, nil) }
+func AF32B() *TEvent                    { return newTEvent(TEventArrayFloat32Begin, nil, nil) }
+func AF64B() *TEvent                    { return newTEvent(TEventArrayFloat64Begin, nil, nil) }
+func AUUB() *TEvent                     { return newTEvent(TEventArrayUUIDBegin, nil, nil) }
 func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
@@ -461,9 +583,6 @@ func EventForValue(value interface{}) *TEvent {
 		switch rv.Type().Elem().Kind() {
 		case reflect.Uint8:
 			return AU8(rv.Bytes())
-		case reflect.Uint16:
-			panic(fmt.Errorf("TODO: AU16"))
-			return AU16(rv.Bytes())
 		}
 	case reflect.Ptr:
 		if rv.IsNil() {
@@ -631,8 +750,32 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 		h.Print(CUB(value))
 	case events.ArrayTypeCustomText:
 		h.Print(CUT(string(value)))
+	case events.ArrayTypeBoolean:
+		h.Print(AB(elementCount, value))
+	case events.ArrayTypeInt8:
+		h.Print(AI8(value))
+	case events.ArrayTypeInt16:
+		h.Print(AI16(value))
+	case events.ArrayTypeInt32:
+		h.Print(AI32(value))
+	case events.ArrayTypeInt64:
+		h.Print(AI64(value))
 	case events.ArrayTypeUint8:
 		h.Print(AU8(value))
+	case events.ArrayTypeUint16:
+		h.Print(AU16(value))
+	case events.ArrayTypeUint32:
+		h.Print(AU32(value))
+	case events.ArrayTypeUint64:
+		h.Print(AU64(value))
+	case events.ArrayTypeFloat16:
+		h.Print(AF16(value))
+	case events.ArrayTypeFloat32:
+		h.Print(AF32(value))
+	case events.ArrayTypeFloat64:
+		h.Print(AF64(value))
+	case events.ArrayTypeUUID:
+		h.Print(AUU(value))
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
@@ -650,8 +793,32 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 		h.Print(CBB())
 	case events.ArrayTypeCustomText:
 		h.Print(CTB())
+	case events.ArrayTypeBoolean:
+		h.Print(ABB())
+	case events.ArrayTypeInt8:
+		h.Print(AI8B())
+	case events.ArrayTypeInt16:
+		h.Print(AI16B())
+	case events.ArrayTypeInt32:
+		h.Print(AI32B())
+	case events.ArrayTypeInt64:
+		h.Print(AI64B())
 	case events.ArrayTypeUint8:
 		h.Print(AU8B())
+	case events.ArrayTypeUint16:
+		h.Print(AU16B())
+	case events.ArrayTypeUint32:
+		h.Print(AU32B())
+	case events.ArrayTypeUint64:
+		h.Print(AU64B())
+	case events.ArrayTypeFloat16:
+		h.Print(AF16B())
+	case events.ArrayTypeFloat32:
+		h.Print(AF32B())
+	case events.ArrayTypeFloat64:
+		h.Print(AF64B())
+	case events.ArrayTypeUUID:
+		h.Print(AUUB())
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
@@ -778,10 +945,32 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 		h.add(CUB(value))
 	case events.ArrayTypeCustomText:
 		h.add(CUT(string(value)))
+	case events.ArrayTypeBoolean:
+		h.add(AB(elementCount, value))
+	case events.ArrayTypeInt8:
+		h.add(AI8(value))
+	case events.ArrayTypeInt16:
+		h.add(AI16(value))
+	case events.ArrayTypeInt32:
+		h.add(AI32(value))
+	case events.ArrayTypeInt64:
+		h.add(AI64(value))
 	case events.ArrayTypeUint8:
 		h.add(AU8(value))
 	case events.ArrayTypeUint16:
 		h.add(AU16(value))
+	case events.ArrayTypeUint32:
+		h.add(AU32(value))
+	case events.ArrayTypeUint64:
+		h.add(AU64(value))
+	case events.ArrayTypeFloat16:
+		h.add(AF16(value))
+	case events.ArrayTypeFloat32:
+		h.add(AF32(value))
+	case events.ArrayTypeFloat64:
+		h.add(AF64(value))
+	case events.ArrayTypeUUID:
+		h.add(AUU(value))
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
@@ -798,8 +987,32 @@ func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 		h.add(CBB())
 	case events.ArrayTypeCustomText:
 		h.add(CTB())
+	case events.ArrayTypeBoolean:
+		h.add(ABB())
+	case events.ArrayTypeInt8:
+		h.add(AI8B())
+	case events.ArrayTypeInt16:
+		h.add(AI16B())
+	case events.ArrayTypeInt32:
+		h.add(AI32B())
+	case events.ArrayTypeInt64:
+		h.add(AI64B())
 	case events.ArrayTypeUint8:
 		h.add(AU8B())
+	case events.ArrayTypeUint16:
+		h.add(AU16B())
+	case events.ArrayTypeUint32:
+		h.add(AU32B())
+	case events.ArrayTypeUint64:
+		h.add(AU64B())
+	case events.ArrayTypeFloat16:
+		h.add(AF16B())
+	case events.ArrayTypeFloat32:
+		h.add(AF32B())
+	case events.ArrayTypeFloat64:
+		h.add(AF64B())
+	case events.ArrayTypeUUID:
+		h.add(AUUB())
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
