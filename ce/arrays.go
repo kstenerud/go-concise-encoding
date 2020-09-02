@@ -20,87 +20,48 @@
 
 package ce
 
-func int8SliceToBytes(data []int8) []byte {
-	length := len(data)
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i] = byte(v)
-	}
-	return result
-}
+import (
+	"github.com/kstenerud/go-concise-encoding/internal/arrays"
+)
 
-func uint16SliceToBytes(data []uint16) []byte {
-	length := len(data) * 2
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i*2] = byte(v)
-		result[i*2+1] = byte(v >> 8)
-	}
-	return result
-}
+// Copy byte slice data, interpreting as little endian data of larger types.
+func BytesToInt8Slice(data []byte) []int8 { return arrays.BytesToInt8Slice(data) }
 
-func int16SliceToBytes(data []int16) []byte {
-	length := len(data) * 2
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i*2] = byte(v)
-		result[i*2+1] = byte(v >> 8)
-	}
-	return result
-}
+func BytesToUint16Slice(data []byte) []uint16 { return arrays.BytesToUint16Slice(data) }
 
-func uint32SliceToBytes(data []uint32) []byte {
-	length := len(data) * 4
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i*4] = byte(v)
-		result[i*4+1] = byte(v >> 8)
-		result[i*4+2] = byte(v >> 16)
-		result[i*4+3] = byte(v >> 24)
-	}
-	return result
-}
+func BytesToInt16Slice(data []byte) []int16 { return arrays.BytesToInt16Slice(data) }
 
-func int32SliceToBytes(data []int32) []byte {
-	length := len(data) * 4
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i*4] = byte(v)
-		result[i*4+1] = byte(v >> 8)
-		result[i*4+2] = byte(v >> 16)
-		result[i*4+3] = byte(v >> 24)
-	}
-	return result
-}
+func BytesToUint32Slice(data []byte) []uint32 { return arrays.BytesToUint32Slice(data) }
 
-func uint64SliceToBytes(data []uint64) []byte {
-	length := len(data) * 8
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i*8] = byte(v)
-		result[i*8+1] = byte(v >> 8)
-		result[i*8+2] = byte(v >> 16)
-		result[i*8+3] = byte(v >> 24)
-		result[i*8+4] = byte(v >> 32)
-		result[i*8+5] = byte(v >> 40)
-		result[i*8+6] = byte(v >> 48)
-		result[i*8+7] = byte(v >> 56)
-	}
-	return result
-}
+func BytesToInt32Slice(data []byte) []int32 { return arrays.BytesToInt32Slice(data) }
 
-func int64SliceToBytes(data []int64) []byte {
-	length := len(data) * 8
-	result := make([]byte, length, length)
-	for i, v := range data {
-		result[i*8] = byte(v)
-		result[i*8+1] = byte(v >> 8)
-		result[i*8+2] = byte(v >> 16)
-		result[i*8+3] = byte(v >> 24)
-		result[i*8+4] = byte(v >> 32)
-		result[i*8+5] = byte(v >> 40)
-		result[i*8+6] = byte(v >> 48)
-		result[i*8+7] = byte(v >> 56)
-	}
-	return result
-}
+func BytesToFloat32Slice(data []byte) []float32 { return arrays.BytesToFloat32Slice(data) }
+
+func BytesToUint64Slice(data []byte) []uint64 { return BytesToUint64Slice(data) }
+
+func BytesToInt64Slice(data []byte) []int64 { return arrays.BytesToInt64Slice(data) }
+
+func BytesToFloat64Slice(data []byte) []float64 { return arrays.BytesToFloat64Slice(data) }
+
+// Reinterpret slices as byte slices. On little endian machines, these are zero
+// cost. On big endian machines, these will allocate space and copy the data.
+// Warning: Do not write to or store the resulting byte slice! The contents
+//          should be considered volatile and likely to change if the source
+//          slice changes.
+func Int8SliceAsBytes(data []int8) []byte { return arrays.Int8SliceAsBytes(data) }
+
+func Uint16SliceAsBytes(data []uint16) []byte { return arrays.Uint16SliceAsBytes(data) }
+
+func Int16SliceAsBytes(data []int16) []byte { return arrays.Int16SliceAsBytes(data) }
+
+func Uint32SliceAsBytes(data []uint32) []byte { return arrays.Uint32SliceAsBytes(data) }
+
+func Int32SliceAsBytes(data []int32) []byte { return arrays.Int32SliceAsBytes(data) }
+
+func Float32SliceAsBytes(data []float32) []byte { return arrays.Float32SliceAsBytes(data) }
+
+func Uint64SliceAsBytes(data []uint64) []byte { return arrays.Uint64SliceAsBytes(data) }
+
+func Int64SliceAsBytes(data []int64) []byte { return arrays.Int64SliceAsBytes(data) }
+
+func Float64SliceAsBytes(data []float64) []byte { return arrays.Float64SliceAsBytes(data) }
