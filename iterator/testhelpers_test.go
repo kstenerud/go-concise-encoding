@@ -61,9 +61,15 @@ func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
 func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
-func AU16(v []byte) *test.TEvent             { return test.AU16(v) }
-func AU32(v []byte) *test.TEvent             { return test.AU32(v) }
-func AU64(v []byte) *test.TEvent             { return test.AU64(v) }
+func AU16(v []uint16) *test.TEvent           { return test.AU16(v) }
+func AU32(v []uint32) *test.TEvent           { return test.AU32(v) }
+func AU64(v []uint64) *test.TEvent           { return test.AU64(v) }
+func AI8(v []int8) *test.TEvent              { return test.AI8(v) }
+func AI16(v []int16) *test.TEvent            { return test.AI16(v) }
+func AI32(v []int32) *test.TEvent            { return test.AI32(v) }
+func AI64(v []int64) *test.TEvent            { return test.AI64(v) }
+func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
+func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func VB() *test.TEvent                       { return test.VB() }
 func UB() *test.TEvent                       { return test.UB() }

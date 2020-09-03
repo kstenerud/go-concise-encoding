@@ -32,6 +32,8 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/kstenerud/go-concise-encoding/internal/arrays"
+
 	"github.com/kstenerud/go-concise-encoding/debug"
 
 	"github.com/kstenerud/go-concise-encoding/conversions"
@@ -382,37 +384,38 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		bytes := _this.V2.([]byte)
 		receiver.OnArray(events.ArrayTypeBoolean, bitCount, bytes)
 	case TEventArrayInt8:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Int8SliceAsBytes(_this.V1.([]int8))
 		receiver.OnArray(events.ArrayTypeInt8, uint64(len(bytes)), bytes)
 	case TEventArrayInt16:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Int16SliceAsBytes(_this.V1.([]int16))
 		receiver.OnArray(events.ArrayTypeInt16, uint64(len(bytes)/2), bytes)
 	case TEventArrayInt32:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Int32SliceAsBytes(_this.V1.([]int32))
 		receiver.OnArray(events.ArrayTypeInt32, uint64(len(bytes)/4), bytes)
 	case TEventArrayInt64:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Int64SliceAsBytes(_this.V1.([]int64))
 		receiver.OnArray(events.ArrayTypeInt64, uint64(len(bytes)/8), bytes)
 	case TEventArrayUint8:
 		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
 	case TEventArrayUint16:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Uint16SliceAsBytes(_this.V1.([]uint16))
 		receiver.OnArray(events.ArrayTypeUint16, uint64(len(bytes)/2), bytes)
 	case TEventArrayUint32:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Uint32SliceAsBytes(_this.V1.([]uint32))
 		receiver.OnArray(events.ArrayTypeUint32, uint64(len(bytes)/4), bytes)
 	case TEventArrayUint64:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Uint64SliceAsBytes(_this.V1.([]uint64))
 		receiver.OnArray(events.ArrayTypeUint64, uint64(len(bytes)/8), bytes)
 	case TEventArrayFloat16:
+		// TODO: How to handle float16 in go code?
 		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeFloat16, uint64(len(bytes)/2), bytes)
 	case TEventArrayFloat32:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Float32SliceAsBytes(_this.V1.([]float32))
 		receiver.OnArray(events.ArrayTypeFloat32, uint64(len(bytes)/4), bytes)
 	case TEventArrayFloat64:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Float64SliceAsBytes(_this.V1.([]float64))
 		receiver.OnArray(events.ArrayTypeFloat64, uint64(len(bytes)/8), bytes)
 	case TEventArrayUUID:
 		bytes := _this.V1.([]byte)
@@ -520,17 +523,17 @@ func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
 func AB(l uint64, v []byte) *TEvent     { return newTEvent(TEventArrayBoolean, l, v) }
-func AI8(v []byte) *TEvent              { return newTEvent(TEventArrayInt8, v, nil) }
-func AI16(v []byte) *TEvent             { return newTEvent(TEventArrayInt16, v, nil) }
-func AI32(v []byte) *TEvent             { return newTEvent(TEventArrayInt32, v, nil) }
-func AI64(v []byte) *TEvent             { return newTEvent(TEventArrayInt64, v, nil) }
+func AI8(v []int8) *TEvent              { return newTEvent(TEventArrayInt8, v, nil) }
+func AI16(v []int16) *TEvent            { return newTEvent(TEventArrayInt16, v, nil) }
+func AI32(v []int32) *TEvent            { return newTEvent(TEventArrayInt32, v, nil) }
+func AI64(v []int64) *TEvent            { return newTEvent(TEventArrayInt64, v, nil) }
 func AU8(v []byte) *TEvent              { return newTEvent(TEventArrayUint8, v, nil) }
-func AU16(v []byte) *TEvent             { return newTEvent(TEventArrayUint16, v, nil) }
-func AU32(v []byte) *TEvent             { return newTEvent(TEventArrayUint32, v, nil) }
-func AU64(v []byte) *TEvent             { return newTEvent(TEventArrayUint64, v, nil) }
+func AU16(v []uint16) *TEvent           { return newTEvent(TEventArrayUint16, v, nil) }
+func AU32(v []uint32) *TEvent           { return newTEvent(TEventArrayUint32, v, nil) }
+func AU64(v []uint64) *TEvent           { return newTEvent(TEventArrayUint64, v, nil) }
 func AF16(v []byte) *TEvent             { return newTEvent(TEventArrayFloat16, v, nil) }
-func AF32(v []byte) *TEvent             { return newTEvent(TEventArrayFloat32, v, nil) }
-func AF64(v []byte) *TEvent             { return newTEvent(TEventArrayFloat64, v, nil) }
+func AF32(v []float32) *TEvent          { return newTEvent(TEventArrayFloat32, v, nil) }
+func AF64(v []float64) *TEvent          { return newTEvent(TEventArrayFloat64, v, nil) }
 func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUUID, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
 func VB() *TEvent                       { return newTEvent(TEventVerbatimStringBegin, nil, nil) }
@@ -753,27 +756,27 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	case events.ArrayTypeBoolean:
 		h.Print(AB(elementCount, value))
 	case events.ArrayTypeInt8:
-		h.Print(AI8(value))
+		h.Print(AI8(arrays.BytesToInt8Slice(value)))
 	case events.ArrayTypeInt16:
-		h.Print(AI16(value))
+		h.Print(AI16(arrays.BytesToInt16Slice(value)))
 	case events.ArrayTypeInt32:
-		h.Print(AI32(value))
+		h.Print(AI32(arrays.BytesToInt32Slice(value)))
 	case events.ArrayTypeInt64:
-		h.Print(AI64(value))
+		h.Print(AI64(arrays.BytesToInt64Slice(value)))
 	case events.ArrayTypeUint8:
 		h.Print(AU8(value))
 	case events.ArrayTypeUint16:
-		h.Print(AU16(value))
+		h.Print(AU16(arrays.BytesToUint16Slice(value)))
 	case events.ArrayTypeUint32:
-		h.Print(AU32(value))
+		h.Print(AU32(arrays.BytesToUint32Slice(value)))
 	case events.ArrayTypeUint64:
-		h.Print(AU64(value))
+		h.Print(AU64(arrays.BytesToUint64Slice(value)))
 	case events.ArrayTypeFloat16:
 		h.Print(AF16(value))
 	case events.ArrayTypeFloat32:
-		h.Print(AF32(value))
+		h.Print(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:
-		h.Print(AF64(value))
+		h.Print(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUUID:
 		h.Print(AUU(value))
 	default:
@@ -948,27 +951,27 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 	case events.ArrayTypeBoolean:
 		h.add(AB(elementCount, value))
 	case events.ArrayTypeInt8:
-		h.add(AI8(value))
+		h.add(AI8(arrays.BytesToInt8Slice(value)))
 	case events.ArrayTypeInt16:
-		h.add(AI16(value))
+		h.add(AI16(arrays.BytesToInt16Slice(value)))
 	case events.ArrayTypeInt32:
-		h.add(AI32(value))
+		h.add(AI32(arrays.BytesToInt32Slice(value)))
 	case events.ArrayTypeInt64:
-		h.add(AI64(value))
+		h.add(AI64(arrays.BytesToInt64Slice(value)))
 	case events.ArrayTypeUint8:
 		h.add(AU8(value))
 	case events.ArrayTypeUint16:
-		h.add(AU16(value))
+		h.add(AU16(arrays.BytesToUint16Slice(value)))
 	case events.ArrayTypeUint32:
-		h.add(AU32(value))
+		h.add(AU32(arrays.BytesToUint32Slice(value)))
 	case events.ArrayTypeUint64:
-		h.add(AU64(value))
+		h.add(AU64(arrays.BytesToUint64Slice(value)))
 	case events.ArrayTypeFloat16:
 		h.add(AF16(value))
 	case events.ArrayTypeFloat32:
-		h.add(AF32(value))
+		h.add(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:
-		h.add(AF64(value))
+		h.add(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUUID:
 		h.add(AUU(value))
 	default:

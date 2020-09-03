@@ -95,7 +95,7 @@ func TestIterateSlice(t *testing.T) {
 
 	assertIterate(t, []uint{1, 2}, L(), I(1), I(2), E())
 	assertIterate(t, []uint8{0x12, 0x34}, AU8([]byte{0x12, 0x34}))
-	assertIterate(t, []uint16{0x1234, 0x5678}, AU16([]byte{0x34, 0x12, 0x78, 0x56}))
+	assertIterate(t, []uint16{0x1234, 0x5678}, AU16([]uint16{0x1234, 0x5678}))
 	assertIterate(t, []uint32{1, 2}, L(), I(1), I(2), E())
 	assertIterate(t, []uint64{1, 2}, L(), I(1), I(2), E())
 

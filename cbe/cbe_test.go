@@ -135,8 +135,8 @@ func TestCBEArrayUint16EOF(t *testing.T) {
 }
 
 func TestCBEArrayUint16(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt16, 0x02, 0x01, 0x02}, BD(), V(1), AU16([]byte{0x01, 0x02}), ED())
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt16, 0x04, 0xfa, 0x11, 0x01, 0x02}, BD(), V(1), AU16([]byte{0xfa, 0x11, 0x01, 0x02}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt16, 0x02, 0x01, 0x02}, BD(), V(1), AU16([]uint16{0x0201}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt16, 0x04, 0xfa, 0x11, 0x01, 0x02}, BD(), V(1), AU16([]uint16{0x11fa, 0x0201}), ED())
 }
 
 func TestCBEArrayUint32EOF(t *testing.T) {
@@ -147,8 +147,8 @@ func TestCBEArrayUint32EOF(t *testing.T) {
 }
 
 func TestCBEArrayUint32(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt32, 0x02, 0x01, 0x02, 0x03, 0x04}, BD(), V(1), AU32([]byte{0x01, 0x02, 0x03, 0x04}), ED())
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt32, 0x04, 1, 2, 3, 4, 5, 6, 7, 8}, BD(), V(1), AU32([]byte{1, 2, 3, 4, 5, 6, 7, 8}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt32, 0x02, 0x01, 0x02, 0x03, 0x04}, BD(), V(1), AU32([]uint32{0x04030201}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt32, 0x04, 1, 2, 3, 4, 5, 6, 7, 8}, BD(), V(1), AU32([]uint32{0x04030201, 0x08070605}), ED())
 }
 
 func TestCBEArrayUint64EOF(t *testing.T) {
@@ -162,6 +162,6 @@ func TestCBEArrayUint64EOF(t *testing.T) {
 }
 
 func TestCBEArrayUint64(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt64, 0x02, 1, 2, 3, 4, 5, 6, 7, 8}, BD(), V(1), AU64([]byte{1, 2, 3, 4, 5, 6, 7, 8}), ED())
-	assertDecodeEncode(t, []byte{version, typeArray, typePosInt64, 0x04, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6}, BD(), V(1), AU64([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt64, 0x02, 1, 2, 3, 4, 5, 6, 7, 8}, BD(), V(1), AU64([]uint64{0x0807060504030201}), ED())
+	assertDecodeEncode(t, []byte{version, typeArray, typePosInt64, 0x04, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6}, BD(), V(1), AU64([]uint64{0x0807060504030201, 0x0605040302010009}), ED())
 }
