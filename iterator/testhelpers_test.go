@@ -22,6 +22,7 @@ package iterator
 
 import (
 	"math/big"
+	"net/url"
 	"testing"
 	"time"
 
@@ -34,6 +35,46 @@ import (
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
 )
+
+func NewBigInt(str string) *big.Int {
+	return test.NewBigInt(str)
+}
+
+func NewBigFloat(str string, significantDigits int) *big.Float {
+	return test.NewBigFloat(str, significantDigits)
+}
+
+func NewDFloat(str string) compact_float.DFloat {
+	return test.NewDFloat(str)
+}
+
+func NewBDF(str string) *apd.Decimal {
+	return test.NewBDF(str)
+}
+
+func NewURI(uriString string) *url.URL {
+	return test.NewURI(uriString)
+}
+
+func NewDate(year, month, day int) *compact_time.Time {
+	return test.NewDate(year, month, day)
+}
+
+func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+	return test.NewTime(hour, minute, second, nanosecond, areaLocation)
+}
+
+func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+	return test.NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+}
+
+func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+	return test.NewTS(year, month, day, hour, minute, second, nanosecond, areaLocation)
+}
+
+func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+	return test.NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+}
 
 func TT() *test.TEvent                       { return test.TT() }
 func FF() *test.TEvent                       { return test.FF() }
@@ -68,6 +109,7 @@ func AI8(v []int8) *test.TEvent              { return test.AI8(v) }
 func AI16(v []int16) *test.TEvent            { return test.AI16(v) }
 func AI32(v []int32) *test.TEvent            { return test.AI32(v) }
 func AI64(v []int64) *test.TEvent            { return test.AI64(v) }
+func AF16(v []byte) *test.TEvent             { return test.AF16(v) }
 func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }

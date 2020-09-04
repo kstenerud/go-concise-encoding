@@ -95,6 +95,26 @@ func NewURI(uriString string) *url.URL {
 	return uri
 }
 
+func NewDate(year, month, day int) *compact_time.Time {
+	return compact_time.NewDate(year, month, day)
+}
+
+func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+	return compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
+}
+
+func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+	return compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+}
+
+func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+	return compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
+}
+
+func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+	return compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+}
+
 func ReportPanic(function func()) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
