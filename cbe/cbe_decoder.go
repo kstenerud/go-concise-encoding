@@ -232,6 +232,8 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType) {
 		return
 	}
 
+	_this.eventReceiver.OnArrayBegin(arrayType)
+
 	for {
 		_this.eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)

@@ -396,4 +396,7 @@ func TestCBEContainers(t *testing.T) {
 		E(), ED())
 }
 
-// TODO: Multipart array
+func TestCBEMultipartArray(t *testing.T) {
+	assertDecode(t, []byte{version, typeString, 0x03, 'a', 0x02, 'b'}, BD(), V(1), SB(), AC(1, true), AD([]byte{'a'}), AC(1, false), AD([]byte{'b'}), ED())
+	assertDecode(t, []byte{version, typeArray, typePosInt16, 0x03, 0x01, 0x02, 0x02, 0x03, 0x04}, BD(), V(1), AU16B(), AC(1, true), AD([]byte{0x01, 0x02}), AC(1, false), AD([]byte{0x03, 0x04}), ED())
+}
