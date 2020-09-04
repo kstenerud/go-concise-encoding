@@ -372,9 +372,28 @@ func TestCBEReference(t *testing.T) {
 	assertDecodeEncode(t, []byte{version, typeReference, typeString1, 'a'}, BD(), V(1), REF(), S("a"), ED())
 }
 
-// TODO: List
-// TODO: Map
-// TODO: Markup
-// TODO: Metadata
-// TODO: Comment
+func TestCBEContainers(t *testing.T) {
+	assertDecodeEncode(t, []byte{version, typeList, 1, typeEndContainer}, BD(), V(1), L(), PI(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeMap, 1, typeEndContainer}, BD(), V(1), M(), PI(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeMetadata, 1, typeEndContainer}, BD(), V(1), META(), PI(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeComment, 1, typeEndContainer}, BD(), V(1), CMT(), PI(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeMarkup, 1, typeEndContainer, typeEndContainer}, BD(), V(1), MUP(), PI(1), E(), E(), ED())
+
+	assertDecodeEncode(t, []byte{version, typeList, 1,
+		typeList, typeString1, 'a', typeEndContainer,
+		typeMap, typeString1, 'a', 100, typeEndContainer,
+		typeMetadata, typeString1, 'a', 100, typeEndContainer,
+		typeComment, typeString1, 'a', typeEndContainer,
+		typeMarkup, typeString1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
+		typeEndContainer,
+	},
+		BD(), V(1), L(), PI(1),
+		L(), S("a"), E(),
+		M(), S("a"), PI(100), E(),
+		META(), S("a"), PI(100), E(),
+		CMT(), S("a"), E(),
+		MUP(), S("a"), S("a"), PI(50), E(), S("a"), E(),
+		E(), ED())
+}
+
 // TODO: Multipart array
