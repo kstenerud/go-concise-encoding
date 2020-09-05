@@ -33,8 +33,8 @@ import (
 
 func TestCTEVersion(t *testing.T) {
 	assertDecodeEncode(t, "c1 ", BD(), V(1), ED())
-	assertDecode(t, "\r\n\t c1 ", BD(), V(1), ED())
-	assertDecode(t, "c1     \r\n\t\t\t", BD(), V(1), ED())
+	assertDecode(t, nil, "\r\n\t c1 ", BD(), V(1), ED())
+	assertDecode(t, nil, "c1     \r\n\t\t\t", BD(), V(1), ED())
 }
 
 func TestCTEVersionNotNumeric(t *testing.T) {
@@ -89,25 +89,25 @@ func TestCTEVerbatimString(t *testing.T) {
 	assertDecodeFails(t, "c1 `A ")
 	assertDecodeFails(t, "c1 `A xyz")
 	assertDecodeFails(t, "c1 `A xyzAx")
-	assertDecode(t, "c1 `A \n\n\n\n\n\n\n\n\n\nA", BD(), V(1), VS("\n\n\n\n\n\n\n\n\n\n"), ED())
-	assertDecode(t, "c1 `A aA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, "c1 `A\taA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, "c1 `A\naA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, "c1 `A\r\naA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, "c1 `#ENDOFSTRING a test\nwith `stuff`#ENDOFSTRING ", BD(), V(1), VS("a test\nwith `stuff`"), ED())
+	assertDecode(t, nil, "c1 `A \n\n\n\n\n\n\n\n\n\nA", BD(), V(1), VS("\n\n\n\n\n\n\n\n\n\n"), ED())
+	assertDecode(t, nil, "c1 `A aA", BD(), V(1), VS("a"), ED())
+	assertDecode(t, nil, "c1 `A\taA", BD(), V(1), VS("a"), ED())
+	assertDecode(t, nil, "c1 `A\naA", BD(), V(1), VS("a"), ED())
+	assertDecode(t, nil, "c1 `A\r\naA", BD(), V(1), VS("a"), ED())
+	assertDecode(t, nil, "c1 `#ENDOFSTRING a test\nwith `stuff`#ENDOFSTRING ", BD(), V(1), VS("a test\nwith `stuff`"), ED())
 }
 
 func TestCTEChunkedString(t *testing.T) {
-	assertEncode(t, "c1 abcdefgh", BD(), V(1), SB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+	assertEncode(t, nil, "c1 abcdefgh", BD(), V(1), SB(), AC(8, false), AD([]byte("abcdefgh")), ED())
 
-	assertEncode(t, "c1 abcdefgh", BD(), V(1), SB(),
+	assertEncode(t, nil, "c1 abcdefgh", BD(), V(1), SB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
 		AC(2, false), AD([]byte("gh")),
 		ED())
 
-	assertEncode(t, "c1 abcdefgh", BD(), V(1), SB(),
+	assertEncode(t, nil, "c1 abcdefgh", BD(), V(1), SB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
@@ -116,16 +116,16 @@ func TestCTEChunkedString(t *testing.T) {
 }
 
 func TestCTEChunkedVerbatimString(t *testing.T) {
-	assertEncode(t, "c1 `#abcdefgh#", BD(), V(1), VB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+	assertEncode(t, nil, "c1 `#abcdefgh#", BD(), V(1), VB(), AC(8, false), AD([]byte("abcdefgh")), ED())
 
-	assertEncode(t, "c1 `#abcdefgh#", BD(), V(1), VB(),
+	assertEncode(t, nil, "c1 `#abcdefgh#", BD(), V(1), VB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
 		AC(2, false), AD([]byte("gh")),
 		ED())
 
-	assertEncode(t, "c1 `#abcdefgh#", BD(), V(1), VB(),
+	assertEncode(t, nil, "c1 `#abcdefgh#", BD(), V(1), VB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
@@ -134,15 +134,15 @@ func TestCTEChunkedVerbatimString(t *testing.T) {
 }
 
 func TestCTEChunkedBytes(t *testing.T) {
-	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
+	assertEncode(t, nil, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
 
-	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(),
+	assertEncode(t, nil, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, false), AD([]byte{0x78, 0x9a}),
 		ED())
 
-	assertEncode(t, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(),
+	assertEncode(t, nil, `c1 |u8x 12 34 56 78 9a|`, BD(), V(1), AU8B(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, true), AD([]byte{0x78, 0x9a}),
@@ -150,16 +150,16 @@ func TestCTEChunkedBytes(t *testing.T) {
 }
 
 func TestCTEChunkedURI(t *testing.T) {
-	assertEncode(t, `c1 u"abcdefgh"`, BD(), V(1), UB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+	assertEncode(t, nil, `c1 u"abcdefgh"`, BD(), V(1), UB(), AC(8, false), AD([]byte("abcdefgh")), ED())
 
-	assertEncode(t, `c1 u"abcdefgh"`, BD(), V(1), UB(),
+	assertEncode(t, nil, `c1 u"abcdefgh"`, BD(), V(1), UB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
 		AC(2, false), AD([]byte("gh")),
 		ED())
 
-	assertEncode(t, `c1 u"abcdefgh"`, BD(), V(1), UB(),
+	assertEncode(t, nil, `c1 u"abcdefgh"`, BD(), V(1), UB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
@@ -168,15 +168,15 @@ func TestCTEChunkedURI(t *testing.T) {
 }
 
 func TestCTEChunkedCustomBinary(t *testing.T) {
-	assertEncode(t, `c1 b"123456789a"`, BD(), V(1), CBB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
+	assertEncode(t, nil, `c1 b"123456789a"`, BD(), V(1), CBB(), AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
 
-	assertEncode(t, `c1 b"123456789a"`, BD(), V(1), CBB(),
+	assertEncode(t, nil, `c1 b"123456789a"`, BD(), V(1), CBB(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, false), AD([]byte{0x78, 0x9a}),
 		ED())
 
-	assertEncode(t, `c1 b"123456789a"`, BD(), V(1), CBB(),
+	assertEncode(t, nil, `c1 b"123456789a"`, BD(), V(1), CBB(),
 		AC(1, true), AD([]byte{0x12}),
 		AC(2, true), AD([]byte{0x34, 0x56}),
 		AC(2, true), AD([]byte{0x78, 0x9a}),
@@ -184,16 +184,16 @@ func TestCTEChunkedCustomBinary(t *testing.T) {
 }
 
 func TestCTEChunkedCustomText(t *testing.T) {
-	assertEncode(t, `c1 t"abcdefgh"`, BD(), V(1), CTB(), AC(8, false), AD([]byte("abcdefgh")), ED())
+	assertEncode(t, nil, `c1 t"abcdefgh"`, BD(), V(1), CTB(), AC(8, false), AD([]byte("abcdefgh")), ED())
 
-	assertEncode(t, `c1 t"abcdefgh"`, BD(), V(1), CTB(),
+	assertEncode(t, nil, `c1 t"abcdefgh"`, BD(), V(1), CTB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
 		AC(2, false), AD([]byte("gh")),
 		ED())
 
-	assertEncode(t, `c1 t"abcdefgh"`, BD(), V(1), CTB(),
+	assertEncode(t, nil, `c1 t"abcdefgh"`, BD(), V(1), CTB(),
 		AC(1, true), AD([]byte("a")),
 		AC(2, true), AD([]byte("bc")),
 		AC(3, true), AD([]byte("def")),
@@ -208,73 +208,73 @@ func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 -49523", BD(), V(1), NI(49523), ED())
 	assertDecodeEncode(t, "c1 10000000000000000000000000000", BD(), V(1), BI(test.NewBigInt("10000000000000000000000000000")), ED())
 	assertDecodeEncode(t, "c1 -10000000000000000000000000000", BD(), V(1), BI(test.NewBigInt("-10000000000000000000000000000")), ED())
-	assertDecode(t, "c1 -4_9_5__2___3", BD(), V(1), NI(49523), ED())
+	assertDecode(t, nil, "c1 -4_9_5__2___3", BD(), V(1), NI(49523), ED())
 }
 
 func TestCTEBinaryInt(t *testing.T) {
-	assertDecode(t, "c1 0b0", BD(), V(1), PI(0), ED())
-	assertDecode(t, "c1 0b1", BD(), V(1), PI(1), ED())
-	assertDecode(t, "c1 0b101", BD(), V(1), PI(5), ED())
-	assertDecode(t, "c1 0b0010100", BD(), V(1), PI(20), ED())
-	assertDecode(t, "c1 -0b100", BD(), V(1), NI(4), ED())
-	assertDecode(t, "c1 -0b_1_0_0", BD(), V(1), NI(4), ED())
+	assertDecode(t, nil, "c1 0b0", BD(), V(1), PI(0), ED())
+	assertDecode(t, nil, "c1 0b1", BD(), V(1), PI(1), ED())
+	assertDecode(t, nil, "c1 0b101", BD(), V(1), PI(5), ED())
+	assertDecode(t, nil, "c1 0b0010100", BD(), V(1), PI(20), ED())
+	assertDecode(t, nil, "c1 -0b100", BD(), V(1), NI(4), ED())
+	assertDecode(t, nil, "c1 -0b_1_0_0", BD(), V(1), NI(4), ED())
 }
 
 func TestCTEOctalInt(t *testing.T) {
-	assertDecode(t, "c1 0o0", BD(), V(1), PI(0), ED())
-	assertDecode(t, "c1 0o1", BD(), V(1), PI(1), ED())
-	assertDecode(t, "c1 0o7", BD(), V(1), PI(7), ED())
-	assertDecode(t, "c1 0o71", BD(), V(1), PI(57), ED())
-	assertDecode(t, "c1 0o644", BD(), V(1), PI(420), ED())
-	assertDecode(t, "c1 -0o777", BD(), V(1), NI(511), ED())
-	assertDecode(t, "c1 -0o_7__7___7", BD(), V(1), NI(511), ED())
+	assertDecode(t, nil, "c1 0o0", BD(), V(1), PI(0), ED())
+	assertDecode(t, nil, "c1 0o1", BD(), V(1), PI(1), ED())
+	assertDecode(t, nil, "c1 0o7", BD(), V(1), PI(7), ED())
+	assertDecode(t, nil, "c1 0o71", BD(), V(1), PI(57), ED())
+	assertDecode(t, nil, "c1 0o644", BD(), V(1), PI(420), ED())
+	assertDecode(t, nil, "c1 -0o777", BD(), V(1), NI(511), ED())
+	assertDecode(t, nil, "c1 -0o_7__7___7", BD(), V(1), NI(511), ED())
 }
 
 func TestCTEHexInt(t *testing.T) {
-	assertDecode(t, "c1 0x0", BD(), V(1), PI(0), ED())
-	assertDecode(t, "c1 0x1", BD(), V(1), PI(1), ED())
-	assertDecode(t, "c1 0xf", BD(), V(1), PI(0xf), ED())
-	assertDecode(t, "c1 0xfedcba9876543210", BD(), V(1), PI(0xfedcba9876543210), ED())
-	assertDecode(t, "c1 0xFEDCBA9876543210", BD(), V(1), PI(0xfedcba9876543210), ED())
-	assertDecode(t, "c1 -0x88", BD(), V(1), NI(0x88), ED())
-	assertDecode(t, "c1 -0x_8_8__5_a_f__d", BD(), V(1), NI(0x885afd), ED())
+	assertDecode(t, nil, "c1 0x0", BD(), V(1), PI(0), ED())
+	assertDecode(t, nil, "c1 0x1", BD(), V(1), PI(1), ED())
+	assertDecode(t, nil, "c1 0xf", BD(), V(1), PI(0xf), ED())
+	assertDecode(t, nil, "c1 0xfedcba9876543210", BD(), V(1), PI(0xfedcba9876543210), ED())
+	assertDecode(t, nil, "c1 0xFEDCBA9876543210", BD(), V(1), PI(0xfedcba9876543210), ED())
+	assertDecode(t, nil, "c1 -0x88", BD(), V(1), NI(0x88), ED())
+	assertDecode(t, nil, "c1 -0x_8_8__5_a_f__d", BD(), V(1), NI(0x885afd), ED())
 }
 
 func TestCTEFloat(t *testing.T) {
-	assertDecode(t, "c1 0.0", BD(), V(1), DF(test.NewDFloat("0")), ED())
-	assertDecode(t, "c1 -0.0", BD(), V(1), DF(test.NewDFloat("-0")), ED())
+	assertDecode(t, nil, "c1 0.0", BD(), V(1), DF(test.NewDFloat("0")), ED())
+	assertDecode(t, nil, "c1 -0.0", BD(), V(1), DF(test.NewDFloat("-0")), ED())
 
 	assertDecodeEncode(t, "c1 1.5", BD(), V(1), DF(test.NewDFloat("1.5")), ED())
 	assertDecodeEncode(t, "c1 1.125", BD(), V(1), DF(test.NewDFloat("1.125")), ED())
 	assertDecodeEncode(t, "c1 1.125e+10", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
 	assertDecodeEncode(t, "c1 1.125e-10", BD(), V(1), DF(test.NewDFloat("1.125e-10")), ED())
-	assertDecode(t, "c1 1.125e10", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
+	assertDecode(t, nil, "c1 1.125e10", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
 
 	assertDecodeEncode(t, "c1 -1.5", BD(), V(1), DF(test.NewDFloat("-1.5")), ED())
 	assertDecodeEncode(t, "c1 -1.125", BD(), V(1), DF(test.NewDFloat("-1.125")), ED())
 	assertDecodeEncode(t, "c1 -1.125e+10", BD(), V(1), DF(test.NewDFloat("-1.125e+10")), ED())
 	assertDecodeEncode(t, "c1 -1.125e-10", BD(), V(1), DF(test.NewDFloat("-1.125e-10")), ED())
-	assertDecode(t, "c1 -1.125e10", BD(), V(1), DF(test.NewDFloat("-1.125e10")), ED())
+	assertDecode(t, nil, "c1 -1.125e10", BD(), V(1), DF(test.NewDFloat("-1.125e10")), ED())
 
 	assertDecodeEncode(t, "c1 0.5", BD(), V(1), DF(test.NewDFloat("0.5")), ED())
 	assertDecodeEncode(t, "c1 0.125", BD(), V(1), DF(test.NewDFloat("0.125")), ED())
-	assertDecode(t, "c1 0.125e+10", BD(), V(1), DF(test.NewDFloat("0.125e+10")), ED())
-	assertDecode(t, "c1 0.125e-10", BD(), V(1), DF(test.NewDFloat("0.125e-10")), ED())
-	assertDecode(t, "c1 0.125e10", BD(), V(1), DF(test.NewDFloat("0.125e10")), ED())
+	assertDecode(t, nil, "c1 0.125e+10", BD(), V(1), DF(test.NewDFloat("0.125e+10")), ED())
+	assertDecode(t, nil, "c1 0.125e-10", BD(), V(1), DF(test.NewDFloat("0.125e-10")), ED())
+	assertDecode(t, nil, "c1 0.125e10", BD(), V(1), DF(test.NewDFloat("0.125e10")), ED())
 
-	assertDecode(t, "c1 -0.5", BD(), V(1), DF(test.NewDFloat("-0.5")), ED())
-	assertDecode(t, "c1 -0.125", BD(), V(1), DF(test.NewDFloat("-0.125")), ED())
-	assertDecode(t, "c1 -0.125e+10", BD(), V(1), DF(test.NewDFloat("-0.125e+10")), ED())
-	assertDecode(t, "c1 -0.125e-10", BD(), V(1), DF(test.NewDFloat("-0.125e-10")), ED())
-	assertDecode(t, "c1 -0.125e10", BD(), V(1), DF(test.NewDFloat("-0.125e10")), ED())
-	assertDecode(t, "c1 -0.125E+10", BD(), V(1), DF(test.NewDFloat("-0.125e+10")), ED())
-	assertDecode(t, "c1 -0.125E-10", BD(), V(1), DF(test.NewDFloat("-0.125e-10")), ED())
-	assertDecode(t, "c1 -0.125E10", BD(), V(1), DF(test.NewDFloat("-0.125e10")), ED())
+	assertDecode(t, nil, "c1 -0.5", BD(), V(1), DF(test.NewDFloat("-0.5")), ED())
+	assertDecode(t, nil, "c1 -0.125", BD(), V(1), DF(test.NewDFloat("-0.125")), ED())
+	assertDecode(t, nil, "c1 -0.125e+10", BD(), V(1), DF(test.NewDFloat("-0.125e+10")), ED())
+	assertDecode(t, nil, "c1 -0.125e-10", BD(), V(1), DF(test.NewDFloat("-0.125e-10")), ED())
+	assertDecode(t, nil, "c1 -0.125e10", BD(), V(1), DF(test.NewDFloat("-0.125e10")), ED())
+	assertDecode(t, nil, "c1 -0.125E+10", BD(), V(1), DF(test.NewDFloat("-0.125e+10")), ED())
+	assertDecode(t, nil, "c1 -0.125E-10", BD(), V(1), DF(test.NewDFloat("-0.125e-10")), ED())
+	assertDecode(t, nil, "c1 -0.125E10", BD(), V(1), DF(test.NewDFloat("-0.125e10")), ED())
 
-	assertDecode(t, "c1 -1.50000000000000000000000001E10000", BD(), V(1), BDF(test.NewBDF("-1.50000000000000000000000001E10000")), ED())
-	assertDecode(t, "c1 1.50000000000000000000000001E10000", BD(), V(1), BDF(test.NewBDF("1.50000000000000000000000001E10000")), ED())
+	assertDecode(t, nil, "c1 -1.50000000000000000000000001E10000", BD(), V(1), BDF(test.NewBDF("-1.50000000000000000000000001E10000")), ED())
+	assertDecode(t, nil, "c1 1.50000000000000000000000001E10000", BD(), V(1), BDF(test.NewBDF("1.50000000000000000000000001E10000")), ED())
 
-	assertDecode(t, "c1 1_._1_2_5_e+1_0", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
+	assertDecode(t, nil, "c1 1_._1_2_5_e+1_0", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
 
 	assertDecodeFails(t, "c1 -0.5.4")
 	assertDecodeFails(t, "c1 -0,5.4")
@@ -284,31 +284,31 @@ func TestCTEFloat(t *testing.T) {
 }
 
 func TestCTEHexFloat(t *testing.T) {
-	assertDecode(t, "c1 0x0.0", BD(), V(1), F(0x0.0p0), ED())
-	assertDecode(t, "c1 0x0.1", BD(), V(1), F(0x0.1p0), ED())
-	assertDecode(t, "c1 0x0.1p+10", BD(), V(1), F(0x0.1p+10), ED())
-	assertDecode(t, "c1 0x0.1p-10", BD(), V(1), F(0x0.1p-10), ED())
-	assertDecode(t, "c1 0x0.1p10", BD(), V(1), F(0x0.1p10), ED())
+	assertDecode(t, nil, "c1 0x0.0", BD(), V(1), F(0x0.0p0), ED())
+	assertDecode(t, nil, "c1 0x0.1", BD(), V(1), F(0x0.1p0), ED())
+	assertDecode(t, nil, "c1 0x0.1p+10", BD(), V(1), F(0x0.1p+10), ED())
+	assertDecode(t, nil, "c1 0x0.1p-10", BD(), V(1), F(0x0.1p-10), ED())
+	assertDecode(t, nil, "c1 0x0.1p10", BD(), V(1), F(0x0.1p10), ED())
 
-	assertDecode(t, "c1 0x1.0", BD(), V(1), F(0x1.0p0), ED())
-	assertDecode(t, "c1 0x1.1", BD(), V(1), F(0x1.1p0), ED())
-	assertDecode(t, "c1 0xf.1p+10", BD(), V(1), F(0xf.1p+10), ED())
-	assertDecode(t, "c1 0xf.1p-10", BD(), V(1), F(0xf.1p-10), ED())
-	assertDecode(t, "c1 0xf.1p10", BD(), V(1), F(0xf.1p10), ED())
+	assertDecode(t, nil, "c1 0x1.0", BD(), V(1), F(0x1.0p0), ED())
+	assertDecode(t, nil, "c1 0x1.1", BD(), V(1), F(0x1.1p0), ED())
+	assertDecode(t, nil, "c1 0xf.1p+10", BD(), V(1), F(0xf.1p+10), ED())
+	assertDecode(t, nil, "c1 0xf.1p-10", BD(), V(1), F(0xf.1p-10), ED())
+	assertDecode(t, nil, "c1 0xf.1p10", BD(), V(1), F(0xf.1p10), ED())
 
-	assertDecode(t, "c1 -0x1.0", BD(), V(1), F(-0x1.0p0), ED())
-	assertDecode(t, "c1 -0x1.1", BD(), V(1), F(-0x1.1p0), ED())
-	assertDecode(t, "c1 -0xf.1p+10", BD(), V(1), F(-0xf.1p+10), ED())
-	assertDecode(t, "c1 -0xf.1p-10", BD(), V(1), F(-0xf.1p-10), ED())
-	assertDecode(t, "c1 -0xf.1p10", BD(), V(1), F(-0xf.1p10), ED())
+	assertDecode(t, nil, "c1 -0x1.0", BD(), V(1), F(-0x1.0p0), ED())
+	assertDecode(t, nil, "c1 -0x1.1", BD(), V(1), F(-0x1.1p0), ED())
+	assertDecode(t, nil, "c1 -0xf.1p+10", BD(), V(1), F(-0xf.1p+10), ED())
+	assertDecode(t, nil, "c1 -0xf.1p-10", BD(), V(1), F(-0xf.1p-10), ED())
+	assertDecode(t, nil, "c1 -0xf.1p10", BD(), V(1), F(-0xf.1p10), ED())
 
-	assertDecode(t, "c1 -0x0.0", BD(), V(1), F(-0x0.0p0), ED())
-	assertDecode(t, "c1 -0x0.1", BD(), V(1), F(-0x0.1p0), ED())
-	assertDecode(t, "c1 -0x0.1p+10", BD(), V(1), F(-0x0.1p+10), ED())
-	assertDecode(t, "c1 -0x0.1p-10", BD(), V(1), F(-0x0.1p-10), ED())
-	assertDecode(t, "c1 -0x0.1p10", BD(), V(1), F(-0x0.1p10), ED())
+	assertDecode(t, nil, "c1 -0x0.0", BD(), V(1), F(-0x0.0p0), ED())
+	assertDecode(t, nil, "c1 -0x0.1", BD(), V(1), F(-0x0.1p0), ED())
+	assertDecode(t, nil, "c1 -0x0.1p+10", BD(), V(1), F(-0x0.1p+10), ED())
+	assertDecode(t, nil, "c1 -0x0.1p-10", BD(), V(1), F(-0x0.1p-10), ED())
+	assertDecode(t, nil, "c1 -0x0.1p10", BD(), V(1), F(-0x0.1p10), ED())
 
-	assertDecode(t, "c1 -0x_0_._1_p_1_0", BD(), V(1), F(-0x0.1p10), ED())
+	assertDecode(t, nil, "c1 -0x_0_._1_p_1_0", BD(), V(1), F(-0x0.1p10), ED())
 }
 
 func TestCTEDate(t *testing.T) {
@@ -317,40 +317,40 @@ func TestCTEDate(t *testing.T) {
 }
 
 func TestCTETime(t *testing.T) {
-	assertDecode(t, "c1 1:45:00", BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
-	assertDecode(t, "c1 01:45:00", BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
+	assertDecode(t, nil, "c1 1:45:00", BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
+	assertDecode(t, nil, "c1 01:45:00", BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
 	assertDecodeEncode(t, "c1 23:59:59.101", BD(), V(1), CT(compact_time.NewTime(23, 59, 59, 101000000, "")), ED())
 	assertDecodeEncode(t, "c1 10:00:01.93/America/Los_Angeles", BD(), V(1), CT(compact_time.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
 	assertDecodeEncode(t, "c1 10:00:01.93/89.92/1.10", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8992, 110)), ED())
-	assertDecode(t, "c1 10:00:01.93/0/0", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 0, 0)), ED())
-	assertDecode(t, "c1 10:00:01.93/1/1", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 100, 100)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/0/0", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 0, 0)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/1/1", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 100, 100)), ED())
 }
 
 func TestCTETimestamp(t *testing.T) {
 	assertDecodeEncode(t, "c1 2000-01-01/19:31:44.901554/Z", BD(), V(1), CT(compact_time.NewTimestamp(2000, 1, 1, 19, 31, 44, 901554000, "Z")), ED())
 	assertDecodeEncode(t, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
-	assertDecode(t, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
+	assertDecode(t, nil, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 }
 
 func TestCTEURI(t *testing.T) {
 	assertDecodeEncode(t, `c1 u"http://example.com"`, BD(), V(1), URI("http://example.com"), ED())
-	assertEncode(t, `c1 u"http://x.com/%22quoted%22"`, BD(), V(1), URI(`http://x.com/"quoted"`), ED())
+	assertEncode(t, nil, `c1 u"http://x.com/%22quoted%22"`, BD(), V(1), URI(`http://x.com/"quoted"`), ED())
 }
 
 func TestCTEQuotedString(t *testing.T) {
 	assertDecodeEncode(t, `c1 "test string"`, BD(), V(1), S("test string"), ED())
-	assertDecode(t, `c1 "test\nstring"`, BD(), V(1), S("test\nstring"), ED())
-	assertDecode(t, `c1 "test\rstring"`, BD(), V(1), S("test\rstring"), ED())
-	assertDecode(t, `c1 "test\tstring"`, BD(), V(1), S("test\tstring"), ED())
+	assertDecode(t, nil, `c1 "test\nstring"`, BD(), V(1), S("test\nstring"), ED())
+	assertDecode(t, nil, `c1 "test\rstring"`, BD(), V(1), S("test\rstring"), ED())
+	assertDecode(t, nil, `c1 "test\tstring"`, BD(), V(1), S("test\tstring"), ED())
 	assertDecodeEncode(t, `c1 "test\"string"`, BD(), V(1), S("test\"string"), ED())
-	assertDecode(t, `c1 "test\*string"`, BD(), V(1), S("test*string"), ED())
-	assertDecode(t, `c1 "test\/string"`, BD(), V(1), S("test/string"), ED())
+	assertDecode(t, nil, `c1 "test\*string"`, BD(), V(1), S("test*string"), ED())
+	assertDecode(t, nil, `c1 "test\/string"`, BD(), V(1), S("test/string"), ED())
 	assertDecodeEncode(t, `c1 "test\\string"`, BD(), V(1), S("test\\string"), ED())
 	assertDecodeEncode(t, `c1 "test\11string"`, BD(), V(1), S("test\u0001string"), ED())
 	assertDecodeEncode(t, `c1 "test\4206dstring"`, BD(), V(1), S("test\u206dstring"), ED())
-	assertDecode(t, `c1 "test\
+	assertDecode(t, nil, `c1 "test\
 string"`, BD(), V(1), S("teststring"), ED())
-	assertDecode(t, "c1 \"test\\\r\nstring\"", BD(), V(1), S("teststring"), ED())
+	assertDecode(t, nil, "c1 \"test\\\r\nstring\"", BD(), V(1), S("teststring"), ED())
 }
 
 func TestCTECustomText(t *testing.T) {
@@ -369,9 +369,9 @@ func TestCTEList(t *testing.T) {
 func TestCTEMap(t *testing.T) {
 	assertDecodeEncode(t, `c1 {}`, BD(), V(1), M(), E(), ED())
 	assertDecodeEncode(t, `c1 {1=2}`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
-	assertDecode(t, "c1 {  1 = 2 3=4 \t}", BD(), V(1), M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
+	assertDecode(t, nil, "c1 {  1 = 2 3=4 \t}", BD(), V(1), M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
 
-	assertDecode(t, `c1 {email = u"mailto:me@somewhere.com" 1.5 = "a string"}`, BD(), V(1), M(),
+	assertDecode(t, nil, `c1 {email = u"mailto:me@somewhere.com" 1.5 = "a string"}`, BD(), V(1), M(),
 		S("email"), URI("mailto:me@somewhere.com"),
 		DF(test.NewDFloat("1.5")), S("a string"),
 		E(), ED())
@@ -408,19 +408,19 @@ func TestCTEMapMap(t *testing.T) {
 func TestCTEMetadata(t *testing.T) {
 	assertDecodeEncode(t, `c1 ()`, BD(), V(1), META(), E(), ED())
 	assertDecodeEncode(t, `c1 (1=2)`, BD(), V(1), META(), PI(1), PI(2), E(), ED())
-	assertDecode(t, "c1 (  1 = 2 3=4 \t)", BD(), V(1), META(), PI(1), PI(2), PI(3), PI(4), E(), ED())
+	assertDecode(t, nil, "c1 (  1 = 2 3=4 \t)", BD(), V(1), META(), PI(1), PI(2), PI(3), PI(4), E(), ED())
 }
 
 func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, `c1 <a>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2 3=4>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), PI(3), PI(4), E(), E(), ED())
-	assertDecode(t, `c1 <a;>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
+	assertDecode(t, nil, `c1 <a;>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a;a>`, BD(), V(1), MUP(), S("a"), E(), S("a"), E(), ED())
-	assertDecode(t, `c1 <a;a string >`, BD(), V(1), MUP(), S("a"), E(), S("a string"), E(), ED())
+	assertDecode(t, nil, `c1 <a;a string >`, BD(), V(1), MUP(), S("a"), E(), S("a string"), E(), ED())
 	assertDecodeEncode(t, `c1 <a;<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a;a<a>>`, BD(), V(1), MUP(), S("a"), E(), S("a"), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a;<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
-	assertDecode(t, `c1 <a 1=2 ;>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), E(), ED())
+	assertDecode(t, nil, `c1 <a 1=2 ;>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2;a>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a"), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2;<a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2;a <a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a "), MUP(), S("a"), E(), E(), E(), ED())
@@ -434,17 +434,17 @@ func TestCTEMarkupMarkup(t *testing.T) {
 }
 
 func TestCTEMarkupComment(t *testing.T) {
-	assertDecode(t, "c1 <a;//blah\n>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, "c1 <a;//blah\n a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
-	assertDecode(t, "c1 <a;a//blah\n a>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a;//blah\n>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a;//blah\n a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a;a//blah\n a>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), S("a"), E(), ED())
 
-	assertDecode(t, "c1 <a;/*blah*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, "c1 <a;a/*blah*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, "c1 <a;/*blah*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a;/*blah*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a;a/*blah*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a;/*blah*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
 
-	assertDecode(t, "c1 <a;/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
-	assertDecode(t, "c1 <a;a/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
-	assertDecode(t, "c1 <a;/*/*blah*/*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a;/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a;a/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a;/*/*blah*/*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), S("a"), E(), ED())
 }
 
 func TestCTEMapMetadata(t *testing.T) {
@@ -468,12 +468,12 @@ func TestCTEMapMetadata(t *testing.T) {
 func TestCTEBytes(t *testing.T) {
 	assertDecodeEncode(t, `c1 |u8x 01|`, BD(), V(1), AU8([]byte{0x01}), ED())
 	assertDecodeEncode(t, `c1 |u8x 01 ff|`, BD(), V(1), AU8([]byte{0x01, 0xff}), ED())
-	assertDecode(t, `c1 |u8x  f9 C2 4F   10  |`, BD(), V(1), AU8([]byte{0xf9, 0xc2, 0x4f, 0x10}), ED())
+	assertDecode(t, nil, `c1 |u8x  f9 C2 4F   10  |`, BD(), V(1), AU8([]byte{0xf9, 0xc2, 0x4f, 0x10}), ED())
 }
 
 func TestCTECustomBinary(t *testing.T) {
 	assertDecodeEncode(t, `c1 b"a9"`, BD(), V(1), CUB([]byte{0xa9}), ED())
-	assertDecode(t, "c1 b\"\n8 f 1 9a 7c\td  \"", BD(), V(1), CUB([]byte{0x8f, 0x19, 0xa7, 0xcd}), ED())
+	assertDecode(t, nil, "c1 b\"\n8 f 1 9a 7c\td  \"", BD(), V(1), CUB([]byte{0x8f, 0x19, 0xa7, 0xcd}), ED())
 }
 
 func TestCTEBadArrayType(t *testing.T) {
@@ -499,49 +499,49 @@ func TestCTEUUID(t *testing.T) {
 
 func TestCTEMarker(t *testing.T) {
 	assertDecodeFails(t, `c1 &2`)
-	assertDecode(t, `c1 &1:string`, BD(), V(1), MARK(), PI(1), S("string"), ED())
-	assertDecode(t, `c1 &a:string`, BD(), V(1), MARK(), S("a"), S("string"), ED())
+	assertDecode(t, nil, `c1 &1:string`, BD(), V(1), MARK(), PI(1), S("string"), ED())
+	assertDecode(t, nil, `c1 &a:string`, BD(), V(1), MARK(), S("a"), S("string"), ED())
 	assertDecodeFails(t, `c1 & 1:string`)
 	assertDecodeFails(t, `c1 &1 string`)
 	assertDecodeFails(t, `c1 &1string`)
 }
 
 func TestCTEReference(t *testing.T) {
-	assertDecode(t, `c1 $2`, BD(), V(1), REF(), PI(2), ED())
-	assertDecode(t, `c1 $a`, BD(), V(1), REF(), S("a"), ED())
+	assertDecode(t, nil, `c1 $2`, BD(), V(1), REF(), PI(2), ED())
+	assertDecode(t, nil, `c1 $a`, BD(), V(1), REF(), S("a"), ED())
 	assertDecodeFails(t, `c1 $ 1`)
 }
 
 func TestCTEMarkerReference(t *testing.T) {
-	assertDecode(t, `c1 [&2:testing $2]`, BD(), V(1), L(), MARK(), PI(2), S("testing"), REF(), PI(2), E(), ED())
+	assertDecode(t, nil, `c1 [&2:testing $2]`, BD(), V(1), L(), MARK(), PI(2), S("testing"), REF(), PI(2), E(), ED())
 }
 
 func TestCTECommentSingleLine(t *testing.T) {
 	assertDecodeFails(t, "c1 //")
-	assertDecode(t, "c1 //\n", BD(), V(1), CMT(), E(), ED())
-	assertDecode(t, "c1 //\r\n", BD(), V(1), CMT(), E(), ED())
+	assertDecode(t, nil, "c1 //\n", BD(), V(1), CMT(), E(), ED())
+	assertDecode(t, nil, "c1 //\r\n", BD(), V(1), CMT(), E(), ED())
 	assertDecodeFails(t, "c1 // ")
-	assertDecode(t, "c1 // \n", BD(), V(1), CMT(), S(" "), E(), ED())
-	assertDecode(t, "c1 // \r\n", BD(), V(1), CMT(), S(" "), E(), ED())
+	assertDecode(t, nil, "c1 // \n", BD(), V(1), CMT(), S(" "), E(), ED())
+	assertDecode(t, nil, "c1 // \r\n", BD(), V(1), CMT(), S(" "), E(), ED())
 	assertDecodeFails(t, "c1 //a")
-	assertDecode(t, "c1 //a\n", BD(), V(1), CMT(), S("a"), E(), ED())
-	assertDecode(t, "c1 //a\r\n", BD(), V(1), CMT(), S("a"), E(), ED())
-	assertDecode(t, "c1 // This is a comment\n", BD(), V(1), CMT(), S(" This is a comment"), E(), ED())
+	assertDecode(t, nil, "c1 //a\n", BD(), V(1), CMT(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 //a\r\n", BD(), V(1), CMT(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 // This is a comment\n", BD(), V(1), CMT(), S(" This is a comment"), E(), ED())
 	assertDecodeFails(t, "c1 /-\n")
 }
 
 func TestCTECommentMultiline(t *testing.T) {
-	assertDecode(t, "c1 /**/", BD(), V(1), CMT(), E(), ED())
-	assertDecode(t, "c1 /* */", BD(), V(1), CMT(), S(" "), E(), ED())
-	assertDecode(t, "c1 /* This is a comment */", BD(), V(1), CMT(), S(" This is a comment "), E(), ED())
-	assertDecode(t, "c1 /*This is a comment*/", BD(), V(1), CMT(), S("This is a comment"), E(), ED())
+	assertDecode(t, nil, "c1 /**/", BD(), V(1), CMT(), E(), ED())
+	assertDecode(t, nil, "c1 /* */", BD(), V(1), CMT(), S(" "), E(), ED())
+	assertDecode(t, nil, "c1 /* This is a comment */", BD(), V(1), CMT(), S(" This is a comment "), E(), ED())
+	assertDecode(t, nil, "c1 /*This is a comment*/", BD(), V(1), CMT(), S("This is a comment"), E(), ED())
 }
 
 func TestCTECommentMultilineNested(t *testing.T) {
-	assertDecode(t, "c1 /*/**/*/", BD(), V(1), CMT(), CMT(), E(), E(), ED())
-	assertDecode(t, "c1 /*/* */*/", BD(), V(1), CMT(), CMT(), S(" "), E(), E(), ED())
-	assertDecode(t, "c1 /* /* */ */", BD(), V(1), CMT(), S(" "), CMT(), S(" "), E(), S(" "), E(), ED())
-	assertDecode(t, "c1  /* before/* mid */ after*/  ", BD(), V(1), CMT(), S(" before"), CMT(), S(" mid "), E(), S(" after"), E(), ED())
+	assertDecode(t, nil, "c1 /*/**/*/", BD(), V(1), CMT(), CMT(), E(), E(), ED())
+	assertDecode(t, nil, "c1 /*/* */*/", BD(), V(1), CMT(), CMT(), S(" "), E(), E(), ED())
+	assertDecode(t, nil, "c1 /* /* */ */", BD(), V(1), CMT(), S(" "), CMT(), S(" "), E(), S(" "), E(), ED())
+	assertDecode(t, nil, "c1  /* before/* mid */ after*/  ", BD(), V(1), CMT(), S(" before"), CMT(), S(" mid "), E(), S(" after"), E(), ED())
 }
 
 func TestCTECommentAfterValue(t *testing.T) {
@@ -575,7 +575,7 @@ func TestComment(t *testing.T) {
 }
 
 func TestURIReference(t *testing.T) {
-	assertDecode(t, `c1
+	assertDecode(t, nil, `c1
 {
     outside_ref      = $u"https://"
     // The markup type is good for presentation data
@@ -584,12 +584,12 @@ func TestURIReference(t *testing.T) {
 }
 
 func TestMarkupVerbatimString(t *testing.T) {
-	assertDecode(t, "c1 <s; `## <d></d>##>")
-	assertDecode(t, "c1 <s; `## /d##>")
+	assertDecode(t, nil, "c1 <s; `## <d></d>##>")
+	assertDecode(t, nil, "c1 <s; `## /d##>")
 }
 
 func TestBufferEdge(t *testing.T) {
-	assertDecode(t, `c1
+	assertDecode(t, nil, `c1
 {
      1  = <a;
             <b;
@@ -601,7 +601,7 @@ func TestBufferEdge(t *testing.T) {
 }
 
 func TestBufferEdge2(t *testing.T) {
-	assertDecode(t, `c1
+	assertDecode(t, nil, `c1
 {
     x  = <a;
                      <b;
@@ -843,7 +843,7 @@ case is three Z characters, specified earlier as a sentinel.#
 }
 
 func TestComplexComment(t *testing.T) {
-	DebugPrintEvents = true
+	// DebugPrintEvents = true
 
 	document := []byte(`c1
 /**/ ( /**/ a= /**/ b /**/ ) /**/
@@ -881,4 +881,40 @@ func TestComplexComment(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
+}
+
+func TestCTEEncodeImpliedVersion(t *testing.T) {
+	opts := options.DefaultCTEEncoderOptions()
+	opts.ImpliedStructure = options.ImpliedStructureVersion
+	assertEncode(t, opts, "[1 2]", BD(), V(1), L(), PI(1), PI(2), E(), ED())
+}
+
+func TestCTEDecodeImpliedVersion(t *testing.T) {
+	opts := options.DefaultCTEDecoderOptions()
+	opts.ImpliedStructure = options.ImpliedStructureVersion
+	assertDecode(t, opts, "[1 2]", BD(), V(1), L(), PI(1), PI(2), E(), ED())
+}
+
+func TestCTEEncodeImpliedList(t *testing.T) {
+	opts := options.DefaultCTEEncoderOptions()
+	opts.ImpliedStructure = options.ImpliedStructureList
+	assertEncode(t, opts, "1 2", BD(), V(1), L(), PI(1), PI(2), E(), ED())
+}
+
+func TestCTEDecodeImpliedList(t *testing.T) {
+	opts := options.DefaultCTEDecoderOptions()
+	opts.ImpliedStructure = options.ImpliedStructureList
+	assertDecode(t, opts, "1 2", BD(), V(1), L(), PI(1), PI(2), E(), ED())
+}
+
+func TestCTEEncodeImpliedMap(t *testing.T) {
+	opts := options.DefaultCTEEncoderOptions()
+	opts.ImpliedStructure = options.ImpliedStructureMap
+	assertEncode(t, opts, "1=2", BD(), V(1), M(), PI(1), PI(2), E(), ED())
+}
+
+func TestCTEDecodeImpliedMap(t *testing.T) {
+	opts := options.DefaultCTEDecoderOptions()
+	opts.ImpliedStructure = options.ImpliedStructureMap
+	assertDecode(t, opts, "1=2", BD(), V(1), M(), PI(1), PI(2), E(), ED())
 }

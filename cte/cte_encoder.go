@@ -113,8 +113,10 @@ func (_this *Encoder) Reset() {
 func (_this *Encoder) OnBeginDocument() {
 	switch _this.opts.ImpliedStructure {
 	case options.ImpliedStructureList:
+		_this.setState(cteEncoderStateAwaitTLO)
 		_this.stackState(cteEncoderStateAwaitListFirstItem, "")
 	case options.ImpliedStructureMap:
+		_this.setState(cteEncoderStateAwaitTLO)
 		_this.stackState(cteEncoderStateAwaitMapFirstKey, "")
 	default:
 		_this.setState(cteEncoderStateAwaitVersion)

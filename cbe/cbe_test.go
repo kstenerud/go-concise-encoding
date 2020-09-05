@@ -499,7 +499,7 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 func TestCBEEncodeImpliedVersion(t *testing.T) {
 	opts := options.DefaultCBEEncoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureVersion
-	assertEncode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, V(1), L(), PI(1), PI(2), E(), ED())
+	assertEncode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), PI(1), PI(2), E(), ED())
 }
 
 func TestCBEDecodeImpliedVersion(t *testing.T) {
@@ -511,7 +511,7 @@ func TestCBEDecodeImpliedVersion(t *testing.T) {
 func TestCBEEncodeImpliedList(t *testing.T) {
 	opts := options.DefaultCBEEncoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureList
-	assertEncode(t, opts, []byte{1, 2}, V(1), L(), PI(1), PI(2), E(), ED())
+	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), L(), PI(1), PI(2), E(), ED())
 }
 
 func TestCBEDecodeImpliedList(t *testing.T) {
@@ -523,7 +523,7 @@ func TestCBEDecodeImpliedList(t *testing.T) {
 func TestCBEEncodeImpliedMap(t *testing.T) {
 	opts := options.DefaultCBEEncoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureMap
-	assertEncode(t, opts, []byte{1, 2}, V(1), M(), PI(1), PI(2), E(), ED())
+	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), M(), PI(1), PI(2), E(), ED())
 }
 
 func TestCBEDecodeImpliedMap(t *testing.T) {

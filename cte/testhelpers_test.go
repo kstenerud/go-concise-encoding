@@ -27,6 +27,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -146,7 +148,7 @@ func ED() *test.TEvent                       { return test.ED() }
 
 var DebugPrintEvents = false
 
-func decodeToEvents(document []byte, withRules bool) (evts []*test.TEvent, err error) {
+func decodeToEvents(opts *options.CTEDecoderOptions, document []byte, withRules bool) (evts []*test.TEvent, err error) {
 	var topLevelReceiver events.DataEventReceiver
 	ter := test.NewTER()
 	topLevelReceiver = ter
@@ -156,21 +158,21 @@ func decodeToEvents(document []byte, withRules bool) (evts []*test.TEvent, err e
 	if DebugPrintEvents {
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
 	}
-	err = NewDecoder(nil).Decode(bytes.NewBuffer(document), topLevelReceiver)
+	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
 	evts = ter.Events
 	return
 }
 
-func encodeEvents(events ...*test.TEvent) []byte {
+func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(nil)
+	encoder := NewEncoder(opts)
 	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(encoder, events...)
 	return buffer.Bytes()
 }
 
-func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document), false)
+func assertDecode(t *testing.T, opts *options.CTEDecoderOptions, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
+	actualEvents, err := decodeToEvents(opts, []byte(document), false)
 	if err != nil {
 		t.Error(err)
 		return
@@ -188,7 +190,7 @@ func assertDecode(t *testing.T, document string, expectedEvents ...*test.TEvent)
 }
 
 func assertDecodeWithRules(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents([]byte(document), true)
+	actualEvents, err := decodeToEvents(nil, []byte(document), true)
 	if err != nil {
 		t.Error(err)
 		return
@@ -206,14 +208,14 @@ func assertDecodeWithRules(t *testing.T, document string, expectedEvents ...*tes
 }
 
 func assertDecodeFails(t *testing.T, document string) {
-	_, err := decodeToEvents([]byte(document), false)
+	_, err := decodeToEvents(nil, []byte(document), false)
 	if err == nil {
 		t.Errorf("Expected decode to fail")
 	}
 }
 
-func assertEncode(t *testing.T, expectedDocument string, events ...*test.TEvent) (successful bool) {
-	actualDocument := string(encodeEvents(events...))
+func assertEncode(t *testing.T, opts *options.CTEEncoderOptions, expectedDocument string, events ...*test.TEvent) (successful bool) {
+	actualDocument := string(encodeEvents(opts, events...))
 	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
 		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
 		return
@@ -223,11 +225,11 @@ func assertEncode(t *testing.T, expectedDocument string, events ...*test.TEvent)
 }
 
 func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool) {
-	successful, actualEvents := assertDecode(t, document, expectedEvents...)
+	successful, actualEvents := assertDecode(t, nil, document, expectedEvents...)
 	if !successful {
 		return
 	}
-	return assertEncode(t, document, actualEvents...)
+	return assertEncode(t, nil, document, actualEvents...)
 }
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
