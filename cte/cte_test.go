@@ -809,7 +809,7 @@ case is three Z characters, specified earlier as a sentinel.#
             Please choose from the following widgets: <div id=parent style=normal ref-id=1;
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "##" is chosen as the ending sequence
-                 */;
+                 */
                 <script;
                     ` + "`" + `#                    document.getElementById('parent').insertAdjacentHTML('beforeend',
                         '<div id="idChild"> content </div>');
@@ -819,7 +819,41 @@ case is three Z characters, specified earlier as a sentinel.#
         >
     >
 }`
-	// TODO: There's an extra semicolon inserted after the comment in the markup.
+
+	encoded := &bytes.Buffer{}
+	encOpts := options.DefaultCTEEncoderOptions()
+	encOpts.Indent = "    "
+	encoder := NewEncoder(encOpts)
+	encoder.PrepareToEncode(encoded)
+	decoder := NewDecoder(nil)
+	err := decoder.Decode(bytes.NewBuffer(document), encoder)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	actual := string(encoded.Bytes())
+	if actual != expected {
+		t.Errorf("Expected %v but got %v", expected, actual)
+	}
+}
+
+// TODO: /**/(/**/a=/**/b /**/)/**/
+
+func TestMarkupComment(t *testing.T) {
+	DebugPrintEvents = true
+
+	document := []byte(`c1
+<a;
+    /**/
+    <b>
+>`)
+
+	expected := `c1
+<a;
+    /**/
+    <b>
+>`
 
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()

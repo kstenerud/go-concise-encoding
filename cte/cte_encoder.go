@@ -46,19 +46,20 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	buff               buffer.StreamingWriteBuffer
-	chunkBuffer        []byte
-	remainingChunkSize uint64
-	containerState     []cteEncoderState
-	containerItemCount []int
-	currentState       cteEncoderState
-	currentItemCount   int
-	nextPrefix         string
-	prefixGenerators   []cteEncoderPrefixGenerator
-	opts               options.CTEEncoderOptions
-	skipFirstMap       bool
-	skipFirstList      bool
-	containerDepth     int
+	buff                   buffer.StreamingWriteBuffer
+	chunkBuffer            []byte
+	remainingChunkSize     uint64
+	containerState         []cteEncoderState
+	containerItemCount     []int
+	currentState           cteEncoderState
+	currentItemCount       int
+	nextPrefix             string
+	prefixGenerators       []cteEncoderPrefixGenerator
+	opts                   options.CTEEncoderOptions
+	skipFirstMap           bool
+	skipFirstList          bool
+	containerDepth         int
+	transitionFromSuffixes []string
 }
 
 // Create a new CTE encoder, which will receive data events and write a document
@@ -76,8 +77,10 @@ func (_this *Encoder) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
 	_this.buff.Init(_this.opts.BufferSize)
 	_this.prefixGenerators = cteEncoderPrefixGenerators[:]
+	_this.transitionFromSuffixes = cteTransitionFromSuffixes[:]
 	if len(_this.opts.Indent) > 0 {
 		_this.prefixGenerators = cteEncoderPrettyPrefixHandlers[:]
+		_this.transitionFromSuffixes = cteTransitionFromSuffixesPretty[:]
 	}
 	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
 	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
@@ -529,6 +532,12 @@ func (_this *Encoder) OnEnd() {
 		return
 	}
 
+	if _this.currentState == cteEncoderStateAwaitMarkupFirstItem {
+		// When markup has no contents, we don't need a semicolon. This code
+		// removes the automatic semicolon suffix after the attrs in that case.
+		_this.buff.EraseLastByte()
+	}
+
 	oldState := _this.currentState
 	if _this.currentItemCount > 0 && oldState != cteEncoderStateAwaitCommentItem {
 		_this.applyIndentation(-1)
@@ -592,6 +601,7 @@ func (_this *Encoder) unstackState() {
 }
 
 func (_this *Encoder) transitionState() {
+	_this.addString(_this.transitionFromSuffixes[_this.currentState])
 	_this.setState(cteEncoderStateTransitions[_this.currentState])
 }
 
@@ -784,14 +794,14 @@ var cteEncoderPrefixGenerators = [cteEncoderStateCount]cteEncoderPrefixGenerator
 	cteEncoderStateAwaitListItem:        (*Encoder).generateSpacePrefix,
 	cteEncoderStateAwaitMapFirstKey:     (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMapKey:          (*Encoder).generateSpacePrefix,
-	cteEncoderStateAwaitMapValue:        (*Encoder).generateEqualsPrefix,
+	cteEncoderStateAwaitMapValue:        (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMetaFirstKey:    (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMetaKey:         (*Encoder).generateSpacePrefix,
-	cteEncoderStateAwaitMetaValue:       (*Encoder).generateEqualsPrefix,
+	cteEncoderStateAwaitMetaValue:       (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkupName:      (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkupKey:       (*Encoder).generateSpacePrefix,
-	cteEncoderStateAwaitMarkupValue:     (*Encoder).generateEqualsPrefix,
-	cteEncoderStateAwaitMarkupFirstItem: (*Encoder).generateMarkupContentsPrefix,
+	cteEncoderStateAwaitMarkupValue:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMarkupFirstItem: (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkupItem:      (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitCommentItem:     (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkerID:        (*Encoder).generateNoPrefix,
@@ -823,14 +833,14 @@ var cteEncoderPrettyPrefixHandlers = [cteEncoderStateCount]cteEncoderPrefixGener
 	cteEncoderStateAwaitListItem:        (*Encoder).generateIndentPrefix,
 	cteEncoderStateAwaitMapFirstKey:     (*Encoder).generateIndentPrefix,
 	cteEncoderStateAwaitMapKey:          (*Encoder).generateIndentPrefix,
-	cteEncoderStateAwaitMapValue:        (*Encoder).generateSpaceEqualsPrefix,
+	cteEncoderStateAwaitMapValue:        (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMetaFirstKey:    (*Encoder).generateIndentPrefix,
 	cteEncoderStateAwaitMetaKey:         (*Encoder).generateIndentPrefix,
-	cteEncoderStateAwaitMetaValue:       (*Encoder).generateSpaceEqualsPrefix,
+	cteEncoderStateAwaitMetaValue:       (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkupName:      (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkupKey:       (*Encoder).generateSpacePrefix,
-	cteEncoderStateAwaitMarkupValue:     (*Encoder).generateEqualsPrefix,
-	cteEncoderStateAwaitMarkupFirstItem: (*Encoder).generateMarkupContentsIndentPrefix,
+	cteEncoderStateAwaitMarkupValue:     (*Encoder).generateNoPrefix,
+	cteEncoderStateAwaitMarkupFirstItem: (*Encoder).generateIndentPrefix,
 	cteEncoderStateAwaitMarkupItem:      (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitCommentItem:     (*Encoder).generateNoPrefix,
 	cteEncoderStateAwaitMarkerID:        (*Encoder).generateNoPrefix,
@@ -881,8 +891,24 @@ var cteEncoderTerminators = [cteEncoderStateCount]string{
 	cteEncoderStateAwaitMapKey:          "}",
 	cteEncoderStateAwaitMetaFirstKey:    ")",
 	cteEncoderStateAwaitMetaKey:         ")",
-	cteEncoderStateAwaitMarkupKey:       "",
+	cteEncoderStateAwaitMarkupKey:       ";",
 	cteEncoderStateAwaitMarkupFirstItem: ">",
 	cteEncoderStateAwaitMarkupItem:      ">",
 	cteEncoderStateAwaitCommentItem:     "*/",
+}
+
+var cteTransitionFromSuffixes = [cteEncoderStateCount]string{
+	cteEncoderStateAwaitMapFirstKey:  "=",
+	cteEncoderStateAwaitMapKey:       "=",
+	cteEncoderStateAwaitMetaFirstKey: "=",
+	cteEncoderStateAwaitMetaKey:      "=",
+	cteEncoderStateAwaitMarkupKey:    "=",
+}
+
+var cteTransitionFromSuffixesPretty = [cteEncoderStateCount]string{
+	cteEncoderStateAwaitMapFirstKey:  " = ",
+	cteEncoderStateAwaitMapKey:       " = ",
+	cteEncoderStateAwaitMetaFirstKey: " = ",
+	cteEncoderStateAwaitMetaKey:      " = ",
+	cteEncoderStateAwaitMarkupKey:    "=", // No spaces for markup k-v pairs
 }

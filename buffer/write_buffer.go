@@ -68,6 +68,10 @@ func (_this *StreamingWriteBuffer) CorrectAllocation(usedByteCount int) {
 	_this.bytes = _this.bytes[:len(_this.bytes)-unused]
 }
 
+func (_this *StreamingWriteBuffer) EraseLastByte() {
+	_this.bytes = _this.bytes[:len(_this.bytes)-1]
+}
+
 func (_this *StreamingWriteBuffer) Flush() {
 	_, err := _this.writer.Write(_this.bytes)
 	if err != nil {
