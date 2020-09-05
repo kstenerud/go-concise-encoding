@@ -42,7 +42,7 @@ import (
 // Receives data events, constructing a CTE document from them.
 //
 // Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
-// to recover() at an appropriate location when calling this struct's methods
+// to recover() at an appropriate location when calling Encoder's methods
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
@@ -310,86 +310,6 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	_this.transitionState()
 }
 
-func (_this *Encoder) handleURI(value []byte) {
-	asString := string(value)
-	for _, ch := range value {
-		if ch == '"' {
-			asString = strings.ReplaceAll(asString, "\"", "%22")
-			break
-		}
-	}
-
-	switch _this.currentState {
-	case cteEncoderStateAwaitReferenceID:
-		_this.unstackState()
-		_this.addFmt(`%v$u"%v"`, _this.nextPrefix, asString)
-		_this.currentItemCount++
-		_this.transitionState()
-	default:
-		_this.addPrefix()
-		_this.addFmt(`u"%v"`, asString)
-		_this.currentItemCount++
-		_this.transitionState()
-	}
-}
-
-func (_this *Encoder) handleStringNormal(value []byte) {
-	_this.addPrefix()
-	_this.addString(asPotentialQuotedString(value))
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
-func (_this *Encoder) handleString(value []byte) {
-	switch _this.currentState {
-	case cteEncoderStateAwaitMarkerID:
-		_this.addPrefix()
-		_this.unstackState()
-		_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, string(value))
-	case cteEncoderStateAwaitReferenceID:
-		_this.addPrefix()
-		_this.unstackState()
-		_this.addFmt("%v$%v", _this.nextPrefix, string(value))
-		_this.currentItemCount++
-		_this.transitionState()
-	case cteEncoderStateAwaitMarkupItem, cteEncoderStateAwaitMarkupFirstItem:
-		_this.addPrefix()
-		_this.addString(asMarkupContent(value))
-		_this.currentItemCount++
-		_this.transitionState()
-	case cteEncoderStateAwaitCommentItem:
-		_this.addPrefix()
-		_this.addString(string(value))
-		_this.transitionState()
-	default:
-		_this.addPrefix()
-		_this.addString(asPotentialQuotedString(value))
-		_this.currentItemCount++
-		_this.transitionState()
-	}
-}
-
-func (_this *Encoder) handleVerbatimString(value []byte) {
-	_this.addPrefix()
-	_this.addString(asVerbatimString(value))
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
-func (_this *Encoder) handleCustomBinary(value []byte) {
-	_this.addPrefix()
-	_this.encodeHex('b', value)
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
-func (_this *Encoder) handleCustomText(value []byte) {
-	_this.addPrefix()
-	_this.addString(asCustomText(value))
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
 func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.addPrefix()
 	switch arrayType {
@@ -434,28 +354,6 @@ func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
-}
-
-func (_this *Encoder) finalizeArray() {
-	oldState := _this.currentState
-	_this.unstackState()
-	switch oldState {
-	case cteEncoderStateAwaitArrayU8:
-		_this.OnArray(events.ArrayTypeUint8, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
-	case cteEncoderStateAwaitQuotedString:
-		_this.OnArray(events.ArrayTypeString, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
-	case cteEncoderStateAwaitVerbatimString:
-		_this.OnArray(events.ArrayTypeVerbatimString, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
-	case cteEncoderStateAwaitURI:
-		_this.OnArray(events.ArrayTypeURI, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
-	case cteEncoderStateAwaitCustomBinary:
-		_this.OnArray(events.ArrayTypeCustomBinary, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
-	case cteEncoderStateAwaitCustomText:
-		_this.OnArray(events.ArrayTypeCustomText, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
-	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", oldState))
-	}
-	_this.chunkBuffer = _this.chunkBuffer[:0]
 }
 
 func (_this *Encoder) OnArrayChunk(length uint64, moreChunksFollow bool) {
@@ -554,7 +452,7 @@ func (_this *Encoder) OnEnd() {
 			if _this.currentState&cteEncoderStateAwaitCommentItem != 0 {
 				return
 			}
-			_this.nextPrefix = _this.generateIndentation(0)
+			_this.nextPrefix = _this.generateIndentPrefix()
 		} else {
 			_this.nextPrefix = ""
 		}
@@ -581,7 +479,113 @@ func (_this *Encoder) OnEndDocument() {
 
 // ============================================================================
 
-// Internal
+// Array Handlers
+
+func (_this *Encoder) handleURI(value []byte) {
+	asString := string(value)
+	for _, ch := range value {
+		if ch == '"' {
+			asString = strings.ReplaceAll(asString, "\"", "%22")
+			break
+		}
+	}
+
+	switch _this.currentState {
+	case cteEncoderStateAwaitReferenceID:
+		_this.unstackState()
+		_this.addFmt(`%v$u"%v"`, _this.nextPrefix, asString)
+		_this.currentItemCount++
+		_this.transitionState()
+	default:
+		_this.addPrefix()
+		_this.addFmt(`u"%v"`, asString)
+		_this.currentItemCount++
+		_this.transitionState()
+	}
+}
+
+func (_this *Encoder) handleStringNormal(value []byte) {
+	_this.addPrefix()
+	_this.addString(asPotentialQuotedString(value))
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) handleString(value []byte) {
+	switch _this.currentState {
+	case cteEncoderStateAwaitMarkerID:
+		_this.addPrefix()
+		_this.unstackState()
+		_this.nextPrefix = fmt.Sprintf("%v&%v:", _this.nextPrefix, string(value))
+	case cteEncoderStateAwaitReferenceID:
+		_this.addPrefix()
+		_this.unstackState()
+		_this.addFmt("%v$%v", _this.nextPrefix, string(value))
+		_this.currentItemCount++
+		_this.transitionState()
+	case cteEncoderStateAwaitMarkupItem, cteEncoderStateAwaitMarkupFirstItem:
+		_this.addPrefix()
+		_this.addString(asMarkupContent(value))
+		_this.currentItemCount++
+		_this.transitionState()
+	case cteEncoderStateAwaitCommentItem:
+		_this.addPrefix()
+		_this.addString(string(value))
+		_this.transitionState()
+	default:
+		_this.addPrefix()
+		_this.addString(asPotentialQuotedString(value))
+		_this.currentItemCount++
+		_this.transitionState()
+	}
+}
+
+func (_this *Encoder) handleVerbatimString(value []byte) {
+	_this.addPrefix()
+	_this.addString(asVerbatimString(value))
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) handleCustomBinary(value []byte) {
+	_this.addPrefix()
+	_this.encodeHex('b', value)
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) handleCustomText(value []byte) {
+	_this.addPrefix()
+	_this.addString(asCustomText(value))
+	_this.currentItemCount++
+	_this.transitionState()
+}
+
+func (_this *Encoder) finalizeArray() {
+	oldState := _this.currentState
+	_this.unstackState()
+	switch oldState {
+	case cteEncoderStateAwaitArrayU8:
+		_this.OnArray(events.ArrayTypeUint8, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitQuotedString:
+		_this.OnArray(events.ArrayTypeString, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitVerbatimString:
+		_this.OnArray(events.ArrayTypeVerbatimString, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitURI:
+		_this.OnArray(events.ArrayTypeURI, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitCustomBinary:
+		_this.OnArray(events.ArrayTypeCustomBinary, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitCustomText:
+		_this.OnArray(events.ArrayTypeCustomText, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	default:
+		panic(fmt.Errorf("TODO: Typed array support for %v", oldState))
+	}
+	_this.chunkBuffer = _this.chunkBuffer[:0]
+}
+
+// ============================================================================
+
+// State
 
 func (_this *Encoder) stackState(newState cteEncoderState, prefix string) {
 	_this.addString(prefix)
@@ -609,6 +613,10 @@ func (_this *Encoder) setState(newState cteEncoderState) {
 	_this.currentState = newState
 	_this.nextPrefix = _this.prefixGenerators[_this.currentState](_this)
 }
+
+// ============================================================================
+
+// Encoding
 
 func (_this *Encoder) addPrefix() {
 	if len(_this.nextPrefix) > 0 {
@@ -667,11 +675,6 @@ func (_this *Encoder) applyIndentation(levelOffset int) {
 	}
 }
 
-func (_this *Encoder) generateIndentation(levelOffset int) string {
-	level := len(_this.containerState) + levelOffset
-	return "\n" + strings.Repeat(_this.opts.Indent, level)
-}
-
 func (_this *Encoder) generateNoPrefix() string {
 	return ""
 }
@@ -681,24 +684,13 @@ func (_this *Encoder) generateSpacePrefix() string {
 }
 
 func (_this *Encoder) generateIndentPrefix() string {
-	return _this.generateIndentation(0)
+	level := len(_this.containerState)
+	return "\n" + strings.Repeat(_this.opts.Indent, level)
 }
 
-func (_this *Encoder) generateMarkupContentsPrefix() string {
-	return ";"
-}
+// ============================================================================
 
-func (_this *Encoder) generateMarkupContentsIndentPrefix() string {
-	return ";" + _this.generateIndentation(0)
-}
-
-func (_this *Encoder) generateEqualsPrefix() string {
-	return "="
-}
-
-func (_this *Encoder) generateSpaceEqualsPrefix() string {
-	return " = "
-}
+// Data
 
 type cteEncoderState int64
 
