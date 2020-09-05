@@ -77,13 +77,6 @@ func (_this *Encoder) PrepareToEncode(writer io.Writer) {
 	_this.buff.SetWriter(writer)
 }
 
-func (_this *Encoder) Reset() {
-	_this.buff.Reset()
-	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
-	_this.containerDepth = 0
-}
-
 // ============================================================================
 
 // DataEventReceiver
@@ -169,11 +162,17 @@ func (_this *Encoder) OnNegativeInt(value uint64) {
 }
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
+	if value == nil {
+		_this.encodeType(cbeTypeNil)
+		return
+	}
+
 	if common.IsBigIntNegative(value) {
 		if value.IsInt64() {
 			_this.OnNegativeInt(uint64(-value.Int64()))
 			return
 		}
+		// TODO: -0x7fffffffffffffff to -0xffffffffffffffff don't need big int encoding
 		_this.encodeTypedBigInt(cbeTypeNegInt, value)
 		return
 	}
@@ -226,6 +225,11 @@ func (_this *Encoder) OnFloat(value float64) {
 }
 
 func (_this *Encoder) OnBigFloat(value *big.Float) {
+	if value == nil {
+		_this.encodeType(cbeTypeNil)
+		return
+	}
+
 	v, _, err := apd.NewFromString(conversions.BigFloatToString(value))
 	if err != nil {
 		panic(fmt.Errorf("could not convert %v to apd.Decimal", value))
@@ -238,6 +242,11 @@ func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
 }
 
 func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
+	if value == nil {
+		_this.encodeType(cbeTypeNil)
+		return
+	}
+
 	_this.encodeBigDecimalFloat(value)
 }
 
@@ -360,11 +369,19 @@ func (_this *Encoder) OnReference() {
 
 func (_this *Encoder) OnEndDocument() {
 	_this.buff.Flush()
+	_this.reset()
 }
 
 // ============================================================================
 
 // Internal
+
+func (_this *Encoder) reset() {
+	_this.buff.Reset()
+	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
+	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
+	_this.containerDepth = 0
+}
 
 const (
 	maxSmallStringLength = 15
@@ -390,10 +407,6 @@ func fitsInUint32(value uint64) bool {
 
 func fitsInUint48(value uint64) bool {
 	return value == (value & bitMask48)
-}
-
-func (_this *Encoder) encodeVersion(version uint64) {
-	_this.encodeULEB(version)
 }
 
 func (_this *Encoder) encodeULEB(value uint64) {

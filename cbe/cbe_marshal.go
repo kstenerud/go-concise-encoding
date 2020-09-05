@@ -64,7 +64,6 @@ func (_this *Marshaler) Init(opts *options.CBEMarshalerOptions) {
 // Marshal a go object into a CBE document, written to writer.
 func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error) {
 	defer func() {
-		_this.encoder.Reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				var ok bool
