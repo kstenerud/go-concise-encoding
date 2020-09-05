@@ -768,41 +768,40 @@ const (
 	cteDecoderStateCount
 )
 
-var cteDecoderStateTransitions [cteDecoderStateCount]cteDecoderState
-var cteDecoderStateHandlers [cteDecoderStateCount]cteDecoderHandlerFunction
+var cteDecoderStateTransitions = [cteDecoderStateCount]cteDecoderState{
+	cteDecoderStateAwaitObject:            cteDecoderStateAwaitObject,
+	cteDecoderStateAwaitListItem:          cteDecoderStateAwaitListItem,
+	cteDecoderStateAwaitCommentItem:       cteDecoderStateAwaitCommentItem,
+	cteDecoderStateAwaitMapKey:            cteDecoderStateAwaitMapKVSeparator,
+	cteDecoderStateAwaitMapKVSeparator:    cteDecoderStateAwaitMapValue,
+	cteDecoderStateAwaitMapValue:          cteDecoderStateAwaitMapKey,
+	cteDecoderStateAwaitMetaKey:           cteDecoderStateAwaitMetaKVSeparator,
+	cteDecoderStateAwaitMetaKVSeparator:   cteDecoderStateAwaitMetaValue,
+	cteDecoderStateAwaitMetaValue:         cteDecoderStateAwaitMetaKey,
+	cteDecoderStateAwaitMarkupName:        cteDecoderStateAwaitMarkupKey,
+	cteDecoderStateAwaitMarkupKey:         cteDecoderStateAwaitMarkupKVSeparator,
+	cteDecoderStateAwaitMarkupKVSeparator: cteDecoderStateAwaitMarkupValue,
+	cteDecoderStateAwaitMarkupValue:       cteDecoderStateAwaitMarkupKey,
+	cteDecoderStateAwaitMarkupItem:        cteDecoderStateAwaitMarkupItem,
+	cteDecoderStateAwaitReferenceID:       cteDecoderStateAwaitObject,
+}
 
-func init() {
-	cteDecoderStateTransitions[cteDecoderStateAwaitObject] = cteDecoderStateAwaitObject
-	cteDecoderStateTransitions[cteDecoderStateAwaitListItem] = cteDecoderStateAwaitListItem
-	cteDecoderStateTransitions[cteDecoderStateAwaitCommentItem] = cteDecoderStateAwaitCommentItem
-	cteDecoderStateTransitions[cteDecoderStateAwaitMapKey] = cteDecoderStateAwaitMapKVSeparator
-	cteDecoderStateTransitions[cteDecoderStateAwaitMapKVSeparator] = cteDecoderStateAwaitMapValue
-	cteDecoderStateTransitions[cteDecoderStateAwaitMapValue] = cteDecoderStateAwaitMapKey
-	cteDecoderStateTransitions[cteDecoderStateAwaitMetaKey] = cteDecoderStateAwaitMetaKVSeparator
-	cteDecoderStateTransitions[cteDecoderStateAwaitMetaKVSeparator] = cteDecoderStateAwaitMetaValue
-	cteDecoderStateTransitions[cteDecoderStateAwaitMetaValue] = cteDecoderStateAwaitMetaKey
-	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupName] = cteDecoderStateAwaitMarkupKey
-	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupKey] = cteDecoderStateAwaitMarkupKVSeparator
-	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupKVSeparator] = cteDecoderStateAwaitMarkupValue
-	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupValue] = cteDecoderStateAwaitMarkupKey
-	cteDecoderStateTransitions[cteDecoderStateAwaitMarkupItem] = cteDecoderStateAwaitMarkupItem
-	cteDecoderStateTransitions[cteDecoderStateAwaitReferenceID] = cteDecoderStateAwaitObject
-
-	cteDecoderStateHandlers[cteDecoderStateAwaitObject] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitListItem] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitCommentItem] = (*Decoder).handleCommentContent
-	cteDecoderStateHandlers[cteDecoderStateAwaitMapKey] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMapKVSeparator] = (*Decoder).handleKVSeparator
-	cteDecoderStateHandlers[cteDecoderStateAwaitMapValue] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMetaKey] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMetaKVSeparator] = (*Decoder).handleKVSeparator
-	cteDecoderStateHandlers[cteDecoderStateAwaitMetaValue] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupName] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupKey] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupKVSeparator] = (*Decoder).handleKVSeparator
-	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupValue] = (*Decoder).handleObject
-	cteDecoderStateHandlers[cteDecoderStateAwaitMarkupItem] = (*Decoder).handleMarkupContent
-	cteDecoderStateHandlers[cteDecoderStateAwaitReferenceID] = (*Decoder).handleObject
+var cteDecoderStateHandlers = [cteDecoderStateCount]cteDecoderHandlerFunction{
+	cteDecoderStateAwaitObject:            (*Decoder).handleObject,
+	cteDecoderStateAwaitListItem:          (*Decoder).handleObject,
+	cteDecoderStateAwaitCommentItem:       (*Decoder).handleCommentContent,
+	cteDecoderStateAwaitMapKey:            (*Decoder).handleObject,
+	cteDecoderStateAwaitMapKVSeparator:    (*Decoder).handleKVSeparator,
+	cteDecoderStateAwaitMapValue:          (*Decoder).handleObject,
+	cteDecoderStateAwaitMetaKey:           (*Decoder).handleObject,
+	cteDecoderStateAwaitMetaKVSeparator:   (*Decoder).handleKVSeparator,
+	cteDecoderStateAwaitMetaValue:         (*Decoder).handleObject,
+	cteDecoderStateAwaitMarkupName:        (*Decoder).handleObject,
+	cteDecoderStateAwaitMarkupKey:         (*Decoder).handleObject,
+	cteDecoderStateAwaitMarkupKVSeparator: (*Decoder).handleKVSeparator,
+	cteDecoderStateAwaitMarkupValue:       (*Decoder).handleObject,
+	cteDecoderStateAwaitMarkupItem:        (*Decoder).handleMarkupContent,
+	cteDecoderStateAwaitReferenceID:       (*Decoder).handleObject,
 }
 
 var charBasedHandlers [cteByteEndOfDocument + 1]cteDecoderHandlerFunction
