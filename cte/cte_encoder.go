@@ -414,6 +414,12 @@ func (_this *Encoder) OnMetadata() {
 }
 
 func (_this *Encoder) OnComment() {
+	if _this.nextPrefix == "" &&
+		_this.currentState != cteEncoderStateAwaitMapValue &&
+		_this.currentState != cteEncoderStateAwaitMetaValue &&
+		_this.currentState != cteEncoderStateAwaitMarkupValue {
+		_this.nextPrefix = " "
+	}
 	_this.addPrefix()
 	_this.stackState(cteEncoderStateAwaitCommentItem, "/*")
 	_this.containerDepth++

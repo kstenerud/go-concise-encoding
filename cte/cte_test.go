@@ -544,6 +544,10 @@ func TestCTECommentMultilineNested(t *testing.T) {
 	assertDecode(t, "c1  /* before/* mid */ after*/  ", BD(), V(1), CMT(), S(" before"), CMT(), S(" mid "), E(), S(" after"), E(), ED())
 }
 
+func TestCTECommentAfterValue(t *testing.T) {
+	assertDecodeEncode(t, `c1 [a /**/]`, BD(), V(1), L(), S("a"), CMT(), E(), E(), ED())
+}
+
 //
 
 func TestMapFloatKey(t *testing.T) {
@@ -755,7 +759,7 @@ case is three Z characters, specified earlier as a sentinel.ZZZ
 )
 {
     /* Comments look very C-like, except:
-       /* Nested comments are allowed! */
+        /* Nested comments are allowed! */
     */
     /* Notice that there are no commas in maps and lists*/
     (
@@ -838,18 +842,24 @@ case is three Z characters, specified earlier as a sentinel.#
 	}
 }
 
-// TODO: /**/(/**/a=/**/b /**/)/**/
-
-func TestMarkupComment(t *testing.T) {
+func TestComplexComment(t *testing.T) {
 	DebugPrintEvents = true
 
 	document := []byte(`c1
+/**/ ( /**/ a= /**/ b /**/ ) /**/
 <a;
     /**/
     <b>
 >`)
 
 	expected := `c1
+/**/
+(
+    /**/
+    a = /**/b
+    /**/
+)
+/**/
 <a;
     /**/
     <b>
