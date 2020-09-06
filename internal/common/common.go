@@ -101,6 +101,7 @@ func IsSignalingNan(value float64) bool {
 
 var BigInt0 = big.NewInt(0)
 var BigInt10 = big.NewInt(10)
+var BigInt16 = big.NewInt(16)
 var BigIntN1 = big.NewInt(-1)
 
 func IsBigIntNegative(value *big.Int) bool {

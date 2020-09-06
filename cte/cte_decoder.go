@@ -392,12 +392,16 @@ func (_this *Decoder) handleOtherBasePositive() {
 		_this.eventReceiver.OnPositiveInt(v)
 		_this.endObject()
 	case 'x':
-		v, digitCount := _this.buffer.DecodeHexInteger(0)
+		v, bigV, digitCount := _this.buffer.DecodeHexInteger(0, nil)
 		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
-			fv := _this.buffer.DecodeHexFloat(1, v, digitCount)
+			fv, bigFV := _this.buffer.DecodeHexFloat(1, v, bigV, digitCount)
 			_this.buffer.AssertAtObjectEnd("hex float")
-			_this.eventReceiver.OnFloat(fv)
+			if bigFV != nil {
+				_this.eventReceiver.OnBigFloat(bigFV)
+			} else {
+				_this.eventReceiver.OnFloat(fv)
+			}
 			_this.endObject()
 		} else {
 			_this.buffer.AssertAtObjectEnd("hex integer")
@@ -442,12 +446,16 @@ func (_this *Decoder) handleOtherBaseNegative() {
 		_this.eventReceiver.OnNegativeInt(v)
 		_this.endObject()
 	case 'x':
-		v, digitCount := _this.buffer.DecodeHexInteger(0)
+		v, bigV, digitCount := _this.buffer.DecodeHexInteger(0, nil)
 		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
-			fv := _this.buffer.DecodeHexFloat(-1, v, digitCount)
+			fv, bigFV := _this.buffer.DecodeHexFloat(-1, v, bigV, digitCount)
 			_this.buffer.AssertAtObjectEnd("hex float")
-			_this.eventReceiver.OnFloat(fv)
+			if bigFV != nil {
+				_this.eventReceiver.OnBigFloat(bigFV)
+			} else {
+				_this.eventReceiver.OnFloat(fv)
+			}
 			_this.endObject()
 		} else {
 			_this.buffer.AssertAtObjectEnd("hex integer")
@@ -673,7 +681,7 @@ func (_this *Decoder) handleU8X() {
 			break
 		}
 
-		v, count := _this.buffer.DecodeHexInteger(0)
+		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
 		if count == 0 {
 			panic(fmt.Errorf("Expected hex digits"))
 		}

@@ -364,6 +364,10 @@ func (_this *ReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *
 		bigValue = bigStartValue
 		for {
 			b := _this.PeekByteAllowEOD()
+			if b.HasProperty(ctePropertyNumericWhitespace) {
+				_this.AdvanceByte()
+				continue
+			}
 			if !b.HasProperty(cteProperty09) {
 				return
 			}
@@ -379,33 +383,63 @@ func (_this *ReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *
 
 const maxPreShiftHex = uint64(0x0fffffffffffffff)
 
-func (_this *ReadBuffer) DecodeHexInteger(startValue uint64) (value uint64, digitCount int) {
-	value = startValue
-	for {
-		b := _this.PeekByteAllowEOD()
-		nextNybble := uint64(0)
-		switch {
-		case b.HasProperty(ctePropertyNumericWhitespace):
-			_this.AdvanceByte()
-			continue
-		case b.HasProperty(cteProperty09):
-			nextNybble = uint64(b - '0')
-		case b.HasProperty(ctePropertyLowercaseAF):
-			nextNybble = uint64(b-'a') + 10
-		case b.HasProperty(ctePropertyUppercaseAF):
-			nextNybble = uint64(b-'A') + 10
-		default:
-			return
-		}
+func (_this *ReadBuffer) DecodeHexInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+	if bigStartValue == nil {
+		value = startValue
+		for {
+			b := _this.PeekByteAllowEOD()
+			nextNybble := uint64(0)
+			switch {
+			case b.HasProperty(ctePropertyNumericWhitespace):
+				_this.AdvanceByte()
+				continue
+			case b.HasProperty(cteProperty09):
+				nextNybble = uint64(b - '0')
+			case b.HasProperty(ctePropertyLowercaseAF):
+				nextNybble = uint64(b-'a') + 10
+			case b.HasProperty(ctePropertyUppercaseAF):
+				nextNybble = uint64(b-'A') + 10
+			default:
+				return
+			}
 
-		if value > maxPreShiftHex {
-			// TODO: Support BigInt?
-			_this.Errorf("Overflow reading hex integer")
+			if value > maxPreShiftHex {
+				bigStartValue = new(big.Int).SetUint64(value)
+				break
+			}
+			value = value<<4 + nextNybble
+			digitCount++
+			_this.AdvanceByte()
 		}
-		value = value<<4 + nextNybble
-		digitCount++
-		_this.AdvanceByte()
 	}
+
+	if bigStartValue != nil {
+		bigValue = bigStartValue
+		for {
+			b := _this.PeekByteAllowEOD()
+			nextNybble := uint64(0)
+			switch {
+			case b.HasProperty(ctePropertyNumericWhitespace):
+				_this.AdvanceByte()
+				continue
+			case b.HasProperty(cteProperty09):
+				nextNybble = uint64(b - '0')
+			case b.HasProperty(ctePropertyLowercaseAF):
+				nextNybble = uint64(b-'a') + 10
+			case b.HasProperty(ctePropertyUppercaseAF):
+				nextNybble = uint64(b-'A') + 10
+			default:
+				return
+			}
+
+			bigValue = bigValue.Mul(bigValue, common.BigInt16)
+			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextNybble)))
+			digitCount++
+			_this.AdvanceByte()
+		}
+	}
+
+	return
 }
 
 func (_this *ReadBuffer) DecodeQuotedStringWithEscapes() []byte {
@@ -872,10 +906,14 @@ func (_this *ReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigC
 	return
 }
 
-func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coefficientDigitCount int) float64 {
+func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value float64, bigValue *big.Float) {
+	const minFloat64Exponent = -1022
+	const maxFloat64Exponent = 1023
+	const maxFloat64Coefficient = (uint64(1) << 54) - 1
+
 	exponent := 0
 	fractionalDigitCount := 0
-	coefficient, fractionalDigitCount = _this.DecodeHexInteger(coefficient)
+	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexInteger(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
 		_this.UnexpectedChar("float fractional")
 	}
@@ -903,9 +941,40 @@ func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, coeffici
 
 	exponent -= fractionalDigitCount * 4
 
-	// TODO: Overflow
+	if bigCoefficient != nil {
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt(bigCoefficient)
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, exponent)
+		return
+	}
 
-	return float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(exponent))
+	if coefficient > maxFloat64Coefficient {
+		bigCoefficient = &big.Int{}
+		bigCoefficient = bigCoefficient.SetUint64(coefficient)
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt(bigCoefficient)
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, exponent)
+		return
+	}
+
+	if exponent > maxFloat64Exponent || exponent < minFloat64Exponent {
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt64(int64(coefficient))
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, exponent)
+		return
+	}
+
+	value = float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(exponent))
+	return
 }
 
 func (_this *ReadBuffer) DecodeSingleLineComment() []byte {

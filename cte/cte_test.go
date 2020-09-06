@@ -23,10 +23,10 @@ package cte
 import (
 	"bytes"
 	"math"
+	"math/big"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-compact-time"
 )
@@ -206,8 +206,8 @@ func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 123", BD(), V(1), PI(123), ED())
 	assertDecodeEncode(t, "c1 9412504234235366", BD(), V(1), PI(9412504234235366), ED())
 	assertDecodeEncode(t, "c1 -49523", BD(), V(1), NI(49523), ED())
-	assertDecodeEncode(t, "c1 10000000000000000000000000000", BD(), V(1), BI(test.NewBigInt("10000000000000000000000000000")), ED())
-	assertDecodeEncode(t, "c1 -10000000000000000000000000000", BD(), V(1), BI(test.NewBigInt("-10000000000000000000000000000")), ED())
+	assertDecodeEncode(t, "c1 10000000000000000000000000000", BD(), V(1), BI(NewBigInt("10000000000000000000000000000")), ED())
+	assertDecodeEncode(t, "c1 -10000000000000000000000000000", BD(), V(1), BI(NewBigInt("-10000000000000000000000000000")), ED())
 	assertDecode(t, nil, "c1 -4_9_5__2___3", BD(), V(1), NI(49523), ED())
 }
 
@@ -241,40 +241,40 @@ func TestCTEHexInt(t *testing.T) {
 }
 
 func TestCTEFloat(t *testing.T) {
-	assertDecode(t, nil, "c1 0.0", BD(), V(1), DF(test.NewDFloat("0")), ED())
-	assertDecode(t, nil, "c1 -0.0", BD(), V(1), DF(test.NewDFloat("-0")), ED())
+	assertDecode(t, nil, "c1 0.0", BD(), V(1), DF(NewDFloat("0")), ED())
+	assertDecode(t, nil, "c1 -0.0", BD(), V(1), DF(NewDFloat("-0")), ED())
 
-	assertDecodeEncode(t, "c1 1.5", BD(), V(1), DF(test.NewDFloat("1.5")), ED())
-	assertDecodeEncode(t, "c1 1.125", BD(), V(1), DF(test.NewDFloat("1.125")), ED())
-	assertDecodeEncode(t, "c1 1.125e+10", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
-	assertDecodeEncode(t, "c1 1.125e-10", BD(), V(1), DF(test.NewDFloat("1.125e-10")), ED())
-	assertDecode(t, nil, "c1 1.125e10", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
+	assertDecodeEncode(t, "c1 1.5", BD(), V(1), DF(NewDFloat("1.5")), ED())
+	assertDecodeEncode(t, "c1 1.125", BD(), V(1), DF(NewDFloat("1.125")), ED())
+	assertDecodeEncode(t, "c1 1.125e+10", BD(), V(1), DF(NewDFloat("1.125e+10")), ED())
+	assertDecodeEncode(t, "c1 1.125e-10", BD(), V(1), DF(NewDFloat("1.125e-10")), ED())
+	assertDecode(t, nil, "c1 1.125e10", BD(), V(1), DF(NewDFloat("1.125e+10")), ED())
 
-	assertDecodeEncode(t, "c1 -1.5", BD(), V(1), DF(test.NewDFloat("-1.5")), ED())
-	assertDecodeEncode(t, "c1 -1.125", BD(), V(1), DF(test.NewDFloat("-1.125")), ED())
-	assertDecodeEncode(t, "c1 -1.125e+10", BD(), V(1), DF(test.NewDFloat("-1.125e+10")), ED())
-	assertDecodeEncode(t, "c1 -1.125e-10", BD(), V(1), DF(test.NewDFloat("-1.125e-10")), ED())
-	assertDecode(t, nil, "c1 -1.125e10", BD(), V(1), DF(test.NewDFloat("-1.125e10")), ED())
+	assertDecodeEncode(t, "c1 -1.5", BD(), V(1), DF(NewDFloat("-1.5")), ED())
+	assertDecodeEncode(t, "c1 -1.125", BD(), V(1), DF(NewDFloat("-1.125")), ED())
+	assertDecodeEncode(t, "c1 -1.125e+10", BD(), V(1), DF(NewDFloat("-1.125e+10")), ED())
+	assertDecodeEncode(t, "c1 -1.125e-10", BD(), V(1), DF(NewDFloat("-1.125e-10")), ED())
+	assertDecode(t, nil, "c1 -1.125e10", BD(), V(1), DF(NewDFloat("-1.125e10")), ED())
 
-	assertDecodeEncode(t, "c1 0.5", BD(), V(1), DF(test.NewDFloat("0.5")), ED())
-	assertDecodeEncode(t, "c1 0.125", BD(), V(1), DF(test.NewDFloat("0.125")), ED())
-	assertDecode(t, nil, "c1 0.125e+10", BD(), V(1), DF(test.NewDFloat("0.125e+10")), ED())
-	assertDecode(t, nil, "c1 0.125e-10", BD(), V(1), DF(test.NewDFloat("0.125e-10")), ED())
-	assertDecode(t, nil, "c1 0.125e10", BD(), V(1), DF(test.NewDFloat("0.125e10")), ED())
+	assertDecodeEncode(t, "c1 0.5", BD(), V(1), DF(NewDFloat("0.5")), ED())
+	assertDecodeEncode(t, "c1 0.125", BD(), V(1), DF(NewDFloat("0.125")), ED())
+	assertDecode(t, nil, "c1 0.125e+10", BD(), V(1), DF(NewDFloat("0.125e+10")), ED())
+	assertDecode(t, nil, "c1 0.125e-10", BD(), V(1), DF(NewDFloat("0.125e-10")), ED())
+	assertDecode(t, nil, "c1 0.125e10", BD(), V(1), DF(NewDFloat("0.125e10")), ED())
 
-	assertDecode(t, nil, "c1 -0.5", BD(), V(1), DF(test.NewDFloat("-0.5")), ED())
-	assertDecode(t, nil, "c1 -0.125", BD(), V(1), DF(test.NewDFloat("-0.125")), ED())
-	assertDecode(t, nil, "c1 -0.125e+10", BD(), V(1), DF(test.NewDFloat("-0.125e+10")), ED())
-	assertDecode(t, nil, "c1 -0.125e-10", BD(), V(1), DF(test.NewDFloat("-0.125e-10")), ED())
-	assertDecode(t, nil, "c1 -0.125e10", BD(), V(1), DF(test.NewDFloat("-0.125e10")), ED())
-	assertDecode(t, nil, "c1 -0.125E+10", BD(), V(1), DF(test.NewDFloat("-0.125e+10")), ED())
-	assertDecode(t, nil, "c1 -0.125E-10", BD(), V(1), DF(test.NewDFloat("-0.125e-10")), ED())
-	assertDecode(t, nil, "c1 -0.125E10", BD(), V(1), DF(test.NewDFloat("-0.125e10")), ED())
+	assertDecode(t, nil, "c1 -0.5", BD(), V(1), DF(NewDFloat("-0.5")), ED())
+	assertDecode(t, nil, "c1 -0.125", BD(), V(1), DF(NewDFloat("-0.125")), ED())
+	assertDecode(t, nil, "c1 -0.125e+10", BD(), V(1), DF(NewDFloat("-0.125e+10")), ED())
+	assertDecode(t, nil, "c1 -0.125e-10", BD(), V(1), DF(NewDFloat("-0.125e-10")), ED())
+	assertDecode(t, nil, "c1 -0.125e10", BD(), V(1), DF(NewDFloat("-0.125e10")), ED())
+	assertDecode(t, nil, "c1 -0.125E+10", BD(), V(1), DF(NewDFloat("-0.125e+10")), ED())
+	assertDecode(t, nil, "c1 -0.125E-10", BD(), V(1), DF(NewDFloat("-0.125e-10")), ED())
+	assertDecode(t, nil, "c1 -0.125E10", BD(), V(1), DF(NewDFloat("-0.125e10")), ED())
 
-	assertDecode(t, nil, "c1 -1.50000000000000000000000001E10000", BD(), V(1), BDF(test.NewBDF("-1.50000000000000000000000001E10000")), ED())
-	assertDecode(t, nil, "c1 1.50000000000000000000000001E10000", BD(), V(1), BDF(test.NewBDF("1.50000000000000000000000001E10000")), ED())
+	assertDecode(t, nil, "c1 -1.50000000000000000000000001E10000", BD(), V(1), BDF(NewBDF("-1.50000000000000000000000001E10000")), ED())
+	assertDecode(t, nil, "c1 1.50000000000000000000000001E10000", BD(), V(1), BDF(NewBDF("1.50000000000000000000000001E10000")), ED())
 
-	assertDecode(t, nil, "c1 1_._1_2_5_e+1_0", BD(), V(1), DF(test.NewDFloat("1.125e+10")), ED())
+	assertDecode(t, nil, "c1 1_._1_2_5_e+1_0", BD(), V(1), DF(NewDFloat("1.125e+10")), ED())
 
 	assertDecodeFails(t, "c1 -0.5.4")
 	assertDecodeFails(t, "c1 -0,5.4")
@@ -307,6 +307,33 @@ func TestCTEHexFloat(t *testing.T) {
 	assertDecode(t, nil, "c1 -0x0.1p+10", BD(), V(1), F(-0x0.1p+10), ED())
 	assertDecode(t, nil, "c1 -0x0.1p-10", BD(), V(1), F(-0x0.1p-10), ED())
 	assertDecode(t, nil, "c1 -0x0.1p10", BD(), V(1), F(-0x0.1p10), ED())
+
+	// Everything too big for float64
+	bigExpected, _, err := big.ParseFloat("-1.54fffe2ac00592375b427ap100000", 16, 90, big.ToNearestEven)
+	if err != nil {
+		panic(err)
+	}
+	assertDecode(t, nil, "c1 -0x1.54fffe2ac00592375b427ap100000", BD(), V(1), BF(bigExpected), ED())
+	bigExpected = bigExpected.Neg(bigExpected)
+	assertDecode(t, nil, "c1 0x1.54fffe2ac00592375b427ap100000", BD(), V(1), BF(bigExpected), ED())
+
+	// Coefficient too big for float64
+	bigExpected, _, err = big.ParseFloat("-1.54fffe2ac00592375b427ap100", 16, 90, big.ToNearestEven)
+	if err != nil {
+		panic(err)
+	}
+	assertDecode(t, nil, "c1 -0x1.54fffe2ac00592375b427ap100", BD(), V(1), BF(bigExpected), ED())
+	bigExpected = bigExpected.Neg(bigExpected)
+	assertDecode(t, nil, "c1 0x1.54fffe2ac00592375b427ap100", BD(), V(1), BF(bigExpected), ED())
+
+	// Exponent too big for float64
+	bigExpected, _, err = big.ParseFloat("-1.8p100000", 16, 64, big.ToNearestEven)
+	if err != nil {
+		panic(err)
+	}
+	assertDecode(t, nil, "c1 -0x1.8p100000", BD(), V(1), BF(bigExpected), ED())
+	bigExpected = bigExpected.Neg(bigExpected)
+	assertDecode(t, nil, "c1 0x1.8p100000", BD(), V(1), BF(bigExpected), ED())
 
 	assertDecode(t, nil, "c1 -0x_0_._1_p_1_0", BD(), V(1), F(-0x0.1p10), ED())
 }
@@ -373,7 +400,7 @@ func TestCTEMap(t *testing.T) {
 
 	assertDecode(t, nil, `c1 {email = u"mailto:me@somewhere.com" 1.5 = "a string"}`, BD(), V(1), M(),
 		S("email"), URI("mailto:me@somewhere.com"),
-		DF(test.NewDFloat("1.5")), S("a string"),
+		DF(NewDFloat("1.5")), S("a string"),
 		E(), ED())
 }
 
