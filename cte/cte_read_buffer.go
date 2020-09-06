@@ -294,44 +294,104 @@ func (_this *ReadBuffer) SkipWhitespace() {
 
 const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 
-func (_this *ReadBuffer) DecodeBinaryInteger() (value uint64) {
+func (_this *ReadBuffer) DecodeBinaryInteger() (value uint64, bigValue *big.Int, digitCount int) {
 	for {
 		b := _this.PeekByteAllowEOD()
-		if b.HasProperty(ctePropertyNumericWhitespace) {
+		nextDigitValue := uint64(0)
+		switch {
+		case b.HasProperty(ctePropertyNumericWhitespace):
 			_this.AdvanceByte()
 			continue
-		}
-		if !b.HasProperty(ctePropertyBinaryDigit) {
+		case b.HasProperty(ctePropertyBinaryDigit):
+			nextDigitValue = uint64(b - '0')
+		default:
 			return
 		}
+
 		if value > maxPreShiftBinary {
-			// TODO: Support BigInt?
-			_this.Errorf("Overflow reading binary integer")
+			bigValue = new(big.Int).SetUint64(value)
+			break
 		}
-		value = value<<1 + uint64(b-'0')
+		value = value<<1 + nextDigitValue
+		digitCount++
 		_this.AdvanceByte()
 	}
+
+	if bigValue == nil {
+		return
+	}
+
+	for {
+		b := _this.PeekByteAllowEOD()
+		nextDigitValue := int64(0)
+		switch {
+		case b.HasProperty(ctePropertyNumericWhitespace):
+			_this.AdvanceByte()
+			continue
+		case b.HasProperty(ctePropertyBinaryDigit):
+			nextDigitValue = int64(b - '0')
+		default:
+			return
+		}
+
+		bigValue = bigValue.Mul(bigValue, common.BigInt2)
+		bigValue = bigValue.Add(bigValue, big.NewInt(nextDigitValue))
+		digitCount++
+		_this.AdvanceByte()
+	}
+
+	return
 }
 
 const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 
-func (_this *ReadBuffer) DecodeOctalInteger() (value uint64) {
+func (_this *ReadBuffer) DecodeOctalInteger() (value uint64, bigValue *big.Int, digitCount int) {
 	for {
 		b := _this.PeekByteAllowEOD()
-		if b.HasProperty(ctePropertyNumericWhitespace) {
+		nextDigitValue := uint64(0)
+		switch {
+		case b.HasProperty(ctePropertyNumericWhitespace):
 			_this.AdvanceByte()
 			continue
-		}
-		if !b.HasProperty(ctePropertyOctalDigit) {
+		case b.HasProperty(ctePropertyOctalDigit):
+			nextDigitValue = uint64(b - '0')
+		default:
 			return
 		}
+
 		if value > maxPreShiftOctal {
-			// TODO: Support BigInt?
-			_this.Errorf("Overflow reading octal integer")
+			bigValue = new(big.Int).SetUint64(value)
+			break
 		}
-		value = value<<3 + uint64(b-'0')
+		value = value<<3 + nextDigitValue
+		digitCount++
 		_this.AdvanceByte()
 	}
+
+	if bigValue == nil {
+		return
+	}
+
+	for {
+		b := _this.PeekByteAllowEOD()
+		nextDigitValue := int64(0)
+		switch {
+		case b.HasProperty(ctePropertyNumericWhitespace):
+			_this.AdvanceByte()
+			continue
+		case b.HasProperty(ctePropertyOctalDigit):
+			nextDigitValue = int64(b - '0')
+		default:
+			return
+		}
+
+		bigValue = bigValue.Mul(bigValue, common.BigInt8)
+		bigValue = bigValue.Add(bigValue, big.NewInt(nextDigitValue))
+		digitCount++
+		_this.AdvanceByte()
+	}
+
+	return
 }
 
 const maxPreShiftDecimal = uint64(0x1999999999999999)
@@ -358,24 +418,26 @@ func (_this *ReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *
 			digitCount++
 			_this.AdvanceByte()
 		}
+
+		if bigStartValue == nil {
+			return
+		}
 	}
 
-	if bigStartValue != nil {
-		bigValue = bigStartValue
-		for {
-			b := _this.PeekByteAllowEOD()
-			if b.HasProperty(ctePropertyNumericWhitespace) {
-				_this.AdvanceByte()
-				continue
-			}
-			if !b.HasProperty(cteProperty09) {
-				return
-			}
-			bigValue = bigValue.Mul(bigValue, common.BigInt10)
-			bigValue = bigValue.Add(bigValue, big.NewInt(int64(b-'0')))
-			digitCount++
+	bigValue = bigStartValue
+	for {
+		b := _this.PeekByteAllowEOD()
+		if b.HasProperty(ctePropertyNumericWhitespace) {
 			_this.AdvanceByte()
+			continue
 		}
+		if !b.HasProperty(cteProperty09) {
+			return
+		}
+		bigValue = bigValue.Mul(bigValue, common.BigInt10)
+		bigValue = bigValue.Add(bigValue, big.NewInt(int64(b-'0')))
+		digitCount++
+		_this.AdvanceByte()
 	}
 
 	return
@@ -411,32 +473,34 @@ func (_this *ReadBuffer) DecodeHexInteger(startValue uint64, bigStartValue *big.
 			digitCount++
 			_this.AdvanceByte()
 		}
+
+		if bigStartValue == nil {
+			return
+		}
 	}
 
-	if bigStartValue != nil {
-		bigValue = bigStartValue
-		for {
-			b := _this.PeekByteAllowEOD()
-			nextNybble := uint64(0)
-			switch {
-			case b.HasProperty(ctePropertyNumericWhitespace):
-				_this.AdvanceByte()
-				continue
-			case b.HasProperty(cteProperty09):
-				nextNybble = uint64(b - '0')
-			case b.HasProperty(ctePropertyLowercaseAF):
-				nextNybble = uint64(b-'a') + 10
-			case b.HasProperty(ctePropertyUppercaseAF):
-				nextNybble = uint64(b-'A') + 10
-			default:
-				return
-			}
-
-			bigValue = bigValue.Mul(bigValue, common.BigInt16)
-			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextNybble)))
-			digitCount++
+	bigValue = bigStartValue
+	for {
+		b := _this.PeekByteAllowEOD()
+		nextNybble := uint64(0)
+		switch {
+		case b.HasProperty(ctePropertyNumericWhitespace):
 			_this.AdvanceByte()
+			continue
+		case b.HasProperty(cteProperty09):
+			nextNybble = uint64(b - '0')
+		case b.HasProperty(ctePropertyLowercaseAF):
+			nextNybble = uint64(b-'a') + 10
+		case b.HasProperty(ctePropertyUppercaseAF):
+			nextNybble = uint64(b-'A') + 10
+		default:
+			return
 		}
+
+		bigValue = bigValue.Mul(bigValue, common.BigInt16)
+		bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextNybble)))
+		digitCount++
+		_this.AdvanceByte()
 	}
 
 	return

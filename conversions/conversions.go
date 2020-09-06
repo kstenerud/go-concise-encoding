@@ -253,6 +253,7 @@ func StringToBigFloat(value string, significantDigits int) (*big.Float, error) {
 
 // Bits to digits
 
+var bitsToHexDigitsTable = []int{0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4}
 var bitsToDecimalDigitsTable = []int{0, 1, 1, 1, 1, 2, 2, 2, 3, 3}
 var decimalDigitsToBitsTable = []int{0, 4, 7}
 
@@ -264,4 +265,12 @@ func DecimalDigitsToBits(digitCount int) int {
 	triadCount := digitCount / 3
 	remainder := digitCount % 3
 	return triadCount*10 + decimalDigitsToBitsTable[remainder]
+}
+
+func BitsToHexDigits(bitCount int) int {
+	return (bitCount/16)*4 + bitsToHexDigitsTable[bitCount&15]
+}
+
+func HexDigitsToBits(digitCount int) int {
+	return digitCount * 4
 }

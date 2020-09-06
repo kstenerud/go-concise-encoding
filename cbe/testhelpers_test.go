@@ -100,12 +100,12 @@ const (
 	typeTimestamp      = 0x9b
 )
 
-func NewBigInt(str string) *big.Int {
-	return test.NewBigInt(str)
+func NewBigInt(str string, base int) *big.Int {
+	return test.NewBigInt(str, base)
 }
 
-func NewBigFloat(str string, significantDigits int) *big.Float {
-	return test.NewBigFloat(str, significantDigits)
+func NewBigFloat(str string, base int, significantDigits int) *big.Float {
+	return test.NewBigFloat(str, base, significantDigits)
 }
 
 func NewDFloat(str string) compact_float.DFloat {
@@ -206,6 +206,10 @@ func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
+
+func InvokeEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
+	test.InvokeEvents(receiver, events...)
+}
 
 var DebugPrintEvents = false
 

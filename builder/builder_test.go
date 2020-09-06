@@ -30,7 +30,6 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-time"
@@ -48,15 +47,15 @@ func TestBuildUnknown(t *testing.T) {
 }
 
 func TestBuilderBasicTypes(t *testing.T) {
-	pBigIntP := test.NewBigInt("12345678901234567890123456789")
-	pBigIntN := test.NewBigInt("-999999999999999999999999999999")
-	pBigFloat := test.NewBigFloat("1.2345678901234567890123456789e10000", 29)
-	dfloat := test.NewDFloat("1.23456e1000")
-	pBigDFloat := test.NewBDF("4.509e10000")
+	pBigIntP := NewBigInt("12345678901234567890123456789", 10)
+	pBigIntN := NewBigInt("-999999999999999999999999999999", 10)
+	pBigFloat := NewBigFloat("1.2345678901234567890123456789e10000", 10, 29)
+	dfloat := NewDFloat("1.23456e1000")
+	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()
 	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
 	pCTime := compact_time.NewTimeLatLong(10, 5, 59, 100, 506, 107)
-	pURL := test.NewURI("http://x.com")
+	pURL := NewURI("http://x.com")
 
 	assertBuild(t, true, B(true))
 	assertBuild(t, false, B(false))
@@ -102,27 +101,27 @@ func TestBuilderBasicTypes(t *testing.T) {
 }
 
 func TestBuilderConvertToBDF(t *testing.T) {
-	pv := test.NewBDF("1")
-	nv := test.NewBDF("-1")
+	pv := NewBDF("1")
+	nv := NewBDF("-1")
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
-	assertBuild(t, pv, BI(test.NewBigInt("1")))
+	assertBuild(t, pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, pv, F(1))
-	assertBuild(t, pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, pv, DF(test.NewDFloat("1")))
-	assertBuild(t, pv, BDF(test.NewBDF("1")))
+	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, pv, DF(NewDFloat("1")))
+	assertBuild(t, pv, BDF(NewBDF("1")))
 
 	assertBuild(t, *pv, PI(1))
 	assertBuild(t, *nv, NI(1))
-	assertBuild(t, *pv, BI(test.NewBigInt("1")))
+	assertBuild(t, *pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, *pv, F(1))
-	assertBuild(t, *pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, *pv, DF(test.NewDFloat("1")))
-	assertBuild(t, *pv, BDF(test.NewBDF("1")))
+	assertBuild(t, *pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, *pv, DF(NewDFloat("1")))
+	assertBuild(t, *pv, BDF(NewBDF("1")))
 }
 
 func TestBuilderConvertToBDFFail(t *testing.T) {
-	v := test.NewBDF("1")
+	v := NewBDF("1")
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
@@ -148,27 +147,27 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 }
 
 func TestBuilderConvertToBF(t *testing.T) {
-	pv := test.NewBigFloat("1", 1)
-	nv := test.NewBigFloat("-1", 1)
+	pv := NewBigFloat("1", 10, 1)
+	nv := NewBigFloat("-1", 10, 1)
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
-	assertBuild(t, pv, BI(test.NewBigInt("1")))
+	assertBuild(t, pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, pv, F(1))
-	assertBuild(t, pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, pv, DF(test.NewDFloat("1")))
-	assertBuild(t, pv, BDF(test.NewBDF("1")))
+	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, pv, DF(NewDFloat("1")))
+	assertBuild(t, pv, BDF(NewBDF("1")))
 
 	assertBuild(t, *pv, PI(1))
 	assertBuild(t, *nv, NI(1))
-	assertBuild(t, *pv, BI(test.NewBigInt("1")))
+	assertBuild(t, *pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, *pv, F(1))
-	assertBuild(t, *pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, *pv, DF(test.NewDFloat("1")))
-	assertBuild(t, *pv, BDF(test.NewBDF("1")))
+	assertBuild(t, *pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, *pv, DF(NewDFloat("1")))
+	assertBuild(t, *pv, BDF(NewBDF("1")))
 }
 
 func TestBuilderConvertToBFFail(t *testing.T) {
-	v := test.NewBigFloat("1", 1)
+	v := NewBigFloat("1", 10, 1)
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
@@ -194,40 +193,40 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 }
 
 func TestBuilderConvertToBI(t *testing.T) {
-	pv := test.NewBigInt("1")
-	nv := test.NewBigInt("-1")
+	pv := NewBigInt("1", 10)
+	nv := NewBigInt("-1", 10)
 	assertBuild(t, pv, PI(1))
-	assertBuild(t, test.NewBigInt("9223372036854775808"), PI(9223372036854775808))
+	assertBuild(t, NewBigInt("9223372036854775808", 10), PI(9223372036854775808))
 	assertBuild(t, nv, NI(1))
-	assertBuild(t, pv, BI(test.NewBigInt("1")))
+	assertBuild(t, pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, pv, F(1))
-	assertBuild(t, pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, pv, DF(test.NewDFloat("1")))
-	assertBuild(t, pv, BDF(test.NewBDF("1")))
+	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, pv, DF(NewDFloat("1")))
+	assertBuild(t, pv, BDF(NewBDF("1")))
 
 	assertBuild(t, *pv, PI(1))
 	assertBuild(t, *nv, NI(1))
-	assertBuild(t, *pv, BI(test.NewBigInt("1")))
+	assertBuild(t, *pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, *pv, F(1))
-	assertBuild(t, *pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, *pv, DF(test.NewDFloat("1")))
-	assertBuild(t, *pv, BDF(test.NewBDF("1")))
+	assertBuild(t, *pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, *pv, DF(NewDFloat("1")))
+	assertBuild(t, *pv, BDF(NewBDF("1")))
 }
 
 func TestBuilderConvertToBIFail(t *testing.T) {
-	v := test.NewBigInt("1")
+	v := NewBigInt("1", 10)
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, F(1.1))
-	assertBuildPanics(t, v, BF(test.NewBigFloat("1.1", 1)))
-	assertBuildPanics(t, v, BF(test.NewBigFloat("1.0e100000", 1)))
-	assertBuildPanics(t, v, DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, v, DF(test.NewDFloat("1.0e100000")))
-	assertBuildPanics(t, v, BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, v, BDF(test.NewBDF("1.0e100000")))
-	assertBuildPanics(t, v, BDF(test.NewBDF("nan")))
-	assertBuildPanics(t, v, BDF(test.NewBDF("snan")))
-	assertBuildPanics(t, v, BDF(test.NewBDF("inf")))
-	assertBuildPanics(t, v, BDF(test.NewBDF("-inf")))
+	assertBuildPanics(t, v, BF(NewBigFloat("1.1", 10, 1)))
+	assertBuildPanics(t, v, BF(NewBigFloat("1.0e100000", 10, 1)))
+	assertBuildPanics(t, v, DF(NewDFloat("1.1")))
+	assertBuildPanics(t, v, DF(NewDFloat("1.0e100000")))
+	assertBuildPanics(t, v, BDF(NewBDF("1.1")))
+	assertBuildPanics(t, v, BDF(NewBDF("1.0e100000")))
+	assertBuildPanics(t, v, BDF(NewBDF("nan")))
+	assertBuildPanics(t, v, BDF(NewBDF("snan")))
+	assertBuildPanics(t, v, BDF(NewBDF("inf")))
+	assertBuildPanics(t, v, BDF(NewBDF("-inf")))
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
@@ -241,16 +240,16 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, *v, N())
 	assertBuildPanics(t, *v, F(1.1))
 	assertBuildPanics(t, *v, B(true))
-	assertBuildPanics(t, *v, BF(test.NewBigFloat("1.1", 1)))
-	assertBuildPanics(t, *v, BF(test.NewBigFloat("1.0e100000", 1)))
-	assertBuildPanics(t, *v, DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, *v, DF(test.NewDFloat("1.0e100000")))
-	assertBuildPanics(t, *v, BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, *v, BDF(test.NewBDF("1.0e100000")))
-	assertBuildPanics(t, *v, BDF(test.NewBDF("nan")))
-	assertBuildPanics(t, *v, BDF(test.NewBDF("snan")))
-	assertBuildPanics(t, *v, BDF(test.NewBDF("inf")))
-	assertBuildPanics(t, *v, BDF(test.NewBDF("-inf")))
+	assertBuildPanics(t, *v, BF(NewBigFloat("1.1", 10, 1)))
+	assertBuildPanics(t, *v, BF(NewBigFloat("1.0e100000", 10, 1)))
+	assertBuildPanics(t, *v, DF(NewDFloat("1.1")))
+	assertBuildPanics(t, *v, DF(NewDFloat("1.0e100000")))
+	assertBuildPanics(t, *v, BDF(NewBDF("1.1")))
+	assertBuildPanics(t, *v, BDF(NewBDF("1.0e100000")))
+	assertBuildPanics(t, *v, BDF(NewBDF("nan")))
+	assertBuildPanics(t, *v, BDF(NewBDF("snan")))
+	assertBuildPanics(t, *v, BDF(NewBDF("inf")))
+	assertBuildPanics(t, *v, BDF(NewBDF("-inf")))
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, URI("x://x"))
@@ -263,19 +262,19 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 }
 
 func TestBuilderConvertToDecimalFloat(t *testing.T) {
-	pv := test.NewDFloat("1")
-	nv := test.NewDFloat("-1")
+	pv := NewDFloat("1")
+	nv := NewDFloat("-1")
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
-	assertBuild(t, pv, BI(test.NewBigInt("1")))
+	assertBuild(t, pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, pv, F(1))
-	assertBuild(t, pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, pv, DF(test.NewDFloat("1")))
-	assertBuild(t, pv, BDF(test.NewBDF("1")))
+	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, pv, DF(NewDFloat("1")))
+	assertBuild(t, pv, BDF(NewBDF("1")))
 }
 
 func TestBuilderDecimalFloatFail(t *testing.T) {
-	v := test.NewDFloat("1")
+	v := NewDFloat("1")
 	assertBuildPanics(t, v, N())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, S("1"))
@@ -294,11 +293,11 @@ func TestBuilderConvertToFloat(t *testing.T) {
 	nv := -1.0
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
-	assertBuild(t, pv, BI(test.NewBigInt("1")))
+	assertBuild(t, pv, BI(NewBigInt("1", 10)))
 	assertBuild(t, pv, F(1))
-	assertBuild(t, pv, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, pv, DF(test.NewDFloat("1")))
-	assertBuild(t, pv, BDF(test.NewBDF("1")))
+	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, pv, DF(NewDFloat("1")))
+	assertBuild(t, pv, BDF(NewBDF("1")))
 }
 
 func TestBuilderConvertToFloatFail(t *testing.T) {
@@ -308,10 +307,10 @@ func TestBuilderConvertToFloatFail(t *testing.T) {
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, PI(0xffffffffffffffff))
 	assertBuildPanics(t, v, I(-0x7fffffffffffffff))
-	assertBuildPanics(t, v, BF(test.NewBigFloat("1.0e309", 1)))
-	assertBuildPanics(t, v, BF(test.NewBigFloat("1.0e-311", 1)))
+	assertBuildPanics(t, v, BF(NewBigFloat("1.0e309", 10, 1)))
+	assertBuildPanics(t, v, BF(NewBigFloat("1.0e-311", 10, 1)))
 	// TODO: apd.Decimal and compact_float.DFloat don't handle float overflow
-	assertBuildPanics(t, v, BI(test.NewBigInt("1234567890123456789012345")))
+	assertBuildPanics(t, v, BI(NewBigInt("1234567890123456789012345", 10)))
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
@@ -326,11 +325,11 @@ func TestBuilderConvertToFloatFail(t *testing.T) {
 func TestBuilderConvertToInt(t *testing.T) {
 	assertBuild(t, 1, PI(1))
 	assertBuild(t, -1, NI(1))
-	assertBuild(t, 1, BI(test.NewBigInt("1")))
+	assertBuild(t, 1, BI(NewBigInt("1", 10)))
 	assertBuild(t, 1, F(1))
-	assertBuild(t, 1, BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, 1, DF(test.NewDFloat("1")))
-	assertBuild(t, 1, BDF(test.NewBDF("1")))
+	assertBuild(t, 1, BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, 1, DF(NewDFloat("1")))
+	assertBuild(t, 1, BDF(NewBDF("1")))
 }
 
 func TestBuilderConvertToIntFail(t *testing.T) {
@@ -338,17 +337,17 @@ func TestBuilderConvertToIntFail(t *testing.T) {
 	assertBuildPanics(t, int(1), B(true))
 	assertBuildPanics(t, int(1), PI(0x8000000000000000))
 	assertBuildPanics(t, int(1), F(1.1))
-	assertBuildPanics(t, int(1), BF(test.NewBigFloat("1.1", 1)))
-	assertBuildPanics(t, int(1), DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, int(1), BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, int(1), BF(test.NewBigFloat("1e20", 1)))
-	assertBuildPanics(t, int(1), DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, int(1), BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, int(1), BF(test.NewBigFloat("-1e20", 1)))
-	assertBuildPanics(t, int(1), DF(test.NewDFloat("-1e20")))
-	assertBuildPanics(t, int(1), BDF(test.NewBDF("-1e20")))
-	assertBuildPanics(t, int(1), BI(test.NewBigInt("100000000000000000000")))
-	assertBuildPanics(t, int(1), BI(test.NewBigInt("-100000000000000000000")))
+	assertBuildPanics(t, int(1), BF(NewBigFloat("1.1", 10, 1)))
+	assertBuildPanics(t, int(1), DF(NewDFloat("1.1")))
+	assertBuildPanics(t, int(1), BDF(NewBDF("1.1")))
+	assertBuildPanics(t, int(1), BF(NewBigFloat("1e20", 10, 1)))
+	assertBuildPanics(t, int(1), DF(NewDFloat("1e20")))
+	assertBuildPanics(t, int(1), BDF(NewBDF("1e20")))
+	assertBuildPanics(t, int(1), BF(NewBigFloat("-1e20", 10, 1)))
+	assertBuildPanics(t, int(1), DF(NewDFloat("-1e20")))
+	assertBuildPanics(t, int(1), BDF(NewBDF("-1e20")))
+	assertBuildPanics(t, int(1), BI(NewBigInt("100000000000000000000", 10)))
+	assertBuildPanics(t, int(1), BI(NewBigInt("-100000000000000000000", 10)))
 	assertBuildPanics(t, int(1), S("1"))
 	assertBuildPanics(t, int(1), AU8([]byte{1}))
 	assertBuildPanics(t, int(1), URI("x://x"))
@@ -362,39 +361,39 @@ func TestBuilderConvertToIntFail(t *testing.T) {
 	assertBuildPanics(t, int8(1), PI(1000))
 	assertBuildPanics(t, int8(1), NI(1000))
 	assertBuildPanics(t, int8(1), I(1000))
-	assertBuildPanics(t, int8(1), BI(test.NewBigInt("1000")))
+	assertBuildPanics(t, int8(1), BI(NewBigInt("1000", 10)))
 	assertBuildPanics(t, int8(1), F(1000))
-	assertBuildPanics(t, int8(1), BF(test.NewBigFloat("1000", 4)))
-	assertBuildPanics(t, int8(1), DF(test.NewDFloat("1000")))
-	assertBuildPanics(t, int8(1), BDF(test.NewBDF("1000")))
+	assertBuildPanics(t, int8(1), BF(NewBigFloat("1000", 10, 4)))
+	assertBuildPanics(t, int8(1), DF(NewDFloat("1000")))
+	assertBuildPanics(t, int8(1), BDF(NewBDF("1000")))
 
 	assertBuildPanics(t, int16(1), PI(100000))
 	assertBuildPanics(t, int16(1), NI(100000))
 	assertBuildPanics(t, int16(1), I(100000))
-	assertBuildPanics(t, int16(1), BI(test.NewBigInt("100000")))
+	assertBuildPanics(t, int16(1), BI(NewBigInt("100000", 10)))
 	assertBuildPanics(t, int16(1), F(100000))
-	assertBuildPanics(t, int16(1), BF(test.NewBigFloat("100000", 6)))
-	assertBuildPanics(t, int16(1), DF(test.NewDFloat("100000")))
-	assertBuildPanics(t, int16(1), BDF(test.NewBDF("100000")))
+	assertBuildPanics(t, int16(1), BF(NewBigFloat("100000", 10, 6)))
+	assertBuildPanics(t, int16(1), DF(NewDFloat("100000")))
+	assertBuildPanics(t, int16(1), BDF(NewBDF("100000")))
 
 	assertBuildPanics(t, int32(1), PI(10000000000))
 	assertBuildPanics(t, int32(1), NI(10000000000))
 	assertBuildPanics(t, int32(1), I(10000000000))
-	assertBuildPanics(t, int32(1), BI(test.NewBigInt("10000000000")))
+	assertBuildPanics(t, int32(1), BI(NewBigInt("10000000000", 10)))
 	assertBuildPanics(t, int32(1), F(10000000000))
-	assertBuildPanics(t, int32(1), BF(test.NewBigFloat("10000000000", 11)))
-	assertBuildPanics(t, int32(1), DF(test.NewDFloat("10000000000")))
-	assertBuildPanics(t, int32(1), BDF(test.NewBDF("10000000000")))
+	assertBuildPanics(t, int32(1), BF(NewBigFloat("10000000000", 10, 11)))
+	assertBuildPanics(t, int32(1), DF(NewDFloat("10000000000")))
+	assertBuildPanics(t, int32(1), BDF(NewBDF("10000000000")))
 }
 
 func TestBuilderConvertToUint(t *testing.T) {
 	assertBuild(t, uint(1), PI(1))
 	assertBuild(t, uint(1), I(1))
-	assertBuild(t, uint(1), BI(test.NewBigInt("1")))
+	assertBuild(t, uint(1), BI(NewBigInt("1", 10)))
 	assertBuild(t, uint(1), F(1))
-	assertBuild(t, uint(1), BF(test.NewBigFloat("1", 1)))
-	assertBuild(t, uint(1), DF(test.NewDFloat("1")))
-	assertBuild(t, uint(1), BDF(test.NewBDF("1")))
+	assertBuild(t, uint(1), BF(NewBigFloat("1", 10, 1)))
+	assertBuild(t, uint(1), DF(NewDFloat("1")))
+	assertBuild(t, uint(1), BDF(NewBDF("1")))
 }
 
 func TestBuilderConvertToUintFail(t *testing.T) {
@@ -402,13 +401,13 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 	assertBuildPanics(t, uint(1), B(true))
 	assertBuildPanics(t, uint(1), NI(1))
 	assertBuildPanics(t, uint(1), F(1.1))
-	assertBuildPanics(t, uint(1), BF(test.NewBigFloat("1.1", 2)))
-	assertBuildPanics(t, uint(1), DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, uint(1), BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, uint(1), BF(test.NewBigFloat("1e20", 2)))
-	assertBuildPanics(t, uint(1), DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, uint(1), BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, uint8(1), BI(test.NewBigInt("100000000000000000000")))
+	assertBuildPanics(t, uint(1), BF(NewBigFloat("1.1", 10, 2)))
+	assertBuildPanics(t, uint(1), DF(NewDFloat("1.1")))
+	assertBuildPanics(t, uint(1), BDF(NewBDF("1.1")))
+	assertBuildPanics(t, uint(1), BF(NewBigFloat("1e20", 10, 2)))
+	assertBuildPanics(t, uint(1), DF(NewDFloat("1e20")))
+	assertBuildPanics(t, uint(1), BDF(NewBDF("1e20")))
+	assertBuildPanics(t, uint8(1), BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, uint(1), S("1"))
 	assertBuildPanics(t, uint(1), AU8([]byte{1}))
 	assertBuildPanics(t, uint(1), URI("x://x"))
@@ -421,27 +420,27 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 
 	assertBuildPanics(t, uint8(1), PI(1000))
 	assertBuildPanics(t, uint8(1), I(1000))
-	assertBuildPanics(t, uint8(1), BI(test.NewBigInt("1000")))
+	assertBuildPanics(t, uint8(1), BI(NewBigInt("1000", 10)))
 	assertBuildPanics(t, uint8(1), F(1000))
-	assertBuildPanics(t, uint8(1), BF(test.NewBigFloat("1000", 4)))
-	assertBuildPanics(t, uint8(1), DF(test.NewDFloat("1000")))
-	assertBuildPanics(t, uint8(1), BDF(test.NewBDF("1000")))
+	assertBuildPanics(t, uint8(1), BF(NewBigFloat("1000", 10, 4)))
+	assertBuildPanics(t, uint8(1), DF(NewDFloat("1000")))
+	assertBuildPanics(t, uint8(1), BDF(NewBDF("1000")))
 
 	assertBuildPanics(t, uint16(1), PI(100000))
 	assertBuildPanics(t, uint16(1), I(100000))
-	assertBuildPanics(t, uint16(1), BI(test.NewBigInt("100000")))
+	assertBuildPanics(t, uint16(1), BI(NewBigInt("100000", 10)))
 	assertBuildPanics(t, uint16(1), F(100000))
-	assertBuildPanics(t, uint16(1), BF(test.NewBigFloat("100000", 6)))
-	assertBuildPanics(t, uint16(1), DF(test.NewDFloat("100000")))
-	assertBuildPanics(t, uint16(1), BDF(test.NewBDF("100000")))
+	assertBuildPanics(t, uint16(1), BF(NewBigFloat("100000", 10, 6)))
+	assertBuildPanics(t, uint16(1), DF(NewDFloat("100000")))
+	assertBuildPanics(t, uint16(1), BDF(NewBDF("100000")))
 
 	assertBuildPanics(t, uint32(1), PI(10000000000))
 	assertBuildPanics(t, uint32(1), I(10000000000))
-	assertBuildPanics(t, uint32(1), BI(test.NewBigInt("10000000000")))
+	assertBuildPanics(t, uint32(1), BI(NewBigInt("10000000000", 10)))
 	assertBuildPanics(t, uint32(1), F(10000000000))
-	assertBuildPanics(t, uint32(1), BF(test.NewBigFloat("10000000000", 11)))
-	assertBuildPanics(t, uint32(1), DF(test.NewDFloat("10000000000")))
-	assertBuildPanics(t, uint32(1), BDF(test.NewBDF("10000000000")))
+	assertBuildPanics(t, uint32(1), BF(NewBigFloat("10000000000", 10, 11)))
+	assertBuildPanics(t, uint32(1), DF(NewDFloat("10000000000")))
+	assertBuildPanics(t, uint32(1), BDF(NewBDF("10000000000")))
 }
 
 func TestBuilderString(t *testing.T) {
@@ -454,13 +453,13 @@ func TestBuilderStringFail(t *testing.T) {
 	assertBuildPanics(t, "", PI(1))
 	assertBuildPanics(t, "", NI(1))
 	assertBuildPanics(t, "", F(1.1))
-	assertBuildPanics(t, "", BF(test.NewBigFloat("1.1", 2)))
-	assertBuildPanics(t, "", DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, "", BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, "", BF(test.NewBigFloat("1e20", 2)))
-	assertBuildPanics(t, "", DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, "", BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, "", BI(test.NewBigInt("100000000000000000000")))
+	assertBuildPanics(t, "", BF(NewBigFloat("1.1", 10, 2)))
+	assertBuildPanics(t, "", DF(NewDFloat("1.1")))
+	assertBuildPanics(t, "", BDF(NewBDF("1.1")))
+	assertBuildPanics(t, "", BF(NewBigFloat("1e20", 10, 2)))
+	assertBuildPanics(t, "", DF(NewDFloat("1e20")))
+	assertBuildPanics(t, "", BDF(NewBDF("1e20")))
+	assertBuildPanics(t, "", BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, "", AU8([]byte{1}))
 	assertBuildPanics(t, "", URI("x://x"))
 	assertBuildPanics(t, "", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
@@ -487,7 +486,7 @@ func TestBuilderChunkedVerbatimString(t *testing.T) {
 }
 
 func TestBuilderChunkedURI(t *testing.T) {
-	expected := test.NewURI("test")
+	expected := NewURI("test")
 	assertBuild(t, expected, UB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
 	assertBuild(t, expected, UB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
 }
@@ -550,13 +549,13 @@ func TestBuilderGoTimeFail(t *testing.T) {
 	assertBuildPanics(t, gtime, PI(1))
 	assertBuildPanics(t, gtime, NI(1))
 	assertBuildPanics(t, gtime, F(1.1))
-	assertBuildPanics(t, gtime, BF(test.NewBigFloat("1.1", 2)))
-	assertBuildPanics(t, gtime, DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, gtime, BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, gtime, BF(test.NewBigFloat("1e20", 2)))
-	assertBuildPanics(t, gtime, DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, gtime, BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, gtime, BI(test.NewBigInt("100000000000000000000")))
+	assertBuildPanics(t, gtime, BF(NewBigFloat("1.1", 10, 2)))
+	assertBuildPanics(t, gtime, DF(NewDFloat("1.1")))
+	assertBuildPanics(t, gtime, BDF(NewBDF("1.1")))
+	assertBuildPanics(t, gtime, BF(NewBigFloat("1e20", 10, 2)))
+	assertBuildPanics(t, gtime, DF(NewDFloat("1e20")))
+	assertBuildPanics(t, gtime, BDF(NewBDF("1e20")))
+	assertBuildPanics(t, gtime, BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, gtime, S("1"))
 	assertBuildPanics(t, gtime, AU8([]byte{1}))
 	assertBuildPanics(t, gtime, URI("x://x"))
@@ -589,13 +588,13 @@ func TestBuilderCompactTimeFail(t *testing.T) {
 	assertBuildPanics(t, ctime, PI(1))
 	assertBuildPanics(t, ctime, NI(1))
 	assertBuildPanics(t, ctime, F(1.1))
-	assertBuildPanics(t, ctime, BF(test.NewBigFloat("1.1", 2)))
-	assertBuildPanics(t, ctime, DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, ctime, BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, ctime, BF(test.NewBigFloat("1e20", 2)))
-	assertBuildPanics(t, ctime, DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, ctime, BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, ctime, BI(test.NewBigInt("100000000000000000000")))
+	assertBuildPanics(t, ctime, BF(NewBigFloat("1.1", 10, 2)))
+	assertBuildPanics(t, ctime, DF(NewDFloat("1.1")))
+	assertBuildPanics(t, ctime, BDF(NewBDF("1.1")))
+	assertBuildPanics(t, ctime, BF(NewBigFloat("1e20", 10, 2)))
+	assertBuildPanics(t, ctime, DF(NewDFloat("1e20")))
+	assertBuildPanics(t, ctime, BDF(NewBDF("1e20")))
+	assertBuildPanics(t, ctime, BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, ctime, S("1"))
 	assertBuildPanics(t, ctime, AU8([]byte{1}))
 	assertBuildPanics(t, ctime, URI("x://x"))
@@ -609,13 +608,13 @@ func TestBuilderCompactTimeFail(t *testing.T) {
 	assertBuildPanics(t, *ctime, PI(1))
 	assertBuildPanics(t, *ctime, NI(1))
 	assertBuildPanics(t, *ctime, F(1.1))
-	assertBuildPanics(t, *ctime, BF(test.NewBigFloat("1.1", 2)))
-	assertBuildPanics(t, *ctime, DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, *ctime, BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, *ctime, BF(test.NewBigFloat("1e20", 2)))
-	assertBuildPanics(t, *ctime, DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, *ctime, BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, *ctime, BI(test.NewBigInt("100000000000000000000")))
+	assertBuildPanics(t, *ctime, BF(NewBigFloat("1.1", 10, 2)))
+	assertBuildPanics(t, *ctime, DF(NewDFloat("1.1")))
+	assertBuildPanics(t, *ctime, BDF(NewBDF("1.1")))
+	assertBuildPanics(t, *ctime, BF(NewBigFloat("1e20", 10, 2)))
+	assertBuildPanics(t, *ctime, DF(NewDFloat("1e20")))
+	assertBuildPanics(t, *ctime, BDF(NewBDF("1e20")))
+	assertBuildPanics(t, *ctime, BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, *ctime, S("1"))
 	assertBuildPanics(t, *ctime, AU8([]byte{1}))
 	assertBuildPanics(t, *ctime, URI("x://x"))
@@ -635,13 +634,13 @@ func TestBuilderSlice(t *testing.T) {
 
 	assertBuild(t, []bool{false, true}, L(), B(false), B(true), E())
 	assertBuild(t, []int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
-		BI(test.NewBigInt("4")), BF(test.NewBigFloat("5", 1)), DF(test.NewDFloat("6")),
-		BDF(test.NewBDF("7")), E())
+		BI(NewBigInt("4", 10)), BF(NewBigFloat("5", 10, 1)), DF(NewDFloat("6")),
+		BDF(NewBDF("7")), E())
 	assertBuild(t, []*int{nil}, L(), N(), E())
 	assertBuild(t, [][]byte{[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, L(), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}), E())
 	assertBuild(t, []string{"test"}, L(), S("test"), E())
 	assertBuild(t, [][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
-	assertBuild(t, []*url.URL{test.NewURI("http://example.com")}, L(), URI("http://example.com"), E())
+	assertBuild(t, []*url.URL{NewURI("http://example.com")}, L(), URI("http://example.com"), E())
 	assertBuild(t, []time.Time{gtime}, L(), GT(gtime), E())
 	assertBuild(t, []*compact_time.Time{ctime}, L(), CT(ctime), E())
 	assertBuild(t, [][]int{[]int{1}}, L(), L(), I(1), E(), E())
@@ -664,13 +663,13 @@ func TestBuilderArray(t *testing.T) {
 
 	assertBuild(t, [2]bool{false, true}, L(), B(false), B(true), E())
 	assertBuild(t, [7]int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
-		BI(test.NewBigInt("4")), BF(test.NewBigFloat("5", 1)), DF(test.NewDFloat("6")),
-		BDF(test.NewBDF("7")), E())
+		BI(NewBigInt("4", 10)), BF(NewBigFloat("5", 10, 1)), DF(NewDFloat("6")),
+		BDF(NewBDF("7")), E())
 	assertBuild(t, [1]*int{nil}, L(), N(), E())
 	assertBuild(t, [1][]byte{[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, L(), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}), E())
 	assertBuild(t, [1]string{"test"}, L(), S("test"), E())
 	assertBuild(t, [1][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
-	assertBuild(t, [1]*url.URL{test.NewURI("http://example.com")}, L(), URI("http://example.com"), E())
+	assertBuild(t, [1]*url.URL{NewURI("http://example.com")}, L(), URI("http://example.com"), E())
 	assertBuild(t, [1]time.Time{gtime}, L(), GT(gtime), E())
 	assertBuild(t, [1]*compact_time.Time{ctime}, L(), CT(ctime), E())
 	assertBuild(t, [1][]int{[]int{1}}, L(), L(), I(1), E(), E())
@@ -693,13 +692,13 @@ func TestBuilderByteArrayFail(t *testing.T) {
 	assertBuildPanics(t, [1]byte{}, PI(1))
 	assertBuildPanics(t, [1]byte{}, NI(1))
 	assertBuildPanics(t, [1]byte{}, F(1.1))
-	assertBuildPanics(t, [1]byte{}, BF(test.NewBigFloat("1.1", 2)))
-	assertBuildPanics(t, [1]byte{}, DF(test.NewDFloat("1.1")))
-	assertBuildPanics(t, [1]byte{}, BDF(test.NewBDF("1.1")))
-	assertBuildPanics(t, [1]byte{}, BF(test.NewBigFloat("1e20", 2)))
-	assertBuildPanics(t, [1]byte{}, DF(test.NewDFloat("1e20")))
-	assertBuildPanics(t, [1]byte{}, BDF(test.NewBDF("1e20")))
-	assertBuildPanics(t, [1]byte{}, BI(test.NewBigInt("100000000000000000000")))
+	assertBuildPanics(t, [1]byte{}, BF(NewBigFloat("1.1", 10, 2)))
+	assertBuildPanics(t, [1]byte{}, DF(NewDFloat("1.1")))
+	assertBuildPanics(t, [1]byte{}, BDF(NewBDF("1.1")))
+	assertBuildPanics(t, [1]byte{}, BF(NewBigFloat("1e20", 10, 2)))
+	assertBuildPanics(t, [1]byte{}, DF(NewDFloat("1e20")))
+	assertBuildPanics(t, [1]byte{}, BDF(NewBDF("1e20")))
+	assertBuildPanics(t, [1]byte{}, BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, [1]byte{}, S(""))
 	assertBuildPanics(t, [1]byte{}, URI("x://x"))
 	assertBuildPanics(t, [1]byte{}, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
@@ -724,12 +723,12 @@ func TestBuilderMap(t *testing.T) {
 		3:  1,
 		4:  -1,
 		5:  1.1,
-		6:  test.NewBigFloat("1.1", 2),
-		7:  test.NewDFloat("1.1"),
-		8:  test.NewBDF("1.1"),
-		9:  test.NewBigInt("100000000000000000000"),
+		6:  NewBigFloat("1.1", 10, 2),
+		7:  NewDFloat("1.1"),
+		8:  NewBDF("1.1"),
+		9:  NewBigInt("100000000000000000000", 10),
 		10: "test",
-		11: test.NewURI("http://example.com"),
+		11: NewURI("http://example.com"),
 		12: []byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 		13: gtime,
 		14: ctime,
@@ -743,10 +742,10 @@ func TestBuilderMap(t *testing.T) {
 		I(3), PI(1),
 		I(4), NI(1),
 		I(5), F(1.1),
-		I(6), BF(test.NewBigFloat("1.1", 2)),
-		I(7), DF(test.NewDFloat("1.1")),
-		I(8), BDF(test.NewBDF("1.1")),
-		I(9), BI(test.NewBigInt("100000000000000000000")),
+		I(6), BF(NewBigFloat("1.1", 10, 2)),
+		I(7), DF(NewDFloat("1.1")),
+		I(8), BDF(NewBDF("1.1")),
+		I(9), BI(NewBigInt("100000000000000000000", 10)),
 		I(10), S("test"),
 		I(11), URI("http://example.com"),
 		I(12), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
@@ -759,7 +758,7 @@ func TestBuilderMap(t *testing.T) {
 }
 
 func TestBuilderStruct(t *testing.T) {
-	s := test.NewTestingOuterStruct(1)
+	s := NewTestingOuterStruct(1)
 	includeFakes := true
 	assertBuild(t, s, s.GetRepresentativeEvents(includeFakes)...)
 }
@@ -778,12 +777,12 @@ func TestBuilderInterfaceSlice(t *testing.T) {
 		1,
 		-1,
 		1.1,
-		test.NewBigFloat("1.1", 2),
-		test.NewDFloat("1.1"),
-		test.NewBDF("1.1"),
-		test.NewBigInt("100000000000000000000"),
+		NewBigFloat("1.1", 10, 2),
+		NewDFloat("1.1"),
+		NewBDF("1.1"),
+		NewBigInt("100000000000000000000", 10),
 		"test",
-		test.NewURI("http://example.com"),
+		NewURI("http://example.com"),
 		[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 		gtime,
 		ctime,
@@ -796,10 +795,10 @@ func TestBuilderInterfaceSlice(t *testing.T) {
 		PI(1),
 		NI(1),
 		F(1.1),
-		BF(test.NewBigFloat("1.1", 2)),
-		DF(test.NewDFloat("1.1")),
-		BDF(test.NewBDF("1.1")),
-		BI(test.NewBigInt("100000000000000000000")),
+		BF(NewBigFloat("1.1", 10, 2)),
+		DF(NewDFloat("1.1")),
+		BDF(NewBDF("1.1")),
+		BI(NewBigInt("100000000000000000000", 10)),
 		S("test"),
 		URI("http://example.com"),
 		UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
@@ -825,12 +824,12 @@ func TestBuilderInterfaceMap(t *testing.T) {
 		3:  1,
 		4:  -1,
 		5:  1.1,
-		6:  test.NewBigFloat("1.1", 2),
-		7:  test.NewDFloat("1.1"),
-		8:  test.NewBDF("1.1"),
-		9:  test.NewBigInt("100000000000000000000"),
+		6:  NewBigFloat("1.1", 10, 2),
+		7:  NewDFloat("1.1"),
+		8:  NewBDF("1.1"),
+		9:  NewBigInt("100000000000000000000", 10),
 		10: "test",
-		11: test.NewURI("http://example.com"),
+		11: NewURI("http://example.com"),
 		12: []byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 		13: gtime,
 		14: ctime,
@@ -844,10 +843,10 @@ func TestBuilderInterfaceMap(t *testing.T) {
 		I(3), PI(1),
 		I(4), NI(1),
 		I(5), F(1.1),
-		I(6), BF(test.NewBigFloat("1.1", 2)),
-		I(7), DF(test.NewDFloat("1.1")),
-		I(8), BDF(test.NewBDF("1.1")),
-		I(9), BI(test.NewBigInt("100000000000000000000")),
+		I(6), BF(NewBigFloat("1.1", 10, 2)),
+		I(7), DF(NewDFloat("1.1")),
+		I(8), BDF(NewBDF("1.1")),
+		I(9), BI(NewBigInt("100000000000000000000", 10)),
 		I(10), S("test"),
 		I(11), URI("http://example.com"),
 		I(12), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
@@ -1124,7 +1123,7 @@ type PURLContainer struct {
 }
 
 func TestBuilderPURLContainer(t *testing.T) {
-	v := PURLContainer{test.NewURI("http://x.com")}
+	v := PURLContainer{NewURI("http://x.com")}
 
 	assertBuild(t, v,
 		M(),

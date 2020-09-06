@@ -100,6 +100,8 @@ func IsSignalingNan(value float64) bool {
 }
 
 var BigInt0 = big.NewInt(0)
+var BigInt2 = big.NewInt(2)
+var BigInt8 = big.NewInt(8)
 var BigInt10 = big.NewInt(10)
 var BigInt16 = big.NewInt(16)
 var BigIntN1 = big.NewInt(-1)

@@ -26,9 +26,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/test"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-time"
@@ -36,14 +37,14 @@ import (
 )
 
 func TestIterateBasic(t *testing.T) {
-	pBigIntP := test.NewBigInt("12345678901234567890123456789")
-	pBigIntN := test.NewBigInt("-999999999999999999999999999999")
-	pBigFloat := test.NewBigFloat("5.377345e-10000", 7)
-	dfloat := test.NewDFloat("1.23456e1000")
-	pBigDFloat := test.NewBDF("4.509e10000")
+	pBigIntP := NewBigInt("12345678901234567890123456789", 10)
+	pBigIntN := NewBigInt("-999999999999999999999999999999", 10)
+	pBigFloat := NewBigFloat("5.377345e-10000", 10, 7)
+	dfloat := NewDFloat("1.23456e1000")
+	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()
 	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
-	pURL := test.NewURI("http://x.com")
+	pURL := NewURI("http://x.com")
 
 	assertIterate(t, nil, N())
 	assertIterate(t, true, B(true))

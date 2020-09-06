@@ -382,14 +382,22 @@ func (_this *Decoder) handleOtherBasePositive() {
 
 	switch b {
 	case 'b':
-		v := _this.buffer.DecodeBinaryInteger()
+		v, bigV, _ := _this.buffer.DecodeBinaryInteger()
 		_this.buffer.AssertAtObjectEnd("binary integer")
-		_this.eventReceiver.OnPositiveInt(v)
+		if bigV != nil {
+			_this.eventReceiver.OnBigInt(bigV)
+		} else {
+			_this.eventReceiver.OnPositiveInt(v)
+		}
 		_this.endObject()
 	case 'o':
-		v := _this.buffer.DecodeOctalInteger()
+		v, bigV, _ := _this.buffer.DecodeOctalInteger()
 		_this.buffer.AssertAtObjectEnd("octal integer")
-		_this.eventReceiver.OnPositiveInt(v)
+		if bigV != nil {
+			_this.eventReceiver.OnBigInt(bigV)
+		} else {
+			_this.eventReceiver.OnPositiveInt(v)
+		}
 		_this.endObject()
 	case 'x':
 		v, bigV, digitCount := _this.buffer.DecodeHexInteger(0, nil)
@@ -405,7 +413,11 @@ func (_this *Decoder) handleOtherBasePositive() {
 			_this.endObject()
 		} else {
 			_this.buffer.AssertAtObjectEnd("hex integer")
-			_this.eventReceiver.OnPositiveInt(v)
+			if bigV != nil {
+				_this.eventReceiver.OnBigInt(bigV)
+			} else {
+				_this.eventReceiver.OnPositiveInt(v)
+			}
 			_this.endObject()
 		}
 	case '.':
@@ -436,14 +448,24 @@ func (_this *Decoder) handleOtherBaseNegative() {
 	b := _this.buffer.ReadByte()
 	switch b {
 	case 'b':
-		v := _this.buffer.DecodeBinaryInteger()
+		v, bigV, _ := _this.buffer.DecodeBinaryInteger()
 		_this.buffer.AssertAtObjectEnd("binary integer")
-		_this.eventReceiver.OnNegativeInt(v)
+		if bigV != nil {
+			bigV = bigV.Neg(bigV)
+			_this.eventReceiver.OnBigInt(bigV)
+		} else {
+			_this.eventReceiver.OnNegativeInt(v)
+		}
 		_this.endObject()
 	case 'o':
-		v := _this.buffer.DecodeOctalInteger()
+		v, bigV, _ := _this.buffer.DecodeOctalInteger()
 		_this.buffer.AssertAtObjectEnd("octal integer")
-		_this.eventReceiver.OnNegativeInt(v)
+		if bigV != nil {
+			bigV = bigV.Neg(bigV)
+			_this.eventReceiver.OnBigInt(bigV)
+		} else {
+			_this.eventReceiver.OnNegativeInt(v)
+		}
 		_this.endObject()
 	case 'x':
 		v, bigV, digitCount := _this.buffer.DecodeHexInteger(0, nil)
@@ -459,7 +481,12 @@ func (_this *Decoder) handleOtherBaseNegative() {
 			_this.endObject()
 		} else {
 			_this.buffer.AssertAtObjectEnd("hex integer")
-			_this.eventReceiver.OnNegativeInt(v)
+			if bigV != nil {
+				bigV = bigV.Neg(bigV)
+				_this.eventReceiver.OnBigInt(bigV)
+			} else {
+				_this.eventReceiver.OnNegativeInt(v)
+			}
 			_this.endObject()
 		}
 	case '.':

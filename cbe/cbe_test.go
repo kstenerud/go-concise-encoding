@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/test"
 )
 
 func TestCBEVersion(t *testing.T) {
@@ -94,9 +93,9 @@ func TestCBEPositiveInt(t *testing.T) {
 	assertDecodeEncode(t, []byte{version, typePosInt64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00}, BD(), V(1), PI(0x1000000000000), ED())
 	assertDecodeEncode(t, []byte{version, typePosInt64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), PI(0x100000000000000), ED())
 	assertDecodeEncode(t, []byte{version, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), V(1), PI(0xffffffffffffffff), ED())
-	assertDecodeEncode(t, []byte{version, typePosInt, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("18446744073709551616")), ED())
-	assertDecodeEncode(t, []byte{version, typePosInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("4722366482869645213696")), ED())
-	assertEncode(t, nil, []byte{version, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), V(1), BI(NewBigInt("18446744073709551615")), ED())
+	assertDecodeEncode(t, []byte{version, typePosInt, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("18446744073709551616", 10)), ED())
+	assertDecodeEncode(t, []byte{version, typePosInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("4722366482869645213696", 10)), ED())
+	assertEncode(t, nil, []byte{version, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), V(1), BI(NewBigInt("18446744073709551615", 10)), ED())
 
 	assertEncode(t, nil, []byte{version, typeNil}, BD(), V(1), BI(nil), ED())
 }
@@ -115,9 +114,9 @@ func TestCBENegativeInt(t *testing.T) {
 	assertDecodeEncode(t, []byte{version, typeNegInt64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00}, BD(), V(1), NI(0x1000000000000), ED())
 	assertDecodeEncode(t, []byte{version, typeNegInt64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), NI(0x100000000000000), ED())
 	assertDecodeEncode(t, []byte{version, typeNegInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), V(1), NI(0xffffffffffffffff), ED())
-	assertDecodeEncode(t, []byte{version, typeNegInt, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("-18446744073709551616")), ED())
-	assertDecodeEncode(t, []byte{version, typeNegInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("-4722366482869645213696")), ED())
-	assertEncode(t, nil, []byte{version, typeNegInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f}, BD(), V(1), BI(NewBigInt("-9223372036854775807")), ED())
+	assertDecodeEncode(t, []byte{version, typeNegInt, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("-18446744073709551616", 10)), ED())
+	assertDecodeEncode(t, []byte{version, typeNegInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("-4722366482869645213696", 10)), ED())
+	assertEncode(t, nil, []byte{version, typeNegInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f}, BD(), V(1), BI(NewBigInt("-9223372036854775807", 10)), ED())
 }
 
 func TestCBEBinaryFloatEOF(t *testing.T) {
@@ -155,7 +154,7 @@ func TestCBEDecimalFloat(t *testing.T) {
 }
 
 func TestCBEBigFloat(t *testing.T) {
-	assertEncode(t, nil, []byte{version, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), V(1), BF(NewBigFloat("9.445283e+5000", 7)), ED())
+	assertEncode(t, nil, []byte{version, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), V(1), BF(NewBigFloat("9.445283e+5000", 10, 7)), ED())
 
 	assertDecodeEncode(t, []byte{version, typeDecimal,
 		0xcf, 0x9d, 0x01, 0xd1, 0x8e, 0xa2, 0xe6, 0x83, 0x8a, 0xbf, 0xc1, 0xbb,
@@ -469,7 +468,7 @@ func TestCBEChunkedArray(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(encoder, V(1), AU16B(), AC(2, true), AD([]byte{1, 0, 2, 0}), AC(2, false), AD([]byte{3, 0, 4, 0}), ED())
+	InvokeEvents(encoder, V(1), AU16B(), AC(2, true), AD([]byte{1, 0, 2, 0}), AC(2, false), AD([]byte{3, 0, 4, 0}), ED())
 
 	expected := []byte{1, typeArray, typePosInt16, 0x05, 1, 0, 2, 0, 0x04, 3, 0, 4, 0}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {
@@ -481,11 +480,11 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(encoder, V(1), M(), E(), ED())
+	InvokeEvents(encoder, V(1), M(), E(), ED())
 
 	buffer2 := &bytes.Buffer{}
 	encoder.PrepareToEncode(buffer2)
-	test.InvokeEvents(encoder, V(1), M(), E(), ED())
+	InvokeEvents(encoder, V(1), M(), E(), ED())
 
 	expected := []byte{1, typeMap, typeEndContainer}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {

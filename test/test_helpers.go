@@ -54,17 +54,26 @@ func PassThroughPanics(shouldPassThrough bool) func() {
 	}
 }
 
-func NewBigInt(str string) *big.Int {
+func NewBigInt(str string, base int) *big.Int {
 	bi := new(big.Int)
-	_, success := bi.SetString(str, 10)
+	_, success := bi.SetString(str, base)
 	if !success {
 		panic(fmt.Errorf("cannot convert %v to big.Int", str))
 	}
 	return bi
 }
 
-func NewBigFloat(str string, significantDigits int) *big.Float {
-	f, _, err := big.ParseFloat(str, 10, uint(conversions.DecimalDigitsToBits(significantDigits)), big.ToNearestEven)
+func NewBigFloat(str string, base int, significantDigits int) *big.Float {
+	bits := uint(0)
+	switch base {
+	case 10:
+		bits = uint(conversions.DecimalDigitsToBits(significantDigits))
+	case 16:
+		bits = uint(conversions.HexDigitsToBits(significantDigits))
+	default:
+		panic(fmt.Errorf("%v: Unhandled base", base))
+	}
+	f, _, err := big.ParseFloat(str, base, bits, big.ToNearestEven)
 	if err != nil {
 		panic(err)
 	}
@@ -1207,11 +1216,11 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F3", I(1))
 		ane("F4", I(-1))
 		ane("F5", F(1.1))
-		ane("F6", BF(NewBigFloat("1.1", 2)))
+		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
 		ane("F9", N())
-		ane("F10", BI(NewBigInt("1000")))
+		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())
 		ane("F14", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
@@ -1229,11 +1238,11 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			I(1),
 			I(-1),
 			F(1.1),
-			BF(NewBigFloat("1.1", 2)),
+			BF(NewBigFloat("1.1", 10, 2)),
 			DF(NewDFloat("1.1")),
 			BDF(NewBDF("1.1")),
 			N(),
-			BI(NewBigInt("1000")),
+			BI(NewBigInt("1000", 10)),
 			NAN(),
 			SNAN(),
 			UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
@@ -1289,13 +1298,13 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PU32 = &_this.U32
 	_this.U64 = uint64(1000000000000) + uint64(baseValue+int(unsafe.Offsetof(_this.U64)))
 	_this.PU64 = &_this.U64
-	_this.PBI = NewBigInt(fmt.Sprintf("-10000000000000000000000000000000000000%v", unsafe.Offsetof(_this.PBI)))
+	_this.PBI = NewBigInt(fmt.Sprintf("-10000000000000000000000000000000000000%v", unsafe.Offsetof(_this.PBI)), 10)
 	_this.BI = *_this.PBI
 	_this.F32 = float32(1000000+baseValue+int(unsafe.Offsetof(_this.F32))) + 0.5
 	_this.PF32 = &_this.F32
 	_this.F64 = float64(1000000000000) + float64(baseValue+int(unsafe.Offsetof(_this.F64))) + 0.5
 	_this.PF64 = &_this.F64
-	_this.PBF = NewBigFloat("12345678901234567890123.1234567", 30)
+	_this.PBF = NewBigFloat("12345678901234567890123.1234567", 10, 30)
 	_this.BF = *_this.PBF
 	_this.DF = NewDFloat(fmt.Sprintf("-100000000000000%ve-1000000", unsafe.Offsetof(_this.DF)))
 	_this.PBDF = NewBDF("-1.234567890123456789777777777777777777771234e-10000")
