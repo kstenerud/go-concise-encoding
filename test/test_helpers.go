@@ -175,6 +175,154 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
 	}
 }
 
+var (
+	EvBD     = BD()
+	EvED     = ED()
+	EvV      = V(1)
+	EvPAD    = PAD(1)
+	EvN      = N()
+	EvB      = B(true)
+	EvTT     = TT()
+	EvFF     = FF()
+	EvPI     = PI(1)
+	EvNI     = NI(1)
+	EvI      = I(0)
+	EvBI     = BI(NewBigInt("1", 10))
+	EvBINil  = BI(nil)
+	EvF      = F(0.1)
+	EvFNAN   = F(math.NaN())
+	EvBF     = BF(NewBigFloat("0.1", 10, 1))
+	EvBFNil  = BF(nil)
+	EvDF     = DF(NewDFloat("0.1"))
+	EvDFNAN  = DF(NewDFloat("nan"))
+	EvBDF    = BDF(NewBDF("0.1"))
+	EvBDFNil = BDF(nil)
+	EvBDFNAN = BDF(NewBDF("nan"))
+	EvNAN    = NAN()
+	EvUUID   = UUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	EvGT     = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
+	EvCT     = CT(compact_time.NewDate(2020, 1, 1))
+	EvCTNil  = CT(nil)
+	EvL      = L()
+	EvM      = M()
+	EvMUP    = MUP()
+	EvMETA   = META()
+	EvCMT    = CMT()
+	EvE      = E()
+	EvMARK   = MARK()
+	EvREF    = REF()
+	EvAC     = AC(1, false)
+	EvAD     = AD([]byte{1})
+	EvS      = S("a")
+	EvSB     = SB()
+	EvVS     = VS("a")
+	EvVB     = VB()
+	EvURI    = URI("http://z.com")
+	EvUB     = UB()
+	EvCUB    = CUB([]byte{1})
+	EvCBB    = CBB()
+	EvCUT    = CUT("a")
+	EvCTB    = CTB()
+	EvAB     = AB(1, []byte{1})
+	EvABB    = ABB()
+	EvAU8    = AU8([]uint8{1})
+	EvAU8B   = AU8B()
+	EvAU16   = AU16([]uint16{1})
+	EvAU16B  = AU16B()
+	EvAU32   = AU32([]uint32{1})
+	EvAU32B  = AU32B()
+	EvAU64   = AU64([]uint64{1})
+	EvAU64B  = AU64B()
+	EvAI8    = AI8([]int8{1})
+	EvAI8B   = AI8B()
+	EvAI16   = AI16([]int16{1})
+	EvAI16B  = AI16B()
+	EvAI32   = AI32([]int32{1})
+	EvAI32B  = AI32B()
+	EvAI64   = AI64([]int64{1})
+	EvAI64B  = AI64B()
+	EvAF16   = AF16([]byte{1, 2})
+	EvAF16B  = AF16B()
+	EvAF32   = AF32([]float32{1})
+	EvAF32B  = AF32B()
+	EvAF64   = AF64([]float64{1})
+	EvAF64B  = AF64B()
+	EvAUU    = AUU([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	EvAUUB   = AUUB()
+)
+
+var allEvents = []*TEvent{
+	EvBD, EvED, EvV, EvPAD, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
+	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
+	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
+	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvVS, EvVB, EvURI, EvUB,
+	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
+	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
+	EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
+	EvAF64B, EvAUU, EvAUUB,
+}
+
+func ComplementaryEvents(events []*TEvent) []*TEvent {
+	complementary := make([]*TEvent, 0, len(allEvents)/2)
+	for _, event := range allEvents {
+		for _, compareEvent := range events {
+			if event == compareEvent {
+				goto Skip
+			}
+		}
+		complementary = append(complementary, event)
+	Skip:
+	}
+	return complementary
+}
+
+var (
+	ArrayBeginTypes = []*TEvent{
+		EvSB, EvVB, EvUB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
+		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB,
+	}
+
+	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
+	InvalidTLOValues = []*TEvent{EvBD, EvV, EvE, EvAC, EvAD}
+
+	ValidMapKeys = []*TEvent{
+		EvPAD, EvB, EvTT, EvFF, EvB, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
+		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvVS, EvVB, EvURI, EvUB, EvCUB,
+		EvCBB, EvCUT, EvCTB, EvMETA, EvCMT, EvE,
+	}
+	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
+
+	ValidMapValues   = ComplementaryEvents(InvalidMapValues)
+	InvalidMapValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
+
+	ValidListValues   = ComplementaryEvents(InvalidListValues)
+	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+
+	ValidCommentValues   = []*TEvent{EvCMT, EvE, EvS, EvSB, EvVS, EvVB, EvPAD}
+	InvalidCommentValues = ComplementaryEvents(ValidCommentValues)
+
+	ValidMarkupNames   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvPI, EvI, EvBI}
+	InvalidMarkupNames = ComplementaryEvents(ValidMarkupNames)
+
+	ValidMarkupContents   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvMUP, EvCMT, EvE}
+	InvalidMarkupContents = ComplementaryEvents(ValidMarkupContents)
+
+	ValidAfterArrayBegin   = []*TEvent{EvAC}
+	InvalidAfterArrayBegin = ComplementaryEvents(ValidAfterArrayBegin)
+
+	ValidAfterArrayChunk   = []*TEvent{EvAD}
+	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
+
+	ValidMarkerIDs   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvPI, EvI, EvBI}
+	InvalidMarkerIDs = ComplementaryEvents(ValidMarkerIDs)
+
+	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
+
+	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvPI, EvI, EvBI, EvURI, EvUB}
+	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
+)
+
 type TEventType int
 
 const (
@@ -359,9 +507,9 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
 	case TEventTrue:
-		receiver.OnBool(true)
+		receiver.OnTrue()
 	case TEventFalse:
-		receiver.OnBool(false)
+		receiver.OnFalse()
 	case TEventPInt:
 		receiver.OnPositiveInt(_this.V1.(uint64))
 	case TEventNInt:
@@ -519,8 +667,8 @@ func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	return newTEvent(eventType, value, nil)
 }
 
-func TT() *TEvent { return newTEvent(TEventBool, true, nil) }
-func FF() *TEvent { return newTEvent(TEventBool, false, nil) }
+func TT() *TEvent { return newTEvent(TEventTrue, nil, nil) }
+func FF() *TEvent { return newTEvent(TEventFalse, nil, nil) }
 func I(v int64) *TEvent {
 	if v >= 0 {
 		return PI(uint64(v))

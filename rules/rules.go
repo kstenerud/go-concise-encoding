@@ -176,6 +176,11 @@ func (_this *Rules) OnInt(value int64) {
 }
 
 func (_this *Rules) OnBigInt(value *big.Int) {
+	if value == nil {
+		_this.OnNil()
+		return
+	}
+
 	if value.IsInt64() {
 		_this.OnInt(value.Int64())
 		return
@@ -206,6 +211,11 @@ func (_this *Rules) OnFloat(value float64) {
 }
 
 func (_this *Rules) OnBigFloat(value *big.Float) {
+	if value == nil {
+		_this.OnNil()
+		return
+	}
+
 	_this.addScalar(eventTypeFloat)
 	_this.nextReceiver.OnBigFloat(value)
 }
@@ -225,6 +235,11 @@ func (_this *Rules) OnDecimalFloat(value compact_float.DFloat) {
 }
 
 func (_this *Rules) OnBigDecimalFloat(value *apd.Decimal) {
+	if value == nil {
+		_this.OnNil()
+		return
+	}
+
 	switch value.Form {
 	case apd.NaN:
 		_this.OnNan(false)
@@ -254,14 +269,28 @@ func (_this *Rules) OnTime(value time.Time) {
 }
 
 func (_this *Rules) OnCompactTime(value *compact_time.Time) {
+	if value == nil {
+		_this.OnNil()
+		return
+	}
+
 	_this.addScalar(eventTypeTime)
 	_this.nextReceiver.OnCompactTime(value)
 }
 
 func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	// TODO: Valid map keys: make this nicer
 	switch arrayType {
 	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+		// TODO: Isn't this done in onArrayData?
 		_this.validateString(value)
+	case events.ArrayTypeURI, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
+	// OK
+	default:
+		switch _this.getCurrentStateID() {
+		case stateIDAwaitingMapKey, stateIDAwaitingMarkupKey, stateIDAwaitingMetadataKey:
+			panic(fmt.Errorf("Array type %v not allowed as map key", arrayType))
+		}
 	}
 	_this.beginArray(arrayType)
 	_this.onArrayChunk(elementCount, false)
@@ -272,6 +301,17 @@ func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, val
 }
 
 func (_this *Rules) OnArrayBegin(arrayType events.ArrayType) {
+	switch arrayType {
+	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	// OK
+	case events.ArrayTypeURI, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
+	// OK
+	default:
+		switch _this.getCurrentStateID() {
+		case stateIDAwaitingMapKey, stateIDAwaitingMarkupKey, stateIDAwaitingMetadataKey:
+			panic(fmt.Errorf("Array type %v not allowed as map key", arrayType))
+		}
+	}
 	_this.beginArray(arrayType)
 	_this.nextReceiver.OnArrayBegin(arrayType)
 }
@@ -564,7 +604,7 @@ func (_this *Rules) onArrayChunkEnded() {
 	_this.unstackState()
 
 	switch _this.arrayType {
-	case events.ArrayTypeString:
+	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
 		if _this.isAwaitingMarkupName() {
 
 			if _this.arrayBytesWritten == 0 {

@@ -44,8 +44,8 @@ func TestCBENil(t *testing.T) {
 }
 
 func TestCBEBool(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeTrue}, BD(), V(1), B(true), ED())
-	assertDecodeEncode(t, []byte{version, typeFalse}, BD(), V(1), B(false), ED())
+	assertDecodeEncode(t, []byte{version, typeTrue}, BD(), V(1), TT(), ED())
+	assertDecodeEncode(t, []byte{version, typeFalse}, BD(), V(1), FF(), ED())
 }
 
 func TestCBEIntEOF(t *testing.T) {
