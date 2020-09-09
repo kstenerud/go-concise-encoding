@@ -690,35 +690,100 @@ func (_this *Decoder) handleVerbatimString() {
 }
 
 func (_this *Decoder) handleU8X() {
-	// TODO: Optimize handleU8X
 	var data []uint8
 	for {
-		b := _this.buffer.PeekByteNoEOD()
-		if !hasProperty(b, ctePropertyWhitespace) {
-			if b == '|' {
-				_this.buffer.AdvanceByte()
-				break
-			}
-			panic(fmt.Errorf("Expected whitespace"))
-		}
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		b = _this.buffer.PeekByteNoEOD()
-		if b == '|' {
-			_this.buffer.AdvanceByte()
-			break
-		}
-
 		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
 		if count == 0 {
-			panic(fmt.Errorf("Expected hex digits"))
+			break
 		}
 		if count > 2 {
 			panic(fmt.Errorf("hex byte too long"))
 		}
 		data = append(data, uint8(v))
 	}
-	_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
-	_this.endObject()
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		panic(fmt.Errorf("Expected hex digits"))
+	}
+}
+
+func (_this *Decoder) handleU16X() {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
+		if count == 0 {
+			break
+		}
+		if count > 4 {
+			panic(fmt.Errorf("hex byte too long"))
+		}
+		data = append(data, uint8(v), uint8(v>>8))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint16, uint64(len(data))/2, data)
+		_this.endObject()
+		return
+	default:
+		panic(fmt.Errorf("Expected hex digits"))
+	}
+}
+
+func (_this *Decoder) handleU32X() {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
+		if count == 0 {
+			break
+		}
+		if count > 8 {
+			panic(fmt.Errorf("hex byte too long"))
+		}
+		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint32, uint64(len(data))/4, data)
+		_this.endObject()
+		return
+	default:
+		panic(fmt.Errorf("Expected hex digits"))
+	}
+}
+
+func (_this *Decoder) handleU64X() {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
+		if count == 0 {
+			break
+		}
+		if count > 16 {
+			panic(fmt.Errorf("hex byte too long"))
+		}
+		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
+			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint64, uint64(len(data))/8, data)
+		_this.endObject()
+		return
+	default:
+		panic(fmt.Errorf("Expected hex digits"))
+	}
 }
 
 func (_this *Decoder) handleTypedArrayBegin() {
@@ -735,6 +800,12 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	switch token {
 	case "u8x":
 		_this.handleU8X()
+	case "u16x":
+		_this.handleU16X()
+	case "u32x":
+		_this.handleU32X()
+	case "u64x":
+		_this.handleU64X()
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %s", token))
 		panic(fmt.Errorf("%s: Unhandled array type", token))
