@@ -1,9 +1,9 @@
-Concise Encoding
-================
+Concise Encoding Go Library
+===========================
 
-A go implementation of [concise encoding](https://github.com/kstenerud/concise-encoding).
+This is the official reference implementation of [concise encoding](https://github.com/kstenerud/concise-encoding).
 
-Convenience like JSON, in a twin text/binary format with full datatype support.
+Concise Encoding is convenient like JSON, in a twin text/binary format with full datatype support.
 
  * **No schema necessary.** The simplicity of ad-hoc data, like in JSON & XML.
  * **Rich type support.** No more special code for dates, bytes, large values, etc.
@@ -12,6 +12,13 @@ Convenience like JSON, in a twin text/binary format with full datatype support.
  * **Metadata.** Out-of-band data? Not a problem!
  * **Recursive/cyclic data.** Recursive structures? Also not a problem!
  * **Fully specified.** No more ambiguities in implementations.
+
+
+
+Example Tool
+------------
+
+Click [here](https://github.com/kstenerud/enctool) for a simple data encoding format conversion tool that uses this library.
 
 
 
