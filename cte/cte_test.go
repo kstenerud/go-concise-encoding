@@ -326,13 +326,13 @@ func TestCTEURI(t *testing.T) {
 // TODO: Other array types
 
 func TestCTEUintXArray(t *testing.T) {
-	assertDecode(t, nil, `c1 |u8x f1 93|`, BD(), V(1), AU8([]byte{0xf1, 0x93}), ED())
+	assertDecodeEncode(t, `c1 |u8x f1 93|`, BD(), V(1), AU8([]byte{0xf1, 0x93}), ED())
 	assertDecode(t, nil, `c1 |u8x f 93 |`, BD(), V(1), AU8([]byte{0xf, 0x93}), ED())
-	assertDecode(t, nil, `c1 |u16x f122 9385|`, BD(), V(1), AU16([]uint16{0xf122, 0x9385}), ED())
+	assertDecodeEncode(t, `c1 |u16x f122 9385|`, BD(), V(1), AU16([]uint16{0xf122, 0x9385}), ED())
 	assertDecode(t, nil, `c1 |u16x f12 95|`, BD(), V(1), AU16([]uint16{0xf12, 0x95}), ED())
-	assertDecode(t, nil, `c1 |u32x 7ddf8134 93cd7aac|`, BD(), V(1), AU32([]uint32{0x7ddf8134, 0x93cd7aac}), ED())
+	assertDecodeEncode(t, `c1 |u32x 7ddf8134 93cd7aac|`, BD(), V(1), AU32([]uint32{0x7ddf8134, 0x93cd7aac}), ED())
 	assertDecode(t, nil, `c1 |u32x 7ddf834 93aac|`, BD(), V(1), AU32([]uint32{0x7ddf834, 0x93aac}), ED())
-	assertDecode(t, nil, `c1 |u64x 83ff9ac2445aace7 94ff7ac3219465c1|`, BD(), V(1), AU64([]uint64{0x83ff9ac2445aace7, 0x94ff7ac3219465c1}), ED())
+	assertDecodeEncode(t, `c1 |u64x 83ff9ac2445aace7 94ff7ac3219465c1|`, BD(), V(1), AU64([]uint64{0x83ff9ac2445aace7, 0x94ff7ac3219465c1}), ED())
 	assertDecode(t, nil, `c1 |u64x 83ff9ac245aace7 94ff79465c1|`, BD(), V(1), AU64([]uint64{0x83ff9ac245aace7, 0x94ff79465c1}), ED())
 }
 

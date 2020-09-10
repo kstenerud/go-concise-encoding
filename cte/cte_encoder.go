@@ -331,7 +331,13 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		_this.handleCustomText(value)
 		return
 	case events.ArrayTypeUint8:
-		_this.encodeUint8Array(value)
+		_this.encodeU8XArray(value)
+	case events.ArrayTypeUint16:
+		_this.encodeU16XArray(value)
+	case events.ArrayTypeUint32:
+		_this.encodeU32XArray(value)
+	case events.ArrayTypeUint64:
+		_this.encodeU64XArray(value)
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
@@ -660,7 +666,7 @@ func (_this *Encoder) encodeHex(prefix byte, value []byte) {
 	}
 }
 
-func (_this *Encoder) encodeUint8Array(value []uint8) {
+func (_this *Encoder) encodeU8XArray(value []uint8) {
 	header := []byte("|u8x")
 	dst := _this.buff.Allocate(len(value)*3 + len(header) + 1)
 	copy(dst, header)
@@ -671,6 +677,73 @@ func (_this *Encoder) encodeUint8Array(value []uint8) {
 		dst[base+1] = hexToChar[b>>4]
 		dst[base+2] = hexToChar[b&15]
 		base += 3
+	}
+	dst[base] = '|'
+}
+
+func (_this *Encoder) encodeU16XArray(value []uint8) {
+	header := []byte("|u16x")
+	dst := _this.buff.Allocate((len(value)/2)*5 + len(header) + 1)
+	copy(dst, header)
+	dst = dst[len(header):]
+	base := 0
+	for i := 0; i < len(value); i += 2 {
+		dst[base] = ' '
+		dst[base+1] = hexToChar[value[i+1]>>4]
+		dst[base+2] = hexToChar[value[i+1]&15]
+		dst[base+3] = hexToChar[value[i]>>4]
+		dst[base+4] = hexToChar[value[i]&15]
+		base += 5
+	}
+	dst[base] = '|'
+}
+
+func (_this *Encoder) encodeU32XArray(value []uint8) {
+	header := []byte("|u32x")
+	dst := _this.buff.Allocate((len(value)/4)*9 + len(header) + 1)
+	copy(dst, header)
+	dst = dst[len(header):]
+	base := 0
+	for i := 0; i < len(value); i += 4 {
+		dst[base] = ' '
+		dst[base+1] = hexToChar[value[i+3]>>4]
+		dst[base+2] = hexToChar[value[i+3]&15]
+		dst[base+3] = hexToChar[value[i+2]>>4]
+		dst[base+4] = hexToChar[value[i+2]&15]
+		dst[base+5] = hexToChar[value[i+1]>>4]
+		dst[base+6] = hexToChar[value[i+1]&15]
+		dst[base+7] = hexToChar[value[i]>>4]
+		dst[base+8] = hexToChar[value[i]&15]
+		base += 9
+	}
+	dst[base] = '|'
+}
+
+func (_this *Encoder) encodeU64XArray(value []uint8) {
+	header := []byte("|u64x")
+	dst := _this.buff.Allocate((len(value)/8)*17 + len(header) + 1)
+	copy(dst, header)
+	dst = dst[len(header):]
+	base := 0
+	for i := 0; i < len(value); i += 8 {
+		dst[base] = ' '
+		dst[base+1] = hexToChar[value[i+7]>>4]
+		dst[base+2] = hexToChar[value[i+7]&15]
+		dst[base+3] = hexToChar[value[i+6]>>4]
+		dst[base+4] = hexToChar[value[i+6]&15]
+		dst[base+5] = hexToChar[value[i+5]>>4]
+		dst[base+6] = hexToChar[value[i+5]&15]
+		dst[base+7] = hexToChar[value[i+4]>>4]
+		dst[base+8] = hexToChar[value[i+4]&15]
+		dst[base+9] = hexToChar[value[i+3]>>4]
+		dst[base+10] = hexToChar[value[i+3]&15]
+		dst[base+11] = hexToChar[value[i+2]>>4]
+		dst[base+12] = hexToChar[value[i+2]&15]
+		dst[base+13] = hexToChar[value[i+1]>>4]
+		dst[base+14] = hexToChar[value[i+1]&15]
+		dst[base+15] = hexToChar[value[i]>>4]
+		dst[base+16] = hexToChar[value[i]&15]
+		base += 17
 	}
 	dst[base] = '|'
 }
