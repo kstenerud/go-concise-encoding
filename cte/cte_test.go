@@ -23,7 +23,6 @@ package cte
 import (
 	"bytes"
 	"math"
-	"math/big"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -33,12 +32,19 @@ import (
 )
 
 func TestCTEVersion(t *testing.T) {
+	// Valid
 	assertDecodeEncode(t, "c1 ", BD(), V(1), ED())
 	assertDecode(t, nil, "\r\n\t c1 ", BD(), V(1), ED())
 	assertDecode(t, nil, "c1     \r\n\t\t\t", BD(), V(1), ED())
-}
 
-func TestCTEVersionNotNumeric(t *testing.T) {
+	// Missing whitespace
+	assertDecodeFails(t, "c1")
+	assertDecodeFails(t, "c1{}")
+
+	// Too big
+	assertDecodeFails(t, "c100000000000000000000000000000000 ")
+
+	// Not numeric
 	for i := 0; i < 0x100; i++ {
 		if i >= '0' && i <= '9' {
 			continue
@@ -46,17 +52,8 @@ func TestCTEVersionNotNumeric(t *testing.T) {
 		document := string([]byte{'c', byte(i)})
 		assertDecodeFails(t, document)
 	}
-}
 
-func TestCTEVersionMissingWhitespace(t *testing.T) {
-	assertDecodeFails(t, "c1")
-}
-
-func TestCTEVersionTooBig(t *testing.T) {
-	assertDecodeFails(t, "c100000000000000000000000000000000 ")
-}
-
-func TestCTEBadVersion(t *testing.T) {
+	// Disallowed version numbers
 	for i := 0; i < 0x100; i++ {
 		switch i {
 		case 'c', 'C', ' ', '\n', '\r', '\t':
@@ -68,17 +65,20 @@ func TestCTEBadVersion(t *testing.T) {
 	}
 }
 
-func TestCTENoWSAfterVersion(t *testing.T) {
-	assertDecodeFails(t, "c1{}")
-}
-
 func TestCTENil(t *testing.T) {
 	assertDecodeEncode(t, "c1 @nil", BD(), V(1), N(), ED())
+	assertDecodeFails(t, "c1 @nill")
+	assertDecodeFails(t, "c1 -@nil")
 }
 
 func TestCTEBool(t *testing.T) {
 	assertDecodeEncode(t, "c1 @true", BD(), V(1), TT(), ED())
 	assertDecodeEncode(t, "c1 @false", BD(), V(1), FF(), ED())
+
+	assertDecodeFails(t, "c1 @truer")
+	assertDecodeFails(t, "c1 @falser")
+	assertDecodeFails(t, "c1 -@true")
+	assertDecodeFails(t, "c1 -@false")
 }
 
 func TestCTEDecimalInt(t *testing.T) {
@@ -88,7 +88,10 @@ func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 -49523", BD(), V(1), NI(49523), ED())
 	assertDecodeEncode(t, "c1 10000000000000000000000000000", BD(), V(1), BI(NewBigInt("10000000000000000000000000000", 10)), ED())
 	assertDecodeEncode(t, "c1 -10000000000000000000000000000", BD(), V(1), BI(NewBigInt("-10000000000000000000000000000", 10)), ED())
+	assertDecode(t, nil, "c1 100_00_0_00000000000_00000000_000_0", BD(), V(1), BI(NewBigInt("10000000000000000000000000000", 10)), ED())
 	assertDecode(t, nil, "c1 -4_9_5__2___3", BD(), V(1), NI(49523), ED())
+
+	assertDecodeFails(t, "c1 1f")
 }
 
 func TestCTEBinaryInt(t *testing.T) {
@@ -103,6 +106,10 @@ func TestCTEBinaryInt(t *testing.T) {
 		BD(), V(1), BI(NewBigInt("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 2)), ED())
 	assertDecode(t, nil, "c1 -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 		BD(), V(1), BI(NewBigInt("-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 2)), ED())
+	assertDecode(t, nil, "c1 0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0",
+		BD(), V(1), BI(NewBigInt("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 2)), ED())
+
+	assertDecodeFails(t, "c1 0b2")
 }
 
 func TestCTEOctalInt(t *testing.T) {
@@ -118,6 +125,10 @@ func TestCTEOctalInt(t *testing.T) {
 		BD(), V(1), BI(NewBigInt("1000000000000000000000000000000000000000000000", 8)), ED())
 	assertDecode(t, nil, "c1 -0o1000000000000000000000000000000000000000000000",
 		BD(), V(1), BI(NewBigInt("-1000000000000000000000000000000000000000000000", 8)), ED())
+	assertDecode(t, nil, "c1 0o1_0000000000000_0000000000000_000000000000000000_0",
+		BD(), V(1), BI(NewBigInt("1000000000000000000000000000000000000000000000", 8)), ED())
+
+	assertDecodeFails(t, "c1 0o9")
 }
 
 func TestCTEHexInt(t *testing.T) {
@@ -133,6 +144,10 @@ func TestCTEHexInt(t *testing.T) {
 		BD(), V(1), BI(NewBigInt("1000000000000000000000000000000000000000000000", 16)), ED())
 	assertDecode(t, nil, "c1 -0x1000000000000000000000000000000000000000000000",
 		BD(), V(1), BI(NewBigInt("-1000000000000000000000000000000000000000000000", 16)), ED())
+	assertDecode(t, nil, "c1 0x1_00000000000_00000000000_0000000000000000000000_0",
+		BD(), V(1), BI(NewBigInt("1000000000000000000000000000000000000000000000", 16)), ED())
+
+	assertDecodeFails(t, "c1 0xg")
 }
 
 func TestCTEFloat(t *testing.T) {
@@ -175,12 +190,17 @@ func TestCTEFloat(t *testing.T) {
 		BD(), V(1), BDF(NewBDF("0.1500000000000000000000000000000000000000000000000001e+10000")), ED())
 	assertDecode(t, nil, "c1 -0.1500000000000000000000000000000000000000000000000001e+10000",
 		BD(), V(1), BDF(NewBDF("-0.1500000000000000000000000000000000000000000000000001e+10000")), ED())
+	assertDecode(t, nil, "c1 0.1_50000000000_00000000000_000000000000_0000000000000000_1e+100_0_0",
+		BD(), V(1), BDF(NewBDF("0.1500000000000000000000000000000000000000000000000001e+10000")), ED())
 
 	assertDecodeFails(t, "c1 -0.5.4")
 	assertDecodeFails(t, "c1 -0,5.4")
 	assertDecodeFails(t, "c1 0.5.4")
 	assertDecodeFails(t, "c1 0,5.4")
 	assertDecodeFails(t, "c1 -@blah")
+	assertDecodeFails(t, "c1 1.1.1")
+	assertDecodeFails(t, "c1 1,1")
+	assertDecodeFails(t, "c1 1.1e4e5")
 }
 
 func TestCTEHexFloat(t *testing.T) {
@@ -209,45 +229,70 @@ func TestCTEHexFloat(t *testing.T) {
 	assertDecode(t, nil, "c1 -0x0.1p10", BD(), V(1), F(-0x0.1p10), ED())
 
 	// Everything too big for float64
-	bigExpected, _, err := big.ParseFloat("-1.54fffe2ac00592375b427ap100000", 16, 90, big.ToNearestEven)
-	if err != nil {
-		panic(err)
-	}
+	bigExpected := NewBigFloat("-1.54fffe2ac00592375b427ap100000", 16, 22)
 	assertDecode(t, nil, "c1 -0x1.54fffe2ac00592375b427ap100000", BD(), V(1), BF(bigExpected), ED())
 	bigExpected = bigExpected.Neg(bigExpected)
 	assertDecode(t, nil, "c1 0x1.54fffe2ac00592375b427ap100000", BD(), V(1), BF(bigExpected), ED())
 
 	// Coefficient too big for float64
-	bigExpected, _, err = big.ParseFloat("-1.54fffe2ac00592375b427ap100", 16, 90, big.ToNearestEven)
-	if err != nil {
-		panic(err)
-	}
+	bigExpected = NewBigFloat("-1.54fffe2ac00592375b427ap100", 16, 22)
 	assertDecode(t, nil, "c1 -0x1.54fffe2ac00592375b427ap100", BD(), V(1), BF(bigExpected), ED())
 	bigExpected = bigExpected.Neg(bigExpected)
 	assertDecode(t, nil, "c1 0x1.54fffe2ac00592375b427ap100", BD(), V(1), BF(bigExpected), ED())
+	assertDecode(t, nil, "c1 0x1.5_4fffe2ac_0059237_5b42_7ap1_00", BD(), V(1), BF(bigExpected), ED())
+	assertDecode(t, nil, "c1 0x1.5_4FFFE2AC_0059237_5B42_7AP1_00", BD(), V(1), BF(bigExpected), ED())
 
 	// Exponent too big for float64
-	bigExpected, _, err = big.ParseFloat("-1.8p100000", 16, 64, big.ToNearestEven)
-	if err != nil {
-		panic(err)
-	}
+	bigExpected = NewBigFloat("-1.8p100000", 16, 16)
 	assertDecode(t, nil, "c1 -0x1.8p100000", BD(), V(1), BF(bigExpected), ED())
 	bigExpected = bigExpected.Neg(bigExpected)
 	assertDecode(t, nil, "c1 0x1.8p100000", BD(), V(1), BF(bigExpected), ED())
 
 	assertDecode(t, nil, "c1 -0x_0_._1_p_1_0", BD(), V(1), F(-0x0.1p10), ED())
+
+	assertDecodeFails(t, "c1 -0x0.5.4")
+	assertDecodeFails(t, "c1 -0x0,5.4")
+	assertDecodeFails(t, "c1 0x0.5.4")
+	assertDecodeFails(t, "c1 0x0,5.4")
+	assertDecodeFails(t, "c1 -0x@blah")
+	assertDecodeFails(t, "c1 0x1.1.1")
+	assertDecodeFails(t, "c1 0x1,1")
+	assertDecodeFails(t, "c1 0x1.1p4p5")
 }
 
 func TestCTEUUID(t *testing.T) {
 	assertDecodeEncode(t, `c1 @fedcba98-7654-3210-aaaa-bbbbbbbbbbbb`, BD(), V(1),
 		UUID([]byte{0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
+	assertDecode(t, nil, `c1 @FEDCBA98-7654-3210-AAAA-BBBBBBBBBBBB`, BD(), V(1),
+		UUID([]byte{0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
 	assertDecodeEncode(t, `c1 @00000000-0000-0000-0000-000000000000`, BD(), V(1),
 		UUID([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}), ED())
+
+	assertDecodeFails(t, `c1 @fedcba98-7654-3210-aaaa-bbbbbbbbbbb`)
+	assertDecodeFails(t, `c1 @fedcba98-7654-3210-aaaa-bbbbbbbbbbbbb`)
 }
 
 func TestCTEDate(t *testing.T) {
 	assertDecodeEncode(t, "c1 2000-01-01", BD(), V(1), CT(compact_time.NewDate(2000, 1, 1)), ED())
 	assertDecodeEncode(t, "c1 -2000-12-31", BD(), V(1), CT(compact_time.NewDate(-2000, 12, 31)), ED())
+
+	assertDecodeFails(t, "c1 0-01-01")
+	assertDecodeFails(t, "c1 --2000-01-01")
+	assertDecodeFails(t, "c1 0a-01-01")
+
+	assertDecodeFails(t, "c1 2000-013-01")
+	assertDecodeFails(t, "c1 2000-30-1")
+	assertDecodeFails(t, "c1 2000-0-10")
+	assertDecodeFails(t, "c1 2000-1a-10")
+	assertDecodeFails(t, "c1 2000-0a-10")
+	assertDecodeFails(t, "c1 2000-a-10")
+
+	assertDecodeFails(t, "c1 2000-01-011")
+	assertDecodeFails(t, "c1 2000-01-99")
+	assertDecodeFails(t, "c1 2000-10-0")
+	assertDecodeFails(t, "c1 2000-10-1a")
+	assertDecodeFails(t, "c1 2000-10-0a")
+	assertDecodeFails(t, "c1 2000-10-a")
 }
 
 func TestCTETime(t *testing.T) {
@@ -256,14 +301,103 @@ func TestCTETime(t *testing.T) {
 	assertDecodeEncode(t, "c1 23:59:59.101", BD(), V(1), CT(compact_time.NewTime(23, 59, 59, 101000000, "")), ED())
 	assertDecodeEncode(t, "c1 10:00:01.93/America/Los_Angeles", BD(), V(1), CT(compact_time.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
 	assertDecodeEncode(t, "c1 10:00:01.93/89.92/1.10", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8992, 110)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/89.90/1.1", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8990, 110)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/89.9/1.10", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8990, 110)), ED())
 	assertDecode(t, nil, "c1 10:00:01.93/0/0", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 0, 0)), ED())
 	assertDecode(t, nil, "c1 10:00:01.93/1/1", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 100, 100)), ED())
+
+	assertDecodeFails(t, "c1 001:45:00")
+	assertDecodeFails(t, "c1 30:45:10")
+	assertDecodeFails(t, "c1 1a:45:10")
+	assertDecodeFails(t, "c1 0a:45:10")
+
+	assertDecodeFails(t, "c1 1:045:00")
+	assertDecodeFails(t, "c1 1:99:10")
+	assertDecodeFails(t, "c1 1:1a:10")
+	assertDecodeFails(t, "c1 1:0a:10")
+	assertDecodeFails(t, "c1 1:a:10")
+
+	assertDecodeFails(t, "c1 1:45:001")
+	assertDecodeFails(t, "c1 1:45:99")
+	assertDecodeFails(t, "c1 1:45:1e")
+	assertDecodeFails(t, "c1 1:45:0e")
+	assertDecodeFails(t, "c1 1:45:e")
+
+	assertDecodeFails(t, "c1 1:45:00.3012544133")
+	assertDecodeFails(t, "c1 1:45:00.301254f")
+	assertDecodeFails(t, "c1 1:45:00.1f")
+	assertDecodeFails(t, "c1 1:45:00.0f")
+	assertDecodeFails(t, "c1 1:45:00.f")
+
+	assertDecodeFails(t, "c1 10:00:01.93/89.92/1.10a")
+	assertDecodeFails(t, "c1 10:00:01.93/89.92a/1.10")
+	assertDecodeFails(t, "c1 10:00:01.93/89.92/a.10")
+	assertDecodeFails(t, "c1 10:00:01.93/w89.92/1.10")
+	assertDecodeFails(t, "c1 10:00:01.93/89.92/1.10a")
+	assertDecodeFails(t, "c1 10:00:01.93/89.92/")
+	assertDecodeFails(t, "c1 10:00:01.93/89.92/1.101")
+	assertDecodeFails(t, "c1 10:00:01.93//1.10")
+	assertDecodeFails(t, "c1 10:00:01.93/89.925/1.10")
 }
 
 func TestCTETimestamp(t *testing.T) {
 	assertDecodeEncode(t, "c1 2000-01-01/19:31:44.901554/Z", BD(), V(1), CT(compact_time.NewTimestamp(2000, 1, 1, 19, 31, 44, 901554000, "Z")), ED())
 	assertDecodeEncode(t, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 	assertDecode(t, nil, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
+	assertDecodeEncode(t, "c1 2020-01-15/10:00:01.93/89.92/1.10", BD(), V(1), CT(compact_time.NewTimestampLatLong(2020, 1, 15, 10, 0, 1, 930000000, 8992, 110)), ED())
+
+	assertDecodeFails(t, "c1 0-01-01/19:31:44.901554")
+	assertDecodeFails(t, "c1 1a-01-01/19:31:44.901554")
+
+	assertDecodeFails(t, "c1 2000-0-01/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-001-01/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-100-01/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-1a-01/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-0a-01/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-a-01/19:31:44.901554")
+
+	assertDecodeFails(t, "c1 2000-01-0/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-001/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-100/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-1a/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-0a/19:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-a/19:31:44.901554")
+
+	assertDecodeFails(t, "c1 2000-01-01/019:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/25:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/1a:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/0a:31:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/a:31:44.901554")
+
+	assertDecodeFails(t, "c1 2000-01-01/19:031:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:310:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:1a:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:0a:44.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:a:44.901554")
+
+	assertDecodeFails(t, "c1 2000-01-01/19:31:044.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:440.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:1a.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:0a.901554")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:a.901554")
+
+	assertDecodeFails(t, "c1 2000-01-01/19:31:44.9015544348")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:44.1a")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:44.0a")
+	assertDecodeFails(t, "c1 2000-01-01/19:31:44.a")
+
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/1.10a")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92a/1.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/a1.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/a89.92/1.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/a")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/a/1.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93//1.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/1999.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/8965.92/1.10")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/1.a")
+	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.a/1.10")
 }
 
 func TestCTEQuotedString(t *testing.T) {
@@ -277,19 +411,29 @@ func TestCTEQuotedString(t *testing.T) {
 	assertDecodeEncode(t, `c1 "test\\string"`, BD(), V(1), S("test\\string"), ED())
 	assertDecodeEncode(t, `c1 "test\11string"`, BD(), V(1), S("test\u0001string"), ED())
 	assertDecodeEncode(t, `c1 "test\4206dstring"`, BD(), V(1), S("test\u206dstring"), ED())
+	assertDecode(t, nil, `c1 "test\4206Dstring"`, BD(), V(1), S("test\u206dstring"), ED())
 	assertDecode(t, nil, `c1 "test\
 string"`, BD(), V(1), S("teststring"), ED())
 	assertDecode(t, nil, "c1 \"test\\\r\nstring\"", BD(), V(1), S("teststring"), ED())
+
+	assertDecodeFails(t, `c1 "test\x"`)
+	assertDecodeFails(t, `c1 "\1g"`)
 }
 
 func TestCTECustomBinary(t *testing.T) {
 	assertDecodeEncode(t, `c1 b"12345678"`, BD(), V(1), CUB([]byte{0x12, 0x34, 0x56, 0x78}), ED())
+	assertDecodeEncode(t, `c1 b"abcd"`, BD(), V(1), CUB([]byte{0xab, 0xcd}), ED())
+	assertDecode(t, nil, `c1 b"ABCD"`, BD(), V(1), CUB([]byte{0xab, 0xcd}), ED())
+	assertDecodeFails(t, `c1 b"qwer"`)
 }
 
 func TestCTECustomText(t *testing.T) {
 	assertDecodeEncode(t, `c1 t"something(123)"`, BD(), V(1), CUT("something(123)"), ED())
 	assertDecodeEncode(t, `c1 t"some\\thing(\"123\")"`, BD(), V(1), CUT("some\\thing(\"123\")"), ED())
 	assertDecodeEncode(t, `c1 t"some\nthing\11(123)"`, BD(), V(1), CUT("some\nthing\u0001(123)"), ED())
+	assertDecodeEncode(t, `c1 t"something('123\r\n\t')"`, BD(), V(1), CUT("something('123\r\n\t')"), ED())
+
+	assertDecodeFails(t, `c1 t"something('123\r\n\t\x')"`)
 }
 
 func TestCTEUnquotedString(t *testing.T) {

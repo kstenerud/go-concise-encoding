@@ -164,10 +164,6 @@ func (_this *ReadBuffer) UngetByte() {
 	_this.tokenPos--
 }
 
-func (_this *ReadBuffer) UngetBytes(byteCount int) {
-	_this.tokenPos -= byteCount
-}
-
 func (_this *ReadBuffer) UngetAll() {
 	_this.tokenPos = _this.tokenStart
 }
@@ -725,6 +721,7 @@ func (_this *ReadBuffer) DecodeHexBytes() []byte {
 func (_this *ReadBuffer) DecodeUUID() []byte {
 	uuid := make([]byte, 0, 16)
 	dashCount := 0
+	digitCount := 0
 	firstNybble := true
 	nextByte := byte(0)
 Loop:
@@ -753,9 +750,10 @@ Loop:
 		nextByte <<= 4
 		firstNybble = !firstNybble
 		_this.AdvanceByte()
+		digitCount++
 	}
 
-	if len(uuid) != 16 ||
+	if digitCount != 32 ||
 		dashCount != 4 ||
 		_this.buffer.Buffer[_this.tokenStart+9] != '-' ||
 		_this.buffer.Buffer[_this.tokenStart+14] != '-' ||
@@ -767,10 +765,15 @@ Loop:
 	return uuid
 }
 
+var maxDayByMonth = []int{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+
 func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 	month, _, digitCount := _this.DecodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Month field is too long")
+	}
+	if month < 1 || month > 12 {
+		_this.Errorf("Month %v is invalid", month)
 	}
 	if _this.PeekByteNoEOD() != '-' {
 		_this.UnexpectedChar("month")
@@ -784,6 +787,9 @@ func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 	}
 	if digitCount > 2 {
 		_this.Errorf("Day field is too long")
+	}
+	if day < 1 || int(day) > maxDayByMonth[month] {
+		_this.Errorf("Day %v is invalid", day)
 	}
 	if _this.PeekByteAllowEOD() != '/' {
 		return compact_time.NewDate(int(year), int(month), int(day))
@@ -814,9 +820,15 @@ func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 }
 
 func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
+	if hour < 0 || hour > 23 {
+		_this.Errorf("Hour %v is invalid", hour)
+	}
 	minute, _, digitCount := _this.DecodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Minute field is too long")
+	}
+	if minute < 0 || minute > 59 {
+		_this.Errorf("Minute %v is invalid", minute)
 	}
 	if _this.PeekByteNoEOD() != ':' {
 		_this.UnexpectedChar("minute")
@@ -826,6 +838,9 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 	second, _, digitCount = _this.DecodeDecimalInteger(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Second field is too long")
+	}
+	if second < 0 || second > 60 {
+		_this.Errorf("Second %v is invalid", second)
 	}
 	var nanosecond int
 
