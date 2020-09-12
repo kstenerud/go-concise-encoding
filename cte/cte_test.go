@@ -92,6 +92,7 @@ func TestCTEDecimalInt(t *testing.T) {
 	assertDecode(t, nil, "c1 -4_9_5__2___3", BD(), V(1), NI(49523), ED())
 
 	assertDecodeFails(t, "c1 1f")
+	assertDecodeFails(t, "c1 -1f")
 }
 
 func TestCTEBinaryInt(t *testing.T) {
@@ -485,12 +486,23 @@ func TestCTEURI(t *testing.T) {
 func TestCTEUintXArray(t *testing.T) {
 	assertDecodeEncode(t, `c1 |u8x f1 93|`, BD(), V(1), AU8([]byte{0xf1, 0x93}), ED())
 	assertDecode(t, nil, `c1 |u8x f 93 |`, BD(), V(1), AU8([]byte{0xf, 0x93}), ED())
+	assertDecodeFails(t, `c1 |u8x f14 93|`)
+	assertDecodeFails(t, `c1 |u8x f1o 93|`)
+
 	assertDecodeEncode(t, `c1 |u16x f122 9385|`, BD(), V(1), AU16([]uint16{0xf122, 0x9385}), ED())
 	assertDecode(t, nil, `c1 |u16x f12 95|`, BD(), V(1), AU16([]uint16{0xf12, 0x95}), ED())
+	assertDecodeFails(t, `c1 |u16x f129e 95|`)
+	assertDecodeFails(t, `c1 |u16x f12j 95|`)
+
 	assertDecodeEncode(t, `c1 |u32x 7ddf8134 93cd7aac|`, BD(), V(1), AU32([]uint32{0x7ddf8134, 0x93cd7aac}), ED())
 	assertDecode(t, nil, `c1 |u32x 7ddf834 93aac|`, BD(), V(1), AU32([]uint32{0x7ddf834, 0x93aac}), ED())
+	assertDecodeFails(t, `c1 |u32x 7ddf8134e 93cd7aac|`)
+	assertDecodeFails(t, `c1 |u32x 7ddf81x 93cd7aac|`)
+
 	assertDecodeEncode(t, `c1 |u64x 83ff9ac2445aace7 94ff7ac3219465c1|`, BD(), V(1), AU64([]uint64{0x83ff9ac2445aace7, 0x94ff7ac3219465c1}), ED())
 	assertDecode(t, nil, `c1 |u64x 83ff9ac245aace7 94ff79465c1|`, BD(), V(1), AU64([]uint64{0x83ff9ac245aace7, 0x94ff79465c1}), ED())
+	assertDecodeFails(t, `c1 |u64x 83ff9ac2445aace72 94ff7ac3219465c1|`)
+	assertDecodeFails(t, `c1 |u64x 83ff9ac2l 94ff7ac3219465c1|`)
 }
 
 func TestCTEBadArrayType(t *testing.T) {
@@ -607,9 +619,23 @@ func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, `c1 <a 1=2;a>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a"), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2;<a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), MUP(), S("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, `c1 <a 1=2;a <a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a "), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecodeEncode(t, `c1 <a;***>`, BD(), V(1), MUP(), S("a"), E(), S("***"), E(), ED())
+	assertDecodeEncode(t, `c1 <a;/x>`, BD(), V(1), MUP(), S("a"), E(), S("/x"), E(), ED())
 
 	assertDecodeEncode(t, `c1 <a;\\>`, BD(), V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
 	assertDecodeEncode(t, `c1 <a;\210>`, BD(), V(1), MUP(), S("a"), E(), S("\u0010"), E(), ED())
+
+	assertDecodeEncode(t, `c1 <a;\\>`, BD(), V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
+	assertDecodeEncode(t, `c1 <a;\<>`, BD(), V(1), MUP(), S("a"), E(), S("<"), E(), ED())
+	assertDecodeEncode(t, `c1 <a;\>>`, BD(), V(1), MUP(), S("a"), E(), S(">"), E(), ED())
+	assertDecodeEncode(t, "c1 <a;\\`>", BD(), V(1), MUP(), S("a"), E(), S("`"), E(), ED())
+	assertDecode(t, nil, `c1 <a;\r>`, BD(), V(1), MUP(), S("a"), E(), S("\r"), E(), ED())
+	assertDecode(t, nil, `c1 <a;\n>`, BD(), V(1), MUP(), S("a"), E(), S("\n"), E(), ED())
+	assertDecode(t, nil, `c1 <a;\t>`, BD(), V(1), MUP(), S("a"), E(), S("\t"), E(), ED())
+	assertDecode(t, nil, `c1 <a;\*>`, BD(), V(1), MUP(), S("a"), E(), S("*"), E(), ED())
+	assertDecode(t, nil, `c1 <a;\/>`, BD(), V(1), MUP(), S("a"), E(), S("/"), E(), ED())
+
+	assertDecodeFails(t, `c1 <a;\y>`)
 }
 
 func TestCTEMarkupVerbatimString(t *testing.T) {
@@ -633,6 +659,9 @@ func TestCTEMarkupComment(t *testing.T) {
 	assertDecode(t, nil, "c1 <a;/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
 	assertDecode(t, nil, "c1 <a;a/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
 	assertDecode(t, nil, "c1 <a;/*/*blah*/*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), S("a"), E(), ED())
+
+	// TODO: Should it be picking up the extra space between the x and comment?
+	assertDecode(t, nil, "c1 <a;x /*blah*/ x>", BD(), V(1), MUP(), S("a"), E(), S("x "), CMT(), S("blah"), E(), S("x"), E(), ED())
 }
 
 func TestCTEMapMetadata(t *testing.T) {
