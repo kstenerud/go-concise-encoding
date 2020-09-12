@@ -359,8 +359,30 @@ func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
 		_this.stackState(cteEncoderStateAwaitCustomText, ``)
 	case events.ArrayTypeUint8:
 		_this.stackState(cteEncoderStateAwaitArrayU8, ``)
+	case events.ArrayTypeUint16:
+		_this.stackState(cteEncoderStateAwaitArrayU16, ``)
+	case events.ArrayTypeUint32:
+		_this.stackState(cteEncoderStateAwaitArrayU32, ``)
+	case events.ArrayTypeUint64:
+		_this.stackState(cteEncoderStateAwaitArrayU64, ``)
+	case events.ArrayTypeInt8:
+		_this.stackState(cteEncoderStateAwaitArrayI8, ``)
+	case events.ArrayTypeInt16:
+		_this.stackState(cteEncoderStateAwaitArrayI16, ``)
+	case events.ArrayTypeInt32:
+		_this.stackState(cteEncoderStateAwaitArrayI32, ``)
+	case events.ArrayTypeInt64:
+		_this.stackState(cteEncoderStateAwaitArrayI64, ``)
+	case events.ArrayTypeFloat16:
+		_this.stackState(cteEncoderStateAwaitArrayF16, ``)
+	case events.ArrayTypeFloat32:
+		_this.stackState(cteEncoderStateAwaitArrayF32, ``)
+	case events.ArrayTypeFloat64:
+		_this.stackState(cteEncoderStateAwaitArrayF64, ``)
+	case events.ArrayTypeUUID:
+		_this.stackState(cteEncoderStateAwaitArrayUUID, ``)
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+		panic(fmt.Errorf("%v: Unknown array type", arrayType))
 	}
 }
 
@@ -572,8 +594,6 @@ func (_this *Encoder) finalizeArray() {
 	oldState := _this.currentState
 	_this.unstackState()
 	switch oldState {
-	case cteEncoderStateAwaitArrayU8:
-		_this.OnArray(events.ArrayTypeUint8, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
 	case cteEncoderStateAwaitQuotedString:
 		_this.OnArray(events.ArrayTypeString, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
 	case cteEncoderStateAwaitVerbatimString:
@@ -584,8 +604,32 @@ func (_this *Encoder) finalizeArray() {
 		_this.OnArray(events.ArrayTypeCustomBinary, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
 	case cteEncoderStateAwaitCustomText:
 		_this.OnArray(events.ArrayTypeCustomText, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayU8:
+		_this.OnArray(events.ArrayTypeUint8, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayU16:
+		_this.OnArray(events.ArrayTypeUint16, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayU32:
+		_this.OnArray(events.ArrayTypeUint32, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayU64:
+		_this.OnArray(events.ArrayTypeUint64, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayI8:
+		_this.OnArray(events.ArrayTypeInt8, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayI16:
+		_this.OnArray(events.ArrayTypeInt16, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayI32:
+		_this.OnArray(events.ArrayTypeInt32, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayI64:
+		_this.OnArray(events.ArrayTypeInt64, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayF16:
+		_this.OnArray(events.ArrayTypeFloat16, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayF32:
+		_this.OnArray(events.ArrayTypeFloat32, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayF64:
+		_this.OnArray(events.ArrayTypeFloat64, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
+	case cteEncoderStateAwaitArrayUUID:
+		_this.OnArray(events.ArrayTypeUUID, uint64(len(_this.chunkBuffer)), _this.chunkBuffer)
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", oldState))
+		panic(fmt.Errorf("BUG: %v: Not an array state", oldState))
 	}
 	_this.chunkBuffer = _this.chunkBuffer[:0]
 }
