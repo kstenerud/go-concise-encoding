@@ -49,6 +49,10 @@ package ce
 import (
 	"io"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
+	"github.com/kstenerud/go-concise-encoding/rules"
+
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -149,4 +153,9 @@ func NewCTEEncoder(opts *options.CTEEncoderOptions) Encoder {
 
 func NewCTEDecoder(opts *options.CTEDecoderOptions) Decoder {
 	return cte.NewDecoder(opts)
+}
+
+// Create a new rules data receiver, which will enforce proper concise encoding structure.
+func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) *rules.Rules {
+	return rules.NewRules(nextReceiver, opts)
 }

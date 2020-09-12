@@ -21,6 +21,7 @@
 package cbe
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -210,6 +211,10 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	_this.eventReceiver.OnEndDocument()
 	return
+}
+
+func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
+	return _this.Decode(bytes.NewBuffer(document), eventReceiver)
 }
 
 // ============================================================================

@@ -234,6 +234,125 @@ func assertEncodeDecodeImpliedStructure(t *testing.T,
 	}
 }
 
+func assertDecodeCBECTE(t *testing.T,
+	cteEncodeOpts *options.CTEEncoderOptions,
+	cteDecodeOpts *options.CTEDecoderOptions,
+	cbeEncodeOpts *options.CBEEncoderOptions,
+	cbeDecodeOpts *options.CBEDecoderOptions,
+	cteExpectedDocument string,
+	cbeExpectedDocument []byte,
+	expectedEvents ...*test.TEvent) {
+
+	var actualEvents *test.TER
+
+	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
+	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
+	textRules := ce.NewRules(textEncoder, nil)
+	var cteActualDocument *bytes.Buffer
+
+	binDecoder := ce.NewCBEDecoder(cbeDecodeOpts)
+	binEncoder := ce.NewCBEEncoder(cbeEncodeOpts)
+	var cbeActualDocument *bytes.Buffer
+
+	cbeActualDocument = &bytes.Buffer{}
+	binEncoder.PrepareToEncode(cbeActualDocument)
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(binEncoder, nil)); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(cbeExpectedDocument, cbeActualDocument.Bytes()) {
+		t.Errorf("Expected %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
+	}
+
+	actualEvents = test.NewTER()
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
+		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
+	}
+
+	cteActualDocument = &bytes.Buffer{}
+	textEncoder.PrepareToEncode(cteActualDocument)
+	if err := binDecoder.DecodeDocument(cbeExpectedDocument, textRules); err != nil {
+		t.Error(err)
+		return
+	}
+	// Don't check the text document for equality since it won't be exactly the same.
+
+	actualEvents = test.NewTER()
+	binEncoder.PrepareToEncode(cbeActualDocument)
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
+		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
+	}
+}
+
+func assertDecodeEncode(t *testing.T,
+	cteEncodeOpts *options.CTEEncoderOptions,
+	cteDecodeOpts *options.CTEDecoderOptions,
+	cbeEncodeOpts *options.CBEEncoderOptions,
+	cbeDecodeOpts *options.CBEDecoderOptions,
+	cteExpectedDocument string,
+	cbeExpectedDocument []byte,
+	expectedEvents ...*test.TEvent) {
+
+	var actualEvents *test.TER
+
+	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
+	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
+	textRules := ce.NewRules(textEncoder, nil)
+	var cteActualDocument *bytes.Buffer
+
+	binDecoder := ce.NewCBEDecoder(cbeDecodeOpts)
+	binEncoder := ce.NewCBEEncoder(cbeEncodeOpts)
+	binRules := ce.NewRules(binEncoder, nil)
+	var cbeActualDocument *bytes.Buffer
+
+	cbeActualDocument = &bytes.Buffer{}
+	binEncoder.PrepareToEncode(cbeActualDocument)
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), binRules); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(cbeExpectedDocument, cbeActualDocument.Bytes()) {
+		t.Errorf("Expected %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
+	}
+
+	actualEvents = test.NewTER()
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
+		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
+	}
+
+	cteActualDocument = &bytes.Buffer{}
+	textEncoder.PrepareToEncode(cteActualDocument)
+	if err := binDecoder.DecodeDocument(cbeExpectedDocument, textRules); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(cteExpectedDocument, string(cteActualDocument.Bytes())) {
+		t.Errorf("Expected [%v] but got [%v]", cteExpectedDocument, string(cteActualDocument.Bytes()))
+	}
+
+	actualEvents = test.NewTER()
+	binEncoder.PrepareToEncode(cbeActualDocument)
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+		t.Error(err)
+		return
+	}
+	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
+		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
+	}
+}
+
 // ============================================================================
 // Marshal/Unmarshal
 

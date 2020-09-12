@@ -31,4 +31,7 @@ import (
 type Decoder interface {
 	// Decode the stream of bytes from reader, sending all events to eventReceiver.
 	Decode(reader io.Reader, eventReceiver events.DataEventReceiver) error
+
+	// Decode from the specified document, sending all events to eventReceiver.
+	DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error)
 }
