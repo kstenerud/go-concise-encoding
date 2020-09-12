@@ -165,6 +165,8 @@ func TestCTEFloat(t *testing.T) {
 	assertDecodeEncode(t, "c1 -1.125e+10", BD(), V(1), DF(NewDFloat("-1.125e+10")), ED())
 	assertDecodeEncode(t, "c1 -1.125e-10", BD(), V(1), DF(NewDFloat("-1.125e-10")), ED())
 	assertDecode(t, nil, "c1 -1.125e10", BD(), V(1), DF(NewDFloat("-1.125e10")), ED())
+	assertDecodeEncode(t, "c1 1.0000000000000000001", BD(), V(1), BDF(NewBDF("1.0000000000000000001")), ED())
+	assertDecodeEncode(t, "c1 -1.0000000000000000001", BD(), V(1), BDF(NewBDF("-1.0000000000000000001")), ED())
 
 	assertDecodeEncode(t, "c1 0.5", BD(), V(1), DF(NewDFloat("0.5")), ED())
 	assertDecodeEncode(t, "c1 0.125", BD(), V(1), DF(NewDFloat("0.125")), ED())
@@ -201,6 +203,9 @@ func TestCTEFloat(t *testing.T) {
 	assertDecodeFails(t, "c1 1.1.1")
 	assertDecodeFails(t, "c1 1,1")
 	assertDecodeFails(t, "c1 1.1e4e5")
+	assertDecodeFails(t, "c1 0.a")
+	assertDecodeFails(t, "c1 0.5et")
+	assertDecodeFails(t, "c1 0.5e99999999999999999999999")
 }
 
 func TestCTEHexFloat(t *testing.T) {
@@ -250,6 +255,11 @@ func TestCTEHexFloat(t *testing.T) {
 
 	assertDecode(t, nil, "c1 -0x_0_._1_p_1_0", BD(), V(1), F(-0x0.1p10), ED())
 
+	bigExpected = NewBigFloat("8.000000000000001p100", 16, 16)
+	assertDecode(t, nil, "c1 0x8.000000000000001p100", BD(), V(1), BF(bigExpected), ED())
+	bigExpected = bigExpected.Neg(bigExpected)
+	assertDecode(t, nil, "c1 -0x8.000000000000001p100", BD(), V(1), BF(bigExpected), ED())
+
 	assertDecodeFails(t, "c1 -0x0.5.4")
 	assertDecodeFails(t, "c1 -0x0,5.4")
 	assertDecodeFails(t, "c1 0x0.5.4")
@@ -258,6 +268,9 @@ func TestCTEHexFloat(t *testing.T) {
 	assertDecodeFails(t, "c1 0x1.1.1")
 	assertDecodeFails(t, "c1 0x1,1")
 	assertDecodeFails(t, "c1 0x1.1p4p5")
+	assertDecodeFails(t, "c1 -0x0.l")
+	assertDecodeFails(t, "c1 -0x0.5pj")
+	assertDecodeFails(t, "c1 -0x0.5p1000000000000000000000000000")
 }
 
 func TestCTEUUID(t *testing.T) {
@@ -657,6 +670,8 @@ func TestCTEMarker(t *testing.T) {
 	assertDecodeFails(t, `c1 & 1:string`)
 	assertDecodeFails(t, `c1 &1 string`)
 	assertDecodeFails(t, `c1 &1string`)
+	assertDecodeFails(t, `c1 &rgnsekfrnsekrgfnskergnslekrgnslergselrgblserfbserfbvsekrskfrvbskerfbksefbskerbfserbfrbksuerfbsekjrfbdjfgbsdjfgbsdfgbsdjkhfg`)
+	assertDecodeFails(t, `c1 &100000000000000000000000000000000000000000000000`)
 }
 
 func TestCTEReference(t *testing.T) {
