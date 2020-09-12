@@ -224,6 +224,12 @@ func assertEncode(t *testing.T, opts *options.CTEEncoderOptions, expectedDocumen
 	return
 }
 
+func assertEncodeFails(t *testing.T, opts *options.CTEEncoderOptions, events ...*test.TEvent) {
+	test.AssertPanics(t, func() {
+		encodeEvents(opts, events...)
+	})
+}
+
 func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool) {
 	successful, actualEvents := assertDecode(t, nil, document, expectedEvents...)
 	if !successful {

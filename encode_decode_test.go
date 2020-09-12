@@ -47,8 +47,10 @@ func TestEncodeDecodeFalse(t *testing.T) {
 }
 
 func TestEncodeDecodePositiveInt(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(1), PI(0), ED())
-	assertEncodeDecode(t, BD(), V(1), PI(1), ED())
+	assertEncodeDecodeCTE(t, BD(), V(1), PI(0), ED())
+	assertEncodeDecodeCTE(t, BD(), V(1), PI(1), ED())
+	assertEncodeDecodeCBE(t, BD(), V(1), I(0), ED())
+	assertEncodeDecodeCBE(t, BD(), V(1), I(1), ED())
 	assertEncodeDecode(t, BD(), V(1), PI(104), ED())
 	assertEncodeDecode(t, BD(), V(1), PI(10405), ED())
 	assertEncodeDecode(t, BD(), V(1), PI(999999), ED())
@@ -56,7 +58,8 @@ func TestEncodeDecodePositiveInt(t *testing.T) {
 }
 
 func TestEncodeDecodeNegativeInt(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(1), NI(1), ED())
+	assertEncodeDecodeCTE(t, BD(), V(1), NI(1), ED())
+	assertEncodeDecodeCBE(t, BD(), V(1), I(-1), ED())
 	assertEncodeDecode(t, BD(), V(1), NI(104), ED())
 	assertEncodeDecode(t, BD(), V(1), NI(10405), ED())
 	assertEncodeDecode(t, BD(), V(1), NI(999999), ED())
@@ -115,38 +118,34 @@ func TestEncodeDecodeString(t *testing.T) {
 
 func TestEncodeDecodeList(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), L(), E(), ED())
-	assertEncodeDecode(t, BD(), V(1), L(), PI(1), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), L(), PI(1000), E(), ED())
 }
 
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), M(), E(), ED())
-	assertEncodeDecode(t, BD(), V(1), M(), S("a"), NI(1), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), M(), S("a"), NI(1000), E(), ED())
 	assertEncodeDecode(t, BD(), V(1), M(), S("some nil"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }
 
 func TestImpliedVersion(t *testing.T) {
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "1", BD(), V(1), PI(1), ED())
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "{a=1}", BD(), V(1), M(), S("a"), PI(1), E(), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "1000", BD(), V(1), PI(1000), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "{a=1000}", BD(), V(1), M(), S("a"), PI(1000), E(), ED())
 }
 
 func TestImpliedList(t *testing.T) {
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "1 2 3",
-		BD(), V(1), L(), PI(1), PI(2), PI(3), E(), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "1000 2000 3000",
+		BD(), V(1), L(), PI(1000), PI(2000), PI(3000), E(), ED())
 
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "{a=1} {b=1}",
-		BD(), V(1), L(), M(), S("a"), PI(1), E(), M(), S("b"), PI(1), E(), E(), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "{a=1000} {b=1000}",
+		BD(), V(1), L(), M(), S("a"), PI(1000), E(), M(), S("b"), PI(1000), E(), E(), ED())
 }
 
 func TestImpliedMap(t *testing.T) {
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1=2 3=xyz",
-		BD(), V(1), M(), PI(1), PI(2), PI(3), S("xyz"), E(), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1000=2000 3000=xyz",
+		BD(), V(1), M(), PI(1000), PI(2000), PI(3000), S("xyz"), E(), ED())
 
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1={a=1} 2={b=1}",
-		BD(), V(1), M(), PI(1), M(), S("a"), PI(1), E(), PI(2), M(), S("b"), PI(1), E(), E(), ED())
-}
-
-func TestDecodeEncode(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, nil, nil, "c1 1", []byte{1, 1}, BD(), V(1), I(1), ED())
+	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1000={a=1000} 2000={b=1000}",
+		BD(), V(1), M(), PI(1000), M(), S("a"), PI(1000), E(), PI(2000), M(), S("b"), PI(1000), E(), E(), ED())
 }
 
 func TestWebsiteExamples(t *testing.T) {
@@ -186,10 +185,10 @@ func TestWebsiteExamples(t *testing.T) {
 		0x69, 0x6e, 0x66, 0x69, 0x6e, 0x69, 0x74, 0x79, 0x65, 0x83, 0x00, 0x7b},
 		BD(), V(1), M(),
 		S("boolean"), TT(),
-		S("binary-int"), I(-0b10001011),
-		S("octal-int"), I(0o644),
-		S("decimal-int"), I(-10000000),
-		S("hex-int"), I(0xfffe0001),
+		S("binary-int"), NI(0b10001011),
+		S("octal-int"), PI(0o644),
+		S("decimal-int"), NI(10000000),
+		S("hex-int"), PI(0xfffe0001),
 		S("decimal-float"), DF(test.NewDFloat("-14.125")),
 		S("hex-float"), F(0x5.1ec4p20),
 		S("not-a-number"), NAN(),
@@ -271,21 +270,21 @@ func TestWebsiteExamples(t *testing.T) {
       <Text;
         Hello!
       >
-      <TextInput style={height=40 borderColor=gray borderWidth=1}; Please name me! >
+      <TextInput style={height=120 borderColor=gray}; Please name me! >
     >
-}`, []byte{0x01, 0x79, 0x89, 0x6d, 0x61, 0x69, 0x6e, 0x2d, 0x76, 0x69, 0x65,
-		0x77, 0x78, 0x84, 0x56, 0x69, 0x65, 0x77, 0x7b, 0x78, 0x85, 0x49, 0x6d,
-		0x61, 0x67, 0x65, 0x83, 0x73, 0x72, 0x63, 0x92, 0x2e, 0x69, 0x6d, 0x61,
-		0x67, 0x65, 0x73, 0x2f, 0x61, 0x76, 0x61, 0x74, 0x61, 0x72, 0x2d, 0x69,
-		0x6d, 0x61, 0x67, 0x65, 0x2e, 0x6a, 0x70, 0x67, 0x7b, 0x7b, 0x78, 0x84,
-		0x54, 0x65, 0x78, 0x74, 0x7b, 0x86, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21,
-		0x7b, 0x78, 0x89, 0x54, 0x65, 0x78, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74,
-		0x85, 0x73, 0x74, 0x79, 0x6c, 0x65, 0x79, 0x86, 0x68, 0x65, 0x69, 0x67,
-		0x68, 0x74, 0x28, 0x8b, 0x62, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x43, 0x6f,
-		0x6c, 0x6f, 0x72, 0x84, 0x67, 0x72, 0x61, 0x79, 0x8b, 0x62, 0x6f, 0x72,
-		0x64, 0x65, 0x72, 0x57, 0x69, 0x64, 0x74, 0x68, 0x01, 0x7b, 0x7b, 0x8f,
-		0x50, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x20, 0x6e, 0x61, 0x6d, 0x65, 0x20,
-		0x6d, 0x65, 0x21, 0x7b, 0x7b, 0x7b},
+}`, []byte{
+		0x01, 0x79, 0x89, 0x6d, 0x61, 0x69, 0x6e, 0x2d, 0x76, 0x69, 0x65, 0x77,
+		0x78, 0x84, 0x56, 0x69, 0x65, 0x77, 0x7b, 0x78, 0x85, 0x49, 0x6d, 0x61,
+		0x67, 0x65, 0x83, 0x73, 0x72, 0x63, 0x92, 0x2e, 0x69, 0x6d, 0x61, 0x67,
+		0x65, 0x73, 0x2f, 0x61, 0x76, 0x61, 0x74, 0x61, 0x72, 0x2d, 0x69, 0x6d,
+		0x61, 0x67, 0x65, 0x2e, 0x6a, 0x70, 0x67, 0x7b, 0x7b, 0x78, 0x84, 0x54,
+		0x65, 0x78, 0x74, 0x7b, 0x86, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x21, 0x7b,
+		0x78, 0x89, 0x54, 0x65, 0x78, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x85,
+		0x73, 0x74, 0x79, 0x6c, 0x65, 0x79, 0x86, 0x68, 0x65, 0x69, 0x67, 0x68,
+		0x74, 0x68, 0x78, 0x8b, 0x62, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x43, 0x6f,
+		0x6c, 0x6f, 0x72, 0x84, 0x67, 0x72, 0x61, 0x79, 0x7b, 0x7b, 0x8f, 0x50,
+		0x6c, 0x65, 0x61, 0x73, 0x65, 0x20, 0x6e, 0x61, 0x6d, 0x65, 0x20, 0x6d,
+		0x65, 0x21, 0x7b, 0x7b, 0x7b},
 		BD(), V(1), M(),
 		S("main-view"), MUP(), S("View"), E(),
 		MUP(), S("Image"), S("src"), URI("images/avatar-image.jpg"), E(), E(),
@@ -293,7 +292,7 @@ func TestWebsiteExamples(t *testing.T) {
 		S("Hello!"),
 		E(),
 		MUP(), S("TextInput"), S("style"), M(),
-		S("height"), I(40), S("borderColor"), S("gray"), S("borderWidth"), I(1), E(), E(),
+		S("height"), PI(120), S("borderColor"), S("gray"), E(), E(),
 		S("Please name me!"), E(),
 		E(), E(), ED())
 

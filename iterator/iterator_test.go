@@ -54,11 +54,11 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, int16(10), I(10))
 	assertIterate(t, int32(10), I(10))
 	assertIterate(t, int64(10), I(10))
-	assertIterate(t, uint(10), I(10))
-	assertIterate(t, uint8(10), I(10))
-	assertIterate(t, uint16(10), I(10))
-	assertIterate(t, uint32(10), I(10))
-	assertIterate(t, uint64(10), I(10))
+	assertIterate(t, uint(10), PI(10))
+	assertIterate(t, uint8(10), PI(10))
+	assertIterate(t, uint16(10), PI(10))
+	assertIterate(t, uint32(10), PI(10))
+	assertIterate(t, uint64(10), PI(10))
 	assertIterate(t, 1, I(1))
 	assertIterate(t, -1, I(-1))
 	assertIterate(t, pBigIntP, BI(pBigIntP))
@@ -75,8 +75,8 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, *pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, (*apd.Decimal)(nil), N())
-	assertIterate(t, common.SignalingNan, SNAN())
-	assertIterate(t, common.QuietNan, NAN())
+	assertIterate(t, common.SignalingNan, F(common.SignalingNan))
+	assertIterate(t, common.QuietNan, F(common.QuietNan))
 	assertIterate(t, gTimeNow, GT(gTimeNow))
 	assertIterate(t, pCTimeNow, CT(pCTimeNow))
 	assertIterate(t, *pCTimeNow, CT(pCTimeNow))
@@ -94,11 +94,11 @@ func TestIterateSlice(t *testing.T) {
 	assertIterate(t, []int32{1, 2}, L(), I(1), I(2), E())
 	assertIterate(t, []int64{1, 2}, L(), I(1), I(2), E())
 
-	assertIterate(t, []uint{1, 2}, L(), I(1), I(2), E())
+	assertIterate(t, []uint{1, 2}, L(), PI(1), PI(2), E())
 	assertIterate(t, []uint8{0x12, 0x34}, AU8([]byte{0x12, 0x34}))
 	assertIterate(t, []uint16{0x1234, 0x5678}, AU16([]uint16{0x1234, 0x5678}))
-	assertIterate(t, []uint32{1, 2}, L(), I(1), I(2), E())
-	assertIterate(t, []uint64{1, 2}, L(), I(1), I(2), E())
+	assertIterate(t, []uint32{1, 2}, L(), PI(1), PI(2), E())
+	assertIterate(t, []uint64{1, 2}, L(), PI(1), PI(2), E())
 
 	assertIterate(t, []float32{1, 2}, L(), F(1), F(2), E())
 	assertIterate(t, []float64{1, 2}, L(), F(1), F(2), E())
@@ -165,7 +165,7 @@ func TestIterateRecurse(t *testing.T) {
 	}
 	obj.R = obj
 
-	expected := []*test.TEvent{BD(), V(1), MARK(), I(0), M(), S("i"), I(50), S("r"), REF(), I(0), E(), ED()}
+	expected := []*test.TEvent{BD(), V(1), MARK(), PI(0), M(), S("i"), I(50), S("r"), REF(), PI(0), E(), ED()}
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true

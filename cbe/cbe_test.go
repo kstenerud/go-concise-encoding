@@ -80,8 +80,8 @@ func TestCBEInt(t *testing.T) {
 }
 
 func TestCBEPositiveInt(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, 0}, BD(), V(1), PI(0), ED())
-	assertDecodeEncode(t, []byte{version, 100}, BD(), V(1), PI(100), ED())
+	assertDecodeEncode(t, []byte{version, 0}, BD(), V(1), I(0), ED())
+	assertDecodeEncode(t, []byte{version, 100}, BD(), V(1), I(100), ED())
 	assertDecodeEncode(t, []byte{version, typePosInt8, 101}, BD(), V(1), PI(101), ED())
 	assertDecodeEncode(t, []byte{version, typePosInt8, 0xff}, BD(), V(1), PI(255), ED())
 	assertDecodeEncode(t, []byte{version, typePosInt16, 0x00, 0x01}, BD(), V(1), PI(0x100), ED())
@@ -101,8 +101,8 @@ func TestCBEPositiveInt(t *testing.T) {
 }
 
 func TestCBENegativeInt(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, 0xff}, BD(), V(1), NI(1), ED())
-	assertDecodeEncode(t, []byte{version, 0x9c}, BD(), V(1), NI(100), ED())
+	assertDecodeEncode(t, []byte{version, 0xff}, BD(), V(1), I(-1), ED())
+	assertDecodeEncode(t, []byte{version, 0x9c}, BD(), V(1), I(-100), ED())
 	assertDecodeEncode(t, []byte{version, typeNegInt8, 101}, BD(), V(1), NI(101), ED())
 	assertDecodeEncode(t, []byte{version, typeNegInt8, 0xff}, BD(), V(1), NI(255), ED())
 	assertDecodeEncode(t, []byte{version, typeNegInt16, 0x00, 0x01}, BD(), V(1), NI(0x100), ED())
@@ -426,21 +426,21 @@ func TestCBEArrayBoolean(t *testing.T) {
 }
 
 func TestCBEMarker(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeMarker, 1, typeString1, 'a'}, BD(), V(1), MARK(), PI(1), S("a"), ED())
+	assertDecodeEncode(t, []byte{version, typeMarker, 1, typeString1, 'a'}, BD(), V(1), MARK(), I(1), S("a"), ED())
 	assertDecodeEncode(t, []byte{version, typeMarker, typeString1, 'a', typeString4, 't', 'e', 's', 't'}, BD(), V(1), MARK(), S("a"), S("test"), ED())
 }
 
 func TestCBEReference(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeReference, 1}, BD(), V(1), REF(), PI(1), ED())
+	assertDecodeEncode(t, []byte{version, typeReference, 1}, BD(), V(1), REF(), I(1), ED())
 	assertDecodeEncode(t, []byte{version, typeReference, typeString1, 'a'}, BD(), V(1), REF(), S("a"), ED())
 }
 
 func TestCBEContainers(t *testing.T) {
-	assertDecodeEncode(t, []byte{version, typeList, 1, typeEndContainer}, BD(), V(1), L(), PI(1), E(), ED())
-	assertDecodeEncode(t, []byte{version, typeMap, 1, typeEndContainer}, BD(), V(1), M(), PI(1), E(), ED())
-	assertDecodeEncode(t, []byte{version, typeMetadata, 1, typeEndContainer}, BD(), V(1), META(), PI(1), E(), ED())
-	assertDecodeEncode(t, []byte{version, typeComment, 1, typeEndContainer}, BD(), V(1), CMT(), PI(1), E(), ED())
-	assertDecodeEncode(t, []byte{version, typeMarkup, 1, typeEndContainer, typeEndContainer}, BD(), V(1), MUP(), PI(1), E(), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeList, 1, typeEndContainer}, BD(), V(1), L(), I(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeMap, 1, typeEndContainer}, BD(), V(1), M(), I(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeMetadata, 1, typeEndContainer}, BD(), V(1), META(), I(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeComment, 1, typeEndContainer}, BD(), V(1), CMT(), I(1), E(), ED())
+	assertDecodeEncode(t, []byte{version, typeMarkup, 1, typeEndContainer, typeEndContainer}, BD(), V(1), MUP(), I(1), E(), E(), ED())
 
 	assertDecodeEncode(t, []byte{version, typeList, 1,
 		typeList, typeString1, 'a', typeEndContainer,
@@ -450,12 +450,12 @@ func TestCBEContainers(t *testing.T) {
 		typeMarkup, typeString1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
 		typeEndContainer,
 	},
-		BD(), V(1), L(), PI(1),
+		BD(), V(1), L(), I(1),
 		L(), S("a"), E(),
-		M(), S("a"), PI(100), E(),
-		META(), S("a"), PI(100), E(),
+		M(), S("a"), I(100), E(),
+		META(), S("a"), I(100), E(),
 		CMT(), S("a"), E(),
-		MUP(), S("a"), S("a"), PI(50), E(), S("a"), E(),
+		MUP(), S("a"), S("a"), I(50), E(), S("a"), E(),
 		E(), ED())
 }
 
@@ -498,35 +498,35 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 func TestCBEEncodeImpliedVersion(t *testing.T) {
 	opts := options.DefaultCBEEncoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureVersion
-	assertEncode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), PI(1), PI(2), E(), ED())
+	assertEncode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), I(1), I(2), E(), ED())
 }
 
 func TestCBEDecodeImpliedVersion(t *testing.T) {
 	opts := options.DefaultCBEDecoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureVersion
-	assertDecode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), PI(1), PI(2), E(), ED())
+	assertDecode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), I(1), I(2), E(), ED())
 }
 
 func TestCBEEncodeImpliedList(t *testing.T) {
 	opts := options.DefaultCBEEncoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureList
-	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), L(), PI(1), PI(2), E(), ED())
+	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), L(), I(1), I(2), E(), ED())
 }
 
 func TestCBEDecodeImpliedList(t *testing.T) {
 	opts := options.DefaultCBEDecoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureList
-	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), L(), PI(1), PI(2), E(), ED())
+	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), L(), I(1), I(2), E(), ED())
 }
 
 func TestCBEEncodeImpliedMap(t *testing.T) {
 	opts := options.DefaultCBEEncoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureMap
-	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), M(), PI(1), PI(2), E(), ED())
+	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), M(), I(1), I(2), E(), ED())
 }
 
 func TestCBEDecodeImpliedMap(t *testing.T) {
 	opts := options.DefaultCBEDecoderOptions()
 	opts.ImpliedStructure = options.ImpliedStructureMap
-	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), M(), PI(1), PI(2), E(), ED())
+	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), M(), I(1), I(2), E(), ED())
 }

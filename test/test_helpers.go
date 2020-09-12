@@ -515,12 +515,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventNInt:
 		receiver.OnNegativeInt(_this.V1.(uint64))
 	case TEventInt:
-		v := _this.V1.(int64)
-		if v >= 0 {
-			receiver.OnPositiveInt(uint64(v))
-		} else {
-			receiver.OnNegativeInt(uint64(-v))
-		}
+		receiver.OnInt(_this.V1.(int64))
 	case TEventBigInt:
 		receiver.OnBigInt(_this.V1.(*big.Int))
 	case TEventFloat:
@@ -667,18 +662,10 @@ func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	return newTEvent(eventType, value, nil)
 }
 
-func TT() *TEvent { return newTEvent(TEventTrue, nil, nil) }
-func FF() *TEvent { return newTEvent(TEventFalse, nil, nil) }
-func I(v int64) *TEvent {
-	if v >= 0 {
-		return PI(uint64(v))
-	}
-	return NI(uint64(-v))
-}
-func F(v float64) *TEvent {
-	return newTEvent(TEventFloat, v, nil)
-}
-
+func TT() *TEvent                       { return newTEvent(TEventTrue, nil, nil) }
+func FF() *TEvent                       { return newTEvent(TEventFalse, nil, nil) }
+func I(v int64) *TEvent                 { return newTEvent(TEventInt, v, nil) }
+func F(v float64) *TEvent               { return newTEvent(TEventFloat, v, nil) }
 func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return newTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
@@ -1067,52 +1054,23 @@ func NewTER() *TER {
 func (h *TER) add(event *TEvent) {
 	h.Events = append(h.Events, event)
 }
-func (h *TER) OnVersion(version uint64)   { h.add(V(version)) }
-func (h *TER) OnPadding(count int)        { h.add(PAD(count)) }
-func (h *TER) OnNil()                     { h.add(N()) }
-func (h *TER) OnBool(value bool)          { h.add(B(value)) }
-func (h *TER) OnTrue()                    { h.add(TT()) }
-func (h *TER) OnFalse()                   { h.add(FF()) }
-func (h *TER) OnPositiveInt(value uint64) { h.add(PI(value)) }
-func (h *TER) OnNegativeInt(value uint64) { h.add(NI(value)) }
-func (h *TER) OnInt(value int64)          { h.add(I(value)) }
-func (h *TER) OnBigInt(value *big.Int)    { h.add(BI(value)) }
-func (h *TER) OnFloat(value float64) {
-	if math.IsNaN(value) {
-		if common.IsSignalingNan(value) {
-			h.add(SNAN())
-		} else {
-			h.add(NAN())
-		}
-	} else {
-		h.add(F(value))
-	}
-}
-func (h *TER) OnBigFloat(value *big.Float) { h.add(newTEvent(TEventBigFloat, value, nil)) }
-func (h *TER) OnDecimalFloat(value compact_float.DFloat) {
-	if value.IsNan() {
-		if value.IsSignalingNan() {
-			h.add(SNAN())
-		} else {
-			h.add(NAN())
-		}
-	} else {
-		h.add(DF(value))
-	}
-}
-func (h *TER) OnBigDecimalFloat(value *apd.Decimal) {
-	switch value.Form {
-	case apd.NaN:
-		h.add(NAN())
-	case apd.NaNSignaling:
-		h.add(SNAN())
-	default:
-		h.add(BDF(value))
-	}
-}
-func (h *TER) OnUUID(value []byte)                    { h.add(UUID(value)) }
-func (h *TER) OnTime(value time.Time)                 { h.add(GT(value)) }
-func (h *TER) OnCompactTime(value *compact_time.Time) { h.add(CT(value)) }
+func (h *TER) OnVersion(version uint64)                  { h.add(V(version)) }
+func (h *TER) OnPadding(count int)                       { h.add(PAD(count)) }
+func (h *TER) OnNil()                                    { h.add(N()) }
+func (h *TER) OnBool(value bool)                         { h.add(B(value)) }
+func (h *TER) OnTrue()                                   { h.add(TT()) }
+func (h *TER) OnFalse()                                  { h.add(FF()) }
+func (h *TER) OnPositiveInt(value uint64)                { h.add(PI(value)) }
+func (h *TER) OnNegativeInt(value uint64)                { h.add(NI(value)) }
+func (h *TER) OnInt(value int64)                         { h.add(I(value)) }
+func (h *TER) OnBigInt(value *big.Int)                   { h.add(BI(value)) }
+func (h *TER) OnFloat(value float64)                     { h.add(F(value)) }
+func (h *TER) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
+func (h *TER) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
+func (h *TER) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
+func (h *TER) OnUUID(value []byte)                       { h.add(UUID(value)) }
+func (h *TER) OnTime(value time.Time)                    { h.add(GT(value)) }
+func (h *TER) OnCompactTime(value *compact_time.Time)    { h.add(CT(value)) }
 func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeString:

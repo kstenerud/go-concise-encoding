@@ -25,6 +25,8 @@ import (
 	"math"
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 
@@ -75,6 +77,9 @@ func TestCTEBool(t *testing.T) {
 	assertDecodeEncode(t, "c1 @true", BD(), V(1), TT(), ED())
 	assertDecodeEncode(t, "c1 @false", BD(), V(1), FF(), ED())
 
+	assertEncode(t, nil, "c1 @false", BD(), V(1), B(false), ED())
+	assertEncode(t, nil, "c1 @true", BD(), V(1), B(true), ED())
+
 	assertDecodeFails(t, "c1 @truer")
 	assertDecodeFails(t, "c1 @falser")
 	assertDecodeFails(t, "c1 -@true")
@@ -90,6 +95,10 @@ func TestCTEDecimalInt(t *testing.T) {
 	assertDecodeEncode(t, "c1 -10000000000000000000000000000", BD(), V(1), BI(NewBigInt("-10000000000000000000000000000", 10)), ED())
 	assertDecode(t, nil, "c1 100_00_0_00000000000_00000000_000_0", BD(), V(1), BI(NewBigInt("10000000000000000000000000000", 10)), ED())
 	assertDecode(t, nil, "c1 -4_9_5__2___3", BD(), V(1), NI(49523), ED())
+	assertEncode(t, nil, "c1 100", BD(), V(1), I(100), ED())
+	assertEncode(t, nil, "c1 -100", BD(), V(1), I(-100), ED())
+	assertDecode(t, nil, "c1 100", BD(), V(1), PI(100), ED())
+	assertDecode(t, nil, "c1 -100", BD(), V(1), NI(100), ED())
 
 	assertDecodeFails(t, "c1 1f")
 	assertDecodeFails(t, "c1 -1f")
@@ -196,6 +205,11 @@ func TestCTEFloat(t *testing.T) {
 	assertDecode(t, nil, "c1 0.1_50000000000_00000000000_000000000000_0000000000000000_1e+100_0_0",
 		BD(), V(1), BDF(NewBDF("0.1500000000000000000000000000000000000000000000000001e+10000")), ED())
 
+	assertEncode(t, nil, "c1 @nan", BD(), V(1), F(common.QuietNan), ED())
+	assertEncode(t, nil, "c1 @snan", BD(), V(1), F(common.SignalingNan), ED())
+
+	assertEncode(t, nil, "c1 1.1", BD(), V(1), BF(NewBigFloat("1.1", 10, 2)), ED())
+
 	assertDecodeFails(t, "c1 -0.5.4")
 	assertDecodeFails(t, "c1 -0,5.4")
 	assertDecodeFails(t, "c1 0.5.4")
@@ -284,6 +298,8 @@ func TestCTEUUID(t *testing.T) {
 
 	assertDecodeFails(t, `c1 @fedcba98-7654-3210-aaaa-bbbbbbbbbbb`)
 	assertDecodeFails(t, `c1 @fedcba98-7654-3210-aaaa-bbbbbbbbbbbbb`)
+	assertEncodeFails(t, nil, BD(), V(1), UUID([]byte{0xfe, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
+	assertEncodeFails(t, nil, BD(), V(1), UUID([]byte{0xfe, 0xdc, 0xff, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
 }
 
 func TestCTEDate(t *testing.T) {
@@ -412,6 +428,12 @@ func TestCTETimestamp(t *testing.T) {
 	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/8965.92/1.10")
 	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/1.a")
 	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.a/1.10")
+
+	gotime, err := NewTS(2020, 1, 15, 10, 0, 1, 930000000, "").AsGoTime()
+	if err != nil {
+		panic(err)
+	}
+	assertEncode(t, nil, "c1 2020-01-15/10:00:01.93", BD(), V(1), GT(gotime), ED())
 }
 
 func TestCTEQuotedString(t *testing.T) {

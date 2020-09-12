@@ -518,13 +518,6 @@ func (_this *Encoder) handleURI(value []byte) {
 	}
 }
 
-func (_this *Encoder) handleStringNormal(value []byte) {
-	_this.addPrefix()
-	_this.addString(asPotentialQuotedString(value))
-	_this.currentItemCount++
-	_this.transitionState()
-}
-
 func (_this *Encoder) handleString(value []byte) {
 	switch _this.currentState {
 	case cteEncoderStateAwaitMarkerID:
