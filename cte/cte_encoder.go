@@ -333,9 +333,9 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeUint8:
 		switch _this.opts.DefaultArrayEncodingBases.Uint8 {
 		case 2:
-			panic("TODO: encoder uint8 base 2")
+			_this.encodeArrayU8Base2(value)
 		case 8:
-			panic("TODO: encoder uint8 base 8")
+			_this.encodeArrayU8Base8(value)
 		case 10:
 			_this.encodeArrayU8Base10(value)
 		case 16:
@@ -796,6 +796,22 @@ func (_this *Encoder) encodeArrayU64Base16(value []uint8) {
 		base += 17
 	}
 	dst[base] = '|'
+}
+
+func (_this *Encoder) encodeArrayU8Base2(value []uint8) {
+	_this.addString("|u8b")
+	for _, b := range value {
+		_this.addFmt(" %b", b)
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayU8Base8(value []uint8) {
+	_this.addString("|u8o")
+	for _, b := range value {
+		_this.addFmt(" %o", b)
+	}
+	_this.addString("|")
 }
 
 func (_this *Encoder) encodeArrayU8Base10(value []uint8) {

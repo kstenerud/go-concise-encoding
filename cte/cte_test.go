@@ -545,8 +545,18 @@ func TestCTEArrayInt8(t *testing.T) {
 
 func TestCTEArrayUint8(t *testing.T) {
 	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Uint8 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |u8b 0 1 10 101 1111111 10000000 11111111|`, BD(), V(1), AU8([]uint8{0, 1, 2, 5, 0x7f, 0x80, 0xff}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint8 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |u8o 0 10 50 127 254 377|`, BD(), V(1), AU8([]uint8{0o0, 0o10, 0o50, 0o127, 0o254, 0o377}), ED())
+
 	eOpts.DefaultArrayEncodingBases.Uint8 = 10
 	assertDecodeEncode(t, nil, eOpts, `c1 |u8 0 10 50 128 254 255|`, BD(), V(1), AU8([]uint8{0, 10, 50, 128, 254, 255}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint8 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |u8x 00 01 50 7f 80 ff|`, BD(), V(1), AU8([]uint8{0x00, 0x01, 0x50, 0x7f, 0x80, 0xff}), ED())
 }
 
 func TestCTEArrayInt16(t *testing.T) {

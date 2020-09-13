@@ -695,7 +695,55 @@ func (_this *Decoder) handleVerbatimString() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleU8X() {
+func (_this *Decoder) handleU8Base2() {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, _, count := _this.buffer.DecodeBinaryInteger()
+		if count == 0 {
+			break
+		}
+		if count > 8 || v > 255 {
+			_this.buffer.Errorf("binary byte too long")
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected hex digits")
+	}
+}
+
+func (_this *Decoder) handleU8Base8() {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, _, count := _this.buffer.DecodeOctalInteger()
+		if count == 0 {
+			break
+		}
+		if count > 3 || v > 255 {
+			_this.buffer.Errorf("octal byte too long")
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected hex digits")
+	}
+}
+
+func (_this *Decoder) handleArrayU8Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
@@ -719,7 +767,7 @@ func (_this *Decoder) handleU8X() {
 	}
 }
 
-func (_this *Decoder) handleU16X() {
+func (_this *Decoder) handleArrayU16Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
@@ -743,7 +791,7 @@ func (_this *Decoder) handleU16X() {
 	}
 }
 
-func (_this *Decoder) handleU32X() {
+func (_this *Decoder) handleArrayU32Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
@@ -767,7 +815,7 @@ func (_this *Decoder) handleU32X() {
 	}
 }
 
-func (_this *Decoder) handleU64X() {
+func (_this *Decoder) handleArrayU64Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
@@ -850,7 +898,7 @@ func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64,
 	return int64(v) * sign, digitCount
 }
 
-func (_this *Decoder) handleU8() {
+func (_this *Decoder) handleArrayU8Base10() {
 	var data []uint8
 	for {
 		v, digitCount := _this.decodeArrayElementUnsignedInteger(8)
@@ -870,7 +918,7 @@ func (_this *Decoder) handleU8() {
 	}
 }
 
-func (_this *Decoder) handleI8() {
+func (_this *Decoder) handleArrayI8Base10() {
 	var data []uint8
 	for {
 		v, digitCount := _this.decodeArrayElementSignedInteger(8)
@@ -902,18 +950,22 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	common.ASCIIBytesToLower(subtoken)
 	token := string(subtoken)
 	switch token {
+	case "u8b":
+		_this.handleU8Base2()
+	case "u8o":
+		_this.handleU8Base8()
 	case "u8x":
-		_this.handleU8X()
+		_this.handleArrayU8Base16()
 	case "u16x":
-		_this.handleU16X()
+		_this.handleArrayU16Base16()
 	case "u32x":
-		_this.handleU32X()
+		_this.handleArrayU32Base16()
 	case "u64x":
-		_this.handleU64X()
+		_this.handleArrayU64Base16()
 	case "u8":
-		_this.handleU8()
+		_this.handleArrayU8Base10()
 	case "i8":
-		_this.handleI8()
+		_this.handleArrayI8Base10()
 	default:
 		panic(fmt.Errorf("TODO: Typed array decoder support for %s", token))
 		_this.buffer.Errorf("%s: Unhandled array type", token)
