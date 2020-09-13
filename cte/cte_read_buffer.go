@@ -290,7 +290,28 @@ func (_this *ReadBuffer) SkipWhitespace() {
 
 const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 
-func (_this *ReadBuffer) DecodeBinaryInteger() (value uint64, bigValue *big.Int, digitCount int) {
+func (_this *ReadBuffer) DecodeSmallBinaryUint() (value uint64, digitCount int) {
+	v, vBig, count := _this.DecodeBinaryUint()
+	if vBig != nil {
+		_this.Errorf("Value cannot be > 64 bits")
+	}
+	return v, count
+}
+
+func (_this *ReadBuffer) DecodeSmallBinaryInt() (value int64, digitCount int) {
+	sign := int64(1)
+	if _this.PeekByteAllowEOD() == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	}
+	v, vBig, count := _this.DecodeBinaryUint()
+	if vBig != nil || v > 0x7fffffffffffffff {
+		_this.Errorf("Value cannot be > 63 bits")
+	}
+	return int64(v) * sign, count
+}
+
+func (_this *ReadBuffer) DecodeBinaryUint() (value uint64, bigValue *big.Int, digitCount int) {
 	for {
 		b := _this.PeekByteAllowEOD()
 		nextDigitValue := uint64(0)
@@ -341,7 +362,28 @@ func (_this *ReadBuffer) DecodeBinaryInteger() (value uint64, bigValue *big.Int,
 
 const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 
-func (_this *ReadBuffer) DecodeOctalInteger() (value uint64, bigValue *big.Int, digitCount int) {
+func (_this *ReadBuffer) DecodeSmallOctalUint() (value uint64, digitCount int) {
+	v, vBig, count := _this.DecodeOctalUint()
+	if vBig != nil {
+		_this.Errorf("Value cannot be > 64 bits")
+	}
+	return v, count
+}
+
+func (_this *ReadBuffer) DecodeSmallOctalInt() (value int64, digitCount int) {
+	sign := int64(1)
+	if _this.PeekByteAllowEOD() == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	}
+	v, vBig, count := _this.DecodeOctalUint()
+	if vBig != nil || v > 0x7fffffffffffffff {
+		_this.Errorf("Value cannot be > 63 bits")
+	}
+	return int64(v) * sign, count
+}
+
+func (_this *ReadBuffer) DecodeOctalUint() (value uint64, bigValue *big.Int, digitCount int) {
 	for {
 		b := _this.PeekByteAllowEOD()
 		nextDigitValue := uint64(0)
@@ -392,9 +434,30 @@ func (_this *ReadBuffer) DecodeOctalInteger() (value uint64, bigValue *big.Int, 
 
 const maxPreShiftDecimal = uint64(0x1999999999999999)
 
+func (_this *ReadBuffer) DecodeSmallDecimalUint() (value uint64, digitCount int) {
+	v, vBig, count := _this.DecodeDecimalUint(0, nil)
+	if vBig != nil {
+		_this.Errorf("Value cannot be > 64 bits")
+	}
+	return v, count
+}
+
+func (_this *ReadBuffer) DecodeSmallDecimalInt() (value int64, digitCount int) {
+	sign := int64(1)
+	if _this.PeekByteAllowEOD() == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	}
+	v, vBig, count := _this.DecodeDecimalUint(0, nil)
+	if vBig != nil || v > 0x7fffffffffffffff {
+		_this.Errorf("Value cannot be > 63 bits")
+	}
+	return int64(v) * sign, count
+}
+
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
-func (_this *ReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+func (_this *ReadBuffer) DecodeDecimalUint(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
 	if bigStartValue == nil {
 		value = startValue
 		for {
@@ -441,7 +504,28 @@ func (_this *ReadBuffer) DecodeDecimalInteger(startValue uint64, bigStartValue *
 
 const maxPreShiftHex = uint64(0x0fffffffffffffff)
 
-func (_this *ReadBuffer) DecodeHexInteger(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+func (_this *ReadBuffer) DecodeSmallHexUint() (value uint64, digitCount int) {
+	v, vBig, count := _this.DecodeHexUint(0, nil)
+	if vBig != nil {
+		_this.Errorf("Value cannot be > 64 bits")
+	}
+	return v, count
+}
+
+func (_this *ReadBuffer) DecodeSmallHexInt() (value int64, digitCount int) {
+	sign := int64(1)
+	if _this.PeekByteAllowEOD() == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	}
+	v, vBig, count := _this.DecodeHexUint(0, nil)
+	if vBig != nil || v > 0x7fffffffffffffff {
+		_this.Errorf("Value cannot be > 63 bits")
+	}
+	return int64(v) * sign, count
+}
+
+func (_this *ReadBuffer) DecodeHexUint(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
 	if bigStartValue == nil {
 		value = startValue
 		for {
@@ -768,7 +852,7 @@ Loop:
 var maxDayByMonth = []int{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 
 func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
-	month, _, digitCount := _this.DecodeDecimalInteger(0, nil)
+	month, _, digitCount := _this.DecodeDecimalUint(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Month field is too long")
 	}
@@ -781,7 +865,7 @@ func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 	_this.AdvanceByte()
 
 	var day uint64
-	day, _, digitCount = _this.DecodeDecimalInteger(0, nil)
+	day, _, digitCount = _this.DecodeDecimalUint(0, nil)
 	if digitCount == 0 {
 		_this.UnexpectedChar("day")
 	}
@@ -797,7 +881,7 @@ func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 
 	_this.AdvanceByte()
 	var hour uint64
-	hour, _, digitCount = _this.DecodeDecimalInteger(0, nil)
+	hour, _, digitCount = _this.DecodeDecimalUint(0, nil)
 	if digitCount == 0 {
 		_this.UnexpectedChar("hour")
 	}
@@ -823,7 +907,7 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 	if hour < 0 || hour > 23 {
 		_this.Errorf("Hour %v is invalid", hour)
 	}
-	minute, _, digitCount := _this.DecodeDecimalInteger(0, nil)
+	minute, _, digitCount := _this.DecodeDecimalUint(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Minute field is too long")
 	}
@@ -835,7 +919,7 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 	}
 	_this.AdvanceByte()
 	var second uint64
-	second, _, digitCount = _this.DecodeDecimalInteger(0, nil)
+	second, _, digitCount = _this.DecodeDecimalUint(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Second field is too long")
 	}
@@ -846,7 +930,7 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 
 	if _this.PeekByteAllowEOD() == '.' {
 		_this.AdvanceByte()
-		v, _, digitCount := _this.DecodeDecimalInteger(0, nil)
+		v, _, digitCount := _this.DecodeDecimalUint(0, nil)
 		if digitCount == 0 {
 			_this.UnexpectedChar("nanosecond")
 		}
@@ -884,7 +968,7 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 }
 
 func (_this *ReadBuffer) DecodeLatLongPortion(name string) (value int) {
-	whole, _, digitCount := _this.DecodeDecimalInteger(0, nil)
+	whole, _, digitCount := _this.DecodeDecimalUint(0, nil)
 	switch digitCount {
 	case 1, 2, 3:
 		// 1-3 digits are allowed
@@ -898,7 +982,7 @@ func (_this *ReadBuffer) DecodeLatLongPortion(name string) (value int) {
 	b := _this.PeekByteAllowEOD()
 	if b == '.' {
 		_this.AdvanceByte()
-		fractional, _, digitCount = _this.DecodeDecimalInteger(0, nil)
+		fractional, _, digitCount = _this.DecodeDecimalUint(0, nil)
 		switch digitCount {
 		case 1:
 			// 1 digit: multiply fractional by 10
@@ -930,7 +1014,7 @@ func (_this *ReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundredth
 func (_this *ReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal) {
 	exponent := int32(0)
 	fractionalDigitCount := 0
-	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeDecimalInteger(coefficient, bigCoefficient)
+	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeDecimalUint(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
 		_this.UnexpectedChar("float fractional")
 	}
@@ -946,7 +1030,7 @@ func (_this *ReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigC
 			exponentSign = -1
 			_this.AdvanceByte()
 		}
-		exp, bigExp, digitCount := _this.DecodeDecimalInteger(0, nil)
+		exp, bigExp, digitCount := _this.DecodeDecimalUint(0, nil)
 		if digitCount == 0 {
 			_this.UnexpectedChar("float exponent")
 		}
@@ -992,7 +1076,7 @@ func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoeff
 
 	exponent := 0
 	fractionalDigitCount := 0
-	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexInteger(coefficient, bigCoefficient)
+	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexUint(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
 		_this.UnexpectedChar("float fractional")
 	}
@@ -1008,7 +1092,7 @@ func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoeff
 			exponentSign = -1
 			_this.AdvanceByte()
 		}
-		exp, bigExp, digitCount := _this.DecodeDecimalInteger(0, nil)
+		exp, bigExp, digitCount := _this.DecodeDecimalUint(0, nil)
 		if digitCount == 0 {
 			_this.UnexpectedChar("float exponent")
 		}

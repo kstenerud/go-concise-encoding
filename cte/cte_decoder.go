@@ -213,7 +213,7 @@ func (_this *Decoder) handleVersion() {
 
 	_this.buffer.AdvanceByte()
 
-	version, bigVersion, digitCount := _this.buffer.DecodeDecimalInteger(0, nil)
+	version, bigVersion, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
 	if digitCount == 0 {
 		_this.buffer.UnexpectedChar("version number")
 	}
@@ -279,7 +279,7 @@ func (_this *Decoder) handleQuotedString() {
 }
 
 func (_this *Decoder) handlePositiveNumeric() {
-	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalInteger(0, nil)
+	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
 
 	// Integer
 	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
@@ -339,7 +339,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 		return
 	}
 
-	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalInteger(0, nil)
+	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
 
 	// Integer
 	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
@@ -388,7 +388,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 
 	switch b {
 	case 'b':
-		v, bigV, _ := _this.buffer.DecodeBinaryInteger()
+		v, bigV, _ := _this.buffer.DecodeBinaryUint()
 		_this.buffer.AssertAtObjectEnd("binary integer")
 		if bigV != nil {
 			_this.eventReceiver.OnBigInt(bigV)
@@ -397,7 +397,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 		}
 		_this.endObject()
 	case 'o':
-		v, bigV, _ := _this.buffer.DecodeOctalInteger()
+		v, bigV, _ := _this.buffer.DecodeOctalUint()
 		_this.buffer.AssertAtObjectEnd("octal integer")
 		if bigV != nil {
 			_this.eventReceiver.OnBigInt(bigV)
@@ -406,7 +406,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 		}
 		_this.endObject()
 	case 'x':
-		v, bigV, digitCount := _this.buffer.DecodeHexInteger(0, nil)
+		v, bigV, digitCount := _this.buffer.DecodeHexUint(0, nil)
 		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
 			fv, bigFV := _this.buffer.DecodeHexFloat(1, v, bigV, digitCount)
@@ -454,7 +454,7 @@ func (_this *Decoder) handleOtherBaseNegative() {
 	b := _this.buffer.ReadByte()
 	switch b {
 	case 'b':
-		v, bigV, _ := _this.buffer.DecodeBinaryInteger()
+		v, bigV, _ := _this.buffer.DecodeBinaryUint()
 		_this.buffer.AssertAtObjectEnd("binary integer")
 		if bigV != nil {
 			bigV = bigV.Neg(bigV)
@@ -464,7 +464,7 @@ func (_this *Decoder) handleOtherBaseNegative() {
 		}
 		_this.endObject()
 	case 'o':
-		v, bigV, _ := _this.buffer.DecodeOctalInteger()
+		v, bigV, _ := _this.buffer.DecodeOctalUint()
 		_this.buffer.AssertAtObjectEnd("octal integer")
 		if bigV != nil {
 			bigV = bigV.Neg(bigV)
@@ -474,7 +474,7 @@ func (_this *Decoder) handleOtherBaseNegative() {
 		}
 		_this.endObject()
 	case 'x':
-		v, bigV, digitCount := _this.buffer.DecodeHexInteger(0, nil)
+		v, bigV, digitCount := _this.buffer.DecodeHexUint(0, nil)
 		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
 			fv, bigFV := _this.buffer.DecodeHexFloat(-1, v, bigV, digitCount)
@@ -695,83 +695,11 @@ func (_this *Decoder) handleVerbatimString() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleU8Base2() {
-	var data []uint8
-	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeBinaryInteger()
-		if count == 0 {
-			break
-		}
-		if count > 8 || v > 255 {
-			_this.buffer.Errorf("binary byte too long")
-		}
-		data = append(data, uint8(v))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected hex digits")
-	}
-}
-
-func (_this *Decoder) handleU8Base8() {
-	var data []uint8
-	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeOctalInteger()
-		if count == 0 {
-			break
-		}
-		if count > 3 || v > 255 {
-			_this.buffer.Errorf("octal byte too long")
-		}
-		data = append(data, uint8(v))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected hex digits")
-	}
-}
-
-func (_this *Decoder) handleArrayU8Base16() {
-	var data []uint8
-	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
-		if count == 0 {
-			break
-		}
-		if count > 2 {
-			_this.buffer.Errorf("hex byte too long")
-		}
-		data = append(data, uint8(v))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected hex digits")
-	}
-}
-
 func (_this *Decoder) handleArrayU16Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
+		v, _, count := _this.buffer.DecodeHexUint(0, nil)
 		if count == 0 {
 			break
 		}
@@ -795,7 +723,7 @@ func (_this *Decoder) handleArrayU32Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
+		v, _, count := _this.buffer.DecodeHexUint(0, nil)
 		if count == 0 {
 			break
 		}
@@ -819,7 +747,7 @@ func (_this *Decoder) handleArrayU64Base16() {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexInteger(0, nil)
+		v, _, count := _this.buffer.DecodeHexUint(0, nil)
 		if count == 0 {
 			break
 		}
@@ -851,19 +779,19 @@ func (_this *Decoder) decodeArrayElementUnsignedInteger(bitSize int) (value uint
 		switch _this.buffer.PeekByteAllowEOD() {
 		case 'b', 'B':
 			_this.buffer.AdvanceByte()
-			value, bigV, digitCount = _this.buffer.DecodeBinaryInteger()
+			value, bigV, digitCount = _this.buffer.DecodeBinaryUint()
 		case 'o', 'O':
 			_this.buffer.AdvanceByte()
-			value, bigV, digitCount = _this.buffer.DecodeOctalInteger()
+			value, bigV, digitCount = _this.buffer.DecodeOctalUint()
 		case 'x', 'X':
 			_this.buffer.AdvanceByte()
-			value, bigV, digitCount = _this.buffer.DecodeHexInteger(0, nil)
+			value, bigV, digitCount = _this.buffer.DecodeHexUint(0, nil)
 		default:
-			value, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
+			value, bigV, digitCount = _this.buffer.DecodeDecimalUint(0, nil)
 			digitCount++
 		}
 	} else {
-		value, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
+		value, bigV, digitCount = _this.buffer.DecodeDecimalUint(0, nil)
 	}
 
 	if digitCount == 0 {
@@ -876,6 +804,50 @@ func (_this *Decoder) decodeArrayElementUnsignedInteger(bitSize int) (value uint
 		_this.buffer.Errorf("Integer value too big for array element")
 	}
 	return
+}
+
+func (_this *Decoder) handleArrayU8BaseAny() {
+	var data []uint8
+	for {
+		v, digitCount := _this.decodeArrayElementUnsignedInteger(8)
+		if digitCount == 0 {
+			break
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected an integer")
+	}
+}
+
+func (_this *Decoder) handleArrayU8(digitType string, decode func() (v uint64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decode()
+		if count == 0 {
+			break
+		}
+		if v > 255 {
+			_this.buffer.Errorf("%v value too big for array type", digitType)
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected %v digits", digitType)
+	}
 }
 
 func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64, digitCount int) {
@@ -898,27 +870,7 @@ func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64,
 	return int64(v) * sign, digitCount
 }
 
-func (_this *Decoder) handleArrayU8Base10() {
-	var data []uint8
-	for {
-		v, digitCount := _this.decodeArrayElementUnsignedInteger(8)
-		if digitCount == 0 {
-			break
-		}
-		data = append(data, uint8(v))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected an integer")
-	}
-}
-
-func (_this *Decoder) handleArrayI8Base10() {
+func (_this *Decoder) handleArrayI8BaseAny() {
 	var data []uint8
 	for {
 		v, digitCount := _this.decodeArrayElementSignedInteger(8)
@@ -938,6 +890,30 @@ func (_this *Decoder) handleArrayI8Base10() {
 	}
 }
 
+func (_this *Decoder) handleArrayI8(digitType string, decode func() (v int64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decode()
+		if count == 0 {
+			break
+		}
+		if v < -128 || v > 127 {
+			_this.buffer.Errorf("%v value too big for array type", digitType)
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeInt8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected %v digits", digitType)
+	}
+}
+
 func (_this *Decoder) handleTypedArrayBegin() {
 	_this.buffer.AdvanceByte()
 	_this.buffer.BeginSubtoken()
@@ -950,22 +926,28 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	common.ASCIIBytesToLower(subtoken)
 	token := string(subtoken)
 	switch token {
+	case "u8":
+		_this.handleArrayU8BaseAny()
 	case "u8b":
-		_this.handleU8Base2()
+		_this.handleArrayU8("binary", _this.buffer.DecodeSmallBinaryUint)
 	case "u8o":
-		_this.handleU8Base8()
+		_this.handleArrayU8("octal", _this.buffer.DecodeSmallOctalUint)
 	case "u8x":
-		_this.handleArrayU8Base16()
+		_this.handleArrayU8("hex", _this.buffer.DecodeSmallHexUint)
 	case "u16x":
 		_this.handleArrayU16Base16()
 	case "u32x":
 		_this.handleArrayU32Base16()
 	case "u64x":
 		_this.handleArrayU64Base16()
-	case "u8":
-		_this.handleArrayU8Base10()
 	case "i8":
-		_this.handleArrayI8Base10()
+		_this.handleArrayI8BaseAny()
+	case "i8b":
+		_this.handleArrayI8("binary", _this.buffer.DecodeSmallBinaryInt)
+	case "i8o":
+		_this.handleArrayI8("octal", _this.buffer.DecodeSmallOctalInt)
+	case "i8x":
+		_this.handleArrayI8("hex", _this.buffer.DecodeSmallHexInt)
 	default:
 		panic(fmt.Errorf("TODO: Typed array decoder support for %s", token))
 		_this.buffer.Errorf("%s: Unhandled array type", token)

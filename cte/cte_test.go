@@ -534,13 +534,31 @@ func TestCTEArrayUintO(t *testing.T) {
 }
 
 func TestCTEArrayInt8(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c1 |i8 0 10 -10 -128 127|`, BD(), V(1), AI8([]int8{0, 10, -10, -128, 127}), ED())
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Int8 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |i8b 0 1 -10 101 1111111 -10000000|`, BD(), V(1), AI8([]int8{0, 1, -2, 5, 0x7f, -0x80}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int8 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |i8o 0 -10 50 -127|`, BD(), V(1), AI8([]int8{0o0, -0o10, 0o50, -0o127}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int8 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |i8 0 10 -50 127 -128|`, BD(), V(1), AI8([]int8{0, 10, -50, 127, -128}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int8 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |i8x 0 1 -50 7f -80|`, BD(), V(1), AI8([]int8{0x00, 0x01, -0x50, 0x7f, -0x80}), ED())
 
 	assertDecode(t, nil, `c1 |i8 00 01 -01 0b101 -0b110 0B101 -0B110 0o10 -0o11 0O10 -0O11 0x7f -0x80 0X7f -0X80|`,
 		BD(), V(1), AI8([]int8{0, 1, -1, 5, -6, 5, -6, 8, -9, 8, -9, 127, -128, 127, -128}), ED())
 
+	assertDecodeFails(t, "c1 |i8b 10000000|")
+	assertDecodeFails(t, "c1 |i8b -10000001|")
+	assertDecodeFails(t, "c1 |i8o 178|")
+	assertDecodeFails(t, "c1 |i8o -179|")
 	assertDecodeFails(t, "c1 |i8 128|")
 	assertDecodeFails(t, "c1 |i8 -129|")
+	assertDecodeFails(t, "c1 |i8x 80|")
+	assertDecodeFails(t, "c1 |i8x -81|")
 }
 
 func TestCTEArrayUint8(t *testing.T) {
@@ -557,6 +575,14 @@ func TestCTEArrayUint8(t *testing.T) {
 
 	eOpts.DefaultArrayEncodingBases.Uint8 = 16
 	assertDecodeEncode(t, nil, eOpts, `c1 |u8x 00 01 50 7f 80 ff|`, BD(), V(1), AU8([]uint8{0x00, 0x01, 0x50, 0x7f, 0x80, 0xff}), ED())
+
+	assertDecode(t, nil, `c1 |u8 00 01 01 0b101 0b110 0B101 0B110 0o10 0o11 0O10 0O11 0x7f 0x80 0X7f 0X80 0xff 0Xff|`,
+		BD(), V(1), AU8([]uint8{0, 1, 1, 5, 6, 5, 6, 8, 9, 8, 9, 127, 128, 127, 128, 255, 255}), ED())
+
+	assertDecodeFails(t, "c1 |u8b 100000000|")
+	assertDecodeFails(t, "c1 |u8o 400|")
+	assertDecodeFails(t, "c1 |u8 256|")
+	assertDecodeFails(t, "c1 |u8x 100|")
 }
 
 func TestCTEArrayInt16(t *testing.T) {

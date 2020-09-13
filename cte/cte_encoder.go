@@ -333,11 +333,11 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeUint8:
 		switch _this.opts.DefaultArrayEncodingBases.Uint8 {
 		case 2:
-			_this.encodeArrayU8Base2(value)
+			_this.encodeArrayU8("|u8b", " %b", value)
 		case 8:
-			_this.encodeArrayU8Base8(value)
+			_this.encodeArrayU8("|u8o", " %o", value)
 		case 10:
-			_this.encodeArrayU8Base10(value)
+			_this.encodeArrayU8("|u8", " %d", value)
 		case 16:
 			_this.encodeArrayU8Base16(value)
 		default:
@@ -350,7 +350,18 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeUint64:
 		_this.encodeArrayU64Base16(value)
 	case events.ArrayTypeInt8:
-		_this.encodeArrayI8Base10(value)
+		switch _this.opts.DefaultArrayEncodingBases.Int8 {
+		case 2:
+			_this.encodeArrayI8("|i8b", " %b", value)
+		case 8:
+			_this.encodeArrayI8("|i8o", " %o", value)
+		case 10:
+			_this.encodeArrayI8("|i8", " %d", value)
+		case 16:
+			_this.encodeArrayI8("|i8x", " %x", value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Int8 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Int8))
+		}
 	default:
 		panic(fmt.Errorf("TODO: Typed array encoder support for %v", arrayType))
 	}
@@ -798,34 +809,18 @@ func (_this *Encoder) encodeArrayU64Base16(value []uint8) {
 	dst[base] = '|'
 }
 
-func (_this *Encoder) encodeArrayU8Base2(value []uint8) {
-	_this.addString("|u8b")
+func (_this *Encoder) encodeArrayU8(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
 	for _, b := range value {
-		_this.addFmt(" %b", b)
+		_this.addFmt(format, b)
 	}
 	_this.addString("|")
 }
 
-func (_this *Encoder) encodeArrayU8Base8(value []uint8) {
-	_this.addString("|u8o")
+func (_this *Encoder) encodeArrayI8(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
 	for _, b := range value {
-		_this.addFmt(" %o", b)
-	}
-	_this.addString("|")
-}
-
-func (_this *Encoder) encodeArrayU8Base10(value []uint8) {
-	_this.addString("|u8")
-	for _, b := range value {
-		_this.addFmt(" %d", b)
-	}
-	_this.addString("|")
-}
-
-func (_this *Encoder) encodeArrayI8Base10(value []uint8) {
-	_this.addString("|i8")
-	for _, b := range value {
-		_this.addFmt(" %d", int8(b))
+		_this.addFmt(format, int8(b))
 	}
 	_this.addString("|")
 }
