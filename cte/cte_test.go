@@ -525,6 +525,14 @@ func TestCTEArrayUintX(t *testing.T) {
 	assertDecodeFails(t, `c1 |u64x 83ff9ac2l 94ff7ac3219465c1|`)
 }
 
+func TestCTEArrayUintB(t *testing.T) {
+	// TODO: TestCTEArrayUintB
+}
+
+func TestCTEArrayUintO(t *testing.T) {
+	// TODO: TestCTEArrayUintO
+}
+
 func TestCTEArrayInt8(t *testing.T) {
 	assertDecodeEncode(t, `c1 |i8 0 10 -10 -128 127|`, BD(), V(1), AI8([]int8{0, 10, -10, -128, 127}), ED())
 
@@ -577,6 +585,10 @@ func TestCTEArrayFloat64(t *testing.T) {
 
 func TestCTEArrayUUID(t *testing.T) {
 	// TODO: TestCTEArrayUUID
+}
+
+func TestCTEArrayBool(t *testing.T) {
+	// TODO: TestCTEArrayBool
 }
 
 func TestCTEBadArrayType(t *testing.T) {
