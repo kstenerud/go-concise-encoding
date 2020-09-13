@@ -331,7 +331,18 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		_this.handleCustomText(value)
 		return
 	case events.ArrayTypeUint8:
-		_this.encodeArrayU8Base16(value)
+		switch _this.opts.DefaultArrayEncodingBases.Uint8 {
+		case 2:
+			panic("TODO: encoder uint8 base 2")
+		case 8:
+			panic("TODO: encoder uint8 base 8")
+		case 10:
+			_this.encodeArrayU8Base10(value)
+		case 16:
+			_this.encodeArrayU8Base16(value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Uint8 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint8))
+		}
 	case events.ArrayTypeUint16:
 		_this.encodeArrayU16Base16(value)
 	case events.ArrayTypeUint32:
@@ -341,7 +352,7 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeInt8:
 		_this.encodeArrayI8Base10(value)
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+		panic(fmt.Errorf("TODO: Typed array encoder support for %v", arrayType))
 	}
 	_this.currentItemCount++
 	_this.transitionState()

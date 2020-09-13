@@ -113,12 +113,43 @@ type CTEEncoderOptions struct {
 	// The implied structure that this encoder will assume.
 	// Any implied structure will not actually be written to the document.
 	ImpliedStructure ImpliedStructure
+
+	DefaultArrayEncodingBases ArrayEncodingBases
+}
+
+// The base to encode numbers in for numeric arrays.
+// A value of 0 or 10 means decimal, 2 = binary, 8 = octal, 16 = hexadecimal.
+type ArrayEncodingBases struct {
+	Int8    int
+	Int16   int
+	Int32   int
+	Int64   int
+	Uint8   int
+	Uint16  int
+	Uint32  int
+	Uint64  int
+	Float16 int
+	Float32 int
+	Float64 int
 }
 
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {
 	return &CTEEncoderOptions{
 		BufferSize:             1024,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
+		DefaultArrayEncodingBases: ArrayEncodingBases{
+			Int8:    10,
+			Int16:   10,
+			Int32:   10,
+			Int64:   10,
+			Uint8:   16,
+			Uint16:  16,
+			Uint32:  16,
+			Uint64:  16,
+			Float16: 16,
+			Float32: 16,
+			Float64: 16,
+		},
 	}
 }
 

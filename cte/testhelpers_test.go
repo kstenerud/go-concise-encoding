@@ -230,12 +230,14 @@ func assertEncodeFails(t *testing.T, opts *options.CTEEncoderOptions, events ...
 	})
 }
 
-func assertDecodeEncode(t *testing.T, document string, expectedEvents ...*test.TEvent) (successful bool) {
-	successful, actualEvents := assertDecode(t, nil, document, expectedEvents...)
+func assertDecodeEncode(t *testing.T, decodeOpts *options.CTEDecoderOptions,
+	encodeOpts *options.CTEEncoderOptions, document string,
+	expectedEvents ...*test.TEvent) (successful bool) {
+	successful, actualEvents := assertDecode(t, decodeOpts, document, expectedEvents...)
 	if !successful {
 		return
 	}
-	return assertEncode(t, nil, document, actualEvents...)
+	return assertEncode(t, encodeOpts, document, actualEvents...)
 }
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {

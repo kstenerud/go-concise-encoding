@@ -792,41 +792,30 @@ func (_this *Decoder) handleU64X() {
 	}
 }
 
-func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64, digitCount int) {
-	minNegative := uint64(1) << (bitSize - 1)
-	allowedMask := (minNegative << 1) - 1
-	sign := int64(1)
-
+func (_this *Decoder) decodeArrayElementUnsignedInteger(bitSize int) (value uint64, digitCount int) {
 	_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-	b := _this.buffer.PeekByteAllowEOD()
-	if b == '-' {
-		_this.buffer.AdvanceByte()
-		sign = -sign
-		b = _this.buffer.PeekByteAllowEOD()
-	}
-	allowedMask >>= 1
 
-	var v uint64
+	allowedMask := (uint64(1) << (bitSize - 1) << 1) - 1
 	var bigV *big.Int
 
-	if b == '0' {
+	if _this.buffer.PeekByteAllowEOD() == '0' {
 		_this.buffer.AdvanceByte()
 		switch _this.buffer.PeekByteAllowEOD() {
 		case 'b', 'B':
 			_this.buffer.AdvanceByte()
-			v, bigV, digitCount = _this.buffer.DecodeBinaryInteger()
+			value, bigV, digitCount = _this.buffer.DecodeBinaryInteger()
 		case 'o', 'O':
 			_this.buffer.AdvanceByte()
-			v, bigV, digitCount = _this.buffer.DecodeOctalInteger()
+			value, bigV, digitCount = _this.buffer.DecodeOctalInteger()
 		case 'x', 'X':
 			_this.buffer.AdvanceByte()
-			v, bigV, digitCount = _this.buffer.DecodeHexInteger(0, nil)
+			value, bigV, digitCount = _this.buffer.DecodeHexInteger(0, nil)
 		default:
-			v, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
+			value, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
 			digitCount++
 		}
 	} else {
-		v, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
+		value, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
 	}
 
 	if digitCount == 0 {
@@ -835,10 +824,50 @@ func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64,
 	if bigV != nil {
 		_this.buffer.Errorf("Integer value too big for array element")
 	}
+	if (value &^ allowedMask) != 0 {
+		_this.buffer.Errorf("Integer value too big for array element")
+	}
+	return
+}
+
+func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64, digitCount int) {
+	_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+
+	minNegative := uint64(1) << (bitSize - 1)
+	allowedMask := minNegative - 1
+	sign := int64(1)
+	if _this.buffer.PeekByteAllowEOD() == '-' {
+		sign = -sign
+		_this.buffer.AdvanceByte()
+	}
+
+	var v uint64
+	v, digitCount = _this.decodeArrayElementUnsignedInteger(bitSize)
+
 	if (v&^allowedMask) != 0 && !(sign < 0 && v == minNegative) {
 		_this.buffer.Errorf("Integer value too big for array element")
 	}
 	return int64(v) * sign, digitCount
+}
+
+func (_this *Decoder) handleU8() {
+	var data []uint8
+	for {
+		v, digitCount := _this.decodeArrayElementUnsignedInteger(8)
+		if digitCount == 0 {
+			break
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected an integer")
+	}
 }
 
 func (_this *Decoder) handleI8() {
@@ -881,10 +910,12 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.handleU32X()
 	case "u64x":
 		_this.handleU64X()
+	case "u8":
+		_this.handleU8()
 	case "i8":
 		_this.handleI8()
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %s", token))
+		panic(fmt.Errorf("TODO: Typed array decoder support for %s", token))
 		_this.buffer.Errorf("%s: Unhandled array type", token)
 	}
 }
