@@ -331,13 +331,15 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		_this.handleCustomText(value)
 		return
 	case events.ArrayTypeUint8:
-		_this.encodeU8XArray(value)
+		_this.encodeArrayU8Base16(value)
 	case events.ArrayTypeUint16:
-		_this.encodeU16XArray(value)
+		_this.encodeArrayU16Base16(value)
 	case events.ArrayTypeUint32:
-		_this.encodeU32XArray(value)
+		_this.encodeArrayU32Base16(value)
 	case events.ArrayTypeUint64:
-		_this.encodeU64XArray(value)
+		_this.encodeArrayU64Base16(value)
+	case events.ArrayTypeInt8:
+		_this.encodeArrayI8Base10(value)
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
@@ -703,7 +705,7 @@ func (_this *Encoder) encodeHex(prefix byte, value []byte) {
 	}
 }
 
-func (_this *Encoder) encodeU8XArray(value []uint8) {
+func (_this *Encoder) encodeArrayU8Base16(value []uint8) {
 	header := []byte("|u8x")
 	dst := _this.buff.Allocate(len(value)*3 + len(header) + 1)
 	copy(dst, header)
@@ -718,7 +720,7 @@ func (_this *Encoder) encodeU8XArray(value []uint8) {
 	dst[base] = '|'
 }
 
-func (_this *Encoder) encodeU16XArray(value []uint8) {
+func (_this *Encoder) encodeArrayU16Base16(value []uint8) {
 	header := []byte("|u16x")
 	dst := _this.buff.Allocate((len(value)/2)*5 + len(header) + 1)
 	copy(dst, header)
@@ -735,7 +737,7 @@ func (_this *Encoder) encodeU16XArray(value []uint8) {
 	dst[base] = '|'
 }
 
-func (_this *Encoder) encodeU32XArray(value []uint8) {
+func (_this *Encoder) encodeArrayU32Base16(value []uint8) {
 	header := []byte("|u32x")
 	dst := _this.buff.Allocate((len(value)/4)*9 + len(header) + 1)
 	copy(dst, header)
@@ -756,7 +758,7 @@ func (_this *Encoder) encodeU32XArray(value []uint8) {
 	dst[base] = '|'
 }
 
-func (_this *Encoder) encodeU64XArray(value []uint8) {
+func (_this *Encoder) encodeArrayU64Base16(value []uint8) {
 	header := []byte("|u64x")
 	dst := _this.buff.Allocate((len(value)/8)*17 + len(header) + 1)
 	copy(dst, header)
@@ -783,6 +785,22 @@ func (_this *Encoder) encodeU64XArray(value []uint8) {
 		base += 17
 	}
 	dst[base] = '|'
+}
+
+func (_this *Encoder) encodeArrayU8Base10(value []uint8) {
+	_this.addString("|u8")
+	for _, b := range value {
+		_this.addFmt(" %d", b)
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayI8Base10(value []uint8) {
+	_this.addString("|i8")
+	for _, b := range value {
+		_this.addFmt(" %d", int8(b))
+	}
+	_this.addString("|")
 }
 
 func (_this *Encoder) applyIndentation(levelOffset int) {

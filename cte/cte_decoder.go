@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/big"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -703,7 +704,7 @@ func (_this *Decoder) handleU8X() {
 			break
 		}
 		if count > 2 {
-			panic(fmt.Errorf("hex byte too long"))
+			_this.buffer.Errorf("hex byte too long")
 		}
 		data = append(data, uint8(v))
 	}
@@ -714,7 +715,7 @@ func (_this *Decoder) handleU8X() {
 		_this.endObject()
 		return
 	default:
-		panic(fmt.Errorf("Expected hex digits"))
+		_this.buffer.Errorf("Expected hex digits")
 	}
 }
 
@@ -727,7 +728,7 @@ func (_this *Decoder) handleU16X() {
 			break
 		}
 		if count > 4 {
-			panic(fmt.Errorf("hex byte too long"))
+			_this.buffer.Errorf("hex byte too long")
 		}
 		data = append(data, uint8(v), uint8(v>>8))
 	}
@@ -738,7 +739,7 @@ func (_this *Decoder) handleU16X() {
 		_this.endObject()
 		return
 	default:
-		panic(fmt.Errorf("Expected hex digits"))
+		_this.buffer.Errorf("Expected hex digits")
 	}
 }
 
@@ -751,7 +752,7 @@ func (_this *Decoder) handleU32X() {
 			break
 		}
 		if count > 8 {
-			panic(fmt.Errorf("hex byte too long"))
+			_this.buffer.Errorf("hex byte too long")
 		}
 		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
 	}
@@ -762,7 +763,7 @@ func (_this *Decoder) handleU32X() {
 		_this.endObject()
 		return
 	default:
-		panic(fmt.Errorf("Expected hex digits"))
+		_this.buffer.Errorf("Expected hex digits")
 	}
 }
 
@@ -775,7 +776,7 @@ func (_this *Decoder) handleU64X() {
 			break
 		}
 		if count > 16 {
-			panic(fmt.Errorf("hex byte too long"))
+			_this.buffer.Errorf("hex byte too long")
 		}
 		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
 			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
@@ -787,7 +788,76 @@ func (_this *Decoder) handleU64X() {
 		_this.endObject()
 		return
 	default:
-		panic(fmt.Errorf("Expected hex digits"))
+		_this.buffer.Errorf("Expected hex digits")
+	}
+}
+
+func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64, digitCount int) {
+	minNegative := uint64(1) << (bitSize - 1)
+	allowedMask := (minNegative << 1) - 1
+	sign := int64(1)
+
+	_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+	b := _this.buffer.PeekByteAllowEOD()
+	if b == '-' {
+		_this.buffer.AdvanceByte()
+		sign = -sign
+		b = _this.buffer.PeekByteAllowEOD()
+	}
+	allowedMask >>= 1
+
+	var v uint64
+	var bigV *big.Int
+
+	if b == '0' {
+		_this.buffer.AdvanceByte()
+		switch _this.buffer.PeekByteAllowEOD() {
+		case 'b', 'B':
+			_this.buffer.AdvanceByte()
+			v, bigV, digitCount = _this.buffer.DecodeBinaryInteger()
+		case 'o', 'O':
+			_this.buffer.AdvanceByte()
+			v, bigV, digitCount = _this.buffer.DecodeOctalInteger()
+		case 'x', 'X':
+			_this.buffer.AdvanceByte()
+			v, bigV, digitCount = _this.buffer.DecodeHexInteger(0, nil)
+		default:
+			v, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
+			digitCount++
+		}
+	} else {
+		v, bigV, digitCount = _this.buffer.DecodeDecimalInteger(0, nil)
+	}
+
+	if digitCount == 0 {
+		return 0, 0
+	}
+	if bigV != nil {
+		_this.buffer.Errorf("Integer value too big for array element")
+	}
+	if (v&^allowedMask) != 0 && !(sign < 0 && v == minNegative) {
+		_this.buffer.Errorf("Integer value too big for array element")
+	}
+	return int64(v) * sign, digitCount
+}
+
+func (_this *Decoder) handleI8() {
+	var data []uint8
+	for {
+		v, digitCount := _this.decodeArrayElementSignedInteger(8)
+		if digitCount == 0 {
+			break
+		}
+		data = append(data, uint8(v))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeInt8, uint64(len(data)), data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected an integer")
 	}
 }
 
@@ -811,9 +881,11 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.handleU32X()
 	case "u64x":
 		_this.handleU64X()
+	case "i8":
+		_this.handleI8()
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %s", token))
-		panic(fmt.Errorf("%s: Unhandled array type", token))
+		_this.buffer.Errorf("%s: Unhandled array type", token)
 	}
 }
 

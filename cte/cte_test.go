@@ -503,9 +503,7 @@ func TestCTEURI(t *testing.T) {
 	assertEncode(t, nil, `c1 u"http://x.com/%22quoted%22"`, BD(), V(1), URI(`http://x.com/"quoted"`), ED())
 }
 
-// TODO: Other array types
-
-func TestCTEUintXArray(t *testing.T) {
+func TestCTEArrayUintX(t *testing.T) {
 	assertDecodeEncode(t, `c1 |u8x f1 93|`, BD(), V(1), AU8([]byte{0xf1, 0x93}), ED())
 	assertDecode(t, nil, `c1 |u8x f 93 |`, BD(), V(1), AU8([]byte{0xf, 0x93}), ED())
 	assertDecodeFails(t, `c1 |u8x f14 93|`)
@@ -525,6 +523,60 @@ func TestCTEUintXArray(t *testing.T) {
 	assertDecode(t, nil, `c1 |u64x 83ff9ac245aace7 94ff79465c1|`, BD(), V(1), AU64([]uint64{0x83ff9ac245aace7, 0x94ff79465c1}), ED())
 	assertDecodeFails(t, `c1 |u64x 83ff9ac2445aace72 94ff7ac3219465c1|`)
 	assertDecodeFails(t, `c1 |u64x 83ff9ac2l 94ff7ac3219465c1|`)
+}
+
+func TestCTEArrayInt8(t *testing.T) {
+	assertDecodeEncode(t, `c1 |i8 0 10 -10 -128 127|`, BD(), V(1), AI8([]int8{0, 10, -10, -128, 127}), ED())
+
+	assertDecode(t, nil, `c1 |i8 00 01 -01 0b101 -0b110 0B101 -0B110 0o10 -0o11 0O10 -0O11 0x7f -0x80 0X7f -0X80|`,
+		BD(), V(1), AI8([]int8{0, 1, -1, 5, -6, 5, -6, 8, -9, 8, -9, 127, -128, 127, -128}), ED())
+
+	assertDecodeFails(t, "c1 |i8 128|")
+	assertDecodeFails(t, "c1 |i8 -129|")
+}
+
+func TestCTEArrayUint8(t *testing.T) {
+	// TODO: TestCTEArrayUint8
+}
+
+func TestCTEArrayInt16(t *testing.T) {
+	// TODO: TestCTEArrayInt16
+}
+
+func TestCTEArrayUint16(t *testing.T) {
+	// TODO: TestCTEArrayUint16
+}
+
+func TestCTEArrayInt32(t *testing.T) {
+	// TODO: TestCTEArrayInt32
+}
+
+func TestCTEArrayUint32(t *testing.T) {
+	// TODO: TestCTEArrayUint32
+}
+
+func TestCTEArrayInt64(t *testing.T) {
+	// TODO: TestCTEArrayInt64
+}
+
+func TestCTEArrayUint64(t *testing.T) {
+	// TODO: TestCTEArrayUint64
+}
+
+func TestCTEArrayFloat16(t *testing.T) {
+	// TODO: TestCTEArrayFloat16
+}
+
+func TestCTEArrayFloat32(t *testing.T) {
+	// TODO: TestCTEArrayFloat32
+}
+
+func TestCTEArrayFloat64(t *testing.T) {
+	// TODO: TestCTEArrayFloat64
+}
+
+func TestCTEArrayUUID(t *testing.T) {
+	// TODO: TestCTEArrayUUID
 }
 
 func TestCTEBadArrayType(t *testing.T) {
