@@ -530,3 +530,9 @@ func TestCBEDecodeImpliedMap(t *testing.T) {
 	opts.ImpliedStructure = options.ImpliedStructureMap
 	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), M(), I(1), I(2), E(), ED())
 }
+
+func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
+	sl := []interface{}{}
+	v := []interface{}{sl, sl, sl}
+	assertMarshalUnmarshal(t, v, []byte{0x01, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
+}
