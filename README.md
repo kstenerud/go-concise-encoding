@@ -99,3 +99,11 @@ func main() {
 	demonstrateCBEUnmarshal()
 }
 ```
+
+
+Architecture
+------------
+
+The architecture is designed to keep things as simple as possible for this reference implementation.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md)
