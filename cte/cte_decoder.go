@@ -695,30 +695,6 @@ func (_this *Decoder) handleVerbatimString() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleArrayU16Base16() {
-	var data []uint8
-	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexUint(0, nil)
-		if count == 0 {
-			break
-		}
-		if count > 4 {
-			_this.buffer.Errorf("hex byte too long")
-		}
-		data = append(data, uint8(v), uint8(v>>8))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint16, uint64(len(data))/2, data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected hex digits")
-	}
-}
-
 func (_this *Decoder) handleArrayU32Base16() {
 	var data []uint8
 	for {
@@ -850,6 +826,50 @@ func (_this *Decoder) handleArrayU8(digitType string, decode func() (v uint64, d
 	}
 }
 
+func (_this *Decoder) handleArrayU16BaseAny() {
+	var data []uint8
+	for {
+		v, digitCount := _this.decodeArrayElementUnsignedInteger(16)
+		if digitCount == 0 {
+			break
+		}
+		data = append(data, uint8(v), uint8(v>>8))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint16, uint64(len(data))/2, data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected an integer")
+	}
+}
+
+func (_this *Decoder) handleArrayU16(digitType string, decode func() (v uint64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decode()
+		if count == 0 {
+			break
+		}
+		if v > 0xffff {
+			_this.buffer.Errorf("%v value too big for array type", digitType)
+		}
+		data = append(data, uint8(v), uint8(v>>8))
+	}
+	switch _this.buffer.PeekByteNoEOD() {
+	case '|':
+		_this.buffer.AdvanceByte()
+		_this.eventReceiver.OnArray(events.ArrayTypeUint16, uint64(len(data))/2, data)
+		_this.endObject()
+		return
+	default:
+		_this.buffer.Errorf("Expected %v digits", digitType)
+	}
+}
+
 func (_this *Decoder) decodeArrayElementSignedInteger(bitSize int) (value int64, digitCount int) {
 	_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
 
@@ -934,8 +954,14 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.handleArrayU8("octal", _this.buffer.DecodeSmallOctalUint)
 	case "u8x":
 		_this.handleArrayU8("hex", _this.buffer.DecodeSmallHexUint)
+	case "u16":
+		_this.handleArrayU16BaseAny()
+	case "u16b":
+		_this.handleArrayU16("binary", _this.buffer.DecodeSmallBinaryUint)
+	case "u16o":
+		_this.handleArrayU16("octal", _this.buffer.DecodeSmallOctalUint)
 	case "u16x":
-		_this.handleArrayU16Base16()
+		_this.handleArrayU16("hex", _this.buffer.DecodeSmallHexUint)
 	case "u32x":
 		_this.handleArrayU32Base16()
 	case "u64x":

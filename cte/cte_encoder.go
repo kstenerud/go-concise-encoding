@@ -344,7 +344,18 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 			panic(fmt.Errorf("%v: Invalid Uint8 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint8))
 		}
 	case events.ArrayTypeUint16:
-		_this.encodeArrayU16Base16(value)
+		switch _this.opts.DefaultArrayEncodingBases.Uint16 {
+		case 2:
+			_this.encodeArrayU16("|u16b", " %b", value)
+		case 8:
+			_this.encodeArrayU16("|u16o", " %o", value)
+		case 10:
+			_this.encodeArrayU16("|u16", " %d", value)
+		case 16:
+			_this.encodeArrayU16Base16(value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Uint8 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint8))
+		}
 	case events.ArrayTypeUint32:
 		_this.encodeArrayU32Base16(value)
 	case events.ArrayTypeUint64:
@@ -813,6 +824,14 @@ func (_this *Encoder) encodeArrayU8(initiator string, format string, value []uin
 	_this.addString(initiator)
 	for _, b := range value {
 		_this.addFmt(format, b)
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayU16(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 2 {
+		_this.addFmt(format, int(value[i])|(int(value[i+1])<<8))
 	}
 	_this.addString("|")
 }
