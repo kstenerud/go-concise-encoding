@@ -25,6 +25,8 @@ Click [here](https://github.com/kstenerud/enctool) for a simple data encoding fo
 Library Usage
 -------------
 
+https://play.golang.org/p/DJwWVIdQEIT
+
 ```golang
 package main
 
