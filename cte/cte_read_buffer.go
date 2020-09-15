@@ -434,27 +434,6 @@ func (_this *ReadBuffer) DecodeOctalUint() (value uint64, bigValue *big.Int, dig
 
 const maxPreShiftDecimal = uint64(0x1999999999999999)
 
-func (_this *ReadBuffer) DecodeSmallDecimalUint() (value uint64, digitCount int) {
-	v, vBig, count := _this.DecodeDecimalUint(0, nil)
-	if vBig != nil {
-		_this.Errorf("Value cannot be > 64 bits")
-	}
-	return v, count
-}
-
-func (_this *ReadBuffer) DecodeSmallDecimalInt() (value int64, digitCount int) {
-	sign := int64(1)
-	if _this.PeekByteAllowEOD() == '-' {
-		sign = -sign
-		_this.AdvanceByte()
-	}
-	v, vBig, count := _this.DecodeDecimalUint(0, nil)
-	if vBig != nil || v > 0x7fffffffffffffff {
-		_this.Errorf("Value cannot be > 63 bits")
-	}
-	return int64(v) * sign, count
-}
-
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
 func (_this *ReadBuffer) DecodeDecimalUint(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
@@ -584,6 +563,50 @@ func (_this *ReadBuffer) DecodeHexUint(startValue uint64, bigStartValue *big.Int
 	}
 
 	return
+}
+
+func (_this *ReadBuffer) DecodeSmallUint() (value uint64, digitCount int) {
+	var bigV *big.Int
+
+	if _this.PeekByteAllowEOD() == '0' {
+		_this.AdvanceByte()
+		switch _this.PeekByteAllowEOD() {
+		case 'b', 'B':
+			_this.AdvanceByte()
+			value, bigV, digitCount = _this.DecodeBinaryUint()
+		case 'o', 'O':
+			_this.AdvanceByte()
+			value, bigV, digitCount = _this.DecodeOctalUint()
+		case 'x', 'X':
+			_this.AdvanceByte()
+			value, bigV, digitCount = _this.DecodeHexUint(0, nil)
+		default:
+			value, bigV, digitCount = _this.DecodeDecimalUint(0, nil)
+			digitCount++
+		}
+	} else {
+		value, bigV, digitCount = _this.DecodeDecimalUint(0, nil)
+	}
+
+	if bigV != nil {
+		_this.Errorf("Integer value too big for element")
+	}
+	return
+}
+
+func (_this *ReadBuffer) DecodeSmallInt() (value int64, digitCount int) {
+	sign := int64(1)
+	if _this.PeekByteAllowEOD() == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	}
+
+	v, count := _this.DecodeSmallUint()
+
+	if v > 0x7fffffffffffffff {
+		_this.Errorf("Integer value too big for element")
+	}
+	return int64(v) * sign, count
 }
 
 func (_this *ReadBuffer) DecodeQuotedStringWithEscapes() []byte {

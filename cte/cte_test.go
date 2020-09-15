@@ -586,7 +586,31 @@ func TestCTEArrayUint8(t *testing.T) {
 }
 
 func TestCTEArrayInt16(t *testing.T) {
-	// TODO: TestCTEArrayInt16
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Int16 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |i16b 0 1 -10 101 111111111111111 -1000000000000000|`, BD(), V(1), AI16([]int16{0, 1, -2, 5, 0x7fff, -0x8000}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int16 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |i16o 0 -10 50 -77777|`, BD(), V(1), AI16([]int16{0o0, -0o10, 0o50, -0o77777}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int16 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |i16 0 10 -50 32767 -32768|`, BD(), V(1), AI16([]int16{0, 10, -50, 32767, -32768}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int16 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |i16x 0 1 -50 7fff -8000|`, BD(), V(1), AI16([]int16{0x00, 0x01, -0x50, 0x7fff, -0x8000}), ED())
+
+	assertDecode(t, nil, `c1 |i16 00 01 -01 0b101 -0b110 0B101 -0B110 0o10 -0o11 0O10 -0O11 0x7f -0x80 0X7fff -0X8000|`,
+		BD(), V(1), AI16([]int16{0, 1, -1, 5, -6, 5, -6, 8, -9, 8, -9, 127, -128, 32767, -32768}), ED())
+
+	assertDecodeFails(t, "c1 |i16b 1000000000000000|")
+	assertDecodeFails(t, "c1 |i16b -1000000000000001|")
+	assertDecodeFails(t, "c1 |i16o 100000|")
+	assertDecodeFails(t, "c1 |i16o -100001|")
+	assertDecodeFails(t, "c1 |i16 32768|")
+	assertDecodeFails(t, "c1 |i16 -32769|")
+	assertDecodeFails(t, "c1 |i16x 8000|")
+	assertDecodeFails(t, "c1 |i16x -8001|")
 }
 
 func TestCTEArrayUint16(t *testing.T) {
