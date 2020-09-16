@@ -95,6 +95,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 	if _this.opts.ImpliedStructure != options.ImpliedStructureNone {
 		return
 	}
+	_this.encodeByte(cbeDocumentHeader)
 	_this.encodeULEB(version)
 }
 
@@ -415,8 +416,12 @@ func (_this *Encoder) encodeULEB(value uint64) {
 	_this.buff.CorrectAllocation(byteCount)
 }
 
+func (_this *Encoder) encodeByte(value byte) {
+	_this.buff.Allocate(1)[0] = value
+}
+
 func (_this *Encoder) encodeType(value cbeTypeField) {
-	_this.buff.Allocate(1)[0] = byte(value)
+	_this.encodeByte(byte(value))
 }
 
 func (_this *Encoder) encodeTyped8Bits(typeValue cbeTypeField, value byte) {

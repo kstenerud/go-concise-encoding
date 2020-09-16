@@ -33,6 +33,8 @@ import (
 
 // Internal
 
+const cbeDocumentHeader = byte(0x03)
+
 type cbeTypeField uint8
 
 const (

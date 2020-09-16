@@ -88,6 +88,10 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 		_this.eventReceiver.OnMap()
 	default:
+		docHeader := _this.buffer.DecodeUint8()
+		if docHeader != cbeDocumentHeader {
+			_this.buffer.errorf("First byte of CBE document must be 0x%02x (found 0x%02x)", cbeDocumentHeader, docHeader)
+		}
 		_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
 	}
 

@@ -41,6 +41,7 @@ import (
 )
 
 const (
+	header  = 0x03
 	version = 1
 
 	typeDecimal        = 0x65
