@@ -115,6 +115,7 @@ type CTEEncoderOptions struct {
 	ImpliedStructure ImpliedStructure
 
 	DefaultArrayEncodingBases ArrayEncodingBases
+	// TODO: Leading zeroes per array type
 }
 
 // The base to encode numbers in for numeric arrays.

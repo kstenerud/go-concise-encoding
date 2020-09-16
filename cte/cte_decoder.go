@@ -787,6 +787,36 @@ func (_this *Decoder) decodeArrayU16(digitType string, decodeElement func() (v u
 	_this.finishTypedArray(events.ArrayTypeUint16, digitType, 2, data)
 }
 
+func (_this *Decoder) decodeArrayU32(digitType string, decodeElement func() (v uint64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+		if v > 0xffffffff {
+			_this.buffer.Errorf("%v value too big for array type", digitType)
+		}
+		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
+	}
+	_this.finishTypedArray(events.ArrayTypeUint32, digitType, 4, data)
+}
+
+func (_this *Decoder) decodeArrayU64(digitType string, decodeElement func() (v uint64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
+			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
+	}
+	_this.finishTypedArray(events.ArrayTypeUint64, digitType, 8, data)
+}
+
 func (_this *Decoder) decodeArrayI8(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
@@ -819,6 +849,36 @@ func (_this *Decoder) decodeArrayI16(digitType string, decodeElement func() (v i
 	_this.finishTypedArray(events.ArrayTypeInt16, digitType, 2, data)
 }
 
+func (_this *Decoder) decodeArrayI32(digitType string, decodeElement func() (v int64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+		if v < -0x80000000 || v > 0x7fffffff {
+			_this.buffer.Errorf("%v value too big for array type", digitType)
+		}
+		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
+	}
+	_this.finishTypedArray(events.ArrayTypeInt32, digitType, 4, data)
+}
+
+func (_this *Decoder) decodeArrayI64(digitType string, decodeElement func() (v int64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
+			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
+	}
+	_this.finishTypedArray(events.ArrayTypeInt64, digitType, 8, data)
+}
+
 func (_this *Decoder) handleTypedArrayBegin() {
 	_this.buffer.AdvanceByte()
 	_this.buffer.BeginSubtoken()
@@ -847,10 +907,22 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.decodeArrayU16("octal", _this.buffer.DecodeSmallOctalUint)
 	case "u16x":
 		_this.decodeArrayU16("hex", _this.buffer.DecodeSmallHexUint)
+	case "u32":
+		_this.decodeArrayU32("integer", _this.buffer.DecodeSmallUint)
+	case "u32b":
+		_this.decodeArrayU32("binary", _this.buffer.DecodeSmallBinaryUint)
+	case "u32o":
+		_this.decodeArrayU32("octal", _this.buffer.DecodeSmallOctalUint)
 	case "u32x":
-		_this.handleArrayU32Base16()
+		_this.decodeArrayU32("hex", _this.buffer.DecodeSmallHexUint)
+	case "u64":
+		_this.decodeArrayU64("integer", _this.buffer.DecodeSmallUint)
+	case "u64b":
+		_this.decodeArrayU64("binary", _this.buffer.DecodeSmallBinaryUint)
+	case "u64o":
+		_this.decodeArrayU64("octal", _this.buffer.DecodeSmallOctalUint)
 	case "u64x":
-		_this.handleArrayU64Base16()
+		_this.decodeArrayU64("hex", _this.buffer.DecodeSmallHexUint)
 	case "i8":
 		_this.decodeArrayI8("integer", _this.buffer.DecodeSmallInt)
 	case "i8b":
@@ -867,6 +939,22 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.decodeArrayI16("octal", _this.buffer.DecodeSmallOctalInt)
 	case "i16x":
 		_this.decodeArrayI16("hex", _this.buffer.DecodeSmallHexInt)
+	case "i32":
+		_this.decodeArrayI32("integer", _this.buffer.DecodeSmallInt)
+	case "i32b":
+		_this.decodeArrayI32("binary", _this.buffer.DecodeSmallBinaryInt)
+	case "i32o":
+		_this.decodeArrayI32("octal", _this.buffer.DecodeSmallOctalInt)
+	case "i32x":
+		_this.decodeArrayI32("hex", _this.buffer.DecodeSmallHexInt)
+	case "i64":
+		_this.decodeArrayI64("integer", _this.buffer.DecodeSmallInt)
+	case "i64b":
+		_this.decodeArrayI64("binary", _this.buffer.DecodeSmallBinaryInt)
+	case "i64o":
+		_this.decodeArrayI64("octal", _this.buffer.DecodeSmallOctalInt)
+	case "i64x":
+		_this.decodeArrayI64("hex", _this.buffer.DecodeSmallHexInt)
 	default:
 		panic(fmt.Errorf("TODO: Typed array decoder support for %s", token))
 		_this.buffer.Errorf("%s: Unhandled array type", token)

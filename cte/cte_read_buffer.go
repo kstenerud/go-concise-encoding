@@ -304,9 +304,10 @@ func (_this *ReadBuffer) DecodeSmallBinaryInt() (value int64, digitCount int) {
 		sign = -sign
 		_this.AdvanceByte()
 	}
-	v, vBig, count := _this.DecodeBinaryUint()
-	if vBig != nil || v > 0x7fffffffffffffff {
-		_this.Errorf("Value cannot be > 63 bits")
+	v, count := _this.DecodeSmallBinaryUint()
+
+	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
+		_this.Errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
@@ -376,9 +377,10 @@ func (_this *ReadBuffer) DecodeSmallOctalInt() (value int64, digitCount int) {
 		sign = -sign
 		_this.AdvanceByte()
 	}
-	v, vBig, count := _this.DecodeOctalUint()
-	if vBig != nil || v > 0x7fffffffffffffff {
-		_this.Errorf("Value cannot be > 63 bits")
+	v, count := _this.DecodeSmallOctalUint()
+
+	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
+		_this.Errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
@@ -432,7 +434,8 @@ func (_this *ReadBuffer) DecodeOctalUint() (value uint64, bigValue *big.Int, dig
 	return
 }
 
-const maxPreShiftDecimal = uint64(0x1999999999999999)
+const maxPreShiftDecimal = uint64(1844674407370955161)
+const maxLastDigitDecimal = 5
 
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
@@ -448,11 +451,12 @@ func (_this *ReadBuffer) DecodeDecimalUint(startValue uint64, bigStartValue *big
 			if !b.HasProperty(cteProperty09) {
 				return
 			}
-			if value > maxPreShiftDecimal {
+			bValue := uint64(b - '0')
+			if value > maxPreShiftDecimal || (value == maxPreShiftDecimal && bValue > maxLastDigitDecimal) {
 				bigStartValue = new(big.Int).SetUint64(value)
 				break
 			}
-			value = value*10 + uint64(b-'0')
+			value = value*10 + bValue
 			digitCount++
 			_this.AdvanceByte()
 		}
@@ -497,9 +501,10 @@ func (_this *ReadBuffer) DecodeSmallHexInt() (value int64, digitCount int) {
 		sign = -sign
 		_this.AdvanceByte()
 	}
-	v, vBig, count := _this.DecodeHexUint(0, nil)
-	if vBig != nil || v > 0x7fffffffffffffff {
-		_this.Errorf("Value cannot be > 63 bits")
+	v, count := _this.DecodeSmallHexUint()
+
+	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
+		_this.Errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
@@ -603,7 +608,7 @@ func (_this *ReadBuffer) DecodeSmallInt() (value int64, digitCount int) {
 
 	v, count := _this.DecodeSmallUint()
 
-	if v > 0x7fffffffffffffff {
+	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
 		_this.Errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count

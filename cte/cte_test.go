@@ -629,8 +629,8 @@ func TestCTEArrayUint16(t *testing.T) {
 		BD(), V(1), AU16([]uint16{0, 10, 50, 128, 254, 255, 65535}), ED())
 
 	eOpts.DefaultArrayEncodingBases.Uint16 = 16
-	assertDecodeEncode(t, nil, eOpts, `c1 |u16x 0000 0001 0050 007f 0080 00ff ffff|`,
-		BD(), V(1), AU16([]uint16{0x00, 0x01, 0x50, 0x7f, 0x80, 0xff, 0xffff}), ED())
+	assertDecodeEncode(t, nil, eOpts, `c1 |u16x 0000 0001 0050 007f 0080 00ff fffe|`,
+		BD(), V(1), AU16([]uint16{0x00, 0x01, 0x50, 0x7f, 0x80, 0xff, 0xfffe}), ED())
 
 	assertDecode(t, nil, `c1 |u16 00 01 01 0b101 0b110 0B101 0B110 0o10 0o11 0O10 0O11 0x7f 0x80 0X7f 0X80 0xff 0Xff|`,
 		BD(), V(1), AU16([]uint16{0, 1, 1, 5, 6, 5, 6, 8, 9, 8, 9, 127, 128, 127, 128, 255, 255}), ED())
@@ -642,19 +642,120 @@ func TestCTEArrayUint16(t *testing.T) {
 }
 
 func TestCTEArrayInt32(t *testing.T) {
-	// TODO: TestCTEArrayInt32
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Int32 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |i32b 0 1 -10 101 1111111111111111111111111111111 -10000000000000000000000000000000|`,
+		BD(), V(1), AI32([]int32{0, 1, -2, 5, 0x7fffffff, -0x80000000}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int32 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |i32o 0 -10 50 -17777777777|`, BD(), V(1), AI32([]int32{0o0, -0o10, 0o50, -0o17777777777}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int32 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |i32 0 10 -50 2147483647 -2147483648|`, BD(), V(1), AI32([]int32{0, 10, -50, 2147483647, -2147483648}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int32 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |i32x 0 1 -50 7fffffff -80000000 7f6f5f4f|`, BD(), V(1), AI32([]int32{0x00, 0x01, -0x50, 0x7fffffff, -0x80000000, 0x7f6f5f4f}), ED())
+
+	assertDecode(t, nil, `c1 |i32 00 01 -01 0b101 -0b110 0B101 -0B110 0o10 -0o11 0O10 -0O11 0x7f -0x80 0X7fffffff -0X80000000|`,
+		BD(), V(1), AI32([]int32{0, 1, -1, 5, -6, 5, -6, 8, -9, 8, -9, 127, -128, 0x7fffffff, -0x80000000}), ED())
+
+	assertDecodeFails(t, "c1 |i32b 100000000000000000000000000000000|")
+	assertDecodeFails(t, "c1 |i32b -100000000000000000000000000000001|")
+	assertDecodeFails(t, "c1 |i32o 20000000000|")
+	assertDecodeFails(t, "c1 |i32o -20000000001|")
+	assertDecodeFails(t, "c1 |i32 2147483648|")
+	assertDecodeFails(t, "c1 |i32 -2147483649|")
+	assertDecodeFails(t, "c1 |i32x 80000000|")
+	assertDecodeFails(t, "c1 |i32x -80000001|")
 }
 
 func TestCTEArrayUint32(t *testing.T) {
-	// TODO: TestCTEArrayUint32
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Uint32 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |u32b 0 1 10 101 1111111111111111111111111111111 10000000000000000000000000000000 11111111111111111111111111111111|`,
+		BD(), V(1), AU32([]uint32{0, 1, 2, 5, 0x7fffffff, 0x80000000, 0xffffffff}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint32 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |u32o 0 10 50 127 254 377 177777 37777777776|`,
+		BD(), V(1), AU32([]uint32{0o0, 0o10, 0o50, 0o127, 0o254, 0o377, 0o177777, 0o37777777776}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint32 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |u32 0 10 50 128 254 255 65535 4294967294|`,
+		BD(), V(1), AU32([]uint32{0, 10, 50, 128, 254, 255, 65535, 4294967294}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint32 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |u32x 00000000 00000001 00000050 0000007f 00000080 000000ff 0000ffff fffcfdfe|`,
+		BD(), V(1), AU32([]uint32{0x00, 0x01, 0x50, 0x7f, 0x80, 0xff, 0xffff, 0xfffcfdfe}), ED())
+
+	assertDecode(t, nil, `c1 |u32 00 01 01 0b101 0b110 0B101 0B110 0o10 0o11 0O10 0O11 0x7f 0x80 0X7f 0X80 0xff 0Xff 100000000|`,
+		BD(), V(1), AU32([]uint32{0, 1, 1, 5, 6, 5, 6, 8, 9, 8, 9, 127, 128, 127, 128, 255, 255, 100000000}), ED())
+
+	assertDecodeFails(t, "c1 |u32b 100000000000000000000000000000000|")
+	assertDecodeFails(t, "c1 |u32o 40000000000|")
+	assertDecodeFails(t, "c1 |u32 4294967296|")
+	assertDecodeFails(t, "c1 |u32x 100000000|")
 }
 
 func TestCTEArrayInt64(t *testing.T) {
-	// TODO: TestCTEArrayInt64
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Int64 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |i64b 0 1 -10 101 111111111111111111111111111111111111111111111111111111111111111 -1000000000000000000000000000000000000000000000000000000000000000|`,
+		BD(), V(1), AI64([]int64{0, 1, -2, 5, 0x7fffffffffffffff, -0x8000000000000000}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int64 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |i64o 0 -10 50 -777777777777777777777|`,
+		BD(), V(1), AI64([]int64{0o0, -0o10, 0o50, -0o777777777777777777777}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int64 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |i64 0 10 -50 9223372036854775807 -9223372036854775808|`,
+		BD(), V(1), AI64([]int64{0, 10, -50, 9223372036854775807, -9223372036854775808}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Int64 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |i64x 0 1 -50 7fffffffffffffff -8000000000000000 7f6f5f4f3f2f1f0f|`,
+		BD(), V(1), AI64([]int64{0x00, 0x01, -0x50, 0x7fffffffffffffff, -0x8000000000000000, 0x7f6f5f4f3f2f1f0f}), ED())
+
+	assertDecode(t, nil, `c1 |i64 00 01 -01 0b101 -0b110 0B101 -0B110 0o10 -0o11 0O10 -0O11 0x7f -0x80 0X7fffffffffffffff -0X8000000000000000|`,
+		BD(), V(1), AI64([]int64{0, 1, -1, 5, -6, 5, -6, 8, -9, 8, -9, 127, -128, 0x7fffffffffffffff, -0x8000000000000000}), ED())
+
+	assertDecodeFails(t, "c1 |i64b 1000000000000000000000000000000000000000000000000000000000000000|")
+	assertDecodeFails(t, "c1 |i64b -1000000000000000000000000000000000000000000000000000000000000001|")
+	assertDecodeFails(t, "c1 |i64o 1000000000000000000000|")
+	assertDecodeFails(t, "c1 |i64o -1000000000000000000001|")
+	assertDecodeFails(t, "c1 |i64 9223372036854775808|")
+	assertDecodeFails(t, "c1 |i64 -9223372036854775809|")
+	assertDecodeFails(t, "c1 |i64x 8000000000000000|")
+	assertDecodeFails(t, "c1 |i64x -8000000000000001|")
 }
 
 func TestCTEArrayUint64(t *testing.T) {
-	// TODO: TestCTEArrayUint64
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Uint64 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |u64b 0 1 10 101 1111111111111111111111111111111 10000000000000000000000000000000 11111111111111111111111111111111|`,
+		BD(), V(1), AU64([]uint64{0, 1, 2, 5, 0x7fffffff, 0x80000000, 0xffffffff}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint64 = 8
+	assertDecodeEncode(t, nil, eOpts, `c1 |u64o 0 10 50 127 254 377 177777 1777777777777777777777|`,
+		BD(), V(1), AU64([]uint64{0o0, 0o10, 0o50, 0o127, 0o254, 0o377, 0o177777, 0o1777777777777777777777}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint64 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |u64 0 10 50 128 254 255 65535 4294967294 18446744073709551615|`,
+		BD(), V(1), AU64([]uint64{0, 10, 50, 128, 254, 255, 65535, 4294967294, 18446744073709551615}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Uint64 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |u64x 0000000000000000 0000000000000001 0000000000000050 000000000000007f 0000000000000080 00000000000000ff 000000000000ffff 00000000fffcfdfe|`,
+		BD(), V(1), AU64([]uint64{0x00, 0x01, 0x50, 0x7f, 0x80, 0xff, 0xffff, 0xfffcfdfe}), ED())
+
+	assertDecode(t, nil, `c1 |u64 00 01 01 0b101 0b110 0B101 0B110 0o10 0o11 0O10 0O11 0x7f 0x80 0X7f 0X80 0xff 0Xff 100000000|`,
+		BD(), V(1), AU64([]uint64{0, 1, 1, 5, 6, 5, 6, 8, 9, 8, 9, 127, 128, 127, 128, 255, 255, 100000000}), ED())
+
+	assertDecodeFails(t, "c1 |u64b 10000000000000000000000000000000000000000000000000000000000000000|")
+	assertDecodeFails(t, "c1 |u64o 2000000000000000000000|")
+	assertDecodeFails(t, "c1 |u64 18446744073709551616|")
+	assertDecodeFails(t, "c1 |u64x 10000000000000000|")
 }
 
 func TestCTEArrayFloat16(t *testing.T) {

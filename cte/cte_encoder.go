@@ -354,12 +354,34 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		case 16:
 			_this.encodeArrayU16Base16(value)
 		default:
-			panic(fmt.Errorf("%v: Invalid Uint8 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint8))
+			panic(fmt.Errorf("%v: Invalid Uint16 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint16))
 		}
 	case events.ArrayTypeUint32:
-		_this.encodeArrayU32Base16(value)
+		switch _this.opts.DefaultArrayEncodingBases.Uint32 {
+		case 2:
+			_this.encodeArrayU32("|u32b", " %b", value)
+		case 8:
+			_this.encodeArrayU32("|u32o", " %o", value)
+		case 10:
+			_this.encodeArrayU32("|u32", " %d", value)
+		case 16:
+			_this.encodeArrayU32Base16(value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Uint32 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint32))
+		}
 	case events.ArrayTypeUint64:
-		_this.encodeArrayU64Base16(value)
+		switch _this.opts.DefaultArrayEncodingBases.Uint64 {
+		case 2:
+			_this.encodeArrayU64("|u64b", " %b", value)
+		case 8:
+			_this.encodeArrayU64("|u64o", " %o", value)
+		case 10:
+			_this.encodeArrayU64("|u64", " %d", value)
+		case 16:
+			_this.encodeArrayU64Base16(value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Uint64 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Uint64))
+		}
 	case events.ArrayTypeInt8:
 		switch _this.opts.DefaultArrayEncodingBases.Int8 {
 		case 2:
@@ -385,6 +407,32 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 			_this.encodeArrayI16("|i16x", " %x", value)
 		default:
 			panic(fmt.Errorf("%v: Invalid Int16 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Int16))
+		}
+	case events.ArrayTypeInt32:
+		switch _this.opts.DefaultArrayEncodingBases.Int32 {
+		case 2:
+			_this.encodeArrayI32("|i32b", " %b", value)
+		case 8:
+			_this.encodeArrayI32("|i32o", " %o", value)
+		case 10:
+			_this.encodeArrayI32("|i32", " %d", value)
+		case 16:
+			_this.encodeArrayI32("|i32x", " %x", value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Int32 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Int32))
+		}
+	case events.ArrayTypeInt64:
+		switch _this.opts.DefaultArrayEncodingBases.Int64 {
+		case 2:
+			_this.encodeArrayI64("|i64b", " %b", value)
+		case 8:
+			_this.encodeArrayI64("|i64o", " %o", value)
+		case 10:
+			_this.encodeArrayI64("|i64", " %d", value)
+		case 16:
+			_this.encodeArrayI64("|i64x", " %x", value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Int64 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Int64))
 		}
 	default:
 		panic(fmt.Errorf("TODO: Typed array encoder support for %v", arrayType))
@@ -849,6 +897,23 @@ func (_this *Encoder) encodeArrayU16(initiator string, format string, value []ui
 	_this.addString("|")
 }
 
+func (_this *Encoder) encodeArrayU32(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 4 {
+		_this.addFmt(format, uint(value[i])|(uint(value[i+1])<<8)|(uint(value[i+2])<<16)|(uint(value[i+3])<<24))
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayU64(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 8 {
+		_this.addFmt(format, uint64(value[i])|(uint64(value[i+1])<<8)|(uint64(value[i+2])<<16)|(uint64(value[i+3])<<24)|
+			(uint64(value[i+4])<<32)|(uint64(value[i+5])<<40)|(uint64(value[i+6])<<48)|(uint64(value[i+7])<<56))
+	}
+	_this.addString("|")
+}
+
 func (_this *Encoder) encodeArrayI8(initiator string, format string, value []uint8) {
 	_this.addString(initiator)
 	for _, b := range value {
@@ -861,6 +926,23 @@ func (_this *Encoder) encodeArrayI16(initiator string, format string, value []ui
 	_this.addString(initiator)
 	for i := 0; i < len(value); i += 2 {
 		_this.addFmt(format, int16(value[i])|(int16(value[i+1])<<8))
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayI32(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 4 {
+		_this.addFmt(format, int32(value[i])|(int32(value[i+1])<<8)|(int32(value[i+2])<<16)|(int32(value[i+3])<<24))
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayI64(initiator string, format string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 8 {
+		_this.addFmt(format, int64(value[i])|(int64(value[i+1])<<8)|(int64(value[i+2])<<16)|(int64(value[i+3])<<24)|
+			(int64(value[i+4])<<32)|(int64(value[i+5])<<40)|(int64(value[i+6])<<48)|(int64(value[i+7])<<56))
 	}
 	_this.addString("|")
 }
