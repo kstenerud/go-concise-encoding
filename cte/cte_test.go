@@ -537,7 +537,13 @@ func TestCTEArrayInt8(t *testing.T) {
 	eOpts := options.DefaultCTEEncoderOptions()
 
 	eOpts.DefaultArrayEncodingBases.Int8 = 2
+	assertDecodeEncode(t, nil, eOpts, `c1 |i8b|`, BD(), V(1), AI8([]int8{}), ED())
+	assertDecode(t, nil, `c1 |i8b |`, BD(), V(1), AI8([]int8{}), ED())
 	assertDecodeEncode(t, nil, eOpts, `c1 |i8b 0 1 -10 101 1111111 -10000000|`, BD(), V(1), AI8([]int8{0, 1, -2, 5, 0x7f, -0x80}), ED())
+	assertEncode(t, eOpts, `c1 |i8b|`, BD(), V(1), AI8B(), AC(0, false), ED())
+	assertEncode(t, eOpts, `c1 |i8b 1|`, BD(), V(1), AI8B(), AC(1, false), AD([]uint8{1}), ED())
+	assertEncode(t, eOpts, `c1 |i8b 1|`, BD(), V(1), AI8B(), AC(1, true), AD([]uint8{1}), AC(0, false), ED())
+	assertEncode(t, eOpts, `c1 |i8b 1 0|`, BD(), V(1), AI8B(), AC(1, true), AD([]uint8{1}), AC(1, false), AD([]uint8{0}), ED())
 
 	eOpts.DefaultArrayEncodingBases.Int8 = 8
 	assertDecodeEncode(t, nil, eOpts, `c1 |i8o 0 -10 50 -127|`, BD(), V(1), AI8([]int8{0o0, -0o10, 0o50, -0o127}), ED())

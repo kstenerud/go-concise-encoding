@@ -886,7 +886,7 @@ func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v f
 func (_this *Decoder) handleTypedArrayBegin() {
 	_this.buffer.AdvanceByte()
 	_this.buffer.BeginSubtoken()
-	_this.buffer.ReadUntilPropertyNoEOD(ctePropertyWhitespace)
+	_this.buffer.ReadUntilPropertyNoEOD(ctePropertyWhitespace | ctePropertyArrayEnd)
 	subtoken := _this.buffer.GetSubtoken()
 	if len(subtoken) > 0 && subtoken[len(subtoken)-1] == '|' {
 		subtoken = subtoken[:len(subtoken)-1]
@@ -1171,6 +1171,7 @@ const (
 	ctePropertyOctalDigit
 	ctePropertyAreaLocation
 	ctePropertyMarkerID
+	ctePropertyArrayEnd
 )
 
 func (_this cteByteProprty) HasProperty(property cteByteProprty) bool {
@@ -1219,7 +1220,7 @@ func init() {
 	cteByteProperties['('] |= ctePropertyObjectEnd
 	cteByteProperties['<'] |= ctePropertyObjectEnd
 	cteByteProperties['>'] |= ctePropertyObjectEnd
-	cteByteProperties['|'] |= ctePropertyObjectEnd
+	cteByteProperties['|'] |= ctePropertyObjectEnd | ctePropertyArrayEnd
 	cteByteProperties[' '] |= ctePropertyObjectEnd
 	cteByteProperties['\r'] |= ctePropertyObjectEnd
 	cteByteProperties['\n'] |= ctePropertyObjectEnd
