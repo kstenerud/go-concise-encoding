@@ -759,15 +759,69 @@ func TestCTEArrayUint64(t *testing.T) {
 }
 
 func TestCTEArrayFloat16(t *testing.T) {
-	// TODO: TestCTEArrayFloat16
+	// defer test.PassThroughPanics(true)()
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Float16 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |f16x 1.fep+10 -1.3p-40 1.18p+127 1.18p-126|`,
+		BD(), V(1), AF16([]uint8{0xff, 0x44, 0x98, 0xab, 0x0c, 0x7f, 0x8c, 0x00}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Float16 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |f16 250 -0.25|`,
+		BD(), V(1), AF16([]uint8{0x7a, 0x43, 0x80, 0xbe}), ED())
+
+	assertDecode(t, nil, `c1 |f16 0.25 0x4.dp-30|`,
+		BD(), V(1), AF16([]uint8{0x80, 0x3e, 0x9a, 0x31}), ED())
+
+	assertDecodeFails(t, "c1 |f16 0x1.fep+128|")
+	assertDecodeFails(t, "c1 |f16 0x1.fep-127|")
+	assertDecodeFails(t, "c1 |f16 0x1.fffffffffffffffffffffffff|")
+	assertDecodeFails(t, "c1 |f16 -0x1.fffffffffffffffffffffffff|")
 }
 
 func TestCTEArrayFloat32(t *testing.T) {
-	// TODO: TestCTEArrayFloat32
+	// 24 sig bits, 8 exp bits
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Float32 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|`,
+		BD(), V(1), AF32([]float32{0x1.fep+10, -0x1.3p-40, 0x1.111112p+127, 0x1.111112p-126}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Float32 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |f32 1.5e+10 -5.9012e-30|`,
+		BD(), V(1), AF32([]float32{1.5e+10, -5.9012e-30}), ED())
+
+	assertDecode(t, nil, `c1 |f32 5.5e+10 -0xe.89p+50|`,
+		BD(), V(1), AF32([]float32{5.5e+10, -0xe.89p+50}), ED())
+
+	assertDecodeFails(t, "c1 |f32 0x1.fep+128|")
+	assertDecodeFails(t, "c1 |f32 0x1.fep-127|")
+	assertDecodeFails(t, "c1 |f32 0x1.fffffffffffffffffffffffff|")
+	assertDecodeFails(t, "c1 |f32 -0x1.fffffffffffffffffffffffff|")
 }
 
 func TestCTEArrayFloat64(t *testing.T) {
-	// TODO: TestCTEArrayFloat64
+	// 53 sig bits, 11 exp bits
+	eOpts := options.DefaultCTEEncoderOptions()
+
+	eOpts.DefaultArrayEncodingBases.Float64 = 16
+	assertDecodeEncode(t, nil, eOpts, `c1 |f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|`,
+		BD(), V(1), AF64([]float64{0x1.fep+10, -0x1.3p-40, 0x1.111112p+1023, 0x1.111112p-1022}), ED())
+
+	eOpts.DefaultArrayEncodingBases.Float64 = 10
+	assertDecodeEncode(t, nil, eOpts, `c1 |f64 1.5e+308 1.5e-308|`,
+		BD(), V(1), AF64([]float64{1.5e+308, 1.5e-308}), ED())
+
+	assertDecodeEncode(t, nil, eOpts, `c1 |f64 1.5e+10 -5.9012e-30|`,
+		BD(), V(1), AF64([]float64{1.5e+10, -5.9012e-30}), ED())
+
+	assertDecode(t, nil, `c1 |f64 5.5e+10 -0xe.89p+50|`,
+		BD(), V(1), AF64([]float64{5.5e+10, -0xe.89p+50}), ED())
+
+	assertDecodeFails(t, "c1 |f64 0x1.fep+1024|")
+	assertDecodeFails(t, "c1 |f64 0x1.fep-1023|")
+	assertDecodeFails(t, "c1 |f64 0x1.fffffffffffffffffffffffff|")
+	assertDecodeFails(t, "c1 |f64 -0x1.fffffffffffffffffffffffff|")
 }
 
 func TestCTEArrayUUID(t *testing.T) {

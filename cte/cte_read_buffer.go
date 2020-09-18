@@ -614,6 +614,241 @@ func (_this *ReadBuffer) DecodeSmallInt() (value int64, digitCount int) {
 	return int64(v) * sign, count
 }
 
+func (_this *ReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal, digitCount int) {
+	exponent := int32(0)
+	fractionalDigitCount := 0
+	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeDecimalUint(coefficient, bigCoefficient)
+	if fractionalDigitCount == 0 {
+		_this.UnexpectedChar("float fractional")
+	}
+	digitCount = coefficientDigitCount + fractionalDigitCount
+
+	b := _this.PeekByteAllowEOD()
+	if b == 'e' || b == 'E' {
+		_this.AdvanceByte()
+		exponentSign := int32(1)
+		switch _this.PeekByteNoEOD() {
+		case '+':
+			_this.AdvanceByte()
+		case '-':
+			exponentSign = -1
+			_this.AdvanceByte()
+		}
+		exp, bigExp, expDigitCount := _this.DecodeDecimalUint(0, nil)
+		if expDigitCount == 0 {
+			_this.UnexpectedChar("float exponent")
+		}
+		if bigExp != nil || exp > 0x7fffffff {
+			_this.Errorf("Exponent too big")
+		}
+		exponent = int32(exp) * exponentSign
+	}
+
+	exponent -= int32(fractionalDigitCount)
+
+	if coefficient == 0 && bigCoefficient == nil {
+		if sign < 0 {
+			value = compact_float.NegativeZero()
+		}
+		return
+	}
+
+	if bigCoefficient != nil {
+		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		if sign < 0 {
+			bigValue.Negative = true
+		}
+		return
+	}
+	if coefficient > 0x7fffffffffffffff {
+		bigCoefficient = new(big.Int).SetUint64(coefficient)
+		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		if sign < 0 {
+			bigValue.Negative = true
+		}
+		return
+	}
+
+	value = compact_float.DFloatValue(exponent, int64(coefficient)*sign)
+	return
+}
+
+func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value float64, bigValue *big.Float, digitCount int) {
+
+	exponent := 0
+	fractionalDigitCount := 0
+	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexUint(coefficient, bigCoefficient)
+	if fractionalDigitCount == 0 {
+		_this.UnexpectedChar("float fractional")
+	}
+	digitCount = coefficientDigitCount + fractionalDigitCount
+
+	b := _this.PeekByteAllowEOD()
+	if b == 'p' || b == 'P' {
+		_this.AdvanceByte()
+		exponentSign := 1
+		switch _this.PeekByteNoEOD() {
+		case '+':
+			_this.AdvanceByte()
+		case '-':
+			exponentSign = -1
+			_this.AdvanceByte()
+		}
+		exp, bigExp, expDigitCount := _this.DecodeDecimalUint(0, nil)
+		if expDigitCount == 0 {
+			_this.UnexpectedChar("float exponent")
+		}
+		if bigExp != nil {
+			_this.Errorf("Exponent too big")
+		}
+		exponent = int(exp) * exponentSign
+	}
+
+	adjustedExponent := exponent - fractionalDigitCount*4
+
+	if bigCoefficient != nil {
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt(bigCoefficient)
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, adjustedExponent)
+		return
+	}
+
+	if coefficient > maxFloat64Coefficient {
+		bigCoefficient = &big.Int{}
+		bigCoefficient = bigCoefficient.SetUint64(coefficient)
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt(bigCoefficient)
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, adjustedExponent)
+		return
+	}
+
+	normalizedExponent := exponent - (coefficientDigitCount-1)*4
+	if normalizedExponent > maxFloat64Exponent || normalizedExponent < minFloat64Exponent {
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt64(int64(coefficient))
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, adjustedExponent)
+		return
+	}
+
+	value = float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(adjustedExponent))
+	return
+}
+
+func (_this *ReadBuffer) DecodeSmallHexFloat() (value float64, digitCount int) {
+	sign := int64(1)
+	b := _this.PeekByteAllowEOD()
+	if b == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	} else if !b.HasProperty(cteProperty09 | ctePropertyLowercaseAF | ctePropertyUppercaseAF) {
+		return
+	}
+
+	u, bigU, coefficientDigitCount := _this.DecodeHexUint(0, nil)
+	if coefficientDigitCount == 0 {
+		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+	}
+	if bigU != nil || u > maxFloat64Coefficient {
+		_this.Errorf("Value too big for element")
+	}
+	b = _this.PeekByteAllowEOD()
+	switch {
+	case b == '.':
+		_this.AdvanceByte()
+		f, bigF, digitCount := _this.DecodeHexFloat(sign, u, nil, coefficientDigitCount)
+		if bigF != nil {
+			_this.Errorf("Value too big for element")
+		}
+		return f, digitCount
+	case b.HasProperty(ctePropertyWhitespace):
+		return float64(u) * float64(sign), coefficientDigitCount
+	default:
+		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+		return 0, 0
+	}
+}
+
+func (_this *ReadBuffer) DecodeSmallFloat() (value float64, digitCount int) {
+	sign := int64(1)
+	b := _this.PeekByteAllowEOD()
+	if b == '-' {
+		sign = -sign
+		_this.AdvanceByte()
+	} else if !b.HasProperty(cteProperty09) {
+		return
+	}
+
+	if _this.PeekByteAllowEOD() == '0' {
+		_this.AdvanceByte()
+		switch _this.PeekByteAllowEOD() {
+		case 'x', 'X':
+			_this.AdvanceByte()
+			u, bigU, coefficientDigitCount := _this.DecodeHexUint(0, nil)
+			if coefficientDigitCount == 0 {
+				_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+			}
+			if bigU != nil || u > maxFloat64Coefficient {
+				_this.Errorf("Value too big for element")
+			}
+			b = _this.PeekByteAllowEOD()
+			switch {
+			case b == '.':
+				_this.AdvanceByte()
+				f, bigF, digitCount := _this.DecodeHexFloat(sign, u, nil, coefficientDigitCount)
+				if bigF != nil {
+					_this.Errorf("Value too big for element")
+				}
+				return f, digitCount
+			case b.HasProperty(ctePropertyWhitespace):
+				return float64(u) * float64(sign), coefficientDigitCount
+			default:
+				_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+				return 0, 0
+			}
+		}
+		_this.UngetByte()
+	}
+
+	u, bigU, coefficientDigitCount := _this.DecodeDecimalUint(0, nil)
+	if coefficientDigitCount == 0 {
+		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+	}
+	if bigU != nil || u > maxFloat64Coefficient {
+		_this.Errorf("Value too big for element")
+	}
+
+	b = _this.PeekByteAllowEOD()
+	switch {
+	case b == '.':
+		_this.AdvanceByte()
+		f, bigF, digitCount := _this.DecodeDecimalFloat(sign, u, nil, coefficientDigitCount)
+		if bigF != nil {
+			_this.Errorf("Value too big for element")
+		}
+		normalizedExponent := int(f.Exponent) + digitCount - 1
+		if normalizedExponent < minFloat64DecimalExponent || normalizedExponent > maxFloat64DecimalExponent {
+			_this.Errorf("Value too big for element")
+		}
+
+		return f.Float(), digitCount
+	case b.HasProperty(ctePropertyWhitespace):
+		return float64(u) * float64(sign), coefficientDigitCount
+	default:
+		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+		return 0, 0
+	}
+
+}
+
 func (_this *ReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 	sb := strings.Builder{}
 	sb.Write(_this.GetSubtoken())
@@ -1036,135 +1271,6 @@ func (_this *ReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundredth
 
 	longitudeHundredths = _this.DecodeLatLongPortion("longitude")
 
-	return
-}
-
-func (_this *ReadBuffer) DecodeDecimalFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal) {
-	exponent := int32(0)
-	fractionalDigitCount := 0
-	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeDecimalUint(coefficient, bigCoefficient)
-	if fractionalDigitCount == 0 {
-		_this.UnexpectedChar("float fractional")
-	}
-
-	b := _this.PeekByteAllowEOD()
-	if b == 'e' || b == 'E' {
-		_this.AdvanceByte()
-		exponentSign := int32(1)
-		switch _this.PeekByteNoEOD() {
-		case '+':
-			_this.AdvanceByte()
-		case '-':
-			exponentSign = -1
-			_this.AdvanceByte()
-		}
-		exp, bigExp, digitCount := _this.DecodeDecimalUint(0, nil)
-		if digitCount == 0 {
-			_this.UnexpectedChar("float exponent")
-		}
-		if bigExp != nil || exp > 0x7fffffff {
-			_this.Errorf("Exponent too big")
-		}
-		exponent = int32(exp) * exponentSign
-	}
-
-	exponent -= int32(fractionalDigitCount)
-
-	if coefficient == 0 && bigCoefficient == nil {
-		if sign < 0 {
-			value = compact_float.NegativeZero()
-		}
-		return
-	}
-
-	if bigCoefficient != nil {
-		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
-		if sign < 0 {
-			bigValue.Negative = true
-		}
-		return
-	}
-	if coefficient > 0x7fffffffffffffff {
-		bigCoefficient = new(big.Int).SetUint64(coefficient)
-		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
-		if sign < 0 {
-			bigValue.Negative = true
-		}
-		return
-	}
-
-	value = compact_float.DFloatValue(exponent, int64(coefficient)*sign)
-	return
-}
-
-func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value float64, bigValue *big.Float) {
-	const minFloat64Exponent = -1022
-	const maxFloat64Exponent = 1023
-	const maxFloat64Coefficient = (uint64(1) << 54) - 1
-
-	exponent := 0
-	fractionalDigitCount := 0
-	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexUint(coefficient, bigCoefficient)
-	if fractionalDigitCount == 0 {
-		_this.UnexpectedChar("float fractional")
-	}
-
-	b := _this.PeekByteAllowEOD()
-	if b == 'p' || b == 'P' {
-		_this.AdvanceByte()
-		exponentSign := 1
-		switch _this.PeekByteNoEOD() {
-		case '+':
-			_this.AdvanceByte()
-		case '-':
-			exponentSign = -1
-			_this.AdvanceByte()
-		}
-		exp, bigExp, digitCount := _this.DecodeDecimalUint(0, nil)
-		if digitCount == 0 {
-			_this.UnexpectedChar("float exponent")
-		}
-		if bigExp != nil {
-			_this.Errorf("Exponent too big")
-		}
-		exponent = int(exp) * exponentSign
-	}
-
-	exponent -= fractionalDigitCount * 4
-
-	if bigCoefficient != nil {
-		bigValue = &big.Float{}
-		bigValue = bigValue.SetInt(bigCoefficient)
-		if sign < 0 {
-			bigValue = bigValue.Neg(bigValue)
-		}
-		bigValue = bigValue.SetMantExp(bigValue, exponent)
-		return
-	}
-
-	if coefficient > maxFloat64Coefficient {
-		bigCoefficient = &big.Int{}
-		bigCoefficient = bigCoefficient.SetUint64(coefficient)
-		bigValue = &big.Float{}
-		bigValue = bigValue.SetInt(bigCoefficient)
-		if sign < 0 {
-			bigValue = bigValue.Neg(bigValue)
-		}
-		bigValue = bigValue.SetMantExp(bigValue, exponent)
-		return
-	}
-
-	if exponent > maxFloat64Exponent || exponent < minFloat64Exponent {
-		bigValue = &big.Float{}
-		bigValue = bigValue.SetInt64(int64(coefficient))
-		if sign < 0 {
-			bigValue = bigValue.Neg(bigValue)
-		}
-		bigValue = bigValue.SetMantExp(bigValue, exponent)
-		return
-	}
-
-	value = float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(exponent))
 	return
 }
 

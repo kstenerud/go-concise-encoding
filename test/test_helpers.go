@@ -45,7 +45,7 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// Usage: defer PassThroughPanics(true)()
+// Usage: defer test.PassThroughPanics(true)()
 func PassThroughPanics(shouldPassThrough bool) func() {
 	oldValue := debug.DebugOptions.PassThroughPanics
 	debug.DebugOptions.PassThroughPanics = shouldPassThrough

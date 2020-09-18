@@ -303,7 +303,7 @@ func (_this *Decoder) handlePositiveNumeric() {
 		_this.eventReceiver.OnCompactTime(v)
 		_this.endObject()
 	case '.':
-		value, bigValue := _this.buffer.DecodeDecimalFloat(1, coefficient, bigCoefficient, digitCount)
+		value, bigValue, _ := _this.buffer.DecodeDecimalFloat(1, coefficient, bigCoefficient, digitCount)
 		_this.buffer.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			_this.eventReceiver.OnBigDecimalFloat(bigValue)
@@ -360,7 +360,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 		_this.eventReceiver.OnCompactTime(v)
 		_this.endObject()
 	case '.':
-		value, bigValue := _this.buffer.DecodeDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
+		value, bigValue, _ := _this.buffer.DecodeDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
 		_this.buffer.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			_this.eventReceiver.OnBigDecimalFloat(bigValue)
@@ -408,7 +408,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 		v, bigV, digitCount := _this.buffer.DecodeHexUint(0, nil)
 		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
-			fv, bigFV := _this.buffer.DecodeHexFloat(1, v, bigV, digitCount)
+			fv, bigFV, _ := _this.buffer.DecodeHexFloat(1, v, bigV, digitCount)
 			_this.buffer.AssertAtObjectEnd("hex float")
 			if bigFV != nil {
 				_this.eventReceiver.OnBigFloat(bigFV)
@@ -426,7 +426,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 			_this.endObject()
 		}
 	case '.':
-		value, bigValue := _this.buffer.DecodeDecimalFloat(1, 0, nil, 0)
+		value, bigValue, _ := _this.buffer.DecodeDecimalFloat(1, 0, nil, 0)
 		_this.buffer.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			_this.eventReceiver.OnBigDecimalFloat(bigValue)
@@ -476,7 +476,7 @@ func (_this *Decoder) handleOtherBaseNegative() {
 		v, bigV, digitCount := _this.buffer.DecodeHexUint(0, nil)
 		if _this.buffer.PeekByteAllowEOD() == '.' {
 			_this.buffer.AdvanceByte()
-			fv, bigFV := _this.buffer.DecodeHexFloat(-1, v, bigV, digitCount)
+			fv, bigFV, _ := _this.buffer.DecodeHexFloat(-1, v, bigV, digitCount)
 			_this.buffer.AssertAtObjectEnd("hex float")
 			if bigFV != nil {
 				_this.eventReceiver.OnBigFloat(bigFV)
@@ -495,7 +495,7 @@ func (_this *Decoder) handleOtherBaseNegative() {
 			_this.endObject()
 		}
 	case '.':
-		value, bigValue := _this.buffer.DecodeDecimalFloat(-1, 0, nil, 0)
+		value, bigValue, _ := _this.buffer.DecodeDecimalFloat(-1, 0, nil, 0)
 		_this.buffer.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			_this.eventReceiver.OnBigDecimalFloat(bigValue)
@@ -694,55 +694,6 @@ func (_this *Decoder) handleVerbatimString() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleArrayU32Base16() {
-	var data []uint8
-	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexUint(0, nil)
-		if count == 0 {
-			break
-		}
-		if count > 8 {
-			_this.buffer.Errorf("hex byte too long")
-		}
-		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint32, uint64(len(data))/4, data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected hex digits")
-	}
-}
-
-func (_this *Decoder) handleArrayU64Base16() {
-	var data []uint8
-	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
-		v, _, count := _this.buffer.DecodeHexUint(0, nil)
-		if count == 0 {
-			break
-		}
-		if count > 16 {
-			_this.buffer.Errorf("hex byte too long")
-		}
-		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
-			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
-	}
-	switch _this.buffer.PeekByteNoEOD() {
-	case '|':
-		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(events.ArrayTypeUint64, uint64(len(data))/8, data)
-		_this.endObject()
-		return
-	default:
-		_this.buffer.Errorf("Expected hex digits")
-	}
-}
-
 func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
 	switch _this.buffer.PeekByteNoEOD() {
 	case '|':
@@ -763,7 +714,7 @@ func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v ui
 		if count == 0 {
 			break
 		}
-		if v > 255 {
+		if v > maxUint8Value {
 			_this.buffer.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v))
@@ -779,7 +730,7 @@ func (_this *Decoder) decodeArrayU16(digitType string, decodeElement func() (v u
 		if count == 0 {
 			break
 		}
-		if v > 0xffff {
+		if v > maxUint16Value {
 			_this.buffer.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8))
@@ -795,7 +746,7 @@ func (_this *Decoder) decodeArrayU32(digitType string, decodeElement func() (v u
 		if count == 0 {
 			break
 		}
-		if v > 0xffffffff {
+		if v > maxUint32Value {
 			_this.buffer.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
@@ -825,7 +776,7 @@ func (_this *Decoder) decodeArrayI8(digitType string, decodeElement func() (v in
 		if count == 0 {
 			break
 		}
-		if v < -0x80 || v > 0x7f {
+		if v < minInt8Value || v > maxInt8Value {
 			_this.buffer.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v))
@@ -841,7 +792,7 @@ func (_this *Decoder) decodeArrayI16(digitType string, decodeElement func() (v i
 		if count == 0 {
 			break
 		}
-		if v < -0x8000 || v > 0x7fff {
+		if v < minInt16Value || v > maxInt16Value {
 			_this.buffer.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8))
@@ -857,7 +808,7 @@ func (_this *Decoder) decodeArrayI32(digitType string, decodeElement func() (v i
 		if count == 0 {
 			break
 		}
-		if v < -0x80000000 || v > 0x7fffffff {
+		if v < minInt32Value || v > maxInt32Value {
 			_this.buffer.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
@@ -877,6 +828,59 @@ func (_this *Decoder) decodeArrayI64(digitType string, decodeElement func() (v i
 			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
 	}
 	_this.finishTypedArray(events.ArrayTypeInt64, digitType, 8, data)
+}
+
+func (_this *Decoder) decodeArrayF16(digitType string, decodeElement func() (v float64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+
+		exp := extractFloat64Exponent(v)
+		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
+			_this.buffer.Errorf("Exponent too big for bfloat16 type")
+		}
+		bits := math.Float32bits(float32(v))
+		data = append(data, uint8(bits>>16), uint8(bits>>24))
+	}
+	_this.finishTypedArray(events.ArrayTypeFloat16, digitType, 2, data)
+}
+
+func (_this *Decoder) decodeArrayF32(digitType string, decodeElement func() (v float64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+
+		exp := extractFloat64Exponent(v)
+		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
+			_this.buffer.Errorf("Exponent too big for float32 type")
+		}
+		bits := math.Float32bits(float32(v))
+		data = append(data, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24))
+	}
+	_this.finishTypedArray(events.ArrayTypeFloat32, digitType, 4, data)
+}
+
+func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v float64, digitCount int)) {
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := decodeElement()
+		if count == 0 {
+			break
+		}
+		bits := math.Float64bits(v)
+		data = append(data, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24),
+			uint8(bits>>32), uint8(bits>>40), uint8(bits>>48), uint8(bits>>56))
+	}
+	_this.finishTypedArray(events.ArrayTypeFloat64, digitType, 8, data)
 }
 
 func (_this *Decoder) handleTypedArrayBegin() {
@@ -955,6 +959,18 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.decodeArrayI64("octal", _this.buffer.DecodeSmallOctalInt)
 	case "i64x":
 		_this.decodeArrayI64("hex", _this.buffer.DecodeSmallHexInt)
+	case "f16":
+		_this.decodeArrayF16("float", _this.buffer.DecodeSmallFloat)
+	case "f16x":
+		_this.decodeArrayF16("hex float", _this.buffer.DecodeSmallHexFloat)
+	case "f32":
+		_this.decodeArrayF32("float", _this.buffer.DecodeSmallFloat)
+	case "f32x":
+		_this.decodeArrayF32("hex float", _this.buffer.DecodeSmallHexFloat)
+	case "f64":
+		_this.decodeArrayF64("float", _this.buffer.DecodeSmallFloat)
+	case "f64x":
+		_this.decodeArrayF64("hex float", _this.buffer.DecodeSmallHexFloat)
 	default:
 		panic(fmt.Errorf("TODO: Typed array decoder support for %s", token))
 		_this.buffer.Errorf("%s: Unhandled array type", token)

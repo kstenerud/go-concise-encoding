@@ -434,6 +434,53 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		default:
 			panic(fmt.Errorf("%v: Invalid Int64 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Int64))
 		}
+	case events.ArrayTypeFloat16:
+		// TODO: What about NaN, Inf?
+		switch _this.opts.DefaultArrayEncodingBases.Float16 {
+		case 10:
+			_this.encodeArrayF16("|f16", func(v float32) string {
+				v = math.Float32frombits(math.Float32bits(v) &^ 0xffff)
+				return fmt.Sprintf(" %g", v)
+			}, value)
+		case 16:
+			_this.encodeArrayF16("|f16x", func(v float32) string {
+				v = math.Float32frombits(math.Float32bits(v) &^ 0xffff)
+				if v < 0 {
+					return " -" + fmt.Sprintf("%x", v)[3:]
+				}
+				return " " + fmt.Sprintf("%x", v)[2:]
+			}, value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Float16 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Float16))
+		}
+	case events.ArrayTypeFloat32:
+		switch _this.opts.DefaultArrayEncodingBases.Float32 {
+		case 10:
+			_this.encodeArrayF32("|f32", func(v float32) string { return fmt.Sprintf(" %g", v) }, value)
+		case 16:
+			_this.encodeArrayF32("|f32x", func(v float32) string {
+				if v < 0 {
+					return " -" + fmt.Sprintf("%x", v)[3:]
+				}
+				return " " + fmt.Sprintf("%x", v)[2:]
+			}, value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Float32 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Float32))
+		}
+	case events.ArrayTypeFloat64:
+		switch _this.opts.DefaultArrayEncodingBases.Float64 {
+		case 10:
+			_this.encodeArrayF64("|f64", func(v float64) string { return fmt.Sprintf(" %g", v) }, value)
+		case 16:
+			_this.encodeArrayF64("|f64x", func(v float64) string {
+				if v < 0 {
+					return " -" + fmt.Sprintf("%x", v)[3:]
+				}
+				return " " + fmt.Sprintf("%x", v)[2:]
+			}, value)
+		default:
+			panic(fmt.Errorf("%v: Invalid Float64 array encoding base value in CTEEncoderOptions", _this.opts.DefaultArrayEncodingBases.Float64))
+		}
 	default:
 		panic(fmt.Errorf("TODO: Typed array encoder support for %v", arrayType))
 	}
@@ -943,6 +990,34 @@ func (_this *Encoder) encodeArrayI64(initiator string, format string, value []ui
 	for i := 0; i < len(value); i += 8 {
 		_this.addFmt(format, int64(value[i])|(int64(value[i+1])<<8)|(int64(value[i+2])<<16)|(int64(value[i+3])<<24)|
 			(int64(value[i+4])<<32)|(int64(value[i+5])<<40)|(int64(value[i+6])<<48)|(int64(value[i+7])<<56))
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayF16(initiator string, format func(float32) string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 2 {
+		v := math.Float32frombits((uint32(value[i]) << 16) | (uint32(value[i+1]) << 24))
+		_this.addString(format(v))
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayF32(initiator string, format func(float32) string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 4 {
+		v := math.Float32frombits(uint32(value[i]) | (uint32(value[i+1]) << 8) | (uint32(value[i+2]) << 16) | (uint32(value[i+3]) << 24))
+		_this.addString(format(v))
+	}
+	_this.addString("|")
+}
+
+func (_this *Encoder) encodeArrayF64(initiator string, format func(float64) string, value []uint8) {
+	_this.addString(initiator)
+	for i := 0; i < len(value); i += 8 {
+		v := math.Float64frombits(uint64(value[i]) | (uint64(value[i+1]) << 8) | (uint64(value[i+2]) << 16) | (uint64(value[i+3]) << 24) |
+			(uint64(value[i+4]) << 32) | (uint64(value[i+5]) << 40) | (uint64(value[i+6]) << 48) | (uint64(value[i+7]) << 56))
+		_this.addString(format(v))
 	}
 	_this.addString("|")
 }
