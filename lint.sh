@@ -26,9 +26,6 @@ uncommented_methods=(
 	"\w*\.BuildEndContainer"
 	"\w*\.PrepareFor\w*Contents"
 	"\w*\.NotifyChildContainerFinished"
-	"RootBuilder.IsContainerOnly"
-	"RootBuilder.InitTemplate"
-	"RootBuilder.NewInstance"
 )
 
 general_ignored=(

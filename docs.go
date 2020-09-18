@@ -1,5 +1,5 @@
-// Codecs and marshalers to produce and consume Concise Binary Encoding and
-// Concise Text Encoding documents (https://github.com/kstenerud/concise-encoding).
+// Package concise_encoding implements a concise encoding codec and marshaler.
+// https://concise-encoding.org/
 //
 // Most people will only care about the highest level APIs for mashaling in
 // package ce.
@@ -8,7 +8,7 @@
 // API is sufficient. The codecs provide more control over the process, and
 // can handle more data types (such as comments and metadata). The event
 // handlers, builders and iterators are the lowest level API, providing maximum
-// control but higher complexity.
+// control but the highest complexity.
 //
 // The primary architecture design is one of filtered message pipelines,
 // consisting of data events (which report what kind of data is encountered),
