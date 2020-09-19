@@ -24,7 +24,6 @@ package iterator
 import (
 	"fmt"
 	"reflect"
-	"sync"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -36,7 +35,7 @@ import (
 // only in their own session, and don't pollute the base mapping and cause
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
-	iterators sync.Map
+	iterators map[reflect.Type]ObjectIterator
 	opts      options.IteratorSessionOptions
 }
 
@@ -60,10 +59,10 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 		parent = &rootSession
 	}
 
-	parent.iterators.Range(func(k interface{}, v interface{}) bool {
-		_this.iterators.Store(k, v)
-		return true
-	})
+	_this.iterators = make(map[reflect.Type]ObjectIterator)
+	for k, v := range parent.iterators {
+		_this.iterators[k] = v
+	}
 
 	_this.opts = *opts
 
@@ -83,25 +82,21 @@ func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, opts *
 
 // Register a specific iterator for a type.
 // If an iterator has already been registered for this type, it will be replaced.
-// This function is thread-safe.
 func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator ObjectIterator) {
-	_this.iterators.Store(t, iterator)
+	_this.iterators[t] = iterator
 }
 
 // Get an iterator template for the specified type. If a registered template
 // doesn't yet exist, a new default template will be generated and registered.
-// This method is thread-safe.
 func (_this *Session) GetIteratorTemplateForType(t reflect.Type) ObjectIterator {
-	if intf, loaded := _this.iterators.Load(t); loaded {
-		return intf.(ObjectIterator)
+	iter := _this.iterators[t]
+	if iter == nil {
+		iter = defaultIteratorForType(t)
+		iter.InitTemplate(_this.GetIteratorTemplateForType)
+		_this.iterators[t] = iter
 	}
 
-	intf, loaded := _this.iterators.LoadOrStore(t, defaultIteratorForType(t))
-	iterator := intf.(ObjectIterator)
-	if !loaded {
-		iterator.InitTemplate(_this.GetIteratorTemplateForType)
-	}
-	return iterator
+	return iter
 }
 
 // ============================================================================
