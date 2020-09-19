@@ -27,9 +27,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/options"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-describe"
+	"github.com/kstenerud/go-equivalence"
 )
 
 type A struct {
@@ -54,7 +56,7 @@ func generate() []*A {
 	for i := 0; i < 1000; i++ {
 		a = append(a, &A{
 			Name:     randString(16),
-			Birthday: time.Now(),
+			Birthday: time.Now().Truncate(-1),
 			Phone:    randString(10),
 			Siblings: rand.Intn(5),
 			Spouse:   rand.Intn(2) == 1,
@@ -64,7 +66,7 @@ func generate() []*A {
 	return a
 }
 
-func BenchmarkMarshal(b *testing.B) {
+func BenchmarkCBEMarshal(b *testing.B) {
 	b.Helper()
 	opts := options.DefaultCBEMarshalerOptions()
 	opts.Iterator.RecursionSupport = false
@@ -77,14 +79,14 @@ func BenchmarkMarshal(b *testing.B) {
 		o := data[rand.Intn(len(data))]
 		bytes, err := marshaler.MarshalToDocument(o)
 		if err != nil {
-			b.Fatalf("marshal error %s for %#v", err, o)
+			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(o))
 		}
 		serialSize += len(bytes)
 	}
 	b.ReportMetric(float64(serialSize)/float64(b.N), "B/serial")
 }
 
-func BenchmarkJSON(b *testing.B) {
+func BenchmarkJSONMarshal(b *testing.B) {
 	b.Helper()
 	data := generate()
 	b.ReportAllocs()
@@ -94,9 +96,81 @@ func BenchmarkJSON(b *testing.B) {
 		o := data[rand.Intn(len(data))]
 		bytes, err := json.Marshal(o)
 		if err != nil {
-			b.Fatalf("marshal error %s for %#v", err, o)
+			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(o))
 		}
 		serialSize += len(bytes)
 	}
 	b.ReportMetric(float64(serialSize)/float64(b.N), "B/serial")
+}
+
+func BenchmarkCBEUnmarshal(b *testing.B) {
+	b.Helper()
+	opts := options.DefaultCBEMarshalerOptions()
+	opts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(opts)
+	unmarshaler := ce.NewCBEUnmarshaler(nil)
+	expectedObjs := generate()
+	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
+	documents := make([][]byte, 0, len(expectedObjs))
+	for _, obj := range expectedObjs {
+		bytes, err := marshaler.MarshalToDocument(obj)
+		if err != nil {
+			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(obj))
+		}
+		documents = append(documents, bytes)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	template := &A{}
+	for i := 0; i < b.N; i++ {
+		index := rand.Intn(len(expectedObjs))
+		document := documents[index]
+		obj, err := unmarshaler.UnmarshalFromDocument(document, template)
+		if err != nil {
+			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
+		}
+		actualObjs[index] = obj.(*A)
+	}
+	b.StopTimer()
+	for i, v := range actualObjs {
+		if v != nil {
+			if !equivalence.IsEquivalent(v, expectedObjs[i]) {
+				b.Fatalf("Expected %v to produce %v but got %v", describe.D(documents[i]), describe.D(expectedObjs[i]), describe.D(v))
+			}
+		}
+	}
+}
+
+func BenchmarkJSONUnmarshal(b *testing.B) {
+	b.Helper()
+	expectedObjs := generate()
+	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
+	documents := make([][]byte, 0, len(expectedObjs))
+	for _, obj := range expectedObjs {
+		bytes, err := json.Marshal(obj)
+		if err != nil {
+			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(obj))
+		}
+		documents = append(documents, bytes)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		index := rand.Intn(len(expectedObjs))
+		document := documents[index]
+		obj := &A{}
+		err := json.Unmarshal(document, obj)
+		if err != nil {
+			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
+		}
+		actualObjs[index] = obj
+	}
+	b.StopTimer()
+	for i, v := range actualObjs {
+		if v != nil {
+			if !equivalence.IsEquivalent(v, expectedObjs[i]) {
+				b.Fatalf("Expected %v to produce %v but got %v", describe.D(documents[i]), describe.D(expectedObjs[i]), describe.D(v))
+			}
+		}
+	}
 }
