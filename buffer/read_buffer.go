@@ -49,6 +49,8 @@ func NewStreamingReadBuffer(reader io.Reader, bufferSize int, minFreeBytes int) 
 func (_this *StreamingReadBuffer) Init(reader io.Reader, bufferSize int, minFreeBytes int) {
 	if cap(_this.Buffer) < bufferSize {
 		_this.Buffer = make([]byte, 0, bufferSize)
+	} else {
+		_this.Buffer = _this.Buffer[:0]
 	}
 	_this.reader = reader
 	_this.minFreeBytes = minFreeBytes

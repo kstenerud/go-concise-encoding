@@ -60,10 +60,12 @@ func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *
 // the reader.
 func (_this *ReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
+	_this.position = 0
 }
 
 func (_this *ReadBuffer) Reset() {
 	_this.buffer.Reset()
+	_this.position = 0
 }
 
 // Refill the buffer from the reader if we've hit the "low water" of unread
