@@ -124,28 +124,7 @@ func TestEncodeDecodeList(t *testing.T) {
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), M(), E(), ED())
 	assertEncodeDecode(t, BD(), V(1), M(), S("a"), NI(1000), E(), ED())
-	assertEncodeDecode(t, BD(), V(1), M(), S("some nil"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
-}
-
-func TestImpliedVersion(t *testing.T) {
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "1000", BD(), V(1), PI(1000), ED())
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureVersion, 1, "{a=1000}", BD(), V(1), M(), S("a"), PI(1000), E(), ED())
-}
-
-func TestImpliedList(t *testing.T) {
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "1000 2000 3000",
-		BD(), V(1), L(), PI(1000), PI(2000), PI(3000), E(), ED())
-
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureList, 1, "{a=1000} {b=1000}",
-		BD(), V(1), L(), M(), S("a"), PI(1000), E(), M(), S("b"), PI(1000), E(), E(), ED())
-}
-
-func TestImpliedMap(t *testing.T) {
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1000=2000 3000=xyz",
-		BD(), V(1), M(), PI(1000), PI(2000), PI(3000), S("xyz"), E(), ED())
-
-	assertEncodeDecodeImpliedStructure(t, options.ImpliedStructureMap, 1, "1000={a=1000} 2000={b=1000}",
-		BD(), V(1), M(), PI(1000), M(), S("a"), PI(1000), E(), PI(2000), M(), S("b"), PI(1000), E(), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), M(), S("some null"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }
 
 func TestWebsiteExamples(t *testing.T) {
@@ -201,8 +180,8 @@ func TestWebsiteExamples(t *testing.T) {
     unquoted-string = no_quotes_needed
     quoted-string   = "A string delimited by quotes"
     verbatim-string = `+"`"+`XX Like bash here docs. Can contain `+"`"+`"[!#$%^&*{( etc.XX
-    url             = u"https://example.com/"
-    email           = u"mailto:me@somewhere.com"
+    url             = |u https://example.com/|
+    email           = |u mailto:me@somewhere.com|
 }`, []byte{0x03, 0x01, 0x79, 0x8f, 0x75, 0x6e, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x64,
 		0x2d, 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x90, 0x20, 0x6e, 0x6f, 0x5f,
 		0x71, 0x75, 0x6f, 0x74, 0x65, 0x73, 0x5f, 0x6e, 0x65, 0x65, 0x64, 0x65,
@@ -235,7 +214,7 @@ func TestWebsiteExamples(t *testing.T) {
     date = 2019-07-01
     time = 18:04:00.940231541/Europe/Prague
     timestamp = 2010-07-15/13:28:15.415942344/Etc/UTC
-    nil = @nil
+    nil = @null
 }`, []byte{0x03, 0x01, 0x79, 0x84, 0x75, 0x75, 0x69, 0x64, 0x74, 0xf1, 0xce, 0x45,
 		0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66, 0x55, 0x44, 0x00,
 		0x00, 0x84, 0x64, 0x61, 0x74, 0x65, 0x99, 0xe1, 0x4c, 0x00, 0x84, 0x74,
@@ -266,7 +245,7 @@ func TestWebsiteExamples(t *testing.T) {
 	testDecode(`c1
 {
     main-view = <View;
-      <Image src=u"images/avatar-image.jpg">
+      <Image src=|u images/avatar-image.jpg|>
       <Text;
         Hello!
       >
@@ -301,12 +280,12 @@ func TestWebsiteExamples(t *testing.T) {
     marked_object    = &id1:{
         description = "This map will be referenced later using $id1"
         value = -@inf
-        child_elements = @nil
+        child_elements = @null
         recursive = $id1
     }
     ref1             = $id1
     ref2             = $id1
-    outside_ref      = $u"https://somewhere.else.com/path/to/document.cte#some_id"
+    outside_ref      = $|u https://somewhere.else.com/path/to/document.cte#some_id|
 }`, []byte{0x03, 0x01, 0x79, 0x8d, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x64, 0x5f, 0x6f,
 		0x62, 0x6a, 0x65, 0x63, 0x74, 0x97, 0x83, 0x69, 0x64, 0x31, 0x79, 0x8b,
 		0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x90,

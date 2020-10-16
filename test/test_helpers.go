@@ -127,9 +127,10 @@ func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundred
 func ReportPanic(function func()) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			var ok bool
-			err, ok = r.(error)
-			if !ok {
+			switch v := r.(type) {
+			case error:
+				err = v
+			default:
 				err = fmt.Errorf("%v", r)
 			}
 		}
@@ -486,6 +487,7 @@ func newTEvent(eventType TEventType, v1 interface{}, v2 interface{}) *TEvent {
 func (_this *TEvent) String() string {
 	str := _this.Type.String()
 	if _this.V1 != nil {
+		// TODO: Stringify bytes as hex
 		if _this.V2 != nil {
 			return fmt.Sprintf("%v(%v,%v)", str, _this.V1, _this.V2)
 		}
@@ -503,7 +505,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventPadding:
 		receiver.OnPadding(_this.V1.(int))
 	case TEventNil:
-		receiver.OnNil()
+		receiver.OnNull()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
 	case TEventTrue:
@@ -822,9 +824,9 @@ func (h *TEventPrinter) OnPadding(count int) {
 	h.Print(PAD(count))
 	h.Next.OnPadding(count)
 }
-func (h *TEventPrinter) OnNil() {
+func (h *TEventPrinter) OnNull() {
 	h.Print(N())
-	h.Next.OnNil()
+	h.Next.OnNull()
 }
 func (h *TEventPrinter) OnBool(value bool) {
 	h.Print(B(value))
@@ -1056,7 +1058,7 @@ func (h *TER) add(event *TEvent) {
 }
 func (h *TER) OnVersion(version uint64)                  { h.add(V(version)) }
 func (h *TER) OnPadding(count int)                       { h.add(PAD(count)) }
-func (h *TER) OnNil()                                    { h.add(N()) }
+func (h *TER) OnNull()                                   { h.add(N()) }
 func (h *TER) OnBool(value bool)                         { h.add(B(value)) }
 func (h *TER) OnTrue()                                   { h.add(TT()) }
 func (h *TER) OnFalse()                                  { h.add(FF()) }

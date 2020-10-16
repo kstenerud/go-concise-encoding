@@ -32,14 +32,7 @@ type CBEDecoderOptions struct {
 	BufferSize int
 
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	// This value is consulted if ImpliedStructure is anything other than
-	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
-
-	// The implied structure that this decoder will assume.
-	// Any implied structure will be automatically reported without being
-	// present in the document.
-	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCBEDecoderOptions() *CBEDecoderOptions {
@@ -65,6 +58,10 @@ func (_this *CBEDecoderOptions) WithDefaultsApplied() *CBEDecoderOptions {
 	return _this
 }
 
+func (_this *CBEDecoderOptions) Validate() error {
+	return nil
+}
+
 // ============================================================================
 // CBE Encoder
 
@@ -73,13 +70,7 @@ type CBEEncoderOptions struct {
 	BufferSize int
 
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	// This value is consulted if ImpliedStructure is anything other than
-	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
-
-	// The implied structure that this encoder will assume.
-	// Any implied structure will not actually be written to the document.
-	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCBEEncoderOptions() *CBEEncoderOptions {
@@ -103,6 +94,10 @@ func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
 	}
 
 	return _this
+}
+
+func (_this *CBEEncoderOptions) Validate() error {
+	return nil
 }
 
 // ============================================================================
@@ -132,6 +127,16 @@ func (_this *CBEMarshalerOptions) WithDefaultsApplied() *CBEMarshalerOptions {
 	_this.Session.WithDefaultsApplied()
 
 	return _this
+}
+
+func (_this *CBEMarshalerOptions) Validate() error {
+	if err := _this.Encoder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Iterator.Validate(); err != nil {
+		return err
+	}
+	return _this.Session.Validate()
 }
 
 // ============================================================================
@@ -164,4 +169,17 @@ func (_this *CBEUnmarshalerOptions) WithDefaultsApplied() *CBEUnmarshalerOptions
 	_this.Rules.WithDefaultsApplied()
 
 	return _this
+}
+
+func (_this *CBEUnmarshalerOptions) Validate() error {
+	if err := _this.Builder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Decoder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Rules.Validate(); err != nil {
+		return err
+	}
+	return _this.Session.Validate()
 }

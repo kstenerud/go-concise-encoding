@@ -48,8 +48,6 @@ import (
 type Encoder struct {
 	buff           buffer.StreamingWriteBuffer
 	opts           options.CBEEncoderOptions
-	skipFirstMap   bool
-	skipFirstList  bool
 	containerDepth int
 }
 
@@ -67,8 +65,6 @@ func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 	_this.buff.Init(_this.opts.BufferSize)
-	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
@@ -92,14 +88,11 @@ func (_this *Encoder) OnBeginDocument() {
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
-	if _this.opts.ImpliedStructure != options.ImpliedStructureNone {
-		return
-	}
 	_this.encodeByte(cbeDocumentHeader)
 	_this.encodeULEB(version)
 }
 
-func (_this *Encoder) OnNil() {
+func (_this *Encoder) OnNull() {
 	_this.encodeType(cbeTypeNil)
 }
 
@@ -318,21 +311,11 @@ func (_this *Encoder) OnArrayData(data []byte) {
 }
 
 func (_this *Encoder) OnList() {
-	if _this.skipFirstList {
-		_this.skipFirstList = false
-		return
-	}
-
 	_this.encodeType(cbeTypeList)
 	_this.containerDepth++
 }
 
 func (_this *Encoder) OnMap() {
-	if _this.skipFirstMap {
-		_this.skipFirstMap = false
-		return
-	}
-
 	_this.encodeType(cbeTypeMap)
 	_this.containerDepth++
 }
@@ -379,8 +362,6 @@ func (_this *Encoder) OnEndDocument() {
 
 func (_this *Encoder) reset() {
 	_this.buff.Reset()
-	_this.skipFirstList = _this.opts.ImpliedStructure == options.ImpliedStructureList
-	_this.skipFirstMap = _this.opts.ImpliedStructure == options.ImpliedStructureMap
 	_this.containerDepth = 0
 }
 

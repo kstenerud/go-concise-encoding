@@ -189,51 +189,6 @@ func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
 }
 
-func assertEncodeDecodeImpliedStructure(t *testing.T,
-	impliedStruct options.ImpliedStructure,
-	version uint64,
-	cteDocument string,
-	expected ...*test.TEvent) {
-
-	cteEncodeOpts := options.DefaultCTEEncoderOptions()
-	cteEncodeOpts.ConciseEncodingVersion = version
-	cteEncodeOpts.ImpliedStructure = impliedStruct
-	cteDecodeOpts := options.DefaultCTEDecoderOptions()
-	cteDecodeOpts.ConciseEncodingVersion = version
-	cteDecodeOpts.ImpliedStructure = impliedStruct
-	cbeEncodeOpts := options.DefaultCBEEncoderOptions()
-	cbeEncodeOpts.ConciseEncodingVersion = version
-	cbeEncodeOpts.ImpliedStructure = impliedStruct
-	cbeDecodeOpts := options.DefaultCBEDecoderOptions()
-	cbeDecodeOpts.ConciseEncodingVersion = version
-	cbeDecodeOpts.ImpliedStructure = impliedStruct
-
-	events, err := cteDecode(cteDecodeOpts, []byte(cteDocument))
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(expected, events) {
-		t.Errorf("CTE: Expected %v but got %v", expected, events)
-		return
-	}
-	actualCTEDoc := string(cteEncode(cteEncodeOpts, expected...))
-	if actualCTEDoc != cteDocument {
-		t.Errorf("CTE: Expected doc [%v] but got [%v]", cteDocument, actualCTEDoc)
-	}
-
-	actualCBEDoc := cbeEncode(cbeEncodeOpts, expected...)
-	events, err = cbeDecode(cbeDecodeOpts, actualCBEDoc)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(expected, events) {
-		t.Errorf("CBE: Expected %v but got %v", expected, events)
-		return
-	}
-}
-
 func assertDecodeCBECTE(t *testing.T,
 	cteEncodeOpts *options.CTEEncoderOptions,
 	cteDecodeOpts *options.CTEDecoderOptions,

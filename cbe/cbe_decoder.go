@@ -66,7 +66,12 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
-				err = r.(error)
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
 			}
 		}
 	}()
@@ -78,22 +83,11 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	_this.buffer.RefillIfNecessary()
 
-	switch _this.opts.ImpliedStructure {
-	case options.ImpliedStructureVersion:
-		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
-	case options.ImpliedStructureList:
-		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
-		_this.eventReceiver.OnList()
-	case options.ImpliedStructureMap:
-		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
-		_this.eventReceiver.OnMap()
-	default:
-		docHeader := _this.buffer.DecodeUint8()
-		if docHeader != cbeDocumentHeader {
-			_this.buffer.errorf("First byte of CBE document must be 0x%02x (found 0x%02x)", cbeDocumentHeader, docHeader)
-		}
-		_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
+	docHeader := _this.buffer.DecodeUint8()
+	if docHeader != cbeDocumentHeader {
+		_this.buffer.errorf("First byte of CBE document must be 0x%02x (found 0x%02x)", cbeDocumentHeader, docHeader)
 	}
+	_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
 
 	for _this.buffer.HasUnreadData() {
 		_this.buffer.RefillIfNecessary()
@@ -161,7 +155,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		case cbeTypeTrue:
 			_this.eventReceiver.OnTrue()
 		case cbeTypeNil:
-			_this.eventReceiver.OnNil()
+			_this.eventReceiver.OnNull()
 		case cbeTypePadding:
 			_this.eventReceiver.OnPadding(1)
 		case cbeTypeString0:
@@ -206,11 +200,6 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			}
 			_this.eventReceiver.OnInt(asSmallInt)
 		}
-	}
-
-	switch _this.opts.ImpliedStructure {
-	case options.ImpliedStructureList, options.ImpliedStructureMap:
-		_this.eventReceiver.OnEnd()
 	}
 
 	_this.eventReceiver.OnEndDocument()

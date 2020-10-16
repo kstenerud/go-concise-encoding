@@ -37,11 +37,11 @@ func containsEscapes(str string) bool {
 }
 
 const (
-	quotedUnsafe            = unicode.Control | unicode.TabReturnNewline | unicode.QuotedOrCustomTextDelimiter
+	quotedUnsafe            = unicode.Control | unicode.TabReturnNewline | unicode.QuotedTextDelimiter
 	unquotedUnsafe          = quotedUnsafe | unicode.Whitespace | unicode.LowSymbolOrLookalike
 	unquotedFirstCharUnsafe = unquotedUnsafe | unicode.NumeralOrLookalike
 	markupUnsafe            = unicode.Control | unicode.MarkupDelimiter
-	customTextUnsafe        = unicode.Control | unicode.TabReturnNewline | unicode.QuotedOrCustomTextDelimiter
+	arrayUnsafe             = unicode.Control | unicode.TabReturnNewline | unicode.ArrayDelimiter
 )
 
 // Wraps a string destined for a CTE document, adding quotes or escapes as
@@ -84,19 +84,19 @@ func asPotentialQuotedString(str []byte) (finalString string) {
 func asVerbatimString(str []byte) string {
 	asString := string(str)
 	sentinel := generateVerbatimSentinel(asString)
-	return "`" + sentinel + asString + sentinel
+	return "`" + sentinel + " " + asString + sentinel
 }
 
-// Wraps a custom text string destined for a CTE document.
-func asCustomText(str []byte) string {
+// Wraps a string-encoded array destined for a CTE document.
+func asStringArray(elementType string, str []byte) string {
 	for _, ch := range string(str) {
 		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(customTextUnsafe) {
-			return escapedCustomText(string(str))
+		if props.HasProperty(arrayUnsafe) {
+			return escapedStringArray(elementType, string(str))
 		}
 	}
 
-	return `t"` + string(str) + `"`
+	return "|" + elementType + " " + string(str) + "|"
 }
 
 // Wraps markup content destined for a CTE document.
@@ -152,20 +152,21 @@ func escapeCharQuoted(ch rune) string {
 	return unicodeEscape(ch)
 }
 
-func escapedCustomText(str string) string {
+func escapedStringArray(elementType string, str string) string {
 	var sb strings.Builder
 	sb.Grow(len([]byte(str)))
 	// Note: StringBuilder's WriteXYZ() always return nil errors
-	sb.WriteByte('t')
-	sb.WriteByte('"')
+	sb.WriteByte('|')
+	sb.WriteString(elementType)
+	sb.WriteByte(' ')
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, customTextUnsafe) {
-			sb.WriteString(escapeCharCustomText(ch))
+		if unicode.CharHasProperty(ch, arrayUnsafe) {
+			sb.WriteString(escapeCharStringArray(ch))
 		} else {
 			sb.WriteRune(ch)
 		}
 	}
-	sb.WriteByte('"')
+	sb.WriteByte('|')
 	return sb.String()
 }
 
@@ -174,10 +175,10 @@ func unicodeEscape(ch rune) string {
 	return fmt.Sprintf("\\%d%s", len(hex), hex)
 }
 
-func escapeCharCustomText(ch rune) string {
+func escapeCharStringArray(ch rune) string {
 	switch ch {
-	case '"':
-		return `\"`
+	case '|':
+		return `\|`
 	case '\\':
 		return `\\`
 	case '\t':

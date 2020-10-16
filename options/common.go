@@ -21,22 +21,3 @@
 // All options that can be used to fine-tune the behavior of various aspects of
 // this library.
 package options
-
-// Defines what (if any) implied structure forms the Concise Encoding document takes.
-type ImpliedStructure int
-
-const (
-	// Assume no implied structure
-	ImpliedStructureNone = iota
-
-	//Assume that the Concise Encoding version has already been specified.
-	ImpliedStructureVersion
-
-	// Assume that the version has been specified AND that the top-level object
-	// has already been opened as a list.
-	ImpliedStructureList
-
-	// Assume that the version has been specified AND that the top-level object
-	// has already been opened as a map.
-	ImpliedStructureMap
-)

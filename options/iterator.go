@@ -73,6 +73,10 @@ func (_this *IteratorSessionOptions) WithDefaultsApplied() *IteratorSessionOptio
 	return _this
 }
 
+func (_this *IteratorSessionOptions) Validate() error {
+	return nil
+}
+
 // ============================================================================
 // Iterator
 
@@ -111,4 +115,8 @@ func (_this *IteratorOptions) WithDefaultsApplied() *IteratorOptions {
 	}
 
 	return _this
+}
+
+func (_this *IteratorOptions) Validate() error {
+	return nil
 }

@@ -81,6 +81,10 @@ func (_this *BuilderSessionOptions) WithDefaultsApplied() *BuilderSessionOptions
 	return _this
 }
 
+func (_this *BuilderSessionOptions) Validate() error {
+	return nil
+}
+
 // ============================================================================
 // Builder
 
@@ -119,4 +123,8 @@ func (_this *BuilderOptions) WithDefaultsApplied() *BuilderOptions {
 	}
 
 	return _this
+}
+
+func (_this *BuilderOptions) Validate() error {
+	return nil
 }

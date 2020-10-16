@@ -56,7 +56,7 @@ func (_this *interfaceIterator) InitInstance(fetchInstance FetchIterator, _ *opt
 
 func (_this *interfaceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 	} else {
 		elem := v.Elem()
 		iter := _this.fetchInstance(elem.Type())
@@ -97,7 +97,7 @@ func (_this *pointerIterator) InitInstance(fetchInstance FetchIterator, _ *optio
 
 func (_this *pointerIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 		return
 	}
 	if addReference(v) {
@@ -141,7 +141,7 @@ func (_this *sliceIterator) InitInstance(fetchInstance FetchIterator, _ *options
 
 func (_this *sliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 		return
 	}
 	if addReference(v) {
@@ -236,7 +236,7 @@ func (_this *mapIterator) InitInstance(fetchInstance FetchIterator, _ *options.I
 
 func (_this *mapIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, addReference AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 		return
 	}
 	if addReference(v) {

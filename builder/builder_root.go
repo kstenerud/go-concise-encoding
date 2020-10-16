@@ -217,7 +217,7 @@ func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 func (_this *RootBuilder) OnBeginDocument()   {}
 func (_this *RootBuilder) OnVersion(_ uint64) {}
 func (_this *RootBuilder) OnPadding(_ int)    {}
-func (_this *RootBuilder) OnNil() {
+func (_this *RootBuilder) OnNull() {
 	_this.currentBuilder.BuildFromNil(_this.object)
 }
 func (_this *RootBuilder) OnBool(value bool) {

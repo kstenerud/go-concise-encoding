@@ -21,6 +21,8 @@
 package options
 
 import (
+	"fmt"
+
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
@@ -51,14 +53,7 @@ type CTEDecoderOptions struct {
 	BufferSize int
 
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	// This value is consulted if ImpliedStructure is anything other than
-	// ImpliedStructureNone.
 	ConciseEncodingVersion uint64
-
-	// The implied structure that this decoder will assume.
-	// Any implied structure will be automatically reported without being
-	// present in the document.
-	ImpliedStructure ImpliedStructure
 }
 
 func DefaultCTEDecoderOptions() *CTEDecoderOptions {
@@ -84,20 +79,21 @@ func (_this *CTEDecoderOptions) WithDefaultsApplied() *CTEDecoderOptions {
 	return _this
 }
 
+func (_this *CTEDecoderOptions) Validate() error {
+	return nil
+}
+
 // ============================================================================
 // CTE Encoder
 
 type CTEEncoderOptions struct {
 	BufferSize int
 
+	// Concise encoding spec version to adhere to. Uses latest if set to 0.
+	ConciseEncodingVersion uint64
+
 	// Indentation to use when pretty printing
 	Indent string
-
-	// TODO: Default encoding to use for floating point
-	DefaultFloatEncoding FloatEncoding
-
-	// TODO: Default encoding to use for integers
-	DefaultIntEncoding IntEncoding
 
 	// TODO: Max column before forcing a newline (if possible)
 	MaxColumn uint
@@ -105,53 +101,83 @@ type CTEEncoderOptions struct {
 	// TODO: Convert line endings to escapes
 	EscapeLineEndings bool
 
-	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	// This value is consulted if ImpliedStructure is anything other than
-	// ImpliedStructureNone.
-	ConciseEncodingVersion uint64
-
-	// The implied structure that this encoder will assume.
-	// Any implied structure will not actually be written to the document.
-	ImpliedStructure ImpliedStructure
-
-	DefaultArrayEncodingBases ArrayEncodingBases
-	// TODO: Leading zeroes per array type
+	DefaultFormats struct {
+		Int   CTEEncodingFormat
+		Uint  CTEEncodingFormat
+		Float CTEEncodingFormat
+		Array struct {
+			Int8    CTEEncodingFormat
+			Int16   CTEEncodingFormat
+			Int32   CTEEncodingFormat
+			Int64   CTEEncodingFormat
+			Uint8   CTEEncodingFormat
+			Uint16  CTEEncodingFormat
+			Uint32  CTEEncodingFormat
+			Uint64  CTEEncodingFormat
+			Float16 CTEEncodingFormat
+			Float32 CTEEncodingFormat
+			Float64 CTEEncodingFormat
+		}
+	}
 }
 
-// The base to encode numbers in for numeric arrays.
-// A value of 0 or 10 means decimal, 2 = binary, 8 = octal, 16 = hexadecimal.
-type ArrayEncodingBases struct {
-	Int8    int
-	Int16   int
-	Int32   int
-	Int64   int
-	Uint8   int
-	Uint16  int
-	Uint32  int
-	Uint64  int
-	Float16 int
-	Float32 int
-	Float64 int
+type CTEEncodingFormat uint8
+
+const (
+	CTEEncodingFormatUnset          CTEEncodingFormat = 0
+	CTEEncodingFormatFlagZeroFilled CTEEncodingFormat = 1
+	CTEEncodingFormatBinary         CTEEncodingFormat = 2 + iota
+	CTEEncodingFormatBinaryZeroFilled
+	CTEEncodingFormatOctal
+	CTEEncodingFormatOctalZeroFilled
+	CTEEncodingFormatHexadecimal
+	CTEEncodingFormatHexadecimalZeroFilled
+	cteEncodingFormatCount
+)
+
+var cteEncodingFormatStrings = []string{
+	CTEEncodingFormatUnset:                 "CTEEncodingFormatUnset",
+	CTEEncodingFormatFlagZeroFilled:        "CTEEncodingFormatFlagZeroFilled",
+	CTEEncodingFormatBinary:                "CTEEncodingFormatBinary",
+	CTEEncodingFormatBinaryZeroFilled:      "CTEEncodingFormatBinaryZeroFilled",
+	CTEEncodingFormatOctal:                 "CTEEncodingFormatOctal",
+	CTEEncodingFormatOctalZeroFilled:       "CTEEncodingFormatOctalZeroFilled",
+	CTEEncodingFormatHexadecimal:           "CTEEncodingFormatHexadecimal",
+	CTEEncodingFormatHexadecimalZeroFilled: "CTEEncodingFormatHexadecimalZeroFilled",
+}
+
+func (_this CTEEncodingFormat) String() string {
+	if _this < cteEncodingFormatCount {
+		return cteEncodingFormatStrings[_this]
+	}
+	return fmt.Sprintf("CTEEncodingFormat(%d)", _this)
 }
 
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {
-	return &CTEEncoderOptions{
+	opts := &CTEEncoderOptions{
 		BufferSize:             1024,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
-		DefaultArrayEncodingBases: ArrayEncodingBases{
-			Int8:    10,
-			Int16:   10,
-			Int32:   10,
-			Int64:   10,
-			Uint8:   16,
-			Uint16:  16,
-			Uint32:  16,
-			Uint64:  16,
-			Float16: 16,
-			Float32: 16,
-			Float64: 16,
-		},
+		Indent:                 "",
+		MaxColumn:              0,
+		EscapeLineEndings:      true,
 	}
+
+	opts.DefaultFormats.Float = CTEEncodingFormatUnset
+	opts.DefaultFormats.Int = CTEEncodingFormatUnset
+	opts.DefaultFormats.Uint = CTEEncodingFormatUnset
+	opts.DefaultFormats.Array.Int8 = CTEEncodingFormatUnset
+	opts.DefaultFormats.Array.Int16 = CTEEncodingFormatUnset
+	opts.DefaultFormats.Array.Int32 = CTEEncodingFormatUnset
+	opts.DefaultFormats.Array.Int64 = CTEEncodingFormatUnset
+	opts.DefaultFormats.Array.Uint8 = CTEEncodingFormatHexadecimalZeroFilled
+	opts.DefaultFormats.Array.Uint16 = CTEEncodingFormatHexadecimalZeroFilled
+	opts.DefaultFormats.Array.Uint32 = CTEEncodingFormatHexadecimalZeroFilled
+	opts.DefaultFormats.Array.Uint64 = CTEEncodingFormatHexadecimalZeroFilled
+	opts.DefaultFormats.Array.Float16 = CTEEncodingFormatHexadecimal
+	opts.DefaultFormats.Array.Float32 = CTEEncodingFormatHexadecimal
+	opts.DefaultFormats.Array.Float64 = CTEEncodingFormatHexadecimal
+
+	return opts
 }
 
 func (_this *CTEEncoderOptions) WithDefaultsApplied() *CTEEncoderOptions {
@@ -164,6 +190,83 @@ func (_this *CTEEncoderOptions) WithDefaultsApplied() *CTEEncoderOptions {
 	}
 
 	return _this
+}
+
+var cteValidFloatFormats = map[CTEEncodingFormat]bool{
+	CTEEncodingFormatUnset:       true,
+	CTEEncodingFormatHexadecimal: true,
+}
+var cteValidIntFormats = map[CTEEncodingFormat]bool{
+	CTEEncodingFormatBinary:      true,
+	CTEEncodingFormatUnset:       true,
+	CTEEncodingFormatOctal:       true,
+	CTEEncodingFormatHexadecimal: true,
+}
+var cteValidArrayIntFormats = map[CTEEncodingFormat]bool{
+	CTEEncodingFormatBinary:                true,
+	CTEEncodingFormatBinaryZeroFilled:      true,
+	CTEEncodingFormatUnset:                 true,
+	CTEEncodingFormatOctal:                 true,
+	CTEEncodingFormatOctalZeroFilled:       true,
+	CTEEncodingFormatHexadecimal:           true,
+	CTEEncodingFormatHexadecimalZeroFilled: true,
+}
+
+func (_this *CTEEncoderOptions) Validate() (err error) {
+	validate := func(name string, format CTEEncodingFormat, validFormats map[CTEEncodingFormat]bool) error {
+		if validFormats[format] {
+			return nil
+		}
+		return fmt.Errorf("%v is not a valid encoding format for %s", format, name)
+	}
+
+	if err = validate("Int", _this.DefaultFormats.Int, cteValidIntFormats); err != nil {
+		return
+	}
+	if err = validate("Uint", _this.DefaultFormats.Uint, cteValidIntFormats); err != nil {
+		return
+	}
+	if err = validate("Float", _this.DefaultFormats.Float, cteValidFloatFormats); err != nil {
+		return
+	}
+
+	if err = validate("Int8", _this.DefaultFormats.Array.Int8, cteValidArrayIntFormats); err != nil {
+		return
+	}
+	if err = validate("Int16", _this.DefaultFormats.Array.Int16, cteValidArrayIntFormats); err != nil {
+		return
+	}
+	if err = validate("Int32", _this.DefaultFormats.Array.Int32, cteValidArrayIntFormats); err != nil {
+		return
+	}
+	if err = validate("Int64", _this.DefaultFormats.Array.Int64, cteValidArrayIntFormats); err != nil {
+		return
+	}
+
+	if err = validate("Uint8", _this.DefaultFormats.Array.Uint8, cteValidArrayIntFormats); err != nil {
+		return
+	}
+	if err = validate("Uint16", _this.DefaultFormats.Array.Uint16, cteValidArrayIntFormats); err != nil {
+		return
+	}
+	if err = validate("Uint32", _this.DefaultFormats.Array.Uint32, cteValidArrayIntFormats); err != nil {
+		return
+	}
+	if err = validate("Uint64", _this.DefaultFormats.Array.Uint64, cteValidArrayIntFormats); err != nil {
+		return
+	}
+
+	if err = validate("Float16", _this.DefaultFormats.Array.Float16, cteValidFloatFormats); err != nil {
+		return
+	}
+	if err = validate("Float32", _this.DefaultFormats.Array.Float32, cteValidFloatFormats); err != nil {
+		return
+	}
+	if err = validate("Float64", _this.DefaultFormats.Array.Float64, cteValidFloatFormats); err != nil {
+		return
+	}
+
+	return
 }
 
 // ============================================================================
@@ -193,6 +296,16 @@ func (_this *CTEMarshalerOptions) WithDefaultsApplied() *CTEMarshalerOptions {
 	_this.Session.WithDefaultsApplied()
 
 	return _this
+}
+
+func (_this *CTEMarshalerOptions) Validate() error {
+	if err := _this.Encoder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Iterator.Validate(); err != nil {
+		return err
+	}
+	return _this.Session.Validate()
 }
 
 // ============================================================================
@@ -225,4 +338,17 @@ func (_this *CTEUnmarshalerOptions) WithDefaultsApplied() *CTEUnmarshalerOptions
 	_this.Rules.WithDefaultsApplied()
 
 	return _this
+}
+
+func (_this *CTEUnmarshalerOptions) Validate() error {
+	if err := _this.Builder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Decoder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Rules.Validate(); err != nil {
+		return err
+	}
+	return _this.Session.Validate()
 }

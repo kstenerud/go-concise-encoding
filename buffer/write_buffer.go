@@ -21,6 +21,7 @@
 package buffer
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -78,6 +79,38 @@ func (_this *StreamingWriteBuffer) Flush() {
 		panic(err)
 	}
 	_this.bytes = _this.bytes[:0]
+}
+
+func (_this *StreamingWriteBuffer) AddNonemptyString(str string) {
+	dst := _this.Allocate(len(str))
+	copy(dst, str)
+}
+
+func (_this *StreamingWriteBuffer) AddNonemptyBytes(bytes []byte) {
+	dst := _this.Allocate(len(bytes))
+	copy(dst, bytes)
+}
+
+func (_this *StreamingWriteBuffer) AddString(str string) {
+	if len(str) > 0 {
+		_this.AddNonemptyString(str)
+	}
+}
+
+func (_this *StreamingWriteBuffer) AddBytes(bytes []byte) {
+	if len(bytes) > 0 {
+		_this.AddNonemptyBytes(bytes)
+	}
+}
+
+func (_this *StreamingWriteBuffer) AddFmt(format string, args ...interface{}) {
+	_this.AddNonemptyString(fmt.Sprintf(format, args...))
+}
+
+// Add a formatted string, but strip the specified number of characters from the
+// beginning of the result before adding.
+func (_this *StreamingWriteBuffer) AddFmtStripped(stripByteCount int, format string, args ...interface{}) {
+	_this.AddNonemptyString(fmt.Sprintf(format, args...)[stripByteCount:])
 }
 
 // ============================================================================

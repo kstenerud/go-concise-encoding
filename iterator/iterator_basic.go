@@ -104,7 +104,7 @@ func (_this *pCompactTimeIterator) InitInstance(_ FetchIterator, _ *options.Iter
 
 func (_this *pCompactTimeIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 	} else {
 		eventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
 	}
@@ -133,7 +133,7 @@ func (_this *pURLIterator) InitInstance(_ FetchIterator, _ *options.IteratorOpti
 
 func (_this *pURLIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 	} else {
 		bytes := []byte(v.Interface().(*url.URL).String())
 		eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
@@ -190,7 +190,7 @@ func (_this *pBigIntIterator) InitInstance(_ FetchIterator, _ *options.IteratorO
 
 func (_this *pBigIntIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 	} else {
 		eventReceiver.OnBigInt(v.Interface().(*big.Int))
 	}
@@ -245,7 +245,7 @@ func (_this *pBigFloatIterator) InitInstance(_ FetchIterator, _ *options.Iterato
 
 func (_this *pBigFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 	} else {
 		eventReceiver.OnBigFloat(v.Interface().(*big.Float))
 	}
@@ -300,7 +300,7 @@ func (_this *pBigDecimalFloatIterator) InitInstance(_ FetchIterator, _ *options.
 
 func (_this *pBigDecimalFloatIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	if v.IsNil() {
-		eventReceiver.OnNil()
+		eventReceiver.OnNull()
 	} else {
 		eventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
 	}

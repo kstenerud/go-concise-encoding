@@ -859,6 +859,7 @@ func (_this *ReadBuffer) DecodeQuotedStringWithEscapes() []byte {
 			_this.AdvanceByte()
 			return []byte(sb.String())
 		case '\\':
+			// TODO: Verify escapes
 			_this.AdvanceByte()
 			escape := _this.PeekByteNoEOD()
 			switch escape {
@@ -931,21 +932,6 @@ func (_this *ReadBuffer) DecodeQuotedString() []byte {
 	}
 }
 
-func (_this *ReadBuffer) DecodeURI() []byte {
-	_this.BeginSubtoken()
-	for {
-		b := _this.PeekByteNoEOD()
-		switch b {
-		case '"':
-			token := _this.GetSubtoken()
-			_this.AdvanceByte()
-			return token
-		default:
-			_this.AdvanceByte()
-		}
-	}
-}
-
 func (_this *ReadBuffer) DecodeVerbatimString() []byte {
 	_this.BeginSubtoken()
 	_this.ReadUntilPropertyNoEOD(ctePropertyWhitespace)
@@ -978,38 +964,38 @@ Outer:
 	}
 }
 
-func (_this *ReadBuffer) DecodeCustomText() []byte {
+func (_this *ReadBuffer) DecodeStringArray() []byte {
 	_this.BeginSubtoken()
 	for {
 		b := _this.PeekByteNoEOD()
 		switch b {
-		case '"':
+		case '|':
 			token := _this.GetSubtoken()
-			_this.AdvanceByte()
 			return token
 		case '\\':
-			return _this.DecodeCustomTextWithEscapes()
+			return _this.DecodeStringArrayWithEscapes()
 		default:
 			_this.AdvanceByte()
 		}
 	}
 }
 
-func (_this *ReadBuffer) DecodeCustomTextWithEscapes() []byte {
+func (_this *ReadBuffer) DecodeStringArrayWithEscapes() []byte {
 	sb := strings.Builder{}
 	sb.Write(_this.GetSubtoken())
 	for {
 		b := _this.PeekByteNoEOD()
 		switch b {
-		case '"':
-			_this.AdvanceByte()
+		case '|':
 			return []byte(sb.String())
 		case '\\':
+			// TODO: Verify escapes
 			_this.AdvanceByte()
 			escape := _this.PeekByteNoEOD()
 			switch escape {
-			case '"':
-				sb.WriteByte('"')
+			// TODO: All escapes
+			case '|':
+				sb.WriteByte('|')
 			case '\\':
 				sb.WriteByte('\\')
 			case 'r':
@@ -1274,17 +1260,24 @@ func (_this *ReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundredth
 	return
 }
 
+func (_this *ReadBuffer) trim(str []byte) []byte {
+	for len(str) > 0 && hasProperty(str[0], ctePropertyWhitespace) {
+		str = str[1:]
+	}
+	for len(str) > 0 && hasProperty(str[len(str)-1], ctePropertyWhitespace) {
+		str = str[:len(str)-1]
+	}
+	return str
+}
+
 func (_this *ReadBuffer) DecodeSingleLineComment() []byte {
 	// We're already past the "//" by this point
 	_this.BeginSubtoken()
 	_this.readUntilByte('\n')
 	subtoken := _this.GetSubtoken()
-	if len(subtoken) > 0 && subtoken[len(subtoken)-1] == '\r' {
-		subtoken = subtoken[:len(subtoken)-1]
-	}
 	_this.AdvanceByte()
 
-	return subtoken
+	return _this.trim(subtoken)
 }
 
 func (_this *ReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
@@ -1298,14 +1291,14 @@ func (_this *ReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
 			token := _this.GetToken()
 			token = token[:len(token)-2]
 			_this.EndToken()
-			return token, nextIsCommentEnd
+			return _this.trim(token), nextIsCommentEnd
 		}
 
 		if firstByte == '/' && lastByte == '*' {
 			token := _this.GetToken()
 			token = token[:len(token)-2]
 			_this.EndToken()
-			return token, nextIsCommentBegin
+			return _this.trim(token), nextIsCommentBegin
 		}
 	}
 }
@@ -1344,6 +1337,7 @@ func (_this *ReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
 		case '\r', '\n', '\t', ' ':
 			wsCount++
 		case '\\':
+			// TODO: Verify escapes
 			completeStringPortion()
 			escape := _this.PeekByteNoEOD()
 			switch escape {

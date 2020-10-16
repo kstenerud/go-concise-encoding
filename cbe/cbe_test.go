@@ -26,8 +26,6 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 func TestCBEVersion(t *testing.T) {
@@ -493,42 +491,6 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 	if !reflect.DeepEqual(buffer2.Bytes(), expected) {
 		t.Errorf("Expected second buffer %v but got %v", expected, buffer2.Bytes())
 	}
-}
-
-func TestCBEEncodeImpliedVersion(t *testing.T) {
-	opts := options.DefaultCBEEncoderOptions()
-	opts.ImpliedStructure = options.ImpliedStructureVersion
-	assertEncode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), I(1), I(2), E(), ED())
-}
-
-func TestCBEDecodeImpliedVersion(t *testing.T) {
-	opts := options.DefaultCBEDecoderOptions()
-	opts.ImpliedStructure = options.ImpliedStructureVersion
-	assertDecode(t, opts, []byte{typeList, 1, 2, typeEndContainer}, BD(), V(1), L(), I(1), I(2), E(), ED())
-}
-
-func TestCBEEncodeImpliedList(t *testing.T) {
-	opts := options.DefaultCBEEncoderOptions()
-	opts.ImpliedStructure = options.ImpliedStructureList
-	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), L(), I(1), I(2), E(), ED())
-}
-
-func TestCBEDecodeImpliedList(t *testing.T) {
-	opts := options.DefaultCBEDecoderOptions()
-	opts.ImpliedStructure = options.ImpliedStructureList
-	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), L(), I(1), I(2), E(), ED())
-}
-
-func TestCBEEncodeImpliedMap(t *testing.T) {
-	opts := options.DefaultCBEEncoderOptions()
-	opts.ImpliedStructure = options.ImpliedStructureMap
-	assertEncode(t, opts, []byte{1, 2}, BD(), V(1), M(), I(1), I(2), E(), ED())
-}
-
-func TestCBEDecodeImpliedMap(t *testing.T) {
-	opts := options.DefaultCBEDecoderOptions()
-	opts.ImpliedStructure = options.ImpliedStructureMap
-	assertDecode(t, opts, []byte{1, 2}, BD(), V(1), M(), I(1), I(2), E(), ED())
 }
 
 func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {

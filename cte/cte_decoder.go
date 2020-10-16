@@ -75,7 +75,12 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
-				err = r.(error)
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
 			}
 		}
 	}()
@@ -93,29 +98,11 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	_this.buffer.SkipWhitespace()
 	_this.buffer.EndToken()
 
-	switch _this.opts.ImpliedStructure {
-	case options.ImpliedStructureVersion:
-		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
-	case options.ImpliedStructureList:
-		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
-		_this.eventReceiver.OnList()
-		_this.stackContainer(cteDecoderStateAwaitListItem)
-	case options.ImpliedStructureMap:
-		_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
-		_this.eventReceiver.OnMap()
-		_this.stackContainer(cteDecoderStateAwaitMapKey)
-	default:
-		_this.handleVersion()
-	}
+	_this.handleVersion()
 
 	for !_this.buffer.IsEndOfDocument() {
 		_this.handleNextState()
 		_this.buffer.RefillIfNecessary()
-	}
-
-	switch _this.opts.ImpliedStructure {
-	case options.ImpliedStructureList, options.ImpliedStructureMap:
-		_this.eventReceiver.OnEnd()
 	}
 
 	_this.eventReceiver.OnEndDocument()
@@ -220,10 +207,10 @@ func (_this *Decoder) handleVersion() {
 		_this.buffer.Errorf("Version too big")
 	}
 
-	if !hasProperty(_this.buffer.PeekByteNoEOD(), ctePropertyWhitespace) {
+	b := _this.buffer.PeekByteAllowEOD()
+	if !b.HasProperty(ctePropertyWhitespace) && b != cteByteEndOfDocument {
 		_this.buffer.UnexpectedChar("whitespace after version")
 	}
-	_this.buffer.AdvanceByte()
 
 	_this.eventReceiver.OnVersion(version)
 	_this.buffer.EndToken()
@@ -233,41 +220,27 @@ func (_this *Decoder) handleStringish() {
 	_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyUnquotedMid)
 
 	// Unquoted string
-	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) || _this.isOnCommentInitiator() {
 		bytes := _this.buffer.GetToken()
 		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 		_this.endObject()
 		return
 	}
 
-	// Bytes, Custom, URI
-	if _this.buffer.GetTokenLength() == 1 && _this.buffer.PeekByteNoEOD() == '"' {
-		// TODO: array chunking on big data instead of building a big slice
+	_this.buffer.UnexpectedChar("unquoted string")
+}
+
+func (_this *Decoder) isOnCommentInitiator() bool {
+	if _this.buffer.PeekByteAllowEOD() == '/' {
 		_this.buffer.AdvanceByte()
-		initiator := _this.buffer.GetTokenFirstByte()
-		switch initiator {
-		case 'b':
-			bytes := _this.buffer.DecodeHexBytes()
-			_this.eventReceiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
-			_this.endObject()
-			return
-		case 't':
-			bytes := _this.buffer.DecodeCustomText()
-			_this.eventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
-			_this.endObject()
-			return
-		case 'u':
-			bytes := _this.buffer.DecodeURI()
-			_this.eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
-			_this.endObject()
-			return
-		default:
-			_this.buffer.UngetByte()
-			_this.buffer.UnexpectedChar("byte array initiator")
+		b := _this.buffer.PeekByteAllowEOD()
+		_this.buffer.UngetByte()
+		switch b {
+		case '/', '*':
+			return true
 		}
 	}
-
-	_this.buffer.UnexpectedChar("unquoted string")
+	return false
 }
 
 func (_this *Decoder) handleQuotedString() {
@@ -281,7 +254,7 @@ func (_this *Decoder) handlePositiveNumeric() {
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
 
 	// Integer
-	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) || _this.isOnCommentInitiator() {
 		if bigCoefficient != nil {
 			_this.eventReceiver.OnBigInt(bigCoefficient)
 		} else {
@@ -341,7 +314,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
 
 	// Integer
-	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) || _this.isOnCommentInitiator() {
 		if bigCoefficient != nil {
 			// TODO: More efficient way to negate?
 			bigCoefficient = bigCoefficient.Mul(bigCoefficient, common.BigIntN1)
@@ -655,8 +628,8 @@ func (_this *Decoder) handleNamedValue() {
 	common.ASCIIBytesToLower(subtoken)
 	token := string(subtoken)
 	switch token {
-	case "nil":
-		_this.eventReceiver.OnNil()
+	case "null":
+		_this.eventReceiver.OnNull()
 		_this.endObject()
 		return
 	case "nan":
@@ -704,6 +677,37 @@ func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType str
 	default:
 		_this.buffer.Errorf("Expected %v digits", digitType)
 	}
+}
+
+func (_this *Decoder) decodeCustomBinary() {
+	digitType := "hex"
+	var data []uint8
+	for {
+		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		v, count := _this.buffer.DecodeSmallHexUint()
+		if count == 0 {
+			break
+		}
+		if v > maxUint8Value {
+			_this.buffer.Errorf("%v value too big for array type", digitType)
+		}
+		data = append(data, uint8(v))
+	}
+	_this.finishTypedArray(events.ArrayTypeCustomBinary, digitType, 1, data)
+}
+
+func (_this *Decoder) decodeCustomText() {
+	digitType := "custom"
+	_this.buffer.SkipWhitespace()
+	bytes := _this.buffer.DecodeStringArray()
+	_this.finishTypedArray(events.ArrayTypeCustomText, digitType, 1, bytes)
+}
+
+func (_this *Decoder) decodeURI() {
+	digitType := "uri"
+	_this.buffer.SkipWhitespace()
+	bytes := _this.buffer.DecodeStringArray()
+	_this.finishTypedArray(events.ArrayTypeURI, digitType, 1, bytes)
 }
 
 func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v uint64, digitCount int)) {
@@ -883,8 +887,7 @@ func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v f
 	_this.finishTypedArray(events.ArrayTypeFloat64, digitType, 8, data)
 }
 
-func (_this *Decoder) handleTypedArrayBegin() {
-	_this.buffer.AdvanceByte()
+func (_this *Decoder) readArraySubtoken() string {
 	_this.buffer.BeginSubtoken()
 	_this.buffer.ReadUntilPropertyNoEOD(ctePropertyWhitespace | ctePropertyArrayEnd)
 	subtoken := _this.buffer.GetSubtoken()
@@ -893,8 +896,19 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.buffer.UngetByte()
 	}
 	common.ASCIIBytesToLower(subtoken)
-	token := string(subtoken)
+	return string(subtoken)
+}
+
+func (_this *Decoder) handleTypedArrayBegin() {
+	_this.buffer.AdvanceByte()
+	token := _this.readArraySubtoken()
 	switch token {
+	case "cb":
+		_this.decodeCustomBinary()
+	case "ct":
+		_this.decodeCustomText()
+	case "u":
+		_this.decodeURI()
 	case "u8":
 		_this.decodeArrayU8("integer", _this.buffer.DecodeSmallUint)
 	case "u8b":
@@ -972,7 +986,6 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	case "f64x":
 		_this.decodeArrayF64("hex float", _this.buffer.DecodeSmallHexFloat)
 	default:
-		panic(fmt.Errorf("TODO: Typed array decoder support for %s", token))
 		_this.buffer.Errorf("%s: Unhandled array type", token)
 	}
 }
@@ -980,15 +993,13 @@ func (_this *Decoder) handleTypedArrayBegin() {
 func (_this *Decoder) handleReference() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnReference()
-	if _this.buffer.PeekByteNoEOD() == 'u' {
+	if _this.buffer.PeekByteNoEOD() == '|' {
 		_this.buffer.AdvanceByte()
-		if _this.buffer.PeekByteNoEOD() != '"' {
-			_this.buffer.UnexpectedChar("reference (uri)")
+		token := _this.readArraySubtoken()
+		if token != "u" {
+			_this.buffer.Errorf("%s: Invalid array type for reference ID", token)
 		}
-		_this.buffer.AdvanceByte()
-		bytes := _this.buffer.DecodeQuotedString()
-		_this.eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
-		_this.endObject()
+		_this.decodeURI()
 		return
 	}
 

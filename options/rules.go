@@ -93,3 +93,7 @@ func (_this *RuleOptions) WithDefaultsApplied() *RuleOptions {
 
 	return _this
 }
+
+func (_this *RuleOptions) Validate() error {
+	return nil
+}

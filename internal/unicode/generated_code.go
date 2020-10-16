@@ -24,7 +24,7 @@
 
 package unicode
 
-type CharProperty uint8
+type CharProperty uint16
 
 const (
 	NumeralOrLookalike CharProperty = 1 << iota
@@ -32,7 +32,8 @@ const (
 	Whitespace
 	Control
 	TabReturnNewline
-	QuotedOrCustomTextDelimiter
+	QuotedTextDelimiter
+	ArrayDelimiter
 	MarkupDelimiter
 	MarkerIDSafe
 	NoProperties CharProperty = 0
@@ -73,7 +74,7 @@ var charProperties = map[rune]CharProperty{
 	/*     */ 0x1f: Control,
 	/* [ ] */ 0x20: Whitespace,
 	/* [!] */ 0x21: LowSymbolOrLookalike,
-	/* ["] */ 0x22: LowSymbolOrLookalike | QuotedOrCustomTextDelimiter,
+	/* ["] */ 0x22: LowSymbolOrLookalike | QuotedTextDelimiter,
 	/* [#] */ 0x23: LowSymbolOrLookalike,
 	/* [$] */ 0x24: LowSymbolOrLookalike,
 	/* [%] */ 0x25: LowSymbolOrLookalike,
@@ -130,7 +131,7 @@ var charProperties = map[rune]CharProperty{
 	/* [Y] */ 0x59: MarkerIDSafe,
 	/* [Z] */ 0x5a: MarkerIDSafe,
 	/* [[] */ 0x5b: LowSymbolOrLookalike,
-	/* [\] */ 0x5c: LowSymbolOrLookalike | QuotedOrCustomTextDelimiter | MarkupDelimiter,
+	/* [\] */ 0x5c: LowSymbolOrLookalike | QuotedTextDelimiter | ArrayDelimiter | MarkupDelimiter,
 	/* []] */ 0x5d: LowSymbolOrLookalike,
 	/* [^] */ 0x5e: LowSymbolOrLookalike,
 	/* [_] */ 0x5f: MarkerIDSafe,
@@ -162,7 +163,7 @@ var charProperties = map[rune]CharProperty{
 	/* [y] */ 0x79: MarkerIDSafe,
 	/* [z] */ 0x7a: MarkerIDSafe,
 	/* [{] */ 0x7b: LowSymbolOrLookalike,
-	/* [|] */ 0x7c: LowSymbolOrLookalike,
+	/* [|] */ 0x7c: LowSymbolOrLookalike | ArrayDelimiter,
 	/* [}] */ 0x7d: LowSymbolOrLookalike,
 	/* [~] */ 0x7e: LowSymbolOrLookalike,
 	/*     */ 0x7f: Control,
@@ -584,7 +585,7 @@ var asciiProperties = [256]CharProperty{
 	/*     */ 0x1f: Control,
 	/* [ ] */ 0x20: Whitespace,
 	/* [!] */ 0x21: LowSymbolOrLookalike,
-	/* ["] */ 0x22: LowSymbolOrLookalike | QuotedOrCustomTextDelimiter,
+	/* ["] */ 0x22: LowSymbolOrLookalike | QuotedTextDelimiter,
 	/* [#] */ 0x23: LowSymbolOrLookalike,
 	/* [$] */ 0x24: LowSymbolOrLookalike,
 	/* [%] */ 0x25: LowSymbolOrLookalike,
@@ -641,7 +642,7 @@ var asciiProperties = [256]CharProperty{
 	/* [Y] */ 0x59: MarkerIDSafe,
 	/* [Z] */ 0x5a: MarkerIDSafe,
 	/* [[] */ 0x5b: LowSymbolOrLookalike,
-	/* [\] */ 0x5c: LowSymbolOrLookalike | QuotedOrCustomTextDelimiter | MarkupDelimiter,
+	/* [\] */ 0x5c: LowSymbolOrLookalike | QuotedTextDelimiter | ArrayDelimiter | MarkupDelimiter,
 	/* []] */ 0x5d: LowSymbolOrLookalike,
 	/* [^] */ 0x5e: LowSymbolOrLookalike,
 	/* [_] */ 0x5f: MarkerIDSafe,
@@ -673,7 +674,7 @@ var asciiProperties = [256]CharProperty{
 	/* [y] */ 0x79: MarkerIDSafe,
 	/* [z] */ 0x7a: MarkerIDSafe,
 	/* [{] */ 0x7b: LowSymbolOrLookalike,
-	/* [|] */ 0x7c: LowSymbolOrLookalike,
+	/* [|] */ 0x7c: LowSymbolOrLookalike | ArrayDelimiter,
 	/* [}] */ 0x7d: LowSymbolOrLookalike,
 	/* [~] */ 0x7e: LowSymbolOrLookalike,
 	/*     */ 0x7f: Control,

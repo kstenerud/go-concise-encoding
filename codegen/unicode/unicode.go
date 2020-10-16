@@ -65,7 +65,8 @@ func GenerateCode(projectDir string, xmlPath string) {
 func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties {
 	properties := CharProperties{}
 
-	properties.Add(CharIsQuotedOrCustomTextDelimiter, '"', '\\')
+	properties.Add(CharIsQuotedTextDelimiter, '"', '\\')
+	properties.Add(CharIsArrayDelimiter, '|', '\\')
 	properties.Add(CharIsMarkupDelimiter, '<', '>', '\\', '`')
 	properties.AddRange(CharIsNumeralOrLookalike, '0', '9')
 
@@ -214,7 +215,7 @@ func fatalIfError(err error, format string, args ...interface{}) {
 func exportHeader(writer io.Writer) error {
 	_, err := fmt.Fprintln(writer, standard.Header+`package unicode
 
-type CharProperty uint8
+type CharProperty uint16
 
 const (
 	NumeralOrLookalike CharProperty = 1 << iota
@@ -222,7 +223,8 @@ const (
 	Whitespace
 	Control
 	TabReturnNewline
-	QuotedOrCustomTextDelimiter
+	QuotedTextDelimiter
+	ArrayDelimiter
 	MarkupDelimiter
 	MarkerIDSafe
 	NoProperties CharProperty = 0
@@ -305,9 +307,11 @@ const (
 	CharIsWhitespace
 	CharIsControl
 	CharIsTabReturnNewline
-	CharIsQuotedOrCustomTextDelimiter
+	CharIsQuotedTextDelimiter
+	CharIsArrayDelimiter
 	CharIsMarkupDelimiter
 	CharIsMarkerIDSafe
+	CharPropertyCount
 	NoProperties CharProperty = 0
 )
 
@@ -317,7 +321,8 @@ var charPropertyNames = []string{
 	"Whitespace",
 	"Control",
 	"TabReturnNewline",
-	"QuotedOrCustomTextDelimiter",
+	"QuotedTextDelimiter",
+	"ArrayDelimiter",
 	"MarkupDelimiter",
 	"MarkerIDSafe",
 }
@@ -329,7 +334,7 @@ func (_this CharProperty) String() string {
 
 	isFirst := true
 	builder := strings.Builder{}
-	for i := 0; i < 8; i++ {
+	for i := 0; i < int(CharPropertyCount); i++ {
 		if _this&CharProperty(1<<i) != 0 {
 			if isFirst {
 				isFirst = false

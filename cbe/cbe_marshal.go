@@ -66,9 +66,10 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
-				var ok bool
-				err, ok = r.(error)
-				if !ok {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
 					err = fmt.Errorf("%v", r)
 				}
 			}
@@ -124,9 +125,10 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
-				var ok bool
-				err, ok = r.(error)
-				if !ok {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
 					err = fmt.Errorf("%v", r)
 				}
 			}
