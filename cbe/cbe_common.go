@@ -38,61 +38,61 @@ const cbeDocumentHeader = byte(0x03)
 type cbeTypeField uint8
 
 const (
-	cbeTypeDecimal        cbeTypeField = 0x65
-	cbeTypePosInt         cbeTypeField = 0x66
-	cbeTypeNegInt         cbeTypeField = 0x67
-	cbeTypePosInt8        cbeTypeField = 0x68
-	cbeTypeNegInt8        cbeTypeField = 0x69
-	cbeTypePosInt16       cbeTypeField = 0x6a
-	cbeTypeNegInt16       cbeTypeField = 0x6b
-	cbeTypePosInt32       cbeTypeField = 0x6c
-	cbeTypeNegInt32       cbeTypeField = 0x6d
-	cbeTypePosInt64       cbeTypeField = 0x6e
-	cbeTypeNegInt64       cbeTypeField = 0x6f
-	cbeTypeFloat16        cbeTypeField = 0x70
-	cbeTypeFloat32        cbeTypeField = 0x72
-	cbeTypeFloat64        cbeTypeField = 0x73
-	cbeTypeUUID           cbeTypeField = 0x74
-	cbeTypeReserved74     cbeTypeField = 0x74
-	cbeTypeReserved75     cbeTypeField = 0x75
-	cbeTypeComment        cbeTypeField = 0x76
-	cbeTypeMetadata       cbeTypeField = 0x77
-	cbeTypeMarkup         cbeTypeField = 0x78
-	cbeTypeMap            cbeTypeField = 0x79
-	cbeTypeList           cbeTypeField = 0x7a
-	cbeTypeEndContainer   cbeTypeField = 0x7b
-	cbeTypeFalse          cbeTypeField = 0x7c
-	cbeTypeTrue           cbeTypeField = 0x7d
-	cbeTypeNil            cbeTypeField = 0x7e
-	cbeTypePadding        cbeTypeField = 0x7f
-	cbeTypeString0        cbeTypeField = 0x80
-	cbeTypeString1        cbeTypeField = 0x81
-	cbeTypeString2        cbeTypeField = 0x82
-	cbeTypeString3        cbeTypeField = 0x83
-	cbeTypeString4        cbeTypeField = 0x84
-	cbeTypeString5        cbeTypeField = 0x85
-	cbeTypeString6        cbeTypeField = 0x86
-	cbeTypeString7        cbeTypeField = 0x87
-	cbeTypeString8        cbeTypeField = 0x88
-	cbeTypeString9        cbeTypeField = 0x89
-	cbeTypeString10       cbeTypeField = 0x8a
-	cbeTypeString11       cbeTypeField = 0x8b
-	cbeTypeString12       cbeTypeField = 0x8c
-	cbeTypeString13       cbeTypeField = 0x8d
-	cbeTypeString14       cbeTypeField = 0x8e
-	cbeTypeString15       cbeTypeField = 0x8f
-	cbeTypeString         cbeTypeField = 0x90
-	cbeTypeVerbatimString cbeTypeField = 0x91
-	cbeTypeURI            cbeTypeField = 0x92
-	cbeTypeCustomBinary   cbeTypeField = 0x93
-	cbeTypeCustomText     cbeTypeField = 0x94
-	cbeTypeArray          cbeTypeField = 0x95
-	cbeTypeReserved96     cbeTypeField = 0x96
-	cbeTypeMarker         cbeTypeField = 0x97
-	cbeTypeReference      cbeTypeField = 0x98
-	cbeTypeDate           cbeTypeField = 0x99
-	cbeTypeTime           cbeTypeField = 0x9a
-	cbeTypeTimestamp      cbeTypeField = 0x9b
+	cbeTypeDecimal      cbeTypeField = 0x65
+	cbeTypePosInt       cbeTypeField = 0x66
+	cbeTypeNegInt       cbeTypeField = 0x67
+	cbeTypePosInt8      cbeTypeField = 0x68
+	cbeTypeNegInt8      cbeTypeField = 0x69
+	cbeTypePosInt16     cbeTypeField = 0x6a
+	cbeTypeNegInt16     cbeTypeField = 0x6b
+	cbeTypePosInt32     cbeTypeField = 0x6c
+	cbeTypeNegInt32     cbeTypeField = 0x6d
+	cbeTypePosInt64     cbeTypeField = 0x6e
+	cbeTypeNegInt64     cbeTypeField = 0x6f
+	cbeTypeFloat16      cbeTypeField = 0x70
+	cbeTypeFloat32      cbeTypeField = 0x72
+	cbeTypeFloat64      cbeTypeField = 0x73
+	cbeTypeUUID         cbeTypeField = 0x74
+	cbeTypeReserved74   cbeTypeField = 0x74
+	cbeTypeReserved75   cbeTypeField = 0x75
+	cbeTypeComment      cbeTypeField = 0x76
+	cbeTypeMetadata     cbeTypeField = 0x77
+	cbeTypeMarkup       cbeTypeField = 0x78
+	cbeTypeMap          cbeTypeField = 0x79
+	cbeTypeList         cbeTypeField = 0x7a
+	cbeTypeEndContainer cbeTypeField = 0x7b
+	cbeTypeFalse        cbeTypeField = 0x7c
+	cbeTypeTrue         cbeTypeField = 0x7d
+	cbeTypeNil          cbeTypeField = 0x7e
+	cbeTypePadding      cbeTypeField = 0x7f
+	cbeTypeString0      cbeTypeField = 0x80
+	cbeTypeString1      cbeTypeField = 0x81
+	cbeTypeString2      cbeTypeField = 0x82
+	cbeTypeString3      cbeTypeField = 0x83
+	cbeTypeString4      cbeTypeField = 0x84
+	cbeTypeString5      cbeTypeField = 0x85
+	cbeTypeString6      cbeTypeField = 0x86
+	cbeTypeString7      cbeTypeField = 0x87
+	cbeTypeString8      cbeTypeField = 0x88
+	cbeTypeString9      cbeTypeField = 0x89
+	cbeTypeString10     cbeTypeField = 0x8a
+	cbeTypeString11     cbeTypeField = 0x8b
+	cbeTypeString12     cbeTypeField = 0x8c
+	cbeTypeString13     cbeTypeField = 0x8d
+	cbeTypeString14     cbeTypeField = 0x8e
+	cbeTypeString15     cbeTypeField = 0x8f
+	cbeTypeString       cbeTypeField = 0x90
+	cbeTypeURI          cbeTypeField = 0x91
+	cbeTypeCustomBinary cbeTypeField = 0x92
+	cbeTypeCustomText   cbeTypeField = 0x93
+	cbeTypeArray        cbeTypeField = 0x94
+	cbeTypeReserved95   cbeTypeField = 0x95
+	cbeTypeReserved96   cbeTypeField = 0x96
+	cbeTypeMarker       cbeTypeField = 0x97
+	cbeTypeReference    cbeTypeField = 0x98
+	cbeTypeDate         cbeTypeField = 0x99
+	cbeTypeTime         cbeTypeField = 0x9a
+	cbeTypeTimestamp    cbeTypeField = 0x9b
 )
 
 const (
@@ -101,64 +101,61 @@ const (
 )
 
 var isTypedArray = []bool{
-	events.ArrayTypeBoolean:        true,
-	events.ArrayTypeUint8:          true,
-	events.ArrayTypeUint16:         true,
-	events.ArrayTypeUint32:         true,
-	events.ArrayTypeUint64:         true,
-	events.ArrayTypeInt8:           true,
-	events.ArrayTypeInt16:          true,
-	events.ArrayTypeInt32:          true,
-	events.ArrayTypeInt64:          true,
-	events.ArrayTypeFloat16:        true,
-	events.ArrayTypeFloat32:        true,
-	events.ArrayTypeFloat64:        true,
-	events.ArrayTypeUUID:           true,
-	events.ArrayTypeString:         false,
-	events.ArrayTypeVerbatimString: false,
-	events.ArrayTypeURI:            false,
-	events.ArrayTypeCustomBinary:   false,
-	events.ArrayTypeCustomText:     false,
+	events.ArrayTypeBoolean:      true,
+	events.ArrayTypeUint8:        true,
+	events.ArrayTypeUint16:       true,
+	events.ArrayTypeUint32:       true,
+	events.ArrayTypeUint64:       true,
+	events.ArrayTypeInt8:         true,
+	events.ArrayTypeInt16:        true,
+	events.ArrayTypeInt32:        true,
+	events.ArrayTypeInt64:        true,
+	events.ArrayTypeFloat16:      true,
+	events.ArrayTypeFloat32:      true,
+	events.ArrayTypeFloat64:      true,
+	events.ArrayTypeUUID:         true,
+	events.ArrayTypeString:       false,
+	events.ArrayTypeURI:          false,
+	events.ArrayTypeCustomBinary: false,
+	events.ArrayTypeCustomText:   false,
 }
 
 var arrayTypeToCBEType = []cbeTypeField{
-	events.ArrayTypeBoolean:        cbeTypeTrue,
-	events.ArrayTypeUint8:          cbeTypePosInt8,
-	events.ArrayTypeUint16:         cbeTypePosInt16,
-	events.ArrayTypeUint32:         cbeTypePosInt32,
-	events.ArrayTypeUint64:         cbeTypePosInt64,
-	events.ArrayTypeInt8:           cbeTypeNegInt8,
-	events.ArrayTypeInt16:          cbeTypeNegInt16,
-	events.ArrayTypeInt32:          cbeTypeNegInt32,
-	events.ArrayTypeInt64:          cbeTypeNegInt64,
-	events.ArrayTypeFloat16:        cbeTypeFloat16,
-	events.ArrayTypeFloat32:        cbeTypeFloat32,
-	events.ArrayTypeFloat64:        cbeTypeFloat64,
-	events.ArrayTypeUUID:           cbeTypeUUID,
-	events.ArrayTypeString:         cbeTypeString,
-	events.ArrayTypeVerbatimString: cbeTypeVerbatimString,
-	events.ArrayTypeURI:            cbeTypeURI,
-	events.ArrayTypeCustomBinary:   cbeTypeCustomBinary,
-	events.ArrayTypeCustomText:     cbeTypeCustomText,
+	events.ArrayTypeBoolean:      cbeTypeTrue,
+	events.ArrayTypeUint8:        cbeTypePosInt8,
+	events.ArrayTypeUint16:       cbeTypePosInt16,
+	events.ArrayTypeUint32:       cbeTypePosInt32,
+	events.ArrayTypeUint64:       cbeTypePosInt64,
+	events.ArrayTypeInt8:         cbeTypeNegInt8,
+	events.ArrayTypeInt16:        cbeTypeNegInt16,
+	events.ArrayTypeInt32:        cbeTypeNegInt32,
+	events.ArrayTypeInt64:        cbeTypeNegInt64,
+	events.ArrayTypeFloat16:      cbeTypeFloat16,
+	events.ArrayTypeFloat32:      cbeTypeFloat32,
+	events.ArrayTypeFloat64:      cbeTypeFloat64,
+	events.ArrayTypeUUID:         cbeTypeUUID,
+	events.ArrayTypeString:       cbeTypeString,
+	events.ArrayTypeURI:          cbeTypeURI,
+	events.ArrayTypeCustomBinary: cbeTypeCustomBinary,
+	events.ArrayTypeCustomText:   cbeTypeCustomText,
 }
 
 var cbeTypeToArrayType = [256]events.ArrayType{
-	cbeTypeTrue:           events.ArrayTypeBoolean,
-	cbeTypePosInt8:        events.ArrayTypeUint8,
-	cbeTypePosInt16:       events.ArrayTypeUint16,
-	cbeTypePosInt32:       events.ArrayTypeUint32,
-	cbeTypePosInt64:       events.ArrayTypeUint64,
-	cbeTypeNegInt8:        events.ArrayTypeInt8,
-	cbeTypeNegInt16:       events.ArrayTypeInt16,
-	cbeTypeNegInt32:       events.ArrayTypeInt32,
-	cbeTypeNegInt64:       events.ArrayTypeInt64,
-	cbeTypeFloat16:        events.ArrayTypeFloat16,
-	cbeTypeFloat32:        events.ArrayTypeFloat32,
-	cbeTypeFloat64:        events.ArrayTypeFloat64,
-	cbeTypeUUID:           events.ArrayTypeUUID,
-	cbeTypeString:         events.ArrayTypeString,
-	cbeTypeVerbatimString: events.ArrayTypeVerbatimString,
-	cbeTypeURI:            events.ArrayTypeURI,
-	cbeTypeCustomBinary:   events.ArrayTypeCustomBinary,
-	cbeTypeCustomText:     events.ArrayTypeCustomText,
+	cbeTypeTrue:         events.ArrayTypeBoolean,
+	cbeTypePosInt8:      events.ArrayTypeUint8,
+	cbeTypePosInt16:     events.ArrayTypeUint16,
+	cbeTypePosInt32:     events.ArrayTypeUint32,
+	cbeTypePosInt64:     events.ArrayTypeUint64,
+	cbeTypeNegInt8:      events.ArrayTypeInt8,
+	cbeTypeNegInt16:     events.ArrayTypeInt16,
+	cbeTypeNegInt32:     events.ArrayTypeInt32,
+	cbeTypeNegInt64:     events.ArrayTypeInt64,
+	cbeTypeFloat16:      events.ArrayTypeFloat16,
+	cbeTypeFloat32:      events.ArrayTypeFloat32,
+	cbeTypeFloat64:      events.ArrayTypeFloat64,
+	cbeTypeUUID:         events.ArrayTypeUUID,
+	cbeTypeString:       events.ArrayTypeString,
+	cbeTypeURI:          events.ArrayTypeURI,
+	cbeTypeCustomBinary: events.ArrayTypeCustomBinary,
+	cbeTypeCustomText:   events.ArrayTypeCustomText,
 }

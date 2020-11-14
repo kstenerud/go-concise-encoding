@@ -57,7 +57,7 @@ func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
 }
 func (_this *stringBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
-	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	case events.ArrayTypeString:
 		dst.SetString(string(value))
 	default:
 		_this.badEvent("BuildFromArray(%v)", arrayType)

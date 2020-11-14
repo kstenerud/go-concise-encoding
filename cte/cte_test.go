@@ -29,8 +29,6 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
-
-	"github.com/kstenerud/go-compact-time"
 )
 
 func TestCTEVersion(t *testing.T) {
@@ -302,8 +300,8 @@ func TestCTEUUID(t *testing.T) {
 }
 
 func TestCTEDate(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c1 2000-01-01", BD(), V(1), CT(compact_time.NewDate(2000, 1, 1)), ED())
-	assertDecodeEncode(t, nil, nil, "c1 -2000-12-31", BD(), V(1), CT(compact_time.NewDate(-2000, 12, 31)), ED())
+	assertDecodeEncode(t, nil, nil, "c1 2000-01-01", BD(), V(1), CT(test.NewDate(2000, 1, 1)), ED())
+	assertDecodeEncode(t, nil, nil, "c1 -2000-12-31", BD(), V(1), CT(test.NewDate(-2000, 12, 31)), ED())
 
 	assertDecodeFails(t, "c1 0-01-01")
 	assertDecodeFails(t, "c1 --2000-01-01")
@@ -325,15 +323,15 @@ func TestCTEDate(t *testing.T) {
 }
 
 func TestCTETime(t *testing.T) {
-	assertDecode(t, nil, "c1 1:45:00", BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
-	assertDecode(t, nil, "c1 01:45:00", BD(), V(1), CT(compact_time.NewTime(1, 45, 0, 0, "")), ED())
-	assertDecodeEncode(t, nil, nil, "c1 23:59:59.101", BD(), V(1), CT(compact_time.NewTime(23, 59, 59, 101000000, "")), ED())
-	assertDecodeEncode(t, nil, nil, "c1 10:00:01.93/America/Los_Angeles", BD(), V(1), CT(compact_time.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
-	assertDecodeEncode(t, nil, nil, "c1 10:00:01.93/89.92/1.10", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8992, 110)), ED())
-	assertDecode(t, nil, "c1 10:00:01.93/89.90/1.1", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8990, 110)), ED())
-	assertDecode(t, nil, "c1 10:00:01.93/89.9/1.10", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 8990, 110)), ED())
-	assertDecode(t, nil, "c1 10:00:01.93/0/0", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 0, 0)), ED())
-	assertDecode(t, nil, "c1 10:00:01.93/1/1", BD(), V(1), CT(compact_time.NewTimeLatLong(10, 0, 1, 930000000, 100, 100)), ED())
+	assertDecode(t, nil, "c1 1:45:00", BD(), V(1), CT(test.NewTime(1, 45, 0, 0, "")), ED())
+	assertDecode(t, nil, "c1 01:45:00", BD(), V(1), CT(test.NewTime(1, 45, 0, 0, "")), ED())
+	assertDecodeEncode(t, nil, nil, "c1 23:59:59.101", BD(), V(1), CT(test.NewTime(23, 59, 59, 101000000, "")), ED())
+	assertDecodeEncode(t, nil, nil, "c1 10:00:01.93/America/Los_Angeles", BD(), V(1), CT(test.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
+	assertDecodeEncode(t, nil, nil, "c1 10:00:01.93/89.92/1.10", BD(), V(1), CT(test.NewTimeLL(10, 0, 1, 930000000, 8992, 110)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/89.90/1.1", BD(), V(1), CT(test.NewTimeLL(10, 0, 1, 930000000, 8990, 110)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/89.9/1.10", BD(), V(1), CT(test.NewTimeLL(10, 0, 1, 930000000, 8990, 110)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/0/0", BD(), V(1), CT(test.NewTimeLL(10, 0, 1, 930000000, 0, 0)), ED())
+	assertDecode(t, nil, "c1 10:00:01.93/1/1", BD(), V(1), CT(test.NewTimeLL(10, 0, 1, 930000000, 100, 100)), ED())
 
 	assertDecodeFails(t, "c1 001:45:00")
 	assertDecodeFails(t, "c1 30:45:10")
@@ -370,10 +368,10 @@ func TestCTETime(t *testing.T) {
 }
 
 func TestCTETimestamp(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c1 2000-01-01/19:31:44.901554/Z", BD(), V(1), CT(compact_time.NewTimestamp(2000, 1, 1, 19, 31, 44, 901554000, "Z")), ED())
-	assertDecodeEncode(t, nil, nil, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
-	assertDecode(t, nil, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(compact_time.NewTimestamp(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
-	assertDecodeEncode(t, nil, nil, "c1 2020-01-15/10:00:01.93/89.92/1.10", BD(), V(1), CT(compact_time.NewTimestampLatLong(2020, 1, 15, 10, 0, 1, 930000000, 8992, 110)), ED())
+	assertDecode(t, nil, "c1 2000-01-01/19:31:44.901554/Z", BD(), V(1), CT(test.NewTS(2000, 1, 1, 19, 31, 44, 901554000, "Z")), ED())
+	assertDecodeEncode(t, nil, nil, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(test.NewTS(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
+	assertDecode(t, nil, "c1 2020-01-15/13:41:00.000599", BD(), V(1), CT(test.NewTS(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
+	assertDecodeEncode(t, nil, nil, "c1 2020-01-15/10:00:01.93/89.92/1.10", BD(), V(1), CT(test.NewTSLL(2020, 1, 15, 10, 0, 1, 930000000, 8992, 110)), ED())
 
 	assertDecodeFails(t, "c1 0-01-01/19:31:44.901554")
 	assertDecodeFails(t, "c1 1a-01-01/19:31:44.901554")
@@ -484,17 +482,16 @@ func TestCTEInvalidString(t *testing.T) {
 }
 
 func TestCTEVerbatimString(t *testing.T) {
-	assertDecodeFails(t, "c1 `")
-	assertDecodeFails(t, "c1 `A")
-	assertDecodeFails(t, "c1 `A ")
-	assertDecodeFails(t, "c1 `A xyz")
-	assertDecodeFails(t, "c1 `A xyzAx")
-	assertDecode(t, nil, "c1 `A \n\n\n\n\n\n\n\n\n\nA", BD(), V(1), VS("\n\n\n\n\n\n\n\n\n\n"), ED())
-	assertDecode(t, nil, "c1 `A aA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, nil, "c1 `A\taA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, nil, "c1 `A\naA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, nil, "c1 `A\r\naA", BD(), V(1), VS("a"), ED())
-	assertDecode(t, nil, "c1 `#ENDOFSTRING a test\nwith `stuff`#ENDOFSTRING ", BD(), V(1), VS("a test\nwith `stuff`"), ED())
+	assertDecodeFails(t, `c1 "\."`)
+	assertDecodeFails(t, `c1 "\.A"`)
+	assertDecodeFails(t, `c1 "\.A "`)
+	assertDecodeFails(t, `c1 "\.A xyz"`)
+	assertDecode(t, nil, `c1 "\.A \n\n\n\n\n\n\n\n\n\nA"`, BD(), V(1), S(`\n\n\n\n\n\n\n\n\n\n`), ED())
+	assertDecode(t, nil, `c1 "\.A aA"`, BD(), V(1), S("a"), ED())
+	assertDecode(t, nil, "c1 \"\\.A\taA\"", BD(), V(1), S("a"), ED())
+	assertDecode(t, nil, "c1 \"\\.A\naA\"", BD(), V(1), S("a"), ED())
+	assertDecode(t, nil, "c1 \"\\.A\r\naA\"", BD(), V(1), S("a"), ED())
+	assertDecode(t, nil, `c1 "\.#ENDOFSTRING a test\nwith \.stuff#ENDOFSTRING"`, BD(), V(1), S(`a test\nwith \.stuff`), ED())
 }
 
 func TestCTEURI(t *testing.T) {
@@ -893,7 +890,7 @@ func TestCTEChunked(t *testing.T) {
 	}
 
 	assertChunkedStringlike("c1 abcdefgh", SB())
-	assertChunkedStringlike("c1 `# abcdefgh#", VB())
+	//TODO: assertChunkedStringlike("c1 `# abcdefgh#", VB())
 	assertChunkedStringlike("c1 |u abcdefgh|", UB())
 	assertChunkedStringlike("c1 |ct abcdefgh|", CTB())
 	assertChunkedByteslike("c1 |cb 12 34 56 78 9a|", CBB())
@@ -965,59 +962,59 @@ func TestCTEMetadata(t *testing.T) {
 func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1 <a>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 <a 1=2 3=4>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), PI(3), PI(4), E(), E(), ED())
-	assertDecode(t, nil, `c1 <a;>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;a>`, BD(), V(1), MUP(), S("a"), E(), S("a"), E(), ED())
-	assertDecode(t, nil, `c1 <a;a string >`, BD(), V(1), MUP(), S("a"), E(), S("a string"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;a<a>>`, BD(), V(1), MUP(), S("a"), E(), S("a"), MUP(), S("a"), E(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
-	assertDecode(t, nil, `c1 <a 1=2 ;>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a 1=2;a>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a 1=2;<a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), MUP(), S("a"), E(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a 1=2;a <a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a "), MUP(), S("a"), E(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;***>`, BD(), V(1), MUP(), S("a"), E(), S("***"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;/x>`, BD(), V(1), MUP(), S("a"), E(), S("/x"), E(), ED())
+	assertDecode(t, nil, `c1 <a,>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,a>`, BD(), V(1), MUP(), S("a"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, `c1 <a,a string >`, BD(), V(1), MUP(), S("a"), E(), S("a string"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,a<a>>`, BD(), V(1), MUP(), S("a"), E(), S("a"), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecode(t, nil, `c1 <a 1=2 ,>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a 1=2,a>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a 1=2,<a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a 1=2,a <a>>`, BD(), V(1), MUP(), S("a"), PI(1), PI(2), E(), S("a "), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,***>`, BD(), V(1), MUP(), S("a"), E(), S("***"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,/x>`, BD(), V(1), MUP(), S("a"), E(), S("/x"), E(), ED())
 
-	assertDecodeEncode(t, nil, nil, `c1 <a;\\>`, BD(), V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;\210>`, BD(), V(1), MUP(), S("a"), E(), S("\u0010"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,\\>`, BD(), V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,\210>`, BD(), V(1), MUP(), S("a"), E(), S("\u0010"), E(), ED())
 
-	assertDecodeEncode(t, nil, nil, `c1 <a;\\>`, BD(), V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;\<>`, BD(), V(1), MUP(), S("a"), E(), S("<"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 <a;\>>`, BD(), V(1), MUP(), S("a"), E(), S(">"), E(), ED())
-	assertDecodeEncode(t, nil, nil, "c1 <a;\\`>", BD(), V(1), MUP(), S("a"), E(), S("`"), E(), ED())
-	assertDecode(t, nil, `c1 <a;\r>`, BD(), V(1), MUP(), S("a"), E(), S("\r"), E(), ED())
-	assertDecode(t, nil, `c1 <a;\n>`, BD(), V(1), MUP(), S("a"), E(), S("\n"), E(), ED())
-	assertDecode(t, nil, `c1 <a;\t>`, BD(), V(1), MUP(), S("a"), E(), S("\t"), E(), ED())
-	assertDecode(t, nil, `c1 <a;\*>`, BD(), V(1), MUP(), S("a"), E(), S("*"), E(), ED())
-	assertDecode(t, nil, `c1 <a;\/>`, BD(), V(1), MUP(), S("a"), E(), S("/"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,\\>`, BD(), V(1), MUP(), S("a"), E(), S("\\"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,\<>`, BD(), V(1), MUP(), S("a"), E(), S("<"), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,\>>`, BD(), V(1), MUP(), S("a"), E(), S(">"), E(), ED())
+	assertDecode(t, nil, `c1 <a,\r>`, BD(), V(1), MUP(), S("a"), E(), S("\r"), E(), ED())
+	assertDecode(t, nil, `c1 <a,\n>`, BD(), V(1), MUP(), S("a"), E(), S("\n"), E(), ED())
+	assertDecode(t, nil, `c1 <a,\t>`, BD(), V(1), MUP(), S("a"), E(), S("\t"), E(), ED())
+	assertDecode(t, nil, `c1 <a,\*>`, BD(), V(1), MUP(), S("a"), E(), S("*"), E(), ED())
+	assertDecode(t, nil, `c1 <a,\/>`, BD(), V(1), MUP(), S("a"), E(), S("/"), E(), ED())
 
-	assertDecodeFails(t, `c1 <a;\y>`)
+	assertDecodeFails(t, `c1 <a,\y>`)
 }
 
-func TestCTEMarkupVerbatimString(t *testing.T) {
-	assertDecode(t, nil, "c1 <s; `## <d></d>##>")
-	assertDecode(t, nil, "c1 <s; `## /d##>")
-}
+// TODO: Verbatim
+// func TestCTEMarkupVerbatimString(t *testing.T) {
+// 	assertDecode(t, nil, "c1 <s, `## <d></d>##>")
+// 	assertDecode(t, nil, "c1 <s, `## /d##>")
+// }
 
 func TestCTEMarkupMarkup(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c1 <a;<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 <a,<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())
 }
 
 func TestCTEMarkupComment(t *testing.T) {
-	assertDecode(t, nil, "c1 <a;//blah\n>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, nil, "c1 <a;//blah\n a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
-	assertDecode(t, nil, "c1 <a;a//blah\n a>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a,//blah\n>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a,//blah\n a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a,a//blah\n a>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), S("a"), E(), ED())
 
-	assertDecode(t, nil, "c1 <a;/*blah*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, nil, "c1 <a;a/*blah*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, nil, "c1 <a;/*blah*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a,/*blah*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a,a/*blah*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), S("blah"), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a,/*blah*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
 
-	assertDecode(t, nil, "c1 <a;/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
-	assertDecode(t, nil, "c1 <a;a/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
-	assertDecode(t, nil, "c1 <a;/*/*blah*/*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c1 <a,/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a,a/*/*blah*/*/>", BD(), V(1), MUP(), S("a"), E(), S("a"), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
+	assertDecode(t, nil, "c1 <a,/*/*blah*/*/a>", BD(), V(1), MUP(), S("a"), E(), CMT(), CMT(), S("blah"), E(), E(), S("a"), E(), ED())
 
 	// TODO: Should it be picking up the extra space between the x and comment?
-	assertDecode(t, nil, "c1 <a;x /*blah*/ x>", BD(), V(1), MUP(), S("a"), E(), S("x "), CMT(), S("blah"), E(), S("x"), E(), ED())
+	assertDecode(t, nil, "c1 <a,x /*blah*/ x>", BD(), V(1), MUP(), S("a"), E(), S("x "), CMT(), S("blah"), E(), S("x"), E(), ED())
 }
 
 func TestCTEMapMetadata(t *testing.T) {
@@ -1112,7 +1109,7 @@ func TestCTECommentAfterValue(t *testing.T) {
 func TestCTEComplexComment(t *testing.T) {
 	document := []byte(`c1
 /**/ ( /**/ a= /**/ b /**/ ) /**/
-<a;
+<a,
     /**/
     <b>
 >`)
@@ -1125,7 +1122,7 @@ func TestCTEComplexComment(t *testing.T) {
     b
     /**/
 ) /**/
-<a;
+<a,
     /**/
     <b>
 >`
@@ -1226,24 +1223,24 @@ func TestCTEMarkupPretty(t *testing.T) {
 <a x=1>`, BD(), V(1), MUP(), S("a"), S("x"), PI(1), E(), E(), ED())
 
 	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 <a;aaa>", BD(), V(1), MUP(), S("a"), E(), S("aaa"), E(), ED())
+	assertDecodeEncode(t, nil, opts, "c1 <a,aaa>", BD(), V(1), MUP(), S("a"), E(), S("aaa"), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-<a;
+<a,
     aaa
 >`, BD(), V(1), MUP(), S("a"), E(), S("aaa"), E(), ED())
 
 	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 <a x=y;aaa>", BD(), V(1), MUP(), S("a"), S("x"), S("y"), E(), S("aaa"), E(), ED())
+	assertDecodeEncode(t, nil, opts, "c1 <a x=y,aaa>", BD(), V(1), MUP(), S("a"), S("x"), S("y"), E(), S("aaa"), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-<a x=y;
+<a x=y,
     aaa
 >`, BD(), V(1), MUP(), S("a"), S("x"), S("y"), E(), S("aaa"), E(), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-<a x=y z=1;
+<a x=y z=1,
     aaa
 >`, BD(), V(1), MUP(), S("a"), S("x"), S("y"), S("z"), PI(1), E(), S("aaa"), E(), ED())
 }
@@ -1444,22 +1441,17 @@ func TestCTEArrayPretty(t *testing.T) {
 ]`, BD(), V(1), L(), AU8([]uint8{0x22, 0x33}), AU8([]uint8{0x66, 0x77}), E(), ED())
 }
 
-func TestCTEVerbatimPretty(t *testing.T) {
-	opts := options.DefaultCTEEncoderOptions()
-
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c1
-{
-    verbatim = `+"`"+`# A string#
-}`, BD(), V(1), M(), S("verbatim"), VS("A string"), E(), ED())
+func TestCTEMarkupVerbatimPretty(t *testing.T) {
+	assertDecode(t, nil, `c1 <blah, \.# aaa #>`,
+		BD(), V(1), MUP(), S("blah"), E(), S("aaa "), E(), ED())
 }
 
 func TestCTEBufferEdge(t *testing.T) {
 	assertDecode(t, nil, `c1
 {
-     1  = <a;
-            <b;
-               <c; `+"`"+`##                       ##>
+     1  = <a,
+            <b,
+               <c, `+"`"+`##                       ##>
                          >
                        >
 }
@@ -1469,9 +1461,9 @@ func TestCTEBufferEdge(t *testing.T) {
 func TestCTEBufferEdge2(t *testing.T) {
 	assertDecode(t, nil, `c1
 {
-    x  = <a;
-                     <b;
-                             <c; `+"`"+`##                     ##>
+    x  = <a,
+                     <b,
+                             <c, `+"`"+`##                     ##>
                            >
                        >
 }
@@ -1505,13 +1497,13 @@ func TestCTEComplexExample(t *testing.T) {
     url              = |u https://example.com/|
     email            = |u mailto:me@somewhere.com|
     1.5              = "Keys don't have to be strings"
-    long-string      = `+"`"+`ZZZ
+    long-string      = "\.ZZZ
 A backtick induces verbatim processing, which in this case will continue
 until three Z characters are encountered, similar to how here documents in
 bash work.
 You can put anything in here, including double-quote ("), or even more
 backticks (`+"`"+`). Verbatim processing stops at the end sequence, which in this
-case is three Z characters, specified earlier as a sentinel.ZZZ
+case is three Z characters, specified earlier as a sentinel.ZZZ"
     marked_object    = &tag1:{
                                 description = "This map will be referenced later using $tag1"
                                 value = -@inf
@@ -1522,16 +1514,16 @@ case is three Z characters, specified earlier as a sentinel.ZZZ
     ref2             = $tag1
     outside_ref      = $|u https://somewhere.else.com/path/to/document.cte#some_tag|
     // The markup type is good for presentation data
-    html_compatible  = <html xmlns=|u http://www.w3.org/1999/xhtml| xml:lang=en ;
-                         <body;
+    html_compatible  = <html xmlns=|u http://www.w3.org/1999/xhtml| "xml:lang"=en ,
+                         <body,
                            Please choose from the following widgets:
-                           <div id=parent style=normal ref-id=1 ;
+                           <div id=parent style=normal ref-id=1 ,
                              /* Here we use a backtick to induce verbatim processing.
                               * In this case, "##" is chosen as the ending sequence
                               */
-                             <script; `+"`"+`##
+                             <script, \.##
                                document.getElementById('parent').insertAdjacentHTML('beforeend',
-                                  '<div id="idChild"> content </div>');
+                                  '<div id="idChild"> content </div>'),
                              ##>
                            >
                          >
@@ -1573,13 +1565,6 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     url = |u https://example.com/|
     email = |u mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
-    long-string = ` + "`" + `#
-A backtick induces verbatim processing, which in this case will continue
-until a hash character is encountered, similar to how here documents in
-bash work.
-You can put anything in here, including double-quote ("), or even more
-backticks (` + "`" + `). Verbatim processing stops at the end sequence, which in this
-case is three Z characters, specified earlier as a sentinel.#
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
         value = -@inf
@@ -1590,16 +1575,12 @@ case is three Z characters, specified earlier as a sentinel.#
     ref2 = $tag1
     outside_ref = $|u https://somewhere.else.com/path/to/document.cte#some_tag|
     // The markup type is good for presentation data
-    html_compatible = <html xmlns=|u http://www.w3.org/1999/xhtml| xml:lang=en;
-        <body;
+    html_compatible = <html xmlns=|u http://www.w3.org/1999/xhtml| "xml:lang"=en,
+        <body,
             Please choose from the following widgets:
-            <div id=parent style=normal ref-id=1;
+            <div id=parent style=normal ref-id=1,
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
-                <script;
-                    ` + "`" + `#                     document.getElementById('parent').insertAdjacentHTML('beforeend',
-                        '<div id="idChild"> content </div>');
-                #>
             >
         >
     >
@@ -1630,19 +1611,13 @@ case is three Z characters, specified earlier as a sentinel.#
     "decimal float" = -14.125
     uuid = @f1ce4567-e89b-12d3-a456-426655440000
     date = 2019-07-01
-    time = 18:04:00.940231541/E/Prague
-    timestamp = 2010-07-15/13:28:15.415942344/Z
+    time = 18:04:00.940231541/Europe/Prague
+    timestamp = 2010-07-15/13:28:15.415942344
     null = @null
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url = |u https://example.com/|
     email = |u mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
-    long-string = ` + "`" + `# A backtick induces verbatim processing, which in this case will continue
-until a hash character is encountered, similar to how here documents in
-bash work.
-You can put anything in here, including double-quote ("), or even more
-backticks (` + "`" + `). Verbatim processing stops at the end sequence, which in this
-case is three Z characters, specified earlier as a sentinel.#
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
         value = -@inf
@@ -1653,16 +1628,11 @@ case is three Z characters, specified earlier as a sentinel.#
     ref2 = $tag1
     outside_ref = $|u https://somewhere.else.com/path/to/document.cte#some_tag|
     /* The markup type is good for presentation data */
-    html_compatible = <html xmlns=|u http://www.w3.org/1999/xhtml| xml:lang=en;
-        <body;
-            Please choose from the following widgets: <div id=parent style=normal ref-id=1;
+    html_compatible = <html xmlns=|u http://www.w3.org/1999/xhtml| "xml:lang"=en,
+        <body,
+            Please choose from the following widgets: <div id=parent style=normal ref-id=1,
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
-                <script;
-                    ` + "`" + `#                     document.getElementById('parent').insertAdjacentHTML('beforeend',
-                        '<div id="idChild"> content </div>');
-                #
-                >
             >
         >
     >

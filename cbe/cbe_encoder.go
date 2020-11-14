@@ -226,7 +226,7 @@ func (_this *Encoder) OnBigFloat(value *big.Float) {
 
 	v, _, err := apd.NewFromString(conversions.BigFloatToString(value))
 	if err != nil {
-		panic(fmt.Errorf("could not convert %v to apd.Decimal", value))
+		_this.errorf("could not convert %v to apd.Decimal", value)
 	}
 	_this.OnBigDecimalFloat(v)
 }
@@ -258,12 +258,16 @@ func (_this *Encoder) OnUUID(value []byte) {
 }
 
 func (_this *Encoder) OnTime(value time.Time) {
-	_this.OnCompactTime(compact_time.AsCompactTime(value))
+	t, err := compact_time.AsCompactTime(value)
+	if err != nil {
+		_this.unexpectedError(err, value)
+	}
+	_this.OnCompactTime(t)
 }
 
 func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	var timeType cbeTypeField
-	switch value.TimeIs {
+	switch value.TimeType {
 	case compact_time.TypeDate:
 		timeType = cbeTypeDate
 	case compact_time.TypeTime:
@@ -582,4 +586,12 @@ func (_this *Encoder) encodeArrayChunkHeader(elementCount uint64, moreChunksFoll
 func (_this *Encoder) encodeArrayData(data []byte) {
 	dst := _this.buff.Allocate(len(data))
 	copy(dst, data)
+}
+
+func (_this *Encoder) unexpectedError(err error, encoding interface{}) {
+	_this.errorf("unexpected error [%v] while encoding %v", err, encoding)
+}
+
+func (_this *Encoder) errorf(format string, args ...interface{}) {
+	panic(fmt.Errorf(format, args...))
 }

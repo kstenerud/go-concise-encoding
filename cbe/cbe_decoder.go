@@ -168,8 +168,6 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(length), _this.decodeSmallString(length))
 		case cbeTypeString:
 			_this.decodeArray(events.ArrayTypeString)
-		case cbeTypeVerbatimString:
-			_this.decodeArray(events.ArrayTypeVerbatimString)
 		case cbeTypeURI:
 			_this.decodeArray(events.ArrayTypeURI)
 		case cbeTypeCustomBinary:

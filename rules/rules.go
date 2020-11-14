@@ -29,9 +29,10 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/internal/unicode"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -281,7 +282,7 @@ func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	// TODO: Valid map keys: make this nicer
 	switch arrayType {
-	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	case events.ArrayTypeString:
 		// TODO: Isn't this done in onArrayData?
 		_this.validateString(value)
 	case events.ArrayTypeURI, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
@@ -302,7 +303,7 @@ func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, val
 
 func (_this *Rules) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
-	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	case events.ArrayTypeString:
 	// OK
 	case events.ArrayTypeURI, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
 	// OK
@@ -450,7 +451,7 @@ func (_this *Rules) onArrayData(data []byte) {
 	}
 
 	switch _this.arrayType {
-	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	case events.ArrayTypeString:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxStringLength {
 			panic(fmt.Errorf("max string length (%v) exceeded", _this.opts.MaxStringLength))
 		}
@@ -552,10 +553,16 @@ func (_this *Rules) validateCommentContents(data []byte) {
 }
 
 func (_this *Rules) validateIDContents(data []byte) {
+	firstCharacter := true
 	for _, ch := range data {
 		_this.charValidator.AddByte(ch)
 		if _this.charValidator.IsCompleteCharacter() {
-			validateRulesIDCharacter(_this.charValidator.GetCharacter())
+			if firstCharacter {
+				validateRulesIDFirstCharacter(_this.charValidator.GetCharacter())
+				firstCharacter = false
+			} else {
+				validateRulesIDCharacter(_this.charValidator.GetCharacter())
+			}
 		}
 	}
 }
@@ -604,7 +611,7 @@ func (_this *Rules) onArrayChunkEnded() {
 	_this.unstackState()
 
 	switch _this.arrayType {
-	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	case events.ArrayTypeString:
 		if _this.isAwaitingMarkupName() {
 
 			if _this.arrayBytesWritten == 0 {
@@ -731,7 +738,6 @@ const (
 	eventIDEndContainer
 	eventIDArray
 	eventIDString
-	eventIDVerbatimString
 	eventIDURI
 	eventIDAChunk
 	eventIDAData
@@ -739,33 +745,32 @@ const (
 )
 
 var ruleEventNames = [...]string{
-	eventIDNothing:        "nothing",
-	eventIDBeginDocument:  "begin document",
-	eventIDVersion:        "version",
-	eventIDPadding:        "padding",
-	eventIDNil:            "nil",
-	eventIDBool:           "bool",
-	eventIDPInt:           "positive int",
-	eventIDNInt:           "negative int",
-	eventIDFloat:          "float",
-	eventIDNan:            "nan",
-	eventIDUUID:           "UUID",
-	eventIDTime:           "time",
-	eventIDList:           "list",
-	eventIDMap:            "map",
-	eventIDMarkup:         "markup",
-	eventIDMetadata:       "metadata",
-	eventIDComment:        "comment",
-	eventIDMarker:         "marker",
-	eventIDReference:      "reference",
-	eventIDEndContainer:   "end container",
-	eventIDArray:          "array",
-	eventIDString:         "string",
-	eventIDVerbatimString: "verbatim string",
-	eventIDURI:            "URI",
-	eventIDAChunk:         "array chunk",
-	eventIDAData:          "array data",
-	eventIDEndDocument:    "end document",
+	eventIDNothing:       "nothing",
+	eventIDBeginDocument: "begin document",
+	eventIDVersion:       "version",
+	eventIDPadding:       "padding",
+	eventIDNil:           "nil",
+	eventIDBool:          "bool",
+	eventIDPInt:          "positive int",
+	eventIDNInt:          "negative int",
+	eventIDFloat:         "float",
+	eventIDNan:           "nan",
+	eventIDUUID:          "UUID",
+	eventIDTime:          "time",
+	eventIDList:          "list",
+	eventIDMap:           "map",
+	eventIDMarkup:        "markup",
+	eventIDMetadata:      "metadata",
+	eventIDComment:       "comment",
+	eventIDMarker:        "marker",
+	eventIDReference:     "reference",
+	eventIDEndContainer:  "end container",
+	eventIDArray:         "array",
+	eventIDString:        "string",
+	eventIDURI:           "URI",
+	eventIDAChunk:        "array chunk",
+	eventIDAData:         "array data",
+	eventIDEndDocument:   "end document",
 }
 
 func (_this ruleEvent) String() string {
@@ -852,7 +857,6 @@ const (
 	eventEndContainer
 	eventBeginArray
 	eventBeginString
-	eventBeginVerbatimString
 	eventBeginURI
 	eventArrayChunk
 	eventArrayData
@@ -869,39 +873,38 @@ const (
 )
 
 const (
-	eventTypeNothing        = eventIDNothing
-	eventTypeBeginDocument  = eventIDBeginDocument | eventBeginDocument
-	eventTypeVersion        = eventIDVersion | eventVersion
-	eventTypePadding        = eventIDPadding | eventPadding
-	eventTypeNil            = eventIDNil | eventNil
-	eventTypeBool           = eventIDBool | eventScalar
-	eventTypePInt           = eventIDPInt | eventPositiveInt
-	eventTypeNInt           = eventIDNInt | eventScalar
-	eventTypeFloat          = eventIDFloat | eventScalar
-	eventTypeNan            = eventIDNan | eventNan
-	eventTypeUUID           = eventIDUUID | eventScalar
-	eventTypeTime           = eventIDTime | eventScalar
-	eventTypeList           = eventIDList | eventBeginList
-	eventTypeMap            = eventIDMap | eventBeginMap
-	eventTypeMarkup         = eventIDMarkup | eventBeginMarkup
-	eventTypeMetadata       = eventIDMetadata | eventBeginMetadata
-	eventTypeComment        = eventIDComment | eventBeginComment
-	eventTypeMarker         = eventIDMarker | eventBeginMarker
-	eventTypeReference      = eventIDReference | eventBeginReference
-	eventTypeEndContainer   = eventIDEndContainer | eventEndContainer
-	eventTypeArray          = eventIDArray | eventBeginArray
-	eventTypeString         = eventIDString | eventBeginString
-	eventTypeVerbatimString = eventIDVerbatimString | eventBeginVerbatimString
-	eventTypeURI            = eventIDURI | eventBeginURI
-	eventTypeAChunk         = eventIDAChunk | eventArrayChunk
-	eventTypeAData          = eventIDAData | eventArrayData
-	eventTypeEndDocument    = eventIDEndDocument | eventEndDocument
-	eventTypeAny            = ruleEventsMask
+	eventTypeNothing       = eventIDNothing
+	eventTypeBeginDocument = eventIDBeginDocument | eventBeginDocument
+	eventTypeVersion       = eventIDVersion | eventVersion
+	eventTypePadding       = eventIDPadding | eventPadding
+	eventTypeNil           = eventIDNil | eventNil
+	eventTypeBool          = eventIDBool | eventScalar
+	eventTypePInt          = eventIDPInt | eventPositiveInt
+	eventTypeNInt          = eventIDNInt | eventScalar
+	eventTypeFloat         = eventIDFloat | eventScalar
+	eventTypeNan           = eventIDNan | eventNan
+	eventTypeUUID          = eventIDUUID | eventScalar
+	eventTypeTime          = eventIDTime | eventScalar
+	eventTypeList          = eventIDList | eventBeginList
+	eventTypeMap           = eventIDMap | eventBeginMap
+	eventTypeMarkup        = eventIDMarkup | eventBeginMarkup
+	eventTypeMetadata      = eventIDMetadata | eventBeginMetadata
+	eventTypeComment       = eventIDComment | eventBeginComment
+	eventTypeMarker        = eventIDMarker | eventBeginMarker
+	eventTypeReference     = eventIDReference | eventBeginReference
+	eventTypeEndContainer  = eventIDEndContainer | eventEndContainer
+	eventTypeArray         = eventIDArray | eventBeginArray
+	eventTypeString        = eventIDString | eventBeginString
+	eventTypeURI           = eventIDURI | eventBeginURI
+	eventTypeAChunk        = eventIDAChunk | eventArrayChunk
+	eventTypeAData         = eventIDAData | eventArrayData
+	eventTypeEndDocument   = eventIDEndDocument | eventEndDocument
+	eventTypeAny           = ruleEventsMask
 )
 
 // Primary rules
 const (
-	eventsArray         = eventBeginArray | eventBeginString | eventBeginVerbatimString | eventBeginURI
+	eventsArray         = eventBeginArray | eventBeginString | eventBeginURI
 	eventsInvisible     = eventPadding | eventBeginComment | eventBeginMetadata
 	eventsKeyableObject = eventsInvisible | eventScalar | eventPositiveInt | eventsArray | eventBeginMarker
 	eventsAnyObject     = eventsKeyableObject | eventNil | eventNan | eventBeginList | eventBeginMap | eventBeginMarkup | eventBeginReference
@@ -912,7 +915,7 @@ const (
 	allowMapValue       = allowAny
 	allowCommentItem    = ruleState(eventBeginString | eventBeginComment | eventEndContainer | eventPadding)
 	allowMarkupName     = ruleState(eventPositiveInt | eventBeginString | eventPadding)
-	allowMarkupContents = ruleState(eventBeginString | eventBeginVerbatimString | eventBeginComment | eventBeginMarkup | eventEndContainer | eventPadding)
+	allowMarkupContents = ruleState(eventBeginString | eventBeginComment | eventBeginMarkup | eventEndContainer | eventPadding)
 	allowMarkerID       = ruleState(eventPositiveInt | eventBeginString | eventPadding)
 	allowReferenceID    = ruleState(eventPositiveInt | eventBeginString | eventBeginURI | eventPadding)
 	allowArrayChunk     = ruleState(eventArrayChunk)
@@ -969,35 +972,39 @@ var childEndRuleStateChanges = [...]ruleState{
 }
 
 var arrayTypeToRuleEvent = [...]ruleEvent{
-	events.ArrayTypeBoolean:        eventTypeArray,
-	events.ArrayTypeUint8:          eventTypeArray,
-	events.ArrayTypeUint16:         eventTypeArray,
-	events.ArrayTypeUint32:         eventTypeArray,
-	events.ArrayTypeUint64:         eventTypeArray,
-	events.ArrayTypeInt8:           eventTypeArray,
-	events.ArrayTypeInt16:          eventTypeArray,
-	events.ArrayTypeInt32:          eventTypeArray,
-	events.ArrayTypeInt64:          eventTypeArray,
-	events.ArrayTypeFloat16:        eventTypeArray,
-	events.ArrayTypeFloat32:        eventTypeArray,
-	events.ArrayTypeFloat64:        eventTypeArray,
-	events.ArrayTypeUUID:           eventTypeArray,
-	events.ArrayTypeString:         eventTypeString,
-	events.ArrayTypeVerbatimString: eventTypeString,
-	events.ArrayTypeURI:            eventTypeURI,
-	events.ArrayTypeCustomBinary:   eventTypeArray,
-	events.ArrayTypeCustomText:     eventTypeArray,
+	events.ArrayTypeBoolean:      eventTypeArray,
+	events.ArrayTypeUint8:        eventTypeArray,
+	events.ArrayTypeUint16:       eventTypeArray,
+	events.ArrayTypeUint32:       eventTypeArray,
+	events.ArrayTypeUint64:       eventTypeArray,
+	events.ArrayTypeInt8:         eventTypeArray,
+	events.ArrayTypeInt16:        eventTypeArray,
+	events.ArrayTypeInt32:        eventTypeArray,
+	events.ArrayTypeInt64:        eventTypeArray,
+	events.ArrayTypeFloat16:      eventTypeArray,
+	events.ArrayTypeFloat32:      eventTypeArray,
+	events.ArrayTypeFloat64:      eventTypeArray,
+	events.ArrayTypeUUID:         eventTypeArray,
+	events.ArrayTypeString:       eventTypeString,
+	events.ArrayTypeURI:          eventTypeURI,
+	events.ArrayTypeCustomBinary: eventTypeArray,
+	events.ArrayTypeCustomText:   eventTypeArray,
 }
 
 func validateRulesCommentCharacter(ch rune) {
-	const commentUnsafe = unicode.Control
-	if unicode.CharHasProperty(ch, commentUnsafe) {
+	if chars.RuneHasProperty(ch, chars.CharIsCommentUnsafe) {
 		panic(fmt.Errorf("0x%04x: Invalid comment character", ch))
 	}
 }
 
+func validateRulesIDFirstCharacter(ch rune) {
+	if chars.RuneHasProperty(ch, chars.CharNeedsQuoteFirst) {
+		panic(fmt.Errorf("0x%04x: Invalid first ID character", ch))
+	}
+}
+
 func validateRulesIDCharacter(ch rune) {
-	if !unicode.CharHasProperty(ch, unicode.MarkerIDSafe) {
+	if chars.RuneHasProperty(ch, chars.CharNeedsQuote) {
 		panic(fmt.Errorf("0x%04x: Invalid ID character", ch))
 	}
 }

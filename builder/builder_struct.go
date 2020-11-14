@@ -220,7 +220,7 @@ func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
 
 func (_this *structBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
 	switch arrayType {
-	case events.ArrayTypeString, events.ArrayTypeVerbatimString:
+	case events.ArrayTypeString:
 		if _this.nextIsKey {
 			if _this.opts.CaseInsensitiveStructFieldNames {
 				common.ASCIIBytesToLower(value)

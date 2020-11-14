@@ -43,6 +43,8 @@ const (
 	minFloat64DecimalExponent = -308 // Denormalized can technically go to -324
 	maxFloat64DecimalExponent = 308
 	maxFloat64Coefficient     = (uint64(1) << 54) - 1
+
+	charNumericWhitespace = '_'
 )
 
 func extractFloat64Exponent(v float64) int {

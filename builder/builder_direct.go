@@ -109,10 +109,6 @@ func (_this *directBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	dst.SetString(string(value))
 }
 
-func (_this *directBuilder) BuildFromVerbatimString(value []byte, dst reflect.Value) {
-	dst.SetString(string(value))
-}
-
 func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value).Elem())
 }

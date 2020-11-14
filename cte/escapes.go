@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/internal/unicode"
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
 func containsEscapes(str string) bool {
@@ -35,14 +35,6 @@ func containsEscapes(str string) bool {
 	}
 	return false
 }
-
-const (
-	quotedUnsafe            = unicode.Control | unicode.TabReturnNewline | unicode.QuotedTextDelimiter
-	unquotedUnsafe          = quotedUnsafe | unicode.Whitespace | unicode.LowSymbolOrLookalike
-	unquotedFirstCharUnsafe = unquotedUnsafe | unicode.NumeralOrLookalike
-	markupUnsafe            = unicode.Control | unicode.MarkupDelimiter
-	arrayUnsafe             = unicode.Control | unicode.TabReturnNewline | unicode.ArrayDelimiter
-)
 
 // Wraps a string destined for a CTE document, adding quotes or escapes as
 // necessary.
@@ -55,16 +47,16 @@ func asPotentialQuotedString(str []byte) (finalString string) {
 	requiresQuotes := false
 	escapeCount := 0
 
-	if unicode.CharHasProperty([]rune(asString)[0], unquotedFirstCharUnsafe) {
+	if chars.RuneHasProperty([]rune(asString)[0], chars.CharNeedsQuoteFirst) {
 		requiresQuotes = true
 	}
 
 	for _, ch := range asString {
-		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(unquotedUnsafe) {
+		props := chars.GetRuneProperty(ch)
+		if props.HasProperty(chars.CharNeedsQuote) {
 			requiresQuotes = true
 		}
-		if props.HasProperty(quotedUnsafe) {
+		if props.HasProperty(chars.CharNeedsEscapeQuoted) {
 			escapeCount++
 		}
 	}
@@ -80,18 +72,10 @@ func asPotentialQuotedString(str []byte) (finalString string) {
 	return escapedQuoted(asString, escapeCount)
 }
 
-// Wraps a verbatim string destined for a CTE document.
-func asVerbatimString(str []byte) string {
-	asString := string(str)
-	sentinel := generateVerbatimSentinel(asString)
-	return "`" + sentinel + " " + asString + sentinel
-}
-
 // Wraps a string-encoded array destined for a CTE document.
 func asStringArray(elementType string, str []byte) string {
 	for _, ch := range string(str) {
-		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(arrayUnsafe) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
 			return escapedStringArray(elementType, string(str))
 		}
 	}
@@ -103,8 +87,7 @@ func asStringArray(elementType string, str []byte) string {
 func asMarkupContent(str []byte) string {
 	asString := string(str)
 	for _, ch := range asString {
-		props := unicode.GetCharProperty(ch)
-		if props.HasProperty(markupUnsafe) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
 			return escapedMarkupText(asString)
 		}
 	}
@@ -122,7 +105,7 @@ func escapedQuoted(str string, escapeCount int) string {
 	// Note: StringBuilder's WriteXYZ() always return nil errors
 	sb.WriteByte('"')
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, quotedUnsafe) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeQuoted) {
 			sb.WriteString(escapeCharQuoted(ch))
 		} else {
 			sb.WriteRune(ch)
@@ -160,7 +143,7 @@ func escapedStringArray(elementType string, str string) string {
 	sb.WriteString(elementType)
 	sb.WriteByte(' ')
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, arrayUnsafe) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
 			sb.WriteString(escapeCharStringArray(ch))
 		} else {
 			sb.WriteRune(ch)
@@ -196,7 +179,7 @@ func escapedMarkupText(str string) string {
 	sb.Grow(len([]byte(str)))
 	// Note: StringBuilder's WriteXYZ() always return nil errors
 	for _, ch := range str {
-		if unicode.CharHasProperty(ch, markupUnsafe) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
 			sb.WriteString(escapeCharMarkup(ch))
 		} else {
 			sb.WriteRune(ch)
@@ -217,10 +200,10 @@ func escapeCharMarkup(ch rune) string {
 		return `\<`
 	case '>':
 		return `\>`
-	case '`':
-		return "\\`"
 	case 0xa0:
 		return `\_`
+	case 0xad:
+		return `\-`
 	case '\\':
 		return `\\`
 	}
@@ -229,7 +212,7 @@ func escapeCharMarkup(ch rune) string {
 
 // Ordered from least common to most common, chosen to not be confused by
 // a human with other CTE document structural characters.
-var verbatimSentinelAlphabet = []byte("#$%&*+/:;=^_|~23456789ZQXJVKBPYGCFMWULDHSNOIRATE10zqxjvkbpygcfmwuldhsnoirate")
+var verbatimSentinelAlphabet = []byte("~%*+;=^_23456789ZQXJVKBPYGCFMWULDHSNOIRATE10zqxjvkbpygcfmwuldhsnoirate")
 
 func generateVerbatimSentinel(str string) string {
 	// Try all 1, 2, and 3-character sequences picked from a safe alphabet.
@@ -269,4 +252,52 @@ func generateVerbatimSentinel(str string) string {
 	// the string. At this point, we conclude that it's a specially crafted
 	// attack string, and not naturally occurring.
 	panic(fmt.Errorf("could not generate verbatim sentinel for malicious string [%v]", str))
+}
+
+func unescape(str []byte) []byte {
+	iDst := 0
+	for iSrc := 0; iSrc < len(str); iSrc++ {
+		b := str[iSrc]
+		if b == '\\' {
+			iSrc++
+			if iSrc >= len(str) {
+				// TODO: Error
+			}
+			b := str[iSrc]
+			switch b {
+			case 't':
+				str[iDst] = '\t'
+			case 'n':
+				str[iDst] = '\n'
+			case 'r':
+				str[iDst] = '\r'
+			case '"', '*', '/', '<', '>', '\\', '|':
+				str[iDst] = b
+			case '_':
+				// Non-breaking space
+				str[iDst] = 0xc2
+				iDst++
+				str[iDst] = 0xa0
+			case '-':
+				// Soft hyphen
+				str[iDst] = 0xc2
+				iDst++
+				str[iDst] = 0xad
+			case '\r', '\n':
+				// TODO: Continuation
+			case '0':
+				str[iDst] = 0
+			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				// TODO: Unicode escape
+			case '.':
+				// TODO: Verbatim
+			default:
+				// TODO: Error
+			}
+		} else {
+			str[iDst] = b
+		}
+		iDst++
+	}
+	return str[:iDst]
 }

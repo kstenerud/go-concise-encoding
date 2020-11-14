@@ -243,17 +243,6 @@ func TestCBEString(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, version, typeString, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), S("00000000001111111111"), ED())
 }
 
-func TestCBEVerbatimStringEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, version, typeVerbatimString, 0x02})
-	assertDecodeFails(t, []byte{header, version, typeVerbatimString, 0x04, 'a'})
-}
-
-func TestCBEVerbatimString(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, typeVerbatimString, 0x00}, BD(), V(1), VS(""), ED())
-	assertDecodeEncode(t, []byte{header, version, typeVerbatimString, 0x02, 'a'}, BD(), V(1), VS("a"), ED())
-	assertDecodeEncode(t, []byte{header, version, typeVerbatimString, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), VS("00000000001111111111"), ED())
-}
-
 func TestCBEURIEOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, version, typeURI, 0x02})
 	assertDecodeFails(t, []byte{header, version, typeURI, 0x04, 'a'})

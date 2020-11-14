@@ -182,7 +182,7 @@ func (_this *encoderEngine) BeginMarkup() {
 
 func (_this *encoderEngine) EndMarkupAttrs() {
 	_this.clearPrefix()
-	_this.setPrefix(";" + _this.generateIndent())
+	_this.setPrefix("," + _this.generateIndent())
 	_this.unstack()
 }
 
@@ -345,7 +345,6 @@ const (
 	awaitingMarkerID
 	awaitingReferenceID
 	awaitingQuotedString
-	awaitingVerbatimString
 	awaitingURI
 	awaitingCustomBinary
 	awaitingCustomText
@@ -386,7 +385,6 @@ var awaitingNames = [awaitingCount]string{
 	awaitingMarkerID:        "MarkerID",
 	awaitingReferenceID:     "ReferenceID",
 	awaitingQuotedString:    "QuotedString",
-	awaitingVerbatimString:  "VerbatimString",
 	awaitingURI:             "URI",
 	awaitingCustomBinary:    "CustomBinary",
 	awaitingCustomText:      "CustomText",
@@ -452,7 +450,6 @@ var prefixSettersCompact = [awaitingCount]prefixSetter{
 	awaitingMarkerID:        (*encoderEngine).setNoPrefix,
 	awaitingReferenceID:     (*encoderEngine).setNoPrefix,
 	awaitingQuotedString:    (*encoderEngine).setNoPrefix,
-	awaitingVerbatimString:  (*encoderEngine).setNoPrefix,
 	awaitingURI:             (*encoderEngine).setNoPrefix,
 	awaitingCustomBinary:    (*encoderEngine).setNoPrefix,
 	awaitingCustomText:      (*encoderEngine).setNoPrefix,
@@ -492,7 +489,6 @@ var prefixSettersPretty = [awaitingCount]prefixSetter{
 	awaitingMarkerID:        (*encoderEngine).setNoPrefix,
 	awaitingReferenceID:     (*encoderEngine).setNoPrefix,
 	awaitingQuotedString:    (*encoderEngine).setNoPrefix,
-	awaitingVerbatimString:  (*encoderEngine).setNoPrefix,
 	awaitingURI:             (*encoderEngine).setNoPrefix,
 	awaitingCustomBinary:    (*encoderEngine).setNoPrefix,
 	awaitingCustomText:      (*encoderEngine).setNoPrefix,

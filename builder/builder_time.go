@@ -224,7 +224,11 @@ func (_this *compactTimeBuilder) BuildFromArray(arrayType events.ArrayType, valu
 }
 
 func (_this *compactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(*compact_time.AsCompactTime(value)))
+	t, err := compact_time.AsCompactTime(value)
+	if err != nil {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(*t))
 }
 
 func (_this *compactTimeBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
@@ -336,7 +340,11 @@ func (_this *pCompactTimeBuilder) BuildFromArray(arrayType events.ArrayType, val
 }
 
 func (_this *pCompactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(compact_time.AsCompactTime(value)))
+	t, err := compact_time.AsCompactTime(value)
+	if err != nil {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(t))
 }
 
 func (_this *pCompactTimeBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {

@@ -31,6 +31,8 @@ import (
 	"io"
 	"math"
 
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
+
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -172,10 +174,6 @@ func (_this *Decoder) handleInvalidChar() {
 	_this.buffer.Errorf("Unexpected [%v]", _this.buffer.DescribeCurrentChar())
 }
 
-func (_this *Decoder) handleInvalidState() {
-	_this.buffer.Errorf("BUG: Invalid state: %v", _this.currentState)
-}
-
 func (_this *Decoder) handleKVSeparator() {
 	_this.buffer.SkipWhitespace()
 	if _this.buffer.PeekByteNoEOD() != '=' {
@@ -208,7 +206,7 @@ func (_this *Decoder) handleVersion() {
 	}
 
 	b := _this.buffer.PeekByteAllowEOD()
-	if !b.HasProperty(ctePropertyWhitespace) && b != cteByteEndOfDocument {
+	if !b.HasProperty(chars.CharIsWhitespace) && b != chars.EndOfDocumentMarker {
 		_this.buffer.UnexpectedChar("whitespace after version")
 	}
 
@@ -216,11 +214,10 @@ func (_this *Decoder) handleVersion() {
 	_this.buffer.EndToken()
 }
 
-func (_this *Decoder) handleStringish() {
-	_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyUnquotedMid)
+func (_this *Decoder) handleUnquotedString() {
+	_this.buffer.ReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
 
-	// Unquoted string
-	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) || _this.isOnCommentInitiator() {
+	if _this.buffer.PeekByteAllowEOD().HasProperty(chars.CharIsObjectEnd) || _this.isOnCommentInitiator() {
 		bytes := _this.buffer.GetToken()
 		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 		_this.endObject()
@@ -252,30 +249,24 @@ func (_this *Decoder) handleQuotedString() {
 
 func (_this *Decoder) handlePositiveNumeric() {
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
-
-	// Integer
-	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) || _this.isOnCommentInitiator() {
-		if bigCoefficient != nil {
-			_this.eventReceiver.OnBigInt(bigCoefficient)
-		} else {
-			_this.eventReceiver.OnPositiveInt(coefficient)
-		}
-		_this.endObject()
-		return
-	}
-
-	switch _this.buffer.ReadByte() {
+	b := _this.buffer.PeekByteAllowEOD()
+	switch b {
 	case '-':
+		_this.buffer.AdvanceByte()
 		v := _this.buffer.DecodeDate(int64(coefficient))
 		_this.buffer.AssertAtObjectEnd("date")
 		_this.eventReceiver.OnCompactTime(v)
 		_this.endObject()
+		return
 	case ':':
+		_this.buffer.AdvanceByte()
 		v := _this.buffer.DecodeTime(int(coefficient))
 		_this.buffer.AssertAtObjectEnd("time")
 		_this.eventReceiver.OnCompactTime(v)
 		_this.endObject()
+		return
 	case '.':
+		_this.buffer.AdvanceByte()
 		value, bigValue, _ := _this.buffer.DecodeDecimalFloat(1, coefficient, bigCoefficient, digitCount)
 		_this.buffer.AssertAtObjectEnd("float")
 		if bigValue != nil {
@@ -284,10 +275,19 @@ func (_this *Decoder) handlePositiveNumeric() {
 			_this.eventReceiver.OnDecimalFloat(value)
 		}
 		_this.endObject()
+		return
 	default:
-		_this.buffer.UngetByte()
-		_this.buffer.UnexpectedChar("numeric")
+		if b.HasProperty(chars.CharIsObjectEnd) {
+			if bigCoefficient != nil {
+				_this.eventReceiver.OnBigInt(bigCoefficient)
+			} else {
+				_this.eventReceiver.OnPositiveInt(coefficient)
+			}
+			_this.endObject()
+			return
+		}
 	}
+	_this.buffer.UnexpectedChar("numeric")
 }
 
 func (_this *Decoder) handleNegativeNumeric() {
@@ -299,7 +299,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 	case '@':
 		_this.buffer.AdvanceByte()
 		_this.buffer.BeginSubtoken()
-		_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyAZ)
+		_this.buffer.ReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
 		subtoken := _this.buffer.GetSubtoken()
 		common.ASCIIBytesToLower(subtoken)
 		token := string(subtoken)
@@ -312,27 +312,17 @@ func (_this *Decoder) handleNegativeNumeric() {
 	}
 
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
-
-	// Integer
-	if _this.buffer.PeekByteAllowEOD().HasProperty(ctePropertyObjectEnd) || _this.isOnCommentInitiator() {
-		if bigCoefficient != nil {
-			// TODO: More efficient way to negate?
-			bigCoefficient = bigCoefficient.Mul(bigCoefficient, common.BigIntN1)
-			_this.eventReceiver.OnBigInt(bigCoefficient)
-		} else {
-			_this.eventReceiver.OnNegativeInt(coefficient)
-		}
-		_this.endObject()
-		return
-	}
-
-	switch _this.buffer.ReadByte() {
+	b := _this.buffer.PeekByteAllowEOD()
+	switch b {
 	case '-':
+		_this.buffer.AdvanceByte()
 		v := _this.buffer.DecodeDate(-int64(coefficient))
 		_this.buffer.AssertAtObjectEnd("time")
 		_this.eventReceiver.OnCompactTime(v)
 		_this.endObject()
+		return
 	case '.':
+		_this.buffer.AdvanceByte()
 		value, bigValue, _ := _this.buffer.DecodeDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
 		_this.buffer.AssertAtObjectEnd("float")
 		if bigValue != nil {
@@ -341,17 +331,28 @@ func (_this *Decoder) handleNegativeNumeric() {
 			_this.eventReceiver.OnDecimalFloat(value)
 		}
 		_this.endObject()
+		return
 	default:
-		_this.buffer.UngetByte()
-		_this.buffer.UnexpectedChar("numeric")
+		if b.HasProperty(chars.CharIsObjectEnd) {
+			if bigCoefficient != nil {
+				// TODO: More efficient way to negate?
+				bigCoefficient = bigCoefficient.Mul(bigCoefficient, common.BigIntN1)
+				_this.eventReceiver.OnBigInt(bigCoefficient)
+			} else {
+				_this.eventReceiver.OnNegativeInt(coefficient)
+			}
+			_this.endObject()
+			return
+		}
 	}
+	_this.buffer.UnexpectedChar("numeric")
 }
 
 func (_this *Decoder) handleOtherBasePositive() {
 	_this.buffer.AdvanceByte()
 	b := _this.buffer.PeekByteAllowEOD()
 
-	if b.HasProperty(ctePropertyObjectEnd) {
+	if b.HasProperty(chars.CharIsObjectEnd) {
 		_this.eventReceiver.OnPositiveInt(0)
 		_this.endObject()
 		return
@@ -408,7 +409,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 		}
 		_this.endObject()
 	default:
-		if b.HasProperty(cteProperty09) && _this.buffer.PeekByteNoEOD() == ':' {
+		if b.HasProperty(chars.CharIsDigitBase10) && _this.buffer.PeekByteNoEOD() == ':' {
 			_this.buffer.AdvanceByte()
 			v := _this.buffer.DecodeTime(int(b - '0'))
 			_this.buffer.AssertAtObjectEnd("time")
@@ -587,12 +588,6 @@ func (_this *Decoder) handleMarkupContent() {
 	case nextIsCommentEnd:
 		_this.eventReceiver.OnEnd()
 		_this.unstackContainer()
-	case nextIsVerbatimString:
-		str := _this.buffer.DecodeVerbatimString()
-		if len(str) > 0 {
-			_this.eventReceiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(str)), str)
-		}
-		_this.buffer.EndToken()
 	case nextIsSingleLineComment:
 		_this.eventReceiver.OnComment()
 		contents := _this.buffer.DecodeSingleLineComment()
@@ -623,7 +618,7 @@ func (_this *Decoder) handleMarkupEnd() {
 func (_this *Decoder) handleNamedValue() {
 	_this.buffer.AdvanceByte()
 	_this.buffer.BeginSubtoken()
-	_this.buffer.ReadWhilePropertyAllowEOD(ctePropertyAZ)
+	_this.buffer.ReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
 	subtoken := _this.buffer.GetSubtoken()
 	common.ASCIIBytesToLower(subtoken)
 	token := string(subtoken)
@@ -654,24 +649,22 @@ func (_this *Decoder) handleNamedValue() {
 		return
 	}
 
+	// TODO: Can just read the subtoken instead since it now runs until object end
 	_this.buffer.UngetAll()
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnUUID(_this.buffer.DecodeUUID())
 	_this.endObject()
 }
 
-func (_this *Decoder) handleVerbatimString() {
-	_this.buffer.AdvanceByte()
-	bytes := _this.buffer.DecodeVerbatimString()
-	_this.eventReceiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(bytes)), bytes)
-	_this.endObject()
+func (_this *Decoder) finishArray(arrayType events.ArrayType, bytesPerElement int, data []byte) {
+	_this.eventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
 }
 
 func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
 	switch _this.buffer.PeekByteNoEOD() {
 	case '|':
 		_this.buffer.AdvanceByte()
-		_this.eventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
+		_this.finishArray(arrayType, bytesPerElement, data)
 		_this.endObject()
 		return
 	default:
@@ -683,7 +676,7 @@ func (_this *Decoder) decodeCustomBinary() {
 	digitType := "hex"
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := _this.buffer.DecodeSmallHexUint()
 		if count == 0 {
 			break
@@ -697,23 +690,23 @@ func (_this *Decoder) decodeCustomBinary() {
 }
 
 func (_this *Decoder) decodeCustomText() {
-	digitType := "custom"
 	_this.buffer.SkipWhitespace()
 	bytes := _this.buffer.DecodeStringArray()
-	_this.finishTypedArray(events.ArrayTypeCustomText, digitType, 1, bytes)
+	_this.finishArray(events.ArrayTypeCustomText, 1, bytes)
+	_this.endObject()
 }
 
 func (_this *Decoder) decodeURI() {
-	digitType := "uri"
 	_this.buffer.SkipWhitespace()
 	bytes := _this.buffer.DecodeStringArray()
-	_this.finishTypedArray(events.ArrayTypeURI, digitType, 1, bytes)
+	_this.finishArray(events.ArrayTypeURI, 1, bytes)
+	_this.endObject()
 }
 
 func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -729,7 +722,7 @@ func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v ui
 func (_this *Decoder) decodeArrayU16(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -745,7 +738,7 @@ func (_this *Decoder) decodeArrayU16(digitType string, decodeElement func() (v u
 func (_this *Decoder) decodeArrayU32(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -761,7 +754,7 @@ func (_this *Decoder) decodeArrayU32(digitType string, decodeElement func() (v u
 func (_this *Decoder) decodeArrayU64(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -775,7 +768,7 @@ func (_this *Decoder) decodeArrayU64(digitType string, decodeElement func() (v u
 func (_this *Decoder) decodeArrayI8(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -791,7 +784,7 @@ func (_this *Decoder) decodeArrayI8(digitType string, decodeElement func() (v in
 func (_this *Decoder) decodeArrayI16(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -807,7 +800,7 @@ func (_this *Decoder) decodeArrayI16(digitType string, decodeElement func() (v i
 func (_this *Decoder) decodeArrayI32(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -823,7 +816,7 @@ func (_this *Decoder) decodeArrayI32(digitType string, decodeElement func() (v i
 func (_this *Decoder) decodeArrayI64(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -837,7 +830,7 @@ func (_this *Decoder) decodeArrayI64(digitType string, decodeElement func() (v i
 func (_this *Decoder) decodeArrayF16(digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -856,7 +849,7 @@ func (_this *Decoder) decodeArrayF16(digitType string, decodeElement func() (v f
 func (_this *Decoder) decodeArrayF32(digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -875,7 +868,7 @@ func (_this *Decoder) decodeArrayF32(digitType string, decodeElement func() (v f
 func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
-		_this.buffer.ReadWhilePropertyNoEOD(ctePropertyWhitespace)
+		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -887,9 +880,9 @@ func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v f
 	_this.finishTypedArray(events.ArrayTypeFloat64, digitType, 8, data)
 }
 
-func (_this *Decoder) readArraySubtoken() string {
+func (_this *Decoder) readArrayType() string {
 	_this.buffer.BeginSubtoken()
-	_this.buffer.ReadUntilPropertyNoEOD(ctePropertyWhitespace | ctePropertyArrayEnd)
+	_this.buffer.ReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
 	subtoken := _this.buffer.GetSubtoken()
 	if len(subtoken) > 0 && subtoken[len(subtoken)-1] == '|' {
 		subtoken = subtoken[:len(subtoken)-1]
@@ -901,7 +894,7 @@ func (_this *Decoder) readArraySubtoken() string {
 
 func (_this *Decoder) handleTypedArrayBegin() {
 	_this.buffer.AdvanceByte()
-	token := _this.readArraySubtoken()
+	token := _this.readArrayType()
 	switch token {
 	case "cb":
 		_this.decodeCustomBinary()
@@ -995,7 +988,7 @@ func (_this *Decoder) handleReference() {
 	_this.eventReceiver.OnReference()
 	if _this.buffer.PeekByteNoEOD() == '|' {
 		_this.buffer.AdvanceByte()
-		token := _this.readArraySubtoken()
+		token := _this.readArrayType()
 		if token != "u" {
 			_this.buffer.Errorf("%s: Invalid array type for reference ID", token)
 		}
@@ -1086,10 +1079,10 @@ var cteDecoderStateHandlers = [cteDecoderStateCount]cteDecoderHandlerFunction{
 	cteDecoderStateAwaitReferenceID:       (*Decoder).handleObject,
 }
 
-var charBasedHandlers [cteByteEndOfDocument + 1]cteDecoderHandlerFunction
+var charBasedHandlers [0x101]cteDecoderHandlerFunction
 
 func init() {
-	for i := 0; i < cteByteEndOfDocument; i++ {
+	for i := 0; i < 0x100; i++ {
 		charBasedHandlers[i] = (*Decoder).handleInvalidChar
 	}
 
@@ -1108,7 +1101,7 @@ func init() {
 	charBasedHandlers['('] = (*Decoder).handleMetadataBegin
 	charBasedHandlers[')'] = (*Decoder).handleMetadataEnd
 	charBasedHandlers['+'] = (*Decoder).handleInvalidChar
-	charBasedHandlers[','] = (*Decoder).handleInvalidChar
+	charBasedHandlers[','] = (*Decoder).handleMarkupContentBegin
 	charBasedHandlers['-'] = (*Decoder).handleNegativeNumeric
 	charBasedHandlers['.'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['/'] = (*Decoder).handleComment
@@ -1119,25 +1112,24 @@ func init() {
 	}
 
 	charBasedHandlers[':'] = (*Decoder).handleInvalidChar
-	charBasedHandlers[';'] = (*Decoder).handleMarkupContentBegin
+	charBasedHandlers[';'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['<'] = (*Decoder).handleMarkupBegin
 	charBasedHandlers['>'] = (*Decoder).handleMarkupEnd
 	charBasedHandlers['?'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['@'] = (*Decoder).handleNamedValue
 
 	for i := 'A'; i <= 'Z'; i++ {
-		charBasedHandlers[i] = (*Decoder).handleStringish
+		charBasedHandlers[i] = (*Decoder).handleUnquotedString
 	}
 
 	charBasedHandlers['['] = (*Decoder).handleListBegin
 	charBasedHandlers['\\'] = (*Decoder).handleInvalidChar
 	charBasedHandlers[']'] = (*Decoder).handleListEnd
 	charBasedHandlers['^'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['_'] = (*Decoder).handleStringish
-	charBasedHandlers['`'] = (*Decoder).handleVerbatimString
+	charBasedHandlers['_'] = (*Decoder).handleUnquotedString
 
 	for i := 'a'; i <= 'z'; i++ {
-		charBasedHandlers[i] = (*Decoder).handleStringish
+		charBasedHandlers[i] = (*Decoder).handleUnquotedString
 	}
 
 	charBasedHandlers['{'] = (*Decoder).handleMapBegin
@@ -1146,115 +1138,10 @@ func init() {
 	charBasedHandlers['~'] = (*Decoder).handleInvalidChar
 
 	for i := 0xc0; i < 0xf8; i++ {
-		charBasedHandlers[i] = (*Decoder).handleStringish
+		charBasedHandlers[i] = (*Decoder).handleUnquotedString
 	}
 
-	charBasedHandlers[cteByteEndOfDocument] = (*Decoder).handleNothing
-}
-
-// Byte Properties
-
-type cteByte int
-
-func (_this cteByte) HasProperty(property cteByteProprty) bool {
-	return cteByteProperties[_this].HasProperty(property)
-}
-
-func hasProperty(b byte, property cteByteProprty) bool {
-	return cteByteProperties[b].HasProperty(property)
-}
-
-const cteByteEndOfDocument = 0x100
-
-type cteByteProprty uint16
-
-const (
-	ctePropertyWhitespace cteByteProprty = 1 << iota
-	ctePropertyNumericWhitespace
-	ctePropertyObjectEnd
-	ctePropertyUnquotedStart
-	ctePropertyUnquotedMid
-	ctePropertyAZ
-	cteProperty09
-	ctePropertyLowercaseAF
-	ctePropertyUppercaseAF
-	ctePropertyBinaryDigit
-	ctePropertyOctalDigit
-	ctePropertyAreaLocation
-	ctePropertyMarkerID
-	ctePropertyArrayEnd
-)
-
-func (_this cteByteProprty) HasProperty(property cteByteProprty) bool {
-	return _this&property != 0
-}
-
-var cteByteProperties [cteByteEndOfDocument + 1]cteByteProprty
-
-func init() {
-	cteByteProperties[' '] |= ctePropertyWhitespace
-	cteByteProperties['\r'] |= ctePropertyWhitespace
-	cteByteProperties['\n'] |= ctePropertyWhitespace
-	cteByteProperties['\t'] |= ctePropertyWhitespace
-
-	cteByteProperties[':'] |= ctePropertyUnquotedMid
-	cteByteProperties['-'] |= ctePropertyUnquotedMid | ctePropertyAreaLocation
-	cteByteProperties['+'] |= ctePropertyAreaLocation
-	cteByteProperties['.'] |= ctePropertyUnquotedMid
-	cteByteProperties['_'] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAreaLocation | ctePropertyMarkerID | ctePropertyNumericWhitespace
-	for i := '0'; i <= '9'; i++ {
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyAreaLocation | ctePropertyMarkerID
-	}
-	for i := 'a'; i <= 'z'; i++ {
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAZ | ctePropertyAreaLocation | ctePropertyMarkerID
-	}
-	for i := 'A'; i <= 'Z'; i++ {
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart | ctePropertyAZ | ctePropertyAreaLocation | ctePropertyMarkerID
-	}
-	for i := 0xc0; i < 0xf8; i++ {
-		// UTF-8 initiator
-		cteByteProperties[i] |= ctePropertyUnquotedMid | ctePropertyUnquotedStart
-	}
-	for i := 0x80; i < 0xc0; i++ {
-		// UTF-8 continuation
-		cteByteProperties[i] |= ctePropertyUnquotedMid
-	}
-	// TODO: Completely invalid bytes?
-
-	cteByteProperties['='] |= ctePropertyObjectEnd
-	cteByteProperties[';'] |= ctePropertyObjectEnd
-	cteByteProperties['['] |= ctePropertyObjectEnd
-	cteByteProperties[']'] |= ctePropertyObjectEnd
-	cteByteProperties['{'] |= ctePropertyObjectEnd
-	cteByteProperties['}'] |= ctePropertyObjectEnd
-	cteByteProperties[')'] |= ctePropertyObjectEnd
-	cteByteProperties['('] |= ctePropertyObjectEnd
-	cteByteProperties['<'] |= ctePropertyObjectEnd
-	cteByteProperties['>'] |= ctePropertyObjectEnd
-	cteByteProperties['|'] |= ctePropertyObjectEnd | ctePropertyArrayEnd
-	cteByteProperties[' '] |= ctePropertyObjectEnd
-	cteByteProperties['\r'] |= ctePropertyObjectEnd
-	cteByteProperties['\n'] |= ctePropertyObjectEnd
-	cteByteProperties['\t'] |= ctePropertyObjectEnd
-	cteByteProperties[cteByteEndOfDocument] |= ctePropertyObjectEnd
-
-	for i := '0'; i <= '9'; i++ {
-		cteByteProperties[i] |= cteProperty09
-	}
-	for i := 'a'; i <= 'f'; i++ {
-		cteByteProperties[i] |= ctePropertyLowercaseAF
-	}
-	for i := 'A'; i <= 'F'; i++ {
-		cteByteProperties[i] |= ctePropertyUppercaseAF
-	}
-
-	for i := '0'; i <= '7'; i++ {
-		cteByteProperties[i] |= ctePropertyOctalDigit
-	}
-
-	for i := '0'; i <= '1'; i++ {
-		cteByteProperties[i] |= ctePropertyBinaryDigit
-	}
+	charBasedHandlers[chars.EndOfDocumentMarker] = (*Decoder).handleNothing
 }
 
 var subsecondMagnitudes = []int{

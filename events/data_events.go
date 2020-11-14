@@ -52,7 +52,6 @@ const (
 	ArrayTypeFloat64
 	ArrayTypeUUID
 	ArrayTypeString
-	ArrayTypeVerbatimString
 	ArrayTypeURI
 	ArrayTypeCustomBinary
 	ArrayTypeCustomText
@@ -67,47 +66,45 @@ func (_this ArrayType) ElementSize() int {
 }
 
 var arrayTypeNames = [...]string{
-	ArrayTypeInvalid:        "Invalid",
-	ArrayTypeBoolean:        "Boolean",
-	ArrayTypeUint8:          "Uint8",
-	ArrayTypeUint16:         "Uint16",
-	ArrayTypeUint32:         "Uint32",
-	ArrayTypeUint64:         "Uint64",
-	ArrayTypeInt8:           "Int8",
-	ArrayTypeInt16:          "Int16",
-	ArrayTypeInt32:          "Int32",
-	ArrayTypeInt64:          "Int64",
-	ArrayTypeFloat16:        "Float16",
-	ArrayTypeFloat32:        "Float32",
-	ArrayTypeFloat64:        "Float64",
-	ArrayTypeUUID:           "UUID",
-	ArrayTypeString:         "String",
-	ArrayTypeVerbatimString: "Verbatim String",
-	ArrayTypeURI:            "URI",
-	ArrayTypeCustomBinary:   "Custom Binary",
-	ArrayTypeCustomText:     "Custom Text",
+	ArrayTypeInvalid:      "Invalid",
+	ArrayTypeBoolean:      "Boolean",
+	ArrayTypeUint8:        "Uint8",
+	ArrayTypeUint16:       "Uint16",
+	ArrayTypeUint32:       "Uint32",
+	ArrayTypeUint64:       "Uint64",
+	ArrayTypeInt8:         "Int8",
+	ArrayTypeInt16:        "Int16",
+	ArrayTypeInt32:        "Int32",
+	ArrayTypeInt64:        "Int64",
+	ArrayTypeFloat16:      "Float16",
+	ArrayTypeFloat32:      "Float32",
+	ArrayTypeFloat64:      "Float64",
+	ArrayTypeUUID:         "UUID",
+	ArrayTypeString:       "String",
+	ArrayTypeURI:          "URI",
+	ArrayTypeCustomBinary: "Custom Binary",
+	ArrayTypeCustomText:   "Custom Text",
 }
 
 var arrayTypeElementSizes = [...]int{
-	ArrayTypeInvalid:        0,
-	ArrayTypeBoolean:        1,
-	ArrayTypeUint8:          8,
-	ArrayTypeUint16:         16,
-	ArrayTypeUint32:         32,
-	ArrayTypeUint64:         64,
-	ArrayTypeInt8:           8,
-	ArrayTypeInt16:          16,
-	ArrayTypeInt32:          32,
-	ArrayTypeInt64:          64,
-	ArrayTypeFloat16:        16,
-	ArrayTypeFloat32:        32,
-	ArrayTypeFloat64:        64,
-	ArrayTypeUUID:           128,
-	ArrayTypeString:         8,
-	ArrayTypeVerbatimString: 8,
-	ArrayTypeURI:            8,
-	ArrayTypeCustomBinary:   8,
-	ArrayTypeCustomText:     8,
+	ArrayTypeInvalid:      0,
+	ArrayTypeBoolean:      1,
+	ArrayTypeUint8:        8,
+	ArrayTypeUint16:       16,
+	ArrayTypeUint32:       32,
+	ArrayTypeUint64:       64,
+	ArrayTypeInt8:         8,
+	ArrayTypeInt16:        16,
+	ArrayTypeInt32:        32,
+	ArrayTypeInt64:        64,
+	ArrayTypeFloat16:      16,
+	ArrayTypeFloat32:      32,
+	ArrayTypeFloat64:      64,
+	ArrayTypeUUID:         128,
+	ArrayTypeString:       8,
+	ArrayTypeURI:          8,
+	ArrayTypeCustomBinary: 8,
+	ArrayTypeCustomText:   8,
 }
 
 // DataEventReceiver receives data events (int, string, etc) and performs
@@ -171,7 +168,7 @@ func NewNullEventReceiver() *NullEventReceiver {
 func (_this *NullEventReceiver) OnBeginDocument()                    {}
 func (_this *NullEventReceiver) OnVersion(uint64)                    {}
 func (_this *NullEventReceiver) OnPadding(int)                       {}
-func (_this *NullEventReceiver) OnNull()                              {}
+func (_this *NullEventReceiver) OnNull()                             {}
 func (_this *NullEventReceiver) OnBool(bool)                         {}
 func (_this *NullEventReceiver) OnTrue()                             {}
 func (_this *NullEventReceiver) OnFalse()                            {}

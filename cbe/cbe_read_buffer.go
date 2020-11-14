@@ -158,10 +158,10 @@ func (_this *ReadBuffer) DecodeSmallULEB128(name string, maxValue uint64) uint64
 
 complete:
 	if asBig != nil {
-		panic(fmt.Errorf("%v: %v is too big", asBig, name))
+		_this.errorf("%v: %v is too big", asBig, name)
 	}
 	if asUint > maxValue {
-		panic(fmt.Errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue))
+		_this.errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue)
 	}
 	_this.markBytesRead(bytesDecoded)
 	return asUint
@@ -236,22 +236,17 @@ complete:
 
 func (_this *ReadBuffer) DecodeDate() *compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeDate(_this.allUnreadBytes())
-	if err == nil {
-		goto complete
-	}
-	if err != compact_time.ErrorIncomplete {
-		_this.unexpectedError(err)
-	}
-	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-		_this.position += positionOffset
-		value, bytesDecoded, err = compact_time.DecodeDate(_this.allUnreadBytes())
-	})
 	if err == compact_time.ErrorIncomplete {
-		_this.unexpectedEOD()
+		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+			_this.position += positionOffset
+			value, bytesDecoded, err = compact_time.DecodeDate(_this.allUnreadBytes())
+		})
+		if err == compact_time.ErrorIncomplete {
+			_this.unexpectedEOD()
+		}
 	}
 
-complete:
-	if err := value.Validate(); err != nil {
+	if err != nil {
 		_this.unexpectedError(err)
 	}
 	_this.markBytesRead(bytesDecoded)
@@ -259,47 +254,37 @@ complete:
 }
 
 func (_this *ReadBuffer) DecodeTime() *compact_time.Time {
-	value, bytesDecoded, isComplete := compact_time.DecodeTime(_this.allUnreadBytes())
-	if err := value.Validate(); err != nil {
-		_this.unexpectedError(err)
-	}
-	if isComplete {
-		goto complete
-	}
-	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-		_this.position += positionOffset
-		value, bytesDecoded, isComplete = compact_time.DecodeTime(_this.allUnreadBytes())
-		if err := value.Validate(); err != nil {
-			_this.unexpectedError(err)
+	value, bytesDecoded, err := compact_time.DecodeTime(_this.allUnreadBytes())
+	if err == compact_time.ErrorIncomplete {
+		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+			_this.position += positionOffset
+			value, bytesDecoded, err = compact_time.DecodeTime(_this.allUnreadBytes())
+		})
+		if err == compact_time.ErrorIncomplete {
+			_this.unexpectedEOD()
 		}
-	})
-	if !isComplete {
-		_this.unexpectedEOD()
 	}
 
-complete:
+	if err != nil {
+		_this.unexpectedError(err)
+	}
 	_this.markBytesRead(bytesDecoded)
 	return value
 }
 
 func (_this *ReadBuffer) DecodeTimestamp() *compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeTimestamp(_this.allUnreadBytes())
-	if err == nil {
-		goto complete
-	}
-	if err != compact_time.ErrorIncomplete {
-		_this.unexpectedError(err)
-	}
-	_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
-		_this.position += positionOffset
-		value, bytesDecoded, err = compact_time.DecodeTimestamp(_this.allUnreadBytes())
-	})
 	if err == compact_time.ErrorIncomplete {
-		_this.unexpectedEOD()
+		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
+			_this.position += positionOffset
+			value, bytesDecoded, err = compact_time.DecodeTimestamp(_this.allUnreadBytes())
+		})
+		if err == compact_time.ErrorIncomplete {
+			_this.unexpectedEOD()
+		}
 	}
 
-complete:
-	if err := value.Validate(); err != nil {
+	if err != nil {
 		_this.unexpectedError(err)
 	}
 	_this.markBytesRead(bytesDecoded)

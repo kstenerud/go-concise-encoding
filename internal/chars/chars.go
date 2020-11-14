@@ -18,11 +18,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package unicode
+package chars
 
-func StringCharsHaveProperty(str string, property CharProperty) bool {
+const EndOfDocumentMarker = 0x100
+
+func (_this CharProperty) HasProperty(property CharProperty) bool {
+	return _this&property != 0
+}
+
+func StringRunesHaveProperty(str string, property CharProperty) bool {
 	for _, ch := range str {
-		if charProperties[ch]&property != 0 {
+		if charProperties[ch].HasProperty(property) {
 			return true
 		}
 	}
@@ -31,21 +37,33 @@ func StringCharsHaveProperty(str string, property CharProperty) bool {
 
 func StringBytesHaveProperty(str []byte, property CharProperty) bool {
 	for _, ch := range str {
-		if asciiProperties[ch]&property != 0 {
+		if asciiProperties[ch].HasProperty(property) {
 			return true
 		}
 	}
 	return false
 }
 
-func GetCharProperty(char rune) CharProperty {
-	return charProperties[char]
+func GetRuneProperty(r rune) CharProperty {
+	return charProperties[r]
 }
 
-func CharHasProperty(char rune, property CharProperty) bool {
-	return GetCharProperty(char).HasProperty(property)
+func RuneHasProperty(r rune, property CharProperty) bool {
+	return charProperties[r].HasProperty(property)
 }
 
-func (_this CharProperty) HasProperty(property CharProperty) bool {
-	return _this&property != 0
+func ByteHasProperty(b byte, property CharProperty) bool {
+	return asciiProperties[b].HasProperty(property)
+}
+
+type Byte uint8
+
+func (_this Byte) HasProperty(property CharProperty) bool {
+	return asciiProperties[_this].HasProperty(property)
+}
+
+type ByteWithEOF uint16
+
+func (_this ByteWithEOF) HasProperty(property CharProperty) bool {
+	return asciiProperties[_this].HasProperty(property)
 }

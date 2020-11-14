@@ -164,9 +164,6 @@ func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "String")
 }
-func (_this *RootBuilder) BuildFromVerbatimString(_ []byte, _ reflect.Value) {
-	PanicBadEvent(_this, "VerbatimString")
-}
 func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
 	PanicBadEvent(_this, "URI")
 }

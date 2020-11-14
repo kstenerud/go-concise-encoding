@@ -77,13 +77,6 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 					_this.engine.CompleteObject()
 				}
 			})
-	case events.ArrayTypeVerbatimString:
-		_this.beginStringLikeArray(awaitingVerbatimString,
-			func(stringData []byte) {
-				_this.engine.BeginObject()
-				_this.stream.AddString(asVerbatimString(stringData))
-				_this.engine.CompleteObject()
-			})
 	case events.ArrayTypeURI:
 		_this.beginStringLikeArray(awaitingURI,
 			func(stringData []byte) {

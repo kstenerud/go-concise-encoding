@@ -105,23 +105,59 @@ func NewURI(uriString string) *url.URL {
 }
 
 func NewDate(year, month, day int) *compact_time.Time {
-	return compact_time.NewDate(year, month, day)
+	t, err := compact_time.NewDate(year, month, day)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
 
 func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
-	return compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
+	t, err := compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
 
 func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
-	return compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+	t, err := compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
 
 func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
-	return compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
+	t, err := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
 
 func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
-	return compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+	t, err := compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+func AsGoTime(t *compact_time.Time) time.Time {
+	gt, err := t.AsGoTime()
+	if err != nil {
+		panic(err)
+	}
+	return gt
+}
+
+func AsCompactTime(t time.Time) *compact_time.Time {
+	ct, err := compact_time.AsCompactTime(t)
+	if err != nil {
+		panic(err)
+	}
+	return ct
 }
 
 func ReportPanic(function func()) (err error) {
@@ -202,7 +238,7 @@ var (
 	EvNAN    = NAN()
 	EvUUID   = UUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvGT     = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
-	EvCT     = CT(compact_time.NewDate(2020, 1, 1))
+	EvCT     = CT(NewDate(2020, 1, 1))
 	EvCTNil  = CT(nil)
 	EvL      = L()
 	EvM      = M()
@@ -216,8 +252,6 @@ var (
 	EvAD     = AD([]byte{1})
 	EvS      = S("a")
 	EvSB     = SB()
-	EvVS     = VS("a")
-	EvVB     = VB()
 	EvURI    = URI("http://z.com")
 	EvUB     = UB()
 	EvCUB    = CUB([]byte{1})
@@ -256,7 +290,7 @@ var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
-	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvVS, EvVB, EvURI, EvUB,
+	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvURI, EvUB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
 	EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
@@ -279,7 +313,7 @@ func ComplementaryEvents(events []*TEvent) []*TEvent {
 
 var (
 	ArrayBeginTypes = []*TEvent{
-		EvSB, EvVB, EvUB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
+		EvSB, EvUB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
 		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB,
 	}
 
@@ -288,7 +322,7 @@ var (
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvB, EvTT, EvFF, EvB, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvVS, EvVB, EvURI, EvUB, EvCUB,
+		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvURI, EvUB, EvCUB,
 		EvCBB, EvCUT, EvCTB, EvMETA, EvCMT, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
@@ -299,13 +333,13 @@ var (
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
 	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
 
-	ValidCommentValues   = []*TEvent{EvCMT, EvE, EvS, EvSB, EvVS, EvVB, EvPAD}
+	ValidCommentValues   = []*TEvent{EvCMT, EvE, EvS, EvSB, EvPAD}
 	InvalidCommentValues = ComplementaryEvents(ValidCommentValues)
 
-	ValidMarkupNames   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvPI, EvI, EvBI}
+	ValidMarkupNames   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI}
 	InvalidMarkupNames = ComplementaryEvents(ValidMarkupNames)
 
-	ValidMarkupContents   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvMUP, EvCMT, EvE}
+	ValidMarkupContents   = []*TEvent{EvPAD, EvS, EvSB, EvMUP, EvCMT, EvE}
 	InvalidMarkupContents = ComplementaryEvents(ValidMarkupContents)
 
 	ValidAfterArrayBegin   = []*TEvent{EvAC}
@@ -314,13 +348,13 @@ var (
 	ValidAfterArrayChunk   = []*TEvent{EvAD}
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
 
-	ValidMarkerIDs   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvPI, EvI, EvBI}
+	ValidMarkerIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI}
 	InvalidMarkerIDs = ComplementaryEvents(ValidMarkerIDs)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
 	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
 
-	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvVS, EvVB, EvPI, EvI, EvBI, EvURI, EvUB}
+	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvURI, EvUB}
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
 )
 
@@ -348,7 +382,6 @@ const (
 	TEventTime
 	TEventCompactTime
 	TEventString
-	TEventVerbatimString
 	TEventURI
 	TEventCustomBinary
 	TEventCustomText
@@ -366,7 +399,6 @@ const (
 	TEventArrayFloat64
 	TEventArrayUUID
 	TEventStringBegin
-	TEventVerbatimStringBegin
 	TEventURIBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
@@ -397,73 +429,71 @@ const (
 )
 
 var TEventNames = []string{
-	TEventBeginDocument:       "BD",
-	TEventVersion:             "V",
-	TEventPadding:             "PAD",
-	TEventNil:                 "N",
-	TEventBool:                "B",
-	TEventTrue:                "TT",
-	TEventFalse:               "FF",
-	TEventPInt:                "PI",
-	TEventNInt:                "NI",
-	TEventInt:                 "I",
-	TEventBigInt:              "BI",
-	TEventFloat:               "F",
-	TEventBigFloat:            "BF",
-	TEventDecimalFloat:        "DF",
-	TEventBigDecimalFloat:     "BDF",
-	TEventNan:                 "NAN",
-	TEventSNan:                "SNAN",
-	TEventUUID:                "UUID",
-	TEventTime:                "GT",
-	TEventCompactTime:         "CT",
-	TEventString:              "S",
-	TEventVerbatimString:      "VS",
-	TEventURI:                 "URI",
-	TEventCustomBinary:        "CUB",
-	TEventCustomText:          "CUT",
-	TEventArrayBoolean:        "AB",
-	TEventArrayInt8:           "AI8",
-	TEventArrayInt16:          "AI16",
-	TEventArrayInt32:          "AI32",
-	TEventArrayInt64:          "AI64",
-	TEventArrayUint8:          "AU8",
-	TEventArrayUint16:         "AU16",
-	TEventArrayUint32:         "AU32",
-	TEventArrayUint64:         "AU64",
-	TEventArrayFloat16:        "AF16",
-	TEventArrayFloat32:        "AF32",
-	TEventArrayFloat64:        "AF64",
-	TEventArrayUUID:           "AUU",
-	TEventStringBegin:         "SB",
-	TEventVerbatimStringBegin: "VB",
-	TEventURIBegin:            "UB",
-	TEventCustomBinaryBegin:   "CBB",
-	TEventCustomTextBegin:     "CTB",
-	TEventArrayBooleanBegin:   "ABB",
-	TEventArrayInt8Begin:      "AI8B",
-	TEventArrayInt16Begin:     "AI16B",
-	TEventArrayInt32Begin:     "AI32B",
-	TEventArrayInt64Begin:     "AI64B",
-	TEventArrayUint8Begin:     "AU8B",
-	TEventArrayUint16Begin:    "AU16B",
-	TEventArrayUint32Begin:    "AU32B",
-	TEventArrayUint64Begin:    "AU64B",
-	TEventArrayFloat16Begin:   "AF16B",
-	TEventArrayFloat32Begin:   "AF32B",
-	TEventArrayFloat64Begin:   "AF64B",
-	TEventArrayUUIDBegin:      "AUUB",
-	TEventArrayChunk:          "AC",
-	TEventArrayData:           "AD",
-	TEventList:                "L",
-	TEventMap:                 "M",
-	TEventMarkup:              "MUP",
-	TEventMetadata:            "META",
-	TEventComment:             "CMT",
-	TEventEnd:                 "E",
-	TEventMarker:              "MARK",
-	TEventReference:           "REF",
-	TEventEndDocument:         "ED",
+	TEventBeginDocument:     "BD",
+	TEventVersion:           "V",
+	TEventPadding:           "PAD",
+	TEventNil:               "N",
+	TEventBool:              "B",
+	TEventTrue:              "TT",
+	TEventFalse:             "FF",
+	TEventPInt:              "PI",
+	TEventNInt:              "NI",
+	TEventInt:               "I",
+	TEventBigInt:            "BI",
+	TEventFloat:             "F",
+	TEventBigFloat:          "BF",
+	TEventDecimalFloat:      "DF",
+	TEventBigDecimalFloat:   "BDF",
+	TEventNan:               "NAN",
+	TEventSNan:              "SNAN",
+	TEventUUID:              "UUID",
+	TEventTime:              "GT",
+	TEventCompactTime:       "CT",
+	TEventString:            "S",
+	TEventURI:               "URI",
+	TEventCustomBinary:      "CUB",
+	TEventCustomText:        "CUT",
+	TEventArrayBoolean:      "AB",
+	TEventArrayInt8:         "AI8",
+	TEventArrayInt16:        "AI16",
+	TEventArrayInt32:        "AI32",
+	TEventArrayInt64:        "AI64",
+	TEventArrayUint8:        "AU8",
+	TEventArrayUint16:       "AU16",
+	TEventArrayUint32:       "AU32",
+	TEventArrayUint64:       "AU64",
+	TEventArrayFloat16:      "AF16",
+	TEventArrayFloat32:      "AF32",
+	TEventArrayFloat64:      "AF64",
+	TEventArrayUUID:         "AUU",
+	TEventStringBegin:       "SB",
+	TEventURIBegin:          "UB",
+	TEventCustomBinaryBegin: "CBB",
+	TEventCustomTextBegin:   "CTB",
+	TEventArrayBooleanBegin: "ABB",
+	TEventArrayInt8Begin:    "AI8B",
+	TEventArrayInt16Begin:   "AI16B",
+	TEventArrayInt32Begin:   "AI32B",
+	TEventArrayInt64Begin:   "AI64B",
+	TEventArrayUint8Begin:   "AU8B",
+	TEventArrayUint16Begin:  "AU16B",
+	TEventArrayUint32Begin:  "AU32B",
+	TEventArrayUint64Begin:  "AU64B",
+	TEventArrayFloat16Begin: "AF16B",
+	TEventArrayFloat32Begin: "AF32B",
+	TEventArrayFloat64Begin: "AF64B",
+	TEventArrayUUIDBegin:    "AUUB",
+	TEventArrayChunk:        "AC",
+	TEventArrayData:         "AD",
+	TEventList:              "L",
+	TEventMap:               "M",
+	TEventMarkup:            "MUP",
+	TEventMetadata:          "META",
+	TEventComment:           "CMT",
+	TEventEnd:               "E",
+	TEventMarker:            "MARK",
+	TEventReference:         "REF",
+	TEventEndDocument:       "ED",
 }
 
 func (_this TEventType) String() string {
@@ -541,9 +571,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventString:
 		bytes := []byte(_this.V1.(string))
 		receiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
-	case TEventVerbatimString:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeVerbatimString, uint64(len(bytes)), bytes)
 	case TEventURI:
 		bytes := []byte(_this.V1.(string))
 		receiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
@@ -596,8 +623,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArray(events.ArrayTypeUUID, uint64(len(bytes)/16), bytes)
 	case TEventStringBegin:
 		receiver.OnArrayBegin(events.ArrayTypeString)
-	case TEventVerbatimStringBegin:
-		receiver.OnArrayBegin(events.ArrayTypeVerbatimString)
 	case TEventURIBegin:
 		receiver.OnArrayBegin(events.ArrayTypeURI)
 	case TEventCustomBinaryBegin:
@@ -684,7 +709,6 @@ func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
 func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
 func CT(v *compact_time.Time) *TEvent   { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
-func VS(v string) *TEvent               { return newTEvent(TEventVerbatimString, v, nil) }
 func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
@@ -702,7 +726,6 @@ func AF32(v []float32) *TEvent          { return newTEvent(TEventArrayFloat32, v
 func AF64(v []float64) *TEvent          { return newTEvent(TEventArrayFloat64, v, nil) }
 func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUUID, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
-func VB() *TEvent                       { return newTEvent(TEventVerbatimStringBegin, nil, nil) }
 func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
 func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
@@ -911,8 +934,6 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.Print(S(string(value)))
-	case events.ArrayTypeVerbatimString:
-		h.Print(VS(string(value)))
 	case events.ArrayTypeURI:
 		h.Print(URI(string(value)))
 	case events.ArrayTypeCustomBinary:
@@ -954,8 +975,6 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.Print(SB())
-	case events.ArrayTypeVerbatimString:
-		h.Print(VB())
 	case events.ArrayTypeURI:
 		h.Print(UB())
 	case events.ArrayTypeCustomBinary:
@@ -1077,8 +1096,6 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(S(string(value)))
-	case events.ArrayTypeVerbatimString:
-		h.add(VS(string(value)))
 	case events.ArrayTypeURI:
 		h.add(URI(string(value)))
 	case events.ArrayTypeCustomBinary:
@@ -1119,8 +1136,6 @@ func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(SB())
-	case events.ArrayTypeVerbatimString:
-		h.add(VB())
 	case events.ArrayTypeURI:
 		h.add(UB())
 	case events.ArrayTypeCustomBinary:
@@ -1433,7 +1448,7 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PIS.Inner = baseValue + 16
 	testTime := time.Date(30000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
 	_this.PTime = &testTime
-	_this.PCTime = compact_time.NewTimestamp(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
+	_this.PCTime = NewTS(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
 	_this.CTime = *_this.PCTime
 	_this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
 }

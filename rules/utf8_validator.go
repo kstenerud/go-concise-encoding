@@ -55,6 +55,7 @@ func (_this *UTF8Validator) AddByte(byteValue byte) {
 	if byteValue&initiator1ByteMask != initiator1ByteMatch {
 		_this.bytesRemaining = 0
 		_this.accumulator = rune(byteValue)
+		// TODO: Remove this
 		if byteValue == 0 {
 			panic(fmt.Errorf("UTF-8 encoding: NUL byte is not allowed"))
 		}

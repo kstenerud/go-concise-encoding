@@ -32,7 +32,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
 )
 
@@ -43,7 +42,7 @@ func TestIterateBasic(t *testing.T) {
 	dfloat := NewDFloat("1.23456e1000")
 	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()
-	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
+	pCTimeNow := test.AsCompactTime(gTimeNow)
 	pURL := NewURI("http://x.com")
 
 	assertIterate(t, nil, N())

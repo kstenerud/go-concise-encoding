@@ -234,7 +234,7 @@ func (_this *Encoder) OnNan(signaling bool) {
 
 func (_this *Encoder) OnUUID(v []byte) {
 	if len(v) != 16 {
-		panic(fmt.Errorf("expected UUID length 16 but got %v", len(v)))
+		_this.errorf("expected UUID length 16 but got %v", len(v))
 	}
 	_this.engine.BeginObject()
 	_this.stream.AddFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
@@ -243,20 +243,25 @@ func (_this *Encoder) OnUUID(v []byte) {
 }
 
 func (_this *Encoder) OnTime(value time.Time) {
-	_this.OnCompactTime(compact_time.AsCompactTime(value))
+	t, err := compact_time.AsCompactTime(value)
+	if err != nil {
+		_this.unexpectedError(err, value)
+	}
+	_this.OnCompactTime(t)
 }
 
 func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	tz := func(v *compact_time.Time) string {
-		switch v.TimezoneIs {
-		case compact_time.TypeUTC:
+		switch v.TimezoneType {
+		case compact_time.TypeZero:
 			return ""
-		case compact_time.TypeAreaLocation:
+		case compact_time.TypeAreaLocation, compact_time.TypeLocal:
 			return fmt.Sprintf("/%v", v.AreaLocation)
 		case compact_time.TypeLatitudeLongitude:
 			return fmt.Sprintf("/%.2f/%.2f", float64(v.LatitudeHundredths)/100, float64(v.LongitudeHundredths)/100)
 		default:
-			panic(fmt.Errorf("unknown compact time timezone type %v", value.TimezoneIs))
+			_this.errorf("unknown compact time timezone type %v", value.TimezoneType)
+			return ""
 		}
 	}
 	subsec := func(v *compact_time.Time) string {
@@ -271,7 +276,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 		return str[1:]
 	}
 	_this.engine.BeginObject()
-	switch value.TimeIs {
+	switch value.TimeType {
 	case compact_time.TypeDate:
 		_this.stream.AddFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
 	case compact_time.TypeTime:
@@ -280,7 +285,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 		_this.stream.AddFmt("%d-%02d-%02d/%02d:%02d:%02d%v%v",
 			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	default:
-		panic(fmt.Errorf("unknown compact time type %v", value.TimeIs))
+		_this.errorf("unknown compact time type %v", value.TimeType)
 	}
 	_this.engine.CompleteObject()
 }
@@ -339,4 +344,12 @@ func (_this *Encoder) OnReference() {
 
 func (_this *Encoder) OnEndDocument() {
 	_this.stream.Flush()
+}
+
+func (_this *Encoder) unexpectedError(err error, encoding interface{}) {
+	_this.errorf("unexpected error [%v] while encoding %v", err, encoding)
+}
+
+func (_this *Encoder) errorf(format string, args ...interface{}) {
+	panic(fmt.Errorf(format, args...))
 }

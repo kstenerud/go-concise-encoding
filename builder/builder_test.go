@@ -28,6 +28,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/test"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
@@ -53,8 +55,8 @@ func TestBuilderBasicTypes(t *testing.T) {
 	dfloat := NewDFloat("1.23456e1000")
 	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()
-	pCTimeNow := compact_time.AsCompactTime(gTimeNow)
-	pCTime := compact_time.NewTimeLatLong(10, 5, 59, 100, 506, 107)
+	pCTimeNow := test.AsCompactTime(gTimeNow)
+	pCTime := test.NewTimeLL(10, 5, 59, 100, 506, 107)
 	pURL := NewURI("http://x.com")
 
 	assertBuild(t, true, B(true))
@@ -127,7 +129,7 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
 	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
 	assertBuildPanics(t, v, M())
@@ -139,7 +141,7 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, URI("x://x"))
 	assertBuildPanics(t, *v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, *v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, *v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, *v, GT(time.Now()))
 	assertBuildPanics(t, *v, L())
 	assertBuildPanics(t, *v, M())
@@ -173,7 +175,7 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
 	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
 	assertBuildPanics(t, v, M())
@@ -185,7 +187,7 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, URI("x://x"))
 	assertBuildPanics(t, *v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, *v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, *v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, *v, GT(time.Now()))
 	assertBuildPanics(t, *v, L())
 	assertBuildPanics(t, *v, M())
@@ -231,7 +233,7 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
 	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
 	assertBuildPanics(t, v, M())
@@ -254,7 +256,7 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, URI("x://x"))
 	assertBuildPanics(t, *v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, *v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, *v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, *v, GT(time.Now()))
 	assertBuildPanics(t, *v, L())
 	assertBuildPanics(t, *v, M())
@@ -281,7 +283,7 @@ func TestBuilderDecimalFloatFail(t *testing.T) {
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
 	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
 	assertBuildPanics(t, v, M())
@@ -315,7 +317,7 @@ func TestBuilderConvertToFloatFail(t *testing.T) {
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, URI("x://x"))
 	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, v, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
 	assertBuildPanics(t, v, M())
@@ -352,7 +354,7 @@ func TestBuilderConvertToIntFail(t *testing.T) {
 	assertBuildPanics(t, int(1), AU8([]byte{1}))
 	assertBuildPanics(t, int(1), URI("x://x"))
 	assertBuildPanics(t, int(1), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, int(1), CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, int(1), CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, int(1), GT(time.Now()))
 	assertBuildPanics(t, int(1), L())
 	assertBuildPanics(t, int(1), M())
@@ -412,7 +414,7 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 	assertBuildPanics(t, uint(1), AU8([]byte{1}))
 	assertBuildPanics(t, uint(1), URI("x://x"))
 	assertBuildPanics(t, uint(1), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, uint(1), CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, uint(1), CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, uint(1), GT(time.Now()))
 	assertBuildPanics(t, uint(1), L())
 	assertBuildPanics(t, uint(1), M())
@@ -463,7 +465,7 @@ func TestBuilderStringFail(t *testing.T) {
 	assertBuildPanics(t, "", AU8([]byte{1}))
 	assertBuildPanics(t, "", URI("x://x"))
 	assertBuildPanics(t, "", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, "", CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, "", CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, "", GT(time.Now()))
 	assertBuildPanics(t, "", L())
 	assertBuildPanics(t, "", M())
@@ -478,11 +480,6 @@ func TestBuilderChunkedBytes(t *testing.T) {
 func TestBuilderChunkedString(t *testing.T) {
 	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
 	assertBuild(t, "test", SB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
-}
-
-func TestBuilderChunkedVerbatimString(t *testing.T) {
-	assertBuild(t, "test", VB(), AC(2, true), AD([]byte("te")), AC(2, false), AD([]byte("st")))
-	assertBuild(t, "test", VB(), AC(2, true), AD([]byte("te")), AC(2, true), AD([]byte("st")), AC(0, false))
 }
 
 func TestBuilderChunkedURI(t *testing.T) {
@@ -535,7 +532,7 @@ func TestBuilderGoTime(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, gtime, GT(gtime))
 	assertBuild(t, gtime, CT(ctime))
@@ -543,7 +540,7 @@ func TestBuilderGoTime(t *testing.T) {
 
 func TestBuilderGoTimeFail(t *testing.T) {
 	gtime := time.Time{}
-	ctime := compact_time.NewTimeLatLong(1, 1, 1, 1, 100, 0)
+	ctime := test.NewTimeLL(1, 1, 1, 1, 100, 0)
 	assertBuildPanics(t, gtime, N())
 	assertBuildPanics(t, gtime, B(true))
 	assertBuildPanics(t, gtime, PI(1))
@@ -572,7 +569,7 @@ func TestBuilderCompactTime(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, (*compact_time.Time)(nil), N())
 	assertBuild(t, ctime, GT(gtime))
@@ -583,7 +580,7 @@ func TestBuilderCompactTime(t *testing.T) {
 }
 
 func TestBuilderCompactTimeFail(t *testing.T) {
-	ctime := compact_time.NewTimeLatLong(1, 1, 1, 1, 100, 0)
+	ctime := test.NewTimeLL(1, 1, 1, 1, 100, 0)
 	assertBuildPanics(t, ctime, B(true))
 	assertBuildPanics(t, ctime, PI(1))
 	assertBuildPanics(t, ctime, NI(1))
@@ -630,7 +627,7 @@ func TestBuilderSlice(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, []bool{false, true}, L(), B(false), B(true), E())
 	assertBuild(t, []int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
@@ -659,7 +656,7 @@ func TestBuilderArray(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, [2]bool{false, true}, L(), B(false), B(true), E())
 	assertBuild(t, [7]int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
@@ -702,7 +699,7 @@ func TestBuilderByteArrayFail(t *testing.T) {
 	assertBuildPanics(t, [1]byte{}, S(""))
 	assertBuildPanics(t, [1]byte{}, URI("x://x"))
 	assertBuildPanics(t, [1]byte{}, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-	assertBuildPanics(t, [1]byte{}, CT(compact_time.AsCompactTime(time.Now())))
+	assertBuildPanics(t, [1]byte{}, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, [1]byte{}, GT(time.Now()))
 	assertBuildPanics(t, [1]byte{}, L())
 	assertBuildPanics(t, [1]byte{}, M())
@@ -715,7 +712,7 @@ func TestBuilderMap(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, map[int]interface{}{
 		1:  nil,
@@ -769,7 +766,7 @@ func TestBuilderInterfaceSlice(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, []interface{}{
 		// nil,
@@ -816,7 +813,7 @@ func TestBuilderInterfaceMap(t *testing.T) {
 		panic(err)
 	}
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
-	ctime := compact_time.AsCompactTime(gtime)
+	ctime := test.AsCompactTime(gtime)
 
 	assertBuild(t, map[interface{}]interface{}{
 		1:  nil,

@@ -100,7 +100,6 @@ func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v *compact_time.Time) *test.TEvent   { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
-func VS(v string) *test.TEvent               { return test.VS(v) }
 func URI(v string) *test.TEvent              { return test.URI(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
@@ -117,7 +116,6 @@ func AF16(v []byte) *test.TEvent             { return test.AF16(v) }
 func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
-func VB() *test.TEvent                       { return test.VB() }
 func UB() *test.TEvent                       { return test.UB() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
