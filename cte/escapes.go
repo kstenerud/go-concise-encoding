@@ -69,26 +69,38 @@ func asPotentialQuotedString(str []byte) (finalString string) {
 		return `"` + asString + `"`
 	}
 
-	return escapedQuoted(asString, escapeCount)
+	return asEscapedQuotedString(asString, escapeCount)
 }
 
 // Wraps a string-encoded array destined for a CTE document.
 func asStringArray(elementType string, str []byte) string {
 	for _, ch := range string(str) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
-			return escapedStringArray(elementType, string(str))
+			str = asEscapedStringArrayContent(str)
+			break
 		}
 	}
 
 	return "|" + elementType + " " + string(str) + "|"
 }
 
+// Possibly escapes a string-encoded array destined for a CTE document.
+func asStringArrayContents(str []byte) []byte {
+	for _, ch := range string(str) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
+			return asEscapedStringArrayContent(str)
+		}
+	}
+
+	return str
+}
+
 // Wraps markup content destined for a CTE document.
-func asMarkupContent(str []byte) string {
+func asMarkupContents(str []byte) string {
 	asString := string(str)
 	for _, ch := range asString {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
-			return escapedMarkupText(asString)
+			return asEscapedMarkupContents(asString)
 		}
 	}
 
@@ -97,7 +109,7 @@ func asMarkupContent(str []byte) string {
 
 // ============================================================================
 
-func escapedQuoted(str string, escapeCount int) string {
+func asEscapedQuotedString(str string, escapeCount int) string {
 	var sb strings.Builder
 	// Worst case scenario: All characters that require escaping need a unicode
 	// sequence. In this case, we'd need at least 7 bytes per escaped character.
@@ -135,22 +147,18 @@ func escapeCharQuoted(ch rune) string {
 	return unicodeEscape(ch)
 }
 
-func escapedStringArray(elementType string, str string) string {
+func asEscapedStringArrayContent(str []byte) []byte {
 	var sb strings.Builder
-	sb.Grow(len([]byte(str)))
-	// Note: StringBuilder's WriteXYZ() always return nil errors
-	sb.WriteByte('|')
-	sb.WriteString(elementType)
-	sb.WriteByte(' ')
-	for _, ch := range str {
+	sb.Grow(len(str))
+	for _, ch := range string(str) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
+			// Note: StringBuilder's WriteXYZ() always return nil errors
 			sb.WriteString(escapeCharStringArray(ch))
 		} else {
 			sb.WriteRune(ch)
 		}
 	}
-	sb.WriteByte('|')
-	return sb.String()
+	return []byte(sb.String())
 }
 
 func unicodeEscape(ch rune) string {
@@ -174,7 +182,7 @@ func escapeCharStringArray(ch rune) string {
 	return unicodeEscape(ch)
 }
 
-func escapedMarkupText(str string) string {
+func asEscapedMarkupContents(str string) string {
 	var sb strings.Builder
 	sb.Grow(len([]byte(str)))
 	// Note: StringBuilder's WriteXYZ() always return nil errors
@@ -252,52 +260,4 @@ func generateVerbatimSentinel(str string) string {
 	// the string. At this point, we conclude that it's a specially crafted
 	// attack string, and not naturally occurring.
 	panic(fmt.Errorf("could not generate verbatim sentinel for malicious string [%v]", str))
-}
-
-func unescape(str []byte) []byte {
-	iDst := 0
-	for iSrc := 0; iSrc < len(str); iSrc++ {
-		b := str[iSrc]
-		if b == '\\' {
-			iSrc++
-			if iSrc >= len(str) {
-				// TODO: Error
-			}
-			b := str[iSrc]
-			switch b {
-			case 't':
-				str[iDst] = '\t'
-			case 'n':
-				str[iDst] = '\n'
-			case 'r':
-				str[iDst] = '\r'
-			case '"', '*', '/', '<', '>', '\\', '|':
-				str[iDst] = b
-			case '_':
-				// Non-breaking space
-				str[iDst] = 0xc2
-				iDst++
-				str[iDst] = 0xa0
-			case '-':
-				// Soft hyphen
-				str[iDst] = 0xc2
-				iDst++
-				str[iDst] = 0xad
-			case '\r', '\n':
-				// TODO: Continuation
-			case '0':
-				str[iDst] = 0
-			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
-				// TODO: Unicode escape
-			case '.':
-				// TODO: Verbatim
-			default:
-				// TODO: Error
-			}
-		} else {
-			str[iDst] = b
-		}
-		iDst++
-	}
-	return str[:iDst]
 }

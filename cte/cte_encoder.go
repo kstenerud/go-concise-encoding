@@ -133,7 +133,7 @@ func (_this *Encoder) OnInt(value int64) {
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
 	_this.engine.BeginObject()
-	_this.stream.AddFmt("%v", value)
+	_this.stream.AddString(value.String())
 	_this.engine.CompleteObject()
 }
 
@@ -256,7 +256,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 		case compact_time.TypeZero:
 			return ""
 		case compact_time.TypeAreaLocation, compact_time.TypeLocal:
-			return fmt.Sprintf("/%v", v.AreaLocation)
+			return fmt.Sprintf("/%s", v.AreaLocation)
 		case compact_time.TypeLatitudeLongitude:
 			return fmt.Sprintf("/%.2f/%.2f", float64(v.LatitudeHundredths)/100, float64(v.LongitudeHundredths)/100)
 		default:
@@ -280,9 +280,9 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	case compact_time.TypeDate:
 		_this.stream.AddFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
 	case compact_time.TypeTime:
-		_this.stream.AddFmt("%02d:%02d:%02d%v%v", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
+		_this.stream.AddFmt("%02d:%02d:%02d%s%s", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	case compact_time.TypeTimestamp:
-		_this.stream.AddFmt("%d-%02d-%02d/%02d:%02d:%02d%v%v",
+		_this.stream.AddFmt("%d-%02d-%02d/%02d:%02d:%02d%s%s",
 			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	default:
 		_this.errorf("unknown compact time type %v", value.TimeType)

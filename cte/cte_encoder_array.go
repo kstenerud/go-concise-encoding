@@ -67,7 +67,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 					_this.engine.CompleteReference(string(stringData))
 				case awaitingMarkupItem, awaitingMarkupFirstItem:
 					_this.engine.BeginObject()
-					_this.stream.AddString(asMarkupContent(stringData))
+					_this.stream.AddString(asMarkupContents(stringData))
 					_this.engine.CompleteObject()
 				case awaitingCommentItem:
 					_this.engine.AddCommentString(string(stringData))
@@ -84,7 +84,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 					_this.engine.CompleteReference(asStringArray("u", stringData))
 				} else {
 					_this.engine.BeginObject()
-					_this.stream.AddString(asStringArray("u", stringData))
+					_this.encodeStringArray("u", stringData)
 					_this.engine.CompleteObject()
 				}
 			})
@@ -119,7 +119,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 		_this.beginStringLikeArray(awaitingCustomText,
 			func(stringData []byte) {
 				_this.engine.BeginObject()
-				_this.stream.AddString(asStringArray("ct", stringData))
+				_this.encodeStringArray("ct", stringData)
 				_this.engine.CompleteObject()
 			})
 	case events.ArrayTypeUint8:
@@ -430,6 +430,17 @@ func (_this *arrayEncoderEngine) drainStringBuffer() []byte {
 	data := _this.stringBuffer
 	_this.stringBuffer = _this.stringBuffer[:0]
 	return data
+}
+
+func (_this *arrayEncoderEngine) encodeStringArray(name string, contents []byte) {
+	contents = asStringArrayContents(contents)
+	nameLen := len(name)
+	dst := _this.stream.Allocate(nameLen + len(contents) + 3)
+	dst[0] = '|'
+	copy(dst[1:], name)
+	dst[nameLen+1] = ' '
+	copy(dst[nameLen+2:], contents)
+	dst[len(dst)-1] = '|'
 }
 
 // ============================================================================
