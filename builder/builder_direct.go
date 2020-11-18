@@ -102,6 +102,7 @@ func (_this *directBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.V
 }
 
 func (_this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	value = common.CloneBytes(value)
 	dst.Set(reflect.ValueOf(value))
 }
 
@@ -242,7 +243,7 @@ func (_this *directPtrBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflec
 }
 
 func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
-	dst.SetBytes(value)
+	dst.SetBytes(common.CloneBytes(value))
 }
 
 func (_this *directPtrBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {

@@ -138,7 +138,6 @@ type DataEventReceiver interface {
 	OnDecimalFloat(value compact_float.DFloat)
 	OnBigDecimalFloat(value *apd.Decimal)
 	OnNan(signaling bool)
-	OnUUID(value []byte)
 	OnTime(value time.Time)
 	OnCompactTime(value *compact_time.Time)
 	OnList()
@@ -150,9 +149,10 @@ type DataEventReceiver interface {
 	OnMarker()
 	OnReference()
 
-	// WARNING: Do not directly store pointers to the data passed via array
-	// handlers! The underlying contents should be considered volatile and
-	// likely to change after the method returns.
+	// WARNING: Do not directly store pointers to the data passed via array or
+	// UUID handlers! The underlying contents should be considered volatile and
+	// likely to change after the method returns (the decoders re-use memory).
+	OnUUID(value []byte)
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
 	OnArrayBegin(arrayType ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)

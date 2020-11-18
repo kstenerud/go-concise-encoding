@@ -98,7 +98,6 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	// Forgive initial whitespace even though it's technically not allowed
 	_this.buffer.SkipWhitespace()
-	_this.buffer.EndToken()
 
 	_this.handleVersion()
 
@@ -127,32 +126,25 @@ func chooseLowWater(bufferSize int) int {
 	return lowWater
 }
 
-// Tokens
-
-func (_this *Decoder) endObject() {
-	_this.buffer.EndToken()
-	_this.transitionToNextState()
-}
-
 // State
-
-func (_this *Decoder) stackContainer(nextState cteDecoderState) {
-	_this.containerState = append(_this.containerState, _this.currentState)
-	_this.currentState = nextState
-}
-
-func (_this *Decoder) unstackContainer() {
-	index := len(_this.containerState) - 1
-	_this.currentState = _this.containerState[index]
-	_this.containerState = _this.containerState[:index]
-}
 
 func (_this *Decoder) changeState(newState cteDecoderState) {
 	_this.currentState = newState
 }
 
-func (_this *Decoder) transitionToNextState() {
-	_this.currentState = cteDecoderStateTransitions[_this.currentState]
+func (_this *Decoder) stackContainer(nextState cteDecoderState) {
+	_this.containerState = append(_this.containerState, _this.currentState)
+	_this.changeState(nextState)
+}
+
+func (_this *Decoder) unstackContainer() {
+	index := len(_this.containerState) - 1
+	_this.changeState(_this.containerState[index])
+	_this.containerState = _this.containerState[:index]
+}
+
+func (_this *Decoder) endObject() {
+	_this.changeState(cteDecoderStateTransitions[_this.currentState])
 }
 
 // Handlers
@@ -181,13 +173,11 @@ func (_this *Decoder) handleKVSeparator() {
 	}
 	_this.buffer.AdvanceByte()
 	_this.buffer.SkipWhitespace()
-	_this.buffer.EndToken()
 	_this.endObject()
 }
 
 func (_this *Decoder) handleWhitespace() {
 	_this.buffer.SkipWhitespace()
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleVersion() {
@@ -211,10 +201,10 @@ func (_this *Decoder) handleVersion() {
 	}
 
 	_this.eventReceiver.OnVersion(version)
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleUnquotedString() {
+	_this.buffer.BeginToken()
 	_this.buffer.ReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
 
 	if _this.buffer.PeekByteAllowEOD().HasProperty(chars.CharIsObjectEnd) || _this.isOnCommentInitiator() {
@@ -298,13 +288,9 @@ func (_this *Decoder) handleNegativeNumeric() {
 		return
 	case '@':
 		_this.buffer.AdvanceByte()
-		_this.buffer.BeginSubtoken()
-		_this.buffer.ReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
-		subtoken := _this.buffer.GetSubtoken()
-		common.ASCIIBytesToLower(subtoken)
-		token := string(subtoken)
-		if token != "inf" {
-			_this.buffer.Errorf("Unknown named value: %v", token)
+		namedValue := string(_this.buffer.DecodeNamedValue())
+		if namedValue != "inf" {
+			_this.buffer.Errorf("Unknown named value: %v", namedValue)
 		}
 		_this.eventReceiver.OnFloat(math.Inf(-1))
 		_this.endObject()
@@ -487,7 +473,6 @@ func (_this *Decoder) handleListBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnList()
 	_this.stackContainer(cteDecoderStateAwaitListItem)
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleListEnd() {
@@ -501,7 +486,6 @@ func (_this *Decoder) handleMapBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMap()
 	_this.stackContainer(cteDecoderStateAwaitMapKey)
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleMapEnd() {
@@ -515,14 +499,12 @@ func (_this *Decoder) handleMetadataBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMetadata()
 	_this.stackContainer(cteDecoderStateAwaitMetaKey)
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleMetadataEnd() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.unstackContainer()
-	_this.buffer.EndToken()
 	// Don't transition state because metadata is a pseudo-object
 }
 
@@ -536,11 +518,9 @@ func (_this *Decoder) handleComment() {
 			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
 		_this.eventReceiver.OnEnd()
-		_this.buffer.EndToken()
 	case '*':
 		_this.eventReceiver.OnComment()
 		_this.stackContainer(cteDecoderStateAwaitCommentItem)
-		_this.buffer.EndToken()
 	default:
 		_this.buffer.UngetByte()
 		_this.buffer.UnexpectedChar("comment")
@@ -566,14 +546,12 @@ func (_this *Decoder) handleMarkupBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMarkup()
 	_this.stackContainer(cteDecoderStateAwaitMarkupName)
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleMarkupContentBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.changeState(cteDecoderStateAwaitMarkupItem)
-	_this.buffer.EndToken()
 }
 
 func (_this *Decoder) handleMarkupContent() {
@@ -595,11 +573,9 @@ func (_this *Decoder) handleMarkupContent() {
 			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
 		_this.eventReceiver.OnEnd()
-		_this.buffer.EndToken()
 	case nextIsMarkupBegin:
 		_this.eventReceiver.OnMarkup()
-		_this.stackContainer(cteDecoderStateAwaitMarkupValue)
-		_this.buffer.EndToken()
+		_this.stackContainer(cteDecoderStateAwaitMarkupName)
 	case nextIsMarkupEnd:
 		_this.eventReceiver.OnEnd()
 		_this.unstackContainer()
@@ -615,14 +591,10 @@ func (_this *Decoder) handleMarkupEnd() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleNamedValue() {
+func (_this *Decoder) handleNamedValueOrUUID() {
 	_this.buffer.AdvanceByte()
-	_this.buffer.BeginSubtoken()
-	_this.buffer.ReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
-	subtoken := _this.buffer.GetSubtoken()
-	common.ASCIIBytesToLower(subtoken)
-	token := string(subtoken)
-	switch token {
+	namedValue := _this.buffer.DecodeNamedValue()
+	switch string(namedValue) {
 	case "null":
 		_this.eventReceiver.OnNull()
 		_this.endObject()
@@ -649,22 +621,70 @@ func (_this *Decoder) handleNamedValue() {
 		return
 	}
 
-	// TODO: Can just read the subtoken instead since it now runs until object end
-	_this.buffer.UngetAll()
-	_this.buffer.AdvanceByte()
-	_this.eventReceiver.OnUUID(_this.buffer.DecodeUUID())
+	// UUID
+	if len(namedValue) != 36 ||
+		namedValue[8] != '-' ||
+		namedValue[13] != '-' ||
+		namedValue[18] != '-' ||
+		namedValue[23] != '-' {
+		_this.buffer.UngetBytes(len(namedValue))
+		_this.buffer.Errorf("Malformed UUID: [%s]", string(namedValue))
+	}
+
+	decodeHex := func(b byte) byte {
+		switch {
+		case chars.ByteHasProperty(b, chars.CharIsDigitBase10):
+			return byte(b - '0')
+		case chars.ByteHasProperty(b, chars.CharIsLowerAF):
+			return byte(b - 'a' + 10)
+		case chars.ByteHasProperty(b, chars.CharIsUpperAF):
+			return byte(b - 'A' + 10)
+		default:
+			_this.buffer.UngetBytes(len(namedValue))
+			_this.buffer.Errorf("Unexpected char [%c] in UUID [%s]", b, string(namedValue))
+			return 0
+		}
+	}
+
+	decodeSection := func(src []byte, dst []byte) {
+		iSrc := 0
+		iDst := 0
+		for iSrc < len(src) {
+			dst[iDst] = (decodeHex(src[iSrc]) << 4) | decodeHex(src[iSrc+1])
+			iDst++
+			iSrc += 2
+		}
+	}
+
+	decodeSection(namedValue[:8], namedValue)
+	decodeSection(namedValue[9:13], namedValue[4:])
+	decodeSection(namedValue[14:18], namedValue[6:])
+	decodeSection(namedValue[19:23], namedValue[8:])
+	decodeSection(namedValue[24:36], namedValue[10:])
+
+	_this.eventReceiver.OnUUID(namedValue[:16])
 	_this.endObject()
 }
 
-func (_this *Decoder) finishArray(arrayType events.ArrayType, bytesPerElement int, data []byte) {
-	_this.eventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
+func (_this *Decoder) decodeStringArray(arrayType events.ArrayType) {
+	bytes := _this.buffer.DecodeStringArray()
+	_this.eventReceiver.OnArray(arrayType, uint64(len(bytes)), bytes)
+	_this.endObject()
+}
+
+func (_this *Decoder) decodeCustomText() {
+	_this.decodeStringArray(events.ArrayTypeCustomText)
+}
+
+func (_this *Decoder) decodeURI() {
+	_this.decodeStringArray(events.ArrayTypeURI)
 }
 
 func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
 	switch _this.buffer.PeekByteNoEOD() {
 	case '|':
 		_this.buffer.AdvanceByte()
-		_this.finishArray(arrayType, bytesPerElement, data)
+		_this.eventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
 		_this.endObject()
 		return
 	default:
@@ -687,20 +707,6 @@ func (_this *Decoder) decodeCustomBinary() {
 		data = append(data, uint8(v))
 	}
 	_this.finishTypedArray(events.ArrayTypeCustomBinary, digitType, 1, data)
-}
-
-func (_this *Decoder) decodeCustomText() {
-	_this.buffer.SkipWhitespace()
-	bytes := _this.buffer.DecodeStringArray()
-	_this.finishArray(events.ArrayTypeCustomText, 1, bytes)
-	_this.endObject()
-}
-
-func (_this *Decoder) decodeURI() {
-	_this.buffer.SkipWhitespace()
-	bytes := _this.buffer.DecodeStringArray()
-	_this.finishArray(events.ArrayTypeURI, 1, bytes)
-	_this.endObject()
 }
 
 func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v uint64, digitCount int)) {
@@ -881,21 +887,21 @@ func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v f
 }
 
 func (_this *Decoder) readArrayType() string {
-	_this.buffer.BeginSubtoken()
+	_this.buffer.BeginToken()
 	_this.buffer.ReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
-	subtoken := _this.buffer.GetSubtoken()
-	if len(subtoken) > 0 && subtoken[len(subtoken)-1] == '|' {
-		subtoken = subtoken[:len(subtoken)-1]
+	arrayType := _this.buffer.GetToken()
+	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
+		arrayType = arrayType[:len(arrayType)-1]
 		_this.buffer.UngetByte()
 	}
-	common.ASCIIBytesToLower(subtoken)
-	return string(subtoken)
+	common.ASCIIBytesToLower(arrayType)
+	return string(arrayType)
 }
 
 func (_this *Decoder) handleTypedArrayBegin() {
 	_this.buffer.AdvanceByte()
-	token := _this.readArrayType()
-	switch token {
+	arrayType := _this.readArrayType()
+	switch arrayType {
 	case "cb":
 		_this.decodeCustomBinary()
 	case "ct":
@@ -979,7 +985,7 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	case "f64x":
 		_this.decodeArrayF64("hex float", _this.buffer.DecodeSmallHexFloat)
 	default:
-		_this.buffer.Errorf("%s: Unhandled array type", token)
+		_this.buffer.Errorf("%s: Unhandled array type", arrayType)
 	}
 }
 
@@ -988,9 +994,9 @@ func (_this *Decoder) handleReference() {
 	_this.eventReceiver.OnReference()
 	if _this.buffer.PeekByteNoEOD() == '|' {
 		_this.buffer.AdvanceByte()
-		token := _this.readArrayType()
-		if token != "u" {
-			_this.buffer.Errorf("%s: Invalid array type for reference ID", token)
+		arrayType := _this.readArrayType()
+		if arrayType != "u" {
+			_this.buffer.Errorf("%s: Invalid array type for reference ID", arrayType)
 		}
 		_this.decodeURI()
 		return
@@ -1018,11 +1024,14 @@ func (_this *Decoder) handleMarker() {
 	} else {
 		_this.eventReceiver.OnPositiveInt(asUint)
 	}
-	_this.buffer.EndToken()
 	// Don't end object here because the real object follows the marker ID
 }
 
 type cteDecoderState int
+
+func (_this cteDecoderState) String() string {
+	return cteDecoderStateNames[_this]
+}
 
 const (
 	cteDecoderStateAwaitObject cteDecoderState = iota
@@ -1042,6 +1051,24 @@ const (
 	cteDecoderStateAwaitReferenceID
 	cteDecoderStateCount
 )
+
+var cteDecoderStateNames = []string{
+	cteDecoderStateAwaitObject:            "cteDecoderStateAwaitObject",
+	cteDecoderStateAwaitListItem:          "cteDecoderStateAwaitListItem",
+	cteDecoderStateAwaitCommentItem:       "cteDecoderStateAwaitCommentItem",
+	cteDecoderStateAwaitMapKey:            "cteDecoderStateAwaitMapKey",
+	cteDecoderStateAwaitMapKVSeparator:    "cteDecoderStateAwaitMapKVSeparator",
+	cteDecoderStateAwaitMapValue:          "cteDecoderStateAwaitMapValue",
+	cteDecoderStateAwaitMetaKey:           "cteDecoderStateAwaitMetaKey",
+	cteDecoderStateAwaitMetaKVSeparator:   "cteDecoderStateAwaitMetaKVSeparator",
+	cteDecoderStateAwaitMetaValue:         "cteDecoderStateAwaitMetaValue",
+	cteDecoderStateAwaitMarkupName:        "cteDecoderStateAwaitMarkupName",
+	cteDecoderStateAwaitMarkupKey:         "cteDecoderStateAwaitMarkupKey",
+	cteDecoderStateAwaitMarkupKVSeparator: "cteDecoderStateAwaitMarkupKVSeparator",
+	cteDecoderStateAwaitMarkupValue:       "cteDecoderStateAwaitMarkupValue",
+	cteDecoderStateAwaitMarkupItem:        "cteDecoderStateAwaitMarkupItem",
+	cteDecoderStateAwaitReferenceID:       "cteDecoderStateAwaitReferenceID",
+}
 
 var cteDecoderStateTransitions = [cteDecoderStateCount]cteDecoderState{
 	cteDecoderStateAwaitObject:            cteDecoderStateAwaitObject,
@@ -1116,7 +1143,7 @@ func init() {
 	charBasedHandlers['<'] = (*Decoder).handleMarkupBegin
 	charBasedHandlers['>'] = (*Decoder).handleMarkupEnd
 	charBasedHandlers['?'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['@'] = (*Decoder).handleNamedValue
+	charBasedHandlers['@'] = (*Decoder).handleNamedValueOrUUID
 
 	for i := 'A'; i <= 'Z'; i++ {
 		charBasedHandlers[i] = (*Decoder).handleUnquotedString

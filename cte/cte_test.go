@@ -990,11 +990,10 @@ func TestCTEMarkup(t *testing.T) {
 	assertDecodeFails(t, `c1 <a,\y>`)
 }
 
-// TODO: Verbatim
-// func TestCTEMarkupVerbatimString(t *testing.T) {
-// 	assertDecode(t, nil, "c1 <s, `## <d></d>##>")
-// 	assertDecode(t, nil, "c1 <s, `## /d##>")
-// }
+func TestCTEMarkupVerbatimString(t *testing.T) {
+	assertDecode(t, nil, `c1 <s, \.## <d></d>##>`)
+	assertDecode(t, nil, `c1 <s, \.## /d##>`)
+}
 
 func TestCTEMarkupMarkup(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1 <a,<a>>`, BD(), V(1), MUP(), S("a"), E(), MUP(), S("a"), E(), E(), E(), ED())

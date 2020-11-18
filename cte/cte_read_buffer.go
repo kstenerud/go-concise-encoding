@@ -21,12 +21,12 @@
 package cte
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"math"
 	"math/big"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
@@ -39,12 +39,12 @@ import (
 
 type ReadBuffer struct {
 	buffer        buffer.StreamingReadBuffer
+	readPos       int
 	tokenStart    int
 	subtokenStart int
-	tokenPos      int
-	tempBuffer    bytes.Buffer
 	lineCount     int
 	colCount      int
+	workBuffer    strings.Builder
 }
 
 // Create a new CTE read buffer. The buffer will be empty until RefillIfNecessary() is
@@ -71,12 +71,26 @@ func (_this *ReadBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteC
 
 func (_this *ReadBuffer) Reset() {
 	_this.buffer.Reset()
+	_this.readPos = 0
 	_this.tokenStart = 0
 	_this.subtokenStart = 0
-	_this.tokenPos = 0
-	_this.tempBuffer.Reset()
 	_this.lineCount = 0
 	_this.colCount = 0
+	_this.workBuffer.Reset()
+}
+
+func (_this *ReadBuffer) RefillIfNecessary() {
+	offset := _this.buffer.RefillIfNecessary(_this.tokenStart, _this.readPos)
+	if _this.tokenStart-offset < 0 {
+		_this.Errorf("BUG: TokenStart was %v, tokenPos was %v", _this.tokenStart-offset, _this.readPos)
+	}
+	_this.readPos += offset
+	_this.tokenStart += offset
+	_this.subtokenStart += offset
+}
+
+func (_this *ReadBuffer) IsEndOfDocument() bool {
+	return _this.buffer.IsEOF() && !_this.hasUnreadByte()
 }
 
 // Bytes
@@ -86,7 +100,7 @@ func (_this *ReadBuffer) PeekByteNoEOD() byte {
 	if _this.IsEndOfDocument() {
 		_this.UnexpectedEOD()
 	}
-	return _this.buffer.ByteAtOffset(_this.tokenPos)
+	return _this.buffer.ByteAtOffset(_this.readPos)
 }
 
 func (_this *ReadBuffer) PeekByteAllowEOD() chars.ByteWithEOF {
@@ -94,7 +108,7 @@ func (_this *ReadBuffer) PeekByteAllowEOD() chars.ByteWithEOF {
 	if _this.IsEndOfDocument() {
 		return chars.EndOfDocumentMarker
 	}
-	return chars.ByteWithEOF(_this.buffer.ByteAtOffset(_this.tokenPos))
+	return chars.ByteWithEOF(_this.buffer.ByteAtOffset(_this.readPos))
 }
 
 func (_this *ReadBuffer) ReadByte() byte {
@@ -103,23 +117,30 @@ func (_this *ReadBuffer) ReadByte() byte {
 	return b
 }
 
-func (_this *ReadBuffer) SkipBytes(byteCount int) {
-	_this.buffer.RequireBytes(_this.tokenPos, byteCount)
-	_this.tokenPos += byteCount
-}
-
 func (_this *ReadBuffer) AdvanceByte() {
-	_this.tokenPos++
+	val := lineColCounter[_this.buffer.Buffer[_this.readPos]]
+	_this.colCount += val & 1
+	_this.colCount &= ^(val >> 1)
+	_this.lineCount += (val >> 1) & 1
+
+	_this.readPos++
 }
 
-func (_this *ReadBuffer) RefillIfNecessary() {
-	offset := _this.buffer.RefillIfNecessary(_this.tokenStart, _this.tokenPos)
-	if _this.tokenStart-offset < 0 {
-		_this.Errorf("TokenStart was %v, tokenPos was %v", _this.tokenStart-offset, _this.tokenPos)
-	}
-	_this.tokenPos += offset
-	_this.tokenStart += offset
-	_this.subtokenStart += offset
+func (_this *ReadBuffer) UngetByte() {
+	_this.readPos--
+	_this.colCount--
+}
+
+func (_this *ReadBuffer) UngetBytes(count int) {
+	_this.readPos -= count
+	// Works since this is only used for UUID
+	_this.colCount -= count
+}
+
+func (_this *ReadBuffer) skipBytes(byteCount int) {
+	_this.buffer.RequireBytes(_this.readPos, byteCount)
+	_this.readPos += byteCount
+	_this.colCount += len(string(_this.buffer.Buffer[_this.readPos : _this.readPos+byteCount]))
 }
 
 func (_this *ReadBuffer) ReadUntilPropertyNoEOD(property chars.CharProperty) {
@@ -146,7 +167,7 @@ func (_this *ReadBuffer) ReadWhilePropertyAllowEOD(property chars.CharProperty) 
 	}
 }
 
-func (_this *ReadBuffer) GetCharBeginIndex(index int) int {
+func (_this *ReadBuffer) getCharBeginIndex(index int) int {
 	i := index
 	// UTF-8 continuation characters have the form 10xxxxxx
 	for b := _this.buffer.Buffer[i]; b >= 0x80 && b <= 0xc0 && i >= 0; b = _this.buffer.Buffer[i] {
@@ -158,7 +179,7 @@ func (_this *ReadBuffer) GetCharBeginIndex(index int) int {
 	return i
 }
 
-func (_this *ReadBuffer) GetCharEndIndex(index int) int {
+func (_this *ReadBuffer) getCharEndIndex(index int) int {
 	i := index
 	// UTF-8 continuation characters have the form 10xxxxxx
 	for b := _this.buffer.Buffer[i]; b >= 0x80 && b <= 0xc0 && i < len(_this.buffer.Buffer); b = _this.buffer.Buffer[i] {
@@ -167,20 +188,8 @@ func (_this *ReadBuffer) GetCharEndIndex(index int) int {
 	return i
 }
 
-func (_this *ReadBuffer) UngetByte() {
-	_this.tokenPos--
-}
-
-func (_this *ReadBuffer) UngetAll() {
-	_this.tokenPos = _this.tokenStart
-}
-
-func (_this *ReadBuffer) IsEndOfDocument() bool {
-	return _this.buffer.IsEOF() && !_this.hasUnreadByte()
-}
-
 func (_this *ReadBuffer) hasUnreadByte() bool {
-	return _this.buffer.HasByteAtOffset(_this.tokenPos)
+	return _this.buffer.HasByteAtOffset(_this.readPos)
 }
 
 func (_this *ReadBuffer) readUntilByte(b byte) {
@@ -191,29 +200,58 @@ func (_this *ReadBuffer) readUntilByte(b byte) {
 
 // Tokens
 
+func (_this *ReadBuffer) BeginToken() {
+	_this.tokenStart = _this.readPos
+}
+
 func (_this *ReadBuffer) GetToken() []byte {
-	return _this.buffer.Buffer[_this.tokenStart:_this.tokenPos]
+	return _this.buffer.Buffer[_this.tokenStart:_this.readPos]
+}
+
+func (_this *ReadBuffer) GetTokenWithEndOffset(offset int) []byte {
+	return _this.buffer.Buffer[_this.tokenStart : _this.readPos+offset]
 }
 
 func (_this *ReadBuffer) GetTokenLength() int {
-	return _this.tokenPos - _this.tokenStart
+	return _this.readPos - _this.tokenStart
 }
 
 func (_this *ReadBuffer) GetTokenFirstByte() byte {
 	return _this.buffer.Buffer[_this.tokenStart]
 }
 
-func (_this *ReadBuffer) EndToken() {
-	_this.lineCount, _this.colCount = _this.countLinesColsToIndex(_this.tokenPos)
-	_this.tokenStart = _this.tokenPos
-}
-
 func (_this *ReadBuffer) BeginSubtoken() {
-	_this.subtokenStart = _this.tokenPos
+	_this.subtokenStart = _this.readPos
 }
 
 func (_this *ReadBuffer) GetSubtoken() []byte {
-	return _this.buffer.Buffer[_this.subtokenStart:_this.tokenPos]
+	return _this.buffer.Buffer[_this.subtokenStart:_this.readPos]
+}
+
+// Work Buffer
+
+func (_this *ReadBuffer) beginWorkBufferAtOffset(offset int) {
+	_this.workBuffer.WriteString(string(_this.GetTokenWithEndOffset(offset)))
+}
+
+func (_this *ReadBuffer) getWorkBuffer() []byte {
+	return []byte(_this.workBuffer.String())
+}
+
+func (_this *ReadBuffer) getTokenAndWorkBuffer() []byte {
+	return []byte(_this.workBuffer.String())
+}
+
+func (_this *ReadBuffer) writeWorkBufferByte(b byte) {
+	_this.workBuffer.WriteByte(b)
+}
+
+func (_this *ReadBuffer) writeWorkBufferBytes(b []byte) {
+	_this.workBuffer.WriteString(string(b))
+}
+
+func (_this *ReadBuffer) endWorkBuffer() {
+	_this.workBuffer.Reset()
 }
 
 // Errors
@@ -224,15 +262,9 @@ func (_this *ReadBuffer) AssertAtObjectEnd(decoding string) {
 	}
 }
 
-func (_this *ReadBuffer) ErrorAt(index int, format string, args ...interface{}) {
-	lineCount, colCount := _this.countLinesColsToIndex(index)
-
-	msg := fmt.Sprintf(format, args...)
-	panic(fmt.Errorf("offset %v (line %v, col %v): %v", index, lineCount+1, colCount+1, msg))
-}
-
 func (_this *ReadBuffer) Errorf(format string, args ...interface{}) {
-	_this.ErrorAt(_this.tokenPos, format, args...)
+	msg := fmt.Sprintf(format, args...)
+	panic(fmt.Errorf("offset %v (line %v, col %v): %v", _this.readPos, _this.lineCount+1, _this.colCount+1, msg))
 }
 
 func (_this *ReadBuffer) UnexpectedEOD() {
@@ -240,24 +272,21 @@ func (_this *ReadBuffer) UnexpectedEOD() {
 }
 
 func (_this *ReadBuffer) UnexpectedError(err error, decoding string) {
-	_this.ErrorAt(_this.tokenPos, "unexpected error [%v] while decoding %v", err, decoding)
-}
-
-func (_this *ReadBuffer) UnexpectedCharAt(index int, decoding string) {
-	_this.ErrorAt(index, "unexpected [%v] while decoding %v", _this.DescribeCharAt(index), decoding)
+	_this.Errorf("unexpected error [%v] while decoding %v", err, decoding)
 }
 
 func (_this *ReadBuffer) UnexpectedChar(decoding string) {
-	_this.UnexpectedCharAt(_this.tokenPos, decoding)
+	_this.Errorf("unexpected [%v] while decoding %v", _this.DescribeCurrentChar(), decoding)
 }
 
-func (_this *ReadBuffer) DescribeCharAt(index int) string {
+func (_this *ReadBuffer) DescribeCurrentChar() string {
+	index := _this.readPos
 	if index >= len(_this.buffer.Buffer) {
 		return "EOD"
 	}
 
-	charStart := _this.GetCharBeginIndex(index)
-	charEnd := _this.GetCharEndIndex(index)
+	charStart := _this.getCharBeginIndex(index)
+	charEnd := _this.getCharEndIndex(index)
 	if charEnd-charStart > 1 {
 		return string(_this.buffer.Buffer[charStart:charEnd])
 	}
@@ -270,27 +299,6 @@ func (_this *ReadBuffer) DescribeCharAt(index int) string {
 		return "SP"
 	}
 	return fmt.Sprintf("0x%02x", b)
-}
-
-func (_this *ReadBuffer) DescribeCurrentChar() string {
-	return _this.DescribeCharAt(_this.tokenPos)
-}
-
-func (_this *ReadBuffer) countLinesColsToIndex(index int) (lineCount, colCount int) {
-	lineCount = _this.lineCount
-	colCount = _this.colCount
-	for i := _this.tokenStart; i < index; i++ {
-		b := _this.buffer.Buffer[i]
-		if b < 0x80 || b > 0xc0 {
-			colCount++
-		}
-		if b == '\n' {
-			lineCount++
-			colCount = 0
-		}
-	}
-
-	return
 }
 
 // Decoders
@@ -860,29 +868,68 @@ func (_this *ReadBuffer) DecodeSmallFloat() (value float64, digitCount int) {
 
 }
 
-func (_this *ReadBuffer) DecodeEscape() []byte {
+func (_this *ReadBuffer) DecodeNamedValue() []byte {
+	_this.BeginToken()
+	_this.ReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
+	namedValue := _this.GetToken()
+	common.ASCIIBytesToLower(namedValue)
+	return namedValue
+}
+
+func (_this *ReadBuffer) decodeVerbatimString() []byte {
+	_this.BeginSubtoken()
+	_this.ReadUntilPropertyNoEOD(chars.CharIsWhitespace)
+	sentinel := _this.GetSubtoken()
+	sentinelOffset := _this.subtokenStart - _this.tokenStart
+	sentinelLen := len(sentinel)
+	wsByte := _this.ReadByte()
+	if wsByte == '\r' {
+		if _this.ReadByte() != '\n' {
+			_this.UngetByte()
+			_this.UnexpectedChar("verbatim sentinel")
+		}
+	}
+	_this.BeginSubtoken()
+	_this.skipBytes(sentinelLen - 1)
+
+Outer:
+	for {
+		_this.ReadByte()
+		sentinelStart := _this.tokenStart + sentinelOffset
+		compareStart := _this.readPos - sentinelLen
+		for i := sentinelLen - 1; i >= 0; i-- {
+			if _this.buffer.Buffer[sentinelStart+i] != _this.buffer.Buffer[compareStart+i] {
+				continue Outer
+			}
+		}
+		_this.AssertAtObjectEnd("verbatim string")
+		subtoken := _this.GetSubtoken()
+		return subtoken[:len(subtoken)-sentinelLen]
+	}
+}
+
+func (_this *ReadBuffer) decodeEscape() {
 	escape := _this.ReadByte()
 	switch escape {
 	case 't':
-		return []byte{'\t'}
+		_this.writeWorkBufferByte('\t')
 	case 'n':
-		return []byte{'\n'}
+		_this.writeWorkBufferByte('\n')
 	case 'r':
-		return []byte{'\r'}
+		_this.writeWorkBufferByte('\r')
 	case '"', '*', '/', '<', '>', '\\', '|':
-		return []byte{escape}
+		_this.writeWorkBufferByte(escape)
 	case '_':
 		// Non-breaking space
-		return []byte{0xc0, 0xa0}
+		_this.writeWorkBufferBytes([]byte{0xc0, 0xa0})
 	case '-':
 		// Soft hyphen
-		return []byte{0xc0, 0xad}
+		_this.writeWorkBufferBytes([]byte{0xc0, 0xad})
 	case '\r', '\n':
 		// Continuation
 		_this.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
-		return []byte{}
 	case '0':
-		return []byte{0}
+		_this.writeWorkBufferByte(0)
 	case '1', '2', '3', '4', '5', '6', '7', '8', '9':
 		length := int(escape - '0')
 		codepoint := rune(0)
@@ -901,123 +948,78 @@ func (_this *ReadBuffer) DecodeEscape() []byte {
 			_this.AdvanceByte()
 		}
 
-		sb := strings.Builder{}
-		sb.WriteRune(codepoint)
-		return []byte(sb.String())
+		if codepoint < utf8.RuneSelf {
+			_this.writeWorkBufferByte(uint8(codepoint))
+		} else {
+			// _this.writePos += utf8.EncodeRune(_this.buffer.Buffer[_this.writePos:], codepoint)
+			_this.workBuffer.WriteRune(codepoint)
+		}
 	case '.':
-		return _this.decodeVerbatimString()
+		_this.writeWorkBufferBytes(_this.decodeVerbatimString())
+	default:
+		_this.UnexpectedChar("escape sequence")
 	}
-	_this.UnexpectedChar("escape sequence")
-	return []byte{}
 }
 
 func (_this *ReadBuffer) DecodeQuotedString() []byte {
-	sb := strings.Builder{}
+	_this.BeginToken()
+outer:
 	for {
 		b := _this.ReadByte()
 		switch b {
 		case '"':
-			return []byte(sb.String())
+			return _this.GetTokenWithEndOffset(-1)
 		case '\\':
-			sb.WriteString(string(_this.DecodeEscape()))
-		default:
-			sb.WriteByte(b)
+			_this.beginWorkBufferAtOffset(-1)
+			_this.decodeEscape()
+			break outer
 		}
 	}
-}
 
-func (_this *ReadBuffer) decodeVerbatimString() []byte {
-	_this.BeginSubtoken()
-	_this.ReadUntilPropertyNoEOD(chars.CharIsWhitespace)
-	sentinel := _this.GetSubtoken()
-	sentinelOffset := _this.subtokenStart - _this.tokenStart
-	sentinelLen := len(sentinel)
-	wsByte := _this.ReadByte()
-	if wsByte == '\r' {
-		if _this.ReadByte() != '\n' {
-			_this.UngetByte()
-			_this.UnexpectedChar("verbatim sentinel")
-		}
-	}
-	_this.BeginSubtoken()
-	_this.SkipBytes(sentinelLen - 1)
-
-Outer:
 	for {
-		_this.ReadByte()
-		sentinelStart := _this.tokenStart + sentinelOffset
-		compareStart := _this.tokenPos - sentinelLen
-		for i := sentinelLen - 1; i >= 0; i-- {
-			if _this.buffer.Buffer[sentinelStart+i] != _this.buffer.Buffer[compareStart+i] {
-				continue Outer
-			}
+		b := _this.ReadByte()
+		switch b {
+		case '"':
+			str := _this.getTokenAndWorkBuffer()
+			_this.endWorkBuffer()
+			return str
+		case '\\':
+			_this.decodeEscape()
+		default:
+			_this.writeWorkBufferByte(b)
 		}
-		_this.AssertAtObjectEnd("verbatim string")
-		subtoken := _this.GetSubtoken()
-		return subtoken[:len(subtoken)-sentinelLen]
 	}
 }
 
 func (_this *ReadBuffer) DecodeStringArray() []byte {
-	sb := strings.Builder{}
+	_this.SkipWhitespace()
+	_this.BeginToken()
+outer:
 	for {
 		b := _this.ReadByte()
 		switch b {
 		case '|':
-			return []byte(sb.String())
+			str := _this.GetTokenWithEndOffset(-1)
+			_this.endWorkBuffer()
+			return str
 		case '\\':
-			sb.WriteString(string(_this.DecodeEscape()))
-		default:
-			sb.WriteByte(b)
+			_this.beginWorkBufferAtOffset(-1)
+			_this.decodeEscape()
+			break outer
 		}
 	}
-}
 
-func (_this *ReadBuffer) DecodeUUID() []byte {
-	uuid := make([]byte, 0, 16)
-	dashCount := 0
-	digitCount := 0
-	firstNybble := true
-	nextByte := byte(0)
-Loop:
 	for {
-		b := _this.PeekByteAllowEOD()
-		switch {
-		case b.HasProperty(chars.CharIsDigitBase10):
-			nextByte |= byte(b - '0')
-		case b.HasProperty(chars.CharIsLowerAF):
-			nextByte |= byte(b - 'a' + 10)
-		case b.HasProperty(chars.CharIsUpperAF):
-			nextByte |= byte(b - 'A' + 10)
-		case b == '-':
-			dashCount++
-			_this.AdvanceByte()
-			continue
-		case b.HasProperty(chars.CharIsObjectEnd):
-			break Loop
+		b := _this.ReadByte()
+		switch b {
+		case '|':
+			return _this.getTokenAndWorkBuffer()
+		case '\\':
+			_this.decodeEscape()
 		default:
-			_this.UnexpectedCharAt(_this.tokenPos, "UUID")
+			_this.writeWorkBufferByte(b)
 		}
-		if !firstNybble {
-			uuid = append(uuid, nextByte)
-			nextByte = 0
-		}
-		nextByte <<= 4
-		firstNybble = !firstNybble
-		_this.AdvanceByte()
-		digitCount++
 	}
-
-	if digitCount != 32 ||
-		dashCount != 4 ||
-		_this.buffer.Buffer[_this.tokenStart+9] != '-' ||
-		_this.buffer.Buffer[_this.tokenStart+14] != '-' ||
-		_this.buffer.Buffer[_this.tokenStart+19] != '-' ||
-		_this.buffer.Buffer[_this.tokenStart+24] != '-' {
-		_this.ErrorAt(_this.tokenPos-1, "Unrecognized named value or malformed UUID")
-	}
-
-	return uuid
 }
 
 var maxDayByMonth = []int{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
@@ -1131,14 +1133,14 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 
 		// TODO: Multiple levels of /
 		if chars.ByteHasProperty(_this.PeekByteNoEOD(), chars.CharIsAZ) {
-			_this.BeginSubtoken()
+			_this.BeginToken()
 			_this.ReadWhilePropertyAllowEOD(chars.CharIsAreaLocation)
 			if _this.PeekByteAllowEOD() == '/' {
 				_this.AdvanceByte()
 				_this.ReadWhilePropertyAllowEOD(chars.CharIsAreaLocation)
 			}
 
-			areaLocation := string(_this.GetSubtoken())
+			areaLocation := string(_this.GetToken())
 			t, err := compact_time.NewTime(hour, int(minute), int(second), nanosecond, areaLocation)
 			if err != nil {
 				_this.UnexpectedError(err, "time area/loc")
@@ -1210,7 +1212,7 @@ func (_this *ReadBuffer) DecodeLatLong() (latitudeHundredths, longitudeHundredth
 	return
 }
 
-func (_this *ReadBuffer) trim(str []byte) []byte {
+func trimWhitespace(str []byte) []byte {
 	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.CharIsWhitespace) {
 		str = str[1:]
 	}
@@ -1221,16 +1223,16 @@ func (_this *ReadBuffer) trim(str []byte) []byte {
 }
 
 func (_this *ReadBuffer) DecodeSingleLineComment() []byte {
-	// We're already past the "//" by this point
-	_this.BeginSubtoken()
+	_this.BeginToken()
 	_this.readUntilByte('\n')
-	subtoken := _this.GetSubtoken()
+	contents := _this.GetToken()
 	_this.AdvanceByte()
 
-	return _this.trim(subtoken)
+	return trimWhitespace(contents)
 }
 
 func (_this *ReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
+	_this.BeginToken()
 	lastByte := _this.ReadByte()
 
 	for {
@@ -1238,17 +1240,13 @@ func (_this *ReadBuffer) DecodeMultilineComment() ([]byte, nextType) {
 		lastByte = _this.ReadByte()
 
 		if firstByte == '*' && lastByte == '/' {
-			token := _this.GetToken()
-			token = token[:len(token)-2]
-			_this.EndToken()
-			return _this.trim(token), nextIsCommentEnd
+			contents := _this.GetTokenWithEndOffset(-2)
+			return trimWhitespace(contents), nextIsCommentEnd
 		}
 
 		if firstByte == '/' && lastByte == '*' {
-			token := _this.GetToken()
-			token = token[:len(token)-2]
-			_this.EndToken()
-			return _this.trim(token), nextIsCommentBegin
+			contents := _this.GetTokenWithEndOffset(-2)
+			return trimWhitespace(contents), nextIsCommentBegin
 		}
 	}
 }
@@ -1257,12 +1255,11 @@ func (_this *ReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
 	isInitialWS := true
 	wsCount := 0
 	isCommentInitiator := false
-	sb := strings.Builder{}
 
 	completeStringPortion := func() {
 		if wsCount > 0 {
 			if !isInitialWS {
-				sb.WriteByte(' ')
+				_this.writeWorkBufferByte(' ')
 			}
 			wsCount = 0
 		}
@@ -1276,55 +1273,61 @@ func (_this *ReadBuffer) DecodeMarkupContent() ([]byte, nextType) {
 
 	addSlashIfNeeded := func() {
 		if isCommentInitiator {
-			sb.WriteByte('/')
+			_this.writeWorkBufferByte('/')
 			isCommentInitiator = false
 		}
 	}
 
+	_this.BeginToken()
+	_this.beginWorkBufferAtOffset(0)
 	for {
 		currentByte := _this.ReadByte()
 		switch currentByte {
 		case '\r', '\n', '\t', ' ':
 			wsCount++
 		case '\\':
-			sb.WriteString(string(_this.DecodeEscape()))
+			_this.decodeEscape()
 		case '<':
 			completeStringPortion()
 			addSlashIfNeeded()
-			_this.EndToken()
-			return []byte(sb.String()), nextIsMarkupBegin
+			str := _this.getTokenAndWorkBuffer()
+			_this.endWorkBuffer()
+			return str, nextIsMarkupBegin
 		case '>':
 			completeContentsPortion()
 			addSlashIfNeeded()
-			_this.EndToken()
-			return []byte(sb.String()), nextIsMarkupEnd
+			str := _this.getTokenAndWorkBuffer()
+			_this.endWorkBuffer()
+			return str, nextIsMarkupEnd
 		case '/':
 			if isCommentInitiator {
 				completeStringPortion()
-				_this.EndToken()
-				return []byte(sb.String()), nextIsSingleLineComment
+				str := _this.getTokenAndWorkBuffer()
+				_this.endWorkBuffer()
+				return str, nextIsSingleLineComment
 			} else {
 				isCommentInitiator = true
 			}
 		case '*':
 			if isCommentInitiator {
 				completeStringPortion()
-				_this.EndToken()
-				return []byte(sb.String()), nextIsCommentBegin
+				str := _this.getTokenAndWorkBuffer()
+				_this.endWorkBuffer()
+				return str, nextIsCommentBegin
 			} else {
-				sb.WriteByte(currentByte)
+				_this.writeWorkBufferByte(currentByte)
 			}
 		default:
 			completeStringPortion()
 			addSlashIfNeeded()
-			sb.WriteByte(currentByte)
+			_this.writeWorkBufferByte(currentByte)
 		}
 	}
 }
 
 // Decode a marker ID. asString will be empty if the result is an integer.
 func (_this *ReadBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
-	_this.BeginSubtoken()
+	_this.BeginToken()
 
 	b := _this.PeekByteNoEOD()
 	switch {
@@ -1334,7 +1337,7 @@ func (_this *ReadBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
 		for !_this.PeekByteAllowEOD().HasProperty(chars.CharNeedsQuote) {
 			_this.AdvanceByte()
 		}
-		asString = _this.GetSubtoken()
+		asString = _this.GetToken()
 	default:
 		_this.Errorf("Missing marker ID")
 	}
@@ -1354,3 +1357,16 @@ const (
 	nextIsMarkupBegin
 	nextIsMarkupEnd
 )
+
+var lineColCounter = [256]int{
+	'\n': -1,
+}
+
+func init() {
+	for i := 0; i < 0x80; i++ {
+		lineColCounter[i] = 1
+	}
+	for i := 0xc1; i < 0xff; i++ {
+		lineColCounter[i] = 1
+	}
+}

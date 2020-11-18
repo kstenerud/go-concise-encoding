@@ -1065,6 +1065,12 @@ func (h *TEventPrinter) OnNan(signaling bool) {
 	h.Next.OnNan(signaling)
 }
 
+func CloneBytes(bytes []byte) []byte {
+	bytesCopy := make([]byte, len(bytes), len(bytes))
+	copy(bytesCopy, bytes)
+	return bytesCopy
+}
+
 type TER struct {
 	Events []*TEvent
 }
@@ -1089,7 +1095,7 @@ func (h *TER) OnFloat(value float64)                     { h.add(F(value)) }
 func (h *TER) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
 func (h *TER) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
 func (h *TER) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
-func (h *TER) OnUUID(value []byte)                       { h.add(UUID(value)) }
+func (h *TER) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
 func (h *TER) OnTime(value time.Time)                    { h.add(GT(value)) }
 func (h *TER) OnCompactTime(value *compact_time.Time)    { h.add(CT(value)) }
 func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
@@ -1099,11 +1105,11 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 	case events.ArrayTypeURI:
 		h.add(URI(string(value)))
 	case events.ArrayTypeCustomBinary:
-		h.add(CUB(value))
+		h.add(CUB(CloneBytes(value)))
 	case events.ArrayTypeCustomText:
 		h.add(CUT(string(value)))
 	case events.ArrayTypeBoolean:
-		h.add(AB(elementCount, value))
+		h.add(AB(elementCount, CloneBytes(value)))
 	case events.ArrayTypeInt8:
 		h.add(AI8(arrays.BytesToInt8Slice(value)))
 	case events.ArrayTypeInt16:
@@ -1113,7 +1119,7 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 	case events.ArrayTypeInt64:
 		h.add(AI64(arrays.BytesToInt64Slice(value)))
 	case events.ArrayTypeUint8:
-		h.add(AU8(value))
+		h.add(AU8(CloneBytes(value)))
 	case events.ArrayTypeUint16:
 		h.add(AU16(arrays.BytesToUint16Slice(value)))
 	case events.ArrayTypeUint32:
@@ -1121,13 +1127,13 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 	case events.ArrayTypeUint64:
 		h.add(AU64(arrays.BytesToUint64Slice(value)))
 	case events.ArrayTypeFloat16:
-		h.add(AF16(value))
+		h.add(AF16(CloneBytes(value)))
 	case events.ArrayTypeFloat32:
 		h.add(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:
 		h.add(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUUID:
-		h.add(AUU(value))
+		h.add(AUU(CloneBytes(value)))
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
@@ -1173,7 +1179,7 @@ func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 	}
 }
 func (h *TER) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
-func (h *TER) OnArrayData(data []byte)                { h.add(AD(data)) }
+func (h *TER) OnArrayData(data []byte)                { h.add(AD(CloneBytes(data))) }
 func (h *TER) OnList()                                { h.add(L()) }
 func (h *TER) OnMap()                                 { h.add(M()) }
 func (h *TER) OnMarkup()                              { h.add(MUP()) }

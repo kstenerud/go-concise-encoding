@@ -115,6 +115,7 @@ func (_this *intfBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst refle
 }
 
 func (_this *intfBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+	value = common.CloneBytes(value)
 	dst.Set(reflect.ValueOf(value))
 }
 
