@@ -155,7 +155,7 @@ func (_this CTEEncodingFormat) String() string {
 
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {
 	opts := &CTEEncoderOptions{
-		BufferSize:             1024,
+		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 		Indent:                 "",
 		MaxColumn:              0,

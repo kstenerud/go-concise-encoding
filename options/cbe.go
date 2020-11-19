@@ -37,7 +37,7 @@ type CBEDecoderOptions struct {
 
 func DefaultCBEDecoderOptions() *CBEDecoderOptions {
 	return &CBEDecoderOptions{
-		BufferSize:             2048,
+		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
@@ -75,7 +75,7 @@ type CBEEncoderOptions struct {
 
 func DefaultCBEEncoderOptions() *CBEEncoderOptions {
 	return &CBEEncoderOptions{
-		BufferSize:             1024,
+		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }

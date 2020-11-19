@@ -25,7 +25,6 @@ import (
 	"io"
 	"math"
 	"math/big"
-	"strings"
 	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/buffer"
@@ -38,13 +37,14 @@ import (
 )
 
 type ReadBuffer struct {
-	buffer        buffer.StreamingReadBuffer
-	readPos       int
-	tokenStart    int
-	subtokenStart int
-	lineCount     int
-	colCount      int
-	workBuffer    strings.Builder
+	buffer          buffer.StreamingReadBuffer
+	readPos         int
+	tokenStart      int
+	subtokenStart   int
+	lineCount       int
+	colCount        int
+	workBufferStart int
+	workBufferPos   int
 }
 
 // Create a new CTE read buffer. The buffer will be empty until RefillIfNecessary() is
@@ -74,9 +74,10 @@ func (_this *ReadBuffer) Reset() {
 	_this.readPos = 0
 	_this.tokenStart = 0
 	_this.subtokenStart = 0
+	_this.workBufferStart = 0
+	_this.workBufferPos = 0
 	_this.lineCount = 0
 	_this.colCount = 0
-	_this.workBuffer.Reset()
 }
 
 func (_this *ReadBuffer) RefillIfNecessary() {
@@ -87,6 +88,8 @@ func (_this *ReadBuffer) RefillIfNecessary() {
 	_this.readPos += offset
 	_this.tokenStart += offset
 	_this.subtokenStart += offset
+	_this.workBufferStart += offset
+	_this.workBufferPos += offset
 }
 
 func (_this *ReadBuffer) IsEndOfDocument() bool {
@@ -126,14 +129,15 @@ func (_this *ReadBuffer) AdvanceByte() {
 	_this.readPos++
 }
 
+// Warning: Do not use this to unget a linefeed!
 func (_this *ReadBuffer) UngetByte() {
 	_this.readPos--
 	_this.colCount--
 }
 
+// Warning: Do not use this to unget a linefeed!
 func (_this *ReadBuffer) UngetBytes(count int) {
 	_this.readPos -= count
-	// Works since this is only used for UUID
 	_this.colCount -= count
 }
 
@@ -231,27 +235,33 @@ func (_this *ReadBuffer) GetSubtoken() []byte {
 // Work Buffer
 
 func (_this *ReadBuffer) beginWorkBufferAtOffset(offset int) {
-	_this.workBuffer.WriteString(string(_this.GetTokenWithEndOffset(offset)))
-}
-
-func (_this *ReadBuffer) getWorkBuffer() []byte {
-	return []byte(_this.workBuffer.String())
+	_this.workBufferStart = _this.readPos + offset
+	_this.workBufferPos = _this.workBufferStart
 }
 
 func (_this *ReadBuffer) getTokenAndWorkBuffer() []byte {
-	return []byte(_this.workBuffer.String())
+	return _this.buffer.Buffer[_this.tokenStart:_this.workBufferPos]
 }
 
 func (_this *ReadBuffer) writeWorkBufferByte(b byte) {
-	_this.workBuffer.WriteByte(b)
+	_this.buffer.Buffer[_this.workBufferPos] = b
+	_this.workBufferPos++
+}
+
+func (_this *ReadBuffer) writeWorkBufferRune(r rune) {
+	if r < utf8.RuneSelf {
+		_this.writeWorkBufferByte(byte(r))
+	} else {
+		_this.workBufferPos += utf8.EncodeRune(_this.buffer.Buffer[_this.workBufferPos:], r)
+	}
 }
 
 func (_this *ReadBuffer) writeWorkBufferBytes(b []byte) {
-	_this.workBuffer.WriteString(string(b))
+	copy(_this.buffer.Buffer[_this.workBufferPos:], b)
+	_this.workBufferPos += len(b)
 }
 
 func (_this *ReadBuffer) endWorkBuffer() {
-	_this.workBuffer.Reset()
 }
 
 // Errors
@@ -951,8 +961,7 @@ func (_this *ReadBuffer) decodeEscape() {
 		if codepoint < utf8.RuneSelf {
 			_this.writeWorkBufferByte(uint8(codepoint))
 		} else {
-			// _this.writePos += utf8.EncodeRune(_this.buffer.Buffer[_this.writePos:], codepoint)
-			_this.workBuffer.WriteRune(codepoint)
+			_this.writeWorkBufferRune(codepoint)
 		}
 	case '.':
 		_this.writeWorkBufferBytes(_this.decodeVerbatimString())
@@ -1358,9 +1367,7 @@ const (
 	nextIsMarkupEnd
 )
 
-var lineColCounter = [256]int{
-	'\n': -1,
-}
+var lineColCounter [256]int
 
 func init() {
 	for i := 0; i < 0x80; i++ {
@@ -1369,4 +1376,5 @@ func init() {
 	for i := 0xc1; i < 0xff; i++ {
 		lineColCounter[i] = 1
 	}
+	lineColCounter['\n'] = -1
 }

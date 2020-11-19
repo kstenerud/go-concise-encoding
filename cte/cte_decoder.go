@@ -627,8 +627,8 @@ func (_this *Decoder) handleNamedValueOrUUID() {
 		namedValue[13] != '-' ||
 		namedValue[18] != '-' ||
 		namedValue[23] != '-' {
-		_this.buffer.UngetBytes(len(namedValue))
-		_this.buffer.Errorf("Malformed UUID: [%s]", string(namedValue))
+		_this.buffer.UngetBytes(len(namedValue) + 1)
+		_this.buffer.Errorf("Malformed UUID or unknown named value: [%s]", string(namedValue))
 	}
 
 	decodeHex := func(b byte) byte {
@@ -640,7 +640,7 @@ func (_this *Decoder) handleNamedValueOrUUID() {
 		case chars.ByteHasProperty(b, chars.CharIsUpperAF):
 			return byte(b - 'A' + 10)
 		default:
-			_this.buffer.UngetBytes(len(namedValue))
+			_this.buffer.UngetBytes(len(namedValue) + 1)
 			_this.buffer.Errorf("Unexpected char [%c] in UUID [%s]", b, string(namedValue))
 			return 0
 		}
