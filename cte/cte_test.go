@@ -433,6 +433,17 @@ func TestCTETimestamp(t *testing.T) {
 	assertEncode(t, nil, "c1 2020-01-15/10:00:01.93", BD(), V(1), GT(gotime), ED())
 }
 
+func TestCTEConstant(t *testing.T) {
+	assertDecodeEncodeNoRules(t, nil, nil, "c1 #someconst", BD(), V(1), CONST("someconst", false), ED())
+	assertDecodeEncodeNoRules(t, nil, nil, "c1 [#c 1]", BD(), V(1), L(), CONST("c", false), PI(1), E(), ED())
+	assertDecodeEncodeNoRules(t, nil, nil, "c1 {#c=1}", BD(), V(1), M(), CONST("c", false), PI(1), E(), ED())
+
+	assertDecodeEncode(t, nil, nil, "c1 #someconst:xyz", BD(), V(1), CONST("someconst", true), S("xyz"), ED())
+	assertDecodeEncode(t, nil, nil, "c1 [#c:xyz 1]", BD(), V(1), L(), CONST("c", true), S("xyz"), PI(1), E(), ED())
+	assertDecodeEncode(t, nil, nil, "c1 {#c:xyz=1}", BD(), V(1), M(), CONST("c", true), S("xyz"), PI(1), E(), ED())
+	assertDecodeEncode(t, nil, nil, "c1 {#c:123=1}", BD(), V(1), M(), CONST("c", true), PI(123), PI(1), E(), ED())
+}
+
 func TestCTEQuotedString(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1 "test string"`, BD(), V(1), S("test string"), ED())
 	assertDecode(t, nil, `c1 "test\nstring"`, BD(), V(1), S("test\nstring"), ED())

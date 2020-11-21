@@ -157,6 +157,17 @@ func TestRulesReference(t *testing.T) {
 	assertEventsFail(t, rules, ED())
 }
 
+func TestRulesConstant(t *testing.T) {
+	rules := newRulesWithMaxDepth(10)
+	assertEvents(t, rules, M(), S("a"), CONST("something", true), PI(100), E())
+
+	rules = newRulesWithMaxDepth(10)
+	assertEventsFail(t, rules, M(), S("a"), CONST("something", true), E())
+
+	rules = newRulesWithMaxDepth(10)
+	assertEventsFail(t, rules, M(), S("a"), CONST("something", false), E())
+}
+
 // ===========
 // Array Types
 // ===========
@@ -439,7 +450,7 @@ func TestRulesDeepContainer(t *testing.T) {
 }
 
 func TestRulesCommentInt(t *testing.T) {
-
+	// TODO: Recheck comment validation
 	rules := newRulesWithMaxDepth(2)
 	assertEvents(t, rules, CMT(), S("blah\r\n\t\tblah"), SB(), AC(1, false))
 	// assertEventsFail(t, rules, AD([]byte{0x00}))

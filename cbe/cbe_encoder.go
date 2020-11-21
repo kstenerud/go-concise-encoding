@@ -355,6 +355,12 @@ func (_this *Encoder) OnReference() {
 	_this.encodeType(cbeTypeReference)
 }
 
+func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
+	if !explicitValue {
+		_this.errorf("Cannot encode constant %s without explicit value", string(name))
+	}
+}
+
 func (_this *Encoder) OnEndDocument() {
 	_this.buff.Flush()
 	_this.reset()

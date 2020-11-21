@@ -342,6 +342,17 @@ func (_this *Encoder) OnReference() {
 	_this.engine.BeginReference()
 }
 
+func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
+	_this.engine.BeginObject()
+	_this.stream.AddByte('#')
+	_this.stream.AddNonemptyBytes(name)
+	if explicitValue {
+		_this.stream.AddByte(':')
+	} else {
+		_this.engine.CompleteObject()
+	}
+}
+
 func (_this *Encoder) OnEndDocument() {
 	_this.stream.Flush()
 }

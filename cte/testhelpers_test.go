@@ -141,6 +141,7 @@ func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
+func CONST(n string, e bool) *test.TEvent    { return test.CONST(n, e) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
@@ -162,6 +163,21 @@ func decodeToEvents(opts *options.CTEDecoderOptions, document []byte, withRules 
 	return
 }
 
+func decodeToEventsNoRules(opts *options.CTEDecoderOptions, document []byte, withRules bool) (evts []*test.TEvent, err error) {
+	var topLevelReceiver events.DataEventReceiver
+	ter := test.NewTER()
+	topLevelReceiver = ter
+	if withRules {
+		topLevelReceiver = rules.NewRules(topLevelReceiver, nil)
+	}
+	if DebugPrintEvents {
+		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
+	}
+	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
+	evts = ter.Events
+	return
+}
+
 func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(opts)
@@ -171,8 +187,34 @@ func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byt
 	return buffer.Bytes()
 }
 
+func encodeEventsNoRules(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
+	buffer := &bytes.Buffer{}
+	encoder := NewEncoder(opts)
+	encoder.PrepareToEncode(buffer)
+	test.InvokeEvents(encoder, events...)
+	return buffer.Bytes()
+}
+
 func assertDecode(t *testing.T, opts *options.CTEDecoderOptions, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
 	actualEvents, err := decodeToEvents(opts, []byte(document), false)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if len(expectedEvents) > 0 {
+		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
+			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
+			return
+		}
+	}
+	events = actualEvents
+	successful = true
+	return
+}
+
+func assertDecodeNoRules(t *testing.T, opts *options.CTEDecoderOptions, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
+	actualEvents, err := decodeToEventsNoRules(opts, []byte(document), false)
 	if err != nil {
 		t.Error(err)
 		return
@@ -224,6 +266,16 @@ func assertEncode(t *testing.T, opts *options.CTEEncoderOptions, expectedDocumen
 	return
 }
 
+func assertEncodeNoRules(t *testing.T, opts *options.CTEEncoderOptions, expectedDocument string, events ...*test.TEvent) (successful bool) {
+	actualDocument := string(encodeEventsNoRules(opts, events...))
+	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
+		t.Errorf("Expected document [%v] but got [%v]", expectedDocument, actualDocument)
+		return
+	}
+	successful = true
+	return
+}
+
 func assertEncodeFails(t *testing.T, opts *options.CTEEncoderOptions, events ...*test.TEvent) {
 	test.AssertPanics(t, func() {
 		encodeEvents(opts, events...)
@@ -238,6 +290,16 @@ func assertDecodeEncode(t *testing.T, decodeOpts *options.CTEDecoderOptions,
 		return
 	}
 	return assertEncode(t, encodeOpts, document, actualEvents...)
+}
+
+func assertDecodeEncodeNoRules(t *testing.T, decodeOpts *options.CTEDecoderOptions,
+	encodeOpts *options.CTEEncoderOptions, document string,
+	expectedEvents ...*test.TEvent) (successful bool) {
+	successful, actualEvents := assertDecodeNoRules(t, decodeOpts, document, expectedEvents...)
+	if !successful {
+		return
+	}
+	return assertEncodeNoRules(t, encodeOpts, document, actualEvents...)
 }
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {

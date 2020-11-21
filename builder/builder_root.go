@@ -330,6 +330,11 @@ func (_this *RootBuilder) OnReference() {
 		_this.currentBuilder.BuildFromReference(id)
 	})
 }
+func (_this *RootBuilder) OnConstant(name []byte, explicitValue bool) {
+	if !explicitValue {
+		panic(fmt.Errorf("Cannot build from constant %s without explicit value", string(name)))
+	}
+}
 func (_this *RootBuilder) OnEndDocument() {
 	// Nothing to do
 }

@@ -392,6 +392,17 @@ func (_this *Rules) OnReference() {
 	_this.nextReceiver.OnReference()
 }
 
+func (_this *Rules) OnConstant(name []byte, explicitValue bool) {
+	if len(name) == 0 {
+		panic(fmt.Errorf("Constant has zero-length name"))
+	}
+	if !explicitValue {
+		panic(fmt.Errorf("Cannot process constant without schema or explicit value"))
+	}
+
+	_this.nextReceiver.OnConstant(name, explicitValue)
+}
+
 func (_this *Rules) OnEndDocument() {
 	_this.assertCurrentStateAllowsType(eventTypeEndDocument)
 	for markerID := range _this.unmatchedIDs {

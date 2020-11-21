@@ -186,10 +186,12 @@ func AssertNoPanic(t *testing.T, function func()) {
 	}
 }
 
-func AssertPanics(t *testing.T, function func()) {
+func AssertPanics(t *testing.T, function func()) bool {
 	if err := ReportPanic(function); err == nil {
 		t.Errorf("Expected an error")
+		return false
 	}
+	return true
 }
 
 func GenerateString(charCount int, startIndex int) string {
@@ -425,6 +427,7 @@ const (
 	TEventEnd
 	TEventMarker
 	TEventReference
+	TEventConstant
 	TEventEndDocument
 )
 
@@ -493,6 +496,7 @@ var TEventNames = []string{
 	TEventEnd:               "E",
 	TEventMarker:            "MARK",
 	TEventReference:         "REF",
+	TEventConstant:          "CONST",
 	TEventEndDocument:       "ED",
 }
 
@@ -675,6 +679,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnMarker()
 	case TEventReference:
 		receiver.OnReference()
+	case TEventConstant:
+		receiver.OnConstant(_this.V1.([]byte), _this.V2.(bool))
 	case TEventEndDocument:
 		receiver.OnEndDocument()
 	default:
@@ -752,6 +758,7 @@ func CMT() *TEvent                      { return newTEvent(TEventComment, nil, n
 func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func MARK() *TEvent                     { return newTEvent(TEventMarker, nil, nil) }
 func REF() *TEvent                      { return newTEvent(TEventReference, nil, nil) }
+func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, []byte(n), e) }
 func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
 
@@ -1052,6 +1059,10 @@ func (h *TEventPrinter) OnReference() {
 	h.Print(REF())
 	h.Next.OnReference()
 }
+func (h *TEventPrinter) OnConstant(name []byte, explicitValue bool) {
+	h.Print(CONST(string(name), explicitValue))
+	h.Next.OnConstant(name, explicitValue)
+}
 func (h *TEventPrinter) OnEndDocument() {
 	h.Print(ED())
 	h.Next.OnEndDocument()
@@ -1188,6 +1199,7 @@ func (h *TER) OnComment()                             { h.add(CMT()) }
 func (h *TER) OnEnd()                                 { h.add(E()) }
 func (h *TER) OnMarker()                              { h.add(MARK()) }
 func (h *TER) OnReference()                           { h.add(REF()) }
+func (h *TER) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
 func (h *TER) OnBeginDocument()                       { h.add(BD()) }
 func (h *TER) OnEndDocument()                         { h.add(ED()) }
 func (h *TER) OnNan(signaling bool) {

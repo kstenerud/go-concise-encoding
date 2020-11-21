@@ -91,6 +91,11 @@ func (_this *StreamingWriteBuffer) AddNonemptyBytes(bytes []byte) {
 	copy(dst, bytes)
 }
 
+func (_this *StreamingWriteBuffer) AddByte(b byte) {
+	dst := _this.Allocate(1)
+	dst[0] = b
+}
+
 func (_this *StreamingWriteBuffer) AddString(str string) {
 	if len(str) > 0 {
 		_this.AddNonemptyString(str)

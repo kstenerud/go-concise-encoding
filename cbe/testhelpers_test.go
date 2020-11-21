@@ -203,6 +203,7 @@ func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }
 func REF() *test.TEvent                      { return test.REF() }
+func CONST(n string, e bool) *test.TEvent    { return test.CONST(n, e) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
@@ -285,6 +286,13 @@ func assertEncode(t *testing.T, opts *options.CBEEncoderOptions, expectedDocumen
 		return
 	}
 	successful = true
+	return
+}
+
+func assertEncodeFails(t *testing.T, opts *options.CBEEncoderOptions, events ...*test.TEvent) (successful bool) {
+	successful = test.AssertPanics(t, func() {
+		encodeEvents(opts, events...)
+	})
 	return
 }
 

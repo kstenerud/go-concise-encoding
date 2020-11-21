@@ -708,7 +708,7 @@ func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoeff
 	fractionalDigitCount := 0
 	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexUint(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
-		_this.UnexpectedChar("float fractional")
+		_this.UnexpectedChar("hex float fractional")
 	}
 	digitCount = coefficientDigitCount + fractionalDigitCount
 
@@ -725,7 +725,7 @@ func (_this *ReadBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoeff
 		}
 		exp, bigExp, expDigitCount := _this.DecodeDecimalUint(0, nil)
 		if expDigitCount == 0 {
-			_this.UnexpectedChar("float exponent")
+			_this.UnexpectedChar("hex float exponent")
 		}
 		if bigExp != nil {
 			_this.Errorf("Exponent too big")
@@ -784,7 +784,7 @@ func (_this *ReadBuffer) DecodeSmallHexFloat() (value float64, digitCount int) {
 
 	u, bigU, coefficientDigitCount := _this.DecodeHexUint(0, nil)
 	if coefficientDigitCount == 0 {
-		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+		_this.UnexpectedChar("hex float coefficient")
 	}
 	if bigU != nil || u > maxFloat64Coefficient {
 		_this.Errorf("Value too big for element")
@@ -801,7 +801,7 @@ func (_this *ReadBuffer) DecodeSmallHexFloat() (value float64, digitCount int) {
 	case b.HasProperty(chars.CharIsWhitespace):
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
-		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+		_this.UnexpectedChar("hex float")
 		return 0, 0
 	}
 }
@@ -823,7 +823,7 @@ func (_this *ReadBuffer) DecodeSmallFloat() (value float64, digitCount int) {
 			_this.AdvanceByte()
 			u, bigU, coefficientDigitCount := _this.DecodeHexUint(0, nil)
 			if coefficientDigitCount == 0 {
-				_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+				_this.UnexpectedChar("float")
 			}
 			if bigU != nil || u > maxFloat64Coefficient {
 				_this.Errorf("Value too big for element")
@@ -840,7 +840,7 @@ func (_this *ReadBuffer) DecodeSmallFloat() (value float64, digitCount int) {
 			case b.HasProperty(chars.CharIsWhitespace):
 				return float64(u) * float64(sign), coefficientDigitCount
 			default:
-				_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+				_this.UnexpectedChar("float")
 				return 0, 0
 			}
 		}
@@ -849,7 +849,7 @@ func (_this *ReadBuffer) DecodeSmallFloat() (value float64, digitCount int) {
 
 	u, bigU, coefficientDigitCount := _this.DecodeDecimalUint(0, nil)
 	if coefficientDigitCount == 0 {
-		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+		_this.UnexpectedChar("float")
 	}
 	if bigU != nil || u > maxFloat64Coefficient {
 		_this.Errorf("Value too big for element")
@@ -872,7 +872,7 @@ func (_this *ReadBuffer) DecodeSmallFloat() (value float64, digitCount int) {
 	case b.HasProperty(chars.CharIsWhitespace):
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
-		_this.Errorf("%c: Unexpected character", _this.PeekByteAllowEOD())
+		_this.UnexpectedChar("float")
 		return 0, 0
 	}
 
@@ -882,6 +882,9 @@ func (_this *ReadBuffer) DecodeNamedValue() []byte {
 	_this.BeginToken()
 	_this.ReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
 	namedValue := _this.GetToken()
+	if len(namedValue) == 0 {
+		_this.UnexpectedChar("name")
+	}
 	common.ASCIIBytesToLower(namedValue)
 	return namedValue
 }

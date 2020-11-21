@@ -666,6 +666,19 @@ func (_this *Decoder) handleNamedValueOrUUID() {
 	_this.endObject()
 }
 
+func (_this *Decoder) handleConstant() {
+	_this.buffer.AdvanceByte()
+	name := _this.buffer.DecodeNamedValue()
+	explicitValue := false
+	if _this.buffer.PeekByteAllowEOD() == ':' {
+		_this.buffer.AdvanceByte()
+		explicitValue = true
+	} else {
+		_this.endObject()
+	}
+	_this.eventReceiver.OnConstant(name, explicitValue)
+}
+
 func (_this *Decoder) decodeStringArray(arrayType events.ArrayType) {
 	bytes := _this.buffer.DecodeStringArray()
 	_this.eventReceiver.OnArray(arrayType, uint64(len(bytes)), bytes)
@@ -1120,7 +1133,7 @@ func init() {
 
 	charBasedHandlers['!'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['"'] = (*Decoder).handleQuotedString
-	charBasedHandlers['#'] = (*Decoder).handleInvalidChar
+	charBasedHandlers['#'] = (*Decoder).handleConstant
 	charBasedHandlers['$'] = (*Decoder).handleReference
 	charBasedHandlers['%'] = (*Decoder).handleInvalidChar
 	charBasedHandlers['&'] = (*Decoder).handleMarker
