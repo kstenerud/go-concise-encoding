@@ -338,7 +338,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 	_this.buffer.AdvanceByte()
 	b := _this.buffer.PeekByteAllowEOD()
 
-	if b.HasProperty(chars.CharIsObjectEnd) {
+	if b.HasProperty(chars.CharIsObjectEnd) && b != '.' {
 		_this.eventReceiver.OnPositiveInt(0)
 		_this.endObject()
 		return

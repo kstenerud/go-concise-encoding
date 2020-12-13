@@ -483,7 +483,7 @@ func TestCTECustomText(t *testing.T) {
 func TestCTEUnquotedString(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c1 a", BD(), V(1), S("a"), ED())
 	assertDecodeEncode(t, nil, nil, "c1 abcd", BD(), V(1), S("abcd"), ED())
-	assertDecodeEncode(t, nil, nil, "c1 _-.123aF", BD(), V(1), S("_-.123aF"), ED())
+	assertDecodeEncode(t, nil, nil, "c1 _-123aF", BD(), V(1), S("_-123aF"), ED())
 	assertDecodeEncode(t, nil, nil, "c1 新しい", BD(), V(1), S("新しい"), ED())
 }
 
