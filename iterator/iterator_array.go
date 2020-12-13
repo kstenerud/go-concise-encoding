@@ -24,6 +24,8 @@ import (
 	"math"
 	"reflect"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
@@ -278,4 +280,47 @@ func (_this *float64ArrayIterator) IterateObject(v reflect.Value, eventReceiver 
 
 func (_this *float64SliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	iterateArrayFloat64(v, eventReceiver)
+}
+
+// ----
+// bool
+// ----
+
+func iterateArrayBool(v reflect.Value, eventReceiver events.DataEventReceiver) {
+	elementCount := v.Len()
+	byteCount := common.ElementCountToByteCount(1, uint64(elementCount))
+	data := make([]uint8, byteCount, byteCount)
+	if elementCount == 0 {
+		eventReceiver.OnArray(events.ArrayTypeBoolean, uint64(elementCount), data)
+		return
+	}
+
+	nextData := data
+	var nextByte uint8
+	if v.Index(0).Bool() {
+		nextByte = 1
+	}
+
+	for i := 1; i < elementCount; i++ {
+		if i&7 == 0 {
+			nextData[0] = nextByte
+			nextData = nextData[1:]
+		}
+		nextByte <<= 1
+		if v.Index(i).Bool() {
+			nextByte |= 1
+		}
+	}
+	if elementCount&7 != 0 {
+		nextData[0] = nextByte
+	}
+	eventReceiver.OnArray(events.ArrayTypeBoolean, uint64(elementCount), data)
+}
+
+func (_this *boolArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
+	iterateArrayBool(v, eventReceiver)
+}
+
+func (_this *boolSliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
+	iterateArrayBool(v, eventReceiver)
 }

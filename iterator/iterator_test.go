@@ -171,6 +171,12 @@ func TestIterateArrayFloat64(t *testing.T) {
 	assertIterate(t, &a, AF64([]float64{1.5, -1.5}))
 }
 
+func TestIterateArrayBool(t *testing.T) {
+	a := [2]bool{true, false}
+	assertIterate(t, a, AB(2, []byte{0x02}))
+	assertIterate(t, &a, AB(2, []byte{0x02}))
+}
+
 func TestIterateInterface(t *testing.T) {
 	assertIterate(t, []interface{}{1, nil, 5.5}, L(), I(1), N(), F(5.5), E())
 }

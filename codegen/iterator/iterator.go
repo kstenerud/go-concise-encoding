@@ -42,9 +42,9 @@ var types = [...]string{
 	"int64",
 	"float32",
 	"float64",
-	// TODO: Remaining typed arrays. Can they be done?
+	"bool",
+	// No go types for these:
 	// "float16",
-	// "bool",
 	// "UUID",
 }
 

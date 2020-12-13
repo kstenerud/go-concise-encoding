@@ -161,6 +161,8 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 			return newFloat32ArrayIterator()
 		case reflect.Float64:
 			return newFloat64ArrayIterator()
+		case reflect.Bool:
+			return newBoolArrayIterator()
 		default:
 			return newArrayIterator(t)
 		}

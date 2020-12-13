@@ -28,6 +28,22 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
+// bool
+
+type boolArrayIterator struct{}
+
+func newBoolArrayIterator() ObjectIterator                                                { return &boolArrayIterator{} }
+func (_this *boolArrayIterator) InitTemplate(_ FetchIterator)                             {}
+func (_this *boolArrayIterator) NewInstance() ObjectIterator                              { return _this }
+func (_this *boolArrayIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
+
+type boolSliceIterator struct{}
+
+func newBoolSliceIterator() ObjectIterator                                                { return &boolSliceIterator{} }
+func (_this *boolSliceIterator) InitTemplate(_ FetchIterator)                             {}
+func (_this *boolSliceIterator) NewInstance() ObjectIterator                              { return _this }
+func (_this *boolSliceIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
+
 // float32
 
 type float32ArrayIterator struct{}
