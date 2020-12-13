@@ -77,14 +77,14 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 					_this.engine.CompleteObject()
 				}
 			})
-	case events.ArrayTypeURI:
-		_this.beginStringLikeArray(awaitingURI,
+	case events.ArrayTypeResourceID:
+		_this.beginStringLikeArray(awaitingRID,
 			func(stringData []byte) {
 				if _this.engine.Awaiting == awaitingReferenceID {
-					_this.engine.CompleteReference(asStringArray("u", stringData))
+					_this.engine.CompleteReference(asStringArray("r", stringData))
 				} else {
 					_this.engine.BeginObject()
-					_this.encodeStringArray("u", stringData)
+					_this.encodeStringArray("r", stringData)
 					_this.engine.CompleteObject()
 				}
 			})
@@ -339,7 +339,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 		const elemWidth = 16
 		_this.beginArray(awaitingArrayUUID,
 			elemWidth,
-			"|uu",
+			"|u",
 			func(data []byte) {
 				for len(data) > 0 {
 					_this.stream.AddFmt("%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",

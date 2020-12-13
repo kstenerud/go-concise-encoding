@@ -34,7 +34,7 @@ type RuleOptions struct {
 	// Limits before the ruleset artificially terminates with an error.
 	MaxBytesLength      uint64
 	MaxStringLength     uint64
-	MaxURILength        uint64
+	MaxResourceIDLength uint64
 	MaxMarkupNameLength uint64
 	MaxContainerDepth   uint64
 	MaxObjectCount      uint64
@@ -51,7 +51,7 @@ func DefaultRuleOptions() *RuleOptions {
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 		MaxBytesLength:         1000000000,
 		MaxStringLength:        100000000,
-		MaxURILength:           10000,
+		MaxResourceIDLength:    10000,
 		MaxMarkupNameLength:    100,
 		MaxContainerDepth:      1000,
 		MaxObjectCount:         10000000,
@@ -75,8 +75,8 @@ func (_this *RuleOptions) WithDefaultsApplied() *RuleOptions {
 	if _this.MaxStringLength < 1 {
 		_this.MaxStringLength = defaults.MaxStringLength
 	}
-	if _this.MaxURILength < 1 {
-		_this.MaxURILength = defaults.MaxURILength
+	if _this.MaxResourceIDLength < 1 {
+		_this.MaxResourceIDLength = defaults.MaxResourceIDLength
 	}
 	if _this.MaxMarkupNameLength < 1 {
 		_this.MaxMarkupNameLength = defaults.MaxMarkupNameLength

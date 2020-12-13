@@ -54,7 +54,7 @@ func GenerateCode(projectDir string) {
 		panic(err)
 	}
 
-	generatedFilePath := filepath.Join(projectDir, "iterator/generated_code.go")
+	generatedFilePath := filepath.Join(projectDir, "iterator/generated-do-not-edit.go")
 	writer, err := os.Create(generatedFilePath)
 	if err != nil {
 		panic(fmt.Errorf("could not open %s: %v", generatedFilePath, err))

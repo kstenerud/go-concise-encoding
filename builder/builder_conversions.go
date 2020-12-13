@@ -493,9 +493,9 @@ func setPBigDecimalFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Valu
 	dst.Set(reflect.ValueOf(value))
 }
 
-// URI
+// Resource ID
 
-func stringToURI(value string) *url.URL {
+func stringToRID(value string) *url.URL {
 	u, err := url.Parse(string(value))
 	if err != nil {
 		panic(err)
@@ -503,12 +503,12 @@ func stringToURI(value string) *url.URL {
 	return u
 }
 
-func setURIFromString(value string, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(stringToURI(value)).Elem())
+func setRIDFromString(value string, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(stringToRID(value)).Elem())
 }
 
-func setPURIFromString(value string, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(stringToURI(value)))
+func setPRIDFromString(value string, dst reflect.Value) {
+	dst.Set(reflect.ValueOf(stringToRID(value)))
 }
 
 // Anything

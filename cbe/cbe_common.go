@@ -82,7 +82,7 @@ const (
 	cbeTypeString14     cbeTypeField = 0x8e
 	cbeTypeString15     cbeTypeField = 0x8f
 	cbeTypeString       cbeTypeField = 0x90
-	cbeTypeURI          cbeTypeField = 0x91
+	cbeTypeRID          cbeTypeField = 0x91
 	cbeTypeCustomBinary cbeTypeField = 0x92
 	cbeTypeCustomText   cbeTypeField = 0x93
 	cbeTypeArray        cbeTypeField = 0x94
@@ -115,7 +115,7 @@ var isTypedArray = []bool{
 	events.ArrayTypeFloat64:      true,
 	events.ArrayTypeUUID:         true,
 	events.ArrayTypeString:       false,
-	events.ArrayTypeURI:          false,
+	events.ArrayTypeResourceID:   false,
 	events.ArrayTypeCustomBinary: false,
 	events.ArrayTypeCustomText:   false,
 }
@@ -135,7 +135,7 @@ var arrayTypeToCBEType = []cbeTypeField{
 	events.ArrayTypeFloat64:      cbeTypeFloat64,
 	events.ArrayTypeUUID:         cbeTypeUUID,
 	events.ArrayTypeString:       cbeTypeString,
-	events.ArrayTypeURI:          cbeTypeURI,
+	events.ArrayTypeResourceID:   cbeTypeRID,
 	events.ArrayTypeCustomBinary: cbeTypeCustomBinary,
 	events.ArrayTypeCustomText:   cbeTypeCustomText,
 }
@@ -155,7 +155,7 @@ var cbeTypeToArrayType = [256]events.ArrayType{
 	cbeTypeFloat64:      events.ArrayTypeFloat64,
 	cbeTypeUUID:         events.ArrayTypeUUID,
 	cbeTypeString:       events.ArrayTypeString,
-	cbeTypeURI:          events.ArrayTypeURI,
+	cbeTypeRID:          events.ArrayTypeResourceID,
 	cbeTypeCustomBinary: events.ArrayTypeCustomBinary,
 	cbeTypeCustomText:   events.ArrayTypeCustomText,
 }

@@ -505,9 +505,9 @@ func TestCTEVerbatimString(t *testing.T) {
 	assertDecode(t, nil, `c1 "\.#ENDOFSTRING a test\nwith \.stuff#ENDOFSTRING"`, BD(), V(1), S(`a test\nwith \.stuff`), ED())
 }
 
-func TestCTEURI(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c1 |u http://example.com|`, BD(), V(1), URI("http://example.com"), ED())
-	assertDecodeEncode(t, nil, nil, `c1 |u http://x.com/\||`, BD(), V(1), URI(`http://x.com/|`), ED())
+func TestCTERID(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, `c1 |r http://example.com|`, BD(), V(1), RID("http://example.com"), ED())
+	assertDecodeEncode(t, nil, nil, `c1 |r http://x.com/\||`, BD(), V(1), RID(`http://x.com/|`), ED())
 }
 
 func TestCTEArrayUintX(t *testing.T) {
@@ -902,7 +902,7 @@ func TestCTEChunked(t *testing.T) {
 
 	assertChunkedStringlike("c1 abcdefgh", SB())
 	//TODO: assertChunkedStringlike("c1 `# abcdefgh#", VB())
-	assertChunkedStringlike("c1 |u abcdefgh|", UB())
+	assertChunkedStringlike("c1 |r abcdefgh|", RB())
 	assertChunkedStringlike("c1 |ct abcdefgh|", CTB())
 	assertChunkedByteslike("c1 |cb 12 34 56 78 9a|", CBB())
 	assertChunkedByteslike(`c1 |u8x 12 34 56 78 9a|`, AU8B())
@@ -927,8 +927,8 @@ func TestCTEMap(t *testing.T) {
 	assertDecode(t, nil, "c1 {  1 = 2 3=4 \t}", BD(), V(1), M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
 	assertDecodeEncode(t, nil, nil, "c1 {null=@null 1.5=1000}")
 
-	assertDecode(t, nil, `c1 {email = |u mailto:me@somewhere.com| 1.5 = "a string"}`, BD(), V(1), M(),
-		S("email"), URI("mailto:me@somewhere.com"),
+	assertDecode(t, nil, `c1 {email = |r mailto:me@somewhere.com| 1.5 = "a string"}`, BD(), V(1), M(),
+		S("email"), RID("mailto:me@somewhere.com"),
 		DF(NewDFloat("1.5")), S("a string"),
 		E(), ED())
 
@@ -1070,7 +1070,7 @@ func TestCTEReference(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1 [&2:aaaaa $2]`, BD(), V(1), L(), MARK(), PI(2), S("aaaaa"), REF(), PI(2), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 [&a:aaaaa $a]`, BD(), V(1), L(), MARK(), S("a"), S("aaaaa"), REF(), S("a"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 [&a:aaaaa a]`, BD(), V(1), L(), MARK(), S("a"), S("aaaaa"), S("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c1 $|u http://x.y|`, BD(), V(1), REF(), URI("http://x.y"), ED())
+	assertDecodeEncode(t, nil, nil, `c1 $|r http://x.y|`, BD(), V(1), REF(), RID("http://x.y"), ED())
 	assertDecodeFails(t, `c1 $ 1`)
 }
 
@@ -1504,8 +1504,8 @@ func TestCTEComplexExample(t *testing.T) {
     timestamp        = 2010-7-15/13:28:15.415942344/Z
     null             = @null
     bytes            = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    url              = |u https://example.com/|
-    email            = |u mailto:me@somewhere.com|
+    url              = |r https://example.com/|
+    email            = |r mailto:me@somewhere.com|
     1.5              = "Keys don't have to be strings"
     long-string      = "\.ZZZ
 A backtick induces verbatim processing, which in this case will continue
@@ -1522,9 +1522,9 @@ case is three Z characters, specified earlier as a sentinel.ZZZ"
                             }
     ref1             = $tag1
     ref2             = $tag1
-    outside_ref      = $|u https://somewhere.else.com/path/to/document.cte#some_tag|
+    outside_ref      = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
     // The markup type is good for presentation data
-    html_compatible  = <html xmlns=|u http://www.w3.org/1999/xhtml| "xml:lang"=en ,
+    html_compatible  = <html xmlns=|r http://www.w3.org/1999/xhtml| "xml:lang"=en ,
                          <body,
                            Please choose from the following widgets:
                            <div id=parent style=normal ref-id=1 ,
@@ -1572,8 +1572,8 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     timestamp = 2010-07-15/13:28:15.415942344/Z
     null = @null
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    url = |u https://example.com/|
-    email = |u mailto:me@somewhere.com|
+    url = |r https://example.com/|
+    email = |r mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
@@ -1583,9 +1583,9 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     }
     ref1 = $tag1
     ref2 = $tag1
-    outside_ref = $|u https://somewhere.else.com/path/to/document.cte#some_tag|
+    outside_ref = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
     // The markup type is good for presentation data
-    html_compatible = <html xmlns=|u http://www.w3.org/1999/xhtml| "xml:lang"=en,
+    html_compatible = <html xmlns=|r http://www.w3.org/1999/xhtml| "xml:lang"=en,
         <body,
             Please choose from the following widgets:
             <div id=parent style=normal ref-id=1,
@@ -1625,8 +1625,8 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     timestamp = 2010-07-15/13:28:15.415942344
     null = @null
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    url = |u https://example.com/|
-    email = |u mailto:me@somewhere.com|
+    url = |r https://example.com/|
+    email = |r mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
@@ -1636,9 +1636,9 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     }
     ref1 = $tag1
     ref2 = $tag1
-    outside_ref = $|u https://somewhere.else.com/path/to/document.cte#some_tag|
+    outside_ref = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
     /* The markup type is good for presentation data */
-    html_compatible = <html xmlns=|u http://www.w3.org/1999/xhtml| "xml:lang"=en,
+    html_compatible = <html xmlns=|r http://www.w3.org/1999/xhtml| "xml:lang"=en,
         <body,
             Please choose from the following widgets: <div id=parent style=normal ref-id=1,
                 /* Here we use a backtick to induce verbatim processing.

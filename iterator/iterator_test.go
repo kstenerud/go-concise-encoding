@@ -43,7 +43,7 @@ func TestIterateBasic(t *testing.T) {
 	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()
 	pCTimeNow := test.AsCompactTime(gTimeNow)
-	pURL := NewURI("http://x.com")
+	pURL := NewRID("http://x.com")
 
 	assertIterate(t, nil, N())
 	assertIterate(t, true, B(true))
@@ -81,8 +81,8 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, *pCTimeNow, CT(pCTimeNow))
 	assertIterate(t, []byte{1, 2, 3, 4}, AU8([]byte{1, 2, 3, 4}))
 	assertIterate(t, "test", S("test"))
-	assertIterate(t, pURL, URI("http://x.com"))
-	assertIterate(t, *pURL, URI("http://x.com"))
+	assertIterate(t, pURL, RID("http://x.com"))
+	assertIterate(t, *pURL, RID("http://x.com"))
 	assertIterate(t, (*url.URL)(nil), N())
 }
 

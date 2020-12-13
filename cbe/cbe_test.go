@@ -249,15 +249,15 @@ func TestCBEString(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, version, typeString, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), S("00000000001111111111"), ED())
 }
 
-func TestCBEURIEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, version, typeURI, 0x02})
-	assertDecodeFails(t, []byte{header, version, typeURI, 0x04, 'a'})
+func TestCBERIDEOF(t *testing.T) {
+	assertDecodeFails(t, []byte{header, version, TypeRID, 0x02})
+	assertDecodeFails(t, []byte{header, version, TypeRID, 0x04, 'a'})
 }
 
-func TestCBEURI(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, typeURI, 0x00}, BD(), V(1), URI(""), ED())
-	assertDecodeEncode(t, []byte{header, version, typeURI, 0x02, 'a'}, BD(), V(1), URI("a"), ED())
-	assertDecodeEncode(t, []byte{header, version, typeURI, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), URI("00000000001111111111"), ED())
+func TestCBERID(t *testing.T) {
+	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x00}, BD(), V(1), RID(""), ED())
+	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x02, 'a'}, BD(), V(1), RID("a"), ED())
+	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), RID("00000000001111111111"), ED())
 }
 
 func TestCBECustomBinaryEOF(t *testing.T) {

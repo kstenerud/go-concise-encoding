@@ -29,7 +29,7 @@ import (
 )
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := filepath.Join(projectDir, "builder/generated_code.go")
+	generatedFilePath := filepath.Join(projectDir, "builder/generated-do-not-edit.go")
 	writer, err := os.Create(generatedFilePath)
 	if err != nil {
 		panic(fmt.Errorf("could not open %s: %v", generatedFilePath, err))

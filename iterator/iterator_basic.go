@@ -136,7 +136,7 @@ func (_this *pURLIterator) IterateObject(v reflect.Value, eventReceiver events.D
 		eventReceiver.OnNull()
 	} else {
 		bytes := []byte(v.Interface().(*url.URL).String())
-		eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
+		eventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
 	}
 }
 
@@ -164,7 +164,7 @@ func (_this *urlIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptio
 func (_this *urlIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	vCopy := v.Interface().(url.URL)
 	bytes := []byte((&vCopy).String())
-	eventReceiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
+	eventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
 }
 
 // --------

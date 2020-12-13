@@ -88,7 +88,7 @@ const (
 	typeString14     = 0x8e
 	typeString15     = 0x8f
 	typeString       = 0x90
-	typeURI          = 0x91
+	TypeRID          = 0x91
 	typeCustomBinary = 0x92
 	typeCustomText   = 0x93
 	typeArray        = 0x94
@@ -117,8 +117,8 @@ func NewBDF(str string) *apd.Decimal {
 	return test.NewBDF(str)
 }
 
-func NewURI(uriString string) *url.URL {
-	return test.NewURI(uriString)
+func NewRID(RIDString string) *url.URL {
+	return test.NewRID(RIDString)
 }
 
 func NewDate(year, month, day int) *compact_time.Time {
@@ -161,7 +161,7 @@ func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v *compact_time.Time) *test.TEvent   { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
-func URI(v string) *test.TEvent              { return test.URI(v) }
+func RID(v string) *test.TEvent              { return test.RID(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -177,7 +177,7 @@ func AF16(v []byte) *test.TEvent             { return test.AF16(v) }
 func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
-func UB() *test.TEvent                       { return test.UB() }
+func RB() *test.TEvent                       { return test.RB() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }

@@ -168,8 +168,8 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(length), _this.decodeSmallString(length))
 		case cbeTypeString:
 			_this.decodeArray(events.ArrayTypeString)
-		case cbeTypeURI:
-			_this.decodeArray(events.ArrayTypeURI)
+		case cbeTypeRID:
+			_this.decodeArray(events.ArrayTypeResourceID)
 		case cbeTypeCustomBinary:
 			_this.decodeArray(events.ArrayTypeCustomBinary)
 		case cbeTypeCustomText:

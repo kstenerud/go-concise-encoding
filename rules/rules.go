@@ -285,7 +285,7 @@ func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, val
 	case events.ArrayTypeString:
 		// TODO: Isn't this done in onArrayData?
 		_this.validateString(value)
-	case events.ArrayTypeURI, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
+	case events.ArrayTypeResourceID, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
 	// OK
 	default:
 		switch _this.getCurrentStateID() {
@@ -305,7 +305,7 @@ func (_this *Rules) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 	// OK
-	case events.ArrayTypeURI, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
+	case events.ArrayTypeResourceID, events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
 	// OK
 	default:
 		switch _this.getCurrentStateID() {
@@ -470,14 +470,14 @@ func (_this *Rules) onArrayData(data []byte) {
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
 		}
-	case events.ArrayTypeURI:
-		if _this.arrayBytesWritten+dataLength > _this.opts.MaxURILength {
-			panic(fmt.Errorf("max URI length (%v) exceeded", _this.opts.MaxURILength))
+	case events.ArrayTypeResourceID:
+		if _this.arrayBytesWritten+dataLength > _this.opts.MaxResourceIDLength {
+			panic(fmt.Errorf("max ResourceID length (%v) exceeded", _this.opts.MaxResourceIDLength))
 		}
 		if _this.isAwaitingID() {
 			_this.arrayData = append(_this.arrayData, data...)
 		}
-		// Note: URI validation happens when the array is complete
+		// Note: ResourceID validation happens when the array is complete
 	default:
 		if _this.arrayBytesWritten+dataLength > _this.opts.MaxBytesLength {
 			panic(fmt.Errorf("max byte array length (%v) exceeded", _this.opts.MaxBytesLength))
@@ -644,13 +644,13 @@ func (_this *Rules) onArrayChunkEnded() {
 			}
 			_this.stackID(string(_this.arrayData))
 		}
-	case events.ArrayTypeURI:
+	case events.ArrayTypeResourceID:
 		if _this.isAwaitingID() {
-			uri, err := url.Parse(string(_this.arrayData))
+			ResourceID, err := url.Parse(string(_this.arrayData))
 			if err != nil {
 				panic(fmt.Errorf("%v", err))
 			}
-			_this.stackID(uri)
+			_this.stackID(ResourceID)
 		}
 	}
 
@@ -749,7 +749,7 @@ const (
 	eventIDEndContainer
 	eventIDArray
 	eventIDString
-	eventIDURI
+	eventIDResourceID
 	eventIDAChunk
 	eventIDAData
 	eventIDEndDocument
@@ -778,7 +778,7 @@ var ruleEventNames = [...]string{
 	eventIDEndContainer:  "end container",
 	eventIDArray:         "array",
 	eventIDString:        "string",
-	eventIDURI:           "URI",
+	eventIDResourceID:    "ResourceID",
 	eventIDAChunk:        "array chunk",
 	eventIDAData:         "array data",
 	eventIDEndDocument:   "end document",
@@ -868,7 +868,7 @@ const (
 	eventEndContainer
 	eventBeginArray
 	eventBeginString
-	eventBeginURI
+	eventBeginResourceID
 	eventArrayChunk
 	eventArrayData
 	eventEndDocument
@@ -906,7 +906,7 @@ const (
 	eventTypeEndContainer  = eventIDEndContainer | eventEndContainer
 	eventTypeArray         = eventIDArray | eventBeginArray
 	eventTypeString        = eventIDString | eventBeginString
-	eventTypeURI           = eventIDURI | eventBeginURI
+	eventTypeResourceID    = eventIDResourceID | eventBeginResourceID
 	eventTypeAChunk        = eventIDAChunk | eventArrayChunk
 	eventTypeAData         = eventIDAData | eventArrayData
 	eventTypeEndDocument   = eventIDEndDocument | eventEndDocument
@@ -915,7 +915,7 @@ const (
 
 // Primary rules
 const (
-	eventsArray         = eventBeginArray | eventBeginString | eventBeginURI
+	eventsArray         = eventBeginArray | eventBeginString | eventBeginResourceID
 	eventsInvisible     = eventPadding | eventBeginComment | eventBeginMetadata
 	eventsKeyableObject = eventsInvisible | eventScalar | eventPositiveInt | eventsArray | eventBeginMarker
 	eventsAnyObject     = eventsKeyableObject | eventNil | eventNan | eventBeginList | eventBeginMap | eventBeginMarkup | eventBeginReference
@@ -928,7 +928,7 @@ const (
 	allowMarkupName     = ruleState(eventPositiveInt | eventBeginString | eventPadding)
 	allowMarkupContents = ruleState(eventBeginString | eventBeginComment | eventBeginMarkup | eventEndContainer | eventPadding)
 	allowMarkerID       = ruleState(eventPositiveInt | eventBeginString | eventPadding)
-	allowReferenceID    = ruleState(eventPositiveInt | eventBeginString | eventBeginURI | eventPadding)
+	allowReferenceID    = ruleState(eventPositiveInt | eventBeginString | eventBeginResourceID | eventPadding)
 	allowArrayChunk     = ruleState(eventArrayChunk)
 	allowArrayData      = ruleState(eventArrayData)
 	allowBeginDocument  = ruleState(eventBeginDocument)
@@ -997,7 +997,7 @@ var arrayTypeToRuleEvent = [...]ruleEvent{
 	events.ArrayTypeFloat64:      eventTypeArray,
 	events.ArrayTypeUUID:         eventTypeArray,
 	events.ArrayTypeString:       eventTypeString,
-	events.ArrayTypeURI:          eventTypeURI,
+	events.ArrayTypeResourceID:   eventTypeResourceID,
 	events.ArrayTypeCustomBinary: eventTypeArray,
 	events.ArrayTypeCustomText:   eventTypeArray,
 }

@@ -96,12 +96,12 @@ func NewBDF(str string) *apd.Decimal {
 	return v
 }
 
-func NewURI(uriString string) *url.URL {
-	uri, err := url.Parse(uriString)
+func NewRID(RIDString string) *url.URL {
+	rid, err := url.Parse(RIDString)
 	if err != nil {
-		panic(fmt.Errorf("TEST CODE BUG: Bad URL (%v): %w", uriString, err))
+		panic(fmt.Errorf("TEST CODE BUG: Bad URL (%v): %w", RIDString, err))
 	}
-	return uri
+	return rid
 }
 
 func NewDate(year, month, day int) *compact_time.Time {
@@ -254,8 +254,8 @@ var (
 	EvAD     = AD([]byte{1})
 	EvS      = S("a")
 	EvSB     = SB()
-	EvURI    = URI("http://z.com")
-	EvUB     = UB()
+	EvRID    = RID("http://z.com")
+	EvUB     = RB()
 	EvCUB    = CUB([]byte{1})
 	EvCBB    = CBB()
 	EvCUT    = CUT("a")
@@ -292,7 +292,7 @@ var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
-	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvURI, EvUB,
+	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvRID, EvUB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
 	EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
@@ -324,7 +324,7 @@ var (
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvB, EvTT, EvFF, EvB, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvURI, EvUB, EvCUB,
+		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvUB, EvCUB,
 		EvCBB, EvCUT, EvCTB, EvMETA, EvCMT, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
@@ -356,7 +356,7 @@ var (
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
 	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
 
-	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvURI, EvUB}
+	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvRID, EvUB}
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
 )
 
@@ -384,7 +384,7 @@ const (
 	TEventTime
 	TEventCompactTime
 	TEventString
-	TEventURI
+	TEventResourceID
 	TEventCustomBinary
 	TEventCustomText
 	TEventArrayBoolean
@@ -401,7 +401,7 @@ const (
 	TEventArrayFloat64
 	TEventArrayUUID
 	TEventStringBegin
-	TEventURIBegin
+	TEventResourceIDBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
 	TEventArrayBooleanBegin
@@ -453,7 +453,7 @@ var TEventNames = []string{
 	TEventTime:              "GT",
 	TEventCompactTime:       "CT",
 	TEventString:            "S",
-	TEventURI:               "URI",
+	TEventResourceID:        "RID",
 	TEventCustomBinary:      "CUB",
 	TEventCustomText:        "CUT",
 	TEventArrayBoolean:      "AB",
@@ -470,7 +470,7 @@ var TEventNames = []string{
 	TEventArrayFloat64:      "AF64",
 	TEventArrayUUID:         "AUU",
 	TEventStringBegin:       "SB",
-	TEventURIBegin:          "UB",
+	TEventResourceIDBegin:   "RB",
 	TEventCustomBinaryBegin: "CBB",
 	TEventCustomTextBegin:   "CTB",
 	TEventArrayBooleanBegin: "ABB",
@@ -575,9 +575,9 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventString:
 		bytes := []byte(_this.V1.(string))
 		receiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
-	case TEventURI:
+	case TEventResourceID:
 		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeURI, uint64(len(bytes)), bytes)
+		receiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
 	case TEventCustomBinary:
 		bytes := []byte(_this.V1.([]byte))
 		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
@@ -627,8 +627,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArray(events.ArrayTypeUUID, uint64(len(bytes)/16), bytes)
 	case TEventStringBegin:
 		receiver.OnArrayBegin(events.ArrayTypeString)
-	case TEventURIBegin:
-		receiver.OnArrayBegin(events.ArrayTypeURI)
+	case TEventResourceIDBegin:
+		receiver.OnArrayBegin(events.ArrayTypeResourceID)
 	case TEventCustomBinaryBegin:
 		receiver.OnArrayBegin(events.ArrayTypeCustomBinary)
 	case TEventCustomTextBegin:
@@ -715,7 +715,7 @@ func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
 func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
 func CT(v *compact_time.Time) *TEvent   { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
-func URI(v string) *TEvent              { return newTEvent(TEventURI, v, nil) }
+func RID(v string) *TEvent              { return newTEvent(TEventResourceID, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
 func AB(l uint64, v []byte) *TEvent     { return newTEvent(TEventArrayBoolean, l, v) }
@@ -732,7 +732,7 @@ func AF32(v []float32) *TEvent          { return newTEvent(TEventArrayFloat32, v
 func AF64(v []float64) *TEvent          { return newTEvent(TEventArrayFloat64, v, nil) }
 func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUUID, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
-func UB() *TEvent                       { return newTEvent(TEventURIBegin, nil, nil) }
+func RB() *TEvent                       { return newTEvent(TEventResourceIDBegin, nil, nil) }
 func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
 func ABB() *TEvent                      { return newTEvent(TEventArrayBooleanBegin, nil, nil) }
@@ -797,7 +797,7 @@ func EventForValue(value interface{}) *TEvent {
 		case common.TypePCompactTime:
 			return CT(rv.Interface().(*compact_time.Time))
 		case common.TypePURL:
-			return URI(rv.Interface().(*url.URL).String())
+			return RID(rv.Interface().(*url.URL).String())
 		}
 		return EventForValue(rv.Elem().Interface())
 	case reflect.Struct:
@@ -822,7 +822,7 @@ func EventForValue(value interface{}) *TEvent {
 			return GT(v)
 		case common.TypeURL:
 			v := rv.Interface().(url.URL)
-			return URI(v.String())
+			return RID(v.String())
 		}
 	}
 	panic(fmt.Errorf("TEST CODE BUG: Unhandled kind: %v", rv.Kind()))
@@ -941,8 +941,8 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.Print(S(string(value)))
-	case events.ArrayTypeURI:
-		h.Print(URI(string(value)))
+	case events.ArrayTypeResourceID:
+		h.Print(RID(string(value)))
 	case events.ArrayTypeCustomBinary:
 		h.Print(CUB(value))
 	case events.ArrayTypeCustomText:
@@ -982,8 +982,8 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.Print(SB())
-	case events.ArrayTypeURI:
-		h.Print(UB())
+	case events.ArrayTypeResourceID:
+		h.Print(RB())
 	case events.ArrayTypeCustomBinary:
 		h.Print(CBB())
 	case events.ArrayTypeCustomText:
@@ -1113,8 +1113,8 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(S(string(value)))
-	case events.ArrayTypeURI:
-		h.add(URI(string(value)))
+	case events.ArrayTypeResourceID:
+		h.add(RID(string(value)))
 	case events.ArrayTypeCustomBinary:
 		h.add(CUB(CloneBytes(value)))
 	case events.ArrayTypeCustomText:
@@ -1153,8 +1153,8 @@ func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(SB())
-	case events.ArrayTypeURI:
-		h.add(UB())
+	case events.ArrayTypeResourceID:
+		h.add(RB())
 	case events.ArrayTypeCustomBinary:
 		h.add(CBB())
 	case events.ArrayTypeCustomText:
@@ -1369,7 +1369,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F16", CT(_this.PCTime))
 		ane("F17", AU8([]byte{1}))
 		ane("F18", S("xyz"))
-		ane("F19", URI("http://example.com"))
+		ane("F19", RID("http://example.com"))
 		// ane("F20", cust([]byte{1}))
 		ane("FakeList", L(), E())
 		ane("FakeMap", M(), E())
@@ -1391,7 +1391,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			CT(_this.PCTime),
 			AU8([]byte{1}),
 			S("xyz"),
-			URI("http://example.com"),
+			RID("http://example.com"),
 			// cust([]byte{1}),
 			E(), E(), E())
 	}

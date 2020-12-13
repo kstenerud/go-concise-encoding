@@ -345,7 +345,7 @@ const (
 	awaitingMarkerID
 	awaitingReferenceID
 	awaitingQuotedString
-	awaitingURI
+	awaitingRID
 	awaitingCustomBinary
 	awaitingCustomText
 	awaitingArrayBool
@@ -385,7 +385,7 @@ var awaitingNames = [awaitingCount]string{
 	awaitingMarkerID:        "MarkerID",
 	awaitingReferenceID:     "ReferenceID",
 	awaitingQuotedString:    "QuotedString",
-	awaitingURI:             "URI",
+	awaitingRID:             "ResourceID",
 	awaitingCustomBinary:    "CustomBinary",
 	awaitingCustomText:      "CustomText",
 	awaitingArrayBool:       "ArrayBool",
@@ -450,7 +450,7 @@ var prefixSettersCompact = [awaitingCount]prefixSetter{
 	awaitingMarkerID:        (*encoderEngine).setNoPrefix,
 	awaitingReferenceID:     (*encoderEngine).setNoPrefix,
 	awaitingQuotedString:    (*encoderEngine).setNoPrefix,
-	awaitingURI:             (*encoderEngine).setNoPrefix,
+	awaitingRID:             (*encoderEngine).setNoPrefix,
 	awaitingCustomBinary:    (*encoderEngine).setNoPrefix,
 	awaitingCustomText:      (*encoderEngine).setNoPrefix,
 	awaitingArrayBool:       (*encoderEngine).setNoPrefix,
@@ -489,7 +489,7 @@ var prefixSettersPretty = [awaitingCount]prefixSetter{
 	awaitingMarkerID:        (*encoderEngine).setNoPrefix,
 	awaitingReferenceID:     (*encoderEngine).setNoPrefix,
 	awaitingQuotedString:    (*encoderEngine).setNoPrefix,
-	awaitingURI:             (*encoderEngine).setNoPrefix,
+	awaitingRID:             (*encoderEngine).setNoPrefix,
 	awaitingCustomBinary:    (*encoderEngine).setNoPrefix,
 	awaitingCustomText:      (*encoderEngine).setNoPrefix,
 	awaitingArrayBool:       (*encoderEngine).setNoPrefix,

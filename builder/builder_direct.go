@@ -110,7 +110,7 @@ func (_this *directBuilder) BuildFromString(value []byte, dst reflect.Value) {
 	dst.SetString(string(value))
 }
 
-func (_this *directBuilder) BuildFromURI(value *url.URL, dst reflect.Value) {
+func (_this *directBuilder) BuildFromRID(value *url.URL, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value).Elem())
 }
 
@@ -128,8 +128,8 @@ func (_this *directBuilder) BuildFromCustomText(value []byte, dst reflect.Value)
 
 func (_this *directBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
-	case events.ArrayTypeURI:
-		setURIFromString(string(value), dst)
+	case events.ArrayTypeResourceID:
+		setRIDFromString(string(value), dst)
 	default:
 		PanicBadEventWithType(_this, _this.dstType, "TypedArray(%v)", arrayType)
 	}
@@ -260,8 +260,8 @@ func (_this *directPtrBuilder) BuildFromArray(arrayType events.ArrayType, value 
 		dst.SetBytes(common.CloneBytes(value))
 	case events.ArrayTypeString:
 		dst.SetString(string(value))
-	case events.ArrayTypeURI:
-		setPURIFromString(string(value), dst)
+	case events.ArrayTypeResourceID:
+		setPRIDFromString(string(value), dst)
 	default:
 		panic(fmt.Errorf("TODO: Add typed array support for %v", arrayType))
 	}

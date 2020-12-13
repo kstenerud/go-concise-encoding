@@ -135,8 +135,8 @@ func TestRulesArrayOneshot(t *testing.T) {
 	// TODO: Other array types
 }
 
-func TestRulesURIOneshot(t *testing.T) {
-	assertEventsMaxDepth(t, 1, URI("http://example.com"), ED())
+func TestRulesResourceIDOneshot(t *testing.T) {
+	assertEventsMaxDepth(t, 1, RID("http://example.com"), ED())
 }
 
 func TestRulesCustomOneshot(t *testing.T) {
@@ -152,7 +152,7 @@ func TestRulesReference(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 
 	assertEvents(t, rules, L(), MARK(), S("a"), F(0.1), MARK(), I(100), GT(time.Now()),
-		REF(), S("a"), REF(), URI("http://example.com"), REF(), I(100),
+		REF(), S("a"), REF(), RID("http://example.com"), REF(), I(100),
 		REF(), I(5), S("test"), E())
 	assertEventsFail(t, rules, ED())
 }
@@ -240,12 +240,12 @@ func TestRulesStringMultiChunk(t *testing.T) {
 	assertEventsMaxDepth(t, 1, SB(), AC(20, false), AD(NewString(5, 0)), AD(NewString(3, 0)), AD(NewString(12, 0)), ED())
 }
 
-func TestRulesURI(t *testing.T) {
-	assertEventsMaxDepth(t, 1, UB(), AC(18, false), AD([]byte("http://example.com")), ED())
+func TestRulesRID(t *testing.T) {
+	assertEventsMaxDepth(t, 1, RB(), AC(18, false), AD([]byte("http://example.com")), ED())
 }
 
-func TestRulesURIMultiChunk(t *testing.T) {
-	assertEventsMaxDepth(t, 1, UB(), AC(13, false), AD([]byte("http:")), AD([]byte("test")), AD([]byte(".net")), ED())
+func TestRulesResourceIDMultiChunk(t *testing.T) {
+	assertEventsMaxDepth(t, 1, RB(), AC(13, false), AD([]byte("http:")), AD([]byte("test")), AD([]byte(".net")), ED())
 }
 
 func testRulesCustomBinary(t *testing.T, length int, byteCount ...int) {
@@ -338,7 +338,7 @@ func TestRulesInArray(t *testing.T) {
 	assertRulesInArray(t, rules)
 	assertEvents(t, rules, AD(NewString(5, 0)))
 	assertRulesNotInArray(t, rules)
-	assertEvents(t, rules, UB())
+	assertEvents(t, rules, RB())
 	assertRulesInArray(t, rules)
 	assertEvents(t, rules, AC(5, false))
 	assertRulesInArray(t, rules)
@@ -935,9 +935,9 @@ func TestRulesErrorRefMissingMarker(t *testing.T) {
 	assertEventsFail(t, rules, ED())
 }
 
-func TestRulesURILength0_1(t *testing.T) {
-	assertEventsMaxDepth(t, 2, URI(""))
-	assertEventsMaxDepth(t, 2, URI("a"))
+func TestRulesResourceIDLength0_1(t *testing.T) {
+	assertEventsMaxDepth(t, 2, RID(""))
+	assertEventsMaxDepth(t, 2, RID("a"))
 }
 
 func TestRulesErrorDuplicateMarkerID(t *testing.T) {
@@ -1001,14 +1001,14 @@ func TestRulesMaxStringLength(t *testing.T) {
 	assertEventsFail(t, rules, AD(NewBytes(4, 40)))
 }
 
-func TestRulesMaxURILength(t *testing.T) {
+func TestRulesMaxResourceIDLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
-	opts.MaxURILength = 10
+	opts.MaxResourceIDLength = 10
 	rules := newRulesAfterVersion(opts)
-	assertEventsFail(t, rules, URI("12345678901"))
+	assertEventsFail(t, rules, RID("12345678901"))
 
 	rules = newRulesAfterVersion(opts)
-	assertEvents(t, rules, UB(), AC(8, true), AD(NewBytes(8, 64)), AC(4, false))
+	assertEvents(t, rules, RB(), AC(8, true), AD(NewBytes(8, 64)), AC(4, false))
 	assertEventsFail(t, rules, AD(NewBytes(4, 64)))
 }
 

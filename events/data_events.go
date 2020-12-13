@@ -52,7 +52,7 @@ const (
 	ArrayTypeFloat64
 	ArrayTypeUUID
 	ArrayTypeString
-	ArrayTypeURI
+	ArrayTypeResourceID
 	ArrayTypeCustomBinary
 	ArrayTypeCustomText
 )
@@ -81,7 +81,7 @@ var arrayTypeNames = [...]string{
 	ArrayTypeFloat64:      "Float64",
 	ArrayTypeUUID:         "UUID",
 	ArrayTypeString:       "String",
-	ArrayTypeURI:          "URI",
+	ArrayTypeResourceID:   "ResourceID",
 	ArrayTypeCustomBinary: "Custom Binary",
 	ArrayTypeCustomText:   "Custom Text",
 }
@@ -102,7 +102,7 @@ var arrayTypeElementSizes = [...]int{
 	ArrayTypeFloat64:      64,
 	ArrayTypeUUID:         128,
 	ArrayTypeString:       8,
-	ArrayTypeURI:          8,
+	ArrayTypeResourceID:   8,
 	ArrayTypeCustomBinary: 8,
 	ArrayTypeCustomText:   8,
 }

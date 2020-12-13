@@ -104,9 +104,9 @@ func TestEncodeDecodeCustom(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), CUB([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
-func TestEncodeDecodeURI(t *testing.T) {
+func TestEncodeDecodeRID(t *testing.T) {
 	// TODO: More complex tests
-	assertEncodeDecode(t, BD(), V(1), URI("http://example.com"), ED())
+	assertEncodeDecode(t, BD(), V(1), RID("http://example.com"), ED())
 }
 
 func TestEncodeDecodeString(t *testing.T) {
@@ -177,8 +177,8 @@ func TestWebsiteExampleStrings(t *testing.T) {
 {
     unquoted-string = no-quotes-needed
     quoted-string = "A string delimited by quotes"
-    url = |u https://example.com/|
-    email = |u mailto:me@somewhere.com|
+    url = |r https://example.com/|
+    email = |r mailto:me@somewhere.com|
 }`, []byte{0x03, 0x01, 0x79, 0x8f, 0x75, 0x6e, 0x71, 0x75, 0x6f, 0x74, 0x65,
 		0x64, 0x2d, 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x90, 0x20, 0x6e, 0x6f,
 		0x2d, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x73, 0x2d, 0x6e, 0x65, 0x65, 0x64,
@@ -194,8 +194,8 @@ func TestWebsiteExampleStrings(t *testing.T) {
 		BD(), V(1), M(),
 		S("unquoted-string"), S("no-quotes-needed"),
 		S("quoted-string"), S("A string delimited by quotes"),
-		S("url"), URI("https://example.com/"),
-		S("email"), URI("mailto:me@somewhere.com"),
+		S("url"), RID("https://example.com/"),
+		S("email"), RID("mailto:me@somewhere.com"),
 		E(), ED())
 }
 
@@ -281,7 +281,7 @@ func TestWebsiteExampleMarkup(t *testing.T) {
 	assertDecodeCBECTE(t, cteEOpts, nil, nil, nil, `c1
 {
     main-view = <View,
-        <Image src=|u images/avatar-image.jpg|>
+        <Image src=|r images/avatar-image.jpg|>
         <Text id=HelloText,
             Hello! Please choose a name!
         >
@@ -315,7 +315,7 @@ func TestWebsiteExampleMarkup(t *testing.T) {
 		0x88, 0x4e, 0x61, 0x6d, 0x65, 0x20, 0x6d, 0x65, 0x21, 0x7b, 0x7b, 0x7b},
 		BD(), V(1), M(),
 		S("main-view"), MUP(), S("View"), E(),
-		MUP(), S("Image"), S("src"), URI("images/avatar-image.jpg"), E(), E(),
+		MUP(), S("Image"), S("src"), RID("images/avatar-image.jpg"), E(), E(),
 		MUP(), S("Text"), S("id"), S("HelloText"), E(),
 		S("Hello! Please choose a name!"),
 		E(),
@@ -342,7 +342,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
     }
     ref1             = $id1
     ref2             = $id1
-    outside_ref      = $|u https://xyz.com/document.cte#some_id|
+    outside_ref      = $|r https://xyz.com/document.cte#some_id|
 }`, []byte{0x03, 0x01, 0x79, 0x8d, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x64, 0x5f,
 		0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x97, 0x83, 0x69, 0x64, 0x31, 0x79,
 		0x8b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e,
@@ -368,7 +368,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
 		E(),
 		S("ref1"), REF(), S("id1"),
 		S("ref2"), REF(), S("id1"),
-		S("outside_ref"), REF(), URI("https://xyz.com/document.cte#some_id"),
+		S("outside_ref"), REF(), RID("https://xyz.com/document.cte#some_id"),
 		E(), ED())
 }
 

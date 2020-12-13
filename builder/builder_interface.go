@@ -133,8 +133,8 @@ func (_this *intfBuilder) BuildFromArray(arrayType events.ArrayType, value []byt
 		dst.Set(reflect.ValueOf(common.CloneBytes(value)))
 	case events.ArrayTypeString:
 		dst.Set(reflect.ValueOf(string(value)))
-	case events.ArrayTypeURI:
-		setPURIFromString(string(value), dst)
+	case events.ArrayTypeResourceID:
+		setPRIDFromString(string(value), dst)
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}

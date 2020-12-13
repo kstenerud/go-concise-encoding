@@ -689,8 +689,8 @@ func (_this *Decoder) decodeCustomText() {
 	_this.decodeStringArray(events.ArrayTypeCustomText)
 }
 
-func (_this *Decoder) decodeURI() {
-	_this.decodeStringArray(events.ArrayTypeURI)
+func (_this *Decoder) decodeRID() {
+	_this.decodeStringArray(events.ArrayTypeResourceID)
 }
 
 func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
@@ -919,8 +919,10 @@ func (_this *Decoder) handleTypedArrayBegin() {
 		_this.decodeCustomBinary()
 	case "ct":
 		_this.decodeCustomText()
+	case "r":
+		_this.decodeRID()
 	case "u":
-		_this.decodeURI()
+		panic("TODO: CTEDecoder: UUID array")
 	case "u8":
 		_this.decodeArrayU8("integer", _this.buffer.DecodeSmallUint)
 	case "u8b":
@@ -1008,10 +1010,10 @@ func (_this *Decoder) handleReference() {
 	if _this.buffer.PeekByteNoEOD() == '|' {
 		_this.buffer.AdvanceByte()
 		arrayType := _this.readArrayType()
-		if arrayType != "u" {
+		if arrayType != "r" {
 			_this.buffer.Errorf("%s: Invalid array type for reference ID", arrayType)
 		}
-		_this.decodeURI()
+		_this.decodeRID()
 		return
 	}
 

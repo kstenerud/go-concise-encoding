@@ -164,8 +164,8 @@ func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
 func (_this *RootBuilder) BuildFromString(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "String")
 }
-func (_this *RootBuilder) BuildFromURI(_ *url.URL, _ reflect.Value) {
-	PanicBadEvent(_this, "URI")
+func (_this *RootBuilder) BuildFromRID(_ *url.URL, _ reflect.Value) {
+	PanicBadEvent(_this, "ResourceID")
 }
 func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
 	PanicBadEvent(_this, "CustomBinary")
