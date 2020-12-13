@@ -34,16 +34,16 @@ import (
 var types = [...]string{
 	"uint8",
 	"uint16",
-	// TODO: Remaining typed arrays
-	// "uint32",
-	// "uint64",
-	// "int8",
-	// "int16",
-	// "int32",
-	// "int64",
+	"uint32",
+	"uint64",
+	"int8",
+	"int16",
+	"int32",
+	"int64",
+	"float32",
+	"float64",
+	// TODO: Remaining typed arrays. Can they be done?
 	// "float16",
-	// "float32",
-	// "float64",
 	// "bool",
 	// "UUID",
 }

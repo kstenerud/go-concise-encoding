@@ -105,12 +105,70 @@ func TestIterateSlice(t *testing.T) {
 }
 
 func TestIterateArray(t *testing.T) {
+	// TODO: Replace these
 	a1 := [2]int{1, 2}
 	assertIterate(t, a1, L(), I(1), I(2), E())
 	assertIterate(t, &a1, L(), I(1), I(2), E())
-	a2 := [2]byte{1, 2}
-	assertIterate(t, a2, AU8([]byte{1, 2}))
-	assertIterate(t, &a2, AU8([]byte{1, 2}))
+}
+
+func TestIterateArrayUint8(t *testing.T) {
+	a := [2]byte{1, 2}
+	assertIterate(t, a, AU8([]byte{1, 2}))
+	assertIterate(t, &a, AU8([]byte{1, 2}))
+}
+
+func TestIterateArrayUint16(t *testing.T) {
+	a := [2]uint16{0x1234, 0x5678}
+	assertIterate(t, a, AU16([]uint16{0x1234, 0x5678}))
+	assertIterate(t, &a, AU16([]uint16{0x1234, 0x5678}))
+}
+
+func TestIterateArrayUint32(t *testing.T) {
+	a := [2]uint32{0x12345678, 0xabcdef12}
+	assertIterate(t, a, AU32([]uint32{0x12345678, 0xabcdef12}))
+	assertIterate(t, &a, AU32([]uint32{0x12345678, 0xabcdef12}))
+}
+
+func TestIterateArrayUint64(t *testing.T) {
+	a := [2]uint64{0x123456789abcdef0, 0xfedcba9876543210}
+	assertIterate(t, a, AU64([]uint64{0x123456789abcdef0, 0xfedcba9876543210}))
+	assertIterate(t, &a, AU64([]uint64{0x123456789abcdef0, 0xfedcba9876543210}))
+}
+
+func TestIterateArrayInt8(t *testing.T) {
+	a := [2]int8{1, -2}
+	assertIterate(t, a, AI8([]int8{1, -2}))
+	assertIterate(t, &a, AI8([]int8{1, -2}))
+}
+
+func TestIterateArrayInt16(t *testing.T) {
+	a := [2]int16{1000, -2000}
+	assertIterate(t, a, AI16([]int16{1000, -2000}))
+	assertIterate(t, &a, AI16([]int16{1000, -2000}))
+}
+
+func TestIterateArrayInt32(t *testing.T) {
+	a := [2]int32{1000000, -2000000}
+	assertIterate(t, a, AI32([]int32{1000000, -2000000}))
+	assertIterate(t, &a, AI32([]int32{1000000, -2000000}))
+}
+
+func TestIterateArrayInt64(t *testing.T) {
+	a := [2]int64{1000000000000, -2000000000000}
+	assertIterate(t, a, AI64([]int64{1000000000000, -2000000000000}))
+	assertIterate(t, &a, AI64([]int64{1000000000000, -2000000000000}))
+}
+
+func TestIterateArrayFloat32(t *testing.T) {
+	a := [2]float32{1.5, -1.5}
+	assertIterate(t, a, AF32([]float32{1.5, -1.5}))
+	assertIterate(t, &a, AF32([]float32{1.5, -1.5}))
+}
+
+func TestIterateArrayFloat64(t *testing.T) {
+	a := [2]float64{1.5, -1.5}
+	assertIterate(t, a, AF64([]float64{1.5, -1.5}))
+	assertIterate(t, &a, AF64([]float64{1.5, -1.5}))
 }
 
 func TestIterateInterface(t *testing.T) {

@@ -145,6 +145,22 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 			return newUint8ArrayIterator()
 		case reflect.Uint16:
 			return newUint16ArrayIterator()
+		case reflect.Uint32:
+			return newUint32ArrayIterator()
+		case reflect.Uint64:
+			return newUint64ArrayIterator()
+		case reflect.Int8:
+			return newInt8ArrayIterator()
+		case reflect.Int16:
+			return newInt16ArrayIterator()
+		case reflect.Int32:
+			return newInt32ArrayIterator()
+		case reflect.Int64:
+			return newInt64ArrayIterator()
+		case reflect.Float32:
+			return newFloat32ArrayIterator()
+		case reflect.Float64:
+			return newFloat64ArrayIterator()
 		default:
 			return newArrayIterator(t)
 		}
