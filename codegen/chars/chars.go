@@ -183,7 +183,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 
 	properties.Add(CharIsObjectEnd, chars.GetRunesWithCriteria(func(char *Char) bool {
 		switch char.Codepoint {
-		case '_', '-', '.':
+		case '_', '-':
 			return false
 		}
 		if char.Codepoint >= '0' && char.Codepoint <= '9' {
@@ -200,7 +200,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 
 	properties.AddLL(CharNeedsQuote|CharNeedsQuoteFirst, chars.GetRunesWithCriteria(func(char *Char) bool {
 		switch char.Codepoint {
-		case '_', '-', '.':
+		case '_', '-':
 			return false
 		}
 		if char.Codepoint >= '0' && char.Codepoint <= '9' {
@@ -214,7 +214,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 		}
 		return char.Codepoint <= 0x7f
 	})...)
-	properties.AddLL(CharNeedsQuoteFirst, '-', '.')
+	properties.AddLL(CharNeedsQuoteFirst, '-')
 
 	properties.AddLL(CharNeedsEscapeQuoted, '\\', '"')
 	properties.AddLL(CharNeedsEscapeArray, '\\', '|', '\t', '\r', '\n')
