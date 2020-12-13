@@ -149,6 +149,8 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 			return newUint32ArrayIterator()
 		case reflect.Uint64:
 			return newUint64ArrayIterator()
+		case reflect.Uint:
+			return newUintArrayIterator()
 		case reflect.Int8:
 			return newInt8ArrayIterator()
 		case reflect.Int16:
@@ -157,6 +159,8 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 			return newInt32ArrayIterator()
 		case reflect.Int64:
 			return newInt64ArrayIterator()
+		case reflect.Int:
+			return newIntArrayIterator()
 		case reflect.Float32:
 			return newFloat32ArrayIterator()
 		case reflect.Float64:
@@ -172,6 +176,28 @@ func defaultIteratorForType(t reflect.Type) ObjectIterator {
 			return newUint8SliceIterator()
 		case reflect.Uint16:
 			return newUint16SliceIterator()
+		case reflect.Uint32:
+			return newUint32SliceIterator()
+		case reflect.Uint64:
+			return newUint64SliceIterator()
+		case reflect.Uint:
+			return newUintSliceIterator()
+		case reflect.Int8:
+			return newInt8SliceIterator()
+		case reflect.Int16:
+			return newInt16SliceIterator()
+		case reflect.Int32:
+			return newInt32SliceIterator()
+		case reflect.Int64:
+			return newInt64SliceIterator()
+		case reflect.Int:
+			return newIntSliceIterator()
+		case reflect.Float32:
+			return newFloat32SliceIterator()
+		case reflect.Float64:
+			return newFloat64SliceIterator()
+		case reflect.Bool:
+			return newBoolSliceIterator()
 		default:
 			return newSliceIterator(t)
 		}

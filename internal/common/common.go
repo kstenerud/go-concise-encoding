@@ -163,6 +163,10 @@ const oneIf64Bit = ((uint64(^uintptr(0)) >> 32) & 1)
 const AddressSpace = int((((1 << (oneIf64Bit * 50)) - 1) * oneIf64Bit) + (((^uint64(^uintptr(0))) >> 32) & ((1 << 31) - 1)))
 const BytesPerInt = int(oneIf64Bit*4 + 4)
 
+func Is64BitArch() bool {
+	return oneIf64Bit == 1
+}
+
 var requiresLowercaseAdjust [256]bool
 
 func init() {

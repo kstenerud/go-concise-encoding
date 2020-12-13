@@ -76,6 +76,22 @@ func (_this *float64SliceIterator) InitTemplate(_ FetchIterator)                
 func (_this *float64SliceIterator) NewInstance() ObjectIterator                              { return _this }
 func (_this *float64SliceIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
 
+// int
+
+type intArrayIterator struct{}
+
+func newIntArrayIterator() ObjectIterator                                                { return &intArrayIterator{} }
+func (_this *intArrayIterator) InitTemplate(_ FetchIterator)                             {}
+func (_this *intArrayIterator) NewInstance() ObjectIterator                              { return _this }
+func (_this *intArrayIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
+
+type intSliceIterator struct{}
+
+func newIntSliceIterator() ObjectIterator                                                { return &intSliceIterator{} }
+func (_this *intSliceIterator) InitTemplate(_ FetchIterator)                             {}
+func (_this *intSliceIterator) NewInstance() ObjectIterator                              { return _this }
+func (_this *intSliceIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
+
 // int16
 
 type int16ArrayIterator struct{}
@@ -139,6 +155,22 @@ func newInt8SliceIterator() ObjectIterator                                      
 func (_this *int8SliceIterator) InitTemplate(_ FetchIterator)                             {}
 func (_this *int8SliceIterator) NewInstance() ObjectIterator                              { return _this }
 func (_this *int8SliceIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
+
+// uint
+
+type uintArrayIterator struct{}
+
+func newUintArrayIterator() ObjectIterator                                                { return &uintArrayIterator{} }
+func (_this *uintArrayIterator) InitTemplate(_ FetchIterator)                             {}
+func (_this *uintArrayIterator) NewInstance() ObjectIterator                              { return _this }
+func (_this *uintArrayIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
+
+type uintSliceIterator struct{}
+
+func newUintSliceIterator() ObjectIterator                                                { return &uintSliceIterator{} }
+func (_this *uintSliceIterator) InitTemplate(_ FetchIterator)                             {}
+func (_this *uintSliceIterator) NewInstance() ObjectIterator                              { return _this }
+func (_this *uintSliceIterator) InitInstance(_ FetchIterator, _ *options.IteratorOptions) {}
 
 // uint16
 

@@ -131,6 +131,26 @@ func (_this *uint64SliceIterator) IterateObject(v reflect.Value, eventReceiver e
 }
 
 // ----
+// uint
+// ----
+
+func (_this *uintArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
+	if common.Is64BitArch() {
+		iterateArrayUint64(v, eventReceiver)
+	} else {
+		iterateArrayUint32(v, eventReceiver)
+	}
+}
+
+func (_this *uintSliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
+	if common.Is64BitArch() {
+		iterateArrayUint64(v, eventReceiver)
+	} else {
+		iterateArrayUint32(v, eventReceiver)
+	}
+}
+
+// ----
 // int8
 // ----
 
@@ -226,6 +246,26 @@ func (_this *int64ArrayIterator) IterateObject(v reflect.Value, eventReceiver ev
 
 func (_this *int64SliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
 	iterateArrayInt64(v, eventReceiver)
+}
+
+// ---
+// int
+// ---
+
+func (_this *intArrayIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
+	if common.Is64BitArch() {
+		iterateArrayInt64(v, eventReceiver)
+	} else {
+		iterateArrayInt32(v, eventReceiver)
+	}
+}
+
+func (_this *intSliceIterator) IterateObject(v reflect.Value, eventReceiver events.DataEventReceiver, _ AddReference) {
+	if common.Is64BitArch() {
+		iterateArrayInt64(v, eventReceiver)
+	} else {
+		iterateArrayInt32(v, eventReceiver)
+	}
 }
 
 // -------
