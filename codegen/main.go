@@ -31,7 +31,6 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/codegen/builder"
 	"github.com/kstenerud/go-concise-encoding/codegen/chars"
-	"github.com/kstenerud/go-concise-encoding/codegen/iterator"
 )
 
 func main() {
@@ -45,7 +44,6 @@ func main() {
 	}
 
 	builder.GenerateCode(projectPath)
-	iterator.GenerateCode(projectPath)
 }
 
 func printHelp() {

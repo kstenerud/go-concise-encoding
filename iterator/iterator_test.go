@@ -227,8 +227,8 @@ type StructTestIterate struct {
 
 func TestIterateStruct(t *testing.T) {
 	sOpts := options.DefaultIteratorSessionOptions()
+	sOpts.LowercaseStructFieldNames = false
 	iOpts := options.DefaultIteratorOptions()
-	iOpts.LowercaseStructFieldNames = false
 
 	assertIterate(t, new(StructTestIterate), M(), S("a"), I(0), E())
 	assertIterateWithOptions(t, sOpts, iOpts, new(StructTestIterate), M(), S("A"), I(0), E())

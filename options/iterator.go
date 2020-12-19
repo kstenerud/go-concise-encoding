@@ -38,6 +38,9 @@ type ConvertToCustomFunction func(v reflect.Value) (asBytes []byte, err error)
 
 type IteratorSessionOptions struct {
 
+	// Use lowercase struct field names
+	LowercaseStructFieldNames bool
+
 	// Specifies which types to convert to custom binary data, and how to do it.
 	// Note: You should only fill out one of these maps, depending on your
 	// intended encoding (binary or text). The iterator session will consult
@@ -53,8 +56,9 @@ type IteratorSessionOptions struct {
 
 func DefaultIteratorSessionOptions() *IteratorSessionOptions {
 	return &IteratorSessionOptions{
-		CustomBinaryConverters: make(map[reflect.Type]ConvertToCustomFunction),
-		CustomTextConverters:   make(map[reflect.Type]ConvertToCustomFunction),
+		LowercaseStructFieldNames: true,
+		CustomBinaryConverters:    make(map[reflect.Type]ConvertToCustomFunction),
+		CustomTextConverters:      make(map[reflect.Type]ConvertToCustomFunction),
 	}
 }
 
@@ -89,19 +93,15 @@ type IteratorOptions struct {
 	// structures, but has a performance cost.
 	RecursionSupport bool
 
-	// Use lowercase struct field names
-	LowercaseStructFieldNames bool
-
 	// TODO If true, don't write a nil object when a nil pointer is encountered.
 	OmitNilPointers bool
 }
 
 func DefaultIteratorOptions() *IteratorOptions {
 	return &IteratorOptions{
-		ConciseEncodingVersion:    version.ConciseEncodingVersion,
-		RecursionSupport:          true,
-		OmitNilPointers:           true,
-		LowercaseStructFieldNames: true,
+		ConciseEncodingVersion: version.ConciseEncodingVersion,
+		RecursionSupport:       true,
+		OmitNilPointers:        true,
 	}
 }
 

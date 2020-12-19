@@ -40,28 +40,32 @@ type RootObjectIterator struct {
 	foundReferences map[duplicates.TypedPointer]bool
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
-	eventReceiver   events.DataEventReceiver
+	context         Context
 	opts            options.IteratorOptions
-	fetchTemplate   FetchIterator
-	iterators       map[reflect.Type]ObjectIterator
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
 // If opts is nil, default options will be used.
-func NewRootObjectIterator(fetchTemplate FetchIterator, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
+func NewRootObjectIterator(context *Context,
+	eventReceiver events.DataEventReceiver,
+	opts *options.IteratorOptions) *RootObjectIterator {
+
 	_this := &RootObjectIterator{}
-	_this.Init(fetchTemplate, eventReceiver, opts)
+	_this.Init(context, eventReceiver, opts)
 	return _this
 }
 
 // Initialize this iterator to send data events to eventReceiver.
 // If opts is nil, default options will be used.
-func (_this *RootObjectIterator) Init(fetchTemplate FetchIterator, eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) {
+func (_this *RootObjectIterator) Init(context *Context,
+	eventReceiver events.DataEventReceiver,
+	opts *options.IteratorOptions) {
+
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
-	_this.fetchTemplate = fetchTemplate
-	_this.eventReceiver = eventReceiver
-	_this.iterators = make(map[reflect.Type]ObjectIterator)
+	_this.context = iteratorContext(context,
+		eventReceiver,
+		_this.addReference)
 }
 
 // Iterates over an object, sending events to the root iterator's
@@ -70,11 +74,11 @@ func (_this *RootObjectIterator) Init(fetchTemplate FetchIterator, eventReceiver
 // Note: This is a LOW LEVEL API. Error reporting is done via panics. Be sure
 // to recover() at an appropriate location when calling this function.
 func (_this *RootObjectIterator) Iterate(object interface{}) {
-	_this.eventReceiver.OnBeginDocument()
-	_this.eventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
+	_this.context.EventReceiver.OnBeginDocument()
+	_this.context.EventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 	if object == nil {
-		_this.eventReceiver.OnNull()
-		_this.eventReceiver.OnEndDocument()
+		_this.context.EventReceiver.OnNull()
+		_this.context.EventReceiver.OnEndDocument()
 		return
 	}
 
@@ -84,9 +88,9 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	}
 
 	rv := reflect.ValueOf(object)
-	iterator := _this.getIteratorInstanceForType(rv.Type())
-	iterator.IterateObject(rv, _this.eventReceiver, _this.addReference)
-	_this.eventReceiver.OnEndDocument()
+	iterate := _this.context.GetIteratorForType(rv.Type())
+	iterate(&_this.context, rv)
+	_this.context.EventReceiver.OnEndDocument()
 }
 
 // ============================================================================
@@ -107,23 +111,12 @@ func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateRefer
 		name = _this.nextMarkerName
 		_this.nextMarkerName++
 		_this.namedReferences[ptr] = name
-		_this.eventReceiver.OnMarker()
-		_this.eventReceiver.OnPositiveInt(uint64(name))
+		_this.context.EventReceiver.OnMarker()
+		_this.context.EventReceiver.OnPositiveInt(uint64(name))
 		return false
 	}
 
-	_this.eventReceiver.OnReference()
-	_this.eventReceiver.OnPositiveInt(uint64(name))
+	_this.context.EventReceiver.OnReference()
+	_this.context.EventReceiver.OnPositiveInt(uint64(name))
 	return true
-}
-
-func (_this *RootObjectIterator) getIteratorInstanceForType(t reflect.Type) ObjectIterator {
-	iterator := _this.iterators[t]
-	if iterator == nil {
-		template := _this.fetchTemplate(t)
-		iterator = template.NewInstance()
-		_this.iterators[t] = iterator
-		iterator.InitInstance(_this.getIteratorInstanceForType, &_this.opts)
-	}
-	return iterator
 }

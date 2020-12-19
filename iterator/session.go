@@ -24,6 +24,7 @@ package iterator
 import (
 	"fmt"
 	"reflect"
+	"sync"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -35,8 +36,9 @@ import (
 // only in their own session, and don't pollute the base mapping and cause
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
-	iterators map[reflect.Type]ObjectIterator
-	opts      options.IteratorSessionOptions
+	iteratorFuncs sync.Map
+	opts          options.IteratorSessionOptions
+	context       Context
 }
 
 // Start a new iterator session. It will inherit the iterators of its parent.
@@ -59,10 +61,10 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 		parent = &rootSession
 	}
 
-	_this.iterators = make(map[reflect.Type]ObjectIterator)
-	for k, v := range parent.iterators {
-		_this.iterators[k] = v
-	}
+	parent.iteratorFuncs.Range(func(k interface{}, v interface{}) bool {
+		_this.iteratorFuncs.Store(k, v)
+		return true
+	})
 
 	_this.opts = *opts
 
@@ -72,31 +74,47 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 	for t, converter := range _this.opts.CustomTextConverters {
 		_this.RegisterIteratorForType(t, newCustomTextIterator(converter))
 	}
+
+	_this.context = sessionContext(_this.GetIteratorForType, _this.opts.LowercaseStructFieldNames)
 }
 
 // Creates a new iterator that sends data events to eventReceiver.
 // If opts is nil, default options will be used.
 func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
-	return NewRootObjectIterator(_this.GetIteratorTemplateForType, eventReceiver, opts)
+
+	return NewRootObjectIterator(&_this.context, eventReceiver, opts)
 }
 
 // Register a specific iterator for a type.
 // If an iterator has already been registered for this type, it will be replaced.
-func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator ObjectIterator) {
-	_this.iterators[t] = iterator
+func (_this *Session) RegisterIteratorForType(t reflect.Type, iterator IteratorFunction) {
+	_this.iteratorFuncs.Store(t, iterator)
 }
 
 // Get an iterator template for the specified type. If a registered template
 // doesn't yet exist, a new default template will be generated and registered.
-func (_this *Session) GetIteratorTemplateForType(t reflect.Type) ObjectIterator {
-	iter := _this.iterators[t]
-	if iter == nil {
-		iter = defaultIteratorForType(t)
-		iter.InitTemplate(_this.GetIteratorTemplateForType)
-		_this.iterators[t] = iter
+func (_this *Session) GetIteratorForType(t reflect.Type) IteratorFunction {
+	storedIterator, ok := _this.iteratorFuncs.Load(t)
+	if ok {
+		return storedIterator.(IteratorFunction)
 	}
 
-	return iter
+	var wg sync.WaitGroup
+	var iterator IteratorFunction
+
+	wg.Add(1)
+	storedIterator, ok2 := _this.iteratorFuncs.LoadOrStore(t, IteratorFunction(func(context *Context, value reflect.Value) {
+		wg.Wait()
+		iterator(context, value)
+	}))
+	if ok2 {
+		return storedIterator.(IteratorFunction)
+	}
+
+	iterator = _this.getDefaultIteratorForType(t)
+	wg.Done()
+	_this.iteratorFuncs.Store(t, iterator)
+	return iterator
 }
 
 // ============================================================================
@@ -110,132 +128,132 @@ func init() {
 	rootSession.Init(nil, nil)
 
 	for _, t := range common.KeyableTypes {
-		rootSession.GetIteratorTemplateForType(t)
-		rootSession.GetIteratorTemplateForType(reflect.PtrTo(t))
-		rootSession.GetIteratorTemplateForType(reflect.SliceOf(t))
+		rootSession.GetIteratorForType(t)
+		rootSession.GetIteratorForType(reflect.PtrTo(t))
+		rootSession.GetIteratorForType(reflect.SliceOf(t))
 		for _, u := range common.KeyableTypes {
-			rootSession.GetIteratorTemplateForType(reflect.MapOf(t, u))
+			rootSession.GetIteratorForType(reflect.MapOf(t, u))
 		}
 	}
 
 	for _, t := range common.NonKeyableTypes {
-		rootSession.GetIteratorTemplateForType(t)
-		rootSession.GetIteratorTemplateForType(reflect.PtrTo(t))
-		rootSession.GetIteratorTemplateForType(reflect.SliceOf(t))
+		rootSession.GetIteratorForType(t)
+		rootSession.GetIteratorForType(reflect.PtrTo(t))
+		rootSession.GetIteratorForType(reflect.SliceOf(t))
 	}
 }
 
-func defaultIteratorForType(t reflect.Type) ObjectIterator {
+func (_this *Session) getDefaultIteratorForType(t reflect.Type) IteratorFunction {
 	switch t.Kind() {
 	case reflect.Bool:
-		return newBoolIterator()
+		return iterateBool
 	case reflect.String:
-		return newStringIterator()
+		return iterateString
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return newIntIterator()
+		return iterateInt
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return newUintIterator()
+		return iterateUint
 	case reflect.Float32, reflect.Float64:
-		return newFloatIterator()
+		return iterateFloat
 	case reflect.Interface:
-		return newInterfaceIterator(t)
+		return iterateInterface
 	case reflect.Array:
 		switch t.Elem().Kind() {
 		case reflect.Uint8:
-			return newUint8ArrayIterator()
+			return iterateArrayUint8
 		case reflect.Uint16:
-			return newUint16ArrayIterator()
+			return iterateSliceOrArrayUint16
 		case reflect.Uint32:
-			return newUint32ArrayIterator()
+			return iterateSliceOrArrayUint32
 		case reflect.Uint64:
-			return newUint64ArrayIterator()
+			return iterateSliceOrArrayUint64
 		case reflect.Uint:
-			return newUintArrayIterator()
+			return iterateSliceOrArrayUint
 		case reflect.Int8:
-			return newInt8ArrayIterator()
+			return iterateSliceOrArrayInt8
 		case reflect.Int16:
-			return newInt16ArrayIterator()
+			return iterateSliceOrArrayInt16
 		case reflect.Int32:
-			return newInt32ArrayIterator()
+			return iterateSliceOrArrayInt32
 		case reflect.Int64:
-			return newInt64ArrayIterator()
+			return iterateSliceOrArrayInt64
 		case reflect.Int:
-			return newIntArrayIterator()
+			return iterateSliceOrArrayInt
 		case reflect.Float32:
-			return newFloat32ArrayIterator()
+			return iterateSliceOrArrayFloat32
 		case reflect.Float64:
-			return newFloat64ArrayIterator()
+			return iterateSliceOrArrayFloat64
 		case reflect.Bool:
-			return newBoolArrayIterator()
+			return iterateSliceOrArrayBool
 		default:
-			return newArrayIterator(t)
+			return newSliceOrArrayAsListIterator(&_this.context, t)
 		}
 	case reflect.Slice:
 		switch t.Elem().Kind() {
 		case reflect.Uint8:
-			return newUint8SliceIterator()
+			return iterateSliceUint8
 		case reflect.Uint16:
-			return newUint16SliceIterator()
+			return iterateSliceOrArrayUint16
 		case reflect.Uint32:
-			return newUint32SliceIterator()
+			return iterateSliceOrArrayUint32
 		case reflect.Uint64:
-			return newUint64SliceIterator()
+			return iterateSliceOrArrayUint64
 		case reflect.Uint:
-			return newUintSliceIterator()
+			return iterateSliceOrArrayUint
 		case reflect.Int8:
-			return newInt8SliceIterator()
+			return iterateSliceOrArrayInt8
 		case reflect.Int16:
-			return newInt16SliceIterator()
+			return iterateSliceOrArrayInt16
 		case reflect.Int32:
-			return newInt32SliceIterator()
+			return iterateSliceOrArrayInt32
 		case reflect.Int64:
-			return newInt64SliceIterator()
+			return iterateSliceOrArrayInt64
 		case reflect.Int:
-			return newIntSliceIterator()
+			return iterateSliceOrArrayInt
 		case reflect.Float32:
-			return newFloat32SliceIterator()
+			return iterateSliceOrArrayFloat32
 		case reflect.Float64:
-			return newFloat64SliceIterator()
+			return iterateSliceOrArrayFloat64
 		case reflect.Bool:
-			return newBoolSliceIterator()
+			return iterateSliceOrArrayBool
 		default:
-			return newSliceIterator(t)
+			return newSliceOrArrayAsListIterator(&_this.context, t)
 		}
 	case reflect.Map:
-		return newMapIterator(t)
+		return newMapIterator(&_this.context, t)
 	case reflect.Struct:
 		switch t {
 		case common.TypeTime:
-			return newTimeIterator()
+			return iterateTime
 		case common.TypeCompactTime:
-			return newCompactTimeIterator()
+			return iterateCompactTime
 		case common.TypeDFloat:
-			return newDFloatIterator()
+			return iterateDecimalFloat
 		case common.TypeURL:
-			return newURLIterator()
+			return iterateURL
 		case common.TypeBigInt:
-			return newBigIntIterator()
+			return iterateBigInt
 		case common.TypeBigFloat:
-			return newBigFloatIterator()
+			return iterateBigFloat
 		case common.TypeBigDecimalFloat:
-			return newBigDecimalFloatIterator()
+			return iterateBigDecimal
 		default:
-			return newStructIterator(t)
+			return newStructIterator(&_this.context, t)
 		}
 	case reflect.Ptr:
 		switch t {
 		case common.TypePCompactTime:
-			return newPCompactTimeIterator()
+			return iteratePCompactTime
 		case common.TypePURL:
-			return newPURLIterator()
+			return iteratePURL
 		case common.TypePBigInt:
-			return newPBigIntIterator()
+			return iteratePBigInt
 		case common.TypePBigFloat:
-			return newPBigFloatIterator()
+			return iteratePBigFloat
 		case common.TypePBigDecimalFloat:
-			return newPBigDecimalFloatIterator()
+			return iteratePBigDecimal
 		default:
-			return newPointerIterator(t)
+			return newPointerIterator(&_this.context, t)
 		}
 	default:
 		panic(fmt.Errorf("BUG: Unhandled type %v", t))
