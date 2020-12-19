@@ -27,7 +27,6 @@ package builder
 import (
 	"fmt"
 	"reflect"
-	"sync"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 
@@ -40,7 +39,7 @@ import (
 // only in their own session, and don't pollute the base mapping and cause
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
-	builders sync.Map
+	builders map[reflect.Type]ObjectBuilder
 	opts     options.BuilderSessionOptions
 }
 
@@ -59,14 +58,14 @@ func NewSession(parent *Session, opts *options.BuilderSessionOptions) *Session {
 // for all basic go types.
 // If opts is nil, default options will be used.
 func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions) {
+	_this.builders = make(map[reflect.Type]ObjectBuilder)
 	opts = opts.WithDefaultsApplied()
 	if parent == nil {
 		parent = &rootSession
 	}
-	parent.builders.Range(func(k interface{}, v interface{}) bool {
-		_this.builders.Store(k, v)
-		return true
-	})
+	for k, v := range parent.builders {
+		_this.builders[k] = v
+	}
 
 	_this.opts = *opts
 	for _, t := range _this.opts.CustomBuiltTypes {
@@ -94,19 +93,23 @@ func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderO
 // If a builder has already been registered for this type, it will be replaced.
 // This method is thread-safe.
 func (_this *Session) RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
-	_this.builders.Store(dstType, builder)
+	_this.builders[dstType] = builder
 }
 
 // Get a builder for the specified type. If a registered builder doesn't yet
 // exist, a new default builder will be generated and registered.
 // This method is thread-safe.
 func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
-	if builder, ok := _this.builders.Load(dstType); ok {
-		return builder.(ObjectBuilder)
+	if builder, ok := _this.builders[dstType]; ok {
+		return builder
 	}
 
-	builder, _ := _this.builders.LoadOrStore(dstType, _this.defaultBuilderForType(dstType))
-	builder.(ObjectBuilder).InitTemplate(_this)
+	builder, ok := _this.builders[dstType]
+	if !ok {
+		builder = _this.defaultBuilderForType(dstType)
+		_this.builders[dstType] = builder
+	}
+	builder.InitTemplate(_this)
 	return builder.(ObjectBuilder)
 }
 

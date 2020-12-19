@@ -289,15 +289,12 @@ func (_this *structBuilder) PrepareForListContents() {
 }
 
 func (_this *structBuilder) PrepareForMapContents() {
-	builderDescs := make(map[string]*structBuilderDesc)
-
 	for k, builderElem := range _this.builderDescs {
-		builderDescs[k] = &structBuilderDesc{
+		_this.builderDescs[k] = &structBuilderDesc{
 			Builder: builderElem.Builder.NewInstance(_this.root, _this, _this.opts),
 			Index:   builderElem.Index,
 		}
 	}
-	_this.builderDescs = builderDescs
 	_this.root.SetCurrentBuilder(_this)
 }
 

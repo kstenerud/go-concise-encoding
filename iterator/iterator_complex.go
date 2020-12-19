@@ -327,6 +327,7 @@ type structIterator struct {
 func newStructIterator(structType reflect.Type) ObjectIterator {
 	return &structIterator{
 		structType: structType,
+		fields:     make([]*structField, 0, 10),
 	}
 }
 
