@@ -288,10 +288,6 @@ func (_this *structBuilder) BuildFromReference(id interface{}) {
 	})
 }
 
-func (_this *structBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
 func (_this *structBuilder) PrepareForMapContents() {
 	for k, builderElem := range _this.builderDescs {
 		_this.builderDescs[k] = &structBuilderDesc{

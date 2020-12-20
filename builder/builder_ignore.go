@@ -132,28 +132,8 @@ func (_this *ignoreBuilder) BuildBeginMap() {
 	builder.PrepareForMapContents()
 }
 
-func (_this *ignoreBuilder) BuildEndContainer() {
-	_this.panicBadEvent("End")
-}
-
-func (_this *ignoreBuilder) BuildBeginMarker(_ interface{}) {
-	panic("TODO: ignoreBuilder.Marker")
-}
-
 func (_this *ignoreBuilder) BuildFromReference(_ interface{}) {
 	// Ignore this directive
-}
-
-func (_this *ignoreBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
-func (_this *ignoreBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
-func (_this *ignoreBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	_this.panicBadEvent("NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -173,6 +153,10 @@ func newIgnoreContainerBuilder() ObjectBuilder {
 
 func (_this *ignoreContainerBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
+}
+
+func (_this *ignoreContainerBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEvent(_this, name, args...)
 }
 
 func (_this *ignoreContainerBuilder) InitTemplate(_ *Session) {
@@ -254,10 +238,6 @@ func (_this *ignoreContainerBuilder) BuildBeginMap() {
 
 func (_this *ignoreContainerBuilder) BuildEndContainer() {
 	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreContainerBuilder) BuildBeginMarker(_ interface{}) {
-	panic("TODO: ignoreContainerBuilder.Marker")
 }
 
 func (_this *ignoreContainerBuilder) BuildFromReference(_ interface{}) {

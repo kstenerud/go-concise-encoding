@@ -35,9 +35,9 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-var globalIntfBuilder = &intfBuilder{}
+var globalIntfBuilder = &interfaceBuilder{}
 
-type intfBuilder struct {
+type interfaceBuilder struct {
 	// Template Data
 	session *Session
 
@@ -51,20 +51,20 @@ func newInterfaceBuilder() ObjectBuilder {
 	return globalIntfBuilder
 }
 
-func (_this *intfBuilder) String() string {
+func (_this *interfaceBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
-func (_this *intfBuilder) panicBadEvent(name string, args ...interface{}) {
+func (_this *interfaceBuilder) panicBadEvent(name string, args ...interface{}) {
 	PanicBadEventWithType(_this, common.TypeInterface, name, args...)
 }
 
-func (_this *intfBuilder) InitTemplate(session *Session) {
+func (_this *interfaceBuilder) InitTemplate(session *Session) {
 	_this.session = session
 }
 
-func (_this *intfBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	return &intfBuilder{
+func (_this *interfaceBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
+	return &interfaceBuilder{
 		session: _this.session,
 		parent:  parent,
 		root:    root,
@@ -72,52 +72,52 @@ func (_this *intfBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, o
 	}
 }
 
-func (_this *intfBuilder) SetParent(parent ObjectBuilder) {
+func (_this *interfaceBuilder) SetParent(parent ObjectBuilder) {
 	_this.parent = parent
 }
 
-func (_this *intfBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.Zero(common.TypeInterface))
 }
 
-func (_this *intfBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromUint(value uint64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromFloat(value float64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	value = common.CloneBytes(value)
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
 	case events.ArrayTypeCustomBinary:
 		if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
@@ -138,50 +138,38 @@ func (_this *intfBuilder) BuildFromArray(arrayType events.ArrayType, value []byt
 	}
 }
 
-func (_this *intfBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *intfBuilder) BuildBeginList() {
+func (_this *interfaceBuilder) BuildBeginList() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForListContents()
 }
 
-func (_this *intfBuilder) BuildBeginMap() {
+func (_this *interfaceBuilder) BuildBeginMap() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForMapContents()
 }
 
-func (_this *intfBuilder) BuildEndContainer() {
-	_this.panicBadEvent("ContainerEnd")
-}
-
-func (_this *intfBuilder) BuildBeginMarker(_ interface{}) {
-	panic("TODO: intfBuilder.Marker")
-}
-
-func (_this *intfBuilder) BuildFromReference(_ interface{}) {
-	panic("TODO: intfBuilder.Reference")
-}
-
-func (_this *intfBuilder) PrepareForListContents() {
+func (_this *interfaceBuilder) PrepareForListContents() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
 	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForListContents()
 }
 
-func (_this *intfBuilder) PrepareForMapContents() {
+func (_this *interfaceBuilder) PrepareForMapContents() {
 	builder := _this.session.GetBuilderForType(common.TypeInterfaceMap)
 	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
 	builder.PrepareForMapContents()
 }
 
-func (_this *intfBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *interfaceBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.parent.NotifyChildContainerFinished(value)
 }

@@ -213,10 +213,6 @@ func (_this *sliceBuilder) PrepareForListContents() {
 	_this.root.SetCurrentBuilder(_this)
 }
 
-func (_this *sliceBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
 func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.root.SetCurrentBuilder(_this)
 	_this.storeValue(value)

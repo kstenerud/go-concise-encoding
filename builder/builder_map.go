@@ -246,10 +246,6 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 	})
 }
 
-func (_this *mapBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
 func (_this *mapBuilder) PrepareForMapContents() {
 	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].NewInstance(_this.root, _this, _this.opts)
 	_this.root.SetCurrentBuilder(_this)

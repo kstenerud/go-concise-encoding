@@ -23,7 +23,6 @@ package builder
 import (
 	"fmt"
 	"math/big"
-	"net/url"
 	"reflect"
 	"time"
 
@@ -134,78 +133,6 @@ func (_this *RootBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *option
 }
 func (_this *RootBuilder) SetParent(_ ObjectBuilder) {
 	_this.panicBadEvent("SetParent")
-}
-func (_this *RootBuilder) BuildFromNil(_ reflect.Value) {
-	_this.panicBadEvent("Nil")
-}
-func (_this *RootBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	_this.panicBadEvent("Bool")
-}
-func (_this *RootBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	_this.panicBadEvent("Int")
-}
-func (_this *RootBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	_this.panicBadEvent("Uint")
-}
-func (_this *RootBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	_this.panicBadEvent("BigInt")
-}
-func (_this *RootBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	_this.panicBadEvent("Float")
-}
-func (_this *RootBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	_this.panicBadEvent("BigFloat")
-}
-func (_this *RootBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	_this.panicBadEvent("Float")
-}
-func (_this *RootBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	_this.panicBadEvent("DecimalFloat")
-}
-func (_this *RootBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	_this.panicBadEvent("UUID")
-}
-func (_this *RootBuilder) BuildFromString(_ []byte, _ reflect.Value) {
-	_this.panicBadEvent("String")
-}
-func (_this *RootBuilder) BuildFromRID(_ *url.URL, _ reflect.Value) {
-	_this.panicBadEvent("ResourceID")
-}
-func (_this *RootBuilder) BuildFromCustomBinary(_ []byte, _ reflect.Value) {
-	_this.panicBadEvent("CustomBinary")
-}
-func (_this *RootBuilder) BuildFromCustomText(_ []byte, _ reflect.Value) {
-	_this.panicBadEvent("CustomText")
-}
-func (_this *RootBuilder) BuildFromArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
-	_this.panicBadEvent("TypedArray(%v)", arrayType)
-}
-func (_this *RootBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	_this.panicBadEvent("Time")
-}
-func (_this *RootBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	_this.panicBadEvent("CompactTime")
-}
-func (_this *RootBuilder) BuildBeginList() {
-	_this.panicBadEvent("List")
-}
-func (_this *RootBuilder) BuildBeginMap() {
-	_this.panicBadEvent("Map")
-}
-func (_this *RootBuilder) BuildEndContainer() {
-	_this.panicBadEvent("End")
-}
-func (_this *RootBuilder) BuildBeginMarker(_ interface{}) {
-	_this.panicBadEvent("Marker")
-}
-func (_this *RootBuilder) BuildFromReference(_ interface{}) {
-	_this.panicBadEvent("Reference")
-}
-func (_this *RootBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-func (_this *RootBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
 }
 func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.object = value

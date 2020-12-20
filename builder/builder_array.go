@@ -193,10 +193,6 @@ func (_this *arrayBuilder) PrepareForListContents() {
 	_this.root.SetCurrentBuilder(_this)
 }
 
-func (_this *arrayBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
 func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.root.SetCurrentBuilder(_this)
 	_this.currentElem().Set(value)

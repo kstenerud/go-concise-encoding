@@ -22,7 +22,6 @@ package builder
 
 import (
 	"fmt"
-	"math/big"
 	"net/url"
 	"reflect"
 	"time"
@@ -31,8 +30,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
@@ -69,40 +66,8 @@ func (_this *directBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *opti
 func (_this *directBuilder) SetParent(_ ObjectBuilder) {
 }
 
-func (_this *directBuilder) BuildFromNil(_ reflect.Value) {
-	_this.panicBadEvent("Nil")
-}
-
 func (_this *directBuilder) BuildFromBool(value bool, dst reflect.Value) {
 	dst.SetBool(value)
-}
-
-func (_this *directBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	_this.panicBadEvent("Int")
-}
-
-func (_this *directBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	_this.panicBadEvent("Uint")
-}
-
-func (_this *directBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	_this.panicBadEvent("BigInt")
-}
-
-func (_this *directBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	_this.panicBadEvent("Float")
-}
-
-func (_this *directBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	_this.panicBadEvent("BigFloat")
-}
-
-func (_this *directBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	_this.panicBadEvent("DecimalFloat")
-}
-
-func (_this *directBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	_this.panicBadEvent("BigDecimalFloat")
 }
 
 func (_this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
@@ -147,38 +112,6 @@ func (_this *directBuilder) BuildFromCompactTime(value *compact_time.Time, dst r
 	dst.Set(reflect.ValueOf(value))
 }
 
-func (_this *directBuilder) BuildBeginList() {
-	_this.panicBadEvent("List")
-}
-
-func (_this *directBuilder) BuildBeginMap() {
-	_this.panicBadEvent("Map")
-}
-
-func (_this *directBuilder) BuildEndContainer() {
-	_this.panicBadEvent("ContainerEnd")
-}
-
-func (_this *directBuilder) BuildBeginMarker(_ interface{}) {
-	panic("TODO: directBuilder.BuildBeginMarker")
-}
-
-func (_this *directBuilder) BuildFromReference(_ interface{}) {
-	panic("TODO: directBuilder.BuildFromReference")
-}
-
-func (_this *directBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
-func (_this *directBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
-func (_this *directBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	_this.panicBadEvent("NotifyChildContainerFinished")
-}
-
 // ============================================================================
 
 // The direct builder has an unambiguous direct mapping from build event to
@@ -218,38 +151,6 @@ func (_this *directPtrBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.Zero(dst.Type()))
 }
 
-func (_this *directPtrBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	_this.panicBadEvent("Bool")
-}
-
-func (_this *directPtrBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	_this.panicBadEvent("Int")
-}
-
-func (_this *directPtrBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	_this.panicBadEvent("Uint")
-}
-
-func (_this *directPtrBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	_this.panicBadEvent("BigInt")
-}
-
-func (_this *directPtrBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	_this.panicBadEvent("Float")
-}
-
-func (_this *directPtrBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	_this.panicBadEvent("BigFloat")
-}
-
-func (_this *directPtrBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	_this.panicBadEvent("DecimalFloat")
-}
-
-func (_this *directPtrBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	_this.panicBadEvent("BigDecimalFloat")
-}
-
 func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
 	dst.SetBytes(common.CloneBytes(value))
 }
@@ -282,36 +183,4 @@ func (_this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value)
 
 func (_this *directPtrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(value))
-}
-
-func (_this *directPtrBuilder) BuildBeginList() {
-	_this.panicBadEvent("List")
-}
-
-func (_this *directPtrBuilder) BuildBeginMap() {
-	_this.panicBadEvent("Map")
-}
-
-func (_this *directPtrBuilder) BuildEndContainer() {
-	_this.panicBadEvent("ContainerEnd")
-}
-
-func (_this *directPtrBuilder) BuildBeginMarker(_ interface{}) {
-	_this.panicBadEvent("Marker")
-}
-
-func (_this *directPtrBuilder) BuildFromReference(_ interface{}) {
-	_this.panicBadEvent("Reference")
-}
-
-func (_this *directPtrBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
-func (_this *directPtrBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
-func (_this *directPtrBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	_this.panicBadEvent("NotifyChildContainerFinished")
 }

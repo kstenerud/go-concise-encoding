@@ -154,26 +154,6 @@ func (_this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst refl
 	dst.Set(ptr)
 }
 
-func (_this *ptrBuilder) BuildBeginList() {
-	_this.panicBadEvent("List")
-}
-
-func (_this *ptrBuilder) BuildBeginMap() {
-	_this.panicBadEvent("Map")
-}
-
-func (_this *ptrBuilder) BuildEndContainer() {
-	_this.panicBadEvent("ContainerEnd")
-}
-
-func (_this *ptrBuilder) BuildBeginMarker(_ interface{}) {
-	panic("TODO: ptrBuilder.Marker")
-}
-
-func (_this *ptrBuilder) BuildFromReference(_ interface{}) {
-	panic("TODO: ptrBuilder.Reference")
-}
-
 func (_this *ptrBuilder) PrepareForListContents() {
 	_this.elemBuilder.PrepareForListContents()
 }

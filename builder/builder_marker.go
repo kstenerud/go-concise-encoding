@@ -64,14 +64,6 @@ func (_this *markerIDBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *op
 func (_this *markerIDBuilder) SetParent(_ ObjectBuilder) {
 }
 
-func (_this *markerIDBuilder) BuildFromNil(_ reflect.Value) {
-	_this.panicBadEvent("Nil")
-}
-
-func (_this *markerIDBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	_this.panicBadEvent("Bool")
-}
-
 func (_this *markerIDBuilder) BuildFromInt(value int64, _ reflect.Value) {
 	if value < 0 {
 		_this.panicBadEvent("Int")
@@ -88,70 +80,6 @@ func (_this *markerIDBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
 		_this.panicBadEvent("BigInt")
 	}
 	_this.onID(value.Uint64())
-}
-
-func (_this *markerIDBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	_this.panicBadEvent("Float")
-}
-
-func (_this *markerIDBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	_this.panicBadEvent("BigFloat")
-}
-
-func (_this *markerIDBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	_this.panicBadEvent("DecimalFloat")
-}
-
-func (_this *markerIDBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	_this.panicBadEvent("BigDecimalFloat")
-}
-
-func (_this *markerIDBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	_this.panicBadEvent("UUID")
-}
-
-func (_this *markerIDBuilder) BuildFromArray(arrayType events.ArrayType, _ []byte, _ reflect.Value) {
-	_this.panicBadEvent("TypedArray(%v)", arrayType)
-}
-
-func (_this *markerIDBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	_this.panicBadEvent("Time")
-}
-
-func (_this *markerIDBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	_this.panicBadEvent("CompactTime")
-}
-
-func (_this *markerIDBuilder) BuildBeginList() {
-	_this.panicBadEvent("List")
-}
-
-func (_this *markerIDBuilder) BuildBeginMap() {
-	_this.panicBadEvent("Map")
-}
-
-func (_this *markerIDBuilder) BuildEndContainer() {
-	_this.panicBadEvent("End")
-}
-
-func (_this *markerIDBuilder) BuildBeginMarker(_ interface{}) {
-	_this.panicBadEvent("Marker")
-}
-
-func (_this *markerIDBuilder) BuildFromReference(_ interface{}) {
-	_this.panicBadEvent("Reference")
-}
-
-func (_this *markerIDBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
-func (_this *markerIDBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
-func (_this *markerIDBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	_this.panicBadEvent("NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -257,26 +185,6 @@ func (_this *markerObjectBuilder) BuildFromTime(value time.Time, dst reflect.Val
 func (_this *markerObjectBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
 	_this.child.BuildFromCompactTime(value, dst)
 	_this.onObjectComplete(dst)
-}
-
-func (_this *markerObjectBuilder) BuildBeginList() {
-	_this.panicBadEvent("List")
-}
-
-func (_this *markerObjectBuilder) BuildBeginMap() {
-	_this.panicBadEvent("Map")
-}
-
-func (_this *markerObjectBuilder) BuildEndContainer() {
-	_this.panicBadEvent("End")
-}
-
-func (_this *markerObjectBuilder) BuildBeginMarker(_ interface{}) {
-	_this.panicBadEvent("Marker")
-}
-
-func (_this *markerObjectBuilder) BuildFromReference(_ interface{}) {
-	_this.panicBadEvent("Reference")
 }
 
 func (_this *markerObjectBuilder) PrepareForListContents() {

@@ -24,13 +24,35 @@ import (
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-// The matching generated code is in generated_code.go
+type stringBuilder struct{}
 
-func (_this *uint8ArrayBuilder) BuildFromNil(dst reflect.Value) {
-	_this.panicBadEvent("BuildFromNil")
+func newStringBuilder() ObjectBuilder       { return &stringBuilder{} }
+func (_this *stringBuilder) String() string { return nameOf(_this) }
+func (_this *stringBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, reflect.TypeOf(""), name, args...)
 }
+func (_this *stringBuilder) InitTemplate(_ *Session) {}
+func (_this *stringBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
+	return _this
+}
+func (_this *stringBuilder) SetParent(_ ObjectBuilder) {}
+
+type uint8ArrayBuilder struct{}
+
+func newUint8ArrayBuilder() ObjectBuilder       { return &uint8ArrayBuilder{} }
+func (_this *uint8ArrayBuilder) String() string { return nameOf(_this) }
+func (_this *uint8ArrayBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, reflect.TypeOf(uint8(0)), name, args...)
+}
+func (_this *uint8ArrayBuilder) InitTemplate(_ *Session) {}
+func (_this *uint8ArrayBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
+	return _this
+}
+func (_this *uint8ArrayBuilder) SetParent(_ ObjectBuilder) {}
+
 func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
 	case events.ArrayTypeUint8:
@@ -44,9 +66,19 @@ func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value
 	}
 }
 
-func (_this *uint16ArrayBuilder) BuildFromNil(dst reflect.Value) {
-	_this.panicBadEvent("BuildFromNil")
+type uint16ArrayBuilder struct{}
+
+func newUint16ArrayBuilder() ObjectBuilder       { return &uint16ArrayBuilder{} }
+func (_this *uint16ArrayBuilder) String() string { return nameOf(_this) }
+func (_this *uint16ArrayBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, reflect.TypeOf(uint16(0)), name, args...)
 }
+func (_this *uint16ArrayBuilder) InitTemplate(_ *Session) {}
+func (_this *uint16ArrayBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
+	return _this
+}
+func (_this *uint16ArrayBuilder) SetParent(_ ObjectBuilder) {}
+
 func (_this *uint16ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	panic("TODO")
 }

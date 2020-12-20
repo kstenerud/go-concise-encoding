@@ -142,18 +142,6 @@ func (_this *topLevelBuilder) BuildBeginMap() {
 	_this.builder.PrepareForMapContents()
 }
 
-func (_this *topLevelBuilder) BuildEndContainer() {
-	_this.panicBadEvent("End")
-}
-
-func (_this *topLevelBuilder) PrepareForListContents() {
-	_this.panicBadEvent("PrepareForListContents")
-}
-
-func (_this *topLevelBuilder) PrepareForMapContents() {
-	_this.panicBadEvent("PrepareForMapContents")
-}
-
 func (_this *topLevelBuilder) NotifyChildContainerFinished(value reflect.Value) {
 	_this.root.NotifyChildContainerFinished(value)
 }
@@ -164,8 +152,4 @@ func (_this *topLevelBuilder) BuildBeginMarker(id interface{}) {
 		_this.builder = origBuilder
 		_this.root.NotifyMarker(id, object)
 	})
-}
-
-func (_this *topLevelBuilder) BuildFromReference(_ interface{}) {
-	_this.panicBadEvent("BuildFromReference")
 }
