@@ -60,6 +60,10 @@ func (_this *sliceBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
+func (_this *sliceBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, _this.dstType, name, args...)
+}
+
 func (_this *sliceBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
@@ -210,7 +214,7 @@ func (_this *sliceBuilder) PrepareForListContents() {
 }
 
 func (_this *sliceBuilder) PrepareForMapContents() {
-	PanicBadEventWithType(_this, _this.dstType, "PrepareForMapContents")
+	_this.panicBadEvent("PrepareForMapContents")
 }
 
 func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {

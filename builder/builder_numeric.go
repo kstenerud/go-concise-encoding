@@ -30,19 +30,19 @@ import (
 // The matching generated code is in generated_code.go
 
 func (_this *intBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 
 func (_this *uintBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 
 func (_this *floatBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 
 func (_this *bigFloatBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 
 func (_this *pBigFloatBuilder) BuildFromNil(dst reflect.Value) {
@@ -50,7 +50,7 @@ func (_this *pBigFloatBuilder) BuildFromNil(dst reflect.Value) {
 }
 
 func (_this *bigDecimalFloatBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
@@ -58,5 +58,5 @@ func (_this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
 }
 
 func (_this *decimalFloatBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }

@@ -59,6 +59,10 @@ func (_this *arrayBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
+func (_this *arrayBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, _this.dstType, name, args...)
+}
+
 func (_this *arrayBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
@@ -190,7 +194,7 @@ func (_this *arrayBuilder) PrepareForListContents() {
 }
 
 func (_this *arrayBuilder) PrepareForMapContents() {
-	PanicBadEventWithType(_this, _this.dstType, "PrepareForMapContents")
+	_this.panicBadEvent("PrepareForMapContents")
 }
 
 func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {

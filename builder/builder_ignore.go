@@ -51,6 +51,10 @@ func (_this *ignoreBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
 
+func (_this *ignoreBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEvent(_this, name, args...)
+}
+
 func (_this *ignoreBuilder) InitTemplate(_ *Session) {
 }
 
@@ -129,7 +133,7 @@ func (_this *ignoreBuilder) BuildBeginMap() {
 }
 
 func (_this *ignoreBuilder) BuildEndContainer() {
-	PanicBadEvent(_this, "End")
+	_this.panicBadEvent("End")
 }
 
 func (_this *ignoreBuilder) BuildBeginMarker(_ interface{}) {
@@ -141,15 +145,15 @@ func (_this *ignoreBuilder) BuildFromReference(_ interface{}) {
 }
 
 func (_this *ignoreBuilder) PrepareForListContents() {
-	PanicBadEvent(_this, "PrepareForListContents")
+	_this.panicBadEvent("PrepareForListContents")
 }
 
 func (_this *ignoreBuilder) PrepareForMapContents() {
-	PanicBadEvent(_this, "PrepareForMapContents")
+	_this.panicBadEvent("PrepareForMapContents")
 }
 
 func (_this *ignoreBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	PanicBadEvent(_this, "NotifyChildContainerFinished")
+	_this.panicBadEvent("NotifyChildContainerFinished")
 }
 
 // ============================================================================

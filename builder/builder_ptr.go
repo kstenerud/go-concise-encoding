@@ -53,6 +53,10 @@ func (_this *ptrBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
 }
 
+func (_this *ptrBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, _this.dstType, name, args...)
+}
+
 func (_this *ptrBuilder) InitTemplate(session *Session) {
 	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
 }
@@ -151,15 +155,15 @@ func (_this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst refl
 }
 
 func (_this *ptrBuilder) BuildBeginList() {
-	PanicBadEventWithType(_this, _this.dstType, "List")
+	_this.panicBadEvent("List")
 }
 
 func (_this *ptrBuilder) BuildBeginMap() {
-	PanicBadEventWithType(_this, _this.dstType, "Map")
+	_this.panicBadEvent("Map")
 }
 
 func (_this *ptrBuilder) BuildEndContainer() {
-	PanicBadEventWithType(_this, _this.dstType, "ContainerEnd")
+	_this.panicBadEvent("ContainerEnd")
 }
 
 func (_this *ptrBuilder) BuildBeginMarker(_ interface{}) {

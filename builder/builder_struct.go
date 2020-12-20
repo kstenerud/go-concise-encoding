@@ -111,6 +111,10 @@ func (_this *structBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
 }
 
+func (_this *structBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, _this.dstType, name, args...)
+}
+
 func (_this *structBuilder) InitTemplate(session *Session) {
 	_this.nameBuilder = session.GetBuilderForType(reflect.TypeOf(""))
 	_this.builderDescs = make(map[string]*structBuilderDesc)
@@ -285,7 +289,7 @@ func (_this *structBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *structBuilder) PrepareForListContents() {
-	PanicBadEventWithType(_this, _this.dstType, "PrepareForListContents")
+	_this.panicBadEvent("PrepareForListContents")
 }
 
 func (_this *structBuilder) PrepareForMapContents() {

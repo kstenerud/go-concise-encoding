@@ -50,7 +50,7 @@ func newBigIntBuilder(dstType reflect.Type) ObjectBuilder {
 func (_this *bigIntBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
-func (_this *bigIntBuilder) badEvent(name string, args ...interface{}) {
+func (_this *bigIntBuilder) panicBadEvent(name string, args ...interface{}) {
 	PanicBadEventWithType(_this, _this.dstType, name, args...)
 }
 func (_this *bigIntBuilder) InitTemplate(_ *Session) {}
@@ -61,10 +61,10 @@ func (_this *bigIntBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, opts *o
 }
 func (_this *bigIntBuilder) SetParent(_ ObjectBuilder) {}
 func (_this *bigIntBuilder) BuildFromNil(_ reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 func (_this *bigIntBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	_this.badEvent("BuildFromBool")
+	_this.panicBadEvent("BuildFromBool")
 }
 func (_this *bigIntBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	setBigIntFromInt(value, dst)
@@ -88,40 +88,40 @@ func (_this *bigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst ref
 	setBigIntFromBigDecimalFloat(value, dst, _this.opts.FloatToBigIntMaxBase10Exponent)
 }
 func (_this *bigIntBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	_this.badEvent("BuildFromUUID")
+	_this.panicBadEvent("BuildFromUUID")
 }
 func (_this *bigIntBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	_this.badEvent("TypedArray(%v)", arrayType)
+	_this.panicBadEvent("TypedArray(%v)", arrayType)
 }
 func (_this *bigIntBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	_this.badEvent("BuildFromTime")
+	_this.panicBadEvent("BuildFromTime")
 }
 func (_this *bigIntBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	_this.badEvent("BuildFromCompactTime")
+	_this.panicBadEvent("BuildFromCompactTime")
 }
 func (_this *bigIntBuilder) BuildBeginList() {
-	_this.badEvent("BuildBeginList")
+	_this.panicBadEvent("BuildBeginList")
 }
 func (_this *bigIntBuilder) BuildBeginMap() {
-	_this.badEvent("BuildBeginMap")
+	_this.panicBadEvent("BuildBeginMap")
 }
 func (_this *bigIntBuilder) BuildEndContainer() {
-	_this.badEvent("BuildEndContainer")
+	_this.panicBadEvent("BuildEndContainer")
 }
 func (_this *bigIntBuilder) BuildBeginMarker(_ interface{}) {
-	_this.badEvent("BuildBeginMarker")
+	_this.panicBadEvent("BuildBeginMarker")
 }
 func (_this *bigIntBuilder) BuildFromReference(_ interface{}) {
-	_this.badEvent("BuildFromReference")
+	_this.panicBadEvent("BuildFromReference")
 }
 func (_this *bigIntBuilder) PrepareForListContents() {
-	_this.badEvent("PrepareForListContents")
+	_this.panicBadEvent("PrepareForListContents")
 }
 func (_this *bigIntBuilder) PrepareForMapContents() {
-	_this.badEvent("PrepareForMapContents")
+	_this.panicBadEvent("PrepareForMapContents")
 }
 func (_this *bigIntBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	_this.badEvent("NotifyChildContainerFinished")
+	_this.panicBadEvent("NotifyChildContainerFinished")
 }
 
 // ============================================================================
@@ -142,7 +142,7 @@ func newPBigIntBuilder(dstType reflect.Type) ObjectBuilder {
 func (_this *pBigIntBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
 }
-func (_this *pBigIntBuilder) badEvent(name string, args ...interface{}) {
+func (_this *pBigIntBuilder) panicBadEvent(name string, args ...interface{}) {
 	PanicBadEventWithType(_this, _this.dstType, name, args...)
 }
 func (_this *pBigIntBuilder) InitTemplate(_ *Session) {}
@@ -156,7 +156,7 @@ func (_this *pBigIntBuilder) BuildFromNil(dst reflect.Value) {
 	dst.Set(reflect.ValueOf((*big.Int)(nil)))
 }
 func (_this *pBigIntBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	_this.badEvent("BuildFromBool")
+	_this.panicBadEvent("BuildFromBool")
 }
 func (_this *pBigIntBuilder) BuildFromInt(value int64, dst reflect.Value) {
 	setPBigIntFromInt(value, dst)
@@ -180,38 +180,38 @@ func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst re
 	setPBigIntFromBigDecimalFloat(value, dst, _this.opts.FloatToBigIntMaxBase10Exponent)
 }
 func (_this *pBigIntBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	_this.badEvent("BuildFromUUID")
+	_this.panicBadEvent("BuildFromUUID")
 }
 func (_this *pBigIntBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	_this.badEvent("TypedArray(%v)", arrayType)
+	_this.panicBadEvent("TypedArray(%v)", arrayType)
 }
 func (_this *pBigIntBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	_this.badEvent("BuildFromTime")
+	_this.panicBadEvent("BuildFromTime")
 }
 func (_this *pBigIntBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	_this.badEvent("BuildFromCompactTime")
+	_this.panicBadEvent("BuildFromCompactTime")
 }
 func (_this *pBigIntBuilder) BuildBeginList() {
-	_this.badEvent("BuildBeginList")
+	_this.panicBadEvent("BuildBeginList")
 }
 func (_this *pBigIntBuilder) BuildBeginMap() {
-	_this.badEvent("BuildBeginMap")
+	_this.panicBadEvent("BuildBeginMap")
 }
 func (_this *pBigIntBuilder) BuildEndContainer() {
-	_this.badEvent("BuildEndContainer")
+	_this.panicBadEvent("BuildEndContainer")
 }
 func (_this *pBigIntBuilder) BuildBeginMarker(_ interface{}) {
-	_this.badEvent("BuildBeginMarker")
+	_this.panicBadEvent("BuildBeginMarker")
 }
 func (_this *pBigIntBuilder) BuildFromReference(_ interface{}) {
-	_this.badEvent("BuildFromReference")
+	_this.panicBadEvent("BuildFromReference")
 }
 func (_this *pBigIntBuilder) PrepareForListContents() {
-	_this.badEvent("PrepareForListContents")
+	_this.panicBadEvent("PrepareForListContents")
 }
 func (_this *pBigIntBuilder) PrepareForMapContents() {
-	_this.badEvent("PrepareForMapContents")
+	_this.panicBadEvent("PrepareForMapContents")
 }
 func (_this *pBigIntBuilder) NotifyChildContainerFinished(_ reflect.Value) {
-	_this.badEvent("NotifyChildContainerFinished")
+	_this.panicBadEvent("NotifyChildContainerFinished")
 }

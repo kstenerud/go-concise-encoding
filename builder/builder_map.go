@@ -70,6 +70,10 @@ func (_this *mapBuilder) String() string {
 	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvBuilders[0], _this.kvBuilders[1])
 }
 
+func (_this *mapBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, _this.dstType, name, args...)
+}
+
 func (_this *mapBuilder) InitTemplate(session *Session) {
 	_this.session = session
 	_this.kvBuilders[kvBuilderKey] = session.GetBuilderForType(_this.dstType.Key())
@@ -243,7 +247,7 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 }
 
 func (_this *mapBuilder) PrepareForListContents() {
-	PanicBadEventWithType(_this, builderIntfType, "PrepareForListContents")
+	_this.panicBadEvent("PrepareForListContents")
 }
 
 func (_this *mapBuilder) PrepareForMapContents() {

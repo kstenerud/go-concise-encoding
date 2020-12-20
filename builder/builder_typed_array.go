@@ -29,7 +29,7 @@ import (
 // The matching generated code is in generated_code.go
 
 func (_this *uint8ArrayBuilder) BuildFromNil(dst reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	switch arrayType {
@@ -40,12 +40,12 @@ func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value
 			elem.SetUint(uint64(value[i]))
 		}
 	default:
-		_this.badEvent("BuildFromArray(%v)", arrayType)
+		_this.panicBadEvent("BuildFromArray(%v)", arrayType)
 	}
 }
 
 func (_this *uint16ArrayBuilder) BuildFromNil(dst reflect.Value) {
-	_this.badEvent("BuildFromNil")
+	_this.panicBadEvent("BuildFromNil")
 }
 func (_this *uint16ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
 	panic("TODO")
@@ -60,6 +60,6 @@ func (_this *stringBuilder) BuildFromArray(arrayType events.ArrayType, value []b
 	case events.ArrayTypeString:
 		dst.SetString(string(value))
 	default:
-		_this.badEvent("BuildFromArray(%v)", arrayType)
+		_this.panicBadEvent("BuildFromArray(%v)", arrayType)
 	}
 }

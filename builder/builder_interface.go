@@ -35,13 +35,7 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-var (
-	builderIntfIntfMapType = reflect.TypeOf(map[interface{}]interface{}{})
-	builderIntfSliceType   = reflect.TypeOf([]interface{}{})
-	builderIntfType        = builderIntfSliceType.Elem()
-
-	globalIntfBuilder = &intfBuilder{}
-)
+var globalIntfBuilder = &intfBuilder{}
 
 type intfBuilder struct {
 	// Template Data
@@ -59,6 +53,10 @@ func newInterfaceBuilder() ObjectBuilder {
 
 func (_this *intfBuilder) String() string {
 	return fmt.Sprintf("%v", reflect.TypeOf(_this))
+}
+
+func (_this *intfBuilder) panicBadEvent(name string, args ...interface{}) {
+	PanicBadEventWithType(_this, common.TypeInterface, name, args...)
 }
 
 func (_this *intfBuilder) InitTemplate(session *Session) {
@@ -79,7 +77,7 @@ func (_this *intfBuilder) SetParent(parent ObjectBuilder) {
 }
 
 func (_this *intfBuilder) BuildFromNil(dst reflect.Value) {
-	dst.Set(reflect.Zero(builderIntfType))
+	dst.Set(reflect.Zero(common.TypeInterface))
 }
 
 func (_this *intfBuilder) BuildFromBool(value bool, dst reflect.Value) {
@@ -161,7 +159,7 @@ func (_this *intfBuilder) BuildBeginMap() {
 }
 
 func (_this *intfBuilder) BuildEndContainer() {
-	PanicBadEventWithType(_this, builderIntfType, "ContainerEnd")
+	_this.panicBadEvent("ContainerEnd")
 }
 
 func (_this *intfBuilder) BuildBeginMarker(_ interface{}) {
