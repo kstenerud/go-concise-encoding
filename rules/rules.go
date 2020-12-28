@@ -91,6 +91,8 @@ func (_this *Rules) Init(nextReceiver events.DataEventReceiver, opts *options.Ru
 	_this.realMaxContainerDepth = _this.opts.MaxContainerDepth + rulesMaxDepthAdjust
 	_this.stateStack = make([]ruleState, 0, _this.realMaxContainerDepth)
 	_this.nextReceiver = nextReceiver
+	_this.arrayData = make([]byte, 0, 32)
+	_this.unassignedIDs = make([]interface{}, 0, 16)
 
 	_this.Reset()
 }

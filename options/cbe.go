@@ -143,18 +143,20 @@ func (_this *CBEMarshalerOptions) Validate() error {
 // CBE Unmarshaler
 
 type CBEUnmarshalerOptions struct {
-	Decoder CBEDecoderOptions
-	Builder BuilderOptions
-	Session BuilderSessionOptions
-	Rules   RuleOptions
+	Decoder      CBEDecoderOptions
+	Builder      BuilderOptions
+	Session      BuilderSessionOptions
+	Rules        RuleOptions
+	EnforceRules bool
 }
 
 func DefaultCBEUnmarshalerOptions() *CBEUnmarshalerOptions {
 	return &CBEUnmarshalerOptions{
-		Decoder: *DefaultCBEDecoderOptions(),
-		Builder: *DefaultBuilderOptions(),
-		Session: *DefaultBuilderSessionOptions(),
-		Rules:   *DefaultRuleOptions(),
+		Decoder:      *DefaultCBEDecoderOptions(),
+		Builder:      *DefaultBuilderOptions(),
+		Session:      *DefaultBuilderSessionOptions(),
+		Rules:        *DefaultRuleOptions(),
+		EnforceRules: true,
 	}
 }
 

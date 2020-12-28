@@ -105,10 +105,51 @@ func BenchmarkJSONMarshal(b *testing.B) {
 
 func BenchmarkCBEUnmarshal(b *testing.B) {
 	b.Helper()
-	opts := options.DefaultCBEMarshalerOptions()
-	opts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(opts)
-	unmarshaler := ce.NewCBEUnmarshaler(nil)
+	marshalOpts := options.DefaultCBEMarshalerOptions()
+	marshalOpts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts.EnforceRules = false
+	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	expectedObjs := generate()
+	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
+	documents := make([][]byte, 0, len(expectedObjs))
+	for _, obj := range expectedObjs {
+		bytes, err := marshaler.MarshalToDocument(obj)
+		if err != nil {
+			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(obj))
+		}
+		documents = append(documents, bytes)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	template := &A{}
+	for i := 0; i < b.N; i++ {
+		index := rand.Intn(len(expectedObjs))
+		document := documents[index]
+		obj, err := unmarshaler.UnmarshalFromDocument(document, template)
+		if err != nil {
+			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
+		}
+		actualObjs[index] = obj.(*A)
+	}
+	b.StopTimer()
+	for i, v := range actualObjs {
+		if v != nil {
+			if !equivalence.IsEquivalent(v, expectedObjs[i]) {
+				b.Fatalf("Expected %v to produce %v but got %v", describe.D(documents[i]), describe.D(expectedObjs[i]), describe.D(v))
+			}
+		}
+	}
+}
+
+func BenchmarkRules(b *testing.B) {
+	b.Helper()
+	marshalOpts := options.DefaultCBEMarshalerOptions()
+	marshalOpts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
 	expectedObjs := generate()
 	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
 	documents := make([][]byte, 0, len(expectedObjs))

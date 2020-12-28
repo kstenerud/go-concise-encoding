@@ -26,6 +26,18 @@ benchmark:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBE* -bench BenchmarkCBE* -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
+benchmarkMarshal:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkCBEMarshal -bench BenchmarkCBEMarshal -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
+benchmarkUnmarshal:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkCBEUnmarshal -bench BenchmarkCBEUnmarshal -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
+benchmarkRules:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkRules -bench BenchmarkRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
 compare:
 	go test -run Benchmark* -bench Benchmark*
 
