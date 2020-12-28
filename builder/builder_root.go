@@ -78,6 +78,7 @@ func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *opt
 		_this.NotifyMarker,
 		_this.NotifyReference)
 	_this.object = reflect.New(dstType).Elem()
+	_this.chunkedData = make([]byte, 0, 128)
 
 	generator := session.GetBuilderGeneratorForType(dstType)
 	builder := generator()

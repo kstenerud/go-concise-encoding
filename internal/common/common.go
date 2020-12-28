@@ -77,11 +77,17 @@ var KeyableTypes = []reflect.Type{
 	reflect.TypeOf((*string)(nil)).Elem(),
 	reflect.TypeOf((*url.URL)(nil)).Elem(),
 	reflect.TypeOf((*time.Time)(nil)).Elem(),
+	reflect.TypeOf((*compact_time.Time)(nil)).Elem(),
 	reflect.TypeOf((*compact_float.DFloat)(nil)).Elem(),
 	reflect.TypeOf((*interface{})(nil)).Elem(),
+
+	// Must be pointers
+	reflect.TypeOf((*big.Float)(nil)),
+	reflect.TypeOf((*big.Int)(nil)),
 }
 
 var NonKeyableTypes = []reflect.Type{
+	reflect.TypeOf((*big.Float)(nil)).Elem(),
 	reflect.TypeOf((*big.Int)(nil)).Elem(),
 	reflect.TypeOf((*apd.Decimal)(nil)).Elem(),
 }

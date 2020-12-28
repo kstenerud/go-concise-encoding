@@ -61,10 +61,12 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 	if parent == nil {
 		parent = &rootSession
 	}
-	_this.builderGenerators.Range(func(key, value interface{}) bool {
-		_this.builderGenerators.Store(key, value)
-		return true
-	})
+	if parent != _this {
+		parent.builderGenerators.Range(func(key, value interface{}) bool {
+			_this.builderGenerators.Store(key, value)
+			return true
+		})
+	}
 
 	_this.opts = *opts
 	for _, t := range _this.opts.CustomBuiltTypes {
@@ -207,23 +209,24 @@ var interfaceMapBuilderGenerator BuilderGenerator
 func init() {
 	rootSession.Init(nil, nil)
 
-	// for _, t := range common.KeyableTypes {
-	// 	rootSession.GetBuilderGeneratorForType(t)
-	// 	rootSession.GetBuilderGeneratorForType(reflect.PtrTo(t))
-	// 	rootSession.GetBuilderGeneratorForType(reflect.SliceOf(t))
-	// 	for _, u := range common.KeyableTypes {
-	// 		rootSession.GetBuilderGeneratorForType(reflect.MapOf(t, u))
-	// 	}
-	// 	for _, u := range common.NonKeyableTypes {
-	// 		rootSession.GetBuilderGeneratorForType(reflect.MapOf(t, u))
-	// 	}
-	// }
+	for _, t := range common.KeyableTypes {
+		rootSession.GetBuilderGeneratorForType(t)
+		rootSession.GetBuilderGeneratorForType(reflect.PtrTo(t))
+		rootSession.GetBuilderGeneratorForType(reflect.SliceOf(t))
+		rootSession.GetBuilderGeneratorForType(reflect.SliceOf(reflect.PtrTo(t)))
+		for _, u := range common.KeyableTypes {
+			rootSession.GetBuilderGeneratorForType(reflect.MapOf(t, u))
+		}
+		for _, u := range common.NonKeyableTypes {
+			rootSession.GetBuilderGeneratorForType(reflect.MapOf(t, u))
+		}
+	}
 
-	// for _, t := range common.NonKeyableTypes {
-	// 	rootSession.GetBuilderGeneratorForType(t)
-	// 	rootSession.GetBuilderGeneratorForType(reflect.PtrTo(t))
-	// 	rootSession.GetBuilderGeneratorForType(reflect.SliceOf(t))
-	// }
+	for _, t := range common.NonKeyableTypes {
+		rootSession.GetBuilderGeneratorForType(t)
+		rootSession.GetBuilderGeneratorForType(reflect.PtrTo(t))
+		rootSession.GetBuilderGeneratorForType(reflect.SliceOf(t))
+	}
 
 	interfaceMapBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceMap)
 	interfaceSliceBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceSlice)

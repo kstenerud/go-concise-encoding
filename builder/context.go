@@ -55,7 +55,7 @@ func context(opts *options.BuilderOptions,
 		CustomTextBuildFunction:   customTextBuildFunction,
 		NotifyMarker:              notifyMarker,
 		NotifyReference:           notifyReference,
-		builderStack:              make([]ObjectBuilder, 0, 20),
+		builderStack:              make([]ObjectBuilder, 0, 16),
 	}
 }
 
