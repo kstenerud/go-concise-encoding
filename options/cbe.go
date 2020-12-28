@@ -143,10 +143,12 @@ func (_this *CBEMarshalerOptions) Validate() error {
 // CBE Unmarshaler
 
 type CBEUnmarshalerOptions struct {
-	Decoder      CBEDecoderOptions
-	Builder      BuilderOptions
-	Session      BuilderSessionOptions
-	Rules        RuleOptions
+	Decoder CBEDecoderOptions
+	Builder BuilderOptions
+	Session BuilderSessionOptions
+	Rules   RuleOptions
+
+	// If false, do not wrap a Rules object around the builder, disabling all rule checks.
 	EnforceRules bool
 }
 

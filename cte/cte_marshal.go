@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/iterator"
@@ -137,8 +139,11 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 	}()
 
 	builder := _this.Session.NewBuilderFor(template, &_this.opts.Builder)
-	rules := rules.NewRules(builder, &_this.opts.Rules)
-	if err = _this.decoder.Decode(reader, rules); err != nil {
+	receiver := events.DataEventReceiver(builder)
+	if _this.opts.EnforceRules {
+		receiver = rules.NewRules(receiver, &_this.opts.Rules)
+	}
+	if err = _this.decoder.Decode(reader, receiver); err != nil {
 		return
 	}
 	decoded = builder.GetBuiltObject()

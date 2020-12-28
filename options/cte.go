@@ -316,14 +316,18 @@ type CTEUnmarshalerOptions struct {
 	Builder BuilderOptions
 	Session BuilderSessionOptions
 	Rules   RuleOptions
+
+	// If false, do not wrap a Rules object around the builder, disabling all rule checks.
+	EnforceRules bool
 }
 
 func DefaultCTEUnmarshalerOptions() *CTEUnmarshalerOptions {
 	return &CTEUnmarshalerOptions{
-		Decoder: *DefaultCTEDecoderOptions(),
-		Builder: *DefaultBuilderOptions(),
-		Session: *DefaultBuilderSessionOptions(),
-		Rules:   *DefaultRuleOptions(),
+		Decoder:      *DefaultCTEDecoderOptions(),
+		Builder:      *DefaultBuilderOptions(),
+		Session:      *DefaultBuilderSessionOptions(),
+		Rules:        *DefaultRuleOptions(),
+		EnforceRules: true,
 	}
 }
 
