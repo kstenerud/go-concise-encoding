@@ -131,6 +131,7 @@ func init() {
 		rootSession.GetIteratorForType(t)
 		rootSession.GetIteratorForType(reflect.PtrTo(t))
 		rootSession.GetIteratorForType(reflect.SliceOf(t))
+		rootSession.GetIteratorForType(reflect.SliceOf(reflect.PtrTo(t)))
 		for _, u := range common.KeyableTypes {
 			rootSession.GetIteratorForType(reflect.MapOf(t, u))
 		}
