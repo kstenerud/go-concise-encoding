@@ -21,236 +21,100 @@
 package builder
 
 import (
-	"fmt"
 	"math/big"
 	"reflect"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
-type ignoreBuilder struct {
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
-}
+type ignoreBuilder struct{}
 
 var globalIgnoreBuilder = &ignoreBuilder{}
 
-func newIgnoreBuilder() ObjectBuilder {
-	return globalIgnoreBuilder
+func generateIgnoreBuilder() ObjectBuilder  { return globalIgnoreBuilder }
+func (_this *ignoreBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *ignoreBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	return dst
+
 }
 
-func (_this *ignoreBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
+func (_this *ignoreBuilder) BuildFromBool(ctx *Context, _ bool, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEvent(_this, name, args...)
+func (_this *ignoreBuilder) BuildFromInt(ctx *Context, _ int64, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) InitTemplate(_ *Session) {
+func (_this *ignoreBuilder) BuildFromUint(ctx *Context, _ uint64, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	return &ignoreBuilder{
-		parent: parent,
-		root:   root,
-		opts:   opts,
-	}
+func (_this *ignoreBuilder) BuildFromBigInt(ctx *Context, _ *big.Int, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
+func (_this *ignoreBuilder) BuildFromFloat(ctx *Context, _ float64, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromNil(_ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromBigFloat(ctx *Context, _ *big.Float, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromDecimalFloat(ctx *Context, _ compact_float.DFloat, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromBigDecimalFloat(ctx *Context, _ *apd.Decimal, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromUUID(ctx *Context, _ []byte, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromArray(ctx *Context, _ events.ArrayType, _ []byte, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ *compact_time.Time, dst reflect.Value) reflect.Value {
+	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildInitiateList(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildInitiateMap(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildEndContainer(ctx *Context) {
+	ctx.UnstackBuilder()
 }
 
-func (_this *ignoreBuilder) BuildFromArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildBeginListContents(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
+func (_this *ignoreBuilder) BuildBeginMapContents(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.opts)
-	builder.PrepareForListContents()
-}
-
-func (_this *ignoreBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this.parent, _this.opts)
-	builder.PrepareForMapContents()
-}
-
-func (_this *ignoreBuilder) BuildFromReference(_ interface{}) {
+func (_this *ignoreBuilder) BuildFromReference(ctx *Context, _ interface{}) {
 	// Ignore this directive
 }
 
-// ============================================================================
-
-type ignoreContainerBuilder struct {
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
-}
-
-var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
-
-func newIgnoreContainerBuilder() ObjectBuilder {
-	return globalIgnoreContainerBuilder
-}
-
-func (_this *ignoreContainerBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-
-func (_this *ignoreContainerBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEvent(_this, name, args...)
-}
-
-func (_this *ignoreContainerBuilder) InitTemplate(_ *Session) {
-}
-
-func (_this *ignoreContainerBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	return &ignoreContainerBuilder{
-		parent: parent,
-		root:   root,
-		opts:   opts,
-	}
-}
-
-func (_this *ignoreContainerBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
-}
-
-func (_this *ignoreContainerBuilder) BuildFromNil(_ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromBool(_ bool, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromInt(_ int64, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromUint(_ uint64, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromBigInt(_ *big.Int, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromFloat(_ float64, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromBigFloat(_ *big.Float, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromDecimalFloat(_ compact_float.DFloat, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromBigDecimalFloat(_ *apd.Decimal, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromUUID(_ []byte, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromArray(_ events.ArrayType, _ []byte, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromTime(_ time.Time, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildFromCompactTime(_ *compact_time.Time, _ reflect.Value) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) BuildBeginList() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.opts)
-	builder.PrepareForListContents()
-}
-
-func (_this *ignoreContainerBuilder) BuildBeginMap() {
-	builder := newIgnoreContainerBuilder().NewInstance(_this.root, _this, _this.opts)
-	builder.PrepareForMapContents()
-}
-
-func (_this *ignoreContainerBuilder) BuildEndContainer() {
-	_this.root.SetCurrentBuilder(_this.parent)
-}
-
-func (_this *ignoreContainerBuilder) BuildFromReference(_ interface{}) {
-	// Ignore this directive
-}
-
-func (_this *ignoreContainerBuilder) PrepareForListContents() {
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *ignoreContainerBuilder) PrepareForMapContents() {
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *ignoreContainerBuilder) NotifyChildContainerFinished(_ reflect.Value) {
+func (_this *ignoreBuilder) NotifyChildContainerFinished(ctx *Context, _ reflect.Value) {
 }

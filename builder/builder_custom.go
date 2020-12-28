@@ -21,45 +21,21 @@
 package builder
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type customBuilder struct {
-	// Template Data
-	session *Session
-}
+type customBuilder struct{}
 
-func newCustomBuilder(session *Session) ObjectBuilder {
-	return &customBuilder{
-		session: session,
+var globalCustomBuilder = &customBuilder{}
+
+func generateCustomBuilder() ObjectBuilder  { return globalCustomBuilder }
+func (_this *customBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *customBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
+		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 	}
-}
-
-func (_this *customBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-
-func (_this *customBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEvent(_this, name, args...)
-}
-
-func (_this *customBuilder) InitTemplate(_ *Session) {
-	_this.panicBadEvent("InitTemplate")
-}
-
-func (_this *customBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-
-func (_this *customBuilder) SetParent(_ ObjectBuilder) {
-}
-
-func (_this *customBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	if !_this.session.TryBuildFromCustom(_this, arrayType, value, dst) {
-		_this.panicBadEvent("TypedArray(%v)", arrayType)
-	}
+	return dst
 }

@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -35,166 +34,144 @@ import (
 )
 
 type arrayBuilder struct {
-	// Template Data
-	dstType     reflect.Type
-	elemBuilder ObjectBuilder
-
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
-
-	// Variable data (must be reset)
-	container reflect.Value
-	index     int
+	containerType reflect.Type
+	elemGenerator BuilderGenerator
+	container     reflect.Value
+	elemIndex     int
 }
 
-func newArrayBuilder(dstType reflect.Type) ObjectBuilder {
-	return &arrayBuilder{
-		dstType: dstType,
+func newArrayBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, containerType reflect.Type) BuilderGenerator {
+	elemBuilderGenerator := getBuilderGeneratorForType(containerType.Elem())
+	return func() ObjectBuilder {
+		builder := &arrayBuilder{
+			containerType: containerType,
+			elemGenerator: elemBuilderGenerator,
+		}
+		builder.reset()
+		return builder
 	}
 }
 
 func (_this *arrayBuilder) String() string {
-	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.containerType.Elem())
 }
 
-func (_this *arrayBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
+func (_this *arrayBuilder) reset() {
+	_this.container = reflect.New(_this.containerType).Elem()
+	_this.elemIndex = 0
 }
 
-func (_this *arrayBuilder) InitTemplate(session *Session) {
-	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
+func (_this *arrayBuilder) advanceElem() reflect.Value {
+	elem := _this.container.Index(_this.elemIndex)
+	_this.elemIndex++
+	return elem
 }
 
-func (_this *arrayBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	builder := &arrayBuilder{
-		dstType:     _this.dstType,
-		elemBuilder: _this.elemBuilder,
-		root:        root,
-		parent:      parent,
-		opts:        opts,
-	}
-	builder.Reset()
-	return builder
+func (_this *arrayBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromNil(ctx, object)
+	return object
 }
 
-func (_this *arrayBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
+func (_this *arrayBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromBool(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) Reset() {
-	_this.container = reflect.New(_this.dstType).Elem()
-	_this.index = 0
+func (_this *arrayBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromInt(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) currentElem() reflect.Value {
-	return _this.container.Index(_this.index)
+func (_this *arrayBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromUint(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromNil(_ reflect.Value) {
-	_this.elemBuilder.BuildFromNil(_this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromBigInt(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromBool(value bool, _ reflect.Value) {
-	_this.elemBuilder.BuildFromBool(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromFloat(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromInt(value int64, _ reflect.Value) {
-	_this.elemBuilder.BuildFromInt(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromBigFloat(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromUint(value uint64, _ reflect.Value) {
-	_this.elemBuilder.BuildFromUint(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromDecimalFloat(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
-	_this.elemBuilder.BuildFromBigInt(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromBigDecimalFloat(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromFloat(value float64, _ reflect.Value) {
-	_this.elemBuilder.BuildFromFloat(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromUUID(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
-	_this.elemBuilder.BuildFromBigFloat(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromArray(ctx, arrayType, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
-	_this.elemBuilder.BuildFromDecimalFloat(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromTime(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
-	_this.elemBuilder.BuildFromBigDecimalFloat(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator().BuildFromCompactTime(ctx, value, object)
+	return object
 }
 
-func (_this *arrayBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromUUID(value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildInitiateList(ctx *Context) {
+	_this.elemGenerator().BuildBeginListContents(ctx)
 }
 
-func (_this *arrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
-	_this.elemBuilder.BuildFromArray(arrayType, value, _this.currentElem())
-	_this.index++
+func (_this *arrayBuilder) BuildInitiateMap(ctx *Context) {
+	_this.elemGenerator().BuildBeginMapContents(ctx)
 }
 
-func (_this *arrayBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
-	_this.elemBuilder.BuildFromTime(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
-	_this.elemBuilder.BuildFromCompactTime(value, _this.currentElem())
-	_this.index++
-}
-
-func (_this *arrayBuilder) BuildBeginList() {
-	_this.elemBuilder.PrepareForListContents()
-}
-
-func (_this *arrayBuilder) BuildBeginMap() {
-	_this.elemBuilder.PrepareForMapContents()
-}
-
-func (_this *arrayBuilder) BuildEndContainer() {
+func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
-	_this.Reset()
-	_this.parent.NotifyChildContainerFinished(object)
+	_this.reset()
+	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
-func (_this *arrayBuilder) BuildBeginMarker(id interface{}) {
-	origBuilder := _this.elemBuilder
-	_this.elemBuilder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
-		_this.elemBuilder = origBuilder
-		_this.root.NotifyMarker(id, object)
-	})
+func (_this *arrayBuilder) BuildBeginListContents(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *arrayBuilder) BuildFromReference(id interface{}) {
+func (_this *arrayBuilder) BuildFromReference(ctx *Context, id interface{}) {
 	container := _this.container
-	index := _this.index
-	_this.index++
-	_this.root.NotifyReference(id, func(object reflect.Value) {
+	index := _this.elemIndex
+	_this.elemIndex++
+	ctx.NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, container.Index(index))
 	})
 }
 
-func (_this *arrayBuilder) PrepareForListContents() {
-	_this.elemBuilder = _this.elemBuilder.NewInstance(_this.root, _this, _this.opts)
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *arrayBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.SetCurrentBuilder(_this)
-	_this.currentElem().Set(value)
-	_this.index++
+func (_this *arrayBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
+	_this.advanceElem().Set(value)
 }

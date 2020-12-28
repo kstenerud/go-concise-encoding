@@ -49,7 +49,6 @@ func (_this *ReferenceFiller) Init() {
 // Notify that a new marker has been found.
 func (_this *ReferenceFiller) NotifyMarker(id interface{}, value reflect.Value) {
 	_this.markedValues[id] = value
-
 	if setters, ok := _this.unresolvedReferences[id]; ok {
 		for _, setter := range setters {
 			setter(value)

@@ -103,11 +103,11 @@ func (_this *Session) GetIteratorForType(t reflect.Type) IteratorFunction {
 	var iterator IteratorFunction
 
 	wg.Add(1)
-	storedIterator, ok2 := _this.iteratorFuncs.LoadOrStore(t, IteratorFunction(func(context *Context, value reflect.Value) {
+	storedIterator, loaded := _this.iteratorFuncs.LoadOrStore(t, IteratorFunction(func(context *Context, value reflect.Value) {
 		wg.Wait()
 		iterator(context, value)
 	}))
-	if ok2 {
+	if loaded {
 		return storedIterator.(IteratorFunction)
 	}
 

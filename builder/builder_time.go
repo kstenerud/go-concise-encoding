@@ -21,161 +21,105 @@
 package builder
 
 import (
-	"fmt"
 	"reflect"
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-compact-time"
 )
 
 // Go Time
 
-type timeBuilder struct {
-	// Template Data
-	session *Session
-}
+var globalTimeBuilder = &timeBuilder{}
 
-func newTimeBuilder() ObjectBuilder {
-	return &timeBuilder{}
-}
+type timeBuilder struct{}
 
-func (_this *timeBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
+func generateTimeBuilder() ObjectBuilder  { return globalTimeBuilder }
+func (_this *timeBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func (_this *timeBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, common.TypeTime, name, args...)
-}
-
-func (_this *timeBuilder) InitTemplate(session *Session) {
-	_this.session = session
-}
-
-func (_this *timeBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-
-func (_this *timeBuilder) SetParent(_ ObjectBuilder) {
-}
-
-func (_this *timeBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	if !_this.session.TryBuildFromCustom(_this, arrayType, value, dst) {
-		_this.panicBadEvent("TypedArray(%v)", arrayType)
+func (_this *timeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
+		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 	}
+	return dst
 }
 
-func (_this *timeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *timeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *timeBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *timeBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	v, err := value.AsGoTime()
 	if err != nil {
 		panic(err)
 	}
 	dst.Set(reflect.ValueOf(v))
+	return dst
 }
 
 // ============================================================================
 
-type compactTimeBuilder struct {
-	// Template Data
-	session *Session
-}
+var globalCompactTimeBuilder = &compactTimeBuilder{}
 
-func newCompactTimeBuilder() ObjectBuilder {
-	return &compactTimeBuilder{}
-}
+type compactTimeBuilder struct{}
 
-func (_this *compactTimeBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
+func generateCompactTimeBuilder() ObjectBuilder  { return globalCompactTimeBuilder }
+func (_this *compactTimeBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func (_this *compactTimeBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, common.TypeCompactTime, name, args...)
-}
-
-func (_this *compactTimeBuilder) InitTemplate(session *Session) {
-	_this.session = session
-}
-
-func (_this *compactTimeBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-
-func (_this *compactTimeBuilder) SetParent(_ ObjectBuilder) {
-}
-
-func (_this *compactTimeBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	if !_this.session.TryBuildFromCustom(_this, arrayType, value, dst) {
-		_this.panicBadEvent("TypedArray(%v)", arrayType)
+func (_this *compactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
+		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 	}
+	return dst
 }
 
-func (_this *compactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	t, err := compact_time.AsCompactTime(value)
 	if err != nil {
 		panic(err)
 	}
 	dst.Set(reflect.ValueOf(*t))
+	return dst
 }
 
-func (_this *compactTimeBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *compactTimeBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(*value))
+	return dst
 }
 
 // ============================================================================
 
-type pCompactTimeBuilder struct {
-	// Template Data
-	session *Session
-}
+var globalPCompactTimeBuilder = &pCompactTimeBuilder{}
 
-func newPCompactTimeBuilder() ObjectBuilder {
-	return &pCompactTimeBuilder{}
-}
+type pCompactTimeBuilder struct{}
 
-func (_this *pCompactTimeBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
+func generatePCompactTimeBuilder() ObjectBuilder  { return &pCompactTimeBuilder{} }
+func (_this *pCompactTimeBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func (_this *pCompactTimeBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, common.TypePCompactTime, name, args...)
-}
-
-func (_this *pCompactTimeBuilder) InitTemplate(session *Session) {
-	_this.session = session
-}
-
-func (_this *pCompactTimeBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-
-func (_this *pCompactTimeBuilder) SetParent(_ ObjectBuilder) {
-}
-
-func (_this *pCompactTimeBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *pCompactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*compact_time.Time)(nil)))
+	return dst
 }
 
-func (_this *pCompactTimeBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	if !_this.session.TryBuildFromCustom(_this, arrayType, value, dst) {
-		_this.panicBadEvent("TypedArray(%v)", arrayType)
+func (_this *pCompactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
+		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 	}
+	return dst
 }
 
-func (_this *pCompactTimeBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *pCompactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	t, err := compact_time.AsCompactTime(value)
 	if err != nil {
 		panic(err)
 	}
 	dst.Set(reflect.ValueOf(t))
+	return dst
 }
 
-func (_this *pCompactTimeBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *pCompactTimeBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }

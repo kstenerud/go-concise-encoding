@@ -24,36 +24,40 @@ import (
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type stringBuilder struct{}
 
-func newStringBuilder() ObjectBuilder       { return &stringBuilder{} }
+var globalStringBuilder = &stringBuilder{}
+
+func generateStringBuilder() ObjectBuilder  { return globalStringBuilder }
 func (_this *stringBuilder) String() string { return nameOf(_this) }
-func (_this *stringBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, reflect.TypeOf(""), name, args...)
+
+func (_this *stringBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	// Go doesn't have the concept of a nil string.
+	dst.SetString("")
+	return dst
 }
-func (_this *stringBuilder) InitTemplate(_ *Session) {}
-func (_this *stringBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
+func (_this *stringBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeString:
+		dst.SetString(string(value))
+	default:
+		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
+	}
+	return dst
 }
-func (_this *stringBuilder) SetParent(_ ObjectBuilder) {}
+
+// ============================================================================
 
 type uint8ArrayBuilder struct{}
 
-func newUint8ArrayBuilder() ObjectBuilder       { return &uint8ArrayBuilder{} }
-func (_this *uint8ArrayBuilder) String() string { return nameOf(_this) }
-func (_this *uint8ArrayBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, reflect.TypeOf(uint8(0)), name, args...)
-}
-func (_this *uint8ArrayBuilder) InitTemplate(_ *Session) {}
-func (_this *uint8ArrayBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *uint8ArrayBuilder) SetParent(_ ObjectBuilder) {}
+var globalUint8ArrayBuilder = &uint8ArrayBuilder{}
 
-func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func generateUint8ArrayBuilder() ObjectBuilder  { return globalUint8ArrayBuilder }
+func (_this *uint8ArrayBuilder) String() string { return nameOf(_this) }
+
+func (_this *uint8ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeUint8:
 		// TODO: Is there a more efficient way?
@@ -62,36 +66,20 @@ func (_this *uint8ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value
 			elem.SetUint(uint64(value[i]))
 		}
 	default:
-		_this.panicBadEvent("BuildFromArray(%v)", arrayType)
+		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
 	}
+	return dst
 }
+
+// ============================================================================
 
 type uint16ArrayBuilder struct{}
 
-func newUint16ArrayBuilder() ObjectBuilder       { return &uint16ArrayBuilder{} }
+var globalUint16ArrayBuilder = &uint16ArrayBuilder{}
+
+func generateUint16ArrayBuilder() ObjectBuilder  { return globalUint16ArrayBuilder }
 func (_this *uint16ArrayBuilder) String() string { return nameOf(_this) }
-func (_this *uint16ArrayBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, reflect.TypeOf(uint16(0)), name, args...)
-}
-func (_this *uint16ArrayBuilder) InitTemplate(_ *Session) {}
-func (_this *uint16ArrayBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *uint16ArrayBuilder) SetParent(_ ObjectBuilder) {}
 
-func (_this *uint16ArrayBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *uint16ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic("TODO")
-}
-
-func (_this *stringBuilder) BuildFromNil(dst reflect.Value) {
-	// Go doesn't have the concept of a nil string.
-	dst.SetString("")
-}
-func (_this *stringBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		dst.SetString(string(value))
-	default:
-		_this.panicBadEvent("BuildFromArray(%v)", arrayType)
-	}
 }

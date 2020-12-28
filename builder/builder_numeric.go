@@ -21,11 +21,8 @@
 package builder
 
 import (
-	"fmt"
 	"math/big"
 	"reflect"
-
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -33,426 +30,356 @@ import (
 
 // ============================================================================
 
-type bigDecimalFloatBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type bigDecimalFloatBuilder struct{}
 
-func newBigDecimalFloatBuilder(dstType reflect.Type) ObjectBuilder {
-	return &bigDecimalFloatBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *bigDecimalFloatBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *bigDecimalFloatBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *bigDecimalFloatBuilder) InitTemplate(_ *Session) {}
-func (_this *bigDecimalFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *bigDecimalFloatBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *bigDecimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+var globalBigDecimalFloatBuilder = &bigDecimalFloatBuilder{}
+
+func generateBigDecimalFloatBuilder() ObjectBuilder  { return globalBigDecimalFloatBuilder }
+func (_this *bigDecimalFloatBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *bigDecimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromInt(value, dst)
+	return dst
 }
-func (_this *bigDecimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromUint(value, dst)
+	return dst
 }
-func (_this *bigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromBigInt(value, dst)
+	return dst
 }
-func (_this *bigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromFloat(value, dst)
+	return dst
 }
-func (_this *bigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *bigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromBigFloat(value, dst)
+	return dst
 }
-func (_this *bigDecimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *bigDecimalFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type bigFloatBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type bigFloatBuilder struct{}
 
-func newBigFloatBuilder(dstType reflect.Type) ObjectBuilder {
-	return &bigFloatBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *bigFloatBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *bigFloatBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *bigFloatBuilder) InitTemplate(_ *Session) {}
-func (_this *bigFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *bigFloatBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *bigFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+var globalBigFloatBuilder = &bigFloatBuilder{}
+
+func generateBigFloatBuilder() ObjectBuilder  { return globalBigFloatBuilder }
+func (_this *bigFloatBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *bigFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setBigFloatFromInt(value, dst)
+	return dst
 }
-func (_this *bigFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *bigFloatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setBigFloatFromUint(value, dst)
+	return dst
 }
-func (_this *bigFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *bigFloatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setBigFloatFromBigInt(value, dst)
+	return dst
 }
-func (_this *bigFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *bigFloatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setBigFloatFromFloat(value, dst)
+	return dst
 }
-func (_this *bigFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *bigFloatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setBigFloatFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *bigFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *bigFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setBigFloatFromBigFloat(value, dst)
+	return dst
 }
-func (_this *bigFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *bigFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setBigFloatFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type bigIntBuilder struct {
-	// Template Data
-	dstType reflect.Type
+type bigIntBuilder struct{}
 
-	// Instance Data
-	opts *options.BuilderOptions
-}
+var globalBigIntBuilder = &bigIntBuilder{}
 
-func newBigIntBuilder(dstType reflect.Type) ObjectBuilder {
-	return &bigIntBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *bigIntBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *bigIntBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *bigIntBuilder) InitTemplate(_ *Session) {}
-func (_this *bigIntBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	return &bigIntBuilder{
-		opts: opts,
-	}
-}
-func (_this *bigIntBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *bigIntBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func generateBigIntBuilder() ObjectBuilder  { return globalBigIntBuilder }
+func (_this *bigIntBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *bigIntBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setBigIntFromInt(value, dst)
+	return dst
 }
-func (_this *bigIntBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *bigIntBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setBigIntFromUint(value, dst)
+	return dst
 }
-func (_this *bigIntBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *bigIntBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setBigIntFromBigInt(value, dst)
+	return dst
 }
-func (_this *bigIntBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	setBigIntFromFloat(value, dst, _this.opts.FloatToBigIntMaxBase2Exponent)
+func (_this *bigIntBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
+	setBigIntFromFloat(value, dst, ctx.Options.FloatToBigIntMaxBase2Exponent)
+	return dst
 }
-func (_this *bigIntBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	setBigIntFromBigFloat(value, dst, _this.opts.FloatToBigIntMaxBase2Exponent)
+func (_this *bigIntBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
+	setBigIntFromBigFloat(value, dst, ctx.Options.FloatToBigIntMaxBase2Exponent)
+	return dst
 }
-func (_this *bigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	setBigIntFromDecimalFloat(value, dst, _this.opts.FloatToBigIntMaxBase10Exponent)
+func (_this *bigIntBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
+	setBigIntFromDecimalFloat(value, dst, ctx.Options.FloatToBigIntMaxBase10Exponent)
+	return dst
 }
-func (_this *bigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	setBigIntFromBigDecimalFloat(value, dst, _this.opts.FloatToBigIntMaxBase10Exponent)
+func (_this *bigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
+	setBigIntFromBigDecimalFloat(value, dst, ctx.Options.FloatToBigIntMaxBase10Exponent)
+	return dst
 }
 
 // ============================================================================
 
-type decimalFloatBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type decimalFloatBuilder struct{}
 
-func newDecimalFloatBuilder(dstType reflect.Type) ObjectBuilder {
-	return &decimalFloatBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *decimalFloatBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *decimalFloatBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *decimalFloatBuilder) InitTemplate(_ *Session) {}
-func (_this *decimalFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *decimalFloatBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *decimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+var globalDecimalFloatBuilder = &decimalFloatBuilder{}
+
+func generateDecimalFloatBuilder() ObjectBuilder  { return globalDecimalFloatBuilder }
+func (_this *decimalFloatBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *decimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromInt(value, dst)
+	return dst
 }
-func (_this *decimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *decimalFloatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromUint(value, dst)
+	return dst
 }
-func (_this *decimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *decimalFloatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromBigInt(value, dst)
+	return dst
 }
-func (_this *decimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *decimalFloatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromFloat(value, dst)
+	return dst
 }
-func (_this *decimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *decimalFloatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *decimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *decimalFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromBigFloat(value, dst)
+	return dst
 }
-func (_this *decimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *decimalFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type floatBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type floatBuilder struct{}
 
-func newFloatBuilder(dstType reflect.Type) ObjectBuilder {
-	return &floatBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *floatBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *floatBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *floatBuilder) InitTemplate(_ *Session) {}
-func (_this *floatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *floatBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *floatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+var globalFloatBuilder = &floatBuilder{}
+
+func generateFloatBuilder() ObjectBuilder  { return globalFloatBuilder }
+func (_this *floatBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *floatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setFloatFromInt(value, dst)
+	return dst
 }
-func (_this *floatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setFloatFromUint(value, dst)
+	return dst
 }
-func (_this *floatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setFloatFromBigInt(value, dst)
+	return dst
 }
-func (_this *floatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setFloatFromFloat(value, dst)
+	return dst
 }
-func (_this *floatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setFloatFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *floatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setFloatFromBigFloat(value, dst)
+	return dst
 }
-func (_this *floatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *floatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setFloatFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type intBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type intBuilder struct{}
 
-func newIntBuilder(dstType reflect.Type) ObjectBuilder {
-	return &intBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *intBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *intBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *intBuilder) InitTemplate(_ *Session) {}
-func (_this *intBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *intBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *intBuilder) BuildFromInt(value int64, dst reflect.Value) {
+var globalIntBuilder = &intBuilder{}
+
+func generateIntBuilder() ObjectBuilder  { return globalIntBuilder }
+func (_this *intBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *intBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setIntFromInt(value, dst)
+	return dst
 }
-func (_this *intBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *intBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setIntFromUint(value, dst)
+	return dst
 }
-func (_this *intBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *intBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setIntFromBigInt(value, dst)
+	return dst
 }
-func (_this *intBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *intBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setIntFromFloat(value, dst)
+	return dst
 }
-func (_this *intBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *intBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setIntFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *intBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *intBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setIntFromBigFloat(value, dst)
+	return dst
 }
-func (_this *intBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *intBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setIntFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type pBigDecimalFloatBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type pBigDecimalFloatBuilder struct{}
 
-func newPBigDecimalFloatBuilder(dstType reflect.Type) ObjectBuilder {
-	return &pBigDecimalFloatBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *pBigDecimalFloatBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *pBigDecimalFloatBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *pBigDecimalFloatBuilder) InitTemplate(_ *Session) {}
-func (_this *pBigDecimalFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *pBigDecimalFloatBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *pBigDecimalFloatBuilder) BuildFromNil(dst reflect.Value) {
+var globalPBigDecimalFloatBuilder = &pBigDecimalFloatBuilder{}
+
+func generatePBigDecimalFloatBuilder() ObjectBuilder  { return globalPBigDecimalFloatBuilder }
+func (_this *pBigDecimalFloatBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *pBigDecimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*apd.Decimal)(nil)))
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromInt(value, dst)
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromUint(value, dst)
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromBigInt(value, dst)
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromFloat(value, dst)
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromBigFloat(value, dst)
+	return dst
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *pBigDecimalFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setPBigDecimalFloatFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type pBigFloatBuilder struct {
-	// Template Data
-	dstType reflect.Type
-}
+type pBigFloatBuilder struct{}
 
-func newPBigFloatBuilder(dstType reflect.Type) ObjectBuilder {
-	return &pBigFloatBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *pBigFloatBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *pBigFloatBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *pBigFloatBuilder) InitTemplate(_ *Session) {}
-func (_this *pBigFloatBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *pBigFloatBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *pBigFloatBuilder) BuildFromNil(dst reflect.Value) {
+var globalPBigFloatBuilder = &pBigFloatBuilder{}
+
+func generatePBigFloatBuilder() ObjectBuilder  { return globalPBigFloatBuilder }
+func (_this *pBigFloatBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *pBigFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Float)(nil)))
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setPBigFloatFromInt(value, dst)
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setPBigFloatFromUint(value, dst)
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setPBigFloatFromBigInt(value, dst)
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setPBigFloatFromFloat(value, dst)
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setPBigFloatFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setPBigFloatFromBigFloat(value, dst)
+	return dst
 }
-func (_this *pBigFloatBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *pBigFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setPBigFloatFromBigDecimalFloat(value, dst)
+	return dst
 }
 
 // ============================================================================
 
-type pBigIntBuilder struct {
-	// Template Data
-	dstType reflect.Type
+type pBigIntBuilder struct{}
 
-	// Instance Data
-	opts *options.BuilderOptions
-}
+var globalPBigIntBuilder = &pBigIntBuilder{}
 
-func newPBigIntBuilder(dstType reflect.Type) ObjectBuilder {
-	return &pBigIntBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *pBigIntBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *pBigIntBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *pBigIntBuilder) InitTemplate(_ *Session) {}
-func (_this *pBigIntBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	return &pBigIntBuilder{
-		opts: opts,
-	}
-}
-func (_this *pBigIntBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *pBigIntBuilder) BuildFromNil(dst reflect.Value) {
+func generatePBigIntBuilder() ObjectBuilder  { return globalPBigIntBuilder }
+func (_this *pBigIntBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *pBigIntBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Int)(nil)))
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *pBigIntBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setPBigIntFromInt(value, dst)
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *pBigIntBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setPBigIntFromUint(value, dst)
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *pBigIntBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setPBigIntFromBigInt(value, dst)
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromFloat(value float64, dst reflect.Value) {
-	setPBigIntFromFloat(value, dst, _this.opts.FloatToBigIntMaxBase2Exponent)
+func (_this *pBigIntBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
+	setPBigIntFromFloat(value, dst, ctx.Options.FloatToBigIntMaxBase2Exponent)
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
-	setPBigIntFromBigFloat(value, dst, _this.opts.FloatToBigIntMaxBase2Exponent)
+func (_this *pBigIntBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
+	setPBigIntFromBigFloat(value, dst, ctx.Options.FloatToBigIntMaxBase2Exponent)
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
-	setPBigIntFromDecimalFloat(value, dst, _this.opts.FloatToBigIntMaxBase10Exponent)
+func (_this *pBigIntBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
+	setPBigIntFromDecimalFloat(value, dst, ctx.Options.FloatToBigIntMaxBase10Exponent)
+	return dst
 }
-func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	setPBigIntFromBigDecimalFloat(value, dst, _this.opts.FloatToBigIntMaxBase10Exponent)
+func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
+	setPBigIntFromBigDecimalFloat(value, dst, ctx.Options.FloatToBigIntMaxBase10Exponent)
+	return dst
 }
 
 // ============================================================================
@@ -462,40 +389,36 @@ type uintBuilder struct {
 	dstType reflect.Type
 }
 
-func newUintBuilder(dstType reflect.Type) ObjectBuilder {
-	return &uintBuilder{
-		dstType: dstType,
-	}
-}
-func (_this *uintBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-func (_this *uintBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-func (_this *uintBuilder) InitTemplate(_ *Session) {}
-func (_this *uintBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-func (_this *uintBuilder) SetParent(_ ObjectBuilder) {}
-func (_this *uintBuilder) BuildFromInt(value int64, dst reflect.Value) {
+var globalUintBuilder = &uintBuilder{}
+
+func generateUintBuilder() ObjectBuilder  { return globalUintBuilder }
+func (_this *uintBuilder) String() string { return reflect.TypeOf(_this).String() }
+
+func (_this *uintBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setUintFromInt(value, dst)
+	return dst
 }
-func (_this *uintBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	setUintFromUint(value, dst)
+	return dst
 }
-func (_this *uintBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	setUintFromBigInt(value, dst)
+	return dst
 }
-func (_this *uintBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	setUintFromFloat(value, dst)
+	return dst
 }
-func (_this *uintBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	setUintFromDecimalFloat(value, dst)
+	return dst
 }
-func (_this *uintBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	setUintFromBigFloat(value, dst)
+	return dst
 }
-func (_this *uintBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *uintBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setUintFromBigDecimalFloat(value, dst)
+	return dst
 }

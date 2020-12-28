@@ -28,141 +28,89 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-compact-time"
 )
 
 // The direct builder has an unambiguous direct mapping from build event to
 // a non-pointer destination type (for example, a bool is always a bool).
-type directBuilder struct {
-	// Template Data
-	session *Session
-	dstType reflect.Type
-}
+type directBuilder struct{}
 
-func newDirectBuilder(dstType reflect.Type) ObjectBuilder {
-	return &directBuilder{
-		dstType: dstType,
-	}
-}
+var globalDirectBuilder = &directBuilder{}
 
-func (_this *directBuilder) String() string {
-	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
-}
+func generateDirectBuilder() ObjectBuilder  { return globalDirectBuilder }
+func (_this *directBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func (_this *directBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-
-func (_this *directBuilder) InitTemplate(session *Session) {
-	_this.session = session
-}
-
-func (_this *directBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-
-func (_this *directBuilder) SetParent(_ ObjectBuilder) {
-}
-
-func (_this *directBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *directBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	dst.SetBool(value)
+	return dst
 }
 
-func (_this *directBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *directBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	value = common.CloneBytes(value)
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *directBuilder) BuildFromString(value []byte, dst reflect.Value) {
+func (_this *directBuilder) BuildFromString(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	dst.SetString(string(value))
+	return dst
 }
 
-func (_this *directBuilder) BuildFromRID(value *url.URL, dst reflect.Value) {
+func (_this *directBuilder) BuildFromRID(ctx *Context, value *url.URL, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value).Elem())
+	return dst
 }
 
-func (_this *directBuilder) BuildFromCustomBinary(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-		PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
-	}
-}
-
-func (_this *directBuilder) BuildFromCustomText(value []byte, dst reflect.Value) {
-	if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
-		PanicBuildFromCustomText(_this, value, dst.Type(), err)
-	}
-}
-
-func (_this *directBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *directBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeResourceID:
 		setRIDFromString(string(value), dst)
 	default:
-		_this.panicBadEvent("TypedArray(%v)", arrayType)
+		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
 	}
+	return dst
 }
 
-func (_this *directBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *directBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *directBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *directBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
 // ============================================================================
 
 // The direct builder has an unambiguous direct mapping from build event to
 // a pointer destination type (for example, a *url is always a *url).
-type directPtrBuilder struct {
-	// Template Data
-	session *Session
-	dstType reflect.Type
-}
+type directPtrBuilder struct{}
 
-func newDirectPtrBuilder(dstType reflect.Type) ObjectBuilder {
-	return &directPtrBuilder{
-		dstType: dstType,
-	}
-}
+var globalDirectPtrBuilder = &directPtrBuilder{}
 
-func (_this *directPtrBuilder) String() string {
-	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
-}
+func generateDirectPtrBuilder() ObjectBuilder  { return globalDirectPtrBuilder }
+func (_this *directPtrBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func (_this *directPtrBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-
-func (_this *directPtrBuilder) InitTemplate(session *Session) {
-	_this.session = session
-}
-
-func (_this *directPtrBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	return _this
-}
-
-func (_this *directPtrBuilder) SetParent(_ ObjectBuilder) {
-}
-
-func (_this *directPtrBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	return dst
 }
 
-func (_this *directPtrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	dst.SetBytes(common.CloneBytes(value))
+	return dst
 }
 
-func (_this *directPtrBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeCustomBinary:
-		if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		if err := ctx.CustomBinaryBuildFunction(value, dst); err != nil {
 			PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 		}
 	case events.ArrayTypeCustomText:
-		if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		if err := ctx.CustomTextBuildFunction(value, dst); err != nil {
 			PanicBuildFromCustomText(_this, value, dst.Type(), err)
 		}
 	case events.ArrayTypeUint8:
@@ -174,13 +122,16 @@ func (_this *directPtrBuilder) BuildFromArray(arrayType events.ArrayType, value 
 	default:
 		panic(fmt.Errorf("TODO: Add typed array support for %v", arrayType))
 	}
+	return dst
 }
 
-func (_this *directPtrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	// TODO: Should non-pointer stuff be here?
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *directPtrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *directPtrBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }

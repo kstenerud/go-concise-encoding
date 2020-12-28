@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -40,70 +39,40 @@ const (
 )
 
 type mapBuilder struct {
-	// Template Data
-	session    *Session
-	dstType    reflect.Type
-	kvTypes    [2]reflect.Type
-	kvBuilders [2]ObjectBuilder
-
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
-
-	// Variable data (must be reset)
+	mapType         reflect.Type
+	kvTypes         [2]reflect.Type
+	kvGenerators    [2]BuilderGenerator
 	container       reflect.Value
 	key             reflect.Value
 	builderIndex    int
-	nextBuilder     ObjectBuilder
+	nextGenerator   BuilderGenerator
 	nextStoreMethod func(*mapBuilder, reflect.Value)
 }
 
-func newMapBuilder(dstType reflect.Type) ObjectBuilder {
-	return &mapBuilder{
-		dstType: dstType,
-		kvTypes: [2]reflect.Type{dstType.Key(), dstType.Elem()},
+func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, mapType reflect.Type) BuilderGenerator {
+	kvTypes := [2]reflect.Type{mapType.Key(), mapType.Elem()}
+	kvGenerators := [2]BuilderGenerator{getBuilderGeneratorForType(kvTypes[0]), getBuilderGeneratorForType(kvTypes[1])}
+
+	return func() ObjectBuilder {
+		builder := &mapBuilder{
+			mapType:      mapType,
+			kvTypes:      kvTypes,
+			kvGenerators: kvGenerators,
+		}
+		builder.reset()
+		return builder
 	}
 }
 
 func (_this *mapBuilder) String() string {
-	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvBuilders[0], _this.kvBuilders[1])
-}
-
-func (_this *mapBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-
-func (_this *mapBuilder) InitTemplate(session *Session) {
-	_this.session = session
-	_this.kvBuilders[kvBuilderKey] = session.GetBuilderForType(_this.dstType.Key())
-	_this.kvBuilders[kvBuilderValue] = session.GetBuilderForType(_this.dstType.Elem())
-}
-
-func (_this *mapBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	that := &mapBuilder{
-		session: _this.session,
-		dstType: _this.dstType,
-		kvTypes: _this.kvTypes,
-		parent:  parent,
-		root:    root,
-		opts:    opts,
-	}
-	that.kvBuilders[kvBuilderKey] = _this.kvBuilders[kvBuilderKey].NewInstance(root, that, opts)
-	that.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue]
-	that.reset()
-	return that
-}
-
-func (_this *mapBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
+	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvGenerators[0], _this.kvGenerators[1])
 }
 
 func (_this *mapBuilder) reset() {
-	_this.container = reflect.MakeMap(_this.dstType)
+	_this.container = reflect.MakeMap(_this.mapType)
 	_this.key = reflect.Value{}
 	_this.builderIndex = kvBuilderKey
-	_this.nextBuilder = _this.kvBuilders[_this.builderIndex]
+	_this.nextGenerator = _this.kvGenerators[_this.builderIndex]
 	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
 }
 
@@ -127,7 +96,7 @@ func (_this *mapBuilder) store(value reflect.Value) {
 
 func (_this *mapBuilder) swapKeyValue() {
 	_this.builderIndex = (_this.builderIndex + 1) & 1
-	_this.nextBuilder = _this.kvBuilders[_this.builderIndex]
+	_this.nextGenerator = _this.kvGenerators[_this.builderIndex]
 	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
 }
 
@@ -135,107 +104,125 @@ func (_this *mapBuilder) newElem() reflect.Value {
 	return reflect.New(_this.kvTypes[_this.builderIndex]).Elem()
 }
 
-func (_this *mapBuilder) BuildFromNil(_ reflect.Value) {
+func (_this *mapBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromNil(object)
+	_this.nextGenerator().BuildFromNil(ctx, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromBool(value bool, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromBool(value, object)
+	_this.nextGenerator().BuildFromBool(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromInt(value int64, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromInt(value, object)
+	_this.nextGenerator().BuildFromInt(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromUint(value uint64, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromUint(value, object)
+	_this.nextGenerator().BuildFromUint(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromBigInt(value, object)
+	_this.nextGenerator().BuildFromBigInt(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromFloat(value float64, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromFloat(value, object)
+	_this.nextGenerator().BuildFromFloat(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromBigFloat(value, object)
+	_this.nextGenerator().BuildFromBigFloat(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromDecimalFloat(value, object)
+	_this.nextGenerator().BuildFromDecimalFloat(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromBigDecimalFloat(value, object)
+	_this.nextGenerator().BuildFromBigDecimalFloat(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromUUID(value, object)
+	_this.nextGenerator().BuildFromUUID(ctx, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+func (_this *mapBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextBuilder.BuildFromArray(arrayType, value, object)
+	_this.nextGenerator().BuildFromArray(ctx, arrayType, value, object)
 	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
-	_this.store(reflect.ValueOf(value))
+func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+	// TODO: Why was it this way?
+	// _this.store(reflect.ValueOf(value))
+	object := _this.newElem()
+	_this.nextGenerator().BuildFromTime(ctx, value, object)
+	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
-	_this.store(reflect.ValueOf(value))
+func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+	// TODO: Why was it this way?
+	// _this.store(reflect.ValueOf(value))
+	object := _this.newElem()
+	_this.nextGenerator().BuildFromCompactTime(ctx, value, object)
+	_this.store(object)
+	return object
 }
 
-func (_this *mapBuilder) BuildBeginList() {
-	_this.nextBuilder.PrepareForListContents()
+func (_this *mapBuilder) BuildInitiateList(ctx *Context) {
+	_this.nextGenerator().BuildBeginListContents(ctx)
 }
 
-func (_this *mapBuilder) BuildBeginMap() {
-	_this.nextBuilder.PrepareForMapContents()
+func (_this *mapBuilder) BuildInitiateMap(ctx *Context) {
+	_this.nextGenerator().BuildBeginMapContents(ctx)
 }
 
-func (_this *mapBuilder) BuildEndContainer() {
+func (_this *mapBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
 	_this.reset()
-	_this.parent.NotifyChildContainerFinished(object)
+	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
-func (_this *mapBuilder) BuildBeginMarker(id interface{}) {
-	root := _this.root
-	_this.nextBuilder = newMarkerObjectBuilder(_this, _this.nextBuilder, func(object reflect.Value) {
-		root.NotifyMarker(id, object)
-	})
+func (_this *mapBuilder) BuildBeginMapContents(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *mapBuilder) BuildFromReference(id interface{}) {
+func (_this *mapBuilder) BuildFromReference(ctx *Context, id interface{}) {
 	container := _this.container
 	key := _this.key
 	tempValue := _this.newElem()
 	_this.swapKeyValue()
-	_this.root.NotifyReference(id, func(object reflect.Value) {
+	ctx.NotifyReference(id, func(object reflect.Value) {
 		if container.Type().Elem().Kind() == reflect.Interface || object.Type() == container.Type().Elem() {
 			// In case of self-referencing pointers, we need to pass the original container, not a copy.
 			container.SetMapIndex(key, object)
@@ -246,12 +233,6 @@ func (_this *mapBuilder) BuildFromReference(id interface{}) {
 	})
 }
 
-func (_this *mapBuilder) PrepareForMapContents() {
-	_this.kvBuilders[kvBuilderValue] = _this.kvBuilders[kvBuilderValue].NewInstance(_this.root, _this, _this.opts)
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *mapBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.SetCurrentBuilder(_this)
+func (_this *mapBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.store(value)
 }

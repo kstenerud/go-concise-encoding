@@ -28,103 +28,80 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
-var globalIntfBuilder = &interfaceBuilder{}
+type interfaceBuilder struct{}
 
-type interfaceBuilder struct {
-	// Template Data
-	session *Session
+var globalInterfaceBuilder = &interfaceBuilder{}
 
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
+func generateInterfaceBuilder() ObjectBuilder {
+	return globalInterfaceBuilder
 }
+func (_this *interfaceBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func newInterfaceBuilder() ObjectBuilder {
-	return globalIntfBuilder
-}
-
-func (_this *interfaceBuilder) String() string {
-	return fmt.Sprintf("%v", reflect.TypeOf(_this))
-}
-
-func (_this *interfaceBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, common.TypeInterface, name, args...)
-}
-
-func (_this *interfaceBuilder) InitTemplate(session *Session) {
-	_this.session = session
-}
-
-func (_this *interfaceBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	return &interfaceBuilder{
-		session: _this.session,
-		parent:  parent,
-		root:    root,
-		opts:    opts,
-	}
-}
-
-func (_this *interfaceBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
-}
-
-func (_this *interfaceBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(common.TypeInterface))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	value = common.CloneBytes(value)
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeCustomBinary:
-		if err := _this.session.GetCustomBinaryBuildFunction()(value, dst); err != nil {
+		if err := ctx.CustomBinaryBuildFunction(value, dst); err != nil {
 			PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
 		}
 	case events.ArrayTypeCustomText:
-		if err := _this.session.GetCustomTextBuildFunction()(value, dst); err != nil {
+		if err := ctx.CustomTextBuildFunction(value, dst); err != nil {
 			PanicBuildFromCustomText(_this, value, dst.Type(), err)
 		}
 	case events.ArrayTypeUint8:
@@ -136,40 +113,43 @@ func (_this *interfaceBuilder) BuildFromArray(arrayType events.ArrayType, value 
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
+	return dst
 }
 
-func (_this *interfaceBuilder) BuildBeginList() {
-	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
-	builder.PrepareForListContents()
+func (_this *interfaceBuilder) BuildInitiateList(ctx *Context) {
+	ctx.StackBuilder(interfaceSliceBuilderGenerator())
 }
 
-func (_this *interfaceBuilder) BuildBeginMap() {
-	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
-	builder.PrepareForMapContents()
+func (_this *interfaceBuilder) BuildInitiateMap(ctx *Context) {
+	ctx.StackBuilder(interfaceMapBuilderGenerator())
 }
 
-func (_this *interfaceBuilder) PrepareForListContents() {
-	builder := _this.session.GetBuilderForType(common.TypeInterfaceSlice)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
-	builder.PrepareForListContents()
+func (_this *interfaceBuilder) BuildBeginListContents(ctx *Context) {
+	ctx.StackBuilder(interfaceSliceBuilderGenerator())
 }
 
-func (_this *interfaceBuilder) PrepareForMapContents() {
-	builder := _this.session.GetBuilderForType(common.TypeInterfaceMap)
-	builder = builder.NewInstance(_this.root, _this.parent, _this.opts)
-	builder.PrepareForMapContents()
+func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
+	ctx.StackBuilder(interfaceMapBuilderGenerator())
 }
 
-func (_this *interfaceBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.parent.NotifyChildContainerFinished(value)
+func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id interface{}) {
+	panic("TODO: interfaceBuilder.BuildBeginMarker")
+}
+
+func (_this *interfaceBuilder) BuildFromReference(ctx *Context, id interface{}) {
+	panic("TODO: interfaceBuilder.BuildFromReference")
+}
+
+func (_this *interfaceBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
+	ctx.UnstackBuilderAndNotifyChildFinished(value)
 }

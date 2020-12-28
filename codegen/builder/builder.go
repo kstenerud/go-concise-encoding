@@ -31,63 +31,156 @@ import (
 )
 
 var (
-	Nil            = "BuildFromNil(dst reflect.Value)"
-	Bool           = "BuildFromBool(value bool, dst reflect.Value)"
-	Int            = "BuildFromInt(value int64, dst reflect.Value)"
-	Uint           = "BuildFromUint(value uint64, dst reflect.Value)"
-	BigInt         = "BuildFromBigInt(value *big.Int, dst reflect.Value)"
-	Float          = "BuildFromFloat(value float64, dst reflect.Value)"
-	BigFloat       = "BuildFromBigFloat(value *big.Float, dst reflect.Value)"
-	DFloat         = "BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)"
-	BigDFloat      = "BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)"
-	UUID           = "BuildFromUUID(value []byte, dst reflect.Value)"
-	Array          = "BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value)"
-	Time           = "BuildFromTime(value time.Time, dst reflect.Value)"
-	CTime          = "BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)"
-	List           = "BuildBeginList()"
-	Map            = "BuildBeginMap()"
-	End            = "BuildEndContainer()"
-	Marker         = "BuildBeginMarker(id interface{})"
-	Ref            = "BuildFromReference(id interface{})"
-	PrepList       = "PrepareForListContents()"
-	PrepMap        = "PrepareForMapContents()"
-	NotifyFinished = "NotifyChildContainerFinished(container reflect.Value)"
+	Nil            = "BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value"
+	Bool           = "BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value"
+	Int            = "BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value"
+	Uint           = "BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value"
+	BigInt         = "BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value"
+	Float          = "BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value"
+	BigFloat       = "BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value"
+	DFloat         = "BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value"
+	BigDFloat      = "BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value"
+	UUID           = "BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value"
+	Array          = "BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value"
+	Time           = "BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value"
+	CTime          = "BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value"
+	Ref            = "BuildFromReference(ctx *Context, id interface{})"
+	ListInit       = "BuildInitiateList(ctx *Context)"
+	MapInit        = "BuildInitiateMap(ctx *Context)"
+	End            = "BuildEndContainer(ctx *Context)"
+	List           = "BuildBeginListContents(ctx *Context)"
+	Map            = "BuildBeginMapContents(ctx *Context)"
+	NotifyFinished = "NotifyChildContainerFinished(ctx *Context, container reflect.Value)"
+
+	allMethods = []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, List, Map, End, Ref, NotifyFinished}
 )
 
-var allMethods = []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, End, Marker, Ref, PrepList, PrepMap, NotifyFinished}
+type Builder struct {
+	Name    string
+	Methods []string
+}
 
-var validMethodsByClass = map[string][]string{
-	"array":            []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, End, Marker, Ref, PrepList, NotifyFinished},
-	"bigDecimalFloat":  []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"bigFloat":         []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"bigInt":           []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"compactTime":      []string{Array, Time, CTime},
-	"custom":           []string{Array},
-	"decimalFloat":     []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"direct":           []string{Bool, UUID, Array, Time, CTime},
-	"directPtr":        []string{Nil, UUID, Array, Time, CTime},
-	"float":            []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"ignore":           []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, Ref},
-	"ignoreContainer":  []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, End, Ref, PrepList, PrepMap, NotifyFinished},
-	"int":              []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"interface":        []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, PrepList, PrepMap, NotifyFinished},
-	"map":              []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, End, Marker, Ref, PrepMap, NotifyFinished},
-	"markerID":         []string{Int, Uint, BigInt},
-	"markerObject":     []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, PrepList, PrepMap, NotifyFinished},
-	"pBigDecimalFloat": []string{Nil, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"pBigFloat":        []string{Nil, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"pBigInt":          []string{Nil, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"pCompactTime":     []string{Nil, Array, Time, CTime},
-	"ptr":              []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, PrepList, PrepMap, NotifyFinished},
-	"Root":             []string{NotifyFinished},
-	"slice":            []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, End, Marker, Ref, PrepList, NotifyFinished},
-	"string":           []string{Nil, Array},
-	"struct":           []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, End, Marker, Ref, PrepMap, NotifyFinished},
-	"time":             []string{Array, Time, CTime},
-	"topLevel":         []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, Marker, NotifyFinished},
-	"uint":             []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
-	"uint16Array":      []string{Array},
-	"uint8Array":       []string{Array},
+var builders = []Builder{
+	{
+		Name:    "array",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, List, End, Ref, NotifyFinished},
+	},
+	{
+		Name:    "bigDecimalFloat",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "bigFloat",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "bigInt",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "compactTime",
+		Methods: []string{Array, Time, CTime},
+	},
+	{
+		Name:    "custom",
+		Methods: []string{Array},
+	},
+	{
+		Name:    "decimalFloat",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "direct",
+		Methods: []string{Bool, UUID, Array, Time, CTime},
+	},
+	{
+		Name:    "directPtr",
+		Methods: []string{Nil, UUID, Array, Time, CTime},
+	},
+	{
+		Name:    "float",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "ignore",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, List, End, Map, Ref, NotifyFinished},
+	},
+	{
+		Name:    "int",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "interface",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, Map, List, Ref, NotifyFinished},
+	},
+	{
+		Name:    "map",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, Map, End, Ref, NotifyFinished},
+	},
+	{
+		Name:    "markerID",
+		Methods: []string{Int, Uint, BigInt},
+	},
+	{
+		Name:    "markerObject",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, MapInit, ListInit, End, NotifyFinished},
+	},
+	{
+		Name:    "pBigDecimalFloat",
+		Methods: []string{Nil, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "pBigFloat",
+		Methods: []string{Nil, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "pBigInt",
+		Methods: []string{Nil, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "pCompactTime",
+		Methods: []string{Nil, Array, Time, CTime},
+	},
+	{
+		Name:    "ptr",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, NotifyFinished},
+	},
+	{
+		Name:    "referenceID",
+		Methods: []string{Int, Uint, BigInt},
+	},
+	{
+		Name:    "slice",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, List, End, Ref, NotifyFinished},
+	},
+	{
+		Name:    "string",
+		Methods: []string{Nil, Array},
+	},
+	{
+		Name:    "struct",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, Map, End, Ref, NotifyFinished},
+	},
+	{
+		Name:    "time",
+		Methods: []string{Array, Time, CTime},
+	},
+	{
+		Name:    "topLevel",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, NotifyFinished},
+	},
+	{
+		Name:    "uint",
+		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "uint16Array",
+		Methods: []string{Array},
+	},
+	{
+		Name:    "uint8Array",
+		Methods: []string{Array},
+	},
 }
 
 func GenerateCode(projectDir string) {
@@ -109,6 +202,7 @@ func GenerateCode(projectDir string) {
 var codeHeader = standard.Header + `package builder
 
 import (
+	"fmt"
 	"math/big"
 	"reflect"
 	"time"
@@ -130,23 +224,53 @@ func contains(lookingFor string, inSlice []string) bool {
 	return false
 }
 
-func generateBadEventMethod(className string, methodSignature string, writer io.Writer) {
-	methodName := methodSignature[:strings.Index(methodSignature, "(")]
-	_, err := writer.Write([]byte(fmt.Sprintf(`
-func (_this *%sBuilder) %s {
-	_this.panicBadEvent("%s")
+func hasDstValue(methodSignature string) bool {
+	return strings.Contains(methodSignature, ", dst reflect.Value")
 }
-`, className, methodSignature, methodName)))
-	if err != nil {
+
+func openMethod(builder Builder, methodSignature string, writer io.Writer) {
+	if _, err := writer.Write([]byte(fmt.Sprintf("func (_this *%sBuilder) %s {\n", builder.Name, methodSignature))); err != nil {
 		panic(err)
 	}
 }
 
+func closeMethod(writer io.Writer) {
+	if _, err := writer.Write([]byte(fmt.Sprintf("}\n"))); err != nil {
+		panic(err)
+	}
+}
+
+func generateBadEventMethod(builder Builder, methodSignature string, writer io.Writer) {
+	methodName := methodSignature[:strings.Index(methodSignature, "(")]
+	openMethod(builder, methodSignature, writer)
+
+	if hasDstValue(methodSignature) {
+		format := "\tpanic(fmt.Errorf(\"BUG: %%v (building type %%v) cannot respond to %s\", reflect.TypeOf(_this), dst.Type()))\n"
+		if _, err := writer.Write([]byte(fmt.Sprintf(format, methodName))); err != nil {
+			panic(err)
+		}
+	} else {
+		format := "\tpanic(fmt.Errorf(\"BUG: %%v cannot respond to %s\", reflect.TypeOf(_this)))\n"
+		if _, err := writer.Write([]byte(fmt.Sprintf(format, methodName))); err != nil {
+			panic(err)
+		}
+	}
+
+	closeMethod(writer)
+}
+
+type ContainerType int
+
+const (
+	ContainerTypeList = iota
+	ContainerTypeMap
+)
+
 func generateBadEventMethods(writer io.Writer) {
-	for className, validMethods := range validMethodsByClass {
+	for _, builder := range builders {
 		for _, methodSignature := range allMethods {
-			if !contains(methodSignature, validMethods) {
-				generateBadEventMethod(className, methodSignature, writer)
+			if !contains(methodSignature, builder.Methods) {
+				generateBadEventMethod(builder, methodSignature, writer)
 			}
 		}
 	}

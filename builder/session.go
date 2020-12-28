@@ -27,8 +27,7 @@ package builder
 import (
 	"fmt"
 	"reflect"
-
-	"github.com/kstenerud/go-concise-encoding/events"
+	"sync"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -39,8 +38,8 @@ import (
 // only in their own session, and don't pollute the base mapping and cause
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
-	builders map[reflect.Type]ObjectBuilder
-	opts     options.BuilderSessionOptions
+	builderGenerators sync.Map
+	opts              options.BuilderSessionOptions
 }
 
 // Start a new builder session. It will inherit the builders of its parent.
@@ -58,18 +57,18 @@ func NewSession(parent *Session, opts *options.BuilderSessionOptions) *Session {
 // for all basic go types.
 // If opts is nil, default options will be used.
 func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions) {
-	_this.builders = make(map[reflect.Type]ObjectBuilder)
 	opts = opts.WithDefaultsApplied()
 	if parent == nil {
 		parent = &rootSession
 	}
-	for k, v := range parent.builders {
-		_this.builders[k] = v
-	}
+	_this.builderGenerators.Range(func(key, value interface{}) bool {
+		_this.builderGenerators.Store(key, value)
+		return true
+	})
 
 	_this.opts = *opts
 	for _, t := range _this.opts.CustomBuiltTypes {
-		_this.RegisterBuilderForType(t, newCustomBuilder(_this))
+		_this.RegisterBuilderGeneratorForType(t, generateCustomBuilder)
 	}
 }
 
@@ -92,118 +91,107 @@ func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderO
 // Register a specific builder for a type.
 // If a builder has already been registered for this type, it will be replaced.
 // This method is thread-safe.
-func (_this *Session) RegisterBuilderForType(dstType reflect.Type, builder ObjectBuilder) {
-	_this.builders[dstType] = builder
+func (_this *Session) RegisterBuilderGeneratorForType(dstType reflect.Type, builderGenerator BuilderGenerator) {
+	_this.builderGenerators.Store(dstType, builderGenerator)
 }
 
 // Get a builder for the specified type. If a registered builder doesn't yet
 // exist, a new default builder will be generated and registered.
 // This method is thread-safe.
 func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
-	if builder, ok := _this.builders[dstType]; ok {
-		return builder
-	}
-
-	builder, ok := _this.builders[dstType]
-	if !ok {
-		builder = _this.defaultBuilderForType(dstType)
-		_this.builders[dstType] = builder
-	}
-	builder.InitTemplate(_this)
-	return builder.(ObjectBuilder)
+	return _this.GetBuilderGeneratorForType(dstType)()
 }
 
-func (_this *Session) GetCustomBinaryBuildFunction() options.CustomBuildFunction {
-	return _this.opts.CustomBinaryBuildFunction
-}
-
-func (_this *Session) GetCustomTextBuildFunction() options.CustomBuildFunction {
-	return _this.opts.CustomTextBuildFunction
-}
-
-func (_this *Session) TryBuildFromCustom(builder ObjectBuilder, arrayType events.ArrayType, value []byte, dst reflect.Value) bool {
-	switch arrayType {
-	case events.ArrayTypeCustomBinary:
-		if err := _this.GetCustomBinaryBuildFunction()(value, dst); err != nil {
-			PanicBuildFromCustomBinary(builder, value, dst.Type(), err)
-		}
-		return true
-	case events.ArrayTypeCustomText:
-		if err := _this.GetCustomTextBuildFunction()(value, dst); err != nil {
-			PanicBuildFromCustomText(builder, value, dst.Type(), err)
-		}
-		return true
-	default:
-		return false
+func (_this *Session) GetBuilderGeneratorForType(dstType reflect.Type) BuilderGenerator {
+	storedIterator, ok := _this.builderGenerators.Load(dstType)
+	if ok {
+		return storedIterator.(BuilderGenerator)
 	}
+
+	var wg sync.WaitGroup
+	var builderGenerator BuilderGenerator
+
+	wg.Add(1)
+	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func() ObjectBuilder {
+		wg.Wait()
+		return builderGenerator()
+	}))
+	if loaded {
+		return storedBuilderGenerator.(BuilderGenerator)
+	}
+
+	builderGenerator = _this.defaultBuilderGeneratorForType(dstType)
+	wg.Done()
+	_this.builderGenerators.Store(dstType, builderGenerator)
+	return builderGenerator
 }
 
 // ============================================================================
 // Internal
 
-func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder {
+func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) BuilderGenerator {
 	switch dstType.Kind() {
 	case reflect.Bool:
-		return newDirectBuilder(dstType)
+		return generateDirectBuilder
 	case reflect.String:
-		return newStringBuilder()
+		return generateStringBuilder
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return newIntBuilder(dstType)
+		return generateIntBuilder
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return newUintBuilder(dstType)
+		return generateUintBuilder
 	case reflect.Float32, reflect.Float64:
-		return newFloatBuilder(dstType)
+		return generateFloatBuilder
 	case reflect.Interface:
-		return newInterfaceBuilder()
+		return generateInterfaceBuilder
 	case reflect.Array:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
-			return newUint8ArrayBuilder()
+			return generateUint8ArrayBuilder
 		default:
-			return newArrayBuilder(dstType)
+			return newArrayBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
 	case reflect.Slice:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
-			return newDirectPtrBuilder(dstType)
+			return generateDirectPtrBuilder
 		default:
-			return newSliceBuilder(dstType)
+			return newSliceBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
 	case reflect.Map:
-		return newMapBuilder(dstType)
+		return newMapBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 	case reflect.Struct:
 		switch dstType {
 		case common.TypeTime:
-			return newTimeBuilder()
+			return generateTimeBuilder
 		case common.TypeCompactTime:
-			return newCompactTimeBuilder()
+			return generateCompactTimeBuilder
 		case common.TypeURL:
-			return newDirectBuilder(dstType)
+			return generateDirectBuilder
 		case common.TypeDFloat:
-			return newDecimalFloatBuilder(common.TypeDFloat)
+			return generateDecimalFloatBuilder
 		case common.TypeBigInt:
-			return newBigIntBuilder(common.TypeBigInt)
+			return generateBigIntBuilder
 		case common.TypeBigFloat:
-			return newBigFloatBuilder(common.TypeBigFloat)
+			return generateBigFloatBuilder
 		case common.TypeBigDecimalFloat:
-			return newBigDecimalFloatBuilder(common.TypeBigDecimalFloat)
+			return generateBigDecimalFloatBuilder
 		default:
-			return newStructBuilder(dstType)
+			return newStructBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
 	case reflect.Ptr:
 		switch dstType {
 		case common.TypePURL:
-			return newDirectPtrBuilder(dstType)
+			return generateDirectPtrBuilder
 		case common.TypePBigInt:
-			return newPBigIntBuilder(common.TypePBigInt)
+			return generatePBigIntBuilder
 		case common.TypePBigFloat:
-			return newPBigFloatBuilder(common.TypePBigFloat)
+			return generatePBigFloatBuilder
 		case common.TypePBigDecimalFloat:
-			return newPBigDecimalFloatBuilder(common.TypePBigDecimalFloat)
+			return generatePBigDecimalFloatBuilder
 		case common.TypePCompactTime:
-			return newPCompactTimeBuilder()
+			return generatePCompactTimeBuilder
 		default:
-			return newPtrBuilder(dstType)
+			return newPtrBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
 	default:
 		panic(fmt.Errorf("BUG: Unhandled type %v", dstType))
@@ -213,25 +201,30 @@ func (_this *Session) defaultBuilderForType(dstType reflect.Type) ObjectBuilder 
 // The root session caches the most common builders. All sessions inherit
 // these cached values.
 var rootSession Session
+var interfaceSliceBuilderGenerator BuilderGenerator
+var interfaceMapBuilderGenerator BuilderGenerator
 
 func init() {
 	rootSession.Init(nil, nil)
 
-	for _, t := range common.KeyableTypes {
-		rootSession.GetBuilderForType(t)
-		rootSession.GetBuilderForType(reflect.PtrTo(t))
-		rootSession.GetBuilderForType(reflect.SliceOf(t))
-		for _, u := range common.KeyableTypes {
-			rootSession.GetBuilderForType(reflect.MapOf(t, u))
-		}
-		for _, u := range common.NonKeyableTypes {
-			rootSession.GetBuilderForType(reflect.MapOf(t, u))
-		}
-	}
+	// for _, t := range common.KeyableTypes {
+	// 	rootSession.GetBuilderGeneratorForType(t)
+	// 	rootSession.GetBuilderGeneratorForType(reflect.PtrTo(t))
+	// 	rootSession.GetBuilderGeneratorForType(reflect.SliceOf(t))
+	// 	for _, u := range common.KeyableTypes {
+	// 		rootSession.GetBuilderGeneratorForType(reflect.MapOf(t, u))
+	// 	}
+	// 	for _, u := range common.NonKeyableTypes {
+	// 		rootSession.GetBuilderGeneratorForType(reflect.MapOf(t, u))
+	// 	}
+	// }
 
-	for _, t := range common.NonKeyableTypes {
-		rootSession.GetBuilderForType(t)
-		rootSession.GetBuilderForType(reflect.PtrTo(t))
-		rootSession.GetBuilderForType(reflect.SliceOf(t))
-	}
+	// for _, t := range common.NonKeyableTypes {
+	// 	rootSession.GetBuilderGeneratorForType(t)
+	// 	rootSession.GetBuilderGeneratorForType(reflect.PtrTo(t))
+	// 	rootSession.GetBuilderGeneratorForType(reflect.SliceOf(t))
+	// }
+
+	interfaceMapBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceMap)
+	interfaceSliceBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceSlice)
 }

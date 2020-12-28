@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -35,133 +34,127 @@ import (
 )
 
 type ptrBuilder struct {
-	// Template Data
-	dstType     reflect.Type
-	elemBuilder ObjectBuilder
-
-	// Instance Data
-	parent ObjectBuilder
+	dstType       reflect.Type
+	elemGenerator BuilderGenerator
 }
 
-func newPtrBuilder(dstType reflect.Type) ObjectBuilder {
-	return &ptrBuilder{
-		dstType: dstType,
+func newPtrBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
+	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
+
+	return func() ObjectBuilder {
+		return &ptrBuilder{
+			dstType:       dstType,
+			elemGenerator: builderGenerator,
+		}
 	}
 }
 
 func (_this *ptrBuilder) String() string {
-	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
-}
-
-func (_this *ptrBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-
-func (_this *ptrBuilder) InitTemplate(session *Session) {
-	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
-}
-
-func (_this *ptrBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	that := &ptrBuilder{
-		dstType: _this.dstType,
-		parent:  parent,
-	}
-	that.elemBuilder = _this.elemBuilder.NewInstance(root, that, opts)
-	return that
-}
-
-func (_this *ptrBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemGenerator())
 }
 
 func (_this *ptrBuilder) newElem() reflect.Value {
 	return reflect.New(_this.dstType.Elem())
 }
 
-func (_this *ptrBuilder) BuildFromNil(dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(_this.dstType))
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromBool(value bool, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromBool(value, ptr.Elem())
+	_this.elemGenerator().BuildFromBool(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromInt(value int64, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromInt(value, ptr.Elem())
+	_this.elemGenerator().BuildFromInt(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromUint(value uint64, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromUint(value, ptr.Elem())
+	_this.elemGenerator().BuildFromUint(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromBigInt(value *big.Int, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromBigInt(value, ptr.Elem())
+	_this.elemGenerator().BuildFromBigInt(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromFloat(value float64, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromFloat(value, ptr.Elem())
+	_this.elemGenerator().BuildFromFloat(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromBigFloat(value *big.Float, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromBigFloat(value, ptr.Elem())
+	_this.elemGenerator().BuildFromBigFloat(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromDecimalFloat(value, ptr.Elem())
+	_this.elemGenerator().BuildFromDecimalFloat(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromBigDecimalFloat(value, ptr.Elem())
+	_this.elemGenerator().BuildFromBigDecimalFloat(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromUUID(value []byte, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromUUID(value, ptr.Elem())
+	_this.elemGenerator().BuildFromUUID(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromArray(arrayType, value, ptr.Elem())
+	_this.elemGenerator().BuildFromArray(ctx, arrayType, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromTime(value time.Time, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromTime(value, ptr.Elem())
+	_this.elemGenerator().BuildFromTime(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) BuildFromCompactTime(value *compact_time.Time, dst reflect.Value) {
+func (_this *ptrBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemBuilder.BuildFromCompactTime(value, ptr.Elem())
+	_this.elemGenerator().BuildFromCompactTime(ctx, value, ptr.Elem())
 	dst.Set(ptr)
+	return dst
 }
 
-func (_this *ptrBuilder) PrepareForListContents() {
-	_this.elemBuilder.PrepareForListContents()
+func (_this *ptrBuilder) BuildBeginListContents(ctx *Context) {
+	ctx.StackBuilder(_this)
+	_this.elemGenerator().BuildBeginListContents(ctx)
+}
+func (_this *ptrBuilder) BuildBeginMapContents(ctx *Context) {
+	ctx.StackBuilder(_this)
+	_this.elemGenerator().BuildBeginMapContents(ctx)
 }
 
-func (_this *ptrBuilder) PrepareForMapContents() {
-	_this.elemBuilder.PrepareForMapContents()
-}
-
-func (_this *ptrBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.parent.NotifyChildContainerFinished(value.Addr())
+func (_this *ptrBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
+	ctx.UnstackBuilderAndNotifyChildFinished(value.Addr())
 }

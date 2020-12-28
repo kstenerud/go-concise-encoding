@@ -29,23 +29,21 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
-type structBuilderDesc struct {
+type structBuilderField struct {
 	Name      string
-	Builder   ObjectBuilder
 	Index     int
 	Omit      bool
 	OmitEmpty bool
 	OmitValue string
 }
 
-func (_this *structBuilderDesc) applyTags(tags string) {
+func (_this *structBuilderField) applyTags(tags string) {
 	if tags == "" {
 		return
 	}
@@ -82,82 +80,65 @@ func (_this *structBuilderDesc) applyTags(tags string) {
 }
 
 type structBuilder struct {
-	// Template Data
-	dstType       reflect.Type
-	builderDescs  map[string]*structBuilderDesc
-	nameBuilder   ObjectBuilder
-	ignoreBuilder ObjectBuilder
-
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
-
-	// Variable data (must be reset)
-	nextBuilder   ObjectBuilder
-	container     reflect.Value
-	nextValue     reflect.Value
-	nextIsKey     bool
-	nextIsIgnored bool
+	dstType        reflect.Type
+	generatorDescs map[string]*structBuilderGeneratorDesc
+	nameBuilder    ObjectBuilder
+	ignoreBuilder  ObjectBuilder
+	nextBuilder    ObjectBuilder
+	container      reflect.Value
+	nextValue      reflect.Value
+	nextIsKey      bool
+	nextIsIgnored  bool
 }
 
-func newStructBuilder(dstType reflect.Type) ObjectBuilder {
-	return &structBuilder{
-		dstType: dstType,
+type structBuilderGeneratorDesc struct {
+	field            *structBuilderField
+	builderGenerator BuilderGenerator
+}
+
+func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
+	nameBuilder := getBuilderGeneratorForType(reflect.TypeOf(""))()
+	ignoreBuilder := generateIgnoreBuilder()
+	generatorDescs := make(map[string]*structBuilderGeneratorDesc)
+
+	for i := 0; i < dstType.NumField(); i++ {
+		reflectField := dstType.Field(i)
+		if reflectField.PkgPath == "" {
+			builderGenerator := getBuilderGeneratorForType(reflectField.Type)
+			structField := &structBuilderField{
+				Name:  reflectField.Name,
+				Index: i,
+			}
+			structField.applyTags(reflectField.Tag.Get("ce"))
+			generatorDescs[structField.Name] = &structBuilderGeneratorDesc{
+				field:            structField,
+				builderGenerator: builderGenerator,
+			}
+		}
+	}
+
+	// Make lowercase mappings as well in case we later do case-insensitive field name matching
+	for _, desc := range generatorDescs {
+		lowerName := common.ASCIIToLower(desc.field.Name)
+		if _, exists := generatorDescs[lowerName]; !exists {
+			generatorDescs[lowerName] = desc
+		}
+	}
+
+	return func() ObjectBuilder {
+		builder := &structBuilder{
+			dstType:        dstType,
+			generatorDescs: generatorDescs,
+			nameBuilder:    nameBuilder,
+			ignoreBuilder:  ignoreBuilder,
+		}
+		builder.reset()
+		return builder
 	}
 }
 
 func (_this *structBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
-}
-
-func (_this *structBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-
-func (_this *structBuilder) InitTemplate(session *Session) {
-	_this.nameBuilder = session.GetBuilderForType(reflect.TypeOf(""))
-	_this.builderDescs = make(map[string]*structBuilderDesc)
-	_this.ignoreBuilder = newIgnoreBuilder()
-	for i := 0; i < _this.dstType.NumField(); i++ {
-		field := _this.dstType.Field(i)
-		if field.PkgPath == "" {
-			builder := session.GetBuilderForType(field.Type)
-			desc := &structBuilderDesc{
-				Name:    field.Name,
-				Builder: builder,
-				Index:   i,
-			}
-			desc.applyTags(field.Tag.Get("ce"))
-			_this.builderDescs[desc.Name] = desc
-		}
-	}
-}
-
-func (_this *structBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	builderDescs := _this.builderDescs
-	if opts.CaseInsensitiveStructFieldNames {
-		builderDescs = make(map[string]*structBuilderDesc)
-		for name, desc := range _this.builderDescs {
-			builderDescs[common.ASCIIToLower(name)] = desc
-		}
-	}
-
-	that := &structBuilder{
-		dstType:      _this.dstType,
-		builderDescs: builderDescs,
-		parent:       parent,
-		root:         root,
-		opts:         opts,
-	}
-	that.nameBuilder = _this.nameBuilder.NewInstance(root, that, opts)
-	that.ignoreBuilder = _this.ignoreBuilder.NewInstance(root, that, opts)
-	that.reset()
-	return that
-}
-
-func (_this *structBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
 }
 
 func (_this *structBuilder) reset() {
@@ -172,134 +153,145 @@ func (_this *structBuilder) swapKeyValue() {
 	_this.nextIsKey = !_this.nextIsKey
 }
 
-func (_this *structBuilder) BuildFromNil(_ reflect.Value) {
-	_this.nextBuilder.BuildFromNil(_this.nextValue)
+func (_this *structBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromNil(ctx, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromBool(value bool, _ reflect.Value) {
-	_this.nextBuilder.BuildFromBool(value, _this.nextValue)
+func (_this *structBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromBool(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromInt(value int64, _ reflect.Value) {
-	_this.nextBuilder.BuildFromInt(value, _this.nextValue)
+func (_this *structBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromInt(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromUint(value uint64, _ reflect.Value) {
-	_this.nextBuilder.BuildFromUint(value, _this.nextValue)
+func (_this *structBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromUint(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
-	_this.nextBuilder.BuildFromBigInt(value, _this.nextValue)
+func (_this *structBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromBigInt(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromFloat(value float64, _ reflect.Value) {
-	_this.nextBuilder.BuildFromFloat(value, _this.nextValue)
+func (_this *structBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromFloat(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
-	_this.nextBuilder.BuildFromBigFloat(value, _this.nextValue)
+func (_this *structBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromBigFloat(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
-	_this.nextBuilder.BuildFromDecimalFloat(value, _this.nextValue)
+func (_this *structBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromDecimalFloat(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
-	_this.nextBuilder.BuildFromBigDecimalFloat(value, _this.nextValue)
+func (_this *structBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromBigDecimalFloat(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
-	_this.nextBuilder.BuildFromUUID(value, _this.nextValue)
+func (_this *structBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromUUID(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
-			if _this.opts.CaseInsensitiveStructFieldNames {
+			if ctx.Options.CaseInsensitiveStructFieldNames {
 				common.ASCIIBytesToLower(value)
 			}
 			name := string(value)
 
-			if builderDesc, ok := _this.builderDescs[name]; ok {
-				_this.nextBuilder = builderDesc.Builder
-				_this.nextValue = _this.container.Field(builderDesc.Index)
+			if generatorDesc, ok := _this.generatorDescs[name]; ok {
+				_this.nextBuilder = generatorDesc.builderGenerator()
+				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
 			} else {
-				_this.root.SetCurrentBuilder(_this.ignoreBuilder)
 				_this.nextBuilder = _this.ignoreBuilder
 				_this.nextIsIgnored = true
-				return
+				break
 			}
 		} else {
-			_this.nextBuilder.BuildFromArray(arrayType, value, _this.nextValue)
+			_this.nextBuilder.BuildFromArray(ctx, arrayType, value, _this.nextValue)
 		}
 	default:
-		_this.nextBuilder.BuildFromArray(arrayType, value, _this.nextValue)
+		_this.nextBuilder.BuildFromArray(ctx, arrayType, value, _this.nextValue)
 	}
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
-	_this.nextBuilder.BuildFromTime(value, _this.nextValue)
+func (_this *structBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromTime(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
-	_this.nextBuilder.BuildFromCompactTime(value, _this.nextValue)
+func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+	_this.nextBuilder.BuildFromCompactTime(ctx, value, _this.nextValue)
+	object := _this.nextValue
 	_this.swapKeyValue()
+	return object
 }
 
-func (_this *structBuilder) BuildBeginList() {
-	_this.nextBuilder.PrepareForListContents()
+func (_this *structBuilder) BuildInitiateList(ctx *Context) {
+	_this.nextBuilder.BuildBeginListContents(ctx)
 }
 
-func (_this *structBuilder) BuildBeginMap() {
-	_this.nextBuilder.PrepareForMapContents()
+func (_this *structBuilder) BuildInitiateMap(ctx *Context) {
+	_this.nextBuilder.BuildBeginMapContents(ctx)
 }
 
-func (_this *structBuilder) BuildEndContainer() {
+func (_this *structBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
 	_this.reset()
-	_this.parent.NotifyChildContainerFinished(object)
+	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
-func (_this *structBuilder) BuildBeginMarker(id interface{}) {
-	root := _this.root
-	_this.nextBuilder = newMarkerObjectBuilder(_this, _this.nextBuilder, func(object reflect.Value) {
-		root.NotifyMarker(id, object)
-	})
+func (_this *structBuilder) BuildBeginMapContents(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *structBuilder) BuildFromReference(id interface{}) {
+func (_this *structBuilder) BuildFromReference(ctx *Context, id interface{}) {
 	nextValue := _this.nextValue
 	_this.swapKeyValue()
-	_this.root.NotifyReference(id, func(object reflect.Value) {
+	ctx.NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, nextValue)
 	})
 }
 
-func (_this *structBuilder) PrepareForMapContents() {
-	for k, builderElem := range _this.builderDescs {
-		_this.builderDescs[k] = &structBuilderDesc{
-			Builder: builderElem.Builder.NewInstance(_this.root, _this, _this.opts),
-			Index:   builderElem.Index,
-		}
-	}
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *structBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.SetCurrentBuilder(_this)
+func (_this *structBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	if _this.nextIsIgnored {
 		_this.nextIsIgnored = false
 		return

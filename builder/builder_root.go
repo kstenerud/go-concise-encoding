@@ -49,11 +49,11 @@ type RootBuilder struct {
 	currentBuilder       ObjectBuilder
 	object               reflect.Value
 	referenceFiller      ReferenceFiller
-	session              *Session
 	chunkedData          []byte
 	chunkedFunction      func([]byte)
 	chunkRemainingLength uint64
 	moreChunksFollow     bool
+	context              Context
 }
 
 // -----------
@@ -71,22 +71,22 @@ func NewRootBuilder(session *Session, dstType reflect.Type, opts *options.Builde
 // Initialize this root builder to build objects of dstType.
 // If opts is nil, default options will be used.
 func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *options.BuilderOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.session = session
 	_this.dstType = dstType
+	_this.context = context(opts,
+		session.opts.CustomBinaryBuildFunction,
+		session.opts.CustomTextBuildFunction,
+		_this.NotifyMarker,
+		_this.NotifyReference)
 	_this.object = reflect.New(dstType).Elem()
 
-	builder := session.GetBuilderForType(dstType).NewInstance(_this, _this, opts)
-	_this.currentBuilder = newTopLevelBuilder(_this, builder)
+	generator := session.GetBuilderGeneratorForType(dstType)
+	builder := generator()
+	_this.context.StackBuilder(newTopLevelBuilder(_this, builder))
 	_this.referenceFiller.Init()
 }
 
 func (_this *RootBuilder) String() string {
-	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.currentBuilder)
-}
-
-func (_this *RootBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEvent(_this, name, args...)
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.context.CurrentBuilder)
 }
 
 func (_this *RootBuilder) NotifyMarker(id interface{}, value reflect.Value) {
@@ -116,25 +116,11 @@ func (_this *RootBuilder) GetBuiltObject() interface{} {
 	}
 }
 
-func (_this *RootBuilder) SetCurrentBuilder(builder ObjectBuilder) {
-	_this.currentBuilder = builder
-}
-
 // -------------
 // ObjectBuilder
 // -------------
 
-func (_this *RootBuilder) InitTemplate(_ *Session) {
-	_this.panicBadEvent("InitTemplate")
-}
-func (_this *RootBuilder) NewInstance(_ *RootBuilder, _ ObjectBuilder, _ *options.BuilderOptions) ObjectBuilder {
-	_this.panicBadEvent("NewInstance")
-	return nil
-}
-func (_this *RootBuilder) SetParent(_ ObjectBuilder) {
-	_this.panicBadEvent("SetParent")
-}
-func (_this *RootBuilder) NotifyChildContainerFinished(value reflect.Value) {
+func (_this *RootBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.object = value
 }
 
@@ -146,65 +132,65 @@ func (_this *RootBuilder) OnBeginDocument()   {}
 func (_this *RootBuilder) OnVersion(_ uint64) {}
 func (_this *RootBuilder) OnPadding(_ int)    {}
 func (_this *RootBuilder) OnNull() {
-	_this.currentBuilder.BuildFromNil(_this.object)
+	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 }
 func (_this *RootBuilder) OnBool(value bool) {
-	_this.currentBuilder.BuildFromBool(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnTrue() {
-	_this.currentBuilder.BuildFromBool(true, _this.object)
+	_this.context.CurrentBuilder.BuildFromBool(&_this.context, true, _this.object)
 }
 func (_this *RootBuilder) OnFalse() {
-	_this.currentBuilder.BuildFromBool(false, _this.object)
+	_this.context.CurrentBuilder.BuildFromBool(&_this.context, false, _this.object)
 }
 func (_this *RootBuilder) OnPositiveInt(value uint64) {
-	_this.currentBuilder.BuildFromUint(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromUint(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnNegativeInt(value uint64) {
 	if value <= 0x7fffffffffffffff {
-		_this.currentBuilder.BuildFromInt(-(int64(value)), _this.object)
+		_this.context.CurrentBuilder.BuildFromInt(&_this.context, -(int64(value)), _this.object)
 		return
 	}
 	bi := &big.Int{}
 	bi.SetUint64(value)
-	_this.currentBuilder.BuildFromBigInt(bi.Neg(bi), _this.object)
+	_this.context.CurrentBuilder.BuildFromBigInt(&_this.context, bi.Neg(bi), _this.object)
 }
 func (_this *RootBuilder) OnInt(value int64) {
-	_this.currentBuilder.BuildFromInt(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromInt(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnBigInt(value *big.Int) {
-	_this.currentBuilder.BuildFromBigInt(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromBigInt(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnFloat(value float64) {
-	_this.currentBuilder.BuildFromFloat(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromFloat(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnBigFloat(value *big.Float) {
-	_this.currentBuilder.BuildFromBigFloat(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromBigFloat(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnDecimalFloat(value compact_float.DFloat) {
-	_this.currentBuilder.BuildFromDecimalFloat(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromDecimalFloat(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnBigDecimalFloat(value *apd.Decimal) {
-	_this.currentBuilder.BuildFromBigDecimalFloat(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromBigDecimalFloat(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnNan(signaling bool) {
 	nan := common.QuietNan
 	if signaling {
 		nan = common.SignalingNan
 	}
-	_this.currentBuilder.BuildFromFloat(nan, _this.object)
+	_this.context.CurrentBuilder.BuildFromFloat(&_this.context, nan, _this.object)
 }
 func (_this *RootBuilder) OnUUID(value []byte) {
-	_this.currentBuilder.BuildFromUUID(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromUUID(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnTime(value time.Time) {
-	_this.currentBuilder.BuildFromTime(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromTime(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
-	_this.currentBuilder.BuildFromCompactTime(value, _this.object)
+	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	_this.currentBuilder.BuildFromArray(arrayType, value, _this.object)
+	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
 }
 func (_this *RootBuilder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.chunkedFunction = func(bytes []byte) {
@@ -230,10 +216,10 @@ func (_this *RootBuilder) OnArrayData(data []byte) {
 	}
 }
 func (_this *RootBuilder) OnList() {
-	_this.currentBuilder.BuildBeginList()
+	_this.context.CurrentBuilder.BuildInitiateList(&_this.context)
 }
 func (_this *RootBuilder) OnMap() {
-	_this.currentBuilder.BuildBeginMap()
+	_this.context.CurrentBuilder.BuildInitiateMap(&_this.context)
 }
 func (_this *RootBuilder) OnMarkup() {
 	panic("TODO: RootBuilder.OnMarkup")
@@ -245,21 +231,13 @@ func (_this *RootBuilder) OnComment() {
 	panic("TODO: RootBuilder.OnComment")
 }
 func (_this *RootBuilder) OnEnd() {
-	_this.currentBuilder.BuildEndContainer()
+	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
 }
 func (_this *RootBuilder) OnMarker() {
-	originalBuilder := _this.currentBuilder
-	_this.currentBuilder = newMarkerIDBuilder(func(id interface{}) {
-		_this.currentBuilder = originalBuilder
-		_this.currentBuilder.BuildBeginMarker(id)
-	})
+	_this.context.StackBuilder(newMarkerIDBuilder())
 }
 func (_this *RootBuilder) OnReference() {
-	originalBuilder := _this.currentBuilder
-	_this.currentBuilder = newMarkerIDBuilder(func(id interface{}) {
-		_this.currentBuilder = originalBuilder
-		_this.currentBuilder.BuildFromReference(id)
-	})
+	_this.context.StackBuilder(newReferenceIDBuilder())
 }
 func (_this *RootBuilder) OnConstant(name []byte, explicitValue bool) {
 	if !explicitValue {

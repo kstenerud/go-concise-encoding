@@ -31,7 +31,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -43,43 +42,38 @@ import (
 type ObjectBuilder interface {
 
 	// External data and structure events
-	BuildFromNil(dst reflect.Value)
-	BuildFromBool(value bool, dst reflect.Value)
-	BuildFromInt(value int64, dst reflect.Value)
-	BuildFromUint(value uint64, dst reflect.Value)
-	BuildFromBigInt(value *big.Int, dst reflect.Value)
-	BuildFromFloat(value float64, dst reflect.Value)
-	BuildFromBigFloat(value *big.Float, dst reflect.Value)
-	BuildFromDecimalFloat(value compact_float.DFloat, dst reflect.Value)
-	BuildFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value)
-	BuildFromUUID(value []byte, dst reflect.Value)
-	BuildFromArray(arrayType events.ArrayType, value []byte, dst reflect.Value)
-	BuildFromTime(value time.Time, dst reflect.Value)
-	BuildFromCompactTime(value *compact_time.Time, dst reflect.Value)
-	BuildBeginList()
-	BuildBeginMap()
-	BuildEndContainer()
-	BuildBeginMarker(id interface{})
-	BuildFromReference(id interface{})
+	BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value
+	BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value
+	BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value
+	BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value
+	BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value
+	BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value
+	BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value
+	BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value
+	BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value
+	BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value
+	BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value
+	BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value
+	BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value
+	BuildFromReference(ctx *Context, id interface{})
 
-	// Prepare this builder for storing list contents, ultimately followed by End()
-	PrepareForListContents()
+	// Signals that a new source container has begun.
+	// This gets triggered from a data event.
+	BuildInitiateList(ctx *Context)
+	BuildInitiateMap(ctx *Context)
 
-	// Prepare this builder for storing map contents, ultimately followed by End()
-	PrepareForMapContents()
+	// Signals that the source container is finished
+	// This gets triggered from a data event.
+	BuildEndContainer(ctx *Context)
 
-	// Notify that a child builder has finished building a container
-	NotifyChildContainerFinished(container reflect.Value)
+	// Tells this builder to create a new container to receive the source container's objects.
+	// This gets called by the parent builder.
+	BuildBeginListContents(ctx *Context)
+	BuildBeginMapContents(ctx *Context)
 
-	// Initialize as a template. This is called after the template has been
-	// cached in order to support recursive object graphs.
-	InitTemplate(session *Session)
-
-	// Create an instance using this object as a template.
-	// opts must not be nil.
-	NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder
-
-	SetParent(newParent ObjectBuilder)
+	// Notify that a child builder has finished building a container.
+	// This gets triggered from the child builder when the container has ended and the builder unstacked.
+	NotifyChildContainerFinished(ctx *Context, container reflect.Value)
 }
 
 // Fetches a builder for the specified type, building and caching one as needed.
@@ -91,15 +85,7 @@ type FetchBuilder func(reflect.Type) ObjectBuilder
 // Report that a builder was given an event that it can't handle.
 // This indicates a bug in the implementation.
 func PanicBadEvent(builder ObjectBuilder, eventFmt string, args ...interface{}) {
-	event := fmt.Sprintf(eventFmt, args...)
-	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), event))
-}
-
-// Report that a builder with the specified type was given an event that it can't handle.
-// This indicates a bug in the implementation.
-func PanicBadEventWithType(builder ObjectBuilder, dstType reflect.Type, eventFmt string, args ...interface{}) {
-	event := fmt.Sprintf(eventFmt, args...)
-	panic(fmt.Errorf(`BUG: %v with type %v cannot respond to %v`, reflect.TypeOf(builder), dstType, event))
+	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), fmt.Sprintf(eventFmt, args...)))
 }
 
 // Report that a builder couldn't convert between types. This can happen if

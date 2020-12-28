@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -37,51 +36,26 @@ import (
 const defaultSliceCap = 4
 
 type sliceBuilder struct {
-	// Template Data
-	dstType     reflect.Type
-	elemBuilder ObjectBuilder
-
-	// Instance Data
-	root   *RootBuilder
-	parent ObjectBuilder
-	opts   *options.BuilderOptions
-
-	// Variable data (must be reset)
-	ppContainer **reflect.Value
+	dstType       reflect.Type
+	elemGenerator BuilderGenerator
+	ppContainer   **reflect.Value
 }
 
-func newSliceBuilder(dstType reflect.Type) ObjectBuilder {
-	return &sliceBuilder{
-		dstType: dstType,
+func newSliceBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
+	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
+
+	return func() ObjectBuilder {
+		builder := &sliceBuilder{
+			dstType:       dstType,
+			elemGenerator: builderGenerator,
+		}
+		builder.reset()
+		return builder
 	}
 }
 
 func (_this *sliceBuilder) String() string {
-	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemBuilder)
-}
-
-func (_this *sliceBuilder) panicBadEvent(name string, args ...interface{}) {
-	PanicBadEventWithType(_this, _this.dstType, name, args...)
-}
-
-func (_this *sliceBuilder) InitTemplate(session *Session) {
-	_this.elemBuilder = session.GetBuilderForType(_this.dstType.Elem())
-}
-
-func (_this *sliceBuilder) NewInstance(root *RootBuilder, parent ObjectBuilder, opts *options.BuilderOptions) ObjectBuilder {
-	that := &sliceBuilder{
-		dstType:     _this.dstType,
-		elemBuilder: _this.elemBuilder,
-		parent:      parent,
-		root:        root,
-		opts:        opts,
-	}
-	that.reset()
-	return that
-}
-
-func (_this *sliceBuilder) SetParent(parent ObjectBuilder) {
-	_this.parent = parent
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemGenerator)
 }
 
 func (_this *sliceBuilder) reset() {
@@ -98,122 +72,125 @@ func (_this *sliceBuilder) storeValue(value reflect.Value) {
 	**_this.ppContainer = reflect.Append(**_this.ppContainer, value)
 }
 
-func (_this *sliceBuilder) BuildFromNil(_ reflect.Value) {
+func (_this *sliceBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromNil(object)
+	_this.elemGenerator().BuildFromNil(ctx, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromBool(value bool, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBool(value, object)
+	_this.elemGenerator().BuildFromBool(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromInt(value int64, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromInt(value, object)
+	_this.elemGenerator().BuildFromInt(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromUint(value uint64, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromUint(value, object)
+	_this.elemGenerator().BuildFromUint(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromBigInt(value *big.Int, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBigInt(value, object)
+	_this.elemGenerator().BuildFromBigInt(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromFloat(value float64, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromFloat(value, object)
+	_this.elemGenerator().BuildFromFloat(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromBigFloat(value *big.Float, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBigFloat(value, object)
+	_this.elemGenerator().BuildFromBigFloat(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromDecimalFloat(value compact_float.DFloat, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromDecimalFloat(value, object)
+	_this.elemGenerator().BuildFromDecimalFloat(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromBigDecimalFloat(value *apd.Decimal, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromBigDecimalFloat(value, object)
+	_this.elemGenerator().BuildFromBigDecimalFloat(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromUUID(value []byte, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromUUID(value, object)
+	_this.elemGenerator().BuildFromUUID(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromArray(arrayType events.ArrayType, value []byte, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromArray(arrayType, value, object)
+	_this.elemGenerator().BuildFromArray(ctx, arrayType, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromTime(value time.Time, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromTime(value, object)
+	_this.elemGenerator().BuildFromTime(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildFromCompactTime(value *compact_time.Time, _ reflect.Value) {
+func (_this *sliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemBuilder.BuildFromCompactTime(value, object)
+	_this.elemGenerator().BuildFromCompactTime(ctx, value, object)
 	_this.storeValue(object)
+	return object
 }
 
-func (_this *sliceBuilder) BuildBeginList() {
-	_this.elemBuilder.PrepareForListContents()
+func (_this *sliceBuilder) BuildInitiateList(ctx *Context) {
+	_this.elemGenerator().BuildBeginListContents(ctx)
 }
 
-func (_this *sliceBuilder) BuildBeginMap() {
-	_this.elemBuilder.PrepareForMapContents()
+func (_this *sliceBuilder) BuildInitiateMap(ctx *Context) {
+	_this.elemGenerator().BuildBeginMapContents(ctx)
 }
 
-func (_this *sliceBuilder) BuildEndContainer() {
+func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {
 	object := **_this.ppContainer
 	_this.reset()
-	_this.parent.NotifyChildContainerFinished(object)
+	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
-func (_this *sliceBuilder) BuildBeginMarker(id interface{}) {
-	origBuilder := _this.elemBuilder
-	_this.elemBuilder = newMarkerObjectBuilder(_this, origBuilder, func(object reflect.Value) {
-		_this.elemBuilder = origBuilder
-		_this.root.NotifyMarker(id, object)
-	})
+func (_this *sliceBuilder) BuildBeginListContents(ctx *Context) {
+	ctx.StackBuilder(_this)
 }
 
-func (_this *sliceBuilder) BuildFromReference(id interface{}) {
+func (_this *sliceBuilder) BuildFromReference(ctx *Context, id interface{}) {
 	ppContainer := _this.ppContainer
 	index := (**ppContainer).Len()
 	elem := _this.newElem()
 	_this.storeValue(elem)
-	_this.root.NotifyReference(id, func(object reflect.Value) {
+	ctx.NotifyReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, (**ppContainer).Index(index))
 	})
 }
 
-func (_this *sliceBuilder) PrepareForListContents() {
-	_this.elemBuilder = _this.elemBuilder.NewInstance(_this.root, _this, _this.opts)
-	_this.root.SetCurrentBuilder(_this)
-}
-
-func (_this *sliceBuilder) NotifyChildContainerFinished(value reflect.Value) {
-	_this.root.SetCurrentBuilder(_this)
+func (_this *sliceBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.storeValue(value)
 }
