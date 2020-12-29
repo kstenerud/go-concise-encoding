@@ -18,7 +18,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// Iterators iterate through go objects, producing data events.
 package iterator
 
 import (
@@ -27,7 +26,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
-type IteratorFunction func(context *Context, value reflect.Value)
+// Common function signatures
 type GetIteratorForType func(reflect.Type) IteratorFunction
 type TryAddReference func(reflect.Value) (didGenerateReferenceEvent bool)
 

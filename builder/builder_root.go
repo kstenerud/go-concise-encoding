@@ -75,8 +75,8 @@ func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *opt
 	_this.context = context(opts,
 		session.opts.CustomBinaryBuildFunction,
 		session.opts.CustomTextBuildFunction,
-		_this.NotifyMarker,
-		_this.NotifyReference)
+		_this.referenceFiller.NotifyMarker,
+		_this.referenceFiller.NotifyReference)
 	_this.object = reflect.New(dstType).Elem()
 	_this.chunkedData = make([]byte, 0, 128)
 
@@ -88,14 +88,6 @@ func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *opt
 
 func (_this *RootBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.context.CurrentBuilder)
-}
-
-func (_this *RootBuilder) NotifyMarker(id interface{}, value reflect.Value) {
-	_this.referenceFiller.NotifyMarker(id, value)
-}
-
-func (_this *RootBuilder) NotifyReference(lookingForID interface{}, valueSetter func(value reflect.Value)) {
-	_this.referenceFiller.NotifyReference(lookingForID, valueSetter)
 }
 
 // Get the object that was built after using this root builder as a DataEventReceiver.
@@ -117,17 +109,14 @@ func (_this *RootBuilder) GetBuiltObject() interface{} {
 	}
 }
 
-// -------------
-// ObjectBuilder
-// -------------
-
+// Callback from topLevelBuilder
 func (_this *RootBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.object = value
 }
 
-// -----------------------
-// ObjectIteratorCallbacks
-// -----------------------
+// ---------------------------
+// DataEventReceiver Callbacks
+// ---------------------------
 
 func (_this *RootBuilder) OnBeginDocument()   {}
 func (_this *RootBuilder) OnVersion(_ uint64) {}

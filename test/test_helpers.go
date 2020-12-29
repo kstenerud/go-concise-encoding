@@ -45,6 +45,14 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+// ----------------------------------------------------------------------------
+// Pass through panics
+// ----------------------------------------------------------------------------
+
+// Causes the library to pass through all panics for the duration of the current
+// function instead of converting them to error objects. This can be useful for
+// tracking down the ultimate cause.
+//
 // Usage: defer test.PassThroughPanics(true)()
 func PassThroughPanics(shouldPassThrough bool) func() {
 	oldValue := debug.DebugOptions.PassThroughPanics
@@ -53,6 +61,10 @@ func PassThroughPanics(shouldPassThrough bool) func() {
 		debug.DebugOptions.PassThroughPanics = oldValue
 	}
 }
+
+// ----------------------------------------------------------------------------
+// Constructors for common data types
+// ----------------------------------------------------------------------------
 
 func NewBigInt(str string, base int) *big.Int {
 	bi := new(big.Int)
@@ -160,6 +172,10 @@ func AsCompactTime(t time.Time) *compact_time.Time {
 	return ct
 }
 
+// ----------------------------------------------------------------------------
+// Panics
+// ----------------------------------------------------------------------------
+
 func ReportPanic(function func()) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -194,6 +210,10 @@ func AssertPanics(t *testing.T, function func()) bool {
 	return true
 }
 
+// ----------------------------------------------------------------------------
+// Generators
+// ----------------------------------------------------------------------------
+
 func GenerateString(charCount int, startIndex int) string {
 	charRange := int('z' - 'a')
 	var object strings.Builder
@@ -213,6 +233,16 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
 		event.Invoke(receiver)
 	}
 }
+
+func CloneBytes(bytes []byte) []byte {
+	bytesCopy := make([]byte, len(bytes), len(bytes))
+	copy(bytesCopy, bytes)
+	return bytesCopy
+}
+
+// ----------------------------------------------------------------------------
+// Events
+// ----------------------------------------------------------------------------
 
 var (
 	EvBD     = BD()
@@ -360,6 +390,10 @@ var (
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
 )
 
+// ----------------------------------------------------------------------------
+// Event types and pretty-print names
+// ----------------------------------------------------------------------------
+
 type TEventType int
 
 const (
@@ -504,6 +538,10 @@ func (_this TEventType) String() string {
 	return TEventNames[_this]
 }
 
+// ----------------------------------------------------------------------------
+// Stored events
+// ----------------------------------------------------------------------------
+
 type TEvent struct {
 	Type TEventType
 	V1   interface{}
@@ -530,6 +568,8 @@ func (_this *TEvent) String() string {
 	return str
 }
 
+// Invoking a stored event generates the appropriate data event message to
+// the receiver.
 func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	switch _this.Type {
 	case TEventBeginDocument:
@@ -695,6 +735,10 @@ func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	return newTEvent(eventType, value, nil)
 }
 
+// ----------------------------------------------------------------------------
+// Stored event convenience constructors
+// ----------------------------------------------------------------------------
+
 func TT() *TEvent                       { return newTEvent(TEventTrue, nil, nil) }
 func FF() *TEvent                       { return newTEvent(TEventFalse, nil, nil) }
 func I(v int64) *TEvent                 { return newTEvent(TEventInt, v, nil) }
@@ -762,6 +806,7 @@ func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, []byt
 func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
 
+// Converts a go value into a stored event
 func EventForValue(value interface{}) *TEvent {
 	rv := reflect.ValueOf(value)
 	if !rv.IsValid() {
@@ -828,11 +873,16 @@ func EventForValue(value interface{}) *TEvent {
 	panic(fmt.Errorf("TEST CODE BUG: Unhandled kind: %v", rv.Kind()))
 }
 
+// ----------------------------------------------------------------------------
+// Event printer
+// ----------------------------------------------------------------------------
+
 type TEventPrinter struct {
 	Next  events.DataEventReceiver
 	Print func(event *TEvent)
 }
 
+// Create an event receiver that prints the event to stdout.
 func NewStdoutTEventPrinter(next events.DataEventReceiver) *TEventPrinter {
 	return &TEventPrinter{
 		Next: next,
@@ -1076,12 +1126,12 @@ func (h *TEventPrinter) OnNan(signaling bool) {
 	h.Next.OnNan(signaling)
 }
 
-func CloneBytes(bytes []byte) []byte {
-	bytesCopy := make([]byte, len(bytes), len(bytes))
-	copy(bytesCopy, bytes)
-	return bytesCopy
-}
+// ----------------------------------------------------------------------------
+// Event receiver
+// ----------------------------------------------------------------------------
 
+// Event receiver receives data events and stores them to an array which can be
+// inspected, printed, or played back.
 type TER struct {
 	Events []*TEvent
 }
@@ -1209,6 +1259,12 @@ func (h *TER) OnNan(signaling bool) {
 		h.add(NAN())
 	}
 }
+
+// ----------------------------------------------------------------------------
+// Testing structures
+// ----------------------------------------------------------------------------
+
+// These are just complex structures used by a lot of the subsystem tests.
 
 type TestingInnerStruct struct {
 	Inner int

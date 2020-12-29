@@ -97,13 +97,9 @@ func (_this *Session) RegisterBuilderGeneratorForType(dstType reflect.Type, buil
 	_this.builderGenerators.Store(dstType, builderGenerator)
 }
 
-// Get a builder for the specified type. If a registered builder doesn't yet
-// exist, a new default builder will be generated and registered.
+// Get a builder generator for the specified type. If a registered generator
+// doesn't yet exist, a new default generator will be generated and registered.
 // This method is thread-safe.
-func (_this *Session) GetBuilderForType(dstType reflect.Type) ObjectBuilder {
-	return _this.GetBuilderGeneratorForType(dstType)()
-}
-
 func (_this *Session) GetBuilderGeneratorForType(dstType reflect.Type) BuilderGenerator {
 	storedIterator, ok := _this.builderGenerators.Load(dstType)
 	if ok {
