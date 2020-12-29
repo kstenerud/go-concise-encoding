@@ -39,6 +39,18 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
+// func TestBuilderTypedArrayUint8(t *testing.T) {
+// 	assertBuild(t, [2]uint8{1, 2}, AU8([]uint8{1, 2}))
+// 	assertBuild(t, []uint8{1, 2}, AU8([]uint8{1, 2}))
+// }
+
+func TestBuilderTypedArrayUint16(t *testing.T) {
+	assertBuild(t, [2]uint16{1, 2}, AU16([]uint16{1, 2}))
+	assertBuild(t, []uint16{1, 2}, AU16([]uint16{1, 2}))
+}
+
+// =================================================
+
 func TestBuildUnknown(t *testing.T) {
 	expected := []interface{}{1}
 	actual := runBuild(NewSession(nil, nil), nil, L(), I(1), E())

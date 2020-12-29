@@ -178,6 +178,10 @@ var builders = []Builder{
 		Methods: []string{Array},
 	},
 	{
+		Name:    "uint16Slice",
+		Methods: []string{Array},
+	},
+	{
 		Name:    "uint8Array",
 		Methods: []string{Array},
 	},

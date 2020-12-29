@@ -145,6 +145,8 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
 			return generateUint8ArrayBuilder
+		case reflect.Uint16:
+			return generateUint16ArrayBuilder
 		default:
 			return newArrayBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
@@ -152,6 +154,8 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
 			return generateDirectPtrBuilder
+		case reflect.Uint16:
+			return generateUint16SliceBuilder
 		default:
 			return newSliceBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
