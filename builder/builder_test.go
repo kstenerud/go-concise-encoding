@@ -39,14 +39,60 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
-// func TestBuilderTypedArrayUint8(t *testing.T) {
-// 	assertBuild(t, [2]uint8{1, 2}, AU8([]uint8{1, 2}))
-// 	assertBuild(t, []uint8{1, 2}, AU8([]uint8{1, 2}))
-// }
+func TestBuilderTypedArrayUint8(t *testing.T) {
+	assertBuild(t, [2]uint8{0x12, 0x23}, AU8([]uint8{0x12, 0x23}))
+	assertBuild(t, []uint8{0x12, 0x23}, AU8([]uint8{0x12, 0x23}))
+	assertBuild(t, [2]uint16{0x1234, 0x2345}, L(), I(0x1234), I(0x2345), E())
+	assertBuild(t, []uint16{0x12, 0x23}, L(), I(0x12), I(0x23), E())
+}
 
 func TestBuilderTypedArrayUint16(t *testing.T) {
-	assertBuild(t, [2]uint16{1, 2}, AU16([]uint16{1, 2}))
-	assertBuild(t, []uint16{1, 2}, AU16([]uint16{1, 2}))
+	assertBuild(t, [2]uint16{0x1234, 0x2345}, AU16([]uint16{0x1234, 0x2345}))
+	assertBuild(t, []uint16{0x1234, 0x2345}, AU16([]uint16{0x1234, 0x2345}))
+	assertBuild(t, [2]uint16{0x1234, 0x2345}, L(), I(0x1234), I(0x2345), E())
+	assertBuild(t, []uint16{0x1234, 0x2345}, L(), I(0x1234), I(0x2345), E())
+}
+
+func TestBuilderTypedArrayUint32(t *testing.T) {
+	assertBuild(t, [2]uint32{0x12345678, 0x23456789}, AU32([]uint32{0x12345678, 0x23456789}))
+	assertBuild(t, []uint32{0x12345678, 0x23456789}, AU32([]uint32{0x12345678, 0x23456789}))
+	assertBuild(t, [2]uint32{0x12345678, 0x23456789}, L(), I(0x12345678), I(0x23456789), E())
+	assertBuild(t, []uint32{0x12345678, 0x23456789}, L(), I(0x12345678), I(0x23456789), E())
+}
+
+func TestBuilderTypedArrayUint64(t *testing.T) {
+	assertBuild(t, [2]uint64{0x123456789abcdef0, 0x23456789abcdef01}, AU64([]uint64{0x123456789abcdef0, 0x23456789abcdef01}))
+	assertBuild(t, []uint64{0x123456789abcdef0, 0x23456789abcdef01}, AU64([]uint64{0x123456789abcdef0, 0x23456789abcdef01}))
+	assertBuild(t, [2]uint64{0x123456789abcdef0, 0x23456789abcdef01}, L(), PI(0x123456789abcdef0), PI(0x23456789abcdef01), E())
+	assertBuild(t, []uint64{0x123456789abcdef0, 0x23456789abcdef01}, L(), PI(0x123456789abcdef0), PI(0x23456789abcdef01), E())
+}
+
+func TestBuilderTypedArrayInt8(t *testing.T) {
+	assertBuild(t, [2]int8{0x12, -0x23}, AI8([]int8{0x12, -0x23}))
+	assertBuild(t, []int8{0x12, -0x23}, AI8([]int8{0x12, -0x23}))
+	assertBuild(t, [2]int8{0x12, -0x23}, L(), I(0x12), I(-0x23), E())
+	assertBuild(t, []int8{0x12, -0x23}, L(), I(0x12), I(-0x23), E())
+}
+
+func TestBuilderTypedArrayInt16(t *testing.T) {
+	assertBuild(t, [2]int16{0x1234, -0x2345}, AI16([]int16{0x1234, -0x2345}))
+	assertBuild(t, []int16{0x1234, -0x2345}, AI16([]int16{0x1234, -0x2345}))
+	assertBuild(t, [2]int16{0x1234, -0x2345}, L(), I(0x1234), I(-0x2345), E())
+	assertBuild(t, []int16{0x1234, -0x2345}, L(), I(0x1234), I(-0x2345), E())
+}
+
+func TestBuilderTypedArrayInt32(t *testing.T) {
+	assertBuild(t, [2]int32{0x12345678, -0x23456789}, AI32([]int32{0x12345678, -0x23456789}))
+	assertBuild(t, []int32{0x12345678, -0x23456789}, AI32([]int32{0x12345678, -0x23456789}))
+	assertBuild(t, [2]int32{0x12345678, -0x23456789}, L(), I(0x12345678), I(-0x23456789), E())
+	assertBuild(t, []int32{0x12345678, -0x23456789}, L(), I(0x12345678), I(-0x23456789), E())
+}
+
+func TestBuilderTypedArrayInt64(t *testing.T) {
+	assertBuild(t, [2]int64{0x123456789abcdef0, -0x23456789abcdef01}, AI64([]int64{0x123456789abcdef0, -0x23456789abcdef01}))
+	assertBuild(t, []int64{0x123456789abcdef0, -0x23456789abcdef01}, AI64([]int64{0x123456789abcdef0, -0x23456789abcdef01}))
+	assertBuild(t, [2]int64{0x123456789abcdef0, -0x23456789abcdef01}, L(), PI(0x123456789abcdef0), I(-0x23456789abcdef01), E())
+	assertBuild(t, []int64{0x123456789abcdef0, -0x23456789abcdef01}, L(), PI(0x123456789abcdef0), I(-0x23456789abcdef01), E())
 }
 
 // =================================================
@@ -719,7 +765,6 @@ func TestBuilderByteArrayFail(t *testing.T) {
 	assertBuildPanics(t, [1]byte{}, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, [1]byte{}, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, [1]byte{}, GT(time.Now()))
-	assertBuildPanics(t, [1]byte{}, L())
 	assertBuildPanics(t, [1]byte{}, M())
 	assertBuildPanics(t, [1]byte{}, E())
 }

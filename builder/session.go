@@ -144,9 +144,21 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 	case reflect.Array:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
-			return generateUint8ArrayBuilder
+			return newUint8ArrayBuilderGenerator(dstType)
 		case reflect.Uint16:
-			return generateUint16ArrayBuilder
+			return newUint16ArrayBuilderGenerator(dstType)
+		case reflect.Uint32:
+			return newUint32ArrayBuilderGenerator(dstType)
+		case reflect.Uint64:
+			return newUint64ArrayBuilderGenerator(dstType)
+		case reflect.Int8:
+			return newInt8ArrayBuilderGenerator(dstType)
+		case reflect.Int16:
+			return newInt16ArrayBuilderGenerator(dstType)
+		case reflect.Int32:
+			return newInt32ArrayBuilderGenerator(dstType)
+		case reflect.Int64:
+			return newInt64ArrayBuilderGenerator(dstType)
 		default:
 			return newArrayBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
@@ -156,6 +168,18 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generateDirectPtrBuilder
 		case reflect.Uint16:
 			return generateUint16SliceBuilder
+		case reflect.Uint32:
+			return generateUint32SliceBuilder
+		case reflect.Uint64:
+			return generateUint64SliceBuilder
+		case reflect.Int8:
+			return generateInt8SliceBuilder
+		case reflect.Int16:
+			return generateInt16SliceBuilder
+		case reflect.Int32:
+			return generateInt32SliceBuilder
+		case reflect.Int64:
+			return generateInt64SliceBuilder
 		default:
 			return newSliceBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
@@ -205,6 +229,14 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 var rootSession Session
 var interfaceSliceBuilderGenerator BuilderGenerator
 var interfaceMapBuilderGenerator BuilderGenerator
+var listToUint8SliceGenerator BuilderGenerator
+var listToUint16SliceGenerator BuilderGenerator
+var listToUint32SliceGenerator BuilderGenerator
+var listToUint64SliceGenerator BuilderGenerator
+var listToInt8SliceGenerator BuilderGenerator
+var listToInt16SliceGenerator BuilderGenerator
+var listToInt32SliceGenerator BuilderGenerator
+var listToInt64SliceGenerator BuilderGenerator
 
 func init() {
 	rootSession.Init(nil, nil)
@@ -230,4 +262,12 @@ func init() {
 
 	interfaceMapBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceMap)
 	interfaceSliceBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceSlice)
+	listToUint8SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint8{}))
+	listToUint16SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint16{}))
+	listToUint32SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint32{}))
+	listToUint64SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint64{}))
+	listToInt8SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int8{}))
+	listToInt16SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int16{}))
+	listToInt32SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int32{}))
+	listToInt64SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int64{}))
 }

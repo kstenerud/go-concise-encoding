@@ -174,16 +174,64 @@ var builders = []Builder{
 		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
 	},
 	{
+		Name:    "uint8Array",
+		Methods: []string{Array, List},
+	},
+	{
 		Name:    "uint16Array",
-		Methods: []string{Array},
+		Methods: []string{Array, List},
 	},
 	{
 		Name:    "uint16Slice",
-		Methods: []string{Array},
+		Methods: []string{Array, List},
 	},
 	{
-		Name:    "uint8Array",
-		Methods: []string{Array},
+		Name:    "uint32Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "uint32Slice",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "uint64Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "uint64Slice",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int8Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int8Slice",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int16Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int16Slice",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int32Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int32Slice",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int64Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int64Slice",
+		Methods: []string{Array, List},
 	},
 }
 

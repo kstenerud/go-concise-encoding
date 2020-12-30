@@ -33,13 +33,14 @@ import (
 )
 
 type Context struct {
-	Options                   options.BuilderOptions
-	CustomBinaryBuildFunction options.CustomBuildFunction
-	CustomTextBuildFunction   options.CustomBuildFunction
-	NotifyMarker              func(id interface{}, value reflect.Value)
-	NotifyReference           func(lookingForID interface{}, valueSetter func(value reflect.Value))
-	CurrentBuilder            ObjectBuilder
-	builderStack              []ObjectBuilder
+	Options                    options.BuilderOptions
+	CustomBinaryBuildFunction  options.CustomBuildFunction
+	CustomTextBuildFunction    options.CustomBuildFunction
+	NotifyMarker               func(id interface{}, value reflect.Value)
+	NotifyReference            func(lookingForID interface{}, valueSetter func(value reflect.Value))
+	CurrentBuilder             ObjectBuilder
+	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
+	builderStack               []ObjectBuilder
 }
 
 func context(opts *options.BuilderOptions,
@@ -47,15 +48,17 @@ func context(opts *options.BuilderOptions,
 	customTextBuildFunction options.CustomBuildFunction,
 	notifyMarker func(id interface{}, value reflect.Value),
 	notifyReference func(lookingForID interface{}, valueSetter func(value reflect.Value)),
+	getBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator,
 ) Context {
 	opts = opts.WithDefaultsApplied()
 	return Context{
-		Options:                   *opts,
-		CustomBinaryBuildFunction: customBinaryBuildFunction,
-		CustomTextBuildFunction:   customTextBuildFunction,
-		NotifyMarker:              notifyMarker,
-		NotifyReference:           notifyReference,
-		builderStack:              make([]ObjectBuilder, 0, 16),
+		Options:                    *opts,
+		CustomBinaryBuildFunction:  customBinaryBuildFunction,
+		CustomTextBuildFunction:    customTextBuildFunction,
+		NotifyMarker:               notifyMarker,
+		NotifyReference:            notifyReference,
+		GetBuilderGeneratorForType: getBuilderGeneratorForType,
+		builderStack:               make([]ObjectBuilder, 0, 16),
 	}
 }
 
