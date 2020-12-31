@@ -233,6 +233,22 @@ var builders = []Builder{
 		Name:    "int64Slice",
 		Methods: []string{Array, List},
 	},
+	{
+		Name:    "float32Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "float32Slice",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "float64Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "float64Slice",
+		Methods: []string{Array, List},
+	},
 }
 
 func GenerateCode(projectDir string) {

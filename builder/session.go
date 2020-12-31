@@ -159,6 +159,10 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return newInt32ArrayBuilderGenerator(dstType)
 		case reflect.Int64:
 			return newInt64ArrayBuilderGenerator(dstType)
+		case reflect.Float32:
+			return newFloat32ArrayBuilderGenerator(dstType)
+		case reflect.Float64:
+			return newFloat64ArrayBuilderGenerator(dstType)
 		default:
 			return newArrayBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
@@ -180,6 +184,10 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generateInt32SliceBuilder
 		case reflect.Int64:
 			return generateInt64SliceBuilder
+		case reflect.Float32:
+			return generateFloat32SliceBuilder
+		case reflect.Float64:
+			return generateFloat64SliceBuilder
 		default:
 			return newSliceBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
@@ -237,6 +245,8 @@ var listToInt8SliceGenerator BuilderGenerator
 var listToInt16SliceGenerator BuilderGenerator
 var listToInt32SliceGenerator BuilderGenerator
 var listToInt64SliceGenerator BuilderGenerator
+var listToFloat32SliceGenerator BuilderGenerator
+var listToFloat64SliceGenerator BuilderGenerator
 
 func init() {
 	rootSession.Init(nil, nil)
@@ -270,4 +280,6 @@ func init() {
 	listToInt16SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int16{}))
 	listToInt32SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int32{}))
 	listToInt64SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]int64{}))
+	listToFloat32SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]float32{}))
+	listToFloat64SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]float64{}))
 }

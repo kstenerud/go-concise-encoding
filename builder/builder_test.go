@@ -95,6 +95,13 @@ func TestBuilderTypedArrayInt64(t *testing.T) {
 	assertBuild(t, []int64{0x123456789abcdef0, -0x23456789abcdef01}, L(), PI(0x123456789abcdef0), I(-0x23456789abcdef01), E())
 }
 
+func TestBuilderTypedArrayFloat32(t *testing.T) {
+	assertBuild(t, [2]float32{-1.25, 9.5e10}, AF32([]float32{-1.25, 9.5e10}))
+	// assertBuild(t, []float32{0x12345678, -0x23456789}, AI32([]int32{0x12345678, -0x23456789}))
+	// assertBuild(t, [2]float32{0x12345678, -0x23456789}, L(), I(0x12345678), I(-0x23456789), E())
+	// assertBuild(t, []float32{0x12345678, -0x23456789}, L(), I(0x12345678), I(-0x23456789), E())
+}
+
 // =================================================
 
 func TestBuildUnknown(t *testing.T) {

@@ -22,6 +22,7 @@ package builder
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -575,4 +576,154 @@ func (_this *int64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int64SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToInt64SliceGenerator().BuildBeginListContents(ctx)
+}
+
+// ============================================================================
+
+type float32ArrayBuilder struct {
+	dstType reflect.Type
+}
+
+func newFloat32ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
+	return func() ObjectBuilder {
+		return &float32ArrayBuilder{
+			dstType: dstType,
+		}
+	}
+}
+
+func (_this *float32ArrayBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
+}
+
+func (_this *float32ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeFloat32:
+		elemCount := len(value) / 4
+		for i := 0; i < elemCount; i++ {
+			elemValue := uint32(value[i*4]) |
+				(uint32(value[i*4+1]) << 8) |
+				(uint32(value[i*4+2]) << 16) |
+				(uint32(value[i*4+3]) << 24)
+			elem := dst.Index(i)
+			elem.SetFloat(float64(math.Float32frombits(elemValue)))
+		}
+	default:
+		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
+	}
+	return dst
+}
+
+func (_this *float32ArrayBuilder) BuildBeginListContents(ctx *Context) {
+	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
+	generator().BuildBeginListContents(ctx)
+}
+
+type float32SliceBuilder struct{}
+
+var globalFloat32SliceBuilder = &float32SliceBuilder{}
+
+func generateFloat32SliceBuilder() ObjectBuilder  { return globalFloat32SliceBuilder }
+func (_this *float32SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *float32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeFloat32:
+		elemCount := len(value) / 4
+		slice := make([]float32, elemCount, elemCount)
+		for i := 0; i < elemCount; i++ {
+			elemValue := uint32(value[i*4]) |
+				(uint32(value[i*4+1]) << 8) |
+				(uint32(value[i*4+2]) << 16) |
+				(uint32(value[i*4+3]) << 24)
+			slice[i] = math.Float32frombits(elemValue)
+		}
+		dst.Set(reflect.ValueOf(slice))
+	default:
+		PanicBadEvent(_this, "BuildFromSlice(%v)", arrayType)
+	}
+	return dst
+}
+
+func (_this *float32SliceBuilder) BuildBeginListContents(ctx *Context) {
+	listToFloat32SliceGenerator().BuildBeginListContents(ctx)
+}
+
+// ============================================================================
+
+type float64ArrayBuilder struct {
+	dstType reflect.Type
+}
+
+func newFloat64ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
+	return func() ObjectBuilder {
+		return &float64ArrayBuilder{
+			dstType: dstType,
+		}
+	}
+}
+
+func (_this *float64ArrayBuilder) String() string {
+	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
+}
+
+func (_this *float64ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeFloat64:
+		elemCount := len(value) / 8
+		for i := 0; i < elemCount; i++ {
+			elemValue := uint64(value[i*8]) |
+				(uint64(value[i*8+1]) << 8) |
+				(uint64(value[i*8+2]) << 16) |
+				(uint64(value[i*8+3]) << 24) |
+				(uint64(value[i*8+4]) << 32) |
+				(uint64(value[i*8+5]) << 40) |
+				(uint64(value[i*8+6]) << 48) |
+				(uint64(value[i*8+7]) << 56)
+			elem := dst.Index(i)
+			elem.SetFloat(math.Float64frombits(elemValue))
+		}
+	default:
+		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
+	}
+	return dst
+}
+
+func (_this *float64ArrayBuilder) BuildBeginListContents(ctx *Context) {
+	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
+	generator().BuildBeginListContents(ctx)
+}
+
+type float64SliceBuilder struct{}
+
+var globalFloat64SliceBuilder = &float64SliceBuilder{}
+
+func generateFloat64SliceBuilder() ObjectBuilder  { return globalFloat64SliceBuilder }
+func (_this *float64SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *float64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeFloat64:
+		elemCount := len(value) / 8
+		slice := make([]float64, elemCount, elemCount)
+		for i := 0; i < elemCount; i++ {
+			elemValue := uint64(value[i*8]) |
+				(uint64(value[i*8+1]) << 8) |
+				(uint64(value[i*8+2]) << 16) |
+				(uint64(value[i*8+3]) << 24) |
+				(uint64(value[i*8+4]) << 32) |
+				(uint64(value[i*8+5]) << 40) |
+				(uint64(value[i*8+6]) << 48) |
+				(uint64(value[i*8+7]) << 56)
+			slice[i] = math.Float64frombits(elemValue)
+		}
+		dst.Set(reflect.ValueOf(slice))
+	default:
+		PanicBadEvent(_this, "BuildFromSlice(%v)", arrayType)
+	}
+	return dst
+}
+
+func (_this *float64SliceBuilder) BuildBeginListContents(ctx *Context) {
+	listToFloat64SliceGenerator().BuildBeginListContents(ctx)
 }
