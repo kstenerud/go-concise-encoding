@@ -56,9 +56,9 @@ const (
 	typePosInt64     = 0x6e
 	typeNegInt64     = 0x6f
 	typeFloat16      = 0x70
-	typeFloat32      = 0x72
-	typeFloat64      = 0x73
-	typeUUID         = 0x74
+	typeFloat32      = 0x71
+	typeFloat64      = 0x72
+	typeUUID         = 0x73
 	typeReserved74   = 0x74
 	typeReserved75   = 0x75
 	typeComment      = 0x76
