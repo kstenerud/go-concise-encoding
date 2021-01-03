@@ -97,9 +97,16 @@ func TestBuilderTypedArrayInt64(t *testing.T) {
 
 func TestBuilderTypedArrayFloat32(t *testing.T) {
 	assertBuild(t, [2]float32{-1.25, 9.5e10}, AF32([]float32{-1.25, 9.5e10}))
-	// assertBuild(t, []float32{0x12345678, -0x23456789}, AI32([]int32{0x12345678, -0x23456789}))
-	// assertBuild(t, [2]float32{0x12345678, -0x23456789}, L(), I(0x12345678), I(-0x23456789), E())
-	// assertBuild(t, []float32{0x12345678, -0x23456789}, L(), I(0x12345678), I(-0x23456789), E())
+	assertBuild(t, []float32{-1.25, 9.5e10}, AF32([]float32{-1.25, 9.5e10}))
+	assertBuild(t, [2]float32{-1.25, 9.5e10}, L(), F(-1.25), F(9.5e10), E())
+	assertBuild(t, []float32{-1.25, 9.5e10}, L(), F(-1.25), F(9.5e10), E())
+}
+
+func TestBuilderTypedArrayFloat64(t *testing.T) {
+	assertBuild(t, [2]float64{-1.25, 9.5e10}, AF64([]float64{-1.25, 9.5e10}))
+	assertBuild(t, []float64{-1.25, 9.5e10}, AF64([]float64{-1.25, 9.5e10}))
+	assertBuild(t, [2]float64{-1.25, 9.5e10}, L(), F(-1.25), F(9.5e10), E())
+	assertBuild(t, []float64{-1.25, 9.5e10}, L(), F(-1.25), F(9.5e10), E())
 }
 
 // =================================================
@@ -705,7 +712,6 @@ func TestBuilderSlice(t *testing.T) {
 		BI(NewBigInt("4", 10)), BF(NewBigFloat("5", 10, 1)), DF(NewDFloat("6")),
 		BDF(NewBDF("7")), E())
 	assertBuild(t, []*int{nil}, L(), N(), E())
-	assertBuild(t, [][]byte{[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, L(), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}), E())
 	assertBuild(t, []string{"test"}, L(), S("test"), E())
 	assertBuild(t, [][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
 	assertBuild(t, []*url.URL{NewRID("http://example.com")}, L(), RID("http://example.com"), E())
@@ -734,7 +740,6 @@ func TestBuilderArray(t *testing.T) {
 		BI(NewBigInt("4", 10)), BF(NewBigFloat("5", 10, 1)), DF(NewDFloat("6")),
 		BDF(NewBDF("7")), E())
 	assertBuild(t, [1]*int{nil}, L(), N(), E())
-	assertBuild(t, [1][]byte{[]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}, L(), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}), E())
 	assertBuild(t, [1]string{"test"}, L(), S("test"), E())
 	assertBuild(t, [1][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
 	assertBuild(t, [1]*url.URL{NewRID("http://example.com")}, L(), RID("http://example.com"), E())

@@ -90,12 +90,8 @@ var builders = []Builder{
 		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
 	},
 	{
-		Name:    "direct",
-		Methods: []string{Bool, UUID, Array, Time, CTime},
-	},
-	{
-		Name:    "directPtr",
-		Methods: []string{Nil, UUID, Array, Time, CTime},
+		Name:    "bool",
+		Methods: []string{Bool},
 	},
 	{
 		Name:    "float",
@@ -178,12 +174,16 @@ var builders = []Builder{
 		Methods: []string{Array, List},
 	},
 	{
+		Name:    "uint8Slice",
+		Methods: []string{Nil, Array, List},
+	},
+	{
 		Name:    "uint16Array",
 		Methods: []string{Array, List},
 	},
 	{
 		Name:    "uint16Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "uint32Array",
@@ -191,7 +191,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "uint32Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "uint64Array",
@@ -199,7 +199,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "uint64Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "int8Array",
@@ -207,7 +207,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "int8Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "int16Array",
@@ -215,7 +215,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "int16Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "int32Array",
@@ -223,7 +223,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "int32Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "int64Array",
@@ -231,7 +231,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "int64Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "float32Array",
@@ -239,7 +239,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "float32Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "float64Array",
@@ -247,7 +247,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "float64Slice",
-		Methods: []string{Array, List},
+		Methods: []string{Nil, Array, List},
 	},
 }
 

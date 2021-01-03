@@ -169,7 +169,7 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 	case reflect.Slice:
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
-			return generateDirectPtrBuilder
+			return generateUint8SliceBuilder
 		case reflect.Uint16:
 			return generateUint16SliceBuilder
 		case reflect.Uint32:
@@ -200,7 +200,7 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 		case common.TypeCompactTime:
 			return generateCompactTimeBuilder
 		case common.TypeURL:
-			return generateDirectBuilder
+			return newUrlBuilderGenerator()
 		case common.TypeDFloat:
 			return generateDecimalFloatBuilder
 		case common.TypeBigInt:
@@ -215,7 +215,7 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 	case reflect.Ptr:
 		switch dstType {
 		case common.TypePURL:
-			return generateDirectPtrBuilder
+			return newPUrlBuilderGenerator()
 		case common.TypePBigInt:
 			return generatePBigIntBuilder
 		case common.TypePBigFloat:

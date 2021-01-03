@@ -25,6 +25,8 @@ import (
 	"math"
 	"reflect"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
@@ -86,6 +88,32 @@ func (_this *uint8ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator().BuildBeginListContents(ctx)
 }
 
+type uint8SliceBuilder struct{}
+
+var globalUint8SliceBuilder = &uint8SliceBuilder{}
+
+func generateUint8SliceBuilder() ObjectBuilder  { return globalUint8SliceBuilder }
+func (_this *uint8SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *uint8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
+
+func (_this *uint8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeUint8:
+		dst.SetBytes(common.CloneBytes(value))
+	default:
+		PanicBadEvent(_this, "BuildFromSlice(%v)", arrayType)
+	}
+	return dst
+}
+
+func (_this *uint8SliceBuilder) BuildBeginListContents(ctx *Context) {
+	listToUint8SliceGenerator().BuildBeginListContents(ctx)
+}
+
 // ============================================================================
 
 type uint16ArrayBuilder struct {
@@ -131,6 +159,11 @@ var globalUint16SliceBuilder = &uint16SliceBuilder{}
 
 func generateUint16SliceBuilder() ObjectBuilder  { return globalUint16SliceBuilder }
 func (_this *uint16SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *uint16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
 
 func (_this *uint16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
@@ -199,6 +232,11 @@ var globalUint32SliceBuilder = &uint32SliceBuilder{}
 
 func generateUint32SliceBuilder() ObjectBuilder  { return globalUint32SliceBuilder }
 func (_this *uint32SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *uint32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
 
 func (_this *uint32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
@@ -274,6 +312,11 @@ var globalUint64SliceBuilder = &uint64SliceBuilder{}
 func generateUint64SliceBuilder() ObjectBuilder  { return globalUint64SliceBuilder }
 func (_this *uint64SliceBuilder) String() string { return nameOf(_this) }
 
+func (_this *uint64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
+
 func (_this *uint64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeUint64:
@@ -345,6 +388,11 @@ var globalInt8SliceBuilder = &int8SliceBuilder{}
 func generateInt8SliceBuilder() ObjectBuilder  { return globalInt8SliceBuilder }
 func (_this *int8SliceBuilder) String() string { return nameOf(_this) }
 
+func (_this *int8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
+
 func (_this *int8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeInt8:
@@ -409,6 +457,11 @@ var globalInt16SliceBuilder = &int16SliceBuilder{}
 
 func generateInt16SliceBuilder() ObjectBuilder  { return globalInt16SliceBuilder }
 func (_this *int16SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *int16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
 
 func (_this *int16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
@@ -477,6 +530,11 @@ var globalInt32SliceBuilder = &int32SliceBuilder{}
 
 func generateInt32SliceBuilder() ObjectBuilder  { return globalInt32SliceBuilder }
 func (_this *int32SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *int32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
 
 func (_this *int32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
@@ -552,6 +610,11 @@ var globalInt64SliceBuilder = &int64SliceBuilder{}
 func generateInt64SliceBuilder() ObjectBuilder  { return globalInt64SliceBuilder }
 func (_this *int64SliceBuilder) String() string { return nameOf(_this) }
 
+func (_this *int64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
+
 func (_this *int64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeInt64:
@@ -625,6 +688,11 @@ var globalFloat32SliceBuilder = &float32SliceBuilder{}
 
 func generateFloat32SliceBuilder() ObjectBuilder  { return globalFloat32SliceBuilder }
 func (_this *float32SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *float32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
 
 func (_this *float32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
@@ -700,6 +768,11 @@ var globalFloat64SliceBuilder = &float64SliceBuilder{}
 
 func generateFloat64SliceBuilder() ObjectBuilder  { return globalFloat64SliceBuilder }
 func (_this *float64SliceBuilder) String() string { return nameOf(_this) }
+
+func (_this *float64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.Zero(dst.Type()))
+	return dst
+}
 
 func (_this *float64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
