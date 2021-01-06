@@ -111,6 +111,3 @@ func (_this *Context) TryBuildFromCustom(builder ObjectBuilder, arrayType events
 		return false
 	}
 }
-
-type BuilderGenerator func() ObjectBuilder
-type BuilderGeneratorGetter func(reflect.Type) BuilderGenerator

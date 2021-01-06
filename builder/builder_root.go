@@ -82,8 +82,7 @@ func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *opt
 	_this.chunkedData = make([]byte, 0, 128)
 
 	generator := session.GetBuilderGeneratorForType(dstType)
-	builder := generator()
-	_this.context.StackBuilder(newTopLevelBuilder(_this, builder))
+	_this.context.StackBuilder(newTopLevelBuilder(_this, generator))
 	_this.referenceFiller.Init()
 }
 

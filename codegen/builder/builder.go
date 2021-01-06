@@ -78,6 +78,10 @@ var builders = []Builder{
 		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
 	},
 	{
+		Name:    "bool",
+		Methods: []string{Bool},
+	},
+	{
 		Name:    "compactTime",
 		Methods: []string{Array, Time, CTime},
 	},
@@ -90,12 +94,24 @@ var builders = []Builder{
 		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
 	},
 	{
-		Name:    "bool",
-		Methods: []string{Bool},
-	},
-	{
 		Name:    "float",
 		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "float32Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "float32Slice",
+		Methods: []string{Nil, Array, List},
+	},
+	{
+		Name:    "float64Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "float64Slice",
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "ignore",
@@ -104,6 +120,38 @@ var builders = []Builder{
 	{
 		Name:    "int",
 		Methods: []string{Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat},
+	},
+	{
+		Name:    "int8Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int8Slice",
+		Methods: []string{Nil, Array, List},
+	},
+	{
+		Name:    "int16Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int16Slice",
+		Methods: []string{Nil, Array, List},
+	},
+	{
+		Name:    "int32Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int32Slice",
+		Methods: []string{Nil, Array, List},
+	},
+	{
+		Name:    "int64Array",
+		Methods: []string{Array, List},
+	},
+	{
+		Name:    "int64Slice",
+		Methods: []string{Nil, Array, List},
 	},
 	{
 		Name:    "interface",
@@ -140,6 +188,10 @@ var builders = []Builder{
 	{
 		Name:    "ptr",
 		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, List, Map, NotifyFinished},
+	},
+	{
+		Name:    "pUrl",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, End, Ref},
 	},
 	{
 		Name:    "referenceID",
@@ -202,52 +254,8 @@ var builders = []Builder{
 		Methods: []string{Nil, Array, List},
 	},
 	{
-		Name:    "int8Array",
-		Methods: []string{Array, List},
-	},
-	{
-		Name:    "int8Slice",
-		Methods: []string{Nil, Array, List},
-	},
-	{
-		Name:    "int16Array",
-		Methods: []string{Array, List},
-	},
-	{
-		Name:    "int16Slice",
-		Methods: []string{Nil, Array, List},
-	},
-	{
-		Name:    "int32Array",
-		Methods: []string{Array, List},
-	},
-	{
-		Name:    "int32Slice",
-		Methods: []string{Nil, Array, List},
-	},
-	{
-		Name:    "int64Array",
-		Methods: []string{Array, List},
-	},
-	{
-		Name:    "int64Slice",
-		Methods: []string{Nil, Array, List},
-	},
-	{
-		Name:    "float32Array",
-		Methods: []string{Array, List},
-	},
-	{
-		Name:    "float32Slice",
-		Methods: []string{Nil, Array, List},
-	},
-	{
-		Name:    "float64Array",
-		Methods: []string{Array, List},
-	},
-	{
-		Name:    "float64Slice",
-		Methods: []string{Nil, Array, List},
+		Name:    "url",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, Time, CTime, ListInit, MapInit, End, Ref},
 	},
 }
 

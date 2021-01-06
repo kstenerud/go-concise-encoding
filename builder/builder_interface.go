@@ -38,10 +38,8 @@ type interfaceBuilder struct{}
 
 var globalInterfaceBuilder = &interfaceBuilder{}
 
-func generateInterfaceBuilder() ObjectBuilder {
-	return globalInterfaceBuilder
-}
-func (_this *interfaceBuilder) String() string { return reflect.TypeOf(_this).String() }
+func generateInterfaceBuilder(ctx *Context) ObjectBuilder { return globalInterfaceBuilder }
+func (_this *interfaceBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *interfaceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(common.TypeInterface))
@@ -127,19 +125,19 @@ func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value *compact
 }
 
 func (_this *interfaceBuilder) BuildInitiateList(ctx *Context) {
-	ctx.StackBuilder(interfaceSliceBuilderGenerator())
+	ctx.StackBuilder(interfaceSliceBuilderGenerator(ctx))
 }
 
 func (_this *interfaceBuilder) BuildInitiateMap(ctx *Context) {
-	ctx.StackBuilder(interfaceMapBuilderGenerator())
+	ctx.StackBuilder(interfaceMapBuilderGenerator(ctx))
 }
 
 func (_this *interfaceBuilder) BuildBeginListContents(ctx *Context) {
-	ctx.StackBuilder(interfaceSliceBuilderGenerator())
+	ctx.StackBuilder(interfaceSliceBuilderGenerator(ctx))
 }
 
 func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
-	ctx.StackBuilder(interfaceMapBuilderGenerator())
+	ctx.StackBuilder(interfaceMapBuilderGenerator(ctx))
 }
 
 func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id interface{}) {

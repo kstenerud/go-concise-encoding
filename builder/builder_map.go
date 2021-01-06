@@ -53,7 +53,7 @@ func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, m
 	kvTypes := [2]reflect.Type{mapType.Key(), mapType.Elem()}
 	kvGenerators := [2]BuilderGenerator{getBuilderGeneratorForType(kvTypes[0]), getBuilderGeneratorForType(kvTypes[1])}
 
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		builder := &mapBuilder{
 			mapType:      mapType,
 			kvTypes:      kvTypes,
@@ -106,77 +106,77 @@ func (_this *mapBuilder) newElem() reflect.Value {
 
 func (_this *mapBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromNil(ctx, object)
+	_this.nextGenerator(ctx).BuildFromNil(ctx, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromBool(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromBool(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromInt(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromInt(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromUint(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromUint(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromBigInt(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromBigInt(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromFloat(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromFloat(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromBigFloat(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromBigFloat(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromDecimalFloat(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromDecimalFloat(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromBigDecimalFloat(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromBigDecimalFloat(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromUUID(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromUUID(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromArray(ctx, arrayType, value, object)
+	_this.nextGenerator(ctx).BuildFromArray(ctx, arrayType, value, object)
 	_this.store(object)
 	return object
 }
@@ -185,7 +185,7 @@ func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.
 	// TODO: Why was it this way?
 	// _this.store(reflect.ValueOf(value))
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromTime(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromTime(ctx, value, object)
 	_this.store(object)
 	return object
 }
@@ -194,17 +194,17 @@ func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.
 	// TODO: Why was it this way?
 	// _this.store(reflect.ValueOf(value))
 	object := _this.newElem()
-	_this.nextGenerator().BuildFromCompactTime(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	_this.store(object)
 	return object
 }
 
 func (_this *mapBuilder) BuildInitiateList(ctx *Context) {
-	_this.nextGenerator().BuildBeginListContents(ctx)
+	_this.nextGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *mapBuilder) BuildInitiateMap(ctx *Context) {
-	_this.nextGenerator().BuildBeginMapContents(ctx)
+	_this.nextGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *mapBuilder) BuildEndContainer(ctx *Context) {

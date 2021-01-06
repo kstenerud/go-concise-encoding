@@ -44,7 +44,7 @@ type sliceBuilder struct {
 func newSliceBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
 	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
 
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		builder := &sliceBuilder{
 			dstType:       dstType,
 			elemGenerator: builderGenerator,
@@ -74,101 +74,101 @@ func (_this *sliceBuilder) storeValue(value reflect.Value) {
 
 func (_this *sliceBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromNil(ctx, object)
+	_this.elemGenerator(ctx).BuildFromNil(ctx, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromBool(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBool(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromInt(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromInt(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromUint(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromUint(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromBigInt(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBigInt(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromFloat(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromBigFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBigFloat(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromDecimalFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromDecimalFloat(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromBigDecimalFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBigDecimalFloat(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromUUID(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromUUID(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromArray(ctx, arrayType, value, object)
+	_this.elemGenerator(ctx).BuildFromArray(ctx, arrayType, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromTime(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator().BuildFromCompactTime(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
 
 func (_this *sliceBuilder) BuildInitiateList(ctx *Context) {
-	_this.elemGenerator().BuildBeginListContents(ctx)
+	_this.elemGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *sliceBuilder) BuildInitiateMap(ctx *Context) {
-	_this.elemGenerator().BuildBeginMapContents(ctx)
+	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {

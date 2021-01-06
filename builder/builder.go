@@ -76,8 +76,8 @@ type ObjectBuilder interface {
 	NotifyChildContainerFinished(ctx *Context, container reflect.Value)
 }
 
-// Fetches a builder for the specified type, building and caching one as needed.
-type FetchBuilder func(reflect.Type) ObjectBuilder
+type BuilderGenerator func(ctx *Context) ObjectBuilder
+type BuilderGeneratorGetter func(reflect.Type) BuilderGenerator
 
 // ============================================================================
 // Error reporting

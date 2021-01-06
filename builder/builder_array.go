@@ -42,7 +42,7 @@ type arrayBuilder struct {
 
 func newArrayBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, containerType reflect.Type) BuilderGenerator {
 	elemBuilderGenerator := getBuilderGeneratorForType(containerType.Elem())
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		builder := &arrayBuilder{
 			containerType: containerType,
 			elemGenerator: elemBuilderGenerator,
@@ -69,88 +69,88 @@ func (_this *arrayBuilder) advanceElem() reflect.Value {
 
 func (_this *arrayBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromNil(ctx, object)
+	_this.elemGenerator(ctx).BuildFromNil(ctx, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromBool(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBool(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromInt(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromInt(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromUint(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromUint(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromBigInt(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBigInt(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromFloat(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromBigFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBigFloat(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromDecimalFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromDecimalFloat(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromBigDecimalFloat(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromBigDecimalFloat(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromUUID(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromUUID(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromArray(ctx, arrayType, value, object)
+	_this.elemGenerator(ctx).BuildFromArray(ctx, arrayType, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromTime(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator().BuildFromCompactTime(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	return object
 }
 
 func (_this *arrayBuilder) BuildInitiateList(ctx *Context) {
-	_this.elemGenerator().BuildBeginListContents(ctx)
+	_this.elemGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *arrayBuilder) BuildInitiateMap(ctx *Context) {
-	_this.elemGenerator().BuildBeginMapContents(ctx)
+	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {

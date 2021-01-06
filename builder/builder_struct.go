@@ -80,15 +80,15 @@ func (_this *structBuilderField) applyTags(tags string) {
 }
 
 type structBuilder struct {
-	dstType        reflect.Type
-	generatorDescs map[string]*structBuilderGeneratorDesc
-	nameBuilder    ObjectBuilder
-	ignoreBuilder  ObjectBuilder
-	nextBuilder    ObjectBuilder
-	container      reflect.Value
-	nextValue      reflect.Value
-	nextIsKey      bool
-	nextIsIgnored  bool
+	dstType                reflect.Type
+	generatorDescs         map[string]*structBuilderGeneratorDesc
+	nameBuilderGenerator   BuilderGenerator
+	ignoreBuilderGenerator BuilderGenerator
+	nextBuilderGenerator   BuilderGenerator
+	container              reflect.Value
+	nextValue              reflect.Value
+	nextIsKey              bool
+	nextIsIgnored          bool
 }
 
 type structBuilderGeneratorDesc struct {
@@ -97,8 +97,8 @@ type structBuilderGeneratorDesc struct {
 }
 
 func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
-	nameBuilder := getBuilderGeneratorForType(reflect.TypeOf(""))()
-	ignoreBuilder := generateIgnoreBuilder()
+	nameBuilderGenerator := getBuilderGeneratorForType(reflect.TypeOf(""))
+	ignoreBuilderGenerator := generateIgnoreBuilder
 	generatorDescs := make(map[string]*structBuilderGeneratorDesc)
 
 	for i := 0; i < dstType.NumField(); i++ {
@@ -125,12 +125,12 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 		}
 	}
 
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		builder := &structBuilder{
-			dstType:        dstType,
-			generatorDescs: generatorDescs,
-			nameBuilder:    nameBuilder,
-			ignoreBuilder:  ignoreBuilder,
+			dstType:                dstType,
+			generatorDescs:         generatorDescs,
+			nameBuilderGenerator:   nameBuilderGenerator,
+			ignoreBuilderGenerator: ignoreBuilderGenerator,
 		}
 		builder.reset()
 		return builder
@@ -142,7 +142,7 @@ func (_this *structBuilder) String() string {
 }
 
 func (_this *structBuilder) reset() {
-	_this.nextBuilder = _this.nameBuilder
+	_this.nextBuilderGenerator = _this.nameBuilderGenerator
 	_this.container = reflect.New(_this.dstType).Elem()
 	_this.nextValue = reflect.Value{}
 	_this.nextIsKey = true
@@ -154,70 +154,70 @@ func (_this *structBuilder) swapKeyValue() {
 }
 
 func (_this *structBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromNil(ctx, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromNil(ctx, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromBool(ctx *Context, value bool, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromBool(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromBool(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromInt(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromInt(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromUint(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromUint(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromBigInt(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromBigInt(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromFloat(ctx *Context, value float64, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromFloat(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromFloat(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromBigFloat(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromBigFloat(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromDecimalFloat(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromDecimalFloat(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromBigDecimalFloat(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromBigDecimalFloat(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromUUID(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromUUID(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
@@ -233,18 +233,18 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 			name := string(value)
 
 			if generatorDesc, ok := _this.generatorDescs[name]; ok {
-				_this.nextBuilder = generatorDesc.builderGenerator()
+				_this.nextBuilderGenerator = generatorDesc.builderGenerator
 				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
 			} else {
-				_this.nextBuilder = _this.ignoreBuilder
+				_this.nextBuilderGenerator = _this.ignoreBuilderGenerator
 				_this.nextIsIgnored = true
 				break
 			}
 		} else {
-			_this.nextBuilder.BuildFromArray(ctx, arrayType, value, _this.nextValue)
+			_this.nextBuilderGenerator(ctx).BuildFromArray(ctx, arrayType, value, _this.nextValue)
 		}
 	default:
-		_this.nextBuilder.BuildFromArray(ctx, arrayType, value, _this.nextValue)
+		_this.nextBuilderGenerator(ctx).BuildFromArray(ctx, arrayType, value, _this.nextValue)
 	}
 	object := _this.nextValue
 	_this.swapKeyValue()
@@ -252,25 +252,25 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 }
 
 func (_this *structBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromTime(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromTime(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
-	_this.nextBuilder.BuildFromCompactTime(ctx, value, _this.nextValue)
+	_this.nextBuilderGenerator(ctx).BuildFromCompactTime(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object
 }
 
 func (_this *structBuilder) BuildInitiateList(ctx *Context) {
-	_this.nextBuilder.BuildBeginListContents(ctx)
+	_this.nextBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *structBuilder) BuildInitiateMap(ctx *Context) {
-	_this.nextBuilder.BuildBeginMapContents(ctx)
+	_this.nextBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *structBuilder) BuildEndContainer(ctx *Context) {

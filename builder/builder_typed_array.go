@@ -34,8 +34,8 @@ type stringBuilder struct{}
 
 var globalStringBuilder = &stringBuilder{}
 
-func generateStringBuilder() ObjectBuilder  { return globalStringBuilder }
-func (_this *stringBuilder) String() string { return nameOf(_this) }
+func generateStringBuilder(ctx *Context) ObjectBuilder { return globalStringBuilder }
+func (_this *stringBuilder) String() string            { return nameOf(_this) }
 
 func (_this *stringBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	// Go doesn't have the concept of a nil string.
@@ -59,7 +59,7 @@ type uint8ArrayBuilder struct {
 }
 
 func newUint8ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &uint8ArrayBuilder{
 			dstType: dstType,
 		}
@@ -85,15 +85,15 @@ func (_this *uint8ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *uint8ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type uint8SliceBuilder struct{}
 
 var globalUint8SliceBuilder = &uint8SliceBuilder{}
 
-func generateUint8SliceBuilder() ObjectBuilder  { return globalUint8SliceBuilder }
-func (_this *uint8SliceBuilder) String() string { return nameOf(_this) }
+func generateUint8SliceBuilder(ctx *Context) ObjectBuilder { return globalUint8SliceBuilder }
+func (_this *uint8SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *uint8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -111,7 +111,7 @@ func (_this *uint8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 }
 
 func (_this *uint8SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToUint8SliceGenerator().BuildBeginListContents(ctx)
+	listToUint8SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -121,7 +121,7 @@ type uint16ArrayBuilder struct {
 }
 
 func newUint16ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &uint16ArrayBuilder{
 			dstType: dstType,
 		}
@@ -150,15 +150,15 @@ func (_this *uint16ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.A
 
 func (_this *uint16ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type uint16SliceBuilder struct{}
 
 var globalUint16SliceBuilder = &uint16SliceBuilder{}
 
-func generateUint16SliceBuilder() ObjectBuilder  { return globalUint16SliceBuilder }
-func (_this *uint16SliceBuilder) String() string { return nameOf(_this) }
+func generateUint16SliceBuilder(ctx *Context) ObjectBuilder { return globalUint16SliceBuilder }
+func (_this *uint16SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *uint16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -182,7 +182,7 @@ func (_this *uint16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 }
 
 func (_this *uint16SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToUint16SliceGenerator().BuildBeginListContents(ctx)
+	listToUint16SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -192,7 +192,7 @@ type uint32ArrayBuilder struct {
 }
 
 func newUint32ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &uint32ArrayBuilder{
 			dstType: dstType,
 		}
@@ -223,15 +223,15 @@ func (_this *uint32ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.A
 
 func (_this *uint32ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type uint32SliceBuilder struct{}
 
 var globalUint32SliceBuilder = &uint32SliceBuilder{}
 
-func generateUint32SliceBuilder() ObjectBuilder  { return globalUint32SliceBuilder }
-func (_this *uint32SliceBuilder) String() string { return nameOf(_this) }
+func generateUint32SliceBuilder(ctx *Context) ObjectBuilder { return globalUint32SliceBuilder }
+func (_this *uint32SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *uint32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -257,7 +257,7 @@ func (_this *uint32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 }
 
 func (_this *uint32SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToUint32SliceGenerator().BuildBeginListContents(ctx)
+	listToUint32SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -267,7 +267,7 @@ type uint64ArrayBuilder struct {
 }
 
 func newUint64ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &uint64ArrayBuilder{
 			dstType: dstType,
 		}
@@ -302,15 +302,15 @@ func (_this *uint64ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.A
 
 func (_this *uint64ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type uint64SliceBuilder struct{}
 
 var globalUint64SliceBuilder = &uint64SliceBuilder{}
 
-func generateUint64SliceBuilder() ObjectBuilder  { return globalUint64SliceBuilder }
-func (_this *uint64SliceBuilder) String() string { return nameOf(_this) }
+func generateUint64SliceBuilder(ctx *Context) ObjectBuilder { return globalUint64SliceBuilder }
+func (_this *uint64SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *uint64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -340,7 +340,7 @@ func (_this *uint64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 }
 
 func (_this *uint64SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToUint64SliceGenerator().BuildBeginListContents(ctx)
+	listToUint64SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -350,7 +350,7 @@ type int8ArrayBuilder struct {
 }
 
 func newInt8ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &int8ArrayBuilder{
 			dstType: dstType,
 		}
@@ -378,15 +378,15 @@ func (_this *int8ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 
 func (_this *int8ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type int8SliceBuilder struct{}
 
 var globalInt8SliceBuilder = &int8SliceBuilder{}
 
-func generateInt8SliceBuilder() ObjectBuilder  { return globalInt8SliceBuilder }
-func (_this *int8SliceBuilder) String() string { return nameOf(_this) }
+func generateInt8SliceBuilder(ctx *Context) ObjectBuilder { return globalInt8SliceBuilder }
+func (_this *int8SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *int8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -409,7 +409,7 @@ func (_this *int8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 }
 
 func (_this *int8SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToInt8SliceGenerator().BuildBeginListContents(ctx)
+	listToInt8SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -419,7 +419,7 @@ type int16ArrayBuilder struct {
 }
 
 func newInt16ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &int16ArrayBuilder{
 			dstType: dstType,
 		}
@@ -448,15 +448,15 @@ func (_this *int16ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int16ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type int16SliceBuilder struct{}
 
 var globalInt16SliceBuilder = &int16SliceBuilder{}
 
-func generateInt16SliceBuilder() ObjectBuilder  { return globalInt16SliceBuilder }
-func (_this *int16SliceBuilder) String() string { return nameOf(_this) }
+func generateInt16SliceBuilder(ctx *Context) ObjectBuilder { return globalInt16SliceBuilder }
+func (_this *int16SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *int16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -480,7 +480,7 @@ func (_this *int16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 }
 
 func (_this *int16SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToInt16SliceGenerator().BuildBeginListContents(ctx)
+	listToInt16SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -490,7 +490,7 @@ type int32ArrayBuilder struct {
 }
 
 func newInt32ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &int32ArrayBuilder{
 			dstType: dstType,
 		}
@@ -521,15 +521,15 @@ func (_this *int32ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int32ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type int32SliceBuilder struct{}
 
 var globalInt32SliceBuilder = &int32SliceBuilder{}
 
-func generateInt32SliceBuilder() ObjectBuilder  { return globalInt32SliceBuilder }
-func (_this *int32SliceBuilder) String() string { return nameOf(_this) }
+func generateInt32SliceBuilder(ctx *Context) ObjectBuilder { return globalInt32SliceBuilder }
+func (_this *int32SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *int32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -555,7 +555,7 @@ func (_this *int32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 }
 
 func (_this *int32SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToInt32SliceGenerator().BuildBeginListContents(ctx)
+	listToInt32SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -565,7 +565,7 @@ type int64ArrayBuilder struct {
 }
 
 func newInt64ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &int64ArrayBuilder{
 			dstType: dstType,
 		}
@@ -600,15 +600,15 @@ func (_this *int64ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int64ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type int64SliceBuilder struct{}
 
 var globalInt64SliceBuilder = &int64SliceBuilder{}
 
-func generateInt64SliceBuilder() ObjectBuilder  { return globalInt64SliceBuilder }
-func (_this *int64SliceBuilder) String() string { return nameOf(_this) }
+func generateInt64SliceBuilder(ctx *Context) ObjectBuilder { return globalInt64SliceBuilder }
+func (_this *int64SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *int64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -638,7 +638,7 @@ func (_this *int64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 }
 
 func (_this *int64SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToInt64SliceGenerator().BuildBeginListContents(ctx)
+	listToInt64SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -648,7 +648,7 @@ type float32ArrayBuilder struct {
 }
 
 func newFloat32ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &float32ArrayBuilder{
 			dstType: dstType,
 		}
@@ -679,15 +679,15 @@ func (_this *float32ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.
 
 func (_this *float32ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type float32SliceBuilder struct{}
 
 var globalFloat32SliceBuilder = &float32SliceBuilder{}
 
-func generateFloat32SliceBuilder() ObjectBuilder  { return globalFloat32SliceBuilder }
-func (_this *float32SliceBuilder) String() string { return nameOf(_this) }
+func generateFloat32SliceBuilder(ctx *Context) ObjectBuilder { return globalFloat32SliceBuilder }
+func (_this *float32SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *float32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -714,7 +714,7 @@ func (_this *float32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.
 }
 
 func (_this *float32SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToFloat32SliceGenerator().BuildBeginListContents(ctx)
+	listToFloat32SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 // ============================================================================
@@ -724,7 +724,7 @@ type float64ArrayBuilder struct {
 }
 
 func newFloat64ArrayBuilderGenerator(dstType reflect.Type) BuilderGenerator {
-	return func() ObjectBuilder {
+	return func(ctx *Context) ObjectBuilder {
 		return &float64ArrayBuilder{
 			dstType: dstType,
 		}
@@ -759,15 +759,15 @@ func (_this *float64ArrayBuilder) BuildFromArray(ctx *Context, arrayType events.
 
 func (_this *float64ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator := newArrayBuilderGenerator(ctx.GetBuilderGeneratorForType, _this.dstType)
-	generator().BuildBeginListContents(ctx)
+	generator(ctx).BuildBeginListContents(ctx)
 }
 
 type float64SliceBuilder struct{}
 
 var globalFloat64SliceBuilder = &float64SliceBuilder{}
 
-func generateFloat64SliceBuilder() ObjectBuilder  { return globalFloat64SliceBuilder }
-func (_this *float64SliceBuilder) String() string { return nameOf(_this) }
+func generateFloat64SliceBuilder(ctx *Context) ObjectBuilder { return globalFloat64SliceBuilder }
+func (_this *float64SliceBuilder) String() string            { return nameOf(_this) }
 
 func (_this *float64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
@@ -798,5 +798,5 @@ func (_this *float64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.
 }
 
 func (_this *float64SliceBuilder) BuildBeginListContents(ctx *Context) {
-	listToFloat64SliceGenerator().BuildBeginListContents(ctx)
+	listToFloat64SliceGenerator(ctx).BuildBeginListContents(ctx)
 }

@@ -110,9 +110,9 @@ func (_this *Session) GetBuilderGeneratorForType(dstType reflect.Type) BuilderGe
 	var builderGenerator BuilderGenerator
 
 	wg.Add(1)
-	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func() ObjectBuilder {
+	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func(ctx *Context) ObjectBuilder {
 		wg.Wait()
-		return builderGenerator()
+		return builderGenerator(ctx)
 	}))
 	if loaded {
 		return storedBuilderGenerator.(BuilderGenerator)
@@ -130,7 +130,7 @@ func (_this *Session) GetBuilderGeneratorForType(dstType reflect.Type) BuilderGe
 func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) BuilderGenerator {
 	switch dstType.Kind() {
 	case reflect.Bool:
-		return generateDirectBuilder
+		return generateBoolBuilder
 	case reflect.String:
 		return generateStringBuilder
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:

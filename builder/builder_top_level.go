@@ -35,96 +35,96 @@ import (
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
 // are properly built. See BuildInitiateList and BuildInitiateMap.
 type topLevelBuilder struct {
-	builder ObjectBuilder
-	root    *RootBuilder
+	builderGenerator BuilderGenerator
+	root             *RootBuilder
 }
 
-func newTopLevelBuilder(root *RootBuilder, builder ObjectBuilder) ObjectBuilder {
+func newTopLevelBuilder(root *RootBuilder, builderGenerator BuilderGenerator) ObjectBuilder {
 	return &topLevelBuilder{
-		builder: builder,
-		root:    root,
+		builderGenerator: builderGenerator,
+		root:             root,
 	}
 }
 
 func (_this *topLevelBuilder) String() string { return reflect.TypeOf(_this).String() }
 
 func (_this *topLevelBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromNil(ctx, dst)
+	_this.builderGenerator(ctx).BuildFromNil(ctx, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromBool(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromBool(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromInt(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromInt(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromUint(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromUint(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromBigInt(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromBigInt(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromFloat(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromFloat(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromBigFloat(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromBigFloat(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromDecimalFloat(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromDecimalFloat(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromBigDecimalFloat(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromBigDecimalFloat(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromUUID(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromUUID(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromArray(ctx, arrayType, value, dst)
+	_this.builderGenerator(ctx).BuildFromArray(ctx, arrayType, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromTime(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromTime(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
-	_this.builder.BuildFromCompactTime(ctx, value, dst)
+	_this.builderGenerator(ctx).BuildFromCompactTime(ctx, value, dst)
 	return dst
 }
 
 func (_this *topLevelBuilder) BuildInitiateList(ctx *Context) {
-	if reflect.TypeOf(_this.builder) == reflect.TypeOf((*interfaceBuilder)(nil)) {
-		_this.builder = interfaceSliceBuilderGenerator()
+	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf((*interfaceBuilder)(nil)) {
+		_this.builderGenerator = interfaceSliceBuilderGenerator
 	}
-	_this.builder.BuildBeginListContents(ctx)
+	_this.builderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *topLevelBuilder) BuildInitiateMap(ctx *Context) {
-	if reflect.TypeOf(_this.builder) == reflect.TypeOf(interfaceBuilder{}) {
-		_this.builder = interfaceMapBuilderGenerator()
+	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf(interfaceBuilder{}) {
+		_this.builderGenerator = interfaceMapBuilderGenerator
 	}
-	_this.builder.BuildBeginMapContents(ctx)
+	_this.builderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *topLevelBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
