@@ -172,7 +172,7 @@ func assertBuildWithSession(t *testing.T, session *Session, expected interface{}
 }
 
 func assertBuildPanics(t *testing.T, template interface{}, events ...*test.TEvent) {
-	test.AssertPanics(t, func() {
+	test.AssertPanics(t, "build", func() {
 		runBuild(NewSession(nil, nil), template, events...)
 	})
 }

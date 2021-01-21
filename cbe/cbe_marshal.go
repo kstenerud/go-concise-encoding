@@ -41,7 +41,7 @@ import (
 // iterator session so that cached iterator information is not lost between
 // multiple calls to marshal.
 type Marshaler struct {
-	Session *iterator.Session
+	session iterator.Session
 	encoder Encoder
 	opts    options.CBEMarshalerOptions
 }
@@ -59,14 +59,14 @@ func NewMarshaler(opts *options.CBEMarshalerOptions) *Marshaler {
 func (_this *Marshaler) Init(opts *options.CBEMarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
-	_this.Session = iterator.NewSession(nil, &_this.opts.Session)
+	_this.session.Init(nil, &_this.opts.Session)
 	_this.encoder.Init(&_this.opts.Encoder)
 }
 
 // Marshal a go object into a CBE document, written to writer.
 func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error) {
-	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
+	if !debug.DebugOptions.PassThroughPanics {
+		defer func() {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:
@@ -75,11 +75,11 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 					err = fmt.Errorf("%v", r)
 				}
 			}
-		}
-	}()
+		}()
+	}
 
 	_this.encoder.PrepareToEncode(writer)
-	iterator := _this.Session.NewIterator(&_this.encoder, &_this.opts.Iterator)
+	iterator := _this.session.NewIterator(&_this.encoder, &_this.opts.Iterator)
 	iterator.Iterate(object)
 	return
 }
@@ -99,9 +99,10 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 // builder session so that cached builder information is not lost between
 // multiple calls to unmarshal.
 type Unmarshaler struct {
-	Session *builder.Session
+	session builder.Session
 	decoder Decoder
 	opts    options.CBEUnmarshalerOptions
+	rules   rules.Rules
 }
 
 // Create a new unmarshaler with the specified options.
@@ -117,15 +118,16 @@ func NewUnmarshaler(opts *options.CBEUnmarshalerOptions) *Unmarshaler {
 func (_this *Unmarshaler) Init(opts *options.CBEUnmarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
-	_this.Session = builder.NewSession(nil, &_this.opts.Session)
+	_this.session.Init(nil, &_this.opts.Session)
 	_this.decoder.Init(&_this.opts.Decoder)
+	_this.rules.Init(nil, &_this.opts.Rules)
 }
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
-	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
+	if !debug.DebugOptions.PassThroughPanics {
+		defer func() {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:
@@ -134,13 +136,15 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 					err = fmt.Errorf("%v", r)
 				}
 			}
-		}
-	}()
+		}()
+	}
 
-	builder := _this.Session.NewBuilderFor(template, &_this.opts.Builder)
+	builder := _this.session.NewBuilderFor(template, &_this.opts.Builder)
 	receiver := events.DataEventReceiver(builder)
 	if _this.opts.EnforceRules {
-		receiver = rules.NewRules(receiver, &_this.opts.Rules)
+		_this.rules.Reset()
+		_this.rules.SetNextReceiver(receiver)
+		receiver = &_this.rules
 	}
 	if err = _this.decoder.Decode(reader, receiver); err != nil {
 		return

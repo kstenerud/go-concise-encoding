@@ -192,19 +192,19 @@ func ReportPanic(function func()) (err error) {
 	return
 }
 
-func AssertNoPanic(t *testing.T, function func()) {
+func AssertNoPanic(t *testing.T, name interface{}, function func()) {
 	if debug.DebugOptions.PassThroughPanics {
 		function()
 	} else {
 		if err := ReportPanic(function); err != nil {
-			t.Errorf("Unexpected error: %v", err)
+			t.Errorf("Unexpected error in %v: %v", name, err)
 		}
 	}
 }
 
-func AssertPanics(t *testing.T, function func()) bool {
+func AssertPanics(t *testing.T, name interface{}, function func()) bool {
 	if err := ReportPanic(function); err == nil {
-		t.Errorf("Expected an error")
+		t.Errorf("Expected an error in %v", name)
 		return false
 	}
 	return true
@@ -285,7 +285,7 @@ var (
 	EvS      = S("a")
 	EvSB     = SB()
 	EvRID    = RID("http://z.com")
-	EvUB     = RB()
+	EvRB     = RB()
 	EvCUB    = CUB([]byte{1})
 	EvCBB    = CBB()
 	EvCUT    = CUT("a")
@@ -322,7 +322,7 @@ var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
-	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvRID, EvUB,
+	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
 	EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
@@ -344,18 +344,26 @@ func ComplementaryEvents(events []*TEvent) []*TEvent {
 }
 
 var (
+	MarkerIDTypes        = []*TEvent{EvPAD, EvPI, EvI, EvBI, EvS, EvSB}
+	InvalidMarkerIDTypes = ComplementaryEvents(MarkerIDTypes)
+
+	ReferenceIDTypes        = []*TEvent{EvPAD, EvPI, EvI, EvBI, EvS, EvSB, EvRID, EvRB}
+	InvalidReferenceIDTypes = ComplementaryEvents(ReferenceIDTypes)
+
+	KeyableReferenceIDTypes        = []*TEvent{EvPAD, EvPI, EvI, EvBI, EvS, EvSB}
+	InvalidKeyableReferenceIDTypes = ComplementaryEvents(KeyableReferenceIDTypes)
+
 	ArrayBeginTypes = []*TEvent{
-		EvSB, EvUB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
+		EvSB, EvRB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
 		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB,
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
-	InvalidTLOValues = []*TEvent{EvBD, EvV, EvE, EvAC, EvAD}
+	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
 
 	ValidMapKeys = []*TEvent{
-		EvPAD, EvB, EvTT, EvFF, EvB, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvUB, EvCUB,
-		EvCBB, EvCUT, EvCTB, EvMETA, EvCMT, EvE,
+		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
+		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvREF, EvMETA, EvCMT, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
@@ -368,7 +376,10 @@ var (
 	ValidCommentValues   = []*TEvent{EvCMT, EvE, EvS, EvSB, EvPAD}
 	InvalidCommentValues = ComplementaryEvents(ValidCommentValues)
 
-	ValidMarkupNames   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI}
+	ValidMarkupNames = []*TEvent{
+		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
+		EvUUID, EvGT, EvCT, EvMARK, EvREF, EvS, EvSB, EvRID, EvRB,
+	}
 	InvalidMarkupNames = ComplementaryEvents(ValidMarkupNames)
 
 	ValidMarkupContents   = []*TEvent{EvPAD, EvS, EvSB, EvMUP, EvCMT, EvE}
@@ -384,9 +395,9 @@ var (
 	InvalidMarkerIDs = ComplementaryEvents(ValidMarkerIDs)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMETA, EvCMT, EvMARK}
 
-	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvRID, EvUB}
+	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvRID, EvRB}
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
 )
 

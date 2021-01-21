@@ -277,7 +277,7 @@ func assertEncodeNoRules(t *testing.T, opts *options.CTEEncoderOptions, expected
 }
 
 func assertEncodeFails(t *testing.T, opts *options.CTEEncoderOptions, events ...*test.TEvent) {
-	test.AssertPanics(t, func() {
+	test.AssertPanics(t, "encode", func() {
 		encodeEvents(opts, events...)
 	})
 }

@@ -290,7 +290,7 @@ func assertEncode(t *testing.T, opts *options.CBEEncoderOptions, expectedDocumen
 }
 
 func assertEncodeFails(t *testing.T, opts *options.CBEEncoderOptions, events ...*test.TEvent) (successful bool) {
-	successful = test.AssertPanics(t, func() {
+	successful = test.AssertPanics(t, "encode", func() {
 		encodeEvents(opts, events...)
 	})
 	return

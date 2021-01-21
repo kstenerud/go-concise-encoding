@@ -28,10 +28,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
-func TestEncodeDecodeVersion(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(1), ED())
-}
-
 func TestEncodeDecodeNil(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), N(), ED())
 }

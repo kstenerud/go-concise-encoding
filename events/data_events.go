@@ -38,6 +38,10 @@ type ArrayType uint8
 
 const (
 	ArrayTypeInvalid ArrayType = iota
+	ArrayTypeString
+	ArrayTypeResourceID
+	ArrayTypeCustomText
+	ArrayTypeCustomBinary
 	ArrayTypeBoolean
 	ArrayTypeUint8
 	ArrayTypeUint16
@@ -51,10 +55,6 @@ const (
 	ArrayTypeFloat32
 	ArrayTypeFloat64
 	ArrayTypeUUID
-	ArrayTypeString
-	ArrayTypeResourceID
-	ArrayTypeCustomBinary
-	ArrayTypeCustomText
 )
 
 func (_this ArrayType) String() string {
@@ -67,6 +67,10 @@ func (_this ArrayType) ElementSize() int {
 
 var arrayTypeNames = [...]string{
 	ArrayTypeInvalid:      "Invalid",
+	ArrayTypeString:       "String",
+	ArrayTypeResourceID:   "ResourceID",
+	ArrayTypeCustomText:   "Custom Text",
+	ArrayTypeCustomBinary: "Custom Binary",
 	ArrayTypeBoolean:      "Boolean",
 	ArrayTypeUint8:        "Uint8",
 	ArrayTypeUint16:       "Uint16",
@@ -80,14 +84,14 @@ var arrayTypeNames = [...]string{
 	ArrayTypeFloat32:      "Float32",
 	ArrayTypeFloat64:      "Float64",
 	ArrayTypeUUID:         "UUID",
-	ArrayTypeString:       "String",
-	ArrayTypeResourceID:   "ResourceID",
-	ArrayTypeCustomBinary: "Custom Binary",
-	ArrayTypeCustomText:   "Custom Text",
 }
 
 var arrayTypeElementSizes = [...]int{
 	ArrayTypeInvalid:      0,
+	ArrayTypeString:       8,
+	ArrayTypeResourceID:   8,
+	ArrayTypeCustomText:   8,
+	ArrayTypeCustomBinary: 8,
 	ArrayTypeBoolean:      1,
 	ArrayTypeUint8:        8,
 	ArrayTypeUint16:       16,
@@ -101,10 +105,6 @@ var arrayTypeElementSizes = [...]int{
 	ArrayTypeFloat32:      32,
 	ArrayTypeFloat64:      64,
 	ArrayTypeUUID:         128,
-	ArrayTypeString:       8,
-	ArrayTypeResourceID:   8,
-	ArrayTypeCustomBinary: 8,
-	ArrayTypeCustomText:   8,
 }
 
 // DataEventReceiver receives data events (int, string, etc) and performs

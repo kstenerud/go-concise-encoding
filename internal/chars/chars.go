@@ -22,6 +22,32 @@ package chars
 
 const EndOfDocumentMarker = 0x100
 
+func CalculateRuneByteCount(startByte byte) int {
+	return int(runeByteCounts[startByte>>3])
+}
+
+// Returns the index of the start of the last UTF-8 rune in data, and whether
+// it's complete or not.
+//
+// If data is empty, returns (0, true)
+// If there are no rune starts, returns (0, false)
+// If there is a rune start, returns (index-of-rune-start, is-a-complete-rune)
+func IndexOfLastRuneStart(data []byte) (index int, isCompleteRune bool) {
+	dataLength := len(data)
+	if dataLength == 0 {
+		return 0, true
+	}
+
+	for index = dataLength - 1; index >= 0; index-- {
+		runeByteCount := CalculateRuneByteCount(data[index])
+		if runeByteCount > 0 {
+			isCompleteRune = index+runeByteCount == dataLength
+			return
+		}
+	}
+	return
+}
+
 func (_this CharProperty) HasProperty(property CharProperty) bool {
 	return _this&property != 0
 }

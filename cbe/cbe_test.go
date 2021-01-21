@@ -29,7 +29,7 @@ import (
 )
 
 func TestCBEVersion(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version}, BD(), V(1), ED())
+	assertDecodeEncode(t, []byte{header, version, 1}, BD(), V(1), I(1), ED())
 }
 
 func TestCBEPadding(t *testing.T) {

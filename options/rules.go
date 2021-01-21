@@ -20,25 +20,17 @@
 
 package options
 
-import (
-	"github.com/kstenerud/go-concise-encoding/version"
-)
-
 // ============================================================================
 // Rules
 
 type RuleOptions struct {
-	// Concise encoding spec version to adhere to
-	ConciseEncodingVersion uint64
-
 	// Limits before the ruleset artificially terminates with an error.
-	MaxBytesLength      uint64
-	MaxStringLength     uint64
-	MaxResourceIDLength uint64
-	MaxMarkupNameLength uint64
-	MaxContainerDepth   uint64
-	MaxObjectCount      uint64
-	MaxReferenceCount   uint64
+	MaxArrayByteLength      uint64
+	MaxStringByteLength     uint64
+	MaxResourceIDByteLength uint64
+	MaxContainerDepth       uint64
+	MaxObjectCount          uint64
+	MaxReferenceCount       uint64
 
 	// TODO: Max bytes total for all array types
 	MaxTotalArrayBytes uint64
@@ -48,14 +40,12 @@ type RuleOptions struct {
 
 func DefaultRuleOptions() *RuleOptions {
 	return &RuleOptions{
-		ConciseEncodingVersion: version.ConciseEncodingVersion,
-		MaxBytesLength:         1000000000,
-		MaxStringLength:        100000000,
-		MaxResourceIDLength:    10000,
-		MaxMarkupNameLength:    100,
-		MaxContainerDepth:      1000,
-		MaxObjectCount:         10000000,
-		MaxReferenceCount:      100000,
+		MaxArrayByteLength:      1000000000,
+		MaxStringByteLength:     100000000,
+		MaxResourceIDByteLength: 10000,
+		MaxContainerDepth:       1000,
+		MaxObjectCount:          10000000,
+		MaxReferenceCount:       100000,
 		// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 	}
 }
@@ -66,20 +56,20 @@ func (_this *RuleOptions) WithDefaultsApplied() *RuleOptions {
 		return defaults
 	}
 
-	if _this.ConciseEncodingVersion < 1 {
-		_this.ConciseEncodingVersion = defaults.ConciseEncodingVersion
+	if _this.MaxArrayByteLength < 1 {
+		_this.MaxArrayByteLength = defaults.MaxArrayByteLength
 	}
-	if _this.MaxBytesLength < 1 {
-		_this.MaxBytesLength = defaults.MaxBytesLength
+	if _this.MaxStringByteLength < 1 {
+		_this.MaxStringByteLength = defaults.MaxStringByteLength
 	}
-	if _this.MaxStringLength < 1 {
-		_this.MaxStringLength = defaults.MaxStringLength
+	if _this.MaxStringByteLength > _this.MaxArrayByteLength {
+		_this.MaxStringByteLength = _this.MaxArrayByteLength
 	}
-	if _this.MaxResourceIDLength < 1 {
-		_this.MaxResourceIDLength = defaults.MaxResourceIDLength
+	if _this.MaxResourceIDByteLength < 1 {
+		_this.MaxResourceIDByteLength = defaults.MaxResourceIDByteLength
 	}
-	if _this.MaxMarkupNameLength < 1 {
-		_this.MaxMarkupNameLength = defaults.MaxMarkupNameLength
+	if _this.MaxResourceIDByteLength > _this.MaxArrayByteLength {
+		_this.MaxResourceIDByteLength = _this.MaxArrayByteLength
 	}
 	if _this.MaxContainerDepth < 1 {
 		_this.MaxContainerDepth = defaults.MaxContainerDepth

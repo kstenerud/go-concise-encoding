@@ -8,6 +8,7 @@ require (
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/kstenerud/go-compact-float v1.4.9
 	github.com/kstenerud/go-compact-time v1.4.0
+	github.com/kstenerud/go-concise-encoding/codegen v0.0.0-20210106073619-ca462199a944
 	github.com/kstenerud/go-describe v1.2.13
 	github.com/kstenerud/go-duplicates v1.1.1
 	github.com/kstenerud/go-equivalence v1.0.4

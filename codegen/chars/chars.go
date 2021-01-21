@@ -104,6 +104,41 @@ func GenerateCode(projectDir string, xmlPath string) {
 	fatalIfError(err, "Error writing to %v: %v", outPath, err)
 	err = exportAsciiProperties(properties, writer)
 	fatalIfError(err, "Error writing to %v: %v", outPath, err)
+
+	generateRuneByteCounts(writer)
+}
+
+func getUTF8ByteCount(firstByte byte) int {
+	if firstByte&0x80 == 0 {
+		return 1
+	}
+	if firstByte&0xe0 == 0xc0 {
+		return 2
+	}
+	if firstByte&0xf0 == 0xe0 {
+		return 3
+	}
+	if firstByte&0xf8 == 0xf0 {
+		return 4
+	}
+	return 0
+}
+
+func generateRuneByteCounts(writer io.Writer) {
+	if _, err := writer.Write([]byte("var runeByteCounts = [32]byte{\n")); err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < 32; i++ {
+		byteCount := getUTF8ByteCount(byte(i << 3))
+		if _, err := writer.Write([]byte(fmt.Sprintf("\t0x%02x: %d,\n", i, byteCount))); err != nil {
+			panic(err)
+		}
+	}
+
+	if _, err := writer.Write([]byte("}\n\n")); err != nil {
+		panic(err)
+	}
 }
 
 func charRange(low, high rune) (result []rune) {
@@ -215,6 +250,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 		return char.Codepoint <= 0x7f
 	})...)
 	properties.AddLL(CharNeedsQuoteFirst, '-')
+	properties.Add(CharNeedsQuoteFirst, charRange('0', '9')...)
 
 	properties.AddLL(CharNeedsEscapeQuoted, '\\', '"')
 	properties.AddLL(CharNeedsEscapeArray, '\\', '|', '\t', '\r', '\n')
@@ -298,7 +334,7 @@ func exportAsciiProperties(properties CharProperties, writer io.Writer) error {
 	}
 	sort.Ints(runes)
 
-	if _, err := fmt.Fprintf(writer, "var asciiProperties = [257]CharProperty{\n"); err != nil {
+	if _, err := fmt.Fprintf(writer, "var asciiProperties = [0x101]CharProperty{\n"); err != nil {
 		return err
 	}
 	for _, k := range runes {
@@ -310,6 +346,7 @@ func exportAsciiProperties(properties CharProperties, writer io.Writer) error {
 			}
 		}
 	}
+
 	_, err := fmt.Fprintf(writer, "\t/* EOF */ 0x100: CharIsObjectEnd|CharNeedsQuote,\n}\n")
 	return err
 }

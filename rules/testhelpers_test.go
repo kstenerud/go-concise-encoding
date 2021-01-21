@@ -27,6 +27,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/version"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -125,7 +127,7 @@ var (
 	EvS      = test.EvS
 	EvSB     = test.EvSB
 	EvRID    = test.EvRID
-	EvUB     = test.EvUB
+	EvRB     = test.EvRB
 	EvCUB    = test.EvCUB
 	EvCBB    = test.EvCBB
 	EvCUT    = test.EvCUT
@@ -159,31 +161,37 @@ var (
 )
 
 var (
-	ArrayBeginTypes        = test.ArrayBeginTypes
-	ValidTLOValues         = test.ValidTLOValues
-	InvalidTLOValues       = test.InvalidTLOValues
-	ValidMapKeys           = test.ValidMapKeys
-	InvalidMapKeys         = test.InvalidMapKeys
-	ValidMapValues         = test.ValidMapValues
-	InvalidMapValues       = test.InvalidMapValues
-	ValidListValues        = test.ValidListValues
-	InvalidListValues      = test.InvalidListValues
-	ValidCommentValues     = test.ValidCommentValues
-	InvalidCommentValues   = test.InvalidCommentValues
-	ValidMarkupNames       = test.ValidMarkupNames
-	InvalidMarkupNames     = test.InvalidMarkupNames
-	ValidMarkupContents    = test.ValidMarkupContents
-	InvalidMarkupContents  = test.InvalidMarkupContents
-	ValidAfterArrayBegin   = test.ValidAfterArrayBegin
-	InvalidAfterArrayBegin = test.InvalidAfterArrayBegin
-	ValidAfterArrayChunk   = test.ValidAfterArrayChunk
-	InvalidAfterArrayChunk = test.InvalidAfterArrayChunk
-	ValidMarkerIDs         = test.ValidMarkerIDs
-	InvalidMarkerIDs       = test.InvalidMarkerIDs
-	ValidMarkerValues      = test.ValidMarkerValues
-	InvalidMarkerValues    = test.InvalidMarkerValues
-	ValidReferenceIDs      = test.ValidReferenceIDs
-	InvalidReferenceIDs    = test.InvalidReferenceIDs
+	MarkerIDTypes                  = test.MarkerIDTypes
+	InvalidMarkerIDTypes           = test.InvalidMarkerIDTypes
+	ReferenceIDTypes               = test.ReferenceIDTypes
+	InvalidReferenceIDTypes        = test.InvalidReferenceIDTypes
+	KeyableReferenceIDTypes        = test.KeyableReferenceIDTypes
+	InvalidKeyableReferenceIDTypes = test.InvalidKeyableReferenceIDTypes
+	ArrayBeginTypes                = test.ArrayBeginTypes
+	ValidTLOValues                 = test.ValidTLOValues
+	InvalidTLOValues               = test.InvalidTLOValues
+	ValidMapKeys                   = test.ValidMapKeys
+	InvalidMapKeys                 = test.InvalidMapKeys
+	ValidMapValues                 = test.ValidMapValues
+	InvalidMapValues               = test.InvalidMapValues
+	ValidListValues                = test.ValidListValues
+	InvalidListValues              = test.InvalidListValues
+	ValidCommentValues             = test.ValidCommentValues
+	InvalidCommentValues           = test.InvalidCommentValues
+	ValidMarkupNames               = test.ValidMarkupNames
+	InvalidMarkupNames             = test.InvalidMarkupNames
+	ValidMarkupContents            = test.ValidMarkupContents
+	InvalidMarkupContents          = test.InvalidMarkupContents
+	ValidAfterArrayBegin           = test.ValidAfterArrayBegin
+	InvalidAfterArrayBegin         = test.InvalidAfterArrayBegin
+	ValidAfterArrayChunk           = test.ValidAfterArrayChunk
+	InvalidAfterArrayChunk         = test.InvalidAfterArrayChunk
+	ValidMarkerIDs                 = test.ValidMarkerIDs
+	InvalidMarkerIDs               = test.InvalidMarkerIDs
+	ValidMarkerValues              = test.ValidMarkerValues
+	InvalidMarkerValues            = test.InvalidMarkerValues
+	ValidReferenceIDs              = test.ValidReferenceIDs
+	InvalidReferenceIDs            = test.InvalidReferenceIDs
 )
 
 func ComplementaryEvents(events []*test.TEvent) []*test.TEvent {
@@ -267,84 +275,84 @@ const rulesCodecVersion = 1
 
 var uint8Type = reflect.TypeOf(uint8(0))
 
-func assertEvents(t *testing.T, rules *Rules, events ...*test.TEvent) {
-	test.AssertNoPanic(t, func() {
-		InvokeEvents(rules, events...)
+func assertEventsSucceed(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
+	test.AssertNoPanic(t, events, func() {
+		InvokeEvents(receiver, events...)
 	})
 }
 
-func assertEventsFail(t *testing.T, rules *Rules, events ...*test.TEvent) {
-	test.AssertPanics(t, func() {
-		InvokeEvents(rules, events...)
+func assertEachEventSucceeds(t *testing.T, prefix func() events.DataEventReceiver, events ...*test.TEvent) {
+	for _, event := range events {
+		assertEventsSucceed(t, prefix(), event)
+	}
+}
+
+func assertEventsFail(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
+	test.AssertPanics(t, events, func() {
+		InvokeEvents(receiver, events...)
 	})
+}
+
+func assertEachEventFails(t *testing.T, prefix func() events.DataEventReceiver, events ...*test.TEvent) {
+	for _, event := range events {
+		assertEventsFail(t, prefix(), event)
+	}
 }
 
 func assertEventsMaxDepth(t *testing.T, maxDepth int, events ...*test.TEvent) {
 	rules := newRulesWithMaxDepth(maxDepth)
-	assertEvents(t, rules, events...)
+	assertEventsSucceed(t, rules, events...)
 }
 
 func assertRulesOnString(t *testing.T, rules *Rules, value string) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeString) })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
+	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeString) })
+	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(value)) })
+		test.AssertNoPanic(t, value, func() { rules.OnArrayData([]byte(value)) })
 	}
 }
 
 func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
+	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
+	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
+		test.AssertNoPanic(t, value, func() { rules.OnArrayData(value) })
 	}
 }
 
 func assertRulesAddRID(t *testing.T, rules *Rules, ResourceID string) {
 	length := len(ResourceID)
-	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeResourceID) })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
+	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayBegin(events.ArrayTypeResourceID) })
+	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData([]byte(ResourceID)) })
+		test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayData([]byte(ResourceID)) })
 	}
 }
 
 func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
+	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
+	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
+		test.AssertNoPanic(t, value, func() { rules.OnArrayData(value) })
 	}
 }
 
 func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
 	length := len(value)
-	test.AssertNoPanic(t, func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
-	test.AssertNoPanic(t, func() { rules.OnArrayChunk(uint64(length), false) })
+	test.AssertNoPanic(t, string(value), func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
+	test.AssertNoPanic(t, string(value), func() { rules.OnArrayChunk(uint64(length), false) })
 	if length > 0 {
-		test.AssertNoPanic(t, func() { rules.OnArrayData(value) })
-	}
-}
-
-func assertRulesInArray(t *testing.T, rules *Rules) {
-	if rules.arrayType == events.ArrayTypeInvalid {
-		t.Errorf("Expected to be in array")
-	}
-}
-
-func assertRulesNotInArray(t *testing.T, rules *Rules) {
-	if rules.arrayType != events.ArrayTypeInvalid {
-		t.Errorf("Expected to not be in array")
+		test.AssertNoPanic(t, value, func() { rules.OnArrayData(value) })
 	}
 }
 
 func newRulesAfterVersion(opts *options.RuleOptions) *Rules {
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	rules.OnBeginDocument()
-	rules.OnVersion(opts.ConciseEncodingVersion)
+	rules.OnVersion(version.ConciseEncodingVersion)
 	return rules
 }
 
