@@ -148,6 +148,7 @@ type DataEventReceiver interface {
 	OnEnd()
 	OnMarker()
 	OnReference()
+	OnConcatenate()
 	OnConstant(name []byte, explicitValue bool)
 
 	// WARNING: Do not directly store pointers to the data passed via array or
@@ -197,5 +198,6 @@ func (_this *NullEventReceiver) OnComment()                          {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker()                           {}
 func (_this *NullEventReceiver) OnReference()                        {}
+func (_this *NullEventReceiver) OnConcatenate()                      {}
 func (_this *NullEventReceiver) OnConstant(_ []byte, _ bool)         {}
 func (_this *NullEventReceiver) OnEndDocument()                      {}

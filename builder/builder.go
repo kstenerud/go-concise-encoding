@@ -56,6 +56,7 @@ type ObjectBuilder interface {
 	BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value
 	BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value
 	BuildFromReference(ctx *Context, id interface{})
+	BuildConcatenate(ctx *Context)
 
 	// Signals that a new source container has begun.
 	// This gets triggered from a data event.

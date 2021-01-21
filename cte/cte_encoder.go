@@ -342,6 +342,10 @@ func (_this *Encoder) OnReference() {
 	_this.engine.BeginReference()
 }
 
+func (_this *Encoder) OnConcatenate() {
+	panic("TODO: CTE Encoder.OnConcatenate")
+}
+
 func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
 	_this.engine.BeginObject()
 	_this.stream.AddByte('#')

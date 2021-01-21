@@ -355,6 +355,10 @@ func (_this *Encoder) OnReference() {
 	_this.encodeType(cbeTypeReference)
 }
 
+func (_this *Encoder) OnConcatenate() {
+	_this.encodeType(cbeTypeConcatenate)
+}
+
 func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
 	if !explicitValue {
 		_this.errorf("Cannot encode constant %s without explicit value", string(name))

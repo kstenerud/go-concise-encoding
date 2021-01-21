@@ -87,7 +87,7 @@ const (
 	cbeTypeCustomText   cbeTypeField = 0x93
 	cbeTypeArray        cbeTypeField = 0x94
 	cbeTypeReserved95   cbeTypeField = 0x95
-	cbeTypeReserved96   cbeTypeField = 0x96
+	cbeTypeConcatenate  cbeTypeField = 0x96
 	cbeTypeMarker       cbeTypeField = 0x97
 	cbeTypeReference    cbeTypeField = 0x98
 	cbeTypeDate         cbeTypeField = 0x99

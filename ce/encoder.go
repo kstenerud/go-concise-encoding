@@ -75,5 +75,6 @@ type Encoder interface {
 	OnEnd()
 	OnMarker()
 	OnReference()
+	OnConcatenate()
 	OnConstant(name []byte, explicitValue bool)
 }

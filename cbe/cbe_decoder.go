@@ -185,6 +185,8 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnMarker()
 		case cbeTypeReference:
 			_this.eventReceiver.OnReference()
+		case cbeTypeConcatenate:
+			_this.eventReceiver.OnConcatenate()
 		case cbeTypeDate:
 			_this.eventReceiver.OnCompactTime(_this.buffer.DecodeDate())
 		case cbeTypeTime:

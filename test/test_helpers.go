@@ -280,6 +280,7 @@ var (
 	EvE      = E()
 	EvMARK   = MARK()
 	EvREF    = REF()
+	EvCAT    = CAT()
 	EvAC     = AC(1, false)
 	EvAD     = AD([]byte{1})
 	EvS      = S("a")
@@ -322,7 +323,7 @@ var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
-	EvCMT, EvE, EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
+	EvCMT, EvE, EvMARK, EvREF, EvCAT, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
 	EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
@@ -359,7 +360,7 @@ var (
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
-	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
+	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvCAT}
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
@@ -368,10 +369,10 @@ var (
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
 	ValidMapValues   = ComplementaryEvents(InvalidMapValues)
-	InvalidMapValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
+	InvalidMapValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvCAT}
 
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
-	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvCAT}
 
 	ValidCommentValues   = []*TEvent{EvCMT, EvE, EvS, EvSB, EvPAD}
 	InvalidCommentValues = ComplementaryEvents(ValidCommentValues)
@@ -395,7 +396,7 @@ var (
 	InvalidMarkerIDs = ComplementaryEvents(ValidMarkerIDs)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMETA, EvCMT, EvMARK}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMETA, EvCMT, EvMARK, EvCAT}
 
 	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvRID, EvRB}
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
@@ -472,6 +473,7 @@ const (
 	TEventEnd
 	TEventMarker
 	TEventReference
+	TEventConcatenate
 	TEventConstant
 	TEventEndDocument
 )
@@ -541,6 +543,7 @@ var TEventNames = []string{
 	TEventEnd:               "E",
 	TEventMarker:            "MARK",
 	TEventReference:         "REF",
+	TEventConcatenate:       "CAT",
 	TEventConstant:          "CONST",
 	TEventEndDocument:       "ED",
 }
@@ -730,6 +733,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnMarker()
 	case TEventReference:
 		receiver.OnReference()
+	case TEventConcatenate:
+		receiver.OnConcatenate()
 	case TEventConstant:
 		receiver.OnConstant(_this.V1.([]byte), _this.V2.(bool))
 	case TEventEndDocument:
@@ -813,6 +818,7 @@ func CMT() *TEvent                      { return newTEvent(TEventComment, nil, n
 func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func MARK() *TEvent                     { return newTEvent(TEventMarker, nil, nil) }
 func REF() *TEvent                      { return newTEvent(TEventReference, nil, nil) }
+func CAT() *TEvent                      { return newTEvent(TEventConcatenate, nil, nil) }
 func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, []byte(n), e) }
 func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
@@ -1120,6 +1126,10 @@ func (h *TEventPrinter) OnReference() {
 	h.Print(REF())
 	h.Next.OnReference()
 }
+func (h *TEventPrinter) OnConcatenate() {
+	h.Print(CAT())
+	h.Next.OnConcatenate()
+}
 func (h *TEventPrinter) OnConstant(name []byte, explicitValue bool) {
 	h.Print(CONST(string(name), explicitValue))
 	h.Next.OnConstant(name, explicitValue)
@@ -1260,6 +1270,7 @@ func (h *TER) OnComment()                             { h.add(CMT()) }
 func (h *TER) OnEnd()                                 { h.add(E()) }
 func (h *TER) OnMarker()                              { h.add(MARK()) }
 func (h *TER) OnReference()                           { h.add(REF()) }
+func (h *TER) OnConcatenate()                         { h.add(CAT()) }
 func (h *TER) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
 func (h *TER) OnBeginDocument()                       { h.add(BD()) }
 func (h *TER) OnEndDocument()                         { h.add(ED()) }

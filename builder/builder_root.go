@@ -229,6 +229,9 @@ func (_this *RootBuilder) OnMarker() {
 func (_this *RootBuilder) OnReference() {
 	_this.context.StackBuilder(newReferenceIDBuilder())
 }
+func (_this *RootBuilder) OnConcatenate() {
+	_this.context.CurrentBuilder.BuildConcatenate(&_this.context)
+}
 func (_this *RootBuilder) OnConstant(name []byte, explicitValue bool) {
 	if !explicitValue {
 		panic(fmt.Errorf("Cannot build from constant %s without explicit value", string(name)))

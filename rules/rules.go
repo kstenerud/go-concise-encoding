@@ -249,6 +249,10 @@ func (_this *Rules) OnArrayData(data []byte) {
 	_this.receiver.OnArrayData(data)
 }
 
+func (_this *Rules) OnConcatenate() {
+	panic("TODO: Rules.OnConcatenate")
+}
+
 func (_this *Rules) OnList() {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnList(&_this.context)
