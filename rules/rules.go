@@ -93,10 +93,10 @@ func (_this *Rules) OnPadding(count int) {
 	_this.receiver.OnPadding(count)
 }
 
-func (_this *Rules) OnNull() {
+func (_this *Rules) OnNA() {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context)
-	_this.receiver.OnNull()
+	_this.receiver.OnNA()
 }
 
 func (_this *Rules) OnBool(value bool) {
@@ -137,7 +137,7 @@ func (_this *Rules) OnInt(value int64) {
 
 func (_this *Rules) OnBigInt(value *big.Int) {
 	if value == nil {
-		_this.OnNull()
+		_this.OnNA()
 		return
 	}
 
@@ -159,7 +159,7 @@ func (_this *Rules) OnFloat(value float64) {
 
 func (_this *Rules) OnBigFloat(value *big.Float) {
 	if value == nil {
-		_this.OnNull()
+		_this.OnNA()
 		return
 	}
 
@@ -181,7 +181,7 @@ func (_this *Rules) OnDecimalFloat(value compact_float.DFloat) {
 
 func (_this *Rules) OnBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
-		_this.OnNull()
+		_this.OnNA()
 		return
 	}
 	if value.Form == apd.NaNSignaling {
@@ -218,7 +218,7 @@ func (_this *Rules) OnTime(value time.Time) {
 
 func (_this *Rules) OnCompactTime(value *compact_time.Time) {
 	if value == nil {
-		_this.OnNull()
+		_this.OnNA()
 		return
 	}
 

@@ -149,16 +149,16 @@ func TestBuilderBasicTypes(t *testing.T) {
 	assertBuild(t, *pBigIntP, BI(pBigIntP))
 	assertBuild(t, pBigIntN, BI(pBigIntN))
 	assertBuild(t, *pBigIntN, BI(pBigIntN))
-	assertBuild(t, (*big.Int)(nil), N())
+	assertBuild(t, (*big.Int)(nil), NA())
 	assertBuild(t, float32(-1.25), F(-1.25))
 	assertBuild(t, float64(-9.5e50), F(-9.5e50))
 	assertBuild(t, pBigFloat, BF(pBigFloat))
 	assertBuild(t, *pBigFloat, BF(pBigFloat))
-	assertBuild(t, (*big.Float)(nil), N())
+	assertBuild(t, (*big.Float)(nil), NA())
 	assertBuild(t, dfloat, DF(dfloat))
 	assertBuild(t, pBigDFloat, BDF(pBigDFloat))
 	assertBuild(t, *pBigDFloat, BDF(pBigDFloat))
-	assertBuild(t, (*apd.Decimal)(nil), N())
+	assertBuild(t, (*apd.Decimal)(nil), NA())
 	assertBuild(t, common.SignalingNan, SNAN())
 	assertBuild(t, common.QuietNan, NAN())
 	assertBuild(t, gTimeNow, GT(gTimeNow))
@@ -170,7 +170,7 @@ func TestBuilderBasicTypes(t *testing.T) {
 	assertBuild(t, "test", S("test"))
 	assertBuild(t, pURL, RID("http://x.com"))
 	assertBuild(t, *pURL, RID("http://x.com"))
-	assertBuild(t, (*url.URL)(nil), N())
+	assertBuild(t, (*url.URL)(nil), NA())
 	assertBuild(t, interface{}(1234), I(1234))
 }
 
@@ -207,7 +207,7 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, N())
+	assertBuildPanics(t, *v, NA())
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
@@ -253,7 +253,7 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, N())
+	assertBuildPanics(t, *v, NA())
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
@@ -311,7 +311,7 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, N())
+	assertBuildPanics(t, *v, NA())
 	assertBuildPanics(t, *v, F(1.1))
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, BF(NewBigFloat("1.1", 10, 1)))
@@ -349,7 +349,7 @@ func TestBuilderConvertToDecimalFloat(t *testing.T) {
 
 func TestBuilderDecimalFloatFail(t *testing.T) {
 	v := NewDFloat("1")
-	assertBuildPanics(t, v, N())
+	assertBuildPanics(t, v, NA())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
@@ -377,7 +377,7 @@ func TestBuilderConvertToFloat(t *testing.T) {
 func TestBuilderConvertToFloatFail(t *testing.T) {
 	// TODO: How to define required conversion accuracy?
 	v := 1.0
-	assertBuildPanics(t, v, N())
+	assertBuildPanics(t, v, NA())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, PI(0xffffffffffffffff))
 	assertBuildPanics(t, v, I(-0x7fffffffffffffff))
@@ -407,7 +407,7 @@ func TestBuilderConvertToInt(t *testing.T) {
 }
 
 func TestBuilderConvertToIntFail(t *testing.T) {
-	assertBuildPanics(t, int(1), N())
+	assertBuildPanics(t, int(1), NA())
 	assertBuildPanics(t, int(1), B(true))
 	assertBuildPanics(t, int(1), PI(0x8000000000000000))
 	assertBuildPanics(t, int(1), F(1.1))
@@ -471,7 +471,7 @@ func TestBuilderConvertToUint(t *testing.T) {
 }
 
 func TestBuilderConvertToUintFail(t *testing.T) {
-	assertBuildPanics(t, uint(1), N())
+	assertBuildPanics(t, uint(1), NA())
 	assertBuildPanics(t, uint(1), B(true))
 	assertBuildPanics(t, uint(1), NI(1))
 	assertBuildPanics(t, uint(1), F(1.1))
@@ -518,7 +518,7 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 }
 
 func TestBuilderString(t *testing.T) {
-	assertBuild(t, "", N())
+	assertBuild(t, "", NA())
 	assertBuild(t, "test", S("test"))
 }
 
@@ -613,7 +613,7 @@ func TestBuilderGoTime(t *testing.T) {
 func TestBuilderGoTimeFail(t *testing.T) {
 	gtime := time.Time{}
 	ctime := test.NewTimeLL(1, 1, 1, 1, 100, 0)
-	assertBuildPanics(t, gtime, N())
+	assertBuildPanics(t, gtime, NA())
 	assertBuildPanics(t, gtime, B(true))
 	assertBuildPanics(t, gtime, PI(1))
 	assertBuildPanics(t, gtime, NI(1))
@@ -643,7 +643,7 @@ func TestBuilderCompactTime(t *testing.T) {
 	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
 	ctime := test.AsCompactTime(gtime)
 
-	assertBuild(t, (*compact_time.Time)(nil), N())
+	assertBuild(t, (*compact_time.Time)(nil), NA())
 	assertBuild(t, ctime, GT(gtime))
 	assertBuild(t, ctime, CT(ctime))
 
@@ -672,7 +672,7 @@ func TestBuilderCompactTimeFail(t *testing.T) {
 	assertBuildPanics(t, ctime, M())
 	assertBuildPanics(t, ctime, E())
 
-	assertBuildPanics(t, *ctime, N())
+	assertBuildPanics(t, *ctime, NA())
 	assertBuildPanics(t, *ctime, B(true))
 	assertBuildPanics(t, *ctime, PI(1))
 	assertBuildPanics(t, *ctime, NI(1))
@@ -711,7 +711,7 @@ func TestBuilderSlice(t *testing.T) {
 	assertBuild(t, []int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
 		BI(NewBigInt("4", 10)), BF(NewBigFloat("5", 10, 1)), DF(NewDFloat("6")),
 		BDF(NewBDF("7")), E())
-	assertBuild(t, []*int{nil}, L(), N(), E())
+	assertBuild(t, []*int{nil}, L(), NA(), E())
 	assertBuild(t, []string{"test"}, L(), S("test"), E())
 	assertBuild(t, [][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
 	assertBuild(t, []*url.URL{NewRID("http://example.com")}, L(), RID("http://example.com"), E())
@@ -722,7 +722,7 @@ func TestBuilderSlice(t *testing.T) {
 }
 
 func TestBuilderSliceFail(t *testing.T) {
-	assertBuildPanics(t, []int{}, N())
+	assertBuildPanics(t, []int{}, NA())
 	assertBuildPanics(t, []int{}, M())
 	assertBuildPanics(t, [][]int{}, L(), M())
 }
@@ -739,7 +739,7 @@ func TestBuilderArray(t *testing.T) {
 	assertBuild(t, [7]int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
 		BI(NewBigInt("4", 10)), BF(NewBigFloat("5", 10, 1)), DF(NewDFloat("6")),
 		BDF(NewBDF("7")), E())
-	assertBuild(t, [1]*int{nil}, L(), N(), E())
+	assertBuild(t, [1]*int{nil}, L(), NA(), E())
 	assertBuild(t, [1]string{"test"}, L(), S("test"), E())
 	assertBuild(t, [1][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
 	assertBuild(t, [1]*url.URL{NewRID("http://example.com")}, L(), RID("http://example.com"), E())
@@ -750,7 +750,7 @@ func TestBuilderArray(t *testing.T) {
 }
 
 func TestBuilderArrayFail(t *testing.T) {
-	assertBuildPanics(t, [1]int{}, N())
+	assertBuildPanics(t, [1]int{}, NA())
 	assertBuildPanics(t, [1]int{}, M())
 	assertBuildPanics(t, [1][]int{}, L(), M())
 }
@@ -760,7 +760,7 @@ func TestBuilderByteArray(t *testing.T) {
 }
 
 func TestBuilderByteArrayFail(t *testing.T) {
-	assertBuildPanics(t, [1]byte{}, N())
+	assertBuildPanics(t, [1]byte{}, NA())
 	assertBuildPanics(t, [1]byte{}, B(false))
 	assertBuildPanics(t, [1]byte{}, PI(1))
 	assertBuildPanics(t, [1]byte{}, NI(1))
@@ -809,7 +809,7 @@ func TestBuilderMap(t *testing.T) {
 		17: []byte{1},
 	},
 		M(),
-		I(1), N(),
+		I(1), NA(),
 		I(2), B(true),
 		I(3), PI(1),
 		I(4), NI(1),
@@ -910,7 +910,7 @@ func TestBuilderInterfaceMap(t *testing.T) {
 		17: []byte{1},
 	},
 		M(),
-		I(1), N(),
+		I(1), NA(),
 		I(2), B(true),
 		I(3), PI(1),
 		I(4), NI(1),
@@ -1182,11 +1182,11 @@ func TestBuilderNilContainers(t *testing.T) {
 	assertBuild(t, v,
 		M(),
 		S("Bytes"),
-		N(),
+		NA(),
 		S("Slice"),
-		N(),
+		NA(),
 		S("Map"),
-		N(),
+		NA(),
 		E())
 }
 
@@ -1210,7 +1210,7 @@ func TestBuilderNilPURLContainer(t *testing.T) {
 	assertBuild(t, v,
 		M(),
 		S("URL"),
-		N(),
+		NA(),
 		E())
 }
 

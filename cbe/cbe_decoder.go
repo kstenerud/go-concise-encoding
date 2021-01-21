@@ -155,7 +155,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		case cbeTypeTrue:
 			_this.eventReceiver.OnTrue()
 		case cbeTypeNil:
-			_this.eventReceiver.OnNull()
+			_this.eventReceiver.OnNA()
 		case cbeTypePadding:
 			_this.eventReceiver.OnPadding(1)
 		case cbeTypeString0:

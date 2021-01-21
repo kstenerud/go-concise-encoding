@@ -45,7 +45,7 @@ func TestIterateBasic(t *testing.T) {
 	pCTimeNow := test.AsCompactTime(gTimeNow)
 	pURL := NewRID("http://x.com")
 
-	assertIterate(t, nil, N())
+	assertIterate(t, nil, NA())
 	assertIterate(t, true, B(true))
 	assertIterate(t, false, B(false))
 	assertIterate(t, int(10), I(10))
@@ -64,16 +64,16 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, *pBigIntP, BI(pBigIntP))
 	assertIterate(t, pBigIntN, BI(pBigIntN))
 	assertIterate(t, *pBigIntN, BI(pBigIntN))
-	assertIterate(t, (*big.Int)(nil), N())
+	assertIterate(t, (*big.Int)(nil), NA())
 	assertIterate(t, float32(-1.25), F(-1.25))
 	assertIterate(t, float64(-9.5e50), F(-9.5e50))
 	assertIterate(t, pBigFloat, BF(pBigFloat))
 	assertIterate(t, *pBigFloat, BF(pBigFloat))
-	assertIterate(t, (*big.Float)(nil), N())
+	assertIterate(t, (*big.Float)(nil), NA())
 	assertIterate(t, dfloat, DF(dfloat))
 	assertIterate(t, pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, *pBigDFloat, BDF(pBigDFloat))
-	assertIterate(t, (*apd.Decimal)(nil), N())
+	assertIterate(t, (*apd.Decimal)(nil), NA())
 	assertIterate(t, common.SignalingNan, F(common.SignalingNan))
 	assertIterate(t, common.QuietNan, F(common.QuietNan))
 	assertIterate(t, gTimeNow, GT(gTimeNow))
@@ -83,7 +83,7 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, "test", S("test"))
 	assertIterate(t, pURL, RID("http://x.com"))
 	assertIterate(t, *pURL, RID("http://x.com"))
-	assertIterate(t, (*url.URL)(nil), N())
+	assertIterate(t, (*url.URL)(nil), NA())
 }
 
 func TestIterateArrayUint8(t *testing.T) {
@@ -206,19 +206,19 @@ func TestIterateArrayBool(t *testing.T) {
 }
 
 func TestIterateInterface(t *testing.T) {
-	assertIterate(t, []interface{}{1, nil, 5.5}, L(), I(1), N(), F(5.5), E())
+	assertIterate(t, []interface{}{1, nil, 5.5}, L(), I(1), NA(), F(5.5), E())
 }
 
 func TestIteratePointer(t *testing.T) {
 	v := 1
 	assertIterate(t, &v, I(1))
 	pv := (*int)(nil)
-	assertIterate(t, pv, N())
+	assertIterate(t, pv, NA())
 }
 
 func TestIterateMap(t *testing.T) {
 	assertIterate(t, map[string]int{"a": 1}, M(), S("a"), I(1), E())
-	assertIterate(t, (map[string]int)(nil), N())
+	assertIterate(t, (map[string]int)(nil), NA())
 }
 
 type StructTestIterate struct {
@@ -232,7 +232,7 @@ func TestIterateStruct(t *testing.T) {
 
 	assertIterate(t, new(StructTestIterate), M(), S("a"), I(0), E())
 	assertIterateWithOptions(t, sOpts, iOpts, new(StructTestIterate), M(), S("A"), I(0), E())
-	assertIterate(t, (*StructTestIterate)(nil), N())
+	assertIterate(t, (*StructTestIterate)(nil), NA())
 }
 
 func TestIterateNilOpts(t *testing.T) {

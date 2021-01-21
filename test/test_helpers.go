@@ -249,7 +249,7 @@ var (
 	EvED     = ED()
 	EvV      = V(1)
 	EvPAD    = PAD(1)
-	EvN      = N()
+	EvNA     = NA()
 	EvB      = B(true)
 	EvTT     = TT()
 	EvFF     = FF()
@@ -320,7 +320,7 @@ var (
 )
 
 var allEvents = []*TEvent{
-	EvBD, EvED, EvV, EvPAD, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
+	EvBD, EvED, EvV, EvPAD, EvNA, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
 	EvCMT, EvE, EvMARK, EvREF, EvCAT, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
@@ -593,7 +593,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventPadding:
 		receiver.OnPadding(_this.V1.(int))
 	case TEventNil:
-		receiver.OnNull()
+		receiver.OnNA()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
 	case TEventTrue:
@@ -763,7 +763,7 @@ func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return newTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return newTEvent(TEventVersion, v, nil) }
-func N() *TEvent                        { return newTEvent(TEventNil, nil, nil) }
+func NA() *TEvent                       { return newTEvent(TEventNil, nil, nil) }
 func PAD(v int) *TEvent                 { return newTEvent(TEventPadding, v, nil) }
 func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
@@ -827,7 +827,7 @@ func ED() *TEvent                       { return newTEvent(TEventEndDocument, ni
 func EventForValue(value interface{}) *TEvent {
 	rv := reflect.ValueOf(value)
 	if !rv.IsValid() {
-		return N()
+		return NA()
 	}
 	switch rv.Kind() {
 	case reflect.Bool:
@@ -847,7 +847,7 @@ func EventForValue(value interface{}) *TEvent {
 		}
 	case reflect.Ptr:
 		if rv.IsNil() {
-			return N()
+			return NA()
 		}
 		switch rv.Type() {
 		case common.TypePBigDecimalFloat:
@@ -921,9 +921,9 @@ func (h *TEventPrinter) OnPadding(count int) {
 	h.Print(PAD(count))
 	h.Next.OnPadding(count)
 }
-func (h *TEventPrinter) OnNull() {
-	h.Print(N())
-	h.Next.OnNull()
+func (h *TEventPrinter) OnNA() {
+	h.Print(NA())
+	h.Next.OnNA()
 }
 func (h *TEventPrinter) OnBool(value bool) {
 	h.Print(B(value))
@@ -1165,7 +1165,7 @@ func (h *TER) add(event *TEvent) {
 }
 func (h *TER) OnVersion(version uint64)                  { h.add(V(version)) }
 func (h *TER) OnPadding(count int)                       { h.add(PAD(count)) }
-func (h *TER) OnNull()                                   { h.add(N()) }
+func (h *TER) OnNA()                                     { h.add(NA()) }
 func (h *TER) OnBool(value bool)                         { h.add(B(value)) }
 func (h *TER) OnTrue()                                   { h.add(TT()) }
 func (h *TER) OnFalse()                                  { h.add(FF()) }
@@ -1438,7 +1438,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
-		ane("F9", N())
+		ane("F9", NA())
 		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())
@@ -1460,7 +1460,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			BF(NewBigFloat("1.1", 10, 2)),
 			DF(NewDFloat("1.1")),
 			BDF(NewBDF("1.1")),
-			N(),
+			NA(),
 			BI(NewBigInt("1000", 10)),
 			NAN(),
 			SNAN(),

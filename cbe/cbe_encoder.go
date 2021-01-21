@@ -92,7 +92,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 	_this.encodeULEB(version)
 }
 
-func (_this *Encoder) OnNull() {
+func (_this *Encoder) OnNA() {
 	_this.encodeType(cbeTypeNil)
 }
 

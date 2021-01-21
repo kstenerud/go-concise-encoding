@@ -45,7 +45,7 @@ type Encoder interface {
 
 	OnVersion(version uint64)
 	OnPadding(count int)
-	OnNull()
+	OnNA()
 	OnBool(value bool)
 	OnTrue()
 	OnFalse()

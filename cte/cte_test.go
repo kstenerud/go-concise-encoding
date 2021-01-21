@@ -64,10 +64,10 @@ func TestCTEVersion(t *testing.T) {
 	}
 }
 
-func TestCTENull(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c1 @null", BD(), V(1), N(), ED())
+func TestCTENA(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, "c1 @na", BD(), V(1), NA(), ED())
 	assertDecodeFails(t, "c1 @nil")
-	assertDecodeFails(t, "c1 -@null")
+	assertDecodeFails(t, "c1 -@na")
 }
 
 func TestCTEBool(t *testing.T) {
@@ -925,7 +925,7 @@ func TestCTEMap(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1 {}`, BD(), V(1), M(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 {1=2}`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
 	assertDecode(t, nil, "c1 {  1 = 2 3=4 \t}", BD(), V(1), M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
-	assertDecodeEncode(t, nil, nil, "c1 {null=@null 1.5=1000}")
+	assertDecodeEncode(t, nil, nil, "c1 {na=@na 1.5=1000}")
 
 	assertDecode(t, nil, `c1 {email = |r mailto:me@somewhere.com| 1.5 = "a string"}`, BD(), V(1), M(),
 		S("email"), RID("mailto:me@somewhere.com"),
@@ -1046,7 +1046,7 @@ func TestCTEMapMetadata(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c1 @null`, BD(), V(1), N(), ED())
+	assertDecodeEncode(t, nil, nil, `c1 @na`, BD(), V(1), NA(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 @nan`, BD(), V(1), NAN(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 @snan`, BD(), V(1), SNAN(), ED())
 	assertDecodeEncode(t, nil, nil, `c1 @inf`, BD(), V(1), F(math.Inf(1)), ED())
@@ -1501,7 +1501,7 @@ func TestCTEComplexExample(t *testing.T) {
     date             = 2019-7-1
     time             = 18:04:00.940231541/E/Prague
     timestamp        = 2010-7-15/13:28:15.415942344/Z
-    null             = @null
+    na               = @na
     bytes            = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url              = |r https://example.com/|
     email            = |r mailto:me@somewhere.com|
@@ -1516,7 +1516,7 @@ case is three Z characters, specified earlier as a sentinel.ZZZ"
     marked_object    = &tag1:{
                                 description = "This map will be referenced later using $tag1"
                                 value = -@inf
-                                child_elements = @null
+                                child_elements = @na
                                 recursive = $tag1
                             }
     ref1             = $tag1
@@ -1569,7 +1569,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     date = 2019-07-01
     time = 18:04:00.940231541/E/Prague
     timestamp = 2010-07-15/13:28:15.415942344/Z
-    null = @null
+    na = @na
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url = |r https://example.com/|
     email = |r mailto:me@somewhere.com|
@@ -1577,7 +1577,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
         value = -@inf
-        child_elements = @null
+        child_elements = @na
         recursive = $tag1
     }
     ref1 = $tag1
@@ -1622,7 +1622,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     date = 2019-07-01
     time = 18:04:00.940231541/Europe/Prague
     timestamp = 2010-07-15/13:28:15.415942344
-    null = @null
+    na = @na
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url = |r https://example.com/|
     email = |r mailto:me@somewhere.com|
@@ -1630,7 +1630,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
         value = -@inf
-        child_elements = @null
+        child_elements = @na
         recursive = $tag1
     }
     ref1 = $tag1

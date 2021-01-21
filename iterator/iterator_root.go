@@ -77,7 +77,7 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	_this.context.EventReceiver.OnBeginDocument()
 	_this.context.EventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
 	if object == nil {
-		_this.context.EventReceiver.OnNull()
+		_this.context.EventReceiver.OnNA()
 		_this.context.EventReceiver.OnEndDocument()
 		return
 	}

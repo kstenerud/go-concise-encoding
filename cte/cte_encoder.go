@@ -97,9 +97,9 @@ func (_this *Encoder) OnVersion(version uint64) {
 	_this.engine.AddVersion(version)
 }
 
-func (_this *Encoder) OnNull() {
+func (_this *Encoder) OnNA() {
 	_this.engine.BeginObject()
-	_this.stream.AddString("@null")
+	_this.stream.AddString("@na")
 	_this.engine.CompleteObject()
 }
 

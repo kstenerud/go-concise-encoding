@@ -149,7 +149,7 @@ func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
-func N() *test.TEvent                        { return test.N() }
+func NA() *test.TEvent                       { return test.NA() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }

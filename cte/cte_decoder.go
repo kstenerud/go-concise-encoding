@@ -595,8 +595,8 @@ func (_this *Decoder) handleNamedValueOrUUID() {
 	_this.buffer.AdvanceByte()
 	namedValue := _this.buffer.DecodeNamedValue()
 	switch string(namedValue) {
-	case "null":
-		_this.eventReceiver.OnNull()
+	case "na":
+		_this.eventReceiver.OnNA()
 		_this.endObject()
 		return
 	case "nan":
