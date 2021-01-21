@@ -30,7 +30,7 @@ Code Organization
 | [builder](builder)         | [Builders](#builders)                                           |
 | [cbe](cbe)                 | [CBE codec](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) |
 | [ce](ce)                   | Top-level API                                                   |
-| [codegen](codegen)         | Code generator source (generates all `generated-code.go` files) |
+| [codegen](codegen)         | Code generator source (generates all `generated-do-not-edit.go` files) |
 | [conversions](conversions) | Data type converters used by builders and codecs                |
 | [cte](cte)                 | [CTE codec](https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md) |
 | [debug](debug)             | Tools to help with debugging                                    |
