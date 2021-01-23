@@ -23,14 +23,12 @@ package cte
 import (
 	"fmt"
 	"strings"
-
-	"github.com/kstenerud/go-concise-encoding/buffer"
 )
 
 const prefixInitialBufferSize = 32
 
 type encoderEngine struct {
-	stream                 *buffer.StreamingWriteBuffer
+	stream                 *CTEEncodeBuffer
 	initialState           awaiting
 	indent                 string
 	prefixSetters          []prefixSetter
@@ -44,7 +42,7 @@ type encoderEngine struct {
 	ContainerDepth int
 }
 
-func (_this *encoderEngine) Init(stream *buffer.StreamingWriteBuffer, indent string) {
+func (_this *encoderEngine) Init(stream *CTEEncodeBuffer, indent string) {
 	_this.awaitingStack = []awaiting{}
 	_this.itemCountStack = []int{}
 	_this.prefix = make([]byte, 0, prefixInitialBufferSize)
@@ -69,7 +67,7 @@ func (_this *encoderEngine) Reset() {
 }
 
 func (_this *encoderEngine) AddVersion(version uint64) {
-	_this.stream.AddFmt("c%d", version)
+	_this.stream.WriteVersion(version)
 	if _this.isPretty() {
 		_this.setPrefix("\n")
 	} else {
@@ -160,7 +158,7 @@ func (_this *encoderEngine) CompleteArray() {
 	_this.clearPrefix()
 	_this.unstack()
 	_this.ContainerDepth--
-	_this.stream.AddString("|")
+	_this.stream.WriteArrayEnd()
 	_this.CompleteObject()
 }
 

@@ -24,14 +24,13 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type arrayEncoderEngine struct {
 	engine                 *encoderEngine
-	stream                 *buffer.StreamingWriteBuffer
+	stream                 *CTEEncodeBuffer
 	addElementsFunc        func(b []byte)
 	arrayCloseFunc         func()
 	arrayElementWidth      int

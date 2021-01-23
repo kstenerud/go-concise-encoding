@@ -23,14 +23,10 @@ package cte
 import (
 	"fmt"
 	"io"
-	"math"
 	"math/big"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/buffer"
-	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
@@ -45,7 +41,7 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	stream      buffer.StreamingWriteBuffer
+	stream      CTEEncodeBuffer
 	engine      encoderEngine
 	arrayEngine arrayEncoderEngine
 	opts        options.CTEEncoderOptions
@@ -99,7 +95,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 
 func (_this *Encoder) OnNA() {
 	_this.engine.BeginObject()
-	_this.stream.AddString("@na")
+	_this.stream.WriteNA()
 	_this.engine.CompleteObject()
 }
 
@@ -113,13 +109,13 @@ func (_this *Encoder) OnBool(value bool) {
 
 func (_this *Encoder) OnTrue() {
 	_this.engine.BeginObject()
-	_this.stream.AddString("@true")
+	_this.stream.WriteTrue()
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnFalse() {
 	_this.engine.BeginObject()
-	_this.stream.AddString("@false")
+	_this.stream.WriteFalse()
 	_this.engine.CompleteObject()
 }
 
@@ -133,7 +129,7 @@ func (_this *Encoder) OnInt(value int64) {
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
 	_this.engine.BeginObject()
-	_this.stream.AddString(value.String())
+	_this.stream.WriteBigInt(value)
 	_this.engine.CompleteObject()
 }
 
@@ -145,148 +141,76 @@ func (_this *Encoder) OnPositiveInt(value uint64) {
 		_this.engine.CompleteReference(value)
 	default:
 		_this.engine.BeginObject()
-		_this.stream.AddFmt("%d", value)
+		_this.stream.WritePositiveInt(value)
 		_this.engine.CompleteObject()
 	}
 }
 
 func (_this *Encoder) OnNegativeInt(value uint64) {
 	_this.engine.BeginObject()
-	_this.stream.AddFmt("-%d", value)
+	_this.stream.WriteNegativeInt(value)
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) onInfinity(isPositive bool) {
 	_this.engine.BeginObject()
 	if isPositive {
-		_this.stream.AddString("@inf")
+		_this.stream.WritePosInfinity()
 	} else {
-		_this.stream.AddString("-@inf")
+		_this.stream.WriteNegInfinity()
 	}
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnFloat(value float64) {
-	if math.IsNaN(value) {
-		_this.OnNan(common.IsSignalingNan(value))
-		return
-	}
-	if math.IsInf(value, 0) {
-		_this.onInfinity(value >= 0)
-		return
-	}
-
 	_this.engine.BeginObject()
-	_this.stream.AddFmt("%g", value)
+	_this.stream.WriteFloat(value)
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnBigFloat(value *big.Float) {
-	if value.IsInf() {
-		_this.onInfinity(value.Sign() >= 0)
-		return
-	}
-
 	_this.engine.BeginObject()
-	_this.stream.AddString(conversions.BigFloatToString(value))
+	_this.stream.WriteBigFloat(value)
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
-	if value.IsNan() {
-		_this.OnNan(value.IsSignalingNan())
-		return
-	}
-	if value.IsInfinity() {
-		_this.onInfinity(!value.IsNegativeInfinity())
-		return
-	}
-
 	_this.engine.BeginObject()
-	_this.stream.AddString(value.Text('g'))
+	_this.stream.WriteDecimalFloat(value)
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
-	switch value.Form {
-	case apd.NaN:
-		_this.OnNan(false)
-	case apd.NaNSignaling:
-		_this.OnNan(true)
-	case apd.Infinite:
-		_this.onInfinity(value.Sign() >= 0)
-	default:
-		_this.engine.BeginObject()
-		_this.stream.AddString(value.Text('g'))
-		_this.engine.CompleteObject()
-	}
+	_this.engine.BeginObject()
+	_this.stream.WriteBigDecimalFloat(value)
+	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnNan(signaling bool) {
 	_this.engine.BeginObject()
 	if signaling {
-		_this.stream.AddString("@snan")
+		_this.stream.WriteSignalingNan()
 	} else {
-		_this.stream.AddString("@nan")
+		_this.stream.WriteQuietNan()
 	}
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnUUID(v []byte) {
-	if len(v) != 16 {
-		_this.errorf("expected UUID length 16 but got %v", len(v))
-	}
+func (_this *Encoder) OnUUID(value []byte) {
 	_this.engine.BeginObject()
-	_this.stream.AddFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
+	_this.stream.WriteUUID(value)
 	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnTime(value time.Time) {
-	t, err := compact_time.AsCompactTime(value)
-	if err != nil {
-		_this.unexpectedError(err, value)
-	}
-	_this.OnCompactTime(t)
+	_this.engine.BeginObject()
+	_this.stream.WriteTime(value)
+	_this.engine.CompleteObject()
 }
 
 func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
-	tz := func(v *compact_time.Time) string {
-		switch v.TimezoneType {
-		case compact_time.TypeZero:
-			return ""
-		case compact_time.TypeAreaLocation, compact_time.TypeLocal:
-			return fmt.Sprintf("/%s", v.AreaLocation)
-		case compact_time.TypeLatitudeLongitude:
-			return fmt.Sprintf("/%.2f/%.2f", float64(v.LatitudeHundredths)/100, float64(v.LongitudeHundredths)/100)
-		default:
-			_this.errorf("unknown compact time timezone type %v", value.TimezoneType)
-			return ""
-		}
-	}
-	subsec := func(v *compact_time.Time) string {
-		if v.Nanosecond == 0 {
-			return ""
-		}
-
-		str := fmt.Sprintf("%.9f", float64(v.Nanosecond)/float64(1000000000))
-		for str[len(str)-1] == '0' {
-			str = str[:len(str)-1]
-		}
-		return str[1:]
-	}
 	_this.engine.BeginObject()
-	switch value.TimeType {
-	case compact_time.TypeDate:
-		_this.stream.AddFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
-	case compact_time.TypeTime:
-		_this.stream.AddFmt("%02d:%02d:%02d%s%s", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
-	case compact_time.TypeTimestamp:
-		_this.stream.AddFmt("%d-%02d-%02d/%02d:%02d:%02d%s%s",
-			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
-	default:
-		_this.errorf("unknown compact time type %v", value.TimeType)
-	}
+	_this.stream.WriteCompactTime(value)
 	_this.engine.CompleteObject()
 }
 

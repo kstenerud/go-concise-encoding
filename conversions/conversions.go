@@ -244,6 +244,10 @@ func UintToInt(value uint64) (int64, error) {
 	return int64(value), nil
 }
 
+func UintToString(value uint64) string {
+	return strconv.FormatUint(value, 10)
+}
+
 // string to other
 
 func StringToBigFloat(value string, significantDigits int) (*big.Float, error) {
