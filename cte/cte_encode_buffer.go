@@ -36,6 +36,9 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+const floatStringMaxByteCount = 24 // From strconv.FormatFloat()
+const uintStringMaxByteCount = 21  // 18446744073709551616
+
 type CTEEncodeBuffer struct {
 	buffer.StreamingWriteBuffer
 }
@@ -90,7 +93,9 @@ func (_this *CTEEncodeBuffer) WriteInt(value int64) {
 }
 
 func (_this *CTEEncodeBuffer) WritePositiveInt(value uint64) {
-	_this.AddString(conversions.UintToString(value))
+	buff := _this.Allocate(uintStringMaxByteCount)[:0]
+	used := strconv.AppendUint(buff, value, 10)
+	_this.CorrectAllocation(len(used))
 }
 
 func (_this *CTEEncodeBuffer) WriteNegativeInt(value uint64) {
@@ -103,7 +108,10 @@ func (_this *CTEEncodeBuffer) WriteBigInt(value *big.Int) {
 		_this.WriteNA()
 		return
 	}
-	_this.AddString(value.String())
+
+	var buff [64]byte
+	used := value.Append(buff[:0], 10)
+	_this.AddBytes(used)
 }
 
 func (_this *CTEEncodeBuffer) WriteFloat(value float64) {
@@ -124,7 +132,19 @@ func (_this *CTEEncodeBuffer) WriteFloat(value float64) {
 		return
 	}
 
-	_this.AddString(conversions.FloatToString(value))
+	buff := _this.Allocate(floatStringMaxByteCount)[:0]
+	used := strconv.AppendFloat(buff, value, 'g', -1, 64)
+	_this.CorrectAllocation(len(used))
+}
+
+func (_this *CTEEncodeBuffer) WriteFloatHexNoPrefix(value float64) {
+	buff := _this.Allocate(floatStringMaxByteCount)[:0]
+	used := strconv.AppendFloat(buff, value, 'x', -1, 64)
+	copy(used, used[2:])
+	if value < 0 {
+		used[0] = '-'
+	}
+	_this.CorrectAllocation(len(used) - 2)
 }
 
 func (_this *CTEEncodeBuffer) WriteBigFloat(value *big.Float) {
@@ -141,7 +161,9 @@ func (_this *CTEEncodeBuffer) WriteBigFloat(value *big.Float) {
 		return
 	}
 
-	_this.AddString(conversions.BigFloatToString(value))
+	var buff [64]byte
+	used := value.Append(buff[:0], 'g', conversions.BitsToDecimalDigits(int(value.Prec())))
+	_this.AddBytes(used)
 }
 
 func (_this *CTEEncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
@@ -182,7 +204,9 @@ func (_this *CTEEncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
 			_this.WritePosInfinity()
 		}
 	default:
-		_this.AddString(value.Text('g'))
+		var buff [64]byte
+		used := value.Append(buff[:0], 'g')
+		_this.AddBytes(used)
 	}
 }
 

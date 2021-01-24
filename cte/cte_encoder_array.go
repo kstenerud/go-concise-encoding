@@ -271,15 +271,10 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 				opener,
 				func(data []byte) {
 					for len(data) > 0 {
+						_this.stream.AddByte(' ')
 						bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
 						v := math.Float32frombits(bits)
-						if v < 0 {
-							_this.stream.AddString(" -")
-							_this.stream.AddFmtStripped(3, "%x", v)
-						} else {
-							_this.stream.AddString(" ")
-							_this.stream.AddFmtStripped(2, "%x", v)
-						}
+						_this.stream.WriteFloatHexNoPrefix(float64(v))
 						data = data[elemWidth:]
 					}
 				})
@@ -306,16 +301,11 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 				opener,
 				func(data []byte) {
 					for len(data) > 0 {
+						_this.stream.AddByte(' ')
 						bits := uint64(data[0]) | (uint64(data[1]) << 8) | (uint64(data[2]) << 16) | (uint64(data[3]) << 24) |
 							(uint64(data[4]) << 32) | (uint64(data[5]) << 40) | (uint64(data[6]) << 48) | (uint64(data[7]) << 56)
 						v := math.Float64frombits(bits)
-						if v < 0 {
-							_this.stream.AddString(" -")
-							_this.stream.AddFmtStripped(3, "%x", v)
-						} else {
-							_this.stream.AddString(" ")
-							_this.stream.AddFmtStripped(2, "%x", v)
-						}
+						_this.stream.WriteFloatHexNoPrefix(v)
 						data = data[elemWidth:]
 					}
 				})
@@ -341,9 +331,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 			"|u",
 			func(data []byte) {
 				for len(data) > 0 {
-					_this.stream.AddFmt("%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-						data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
-						data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15])
+					_this.stream.WriteUUID(data)
 					data = data[elemWidth:]
 				}
 			})

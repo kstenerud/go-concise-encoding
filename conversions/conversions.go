@@ -70,7 +70,7 @@ func BigDecimalFloatToUint(value *apd.Decimal) (uint64, error) {
 // big.Float to other
 
 func BigFloatToPBigDecimalFloat(value *big.Float) (*apd.Decimal, error) {
-	d, _, err := apd.NewFromString(BigFloatToString(value))
+	d, _, err := apd.NewFromString(bigFloatToString(value))
 	return d, err
 }
 
@@ -127,7 +127,7 @@ func BigFloatToUint(value *big.Float) (uint64, error) {
 	return u, nil
 }
 
-func BigFloatToString(value *big.Float) string {
+func bigFloatToString(value *big.Float) string {
 	return value.Text('g', BitsToDecimalDigits(int(value.Prec())))
 }
 
@@ -182,12 +182,12 @@ func BigIntToUint(value *big.Int) (uint64, error) {
 
 func FloatToBigDecimalFloat(value float64) (apd.Decimal, error) {
 	var d apd.Decimal
-	_, _, err := apd.BaseContext.SetString(&d, FloatToString(value))
+	_, _, err := apd.BaseContext.SetString(&d, floatToString(value))
 	return d, err
 }
 
 func FloatToPBigDecimalFloat(value float64) (*apd.Decimal, error) {
-	d, _, err := apd.NewFromString(FloatToString(value))
+	d, _, err := apd.NewFromString(floatToString(value))
 	return d, err
 }
 
@@ -195,7 +195,7 @@ func FloatToBigInt(value float64, maxBase2Exponent int) (*big.Int, error) {
 	return BigFloatToBigInt(big.NewFloat(value), maxBase2Exponent)
 }
 
-func FloatToString(value float64) string {
+func floatToString(value float64) string {
 	return strconv.FormatFloat(value, 'g', -1, 64)
 }
 
@@ -242,10 +242,6 @@ func UintToInt(value uint64) (int64, error) {
 		return 0, fmt.Errorf("%v is too big to fit into type int64", value)
 	}
 	return int64(value), nil
-}
-
-func UintToString(value uint64) string {
-	return strconv.FormatUint(value, 10)
 }
 
 // string to other

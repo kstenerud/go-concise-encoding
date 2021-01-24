@@ -224,7 +224,7 @@ func (_this *Encoder) OnBigFloat(value *big.Float) {
 		return
 	}
 
-	v, _, err := apd.NewFromString(conversions.BigFloatToString(value))
+	v, err := conversions.BigFloatToPBigDecimalFloat(value)
 	if err != nil {
 		_this.errorf("could not convert %v to apd.Decimal", value)
 	}
