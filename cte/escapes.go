@@ -21,14 +21,55 @@
 package cte
 
 import (
+	"bytes"
 	"fmt"
-	"strings"
+	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
-func containsEscapes(str string) bool {
-	for _, b := range []byte(str) {
+func getStringRequirements(str []byte) (escapeCount int, requiresQuotes bool) {
+	if len(str) == 0 {
+		return 0, true
+	}
+
+	firstRune, _ := utf8.DecodeRune(str)
+	if chars.RuneHasProperty(firstRune, chars.CharNeedsQuoteFirst) {
+		requiresQuotes = true
+	}
+
+	for _, ch := range string(str) {
+		props := chars.GetRuneProperty(ch)
+		if props.HasProperty(chars.CharNeedsQuote) {
+			requiresQuotes = true
+		}
+		if props.HasProperty(chars.CharNeedsEscapeQuoted) {
+			escapeCount++
+		}
+	}
+	return
+}
+
+func needsEscapesStringLikeArray(str []byte) bool {
+	for _, ch := range string(str) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
+			return true
+		}
+	}
+	return false
+}
+
+func needsEscapesMarkup(str []byte) bool {
+	for _, ch := range string(str) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsEscapes(str []byte) bool {
+	for _, b := range str {
 		if b == '\\' {
 			return true
 		}
@@ -38,182 +79,168 @@ func containsEscapes(str string) bool {
 
 // Wraps a string destined for a CTE document, adding quotes or escapes as
 // necessary.
-func asPotentialQuotedString(str []byte) (finalString string) {
-	asString := string(str)
-	if asString == "" {
-		return `""`
+func asPotentialQuotedString(str []byte) (finalString []byte) {
+	if len(str) == 0 {
+		return []byte{'"', '"'}
 	}
 
-	requiresQuotes := false
-	escapeCount := 0
-
-	if chars.RuneHasProperty([]rune(asString)[0], chars.CharNeedsQuoteFirst) {
-		requiresQuotes = true
-	}
-
-	for _, ch := range asString {
-		props := chars.GetRuneProperty(ch)
-		if props.HasProperty(chars.CharNeedsQuote) {
-			requiresQuotes = true
-		}
-		if props.HasProperty(chars.CharNeedsEscapeQuoted) {
-			escapeCount++
-		}
-	}
+	escapeCount, requiresQuotes := getStringRequirements(str)
 
 	if !requiresQuotes {
-		return asString
+		return str
 	}
 
 	if escapeCount == 0 {
-		return `"` + asString + `"`
+		finalString = make([]byte, len(str)+2)
+		copy(finalString[1:], str)
+		finalString[0] = '"'
+		finalString[len(finalString)-1] = '"'
+		return finalString
 	}
 
-	return asEscapedQuotedString(asString, escapeCount)
+	return asEscapedQuotedString(str, escapeCount)
 }
 
 // Wraps a string-encoded array destined for a CTE document.
-func asStringArray(elementType string, str []byte) string {
-	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
-			str = asEscapedStringArrayContent(str)
-			break
-		}
+func asStringArray(elementType []byte, str []byte) []byte {
+	if needsEscapesStringLikeArray(str) {
+		str = asEscapedStringArrayContent(str)
 	}
 
-	return "|" + elementType + " " + string(str) + "|"
+	bytes := make([]byte, len(str)+len(elementType)+3)
+	bytes[0] = '|'
+	bytes[len(bytes)-1] = '|'
+	copy(bytes[1:], elementType)
+	bytes[1+len(elementType)] = ' '
+	copy(bytes[2+len(elementType):], str)
+	return bytes
 }
 
 // Possibly escapes a string-encoded array destined for a CTE document.
 func asStringArrayContents(str []byte) []byte {
-	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
-			return asEscapedStringArrayContent(str)
-		}
+	if needsEscapesStringLikeArray(str) {
+		return asEscapedStringArrayContent(str)
 	}
 
 	return str
 }
 
 // Wraps markup content destined for a CTE document.
-func asMarkupContents(str []byte) string {
-	asString := string(str)
-	for _, ch := range asString {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
-			return asEscapedMarkupContents(asString)
-		}
+func asMarkupContents(str []byte) []byte {
+	if needsEscapesMarkup(str) {
+		return asEscapedMarkupContents(str)
 	}
 
-	return asString
+	return str
 }
 
 // ============================================================================
 
-func asEscapedQuotedString(str string, escapeCount int) string {
-	var sb strings.Builder
+func asEscapedQuotedString(str []byte, escapeCount int) []byte {
+	var bb bytes.Buffer
 	// Worst case scenario: All characters that require escaping need a unicode
 	// sequence. In this case, we'd need at least 7 bytes per escaped character.
-	sb.Grow(len([]byte(str)) + escapeCount*6 + 2)
+	bb.Grow(len(str) + escapeCount*6 + 2)
 	// Note: StringBuilder's WriteXYZ() always return nil errors
-	sb.WriteByte('"')
-	for _, ch := range str {
+	bb.WriteByte('"')
+	for _, ch := range string(str) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeQuoted) {
-			sb.WriteString(escapeCharQuoted(ch))
+			bb.Write(escapeCharQuoted(ch))
 		} else {
-			sb.WriteRune(ch)
+			bb.WriteRune(ch)
 		}
 	}
-	sb.WriteByte('"')
-	return sb.String()
+	bb.WriteByte('"')
+	return bb.Bytes()
 }
 
-func escapeCharQuoted(ch rune) string {
+func escapeCharQuoted(ch rune) []byte {
 	switch ch {
 	case '\t':
-		return `\t`
+		return []byte(`\t`)
 	case '\r':
-		return `\r`
+		return []byte(`\r`)
 	case '\n':
-		return `\n`
+		return []byte(`\n`)
 	case '"':
-		return `\"`
+		return []byte(`\"`)
 	case '*':
-		return `\*`
+		return []byte(`\*`)
 	case '/':
-		return `\/`
+		return []byte(`\/`)
 	case '\\':
-		return `\\`
+		return []byte(`\\`)
 	}
 	return unicodeEscape(ch)
 }
 
 func asEscapedStringArrayContent(str []byte) []byte {
-	var sb strings.Builder
-	sb.Grow(len(str))
+	var bb bytes.Buffer
+	bb.Grow(len(str))
 	for _, ch := range string(str) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
 			// Note: StringBuilder's WriteXYZ() always return nil errors
-			sb.WriteString(escapeCharStringArray(ch))
+			bb.Write(escapeCharStringArray(ch))
 		} else {
-			sb.WriteRune(ch)
+			bb.WriteRune(ch)
 		}
 	}
-	return []byte(sb.String())
+	return bb.Bytes()
 }
 
-func unicodeEscape(ch rune) string {
+func unicodeEscape(ch rune) []byte {
 	hex := fmt.Sprintf("%x", ch)
-	return fmt.Sprintf("\\%d%s", len(hex), hex)
+	return []byte(fmt.Sprintf("\\%d%s", len(hex), hex))
 }
 
-func escapeCharStringArray(ch rune) string {
+func escapeCharStringArray(ch rune) []byte {
 	switch ch {
 	case '|':
-		return `\|`
+		return []byte(`\|`)
 	case '\\':
-		return `\\`
+		return []byte(`\\`)
 	case '\t':
-		return `\t`
+		return []byte(`\t`)
 	case '\r':
-		return `\r`
+		return []byte(`\r`)
 	case '\n':
-		return `\n`
+		return []byte(`\n`)
 	}
 	return unicodeEscape(ch)
 }
 
-func asEscapedMarkupContents(str string) string {
-	var sb strings.Builder
-	sb.Grow(len([]byte(str)))
+func asEscapedMarkupContents(str []byte) []byte {
+	var bb bytes.Buffer
+	bb.Grow(len(str))
 	// Note: StringBuilder's WriteXYZ() always return nil errors
-	for _, ch := range str {
+	for _, ch := range string(str) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
-			sb.WriteString(escapeCharMarkup(ch))
+			bb.Write(escapeCharMarkup(ch))
 		} else {
-			sb.WriteRune(ch)
+			bb.WriteRune(ch)
 		}
 	}
-	return sb.String()
+	return bb.Bytes()
 }
 
-func escapeCharMarkup(ch rune) string {
+func escapeCharMarkup(ch rune) []byte {
 	switch ch {
 	case '*':
 		// TODO: Check ahead for /* */ instead of blindly escaping
-		return `\*`
+		return []byte(`\*`)
 	case '/':
 		// TODO: Check ahead for /* */ instead of blindly escaping
-		return `\/`
+		return []byte(`\/`)
 	case '<':
-		return `\<`
+		return []byte(`\<`)
 	case '>':
-		return `\>`
+		return []byte(`\>`)
 	case 0xa0:
-		return `\_`
+		return []byte(`\_`)
 	case 0xad:
-		return `\-`
+		return []byte(`\-`)
 	case '\\':
-		return `\\`
+		return []byte(`\\`)
 	}
 	return unicodeEscape(ch)
 }
@@ -222,24 +249,28 @@ func escapeCharMarkup(ch rune) string {
 // a human with other CTE document structural characters.
 var verbatimSentinelAlphabet = []byte("~%*+;=^_23456789ZQXJVKBPYGCFMWULDHSNOIRATE10zqxjvkbpygcfmwuldhsnoirate")
 
-func generateVerbatimSentinel(str string) string {
+func generateVerbatimSentinel(str []byte) []byte {
 	// Try all 1, 2, and 3-character sequences picked from a safe alphabet.
 
 	usedChars := [256]bool{}
-	for _, ch := range []byte(str) {
+	for _, ch := range str {
 		usedChars[ch] = true
 	}
 
+	var sentinelBuff [3]byte
+
 	for _, ch := range verbatimSentinelAlphabet {
 		if !usedChars[ch] {
-			return fmt.Sprintf("%c", ch)
+			return []byte{ch}
 		}
 	}
 
 	for _, ch0 := range verbatimSentinelAlphabet {
 		for _, ch1 := range verbatimSentinelAlphabet {
-			sentinel := fmt.Sprintf("%c%c", ch0, ch1)
-			if !strings.Contains(str, sentinel) {
+			sentinelBuff[0] = ch0
+			sentinelBuff[1] = ch1
+			sentinel := sentinelBuff[:2]
+			if !bytes.Contains(str, sentinel) {
 				return sentinel
 			}
 		}
@@ -248,8 +279,11 @@ func generateVerbatimSentinel(str string) string {
 	for _, ch0 := range verbatimSentinelAlphabet {
 		for _, ch1 := range verbatimSentinelAlphabet {
 			for _, ch2 := range verbatimSentinelAlphabet {
-				sentinel := fmt.Sprintf("%c%c%c", ch0, ch1, ch2)
-				if !strings.Contains(str, sentinel) {
+				sentinelBuff[0] = ch0
+				sentinelBuff[1] = ch1
+				sentinelBuff[2] = ch2
+				sentinel := sentinelBuff[:3]
+				if !bytes.Contains(str, sentinel) {
 					return sentinel
 				}
 			}

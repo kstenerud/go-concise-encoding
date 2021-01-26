@@ -42,7 +42,7 @@ import (
 // multiple calls to marshal.
 type Marshaler struct {
 	session iterator.Session
-	encoder Encoder
+	encoder OldEncoder
 	opts    options.CTEMarshalerOptions
 }
 

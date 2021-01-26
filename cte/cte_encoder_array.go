@@ -30,7 +30,7 @@ import (
 
 type arrayEncoderEngine struct {
 	engine                 *encoderEngine
-	stream                 *CTEEncodeBuffer
+	stream                 *EncodeBuffer
 	addElementsFunc        func(b []byte)
 	arrayCloseFunc         func()
 	arrayElementWidth      int
@@ -66,13 +66,13 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 					_this.engine.CompleteReference(string(stringData))
 				case awaitingMarkupItem, awaitingMarkupFirstItem:
 					_this.engine.BeginObject()
-					_this.stream.AddString(asMarkupContents(stringData))
+					_this.stream.AddBytes(asMarkupContents(stringData))
 					_this.engine.CompleteObject()
 				case awaitingCommentItem:
 					_this.engine.AddCommentString(string(stringData))
 				default:
 					_this.engine.BeginObject()
-					_this.stream.AddString(asPotentialQuotedString(stringData))
+					_this.stream.AddBytes(asPotentialQuotedString(stringData))
 					_this.engine.CompleteObject()
 				}
 			})
@@ -80,7 +80,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 		_this.beginStringLikeArray(awaitingRID,
 			func(stringData []byte) {
 				if _this.engine.Awaiting == awaitingReferenceID {
-					_this.engine.CompleteReference(asStringArray("r", stringData))
+					_this.engine.CompleteReference(string(asStringArray([]byte{'r'}, stringData)))
 				} else {
 					_this.engine.BeginObject()
 					_this.encodeStringArray("r", stringData)

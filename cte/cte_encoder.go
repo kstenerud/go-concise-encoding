@@ -40,8 +40,8 @@ import (
 // to recover() at an appropriate location when calling Encoder's methods
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
-type Encoder struct {
-	stream      CTEEncodeBuffer
+type OldEncoder struct {
+	stream      EncodeBuffer
 	engine      encoderEngine
 	arrayEngine arrayEncoderEngine
 	opts        options.CTEEncoderOptions
@@ -49,15 +49,15 @@ type Encoder struct {
 
 // Create a new CTE encoder, which will receive data events and write a document
 // to writer. If opts is nil, default options will be used.
-func NewEncoder(opts *options.CTEEncoderOptions) *Encoder {
-	_this := &Encoder{}
+func NewOldEncoder(opts *options.CTEEncoderOptions) *OldEncoder {
+	_this := &OldEncoder{}
 	_this.Init(opts)
 	return _this
 }
 
 // Initialize this encoder, which will receive data events and write a document
 // to writer. If opts is nil, default options will be used.
-func (_this *Encoder) Init(opts *options.CTEEncoderOptions) {
+func (_this *OldEncoder) Init(opts *options.CTEEncoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 	_this.stream.Init(_this.opts.BufferSize)
@@ -67,11 +67,11 @@ func (_this *Encoder) Init(opts *options.CTEEncoderOptions) {
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
 // PrepareToEncode MUST be called before using the encoder.
-func (_this *Encoder) PrepareToEncode(writer io.Writer) {
+func (_this *OldEncoder) PrepareToEncode(writer io.Writer) {
 	_this.stream.SetWriter(writer)
 }
 
-func (_this *Encoder) Reset() {
+func (_this *OldEncoder) Reset() {
 	_this.stream.Reset()
 	_this.engine.Reset()
 	_this.arrayEngine.Reset()
@@ -81,25 +81,25 @@ func (_this *Encoder) Reset() {
 
 // DataEventReceiver
 
-func (_this *Encoder) OnBeginDocument() {
+func (_this *OldEncoder) OnBeginDocument() {
 	// Nothing to do
 }
 
-func (_this *Encoder) OnPadding(_ int) {
+func (_this *OldEncoder) OnPadding(_ int) {
 	// Nothing to do
 }
 
-func (_this *Encoder) OnVersion(version uint64) {
+func (_this *OldEncoder) OnVersion(version uint64) {
 	_this.engine.AddVersion(version)
 }
 
-func (_this *Encoder) OnNA() {
+func (_this *OldEncoder) OnNA() {
 	_this.engine.BeginObject()
 	_this.stream.WriteNA()
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnBool(value bool) {
+func (_this *OldEncoder) OnBool(value bool) {
 	if value {
 		_this.OnTrue()
 	} else {
@@ -107,19 +107,19 @@ func (_this *Encoder) OnBool(value bool) {
 	}
 }
 
-func (_this *Encoder) OnTrue() {
+func (_this *OldEncoder) OnTrue() {
 	_this.engine.BeginObject()
 	_this.stream.WriteTrue()
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnFalse() {
+func (_this *OldEncoder) OnFalse() {
 	_this.engine.BeginObject()
 	_this.stream.WriteFalse()
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnInt(value int64) {
+func (_this *OldEncoder) OnInt(value int64) {
 	if value >= 0 {
 		_this.OnPositiveInt(uint64(value))
 	} else {
@@ -127,13 +127,13 @@ func (_this *Encoder) OnInt(value int64) {
 	}
 }
 
-func (_this *Encoder) OnBigInt(value *big.Int) {
+func (_this *OldEncoder) OnBigInt(value *big.Int) {
 	_this.engine.BeginObject()
 	_this.stream.WriteBigInt(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnPositiveInt(value uint64) {
+func (_this *OldEncoder) OnPositiveInt(value uint64) {
 	switch _this.engine.Awaiting {
 	case awaitingMarkerID:
 		_this.engine.CompleteMarker(value)
@@ -146,13 +146,13 @@ func (_this *Encoder) OnPositiveInt(value uint64) {
 	}
 }
 
-func (_this *Encoder) OnNegativeInt(value uint64) {
+func (_this *OldEncoder) OnNegativeInt(value uint64) {
 	_this.engine.BeginObject()
 	_this.stream.WriteNegativeInt(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) onInfinity(isPositive bool) {
+func (_this *OldEncoder) onInfinity(isPositive bool) {
 	_this.engine.BeginObject()
 	if isPositive {
 		_this.stream.WritePosInfinity()
@@ -162,31 +162,31 @@ func (_this *Encoder) onInfinity(isPositive bool) {
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnFloat(value float64) {
+func (_this *OldEncoder) OnFloat(value float64) {
 	_this.engine.BeginObject()
 	_this.stream.WriteFloat(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnBigFloat(value *big.Float) {
+func (_this *OldEncoder) OnBigFloat(value *big.Float) {
 	_this.engine.BeginObject()
 	_this.stream.WriteBigFloat(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
+func (_this *OldEncoder) OnDecimalFloat(value compact_float.DFloat) {
 	_this.engine.BeginObject()
 	_this.stream.WriteDecimalFloat(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
+func (_this *OldEncoder) OnBigDecimalFloat(value *apd.Decimal) {
 	_this.engine.BeginObject()
 	_this.stream.WriteBigDecimalFloat(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnNan(signaling bool) {
+func (_this *OldEncoder) OnNan(signaling bool) {
 	_this.engine.BeginObject()
 	if signaling {
 		_this.stream.WriteSignalingNan()
@@ -196,25 +196,25 @@ func (_this *Encoder) OnNan(signaling bool) {
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnUUID(value []byte) {
+func (_this *OldEncoder) OnUUID(value []byte) {
 	_this.engine.BeginObject()
 	_this.stream.WriteUUID(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnTime(value time.Time) {
+func (_this *OldEncoder) OnTime(value time.Time) {
 	_this.engine.BeginObject()
 	_this.stream.WriteTime(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
+func (_this *OldEncoder) OnCompactTime(value *compact_time.Time) {
 	_this.engine.BeginObject()
 	_this.stream.WriteCompactTime(value)
 	_this.engine.CompleteObject()
 }
 
-func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (_this *OldEncoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.OnArrayBegin(arrayType)
 	_this.OnArrayChunk(elementCount, false)
 	if elementCount > 0 {
@@ -222,55 +222,55 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	}
 }
 
-func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
+func (_this *OldEncoder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.arrayEngine.OnArrayBegin(arrayType)
 }
 
-func (_this *Encoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
+func (_this *OldEncoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
 	_this.arrayEngine.OnArrayChunk(elementCount, moreChunksFollow)
 }
 
-func (_this *Encoder) OnArrayData(data []byte) {
+func (_this *OldEncoder) OnArrayData(data []byte) {
 	_this.arrayEngine.OnArrayData(data)
 }
 
-func (_this *Encoder) OnList() {
+func (_this *OldEncoder) OnList() {
 	_this.engine.BeginContainer(awaitingListFirstItem, "[")
 }
 
-func (_this *Encoder) OnMap() {
+func (_this *OldEncoder) OnMap() {
 	_this.engine.BeginContainer(awaitingMapFirstKey, "{")
 }
 
-func (_this *Encoder) OnMarkup() {
+func (_this *OldEncoder) OnMarkup() {
 	_this.engine.BeginMarkup()
 }
 
-func (_this *Encoder) OnMetadata() {
+func (_this *OldEncoder) OnMetadata() {
 	_this.engine.BeginPseudoContainer(awaitingMetaFirstKey, "(")
 }
 
-func (_this *Encoder) OnComment() {
+func (_this *OldEncoder) OnComment() {
 	_this.engine.BeginComment()
 }
 
-func (_this *Encoder) OnEnd() {
+func (_this *OldEncoder) OnEnd() {
 	_this.engine.EndContainer()
 }
 
-func (_this *Encoder) OnMarker() {
+func (_this *OldEncoder) OnMarker() {
 	_this.engine.BeginMarker()
 }
 
-func (_this *Encoder) OnReference() {
+func (_this *OldEncoder) OnReference() {
 	_this.engine.BeginReference()
 }
 
-func (_this *Encoder) OnConcatenate() {
+func (_this *OldEncoder) OnConcatenate() {
 	panic("TODO: CTE Encoder.OnConcatenate")
 }
 
-func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
+func (_this *OldEncoder) OnConstant(name []byte, explicitValue bool) {
 	_this.engine.BeginObject()
 	_this.stream.AddByte('#')
 	_this.stream.AddNonemptyBytes(name)
@@ -281,14 +281,14 @@ func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
 	}
 }
 
-func (_this *Encoder) OnEndDocument() {
+func (_this *OldEncoder) OnEndDocument() {
 	_this.stream.Flush()
 }
 
-func (_this *Encoder) unexpectedError(err error, encoding interface{}) {
+func (_this *OldEncoder) unexpectedError(err error, encoding interface{}) {
 	_this.errorf("unexpected error [%v] while encoding %v", err, encoding)
 }
 
-func (_this *Encoder) errorf(format string, args ...interface{}) {
+func (_this *OldEncoder) errorf(format string, args ...interface{}) {
 	panic(fmt.Errorf(format, args...))
 }

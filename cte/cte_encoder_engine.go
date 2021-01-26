@@ -28,7 +28,7 @@ import (
 const prefixInitialBufferSize = 32
 
 type encoderEngine struct {
-	stream                 *CTEEncodeBuffer
+	stream                 *EncodeBuffer
 	initialState           awaiting
 	indent                 string
 	prefixSetters          []prefixSetter
@@ -42,7 +42,7 @@ type encoderEngine struct {
 	ContainerDepth int
 }
 
-func (_this *encoderEngine) Init(stream *CTEEncodeBuffer, indent string) {
+func (_this *encoderEngine) Init(stream *EncodeBuffer, indent string) {
 	_this.awaitingStack = []awaiting{}
 	_this.itemCountStack = []int{}
 	_this.prefix = make([]byte, 0, prefixInitialBufferSize)

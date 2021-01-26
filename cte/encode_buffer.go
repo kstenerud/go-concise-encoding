@@ -39,44 +39,60 @@ import (
 const floatStringMaxByteCount = 24 // From strconv.FormatFloat()
 const uintStringMaxByteCount = 21  // 18446744073709551616
 
-type CTEEncodeBuffer struct {
+type EncodeBuffer struct {
 	buffer.StreamingWriteBuffer
 }
 
-func (_this *CTEEncodeBuffer) WriteNA() {
+func (_this *EncodeBuffer) WriteNA() {
 	_this.AddString("@na")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteTrue() {
+func (_this *EncodeBuffer) WriteTrue() {
 	_this.AddString("@true")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteFalse() {
+func (_this *EncodeBuffer) WriteFalse() {
 	_this.AddString("@false")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WritePosInfinity() {
+func (_this *EncodeBuffer) WritePosInfinity() {
 	_this.AddString("@inf")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteNegInfinity() {
+func (_this *EncodeBuffer) WriteNegInfinity() {
 	_this.AddString("-@inf")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteQuietNan() {
+func (_this *EncodeBuffer) WriteQuietNan() {
 	_this.AddString("@nan")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteSignalingNan() {
+func (_this *EncodeBuffer) WriteSignalingNan() {
 	_this.AddString("@snan")
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteVersion(value uint64) {
+func (_this *EncodeBuffer) WriteVersion(value uint64) {
 	_this.AddByte('c')
 	_this.WritePositiveInt(value)
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteBool(value bool) {
+func (_this *EncodeBuffer) WriteNan(signaling bool) {
+	if signaling {
+		_this.WriteSignalingNan()
+	} else {
+		_this.WriteQuietNan()
+	}
+}
+
+func (_this *EncodeBuffer) WriteBool(value bool) {
 	if value {
 		_this.WriteTrue()
 	} else {
@@ -84,7 +100,7 @@ func (_this *CTEEncodeBuffer) WriteBool(value bool) {
 	}
 }
 
-func (_this *CTEEncodeBuffer) WriteInt(value int64) {
+func (_this *EncodeBuffer) WriteInt(value int64) {
 	if value >= 0 {
 		_this.WritePositiveInt(uint64(value))
 	} else {
@@ -92,18 +108,19 @@ func (_this *CTEEncodeBuffer) WriteInt(value int64) {
 	}
 }
 
-func (_this *CTEEncodeBuffer) WritePositiveInt(value uint64) {
+func (_this *EncodeBuffer) WritePositiveInt(value uint64) {
 	buff := _this.Allocate(uintStringMaxByteCount)[:0]
 	used := strconv.AppendUint(buff, value, 10)
 	_this.CorrectAllocation(len(used))
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteNegativeInt(value uint64) {
+func (_this *EncodeBuffer) WriteNegativeInt(value uint64) {
 	_this.AddByte('-')
 	_this.WritePositiveInt(value)
 }
 
-func (_this *CTEEncodeBuffer) WriteBigInt(value *big.Int) {
+func (_this *EncodeBuffer) WriteBigInt(value *big.Int) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -112,9 +129,10 @@ func (_this *CTEEncodeBuffer) WriteBigInt(value *big.Int) {
 	var buff [64]byte
 	used := value.Append(buff[:0], 10)
 	_this.AddBytes(used)
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteFloat(value float64) {
+func (_this *EncodeBuffer) WriteFloat(value float64) {
 	if math.IsNaN(value) {
 		if common.IsSignalingNan(value) {
 			_this.WriteSignalingNan()
@@ -135,9 +153,10 @@ func (_this *CTEEncodeBuffer) WriteFloat(value float64) {
 	buff := _this.Allocate(floatStringMaxByteCount)[:0]
 	used := strconv.AppendFloat(buff, value, 'g', -1, 64)
 	_this.CorrectAllocation(len(used))
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteFloatHexNoPrefix(value float64) {
+func (_this *EncodeBuffer) WriteFloatHexNoPrefix(value float64) {
 	buff := _this.Allocate(floatStringMaxByteCount)[:0]
 	used := strconv.AppendFloat(buff, value, 'x', -1, 64)
 	copy(used, used[2:])
@@ -145,9 +164,10 @@ func (_this *CTEEncodeBuffer) WriteFloatHexNoPrefix(value float64) {
 		used[0] = '-'
 	}
 	_this.CorrectAllocation(len(used) - 2)
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteBigFloat(value *big.Float) {
+func (_this *EncodeBuffer) WriteBigFloat(value *big.Float) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -164,9 +184,10 @@ func (_this *CTEEncodeBuffer) WriteBigFloat(value *big.Float) {
 	var buff [64]byte
 	used := value.Append(buff[:0], 'g', conversions.BitsToDecimalDigits(int(value.Prec())))
 	_this.AddBytes(used)
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
+func (_this *EncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
 	if value.IsNan() {
 		if value.IsSignalingNan() {
 			_this.WriteSignalingNan()
@@ -185,9 +206,10 @@ func (_this *CTEEncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
 	}
 
 	_this.AddString(value.Text('g'))
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
+func (_this *EncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -207,18 +229,20 @@ func (_this *CTEEncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
 		var buff [64]byte
 		used := value.Append(buff[:0], 'g')
 		_this.AddBytes(used)
+		_this.Flush()
 	}
 }
 
-func (_this *CTEEncodeBuffer) WriteUUID(v []byte) {
+func (_this *EncodeBuffer) WriteUUID(v []byte) {
 	if len(v) != 16 {
 		panic(fmt.Errorf("expected UUID length 16 but got %v", len(v)))
 	}
 	_this.AddFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteTime(value time.Time) {
+func (_this *EncodeBuffer) WriteTime(value time.Time) {
 	t, err := compact_time.AsCompactTime(value)
 	if err != nil {
 		_this.unexpectedError(err, value)
@@ -226,7 +250,7 @@ func (_this *CTEEncodeBuffer) WriteTime(value time.Time) {
 	_this.WriteCompactTime(t)
 }
 
-func (_this *CTEEncodeBuffer) WriteCompactTime(value *compact_time.Time) {
+func (_this *EncodeBuffer) WriteCompactTime(value *compact_time.Time) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -266,68 +290,84 @@ func (_this *CTEEncodeBuffer) WriteCompactTime(value *compact_time.Time) {
 	default:
 		panic(fmt.Errorf("unknown compact time type %v", value.TimeType))
 	}
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMarkerBegin(id interface{}) {
+func (_this *EncodeBuffer) WriteMarkerBegin(id interface{}) {
 	_this.AddFmt("&%v:", id)
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteReference(id interface{}) {
+func (_this *EncodeBuffer) WriteReference(id interface{}) {
 	_this.AddFmt("$%v", id)
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteListBegin() {
+func (_this *EncodeBuffer) WriteListBegin() {
 	_this.AddByte('[')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteListEnd() {
+func (_this *EncodeBuffer) WriteListEnd() {
 	_this.AddByte(']')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMapBegin() {
+func (_this *EncodeBuffer) WriteMapBegin() {
 	_this.AddByte('{')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMapEnd() {
+func (_this *EncodeBuffer) WriteMapEnd() {
 	_this.AddByte('}')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMetaBegin() {
+func (_this *EncodeBuffer) WriteMetaBegin() {
 	_this.AddByte('(')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMetaEnd() {
+func (_this *EncodeBuffer) WriteMetaEnd() {
 	_this.AddByte(')')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMarkupBegin() {
+func (_this *EncodeBuffer) WriteMarkupBegin() {
 	_this.AddByte('<')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMarkupContentsBegin() {
+func (_this *EncodeBuffer) WriteMarkupContentsBegin() {
 	_this.AddByte(',')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteMarkupEnd() {
+func (_this *EncodeBuffer) WriteMarkupEnd() {
 	_this.AddByte('>')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteArrayBegin() {
+func (_this *EncodeBuffer) WriteArrayBegin() {
 	_this.AddByte('|')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteArrayEnd() {
+func (_this *EncodeBuffer) WriteArrayEnd() {
 	_this.AddByte('|')
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteCommentBegin() {
+func (_this *EncodeBuffer) WriteCommentBegin() {
 	_this.AddBytes([]byte{'/', '*'})
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) WriteCommentEnd() {
+func (_this *EncodeBuffer) WriteCommentEnd() {
 	_this.AddBytes([]byte{'*', '/'})
+	_this.Flush()
 }
 
-func (_this *CTEEncodeBuffer) unexpectedError(err error, encoding interface{}) {
+func (_this *EncodeBuffer) unexpectedError(err error, encoding interface{}) {
 	panic(fmt.Errorf("unexpected error [%v] while encoding %v", err, encoding))
 }

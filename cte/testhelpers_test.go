@@ -180,7 +180,7 @@ func decodeToEventsNoRules(opts *options.CTEDecoderOptions, document []byte, wit
 
 func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(opts)
+	encoder := NewOldEncoder(opts)
 	encoder.PrepareToEncode(buffer)
 	r := rules.NewRules(encoder, nil)
 	test.InvokeEvents(r, events...)
@@ -189,7 +189,7 @@ func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byt
 
 func encodeEventsNoRules(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(opts)
+	encoder := NewOldEncoder(opts)
 	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(encoder, events...)
 	return buffer.Bytes()
