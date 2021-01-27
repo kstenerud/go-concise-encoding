@@ -93,19 +93,22 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 		}
 		encodeHex := func(value []byte) {
-			dst := _this.stream.Allocate(len(value)*3 + 4)
+			length := len(value) * 3
+			dst := _this.stream.RequireBytes(length)
 			dst[0] = '|'
 			dst[1] = 'c'
 			dst[2] = 'b'
 			dst[3] = ' '
-			dst[len(dst)-1] = '|'
-			dst = dst[3 : len(dst)-1]
-			for i := 0; i < len(value); i++ {
+			dst = dst[3:]
+			i := 0
+			for ; i < len(value); i++ {
 				b := value[i]
 				dst[i*3] = ' '
 				dst[i*3+1] = hexToChar[b>>4]
 				dst[i*3+2] = hexToChar[b&15]
 			}
+			dst[i*3] = '|'
+			_this.stream.UseBytes(length + 4)
 		}
 
 		_this.beginStringLikeArray(awaitingCustomBinary,
@@ -419,15 +422,21 @@ func (_this *arrayEncoderEngine) drainStringBuffer() []byte {
 	return data
 }
 
-func (_this *arrayEncoderEngine) encodeStringArray(name string, contents []byte) {
+func (_this *arrayEncoderEngine) encodeStringArray(arrayType string, contents []byte) {
 	contents = asStringArrayContents(contents)
-	nameLen := len(name)
-	dst := _this.stream.Allocate(nameLen + len(contents) + 3)
+	contentsLen := len(contents)
+	typeLen := len(arrayType)
+	dst := _this.stream.RequireBytes(contentsLen)
 	dst[0] = '|'
-	copy(dst[1:], name)
-	dst[nameLen+1] = ' '
-	copy(dst[nameLen+2:], contents)
-	dst[len(dst)-1] = '|'
+	dst = dst[1:]
+	copy(dst, arrayType)
+	dst = dst[typeLen:]
+	dst[0] = ' '
+	dst = dst[1:]
+	copy(dst, contents)
+	dst = dst[contentsLen:]
+	dst[0] = '|'
+	_this.stream.UseBytes(typeLen + len(contents) + 3)
 }
 
 // ============================================================================

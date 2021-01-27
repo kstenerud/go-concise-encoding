@@ -109,9 +109,9 @@ func (_this *EncodeBuffer) WriteInt(value int64) {
 }
 
 func (_this *EncodeBuffer) WritePositiveInt(value uint64) {
-	buff := _this.Allocate(uintStringMaxByteCount)[:0]
+	buff := _this.RequireBytes(uintStringMaxByteCount)[:0]
 	used := strconv.AppendUint(buff, value, 10)
-	_this.CorrectAllocation(len(used))
+	_this.UseBytes(len(used))
 	_this.Flush()
 }
 
@@ -150,20 +150,20 @@ func (_this *EncodeBuffer) WriteFloat(value float64) {
 		return
 	}
 
-	buff := _this.Allocate(floatStringMaxByteCount)[:0]
+	buff := _this.RequireBytes(floatStringMaxByteCount)[:0]
 	used := strconv.AppendFloat(buff, value, 'g', -1, 64)
-	_this.CorrectAllocation(len(used))
+	_this.UseBytes(len(used))
 	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteFloatHexNoPrefix(value float64) {
-	buff := _this.Allocate(floatStringMaxByteCount)[:0]
+	buff := _this.RequireBytes(floatStringMaxByteCount)[:0]
 	used := strconv.AppendFloat(buff, value, 'x', -1, 64)
 	copy(used, used[2:])
 	if value < 0 {
 		used[0] = '-'
 	}
-	_this.CorrectAllocation(len(used) - 2)
+	_this.UseBytes(len(used) - 2)
 	_this.Flush()
 }
 

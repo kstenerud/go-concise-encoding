@@ -289,9 +289,11 @@ func (_this *encoderEngine) autoSetPrefix() {
 }
 
 func (_this *encoderEngine) flushPrefix() {
-	dst := _this.stream.Allocate(len(_this.prefix))
+	prefixLength := len(_this.prefix)
+	dst := _this.stream.RequireBytes(prefixLength)
 	copy(dst, _this.prefix)
 	_this.clearPrefix()
+	_this.stream.UseBytes(prefixLength)
 }
 
 func (_this *encoderEngine) setNoPrefix() {

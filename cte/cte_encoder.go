@@ -273,7 +273,7 @@ func (_this *OldEncoder) OnConcatenate() {
 func (_this *OldEncoder) OnConstant(name []byte, explicitValue bool) {
 	_this.engine.BeginObject()
 	_this.stream.AddByte('#')
-	_this.stream.AddNonemptyBytes(name)
+	_this.stream.AddBytes(name)
 	if explicitValue {
 		_this.stream.AddByte(':')
 	} else {
