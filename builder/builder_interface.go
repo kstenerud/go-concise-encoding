@@ -43,6 +43,7 @@ func (_this *interfaceBuilder) String() string            { return reflect.TypeO
 
 func (_this *interfaceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(common.TypeInterface))
+	ctx.NANext()
 	return dst
 }
 
@@ -119,7 +120,7 @@ func (_this *interfaceBuilder) BuildFromTime(ctx *Context, value time.Time, dst 
 	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
 }

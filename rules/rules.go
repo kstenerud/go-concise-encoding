@@ -216,12 +216,7 @@ func (_this *Rules) OnTime(value time.Time) {
 	_this.receiver.OnTime(value)
 }
 
-func (_this *Rules) OnCompactTime(value *compact_time.Time) {
-	if value == nil {
-		_this.OnNA()
-		return
-	}
-
+func (_this *Rules) OnCompactTime(value compact_time.Time) {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context)
 	_this.receiver.OnCompactTime(value)

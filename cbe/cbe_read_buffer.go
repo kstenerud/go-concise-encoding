@@ -234,7 +234,7 @@ complete:
 	return value, bigValue
 }
 
-func (_this *ReadBuffer) DecodeDate() *compact_time.Time {
+func (_this *ReadBuffer) DecodeDate() compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeDate(_this.allUnreadBytes())
 	if err == compact_time.ErrorIncomplete {
 		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
@@ -253,7 +253,7 @@ func (_this *ReadBuffer) DecodeDate() *compact_time.Time {
 	return value
 }
 
-func (_this *ReadBuffer) DecodeTime() *compact_time.Time {
+func (_this *ReadBuffer) DecodeTime() compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeTime(_this.allUnreadBytes())
 	if err == compact_time.ErrorIncomplete {
 		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {
@@ -272,7 +272,7 @@ func (_this *ReadBuffer) DecodeTime() *compact_time.Time {
 	return value
 }
 
-func (_this *ReadBuffer) DecodeTimestamp() *compact_time.Time {
+func (_this *ReadBuffer) DecodeTimestamp() compact_time.Time {
 	value, bytesDecoded, err := compact_time.DecodeTimestamp(_this.allUnreadBytes())
 	if err == compact_time.ErrorIncomplete {
 		_this.buffer.RequestAndRetry(_this.position, bytesDecoded*2, func(positionOffset int) {

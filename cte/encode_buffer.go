@@ -250,17 +250,18 @@ func (_this *EncodeBuffer) WriteTime(value time.Time) {
 	_this.WriteCompactTime(t)
 }
 
-func (_this *EncodeBuffer) WriteCompactTime(value *compact_time.Time) {
-	if value == nil {
+func (_this *EncodeBuffer) WriteCompactTime(value compact_time.Time) {
+	if value.IsZeroValue() {
 		_this.WriteNA()
 		return
 	}
-	tz := func(v *compact_time.Time) string {
+
+	tz := func(v compact_time.Time) string {
 		switch v.TimezoneType {
 		case compact_time.TypeZero:
 			return ""
 		case compact_time.TypeAreaLocation, compact_time.TypeLocal:
-			return fmt.Sprintf("/%s", v.AreaLocation)
+			return fmt.Sprintf("/%s", v.LongAreaLocation)
 		case compact_time.TypeLatitudeLongitude:
 			return fmt.Sprintf("/%.2f/%.2f", float64(v.LatitudeHundredths)/100, float64(v.LongitudeHundredths)/100)
 		default:
@@ -268,7 +269,7 @@ func (_this *EncodeBuffer) WriteCompactTime(value *compact_time.Time) {
 			return ""
 		}
 	}
-	subsec := func(v *compact_time.Time) string {
+	subsec := func(v compact_time.Time) string {
 		if v.Nanosecond == 0 {
 			return ""
 		}

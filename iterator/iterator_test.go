@@ -42,7 +42,7 @@ func TestIterateBasic(t *testing.T) {
 	dfloat := NewDFloat("1.23456e1000")
 	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()
-	pCTimeNow := test.AsCompactTime(gTimeNow)
+	cTimeNow := test.AsCompactTime(gTimeNow)
 	pURL := NewRID("http://x.com")
 
 	assertIterate(t, nil, NA())
@@ -77,8 +77,7 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, common.SignalingNan, F(common.SignalingNan))
 	assertIterate(t, common.QuietNan, F(common.QuietNan))
 	assertIterate(t, gTimeNow, GT(gTimeNow))
-	assertIterate(t, pCTimeNow, CT(pCTimeNow))
-	assertIterate(t, *pCTimeNow, CT(pCTimeNow))
+	assertIterate(t, cTimeNow, CT(cTimeNow))
 	assertIterate(t, []byte{1, 2, 3, 4}, AU8([]byte{1, 2, 3, 4}))
 	assertIterate(t, "test", S("test"))
 	assertIterate(t, pURL, RID("http://x.com"))

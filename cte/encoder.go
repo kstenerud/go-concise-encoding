@@ -204,12 +204,7 @@ func (_this *Encoder) OnTime(value time.Time) {
 	_this.context.NotifyObject()
 }
 
-func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
-	if value == nil {
-		_this.OnNA()
-		return
-	}
-
+func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	_this.context.ApplyPrefix()
 	_this.context.Stream.WriteCompactTime(value)
 	_this.context.NotifyObject()

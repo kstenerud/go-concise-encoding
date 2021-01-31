@@ -176,7 +176,7 @@ func (_this *RootBuilder) OnUUID(value []byte) {
 func (_this *RootBuilder) OnTime(value time.Time) {
 	_this.context.CurrentBuilder.BuildFromTime(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
+func (_this *RootBuilder) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {

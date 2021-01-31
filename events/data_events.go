@@ -139,7 +139,7 @@ type DataEventReceiver interface {
 	OnBigDecimalFloat(value *apd.Decimal)
 	OnNan(signaling bool)
 	OnTime(value time.Time)
-	OnCompactTime(value *compact_time.Time)
+	OnCompactTime(value compact_time.Time)
 	OnList()
 	OnMap()
 	OnMarkup()
@@ -185,7 +185,7 @@ func (_this *NullEventReceiver) OnBigDecimalFloat(*apd.Decimal)      {}
 func (_this *NullEventReceiver) OnNan(bool)                          {}
 func (_this *NullEventReceiver) OnUUID([]byte)                       {}
 func (_this *NullEventReceiver) OnTime(time.Time)                    {}
-func (_this *NullEventReceiver) OnCompactTime(*compact_time.Time)    {}
+func (_this *NullEventReceiver) OnCompactTime(compact_time.Time)    {}
 func (_this *NullEventReceiver) OnArray(ArrayType, uint64, []byte)   {}
 func (_this *NullEventReceiver) OnArrayBegin(ArrayType)              {}
 func (_this *NullEventReceiver) OnArrayChunk(uint64, bool)           {}

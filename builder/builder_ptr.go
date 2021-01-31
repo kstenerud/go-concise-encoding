@@ -59,6 +59,7 @@ func (_this *ptrBuilder) newElem() reflect.Value {
 
 func (_this *ptrBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(_this.dstType))
+	ctx.NANext()
 	return dst
 }
 
@@ -139,7 +140,7 @@ func (_this *ptrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflec
 	return dst
 }
 
-func (_this *ptrBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ptrBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, ptr.Elem())
 	dst.Set(ptr)

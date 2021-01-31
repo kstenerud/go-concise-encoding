@@ -84,6 +84,14 @@ func (_this *Context) UnstackBuilderAndNotifyChildFinished(container reflect.Val
 	return oldTop
 }
 
+func (_this *Context) IgnoreNext() {
+	_this.StackBuilder(globalIgnoreBuilder)
+}
+
+func (_this *Context) NANext() {
+	_this.StackBuilder(globalNABuilder)
+}
+
 func (_this *Context) BeginMarkerObject(id interface{}) {
 	_this.UnstackBuilder()
 	marker := newMarkerObjectBuilder(id, _this.CurrentBuilder)

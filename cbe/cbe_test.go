@@ -184,7 +184,7 @@ func TestCBETimeEOF(t *testing.T) {
 
 func TestCBETime(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, version, typeDate, 0x95, 0x7f, 0x3e}, BD(), V(1), CT(NewDate(-2000, 12, 21)), ED())
-	assertDecodeEncode(t, []byte{header, version, typeTime, 0xfe, 0x4f, 0xd6, 0xdc, 0x8b, 0x14, 0x01}, BD(), V(1), CT(NewTime(8, 41, 05, 999999999, "")), ED())
+	assertDecodeEncode(t, []byte{header, version, typeTime, 0xfe, 0x4f, 0xd6, 0xdc, 0x8b, 0x14, 0xfd}, BD(), V(1), CT(NewTime(8, 41, 05, 999999999, "")), ED())
 	assertDecodeEncode(t, []byte{header, version, typeTimestamp, 0x01, 0x00, 0x10, 0x02, 00, 0x10, 'E', '/', 'B', 'e', 'r', 'l', 'i', 'n'}, BD(), V(1), CT(NewTS(2000, 1, 1, 0, 0, 0, 0, "Europe/Berlin")), ED())
 	assertDecodeEncode(t, []byte{header, version, typeTimestamp, 0x8d, 0x1c, 0xb0, 0xd7, 0x06, 0x1f, 0x99, 0x12, 0xd5, 0x2e, 0x2f, 0x04}, BD(), V(1), CT(NewTSLL(3190, 8, 31, 0, 54, 47, 394129000, 5994, 1071)), ED())
 

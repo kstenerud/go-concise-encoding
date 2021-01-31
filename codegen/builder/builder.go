@@ -43,7 +43,7 @@ var (
 	UUID           = "BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value"
 	Array          = "BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value"
 	Time           = "BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value"
-	CTime          = "BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value"
+	CTime          = "BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value"
 	Ref            = "BuildFromReference(ctx *Context, id interface{})"
 	Cat            = "BuildConcatenate(ctx *Context)"
 	ListInit       = "BuildInitiateList(ctx *Context)"
@@ -84,7 +84,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "compactTime",
-		Methods: []string{Array, Time, CTime},
+		Methods: []string{Nil, Array, Time, CTime},
 	},
 	{
 		Name:    "custom",

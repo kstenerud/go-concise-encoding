@@ -190,7 +190,7 @@ func (_this *markerObjectBuilder) BuildFromTime(ctx *Context, value time.Time, d
 	return object
 }
 
-func (_this *markerObjectBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *markerObjectBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromCompactTime(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)
 	return object

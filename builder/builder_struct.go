@@ -258,7 +258,7 @@ func (_this *structBuilder) BuildFromTime(ctx *Context, value time.Time, _ refle
 	return object
 }
 
-func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	_this.nextBuilderGenerator(ctx).BuildFromCompactTime(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()

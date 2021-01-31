@@ -93,7 +93,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 }
 
 func (_this *Encoder) OnNA() {
-	_this.encodeType(cbeTypeNil)
+	_this.encodeType(cbeTypeNA)
 }
 
 func (_this *Encoder) OnBool(value bool) {
@@ -157,7 +157,7 @@ func (_this *Encoder) OnNegativeInt(value uint64) {
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
 	if value == nil {
-		_this.encodeType(cbeTypeNil)
+		_this.encodeType(cbeTypeNA)
 		return
 	}
 
@@ -220,7 +220,7 @@ func (_this *Encoder) OnFloat(value float64) {
 
 func (_this *Encoder) OnBigFloat(value *big.Float) {
 	if value == nil {
-		_this.encodeType(cbeTypeNil)
+		_this.encodeType(cbeTypeNA)
 		return
 	}
 
@@ -237,7 +237,7 @@ func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
 
 func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
-		_this.encodeType(cbeTypeNil)
+		_this.encodeType(cbeTypeNA)
 		return
 	}
 
@@ -266,7 +266,13 @@ func (_this *Encoder) OnTime(value time.Time) {
 	_this.OnCompactTime(t)
 }
 
-func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
+func (_this *Encoder) OnCompactTime(value compact_time.Time) {
+	if value.IsZeroValue() {
+		_this.encodeType(cbeTypeNA)
+		_this.encodeType(cbeTypeNA)
+		return
+	}
+
 	var timeType cbeTypeField
 	switch value.TimeType {
 	case compact_time.TypeDate:
@@ -280,7 +286,7 @@ func (_this *Encoder) OnCompactTime(value *compact_time.Time) {
 	dst := _this.buff.RequireBytes(compact_time.MaxEncodeLength + dataOffset)
 	dst[0] = byte(timeType)
 	dst = dst[dataOffset:]
-	byteCount, _ := compact_time.Encode(value, dst)
+	byteCount, _ := value.Encode(dst)
 	_this.buff.UseBytes(byteCount + dataOffset)
 }
 
@@ -470,7 +476,7 @@ func (_this *Encoder) encodeTypedInt(cbeType cbeTypeField, value uint64) {
 
 func (_this *Encoder) encodeTypedBigInt(cbeType cbeTypeField, value *big.Int) {
 	if value == nil {
-		_this.encodeType(cbeTypeNil)
+		_this.encodeType(cbeTypeNA)
 		return
 	}
 	words := value.Bits()

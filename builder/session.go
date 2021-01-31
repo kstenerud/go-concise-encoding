@@ -222,8 +222,6 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generatePBigFloatBuilder
 		case common.TypePBigDecimalFloat:
 			return generatePBigDecimalFloatBuilder
-		case common.TypePCompactTime:
-			return generatePCompactTimeBuilder
 		default:
 			return newPtrBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}

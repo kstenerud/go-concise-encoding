@@ -57,7 +57,7 @@ func (_this *bigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType even
 func (_this *bigDecimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *bigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *bigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigDecimalFloatBuilder) BuildInitiateList(ctx *Context) {
@@ -99,7 +99,7 @@ func (_this *bigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.Arra
 func (_this *bigFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *bigFloatBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *bigFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigFloatBuilder) BuildInitiateList(ctx *Context) {
@@ -141,7 +141,7 @@ func (_this *bigIntBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 func (_this *bigIntBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *bigIntBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *bigIntBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigIntBuilder) BuildInitiateList(ctx *Context) {
@@ -201,7 +201,7 @@ func (_this *boolBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 func (_this *boolBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *boolBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *boolBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *boolBuilder) BuildInitiateList(ctx *Context) {
@@ -227,9 +227,6 @@ func (_this *boolBuilder) BuildConcatenate(ctx *Context) {
 }
 func (_this *boolBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
-}
-func (_this *compactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *compactTimeBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -315,7 +312,7 @@ func (_this *customBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflec
 func (_this *customBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *customBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *customBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *customBuilder) BuildInitiateList(ctx *Context) {
@@ -357,7 +354,7 @@ func (_this *decimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.
 func (_this *decimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *decimalFloatBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *decimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *decimalFloatBuilder) BuildInitiateList(ctx *Context) {
@@ -399,7 +396,7 @@ func (_this *floatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 func (_this *floatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *floatBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *floatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *floatBuilder) BuildInitiateList(ctx *Context) {
@@ -459,7 +456,7 @@ func (_this *float32ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst 
 func (_this *float32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float32ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *float32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float32ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -513,7 +510,7 @@ func (_this *float32SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst 
 func (_this *float32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float32SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *float32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float32SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -570,7 +567,7 @@ func (_this *float64ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst 
 func (_this *float64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float64ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *float64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float64ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -624,7 +621,7 @@ func (_this *float64SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst 
 func (_this *float64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float64SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *float64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float64SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -666,7 +663,7 @@ func (_this *intBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 func (_this *intBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *intBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *intBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *intBuilder) BuildInitiateList(ctx *Context) {
@@ -726,7 +723,7 @@ func (_this *int8ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst ref
 func (_this *int8ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int8ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int8ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int8ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -780,7 +777,7 @@ func (_this *int8SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst ref
 func (_this *int8SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int8SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int8SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int8SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -837,7 +834,7 @@ func (_this *int16ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *int16ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int16ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int16ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int16ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -891,7 +888,7 @@ func (_this *int16SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *int16SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int16SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int16SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int16SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -948,7 +945,7 @@ func (_this *int32ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *int32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int32ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int32ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -1002,7 +999,7 @@ func (_this *int32SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *int32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int32SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int32SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -1059,7 +1056,7 @@ func (_this *int64ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *int64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int64ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int64ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -1113,7 +1110,7 @@ func (_this *int64SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *int64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int64SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *int64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int64SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -1176,7 +1173,7 @@ func (_this *markerIDBuilder) BuildFromArray(ctx *Context, arrayType events.Arra
 func (_this *markerIDBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *markerIDBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *markerIDBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *markerIDBuilder) BuildInitiateList(ctx *Context) {
@@ -1227,7 +1224,7 @@ func (_this *pBigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType eve
 func (_this *pBigDecimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pBigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pBigDecimalFloatBuilder) BuildInitiateList(ctx *Context) {
@@ -1266,7 +1263,7 @@ func (_this *pBigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 func (_this *pBigFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pBigFloatBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pBigFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pBigFloatBuilder) BuildInitiateList(ctx *Context) {
@@ -1305,7 +1302,7 @@ func (_this *pBigIntBuilder) BuildFromArray(ctx *Context, arrayType events.Array
 func (_this *pBigIntBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pBigIntBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pBigIntBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pBigIntBuilder) BuildInitiateList(ctx *Context) {
@@ -1437,7 +1434,7 @@ func (_this *referenceIDBuilder) BuildFromArray(ctx *Context, arrayType events.A
 func (_this *referenceIDBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *referenceIDBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *referenceIDBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *referenceIDBuilder) BuildInitiateList(ctx *Context) {
@@ -1500,7 +1497,7 @@ func (_this *stringBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflec
 func (_this *stringBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *stringBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *stringBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *stringBuilder) BuildInitiateList(ctx *Context) {
@@ -1617,7 +1614,7 @@ func (_this *uintBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 func (_this *uintBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uintBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uintBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uintBuilder) BuildInitiateList(ctx *Context) {
@@ -1677,7 +1674,7 @@ func (_this *uint8ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *uint8ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint8ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint8ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint8ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -1731,7 +1728,7 @@ func (_this *uint8SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst re
 func (_this *uint8SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint8SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint8SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint8SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -1788,7 +1785,7 @@ func (_this *uint16ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst r
 func (_this *uint16ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint16ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint16ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint16ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -1842,7 +1839,7 @@ func (_this *uint16SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst r
 func (_this *uint16SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint16SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint16SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint16SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -1899,7 +1896,7 @@ func (_this *uint32ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst r
 func (_this *uint32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint32ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint32ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -1953,7 +1950,7 @@ func (_this *uint32SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst r
 func (_this *uint32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint32SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint32SliceBuilder) BuildInitiateList(ctx *Context) {
@@ -2010,7 +2007,7 @@ func (_this *uint64ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst r
 func (_this *uint64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint64ArrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint64ArrayBuilder) BuildInitiateList(ctx *Context) {
@@ -2064,7 +2061,7 @@ func (_this *uint64SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst r
 func (_this *uint64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint64SliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint64SliceBuilder) BuildInitiateList(ctx *Context) {

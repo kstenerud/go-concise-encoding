@@ -426,7 +426,8 @@ func TestCTETimestamp(t *testing.T) {
 	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.92/1.a")
 	assertDecodeFails(t, "c1 2020-01-15/10:00:01.93/89.a/1.10")
 
-	gotime, err := NewTS(2020, 1, 15, 10, 0, 1, 930000000, "").AsGoTime()
+	ts := NewTS(2020, 1, 15, 10, 0, 1, 930000000, "")
+	gotime, err := ts.AsGoTime()
 	if err != nil {
 		panic(err)
 	}

@@ -1036,7 +1036,7 @@ outer:
 
 var maxDayByMonth = []int{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 
-func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
+func (_this *ReadBuffer) DecodeDate(year int64) compact_time.Time {
 	month, _, digitCount := _this.DecodeDecimalUint(0, nil)
 	if digitCount > 2 {
 		_this.Errorf("Month field is too long")
@@ -1093,14 +1093,14 @@ func (_this *ReadBuffer) DecodeDate(year int64) *compact_time.Time {
 	}
 	ts, err := compact_time.NewTimestamp(int(year), int(month), int(day),
 		int(t.Hour), int(t.Minute), int(t.Second), int(t.Nanosecond),
-		t.AreaLocation)
+		t.ShortAreaLocation)
 	if err != nil {
 		_this.UnexpectedError(err, "timestamp area/loc")
 	}
 	return ts
 }
 
-func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
+func (_this *ReadBuffer) DecodeTime(hour int) compact_time.Time {
 	if hour < 0 || hour > 23 {
 		_this.Errorf("Hour %v is invalid", hour)
 	}
@@ -1177,7 +1177,7 @@ func (_this *ReadBuffer) DecodeTime(hour int) *compact_time.Time {
 	}
 
 	_this.UnexpectedChar("time")
-	return nil
+	return compact_time.Time{}
 }
 
 func (_this *ReadBuffer) DecodeLatLongPortion(name string) (value int) {

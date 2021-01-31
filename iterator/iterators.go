@@ -46,14 +46,14 @@ func iterateTime(context *Context, v reflect.Value) {
 
 func iterateCompactTime(context *Context, v reflect.Value) {
 	ct := v.Interface().(compact_time.Time)
-	context.EventReceiver.OnCompactTime(&ct)
+	context.EventReceiver.OnCompactTime(ct)
 }
 
 func iteratePCompactTime(context *Context, v reflect.Value) {
 	if v.IsNil() {
 		context.EventReceiver.OnNA()
 	} else {
-		context.EventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
+		context.EventReceiver.OnCompactTime(v.Interface().(compact_time.Time))
 	}
 }
 

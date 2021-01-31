@@ -139,7 +139,7 @@ func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflec
 	return object
 }
 
-func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
 	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	return object

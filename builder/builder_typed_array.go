@@ -40,6 +40,7 @@ func (_this *stringBuilder) String() string            { return nameOf(_this) }
 func (_this *stringBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	// Go doesn't have the concept of a nil string.
 	dst.SetString("")
+	ctx.NANext()
 	return dst
 }
 func (_this *stringBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
@@ -97,6 +98,7 @@ func (_this *uint8SliceBuilder) String() string            { return nameOf(_this
 
 func (_this *uint8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -162,6 +164,7 @@ func (_this *uint16SliceBuilder) String() string            { return nameOf(_thi
 
 func (_this *uint16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -235,6 +238,7 @@ func (_this *uint32SliceBuilder) String() string            { return nameOf(_thi
 
 func (_this *uint32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -314,6 +318,7 @@ func (_this *uint64SliceBuilder) String() string            { return nameOf(_thi
 
 func (_this *uint64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -390,6 +395,7 @@ func (_this *int8SliceBuilder) String() string            { return nameOf(_this)
 
 func (_this *int8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -460,6 +466,7 @@ func (_this *int16SliceBuilder) String() string            { return nameOf(_this
 
 func (_this *int16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -533,6 +540,7 @@ func (_this *int32SliceBuilder) String() string            { return nameOf(_this
 
 func (_this *int32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -612,6 +620,7 @@ func (_this *int64SliceBuilder) String() string            { return nameOf(_this
 
 func (_this *int64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -691,6 +700,7 @@ func (_this *float32SliceBuilder) String() string            { return nameOf(_th
 
 func (_this *float32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 
@@ -771,6 +781,7 @@ func (_this *float64SliceBuilder) String() string            { return nameOf(_th
 
 func (_this *float64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
+	ctx.NANext()
 	return dst
 }
 

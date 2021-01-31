@@ -208,7 +208,7 @@ func (_this *OldEncoder) OnTime(value time.Time) {
 	_this.engine.CompleteObject()
 }
 
-func (_this *OldEncoder) OnCompactTime(value *compact_time.Time) {
+func (_this *OldEncoder) OnCompactTime(value compact_time.Time) {
 	_this.engine.BeginObject()
 	_this.stream.WriteCompactTime(value)
 	_this.engine.CompleteObject()

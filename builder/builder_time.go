@@ -50,7 +50,7 @@ func (_this *timeBuilder) BuildFromTime(ctx *Context, value time.Time, dst refle
 	return dst
 }
 
-func (_this *timeBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *timeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	v, err := value.AsGoTime()
 	if err != nil {
 		panic(err)
@@ -68,6 +68,12 @@ type compactTimeBuilder struct{}
 func generateCompactTimeBuilder(ctx *Context) ObjectBuilder { return globalCompactTimeBuilder }
 func (_this *compactTimeBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
+func (_this *compactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.ValueOf(compact_time.Time{}))
+	ctx.NANext()
+	return dst
+}
+
 func (_this *compactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
 		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
@@ -80,12 +86,12 @@ func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, ds
 	if err != nil {
 		panic(err)
 	}
-	dst.Set(reflect.ValueOf(*t))
+	dst.Set(reflect.ValueOf(t))
 	return dst
 }
 
-func (_this *compactTimeBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
-	dst.Set(reflect.ValueOf(*value))
+func (_this *compactTimeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+	dst.Set(reflect.ValueOf(value))
 	return dst
 }
 
@@ -99,7 +105,8 @@ func generatePCompactTimeBuilder(ctx *Context) ObjectBuilder { return &pCompactT
 func (_this *pCompactTimeBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *pCompactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	dst.Set(reflect.ValueOf((*compact_time.Time)(nil)))
+	dst.Set(reflect.ValueOf(compact_time.Time{}))
+	ctx.NANext()
 	return dst
 }
 
@@ -119,7 +126,7 @@ func (_this *pCompactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, d
 	return dst
 }
 
-func (_this *pCompactTimeBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pCompactTimeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
 }

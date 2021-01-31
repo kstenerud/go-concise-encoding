@@ -101,7 +101,7 @@ func (_this *urlBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflec
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromTime(ctx, value, dst)
 }
-func (_this *urlBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *urlBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromCompactTime(ctx, value, dst)
 }
@@ -141,6 +141,7 @@ func (_this *pUrlBuilder) String() string { return reflect.TypeOf(_this).String(
 func (_this *pUrlBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	ctx.UnstackBuilder()
+	ctx.NANext()
 	return dst
 }
 
@@ -195,7 +196,7 @@ func (_this *pUrlBuilder) BuildFromTime(ctx *Context, value time.Time, dst refle
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromTime(ctx, value, dst)
 }
-func (_this *pUrlBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pUrlBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromCompactTime(ctx, value, dst)
 }

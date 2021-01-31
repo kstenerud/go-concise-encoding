@@ -243,8 +243,6 @@ func (_this *Session) getDefaultIteratorForType(t reflect.Type) IteratorFunction
 		}
 	case reflect.Ptr:
 		switch t {
-		case common.TypePCompactTime:
-			return iteratePCompactTime
 		case common.TypePURL:
 			return iteratePURL
 		case common.TypePBigInt:

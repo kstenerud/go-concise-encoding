@@ -267,6 +267,7 @@ func (_this *pBigDecimalFloatBuilder) String() string            { return reflec
 
 func (_this *pBigDecimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*apd.Decimal)(nil)))
+	ctx.NANext()
 	return dst
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
@@ -309,6 +310,7 @@ func (_this *pBigFloatBuilder) String() string            { return reflect.TypeO
 
 func (_this *pBigFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Float)(nil)))
+	ctx.NANext()
 	return dst
 }
 func (_this *pBigFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
@@ -351,6 +353,7 @@ func (_this *pBigIntBuilder) String() string            { return reflect.TypeOf(
 
 func (_this *pBigIntBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Int)(nil)))
+	ctx.NANext()
 	return dst
 }
 func (_this *pBigIntBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {

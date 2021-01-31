@@ -108,7 +108,7 @@ func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value time.Time, dst r
 	return dst
 }
 
-func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromCompactTime(ctx, value, dst)
 	return dst
 }

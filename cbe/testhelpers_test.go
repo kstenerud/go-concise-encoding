@@ -121,23 +121,23 @@ func NewRID(RIDString string) *url.URL {
 	return test.NewRID(RIDString)
 }
 
-func NewDate(year, month, day int) *compact_time.Time {
+func NewDate(year, month, day int) compact_time.Time {
 	return test.NewDate(year, month, day)
 }
 
-func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	return test.NewTime(hour, minute, second, nanosecond, areaLocation)
 }
 
-func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	return test.NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 }
 
-func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	return test.NewTS(year, month, day, hour, minute, second, nanosecond, areaLocation)
 }
 
-func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	return test.NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 }
 
@@ -159,7 +159,7 @@ func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v *compact_time.Time) *test.TEvent   { return test.CT(v) }
+func CT(v compact_time.Time) *test.TEvent   { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }

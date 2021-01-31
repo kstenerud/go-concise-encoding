@@ -156,7 +156,7 @@ func (_this *sliceBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflec
 	return object
 }
 
-func (_this *sliceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *sliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	_this.storeValue(object)

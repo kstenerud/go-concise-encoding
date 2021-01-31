@@ -190,7 +190,7 @@ func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.
 	return object
 }
 
-func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	// TODO: Why was it this way?
 	// _this.store(reflect.ValueOf(value))
 	object := _this.newElem()

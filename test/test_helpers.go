@@ -116,7 +116,7 @@ func NewRID(RIDString string) *url.URL {
 	return rid
 }
 
-func NewDate(year, month, day int) *compact_time.Time {
+func NewDate(year, month, day int) compact_time.Time {
 	t, err := compact_time.NewDate(year, month, day)
 	if err != nil {
 		panic(err)
@@ -124,7 +124,7 @@ func NewDate(year, month, day int) *compact_time.Time {
 	return t
 }
 
-func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	t, err := compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
 	if err != nil {
 		panic(err)
@@ -132,7 +132,7 @@ func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact
 	return t
 }
 
-func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	t, err := compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 	if err != nil {
 		panic(err)
@@ -140,7 +140,7 @@ func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHu
 	return t
 }
 
-func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	t, err := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
 	if err != nil {
 		panic(err)
@@ -148,7 +148,7 @@ func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation 
 	return t
 }
 
-func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	t, err := compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 	if err != nil {
 		panic(err)
@@ -156,7 +156,7 @@ func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundred
 	return t
 }
 
-func AsGoTime(t *compact_time.Time) time.Time {
+func AsGoTime(t compact_time.Time) time.Time {
 	gt, err := t.AsGoTime()
 	if err != nil {
 		panic(err)
@@ -164,7 +164,7 @@ func AsGoTime(t *compact_time.Time) time.Time {
 	return gt
 }
 
-func AsCompactTime(t time.Time) *compact_time.Time {
+func AsCompactTime(t time.Time) compact_time.Time {
 	ct, err := compact_time.AsCompactTime(t)
 	if err != nil {
 		panic(err)
@@ -271,7 +271,6 @@ var (
 	EvUUID   = UUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvGT     = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
 	EvCT     = CT(NewDate(2020, 1, 1))
-	EvCTNil  = CT(nil)
 	EvL      = L()
 	EvM      = M()
 	EvMUP    = MUP()
@@ -322,7 +321,7 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvNA, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
-	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
+	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvMETA,
 	EvCMT, EvE, EvMARK, EvREF, EvCAT, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
@@ -625,7 +624,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventTime:
 		receiver.OnTime(_this.V1.(time.Time))
 	case TEventCompactTime:
-		receiver.OnCompactTime(_this.V1.(*compact_time.Time))
+		receiver.OnCompactTime(_this.V1.(compact_time.Time))
 	case TEventString:
 		bytes := []byte(_this.V1.(string))
 		receiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
@@ -773,7 +772,7 @@ func NAN() *TEvent                      { return newTEvent(TEventNan, nil, nil) 
 func SNAN() *TEvent                     { return newTEvent(TEventSNan, nil, nil) }
 func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
 func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
-func CT(v *compact_time.Time) *TEvent   { return EventOrNil(TEventCompactTime, v) }
+func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
 func RID(v string) *TEvent              { return newTEvent(TEventResourceID, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
@@ -856,8 +855,6 @@ func EventForValue(value interface{}) *TEvent {
 			return BF(rv.Interface().(*big.Float))
 		case common.TypePBigInt:
 			return BI(rv.Interface().(*big.Int))
-		case common.TypePCompactTime:
-			return CT(rv.Interface().(*compact_time.Time))
 		case common.TypePURL:
 			return RID(rv.Interface().(*url.URL).String())
 		}
@@ -875,7 +872,7 @@ func EventForValue(value interface{}) *TEvent {
 			return BI(&v)
 		case common.TypeCompactTime:
 			v := rv.Interface().(compact_time.Time)
-			return CT(&v)
+			return CT(v)
 		case common.TypeDFloat:
 			v := rv.Interface().(compact_float.DFloat)
 			return DF(v)
@@ -1000,7 +997,7 @@ func (h *TEventPrinter) OnTime(value time.Time) {
 	h.Print(GT(value))
 	h.Next.OnTime(value)
 }
-func (h *TEventPrinter) OnCompactTime(value *compact_time.Time) {
+func (h *TEventPrinter) OnCompactTime(value compact_time.Time) {
 	h.Print(CT(value))
 	h.Next.OnCompactTime(value)
 }
@@ -1179,7 +1176,7 @@ func (h *TER) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
 func (h *TER) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
 func (h *TER) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
 func (h *TER) OnTime(value time.Time)                    { h.add(GT(value)) }
-func (h *TER) OnCompactTime(value *compact_time.Time)    { h.add(CT(value)) }
+func (h *TER) OnCompactTime(value compact_time.Time)     { h.add(CT(value)) }
 func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeString:
@@ -1338,7 +1335,7 @@ type TestingOuterStruct struct {
 	Time   time.Time
 	PTime  *time.Time
 	CTime  compact_time.Time
-	PCTime *compact_time.Time
+	PCTime compact_time.Time
 	PURL   *url.URL
 	URL    url.URL
 }
@@ -1444,7 +1441,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F13", SNAN())
 		ane("F14", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 		ane("F15", GT(_this.Time))
-		ane("F16", CT(_this.PCTime))
+		ane("F16", CT(_this.CTime))
 		ane("F17", AU8([]byte{1}))
 		ane("F18", S("xyz"))
 		ane("F19", RID("http://example.com"))
@@ -1466,7 +1463,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			SNAN(),
 			UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 			GT(_this.Time),
-			CT(_this.PCTime),
+			CT(_this.CTime),
 			AU8([]byte{1}),
 			S("xyz"),
 			RID("http://example.com"),
@@ -1544,7 +1541,6 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PIS.Inner = baseValue + 16
 	testTime := time.Date(30000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
 	_this.PTime = &testTime
-	_this.PCTime = NewTS(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
-	_this.CTime = *_this.PCTime
+	_this.CTime = NewTS(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
 	_this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
 }

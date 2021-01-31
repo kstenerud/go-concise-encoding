@@ -40,6 +40,7 @@ func generateIgnoreBuilder(ctx *Context) ObjectBuilder { return globalIgnoreBuil
 func (_this *ignoreBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *ignoreBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	ctx.NANext()
 	return dst
 
 }
@@ -88,7 +89,7 @@ func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect
 	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ compact_time.Time, dst reflect.Value) reflect.Value {
 	return dst
 }
 
