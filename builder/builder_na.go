@@ -94,6 +94,11 @@ func (_this *naBuilder) BuildFromArray(ctx *Context, _ events.ArrayType, _ []byt
 	return dst
 }
 
+func (_this *naBuilder) BuildFromStringlikeArray(ctx *Context, _ events.ArrayType, _ string, dst reflect.Value) reflect.Value {
+	ctx.UnstackBuilder()
+	return dst
+}
+
 func (_this *naBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return dst

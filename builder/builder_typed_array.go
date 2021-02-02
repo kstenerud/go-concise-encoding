@@ -53,6 +53,16 @@ func (_this *stringBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 	return dst
 }
 
+func (_this *stringBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeString:
+		dst.SetString(value)
+	default:
+		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
+	}
+	return dst
+}
+
 // ============================================================================
 
 type uint8ArrayBuilder struct {

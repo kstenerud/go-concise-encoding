@@ -184,6 +184,12 @@ func (_this *markerObjectBuilder) BuildFromArray(ctx *Context, arrayType events.
 	return object
 }
 
+func (_this *markerObjectBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	_this.onObjectFinished(ctx, object)
+	return object
+}
+
 func (_this *markerObjectBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromTime(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)

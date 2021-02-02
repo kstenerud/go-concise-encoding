@@ -243,6 +243,22 @@ func (_this *Context) ValidateFullArrayAnyType(arrayType events.ArrayType, eleme
 	}
 }
 
+func (_this *Context) ValidateFullArrayStringlike(arrayType events.ArrayType, data string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		_this.ValidateLengthString(uint64(len(data)))
+		_this.ValidateContentsStringlike(data)
+	case events.ArrayTypeResourceID:
+		_this.ValidateLengthRID(uint64(len(data)))
+		_this.ValidateContentsRIDString(data)
+	case events.ArrayTypeCustomText:
+		_this.ValidateLengthAnyType(uint64(len(data)))
+		_this.ValidateContentsStringlike(data)
+	default:
+		_this.ValidateLengthAnyType(uint64(len(data)))
+	}
+}
+
 func (_this *Context) ValidateFullArrayKeyable(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.AssertArrayTypeKeyable(arrayType)
 	_this.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -274,6 +290,12 @@ func (_this *Context) ValidateFullArrayMarkerID(arrayType events.ArrayType, elem
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthMarkerID(uint64(len(data)))
 	_this.ValidateContentsMarkerID(data)
+}
+
+func (_this *Context) ValidateFullArrayMarkerIDString(arrayType events.ArrayType, data string) {
+	_this.AssertArrayTypeString(arrayType)
+	_this.ValidateLengthMarkerID(uint64(len(data)))
+	_this.ValidateContentsMarkerIDString(data)
 }
 
 func (_this *Context) ValidateByteCount1BPE(elementCount uint64, byteCount uint64) {
@@ -339,6 +361,12 @@ func (_this *Context) ValidateContentsString(contents []byte) {
 	}
 }
 
+func (_this *Context) ValidateContentsStringlike(contents string) {
+	if !utf8.ValidString(contents) {
+		panic(fmt.Errorf("String is not valid UTF-8: %v", string(contents)))
+	}
+}
+
 func (_this *Context) ValidateContentsCustomText(contents []byte) {
 	_this.ValidateContentsString(contents)
 }
@@ -353,23 +381,30 @@ func (_this *Context) ValidateContentsRID(contents []byte) {
 	_this.ValidateContentsString(contents)
 }
 
+func (_this *Context) ValidateContentsRIDString(contents string) {
+	// TODO: More specific validation
+	_this.ValidateContentsStringlike(contents)
+}
+
 func (_this *Context) ValidateContentsMarkerID(contents []byte) {
+	_this.ValidateContentsMarkerIDString(string(contents))
+}
+
+func (_this *Context) ValidateContentsMarkerIDString(contents string) {
 	if len(contents) == 0 {
 		panic(fmt.Errorf("Marker ID string cannot be empty"))
 	}
 
-	asString := string(contents)
-
-	ch, _ := utf8.DecodeRune(contents)
+	ch, _ := utf8.DecodeRuneInString(contents)
 	if chars.RuneHasProperty(ch, chars.CharNeedsQuoteFirst) {
-		panic(fmt.Errorf("ID [%s] first character is invalid", asString))
+		panic(fmt.Errorf("ID [%s] first character is invalid", contents))
 	}
 
 	runeCount := 1
-	for _, ch = range asString {
+	for _, ch = range contents {
 		runeCount++
 		if chars.RuneHasProperty(ch, chars.CharNeedsQuote) {
-			panic(fmt.Errorf("ID [%s] contains an invalid character", asString))
+			panic(fmt.Errorf("ID [%s] contains an invalid character", contents))
 		}
 	}
 	if runeCount > maxMarkerIDRuneCount {

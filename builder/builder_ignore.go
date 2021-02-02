@@ -85,6 +85,10 @@ func (_this *ignoreBuilder) BuildFromArray(ctx *Context, _ events.ArrayType, _ [
 	return dst
 }
 
+func (_this *ignoreBuilder) BuildFromStringlikeArray(ctx *Context, _ events.ArrayType, _ string, dst reflect.Value) reflect.Value {
+	return dst
+}
+
 func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
 	return dst
 }

@@ -626,17 +626,14 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCompactTime:
 		receiver.OnCompactTime(_this.V1.(compact_time.Time))
 	case TEventString:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+		receiver.OnStringlikeArray(events.ArrayTypeString, _this.V1.(string))
 	case TEventResourceID:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+		receiver.OnStringlikeArray(events.ArrayTypeResourceID, _this.V1.(string))
 	case TEventCustomBinary:
-		bytes := []byte(_this.V1.([]byte))
+		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
 	case TEventCustomText:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
+		receiver.OnStringlikeArray(events.ArrayTypeCustomText, _this.V1.(string))
 	case TEventArrayBoolean:
 		bitCount := _this.V1.(uint64)
 		bytes := _this.V2.([]byte)
@@ -1042,6 +1039,19 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	}
 	h.Next.OnArray(arrayType, elementCount, value)
 }
+func (h *TEventPrinter) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		h.Print(S(value))
+	case events.ArrayTypeResourceID:
+		h.Print(RID(value))
+	case events.ArrayTypeCustomText:
+		h.Print(CUT(value))
+	default:
+		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
+	}
+	h.Next.OnStringlikeArray(arrayType, value)
+}
 func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
@@ -1215,6 +1225,18 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 		h.add(AUU(CloneBytes(value)))
 	default:
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+	}
+}
+func (h *TER) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		h.add(S(value))
+	case events.ArrayTypeResourceID:
+		h.add(RID(value))
+	case events.ArrayTypeCustomText:
+		h.add(CUT(value))
+	default:
+		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
 	}
 }
 func (h *TER) OnArrayBegin(arrayType events.ArrayType) {

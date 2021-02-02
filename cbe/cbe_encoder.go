@@ -307,6 +307,23 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	_this.encodeArrayData(value)
 }
 
+func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	elementCount := uint64(len(value))
+	if arrayType == events.ArrayTypeString && elementCount <= maxSmallStringLength {
+		const dataOffset = 1
+		dst := _this.buff.RequireBytes(int(elementCount) + dataOffset)
+		dst[0] = byte(cbeTypeString0 + cbeTypeField(elementCount))
+		dst = dst[dataOffset:]
+		copy(dst, value)
+		_this.buff.UseBytes(int(elementCount) + dataOffset)
+		return
+	}
+
+	_this.encodeArrayHeader(arrayType)
+	_this.encodeArrayChunkHeader(elementCount, 0)
+	_this.encodeArrayString(value)
+}
+
 func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.encodeArrayHeader(arrayType)
 }
@@ -599,6 +616,12 @@ func (_this *Encoder) encodeArrayChunkHeader(elementCount uint64, moreChunksFoll
 }
 
 func (_this *Encoder) encodeArrayData(data []byte) {
+	dst := _this.buff.RequireBytes(len(data))
+	copy(dst, data)
+	_this.buff.UseBytes(len(data))
+}
+
+func (_this *Encoder) encodeArrayString(data string) {
 	dst := _this.buff.RequireBytes(len(data))
 	copy(dst, data)
 	_this.buff.UseBytes(len(data))

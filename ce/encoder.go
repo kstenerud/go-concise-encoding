@@ -64,6 +64,7 @@ type Encoder interface {
 	// Warning: Do not store a pointer to value! The underlying contents should
 	// be considered volatile and likely to change after this method returns!
 	OnArray(arrayType events.ArrayType, elementCount uint64, data []byte)
+	OnStringlikeArray(arrayType events.ArrayType, data string)
 	OnArrayBegin(arrayType events.ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
 	OnArrayData(data []byte)

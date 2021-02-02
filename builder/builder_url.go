@@ -57,6 +57,17 @@ func (_this *urlBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 	return dst
 }
 
+func (_this *urlBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeResourceID:
+		setRIDFromString(value, dst)
+	default:
+		ctx.UnstackBuilder()
+		return ctx.CurrentBuilder.BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	}
+	return dst
+}
+
 func (_this *urlBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromNil(ctx, dst)
@@ -152,6 +163,17 @@ func (_this *pUrlBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 	default:
 		ctx.UnstackBuilder()
 		return ctx.CurrentBuilder.BuildFromArray(ctx, arrayType, value, dst)
+	}
+	return dst
+}
+
+func (_this *pUrlBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeResourceID:
+		setPRIDFromString(value, dst)
+	default:
+		ctx.UnstackBuilder()
+		return ctx.CurrentBuilder.BuildFromStringlikeArray(ctx, arrayType, value, dst)
 	}
 	return dst
 }

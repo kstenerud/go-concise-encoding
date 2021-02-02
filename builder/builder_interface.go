@@ -115,6 +115,22 @@ func (_this *interfaceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 	return dst
 }
 
+func (_this *interfaceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeCustomText:
+		if err := ctx.CustomTextBuildFunction([]byte(value), dst); err != nil {
+			PanicBuildFromCustomText(_this, []byte(value), dst.Type(), err)
+		}
+	case events.ArrayTypeString:
+		dst.Set(reflect.ValueOf(value))
+	case events.ArrayTypeResourceID:
+		setPRIDFromString(value, dst)
+	default:
+		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
+	}
+	return dst
+}
+
 func (_this *interfaceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst

@@ -103,6 +103,10 @@ func (_this *TopLevelRule) OnArray(ctx *Context, arrayType events.ArrayType, ele
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.SwitchEndDocument()
 }
+func (_this *TopLevelRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	ctx.SwitchEndDocument()
+}
 func (_this *TopLevelRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
 }
@@ -133,6 +137,10 @@ func (_this *NARule) OnMarker(ctx *Context)                                   { 
 func (_this *NARule) OnReference(ctx *Context)                                { ctx.BeginTopLevelReference() }
 func (_this *NARule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	ctx.UnstackRule()
+}
+func (_this *NARule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayStringlike(arrayType, data)
 	ctx.UnstackRule()
 }
 func (_this *NARule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {

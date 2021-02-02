@@ -133,6 +133,12 @@ func (_this *arrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 	return object
 }
 
+func (_this *arrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, object)
+	return object
+}
+
 func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)

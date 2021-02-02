@@ -149,6 +149,13 @@ func (_this *sliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 	return object
 }
 
+func (_this *sliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, object)
+	_this.storeValue(object)
+	return object
+}
+
 func (_this *sliceBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)

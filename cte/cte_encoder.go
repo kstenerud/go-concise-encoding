@@ -222,6 +222,15 @@ func (_this *OldEncoder) OnArray(arrayType events.ArrayType, elementCount uint64
 	}
 }
 
+func (_this *OldEncoder) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	elementCount := uint64(len(value))
+	_this.OnArrayBegin(arrayType)
+	_this.OnArrayChunk(elementCount, false)
+	if elementCount > 0 {
+		_this.OnArrayData([]byte(value))
+	}
+}
+
 func (_this *OldEncoder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.arrayEngine.OnArrayBegin(arrayType)
 }

@@ -103,6 +103,11 @@ func (_this *topLevelBuilder) BuildFromArray(ctx *Context, arrayType events.Arra
 	return dst
 }
 
+func (_this *topLevelBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	return dst
+}
+
 func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromTime(ctx, value, dst)
 	return dst

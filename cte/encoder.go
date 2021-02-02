@@ -224,6 +224,20 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	_this.context.Stream.Flush()
 }
 
+func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	_this.context.ApplyPrefix()
+	switch arrayType {
+	case events.ArrayTypeString:
+		// TODO: unquoted-safe
+		// TODO: escapes
+		_this.context.Stream.AddByte('"')
+		_this.context.Stream.AddString(value)
+		_this.context.Stream.AddByte('"')
+	}
+	_this.context.NotifyObject()
+	_this.context.Stream.Flush()
+}
+
 func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
 	// TODO: Stack array prefixer
 }

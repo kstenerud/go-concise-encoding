@@ -103,6 +103,9 @@ func (_this *BeginDocumentRule) OnReference(ctx *Context) {
 func (_this *BeginDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
+func (_this *BeginDocumentRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+}
 func (_this *BeginDocumentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
 }
@@ -180,6 +183,9 @@ func (_this *EndDocumentRule) OnReference(ctx *Context) {
 }
 func (_this *EndDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
+}
+func (_this *EndDocumentRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
 }
 func (_this *EndDocumentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
@@ -262,6 +268,9 @@ func (_this *TerminalRule) OnReference(ctx *Context) {
 func (_this *TerminalRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
+func (_this *TerminalRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+}
 func (_this *TerminalRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
 }
@@ -339,6 +348,9 @@ func (_this *VersionRule) OnReference(ctx *Context) {
 }
 func (_this *VersionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
+}
+func (_this *VersionRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
 }
 func (_this *VersionRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
@@ -802,6 +814,9 @@ func (_this *ArrayRule) OnReference(ctx *Context) {
 func (_this *ArrayRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
+func (_this *ArrayRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+}
 func (_this *ArrayRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
 }
@@ -879,6 +894,9 @@ func (_this *ArrayChunkRule) OnReference(ctx *Context) {
 }
 func (_this *ArrayChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
+}
+func (_this *ArrayChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
 }
 func (_this *ArrayChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
@@ -958,6 +976,9 @@ func (_this *StringRule) OnReference(ctx *Context) {
 func (_this *StringRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
+func (_this *StringRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+}
 func (_this *StringRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
 }
@@ -1035,6 +1056,9 @@ func (_this *StringChunkRule) OnReference(ctx *Context) {
 }
 func (_this *StringChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
+}
+func (_this *StringChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
 }
 func (_this *StringChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
@@ -1114,6 +1138,9 @@ func (_this *StringBuilderRule) OnReference(ctx *Context) {
 func (_this *StringBuilderRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
+func (_this *StringBuilderRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+}
 func (_this *StringBuilderRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
 }
@@ -1191,6 +1218,9 @@ func (_this *StringBuilderChunkRule) OnReference(ctx *Context) {
 }
 func (_this *StringBuilderChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
+}
+func (_this *StringBuilderChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
 }
 func (_this *StringBuilderChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))

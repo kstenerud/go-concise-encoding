@@ -24,8 +24,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-compact-time"
 )
 
@@ -37,13 +35,6 @@ type timeBuilder struct{}
 
 func generateTimeBuilder(ctx *Context) ObjectBuilder { return globalTimeBuilder }
 func (_this *timeBuilder) String() string            { return reflect.TypeOf(_this).String() }
-
-func (_this *timeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
-		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
-	}
-	return dst
-}
 
 func (_this *timeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
@@ -74,13 +65,6 @@ func (_this *compactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) r
 	return dst
 }
 
-func (_this *compactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
-		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
-	}
-	return dst
-}
-
 func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	t, err := compact_time.AsCompactTime(value)
 	if err != nil {
@@ -107,13 +91,6 @@ func (_this *pCompactTimeBuilder) String() string            { return reflect.Ty
 func (_this *pCompactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(compact_time.Time{}))
 	ctx.NANext()
-	return dst
-}
-
-func (_this *pCompactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
-		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
-	}
 	return dst
 }
 

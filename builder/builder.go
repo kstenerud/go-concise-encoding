@@ -53,6 +53,7 @@ type ObjectBuilder interface {
 	BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value
 	BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value
 	BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value
+	BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value
 	BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value
 	BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value
 	BuildFromReference(ctx *Context, id interface{})

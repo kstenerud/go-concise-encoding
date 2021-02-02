@@ -59,16 +59,15 @@ func iteratePCompactTime(context *Context, v reflect.Value) {
 
 func iterateURL(context *Context, v reflect.Value) {
 	vCopy := v.Interface().(url.URL)
-	bytes := []byte((&vCopy).String())
-	context.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+	context.EventReceiver.OnStringlikeArray(events.ArrayTypeResourceID, (&vCopy).String())
 }
 
 func iteratePURL(context *Context, v reflect.Value) {
 	if v.IsNil() {
 		context.NotifyNil()
 	} else {
-		bytes := []byte(v.Interface().(*url.URL).String())
-		context.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+		str := v.Interface().(*url.URL).String()
+		context.EventReceiver.OnStringlikeArray(events.ArrayTypeResourceID, str)
 	}
 }
 
@@ -132,8 +131,7 @@ func iterateFloat(context *Context, v reflect.Value) {
 }
 
 func iterateString(context *Context, v reflect.Value) {
-	bytes := []byte(v.String())
-	context.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+	context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, v.String())
 }
 
 func iterateInterface(context *Context, v reflect.Value) {
@@ -300,7 +298,7 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 		context.EventReceiver.OnMap()
 
 		for _, field := range fields {
-			context.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(field.Name)), []byte(field.Name))
+			context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
 			field.Iterate(context, v.Field(field.Index))
 		}
 

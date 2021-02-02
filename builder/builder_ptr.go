@@ -133,6 +133,13 @@ func (_this *ptrBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 	return dst
 }
 
+func (_this *ptrBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	ptr := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, ptr.Elem())
+	dst.Set(ptr)
+	return dst
+}
+
 func (_this *ptrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, ptr.Elem())

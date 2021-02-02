@@ -228,6 +228,12 @@ func (_this *Rules) OnArray(arrayType events.ArrayType, elementCount uint64, val
 	_this.receiver.OnArray(arrayType, elementCount, value)
 }
 
+func (_this *Rules) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	_this.context.NotifyNewObject()
+	_this.context.CurrentEntry.Rule.OnStringlikeArray(&_this.context, arrayType, value)
+	_this.receiver.OnStringlikeArray(arrayType, value)
+}
+
 func (_this *Rules) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnArrayBegin(&_this.context, arrayType)
@@ -332,6 +338,7 @@ type EventRule interface {
 	OnMarker(ctx *Context)
 	OnReference(ctx *Context)
 	OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)
+	OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)
 	OnArrayBegin(ctx *Context, arrayType events.ArrayType)
 	OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)
 	OnArrayData(ctx *Context, data []byte)

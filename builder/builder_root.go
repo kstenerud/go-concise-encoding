@@ -171,6 +171,9 @@ func (_this *RootBuilder) OnCompactTime(value compact_time.Time) {
 func (_this *RootBuilder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
 }
+func (_this *RootBuilder) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
+}
 func (_this *RootBuilder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.BeginArray(func(bytes []byte) {
 		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
