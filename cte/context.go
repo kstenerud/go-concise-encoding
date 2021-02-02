@@ -26,7 +26,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type Context struct {
+type EncoderContext struct {
 	opts        options.CTEEncoderOptions
 	DepthPrefix []byte
 
@@ -56,81 +56,81 @@ type Context struct {
 	// referenceCount    uint64
 }
 
-func (_this *Context) Init(opts *options.CTEEncoderOptions) {
+func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
 	_this.DepthPrefix = make([]byte, 0, 65)
 	_this.DepthPrefix = append(_this.DepthPrefix, '\n')
 	_this.stackPrefixer(&topLevelPrefixer)
 }
 
-func (_this *Context) Reset() {
+func (_this *EncoderContext) Reset() {
 }
 
-func increaseDepthPrefix(ctx *Context) {
+func increaseDepthPrefix(ctx *EncoderContext) {
 	ctx.DepthPrefix = append(ctx.DepthPrefix, ' ', ' ', ' ', ' ')
 }
 
-func decreaseDepthPrefix(ctx *Context) {
+func decreaseDepthPrefix(ctx *EncoderContext) {
 	ctx.DepthPrefix = ctx.DepthPrefix[:len(ctx.DepthPrefix)-4]
 }
 
-func (_this *Context) stackPrefixer(prefixer Prefixer) {
+func (_this *EncoderContext) stackPrefixer(prefixer Prefixer) {
 	_this.prefixerStack = append(_this.prefixerStack, prefixer)
 	_this.CurrentPrefixer = prefixer
 }
 
-func (_this *Context) unstackPrefixer() {
+func (_this *EncoderContext) unstackPrefixer() {
 	_this.prefixerStack = _this.prefixerStack[:len(_this.prefixerStack)-1]
 	_this.CurrentPrefixer = _this.prefixerStack[len(_this.prefixerStack)-1]
 }
 
-func (_this *Context) changePrefixer(prefixer Prefixer) {
+func (_this *EncoderContext) changePrefixer(prefixer Prefixer) {
 	_this.prefixerStack[len(_this.prefixerStack)-1] = prefixer
 	_this.CurrentPrefixer = prefixer
 }
 
-func (_this *Context) ApplyPrefix() {
+func (_this *EncoderContext) ApplyPrefix() {
 	_this.CurrentPrefixer.ApplyPrefix(_this)
 }
 
-func (_this *Context) NotifyObject() {
+func (_this *EncoderContext) NotifyObject() {
 	_this.CurrentPrefixer.NotifyObject(_this)
 }
 
-func (_this *Context) EndContainer() {
+func (_this *EncoderContext) EndContainer() {
 	_this.CurrentPrefixer.End(_this)
 	_this.unstackPrefixer()
 }
 
-func (_this *Context) BeginList() {
+func (_this *EncoderContext) BeginList() {
 	_this.stackPrefixer(&listPrefixer)
 	_this.CurrentPrefixer.Begin(_this)
 }
 
-func (_this *Context) BeginMap() {
+func (_this *EncoderContext) BeginMap() {
 	_this.stackPrefixer(&mapKeyPrefixer)
 	_this.CurrentPrefixer.Begin(_this)
 }
 
-func (_this *Context) BeginMarkup() {
+func (_this *EncoderContext) BeginMarkup() {
 }
 
-func (_this *Context) BeginMetadata() {
+func (_this *EncoderContext) BeginMetadata() {
 }
 
-func (_this *Context) BeginComment() {
+func (_this *EncoderContext) BeginComment() {
 }
 
-func (_this *Context) BeginMarker() {
+func (_this *EncoderContext) BeginMarker() {
 }
 
-func (_this *Context) BeginReference() {
+func (_this *EncoderContext) BeginReference() {
 }
 
-func (_this *Context) BeginConcatenate() {
+func (_this *EncoderContext) BeginConcatenate() {
 }
 
-func (_this *Context) BeginNA() {
+func (_this *EncoderContext) BeginNA() {
 }
 
 // pre-write (indent)
@@ -155,10 +155,10 @@ func (_this *Context) BeginNA() {
 // - binary float (dec, hex) (with/without prefix)
 
 type Prefixer interface {
-	Begin(ctx *Context)
-	End(ctx *Context)
-	NotifyObject(ctx *Context)
-	ApplyPrefix(ctx *Context)
+	Begin(ctx *EncoderContext)
+	End(ctx *EncoderContext)
+	NotifyObject(ctx *EncoderContext)
+	ApplyPrefix(ctx *EncoderContext)
 }
 
 var (
@@ -170,85 +170,85 @@ var (
 
 type TopLevelPrefixer struct{}
 
-func (_this *TopLevelPrefixer) Begin(ctx *Context) {
+func (_this *TopLevelPrefixer) Begin(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: TopLevelPrefixer cannot respond to Begin"))
 }
 
-func (_this *TopLevelPrefixer) End(ctx *Context) {
+func (_this *TopLevelPrefixer) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: TopLevelPrefixer cannot respond to End"))
 }
 
-func (_this *TopLevelPrefixer) NotifyObject(ctx *Context) {
+func (_this *TopLevelPrefixer) NotifyObject(ctx *EncoderContext) {
 	// Nothing to do
 }
 
-func (_this *TopLevelPrefixer) ApplyPrefix(ctx *Context) {
+func (_this *TopLevelPrefixer) ApplyPrefix(ctx *EncoderContext) {
 	ctx.Stream.AddBytes(ctx.DepthPrefix)
 }
 
 type ListPrefixer struct{}
 
-func (_this *ListPrefixer) Begin(ctx *Context) {
+func (_this *ListPrefixer) Begin(ctx *EncoderContext) {
 	ctx.Stream.AddByte('[')
 	increaseDepthPrefix(ctx)
 }
 
-func (_this *ListPrefixer) End(ctx *Context) {
+func (_this *ListPrefixer) End(ctx *EncoderContext) {
 	decreaseDepthPrefix(ctx)
 	ctx.Stream.AddByte(']')
 }
 
-func (_this *ListPrefixer) NotifyObject(ctx *Context) {
+func (_this *ListPrefixer) NotifyObject(ctx *EncoderContext) {
 	// Nothing to do
 }
 
-func (_this *ListPrefixer) ApplyPrefix(ctx *Context) {
+func (_this *ListPrefixer) ApplyPrefix(ctx *EncoderContext) {
 	ctx.Stream.AddBytes(ctx.DepthPrefix)
 }
 
 type MapKeyPrefixer struct{}
 
-func (_this *MapKeyPrefixer) Begin(ctx *Context) {
+func (_this *MapKeyPrefixer) Begin(ctx *EncoderContext) {
 	ctx.Stream.AddByte('{')
 	increaseDepthPrefix(ctx)
 }
 
-func (_this *MapKeyPrefixer) End(ctx *Context) {
+func (_this *MapKeyPrefixer) End(ctx *EncoderContext) {
 	decreaseDepthPrefix(ctx)
 	ctx.Stream.AddByte('}')
 }
 
-func (_this *MapKeyPrefixer) NotifyObject(ctx *Context) {
+func (_this *MapKeyPrefixer) NotifyObject(ctx *EncoderContext) {
 	ctx.changePrefixer(&mapValuePrefixer)
 }
 
-func (_this *MapKeyPrefixer) ApplyPrefix(ctx *Context) {
+func (_this *MapKeyPrefixer) ApplyPrefix(ctx *EncoderContext) {
 	ctx.Stream.AddBytes(ctx.DepthPrefix)
 }
 
 type MapValuePrefixer struct{}
 
-func (_this *MapValuePrefixer) Begin(ctx *Context) {
+func (_this *MapValuePrefixer) Begin(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: MapValuePrefixer cannot respond to Begin"))
 }
 
-func (_this *MapValuePrefixer) End(ctx *Context) {
+func (_this *MapValuePrefixer) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: MapValuePrefixer cannot respond to End"))
 }
 
-func (_this *MapValuePrefixer) NotifyObject(ctx *Context) {
+func (_this *MapValuePrefixer) NotifyObject(ctx *EncoderContext) {
 	ctx.changePrefixer(&mapKeyPrefixer)
 }
 
-func (_this *MapValuePrefixer) ApplyPrefix(ctx *Context) {
+func (_this *MapValuePrefixer) ApplyPrefix(ctx *EncoderContext) {
 	ctx.Stream.AddBytes([]byte{' ', '=', ' '})
 }
 
 // =============================================================================
 
 type ArrayRenderer interface {
-	RenderArrayPortion(ctx *Context, data []byte)
-	RenderArrayComplete(ctx *Context, data []byte)
+	RenderArrayPortion(ctx *EncoderContext, data []byte)
+	RenderArrayComplete(ctx *EncoderContext, data []byte)
 }
 
 var (
@@ -257,10 +257,10 @@ var (
 
 type ArrayRendererNone struct{}
 
-func (_this *ArrayRendererNone) RenderArrayPortion(ctx *Context, data []byte) {
+func (_this *ArrayRendererNone) RenderArrayPortion(ctx *EncoderContext, data []byte) {
 	panic(fmt.Errorf("BUG: ArrayRendererNone cannot respond to RenderArrayPortion"))
 }
 
-func (_this *ArrayRendererNone) RenderArrayComplete(ctx *Context, data []byte) {
+func (_this *ArrayRendererNone) RenderArrayComplete(ctx *EncoderContext, data []byte) {
 	panic(fmt.Errorf("BUG: ArrayRendererNone cannot respond to RenderArrayComplete"))
 }

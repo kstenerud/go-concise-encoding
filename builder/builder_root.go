@@ -45,15 +45,8 @@ import (
 // directly (with the exception of constructors, initializers, and
 // GetBuildObject(), which are not designed to panic).
 type RootBuilder struct {
-	dstType              reflect.Type
-	currentBuilder       ObjectBuilder
-	object               reflect.Value
-	referenceFiller      ReferenceFiller
-	chunkedData          []byte
-	chunkedFunction      func([]byte)
-	chunkRemainingLength uint64
-	moreChunksFollow     bool
-	context              Context
+	context Context
+	object  reflect.Value
 }
 
 // -----------
@@ -71,19 +64,15 @@ func NewRootBuilder(session *Session, dstType reflect.Type, opts *options.Builde
 // Initialize this root builder to build objects of dstType.
 // If opts is nil, default options will be used.
 func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *options.BuilderOptions) {
-	_this.dstType = dstType
-	_this.context = context(opts,
+	_this.context.Init(opts,
+		dstType,
 		session.opts.CustomBinaryBuildFunction,
 		session.opts.CustomTextBuildFunction,
-		_this.referenceFiller.NotifyMarker,
-		_this.referenceFiller.NotifyReference,
 		session.GetBuilderGeneratorForType)
-	_this.object = reflect.New(dstType).Elem()
-	_this.chunkedData = make([]byte, 0, 128)
 
+	_this.object = reflect.New(dstType).Elem()
 	generator := session.GetBuilderGeneratorForType(dstType)
 	_this.context.StackBuilder(newTopLevelBuilder(_this, generator))
-	_this.referenceFiller.Init()
 }
 
 func (_this *RootBuilder) String() string {
@@ -138,12 +127,12 @@ func (_this *RootBuilder) OnPositiveInt(value uint64) {
 }
 func (_this *RootBuilder) OnNegativeInt(value uint64) {
 	if value <= 0x7fffffffffffffff {
-		_this.context.CurrentBuilder.BuildFromInt(&_this.context, -(int64(value)), _this.object)
+		_this.OnInt(-int64(value))
 		return
 	}
-	bi := &big.Int{}
+	bi := big.Int{}
 	bi.SetUint64(value)
-	_this.context.CurrentBuilder.BuildFromBigInt(&_this.context, bi.Neg(bi), _this.object)
+	_this.OnBigInt(&bi)
 }
 func (_this *RootBuilder) OnInt(value int64) {
 	_this.context.CurrentBuilder.BuildFromInt(&_this.context, value, _this.object)
@@ -164,11 +153,11 @@ func (_this *RootBuilder) OnBigDecimalFloat(value *apd.Decimal) {
 	_this.context.CurrentBuilder.BuildFromBigDecimalFloat(&_this.context, value, _this.object)
 }
 func (_this *RootBuilder) OnNan(signaling bool) {
-	nan := common.QuietNan
 	if signaling {
-		nan = common.SignalingNan
+		_this.OnFloat(common.SignalingNan)
+	} else {
+		_this.OnFloat(common.QuietNan)
 	}
-	_this.context.CurrentBuilder.BuildFromFloat(&_this.context, nan, _this.object)
 }
 func (_this *RootBuilder) OnUUID(value []byte) {
 	_this.context.CurrentBuilder.BuildFromUUID(&_this.context, value, _this.object)
@@ -183,27 +172,16 @@ func (_this *RootBuilder) OnArray(arrayType events.ArrayType, elementCount uint6
 	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
 }
 func (_this *RootBuilder) OnArrayBegin(arrayType events.ArrayType) {
-	_this.chunkedFunction = func(bytes []byte) {
+	_this.context.BeginArray(func(bytes []byte) {
 		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
 		_this.OnArray(arrayType, elementCount, bytes)
-	}
-	_this.chunkedData = _this.chunkedData[:0]
+	})
 }
 func (_this *RootBuilder) OnArrayChunk(length uint64, moreChunksFollow bool) {
-	_this.chunkRemainingLength = length
-	_this.moreChunksFollow = moreChunksFollow
-	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
-		_this.chunkedFunction(_this.chunkedData)
-		_this.chunkedData = _this.chunkedData[:0]
-	}
+	_this.context.BeginArrayChunk(length, moreChunksFollow)
 }
 func (_this *RootBuilder) OnArrayData(data []byte) {
-	_this.chunkedData = append(_this.chunkedData, data...)
-	_this.chunkRemainingLength -= uint64(len(data))
-	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
-		_this.chunkedFunction(_this.chunkedData)
-		_this.chunkedData = _this.chunkedData[:0]
-	}
+	_this.context.AddArrayData(data)
 }
 func (_this *RootBuilder) OnList() {
 	_this.context.CurrentBuilder.BuildInitiateList(&_this.context)
@@ -237,6 +215,4 @@ func (_this *RootBuilder) OnConstant(name []byte, explicitValue bool) {
 		panic(fmt.Errorf("Cannot build from constant %s without explicit value", string(name)))
 	}
 }
-func (_this *RootBuilder) OnEndDocument() {
-	// Nothing to do
-}
+func (_this *RootBuilder) OnEndDocument() {}

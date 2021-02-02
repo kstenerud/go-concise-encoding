@@ -65,8 +65,7 @@ func TestCTEVersion(t *testing.T) {
 }
 
 func TestCTENA(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c1\n@na", BD(), V(1), NA(), ED())
-	assertDecodeFails(t, "c1 @nil")
+	assertDecodeEncode(t, nil, nil, "c1\n@na", BD(), V(1), NA(), NA(), ED())
 	assertDecodeFails(t, "c1 -@na")
 }
 
@@ -1256,7 +1255,7 @@ func TestCTEMapMetadata(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c1\n@na", BD(), V(1), NA(), ED())
+	assertDecodeEncode(t, nil, nil, "c1\n@na", BD(), V(1), NA(), NA(), ED())
 	assertDecodeEncode(t, nil, nil, "c1\n@nan", BD(), V(1), NAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c1\n@snan", BD(), V(1), SNAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c1\n@inf", BD(), V(1), F(math.Inf(1)), ED())

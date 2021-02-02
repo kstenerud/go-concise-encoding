@@ -28,38 +28,42 @@ import (
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type Context struct {
-	Options                    options.BuilderOptions
+	Options         options.BuilderOptions
+	dstType         reflect.Type
+	referenceFiller ReferenceFiller
+
 	CustomBinaryBuildFunction  options.CustomBuildFunction
 	CustomTextBuildFunction    options.CustomBuildFunction
-	NotifyMarker               func(id interface{}, value reflect.Value)
-	NotifyReference            func(lookingForID interface{}, valueSetter func(value reflect.Value))
 	CurrentBuilder             ObjectBuilder
 	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
 	builderStack               []ObjectBuilder
+
+	chunkedData             []byte
+	chunkRemainingLength    uint64
+	moreChunksFollow        bool
+	arrayCompletionCallback func([]byte)
 }
 
-func context(opts *options.BuilderOptions,
+func (_this *Context) Init(opts *options.BuilderOptions,
+	dstType reflect.Type,
 	customBinaryBuildFunction options.CustomBuildFunction,
 	customTextBuildFunction options.CustomBuildFunction,
-	notifyMarker func(id interface{}, value reflect.Value),
-	notifyReference func(lookingForID interface{}, valueSetter func(value reflect.Value)),
 	getBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator,
-) Context {
+) {
 	opts = opts.WithDefaultsApplied()
-	return Context{
-		Options:                    *opts,
-		CustomBinaryBuildFunction:  customBinaryBuildFunction,
-		CustomTextBuildFunction:    customTextBuildFunction,
-		NotifyMarker:               notifyMarker,
-		NotifyReference:            notifyReference,
-		GetBuilderGeneratorForType: getBuilderGeneratorForType,
-		builderStack:               make([]ObjectBuilder, 0, 16),
-	}
+	_this.Options = *opts
+	_this.dstType = dstType
+	_this.CustomBinaryBuildFunction = customBinaryBuildFunction
+	_this.CustomTextBuildFunction = customTextBuildFunction
+	_this.GetBuilderGeneratorForType = getBuilderGeneratorForType
+	_this.builderStack = make([]ObjectBuilder, 0, 16)
+	_this.chunkedData = make([]byte, 0, 128)
+
+	_this.referenceFiller.Init()
 }
 
 func (_this *Context) updateCurrentBuilder() {
@@ -92,6 +96,13 @@ func (_this *Context) NANext() {
 	_this.StackBuilder(globalNABuilder)
 }
 
+func (_this *Context) NotifyMarker(id interface{}, value reflect.Value) {
+	_this.referenceFiller.NotifyMarker(id, value)
+}
+func (_this *Context) NotifyReference(lookingForID interface{}, valueSetter func(value reflect.Value)) {
+	_this.referenceFiller.NotifyReference(lookingForID, valueSetter)
+}
+
 func (_this *Context) BeginMarkerObject(id interface{}) {
 	_this.UnstackBuilder()
 	marker := newMarkerObjectBuilder(id, _this.CurrentBuilder)
@@ -117,5 +128,26 @@ func (_this *Context) TryBuildFromCustom(builder ObjectBuilder, arrayType events
 		return true
 	default:
 		return false
+	}
+}
+
+func (_this *Context) BeginArray(arrayCompletionCallback func([]byte)) {
+	_this.arrayCompletionCallback = arrayCompletionCallback
+	_this.chunkedData = _this.chunkedData[:0]
+}
+func (_this *Context) BeginArrayChunk(length uint64, moreChunksFollow bool) {
+	_this.chunkRemainingLength = length
+	_this.moreChunksFollow = moreChunksFollow
+	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
+		_this.arrayCompletionCallback(_this.chunkedData)
+		_this.chunkedData = _this.chunkedData[:0]
+	}
+}
+func (_this *Context) AddArrayData(data []byte) {
+	_this.chunkedData = append(_this.chunkedData, data...)
+	_this.chunkRemainingLength -= uint64(len(data))
+	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
+		_this.arrayCompletionCallback(_this.chunkedData)
+		_this.chunkedData = _this.chunkedData[:0]
 	}
 }

@@ -411,7 +411,7 @@ const (
 	TEventBeginDocument TEventType = iota
 	TEventVersion
 	TEventPadding
-	TEventNil
+	TEventNA
 	TEventBool
 	TEventTrue
 	TEventFalse
@@ -481,7 +481,7 @@ var TEventNames = []string{
 	TEventBeginDocument:     "BD",
 	TEventVersion:           "V",
 	TEventPadding:           "PAD",
-	TEventNil:               "N",
+	TEventNA:                "NA",
 	TEventBool:              "B",
 	TEventTrue:              "TT",
 	TEventFalse:             "FF",
@@ -591,7 +591,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnVersion(_this.V1.(uint64))
 	case TEventPadding:
 		receiver.OnPadding(_this.V1.(int))
-	case TEventNil:
+	case TEventNA:
 		receiver.OnNA()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
@@ -745,7 +745,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 
 func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	if value == nil {
-		eventType = TEventNil
+		eventType = TEventNA
 	}
 	return newTEvent(eventType, value, nil)
 }
@@ -762,7 +762,7 @@ func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return newTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return newTEvent(TEventVersion, v, nil) }
-func NA() *TEvent                       { return newTEvent(TEventNil, nil, nil) }
+func NA() *TEvent                       { return newTEvent(TEventNA, nil, nil) }
 func PAD(v int) *TEvent                 { return newTEvent(TEventPadding, v, nil) }
 func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
@@ -1435,7 +1435,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
-		ane("F9", NA())
+		ane("F9", NA(), NA())
 		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())

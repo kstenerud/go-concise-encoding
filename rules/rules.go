@@ -95,7 +95,7 @@ func (_this *Rules) OnPadding(count int) {
 
 func (_this *Rules) OnNA() {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context)
+	_this.context.CurrentEntry.Rule.OnNA(&_this.context)
 	_this.receiver.OnNA()
 }
 
@@ -315,6 +315,7 @@ type EventRule interface {
 	OnPadding(ctx *Context)
 	OnKeyableObject(ctx *Context)
 	OnNonKeyableObject(ctx *Context)
+	OnNA(ctx *Context)
 	OnInt(ctx *Context, value int64)
 	OnPositiveInt(ctx *Context, value uint64)
 	OnBigInt(ctx *Context, value *big.Int)
@@ -359,6 +360,7 @@ var (
 	terminalRule            TerminalRule
 	versionRule             VersionRule
 	topLevelRule            TopLevelRule
+	naRule                  NARule
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule

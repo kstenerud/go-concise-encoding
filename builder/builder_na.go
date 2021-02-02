@@ -42,7 +42,6 @@ func (_this *naBuilder) String() string            { return reflect.TypeOf(_this
 func (_this *naBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return dst
-
 }
 
 func (_this *naBuilder) BuildFromBool(ctx *Context, _ bool, dst reflect.Value) reflect.Value {

@@ -37,7 +37,7 @@ import (
 )
 
 type Encoder struct {
-	context Context
+	context EncoderContext
 	buffer  *EncodeBuffer
 }
 

@@ -29,7 +29,7 @@ import (
 )
 
 func TestEncodeDecodeNil(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(1), NA(), ED())
+	assertEncodeDecode(t, BD(), V(1), NA(), NA(), ED())
 }
 
 func TestEncodeDecodeTrue(t *testing.T) {
@@ -118,7 +118,7 @@ func TestEncodeDecodeList(t *testing.T) {
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), M(), E(), ED())
 	assertEncodeDecode(t, BD(), V(1), M(), S("a"), NI(1000), E(), ED())
-	assertEncodeDecode(t, BD(), V(1), M(), S("some NA"), NA(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
+	assertEncodeDecode(t, BD(), V(1), M(), S("some NA"), NA(), NA(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }
 
 func TestWebsiteExampleNumericTypes(t *testing.T) {
@@ -220,7 +220,7 @@ func TestWebsiteExampleOtherTypes(t *testing.T) {
 		S("date"), CT(test.NewDate(2019, 7, 1)),
 		S("time"), CT(test.NewTime(18, 4, 0, 940231541, "Europe/Prague")),
 		S("timestamp"), CT(test.NewTS(2010, 7, 15, 13, 28, 15, 415942344, "Etc/UTC")),
-		S("not-available"), NA(),
+		S("not-available"), NA(), NA(),
 		E(), ED())
 }
 
@@ -360,7 +360,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
 		S("marked_object"), MARK(), S("id1"), M(),
 		S("description"), S("This map will be referenced later as $id1"),
 		S("value"), F(math.Inf(-1)),
-		S("child_elements"), NA(),
+		S("child_elements"), NA(), NA(),
 		S("recursive"), REF(), S("id1"),
 		E(),
 		S("ref1"), REF(), S("id1"),

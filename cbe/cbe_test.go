@@ -38,7 +38,7 @@ func TestCBEPadding(t *testing.T) {
 }
 
 func TestCBENil(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, typeNil}, BD(), V(1), NA(), ED())
+	assertDecodeEncode(t, []byte{header, version, typeNA, typeNA}, BD(), V(1), NA(), NA(), ED())
 }
 
 func TestCBEBool(t *testing.T) {
@@ -95,7 +95,7 @@ func TestCBEPositiveInt(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, version, typePosInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("4722366482869645213696", 10)), ED())
 	assertEncode(t, nil, []byte{header, version, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), V(1), BI(NewBigInt("18446744073709551615", 10)), ED())
 
-	assertEncode(t, nil, []byte{header, version, typeNil}, BD(), V(1), BI(nil), ED())
+	assertEncode(t, nil, []byte{header, version, typeNA, typeNA}, BD(), V(1), BI(nil), NA(), ED())
 }
 
 func TestCBENegativeInt(t *testing.T) {
@@ -159,12 +159,12 @@ func TestCBEBigFloat(t *testing.T) {
 		0xe1, 0xf3, 0xdf, 0xfc, 0xee, 0xac, 0xe5, 0xfe, 0xe1, 0x8f, 0xe2, 0x43},
 		BD(), V(1), BDF(NewBDF("-9.4452837206285466345998345667683453466347345e-5000")), ED())
 
-	assertEncode(t, nil, []byte{header, version, typeNil}, BD(), V(1), BF(nil), ED())
+	assertEncode(t, nil, []byte{header, version, typeNA, typeNA}, BD(), V(1), BF(nil), NA(), ED())
 }
 
 func TestCBEBigDecimalFloat(t *testing.T) {
 	assertEncode(t, nil, []byte{header, version, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), V(1), BDF(NewBDF("9.445283e+5000")), ED())
-	assertEncode(t, nil, []byte{header, version, typeNil}, BD(), V(1), BDF(nil), ED())
+	assertEncode(t, nil, []byte{header, version, typeNA, typeNA}, BD(), V(1), BDF(nil), NA(), ED())
 }
 
 func TestCBEUUIDEOF(t *testing.T) {

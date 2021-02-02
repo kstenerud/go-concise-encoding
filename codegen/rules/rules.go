@@ -38,6 +38,7 @@ var (
 	Pad     = "OnPadding(ctx *Context)"
 	Key     = "OnKeyableObject(ctx *Context)"
 	NonKey  = "OnNonKeyableObject(ctx *Context)"
+	NA      = "OnNA(ctx *Context)"
 	Int     = "OnInt(ctx *Context, value int64)"
 	PInt    = "OnPositiveInt(ctx *Context, value uint64)"
 	BInt    = "OnBigInt(ctx *Context, value *big.Int)"
@@ -58,7 +59,7 @@ var (
 	AChunk  = "OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)"
 	AData   = "OnArrayData(ctx *Context, data []byte)"
 
-	allMethods = []string{BDoc, EDoc, ECtr, Ver, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Array, ABegin, AChunk, AData}
+	allMethods = []string{BDoc, EDoc, ECtr, Ver, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Array, ABegin, AChunk, AData}
 )
 
 type RuleClass struct {
@@ -85,11 +86,15 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "TopLevelRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
+	},
+	{
+		Name:    "NARule",
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
 	},
 	{
 		Name:    "ListRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Array, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Array, ABegin},
 	},
 	{
 		Name:    "MapKeyRule",
@@ -97,7 +102,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MapValueRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
 	},
 	{
 		Name:    "MarkupNameRule",
@@ -109,7 +114,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkupValueRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
 	},
 	{
 		Name:    "MarkupContentsRule",
@@ -125,11 +130,11 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MetaValueRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
 	},
 	{
 		Name:    "MetaCompletionRule",
-		Methods: []string{Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
+		Methods: []string{Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, ABegin},
 	},
 	{
 		Name:    "ArrayRule",
@@ -169,7 +174,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkedObjectAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Array, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Array, ABegin},
 	},
 	{
 		Name:    "ReferenceKeyableRule",

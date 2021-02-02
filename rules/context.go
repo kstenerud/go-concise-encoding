@@ -140,6 +140,10 @@ func (_this *Context) EndContainer() {
 	_this.endContainerLike()
 }
 
+func (_this *Context) BeginNA() {
+	_this.stackRule(&naRule, DataTypeAnyType)
+}
+
 func (_this *Context) BeginList() {
 	_this.beginContainer(&listRule, DataTypeAnyType)
 }

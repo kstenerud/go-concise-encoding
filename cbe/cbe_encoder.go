@@ -259,11 +259,12 @@ func (_this *Encoder) OnUUID(value []byte) {
 }
 
 func (_this *Encoder) OnTime(value time.Time) {
-	t, err := compact_time.AsCompactTime(value)
-	if err != nil {
-		_this.unexpectedError(err, value)
-	}
-	_this.OnCompactTime(t)
+	const dataOffset = 1
+	dst := _this.buff.RequireBytes(compact_time.MaxEncodeLength + dataOffset)
+	dst[0] = byte(cbeTypeTimestamp)
+	dst = dst[dataOffset:]
+	byteCount, _ := compact_time.EncodeGoTimestamp(value, dst)
+	_this.buff.UseBytes(byteCount + dataOffset)
 }
 
 func (_this *Encoder) OnCompactTime(value compact_time.Time) {
