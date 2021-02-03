@@ -72,7 +72,6 @@ func (_this *Context) Init(version uint64, opts *options.RuleOptions) {
 	_this.opts = *opts
 	_this.ExpectedVersion = version
 	_this.stack = make([]contextStackEntry, 0, 16)
-	_this.builtArrayBuffer = make([]byte, 0, 64)
 	_this.Reset()
 }
 

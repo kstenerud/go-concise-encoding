@@ -61,7 +61,6 @@ func (_this *Context) Init(opts *options.BuilderOptions,
 	_this.CustomTextBuildFunction = customTextBuildFunction
 	_this.GetBuilderGeneratorForType = getBuilderGeneratorForType
 	_this.builderStack = make([]ObjectBuilder, 0, 16)
-	_this.chunkedData = make([]byte, 0, 128)
 
 	_this.referenceFiller.Init()
 }

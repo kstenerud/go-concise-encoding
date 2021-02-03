@@ -27,9 +27,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/options"
-
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 
@@ -97,7 +96,7 @@ func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v compact_time.Time) *test.TEvent   { return test.CT(v) }
+func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
@@ -149,7 +148,7 @@ var DebugPrintEvents = false
 
 func decodeToEvents(opts *options.CTEDecoderOptions, document []byte, withRules bool) (evts []*test.TEvent, err error) {
 	var topLevelReceiver events.DataEventReceiver
-	ter := test.NewTER()
+	ter := test.NewTEventStore()
 	topLevelReceiver = ter
 	if withRules {
 		topLevelReceiver = rules.NewRules(topLevelReceiver, nil)
@@ -165,7 +164,7 @@ func decodeToEvents(opts *options.CTEDecoderOptions, document []byte, withRules 
 
 func decodeToEventsNoRules(opts *options.CTEDecoderOptions, document []byte, withRules bool) (evts []*test.TEvent, err error) {
 	var topLevelReceiver events.DataEventReceiver
-	ter := test.NewTER()
+	ter := test.NewTEventStore()
 	topLevelReceiver = ter
 	if withRules {
 		topLevelReceiver = rules.NewRules(topLevelReceiver, nil)

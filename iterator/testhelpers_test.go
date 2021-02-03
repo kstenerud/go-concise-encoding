@@ -98,7 +98,7 @@ func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v compact_time.Time) *test.TEvent   { return test.CT(v) }
+func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
@@ -168,7 +168,7 @@ func assertIterateWithOptions(t *testing.T,
 
 	expected := append([]*test.TEvent{BD(), V(1)}, events...)
 	expected = append(expected, ED())
-	receiver := test.NewTER()
+	receiver := test.NewTEventStore()
 	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {

@@ -145,7 +145,7 @@ func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
 func cbeDecode(opts *options.CBEDecoderOptions, document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTER()
+	receiver := test.NewTEventStore()
 	r := rules.NewRules(receiver, nil)
 	err = ce.NewCBEDecoder(opts).Decode(bytes.NewBuffer(document), r)
 	events = receiver.Events
@@ -169,7 +169,7 @@ func cbeEncodeDecode(encodeOpts *options.CBEEncoderOptions,
 }
 
 func cteDecode(opts *options.CTEDecoderOptions, document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTER()
+	receiver := test.NewTEventStore()
 	r := rules.NewRules(receiver, nil)
 	err = ce.NewCTEDecoder(opts).Decode(bytes.NewBuffer(document), r)
 	events = receiver.Events
@@ -260,7 +260,7 @@ func assertDecodeCBECTE(t *testing.T,
 	cbeExpectedDocument []byte,
 	expectedEvents ...*test.TEvent) {
 
-	var actualEvents *test.TER
+	var actualEvents *test.TEventStore
 
 	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
 	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
@@ -281,7 +281,7 @@ func assertDecodeCBECTE(t *testing.T,
 		t.Errorf("Expected %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
 	}
 
-	actualEvents = test.NewTER()
+	actualEvents = test.NewTEventStore()
 	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
 		t.Error(err)
 		return
@@ -298,7 +298,7 @@ func assertDecodeCBECTE(t *testing.T,
 	}
 	// Don't check the text document for equality since it won't be exactly the same.
 
-	actualEvents = test.NewTER()
+	actualEvents = test.NewTEventStore()
 	binEncoder.PrepareToEncode(cbeActualDocument)
 	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
 		t.Error(err)
@@ -318,7 +318,7 @@ func assertDecodeEncode(t *testing.T,
 	cbeExpectedDocument []byte,
 	expectedEvents ...*test.TEvent) {
 
-	var actualEvents *test.TER
+	var actualEvents *test.TEventStore
 
 	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
 	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
@@ -340,7 +340,7 @@ func assertDecodeEncode(t *testing.T,
 		t.Errorf("Expected %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
 	}
 
-	actualEvents = test.NewTER()
+	actualEvents = test.NewTEventStore()
 	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
 		t.Error(err)
 		return
@@ -359,7 +359,7 @@ func assertDecodeEncode(t *testing.T,
 		t.Errorf("Expected [%v] but got [%v]", cteExpectedDocument, string(cteActualDocument.Bytes()))
 	}
 
-	actualEvents = test.NewTER()
+	actualEvents = test.NewTEventStore()
 	binEncoder.PrepareToEncode(cbeActualDocument)
 	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
 		t.Error(err)

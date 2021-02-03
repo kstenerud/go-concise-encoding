@@ -27,8 +27,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/iterator"
 	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/rules"
+	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
@@ -76,7 +81,7 @@ func BenchmarkCBEMarshal(b *testing.B) {
 	b.ResetTimer()
 	var serialSize int
 	for i := 0; i < b.N; i++ {
-		o := data[rand.Intn(len(data))]
+		o := data[i%len(data)]
 		bytes, err := marshaler.MarshalToDocument(o)
 		if err != nil {
 			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(o))
@@ -93,7 +98,7 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	b.ResetTimer()
 	var serialSize int
 	for i := 0; i < b.N; i++ {
-		o := data[rand.Intn(len(data))]
+		o := data[i%len(data)]
 		bytes, err := json.Marshal(o)
 		if err != nil {
 			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(o))
@@ -103,7 +108,7 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	b.ReportMetric(float64(serialSize)/float64(b.N), "B/serial")
 }
 
-func BenchmarkCBEUnmarshal(b *testing.B) {
+func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
 	b.Helper()
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
@@ -125,7 +130,7 @@ func BenchmarkCBEUnmarshal(b *testing.B) {
 	b.ResetTimer()
 	template := &A{}
 	for i := 0; i < b.N; i++ {
-		index := rand.Intn(len(expectedObjs))
+		index := i % len(expectedObjs)
 		document := documents[index]
 		obj, err := unmarshaler.UnmarshalFromDocument(document, template)
 		if err != nil {
@@ -143,7 +148,7 @@ func BenchmarkCBEUnmarshal(b *testing.B) {
 	}
 }
 
-func BenchmarkRules(b *testing.B) {
+func BenchmarkCBEUnmarshalRules(b *testing.B) {
 	b.Helper()
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
@@ -164,7 +169,7 @@ func BenchmarkRules(b *testing.B) {
 	b.ResetTimer()
 	template := &A{}
 	for i := 0; i < b.N; i++ {
-		index := rand.Intn(len(expectedObjs))
+		index := i % len(expectedObjs)
 		document := documents[index]
 		obj, err := unmarshaler.UnmarshalFromDocument(document, template)
 		if err != nil {
@@ -182,6 +187,76 @@ func BenchmarkRules(b *testing.B) {
 	}
 }
 
+func BenchmarkRules(b *testing.B) {
+	b.Helper()
+	store := test.NewTEventStore()
+	iterSession := iterator.NewSession(nil, nil)
+	iterOptions := options.DefaultIteratorOptions()
+	iterOptions.RecursionSupport = false
+	iter := iterSession.NewIterator(store, iterOptions)
+
+	objs := generate()
+	documents := make([][]*test.TEvent, 0, len(objs))
+	for _, obj := range objs {
+		iter.Iterate(obj)
+		documents = append(documents, store.Events)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	r := rules.NewRules(events.NewNullEventReceiver(), nil)
+	for i := 0; i < b.N; i++ {
+		index := i % len(objs)
+		r.Reset()
+		test.InvokeEvents(r, documents[index]...)
+	}
+	b.StopTimer()
+}
+
+func BenchmarkBuilder(b *testing.B) {
+	b.Helper()
+	store := test.NewTEventStore()
+	iterSession := iterator.NewSession(nil, nil)
+	iterOptions := options.DefaultIteratorOptions()
+	iterOptions.RecursionSupport = false
+	iter := iterSession.NewIterator(store, iterOptions)
+
+	objs := generate()
+	documents := make([][]*test.TEvent, 0, len(objs))
+	for _, obj := range objs {
+		iter.Iterate(obj)
+		documents = append(documents, store.Events)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	template := &A{}
+	builderSession := builder.NewSession(nil, nil)
+	for i := 0; i < b.N; i++ {
+		index := i % len(objs)
+		builder := builderSession.NewBuilderFor(template, nil)
+		test.InvokeEvents(builder, documents[index]...)
+	}
+	b.StopTimer()
+}
+
+func BenchmarkIterator(b *testing.B) {
+	b.Helper()
+	iterSession := iterator.NewSession(nil, nil)
+	iterOptions := options.DefaultIteratorOptions()
+	objs := generate()
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	iterOptions.RecursionSupport = false
+	iter := iterSession.NewIterator(events.NewNullEventReceiver(), iterOptions)
+	for i := 0; i < b.N; i++ {
+		index := i % len(objs)
+		iter.Iterate(objs[index])
+	}
+	b.StopTimer()
+}
+
 func BenchmarkJSONUnmarshal(b *testing.B) {
 	b.Helper()
 	expectedObjs := generate()
@@ -197,7 +272,7 @@ func BenchmarkJSONUnmarshal(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		index := rand.Intn(len(expectedObjs))
+		index := i % len(expectedObjs)
 		document := documents[index]
 		obj := &A{}
 		err := json.Unmarshal(document, obj)

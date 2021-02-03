@@ -1160,34 +1160,36 @@ func (h *TEventPrinter) OnNan(signaling bool) {
 
 // Event receiver receives data events and stores them to an array which can be
 // inspected, printed, or played back.
-type TER struct {
+type TEventStore struct {
 	Events []*TEvent
 }
 
-func NewTER() *TER {
-	return &TER{}
+func NewTEventStore() *TEventStore {
+	return &TEventStore{
+		Events: make([]*TEvent, 1024),
+	}
 }
-func (h *TER) add(event *TEvent) {
+func (h *TEventStore) add(event *TEvent) {
 	h.Events = append(h.Events, event)
 }
-func (h *TER) OnVersion(version uint64)                  { h.add(V(version)) }
-func (h *TER) OnPadding(count int)                       { h.add(PAD(count)) }
-func (h *TER) OnNA()                                     { h.add(NA()) }
-func (h *TER) OnBool(value bool)                         { h.add(B(value)) }
-func (h *TER) OnTrue()                                   { h.add(TT()) }
-func (h *TER) OnFalse()                                  { h.add(FF()) }
-func (h *TER) OnPositiveInt(value uint64)                { h.add(PI(value)) }
-func (h *TER) OnNegativeInt(value uint64)                { h.add(NI(value)) }
-func (h *TER) OnInt(value int64)                         { h.add(I(value)) }
-func (h *TER) OnBigInt(value *big.Int)                   { h.add(BI(value)) }
-func (h *TER) OnFloat(value float64)                     { h.add(F(value)) }
-func (h *TER) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
-func (h *TER) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
-func (h *TER) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
-func (h *TER) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
-func (h *TER) OnTime(value time.Time)                    { h.add(GT(value)) }
-func (h *TER) OnCompactTime(value compact_time.Time)     { h.add(CT(value)) }
-func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (h *TEventStore) OnVersion(version uint64)                  { h.add(V(version)) }
+func (h *TEventStore) OnPadding(count int)                       { h.add(PAD(count)) }
+func (h *TEventStore) OnNA()                                     { h.add(NA()) }
+func (h *TEventStore) OnBool(value bool)                         { h.add(B(value)) }
+func (h *TEventStore) OnTrue()                                   { h.add(TT()) }
+func (h *TEventStore) OnFalse()                                  { h.add(FF()) }
+func (h *TEventStore) OnPositiveInt(value uint64)                { h.add(PI(value)) }
+func (h *TEventStore) OnNegativeInt(value uint64)                { h.add(NI(value)) }
+func (h *TEventStore) OnInt(value int64)                         { h.add(I(value)) }
+func (h *TEventStore) OnBigInt(value *big.Int)                   { h.add(BI(value)) }
+func (h *TEventStore) OnFloat(value float64)                     { h.add(F(value)) }
+func (h *TEventStore) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
+func (h *TEventStore) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
+func (h *TEventStore) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
+func (h *TEventStore) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
+func (h *TEventStore) OnTime(value time.Time)                    { h.add(GT(value)) }
+func (h *TEventStore) OnCompactTime(value compact_time.Time)     { h.add(CT(value)) }
+func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(S(string(value)))
@@ -1227,7 +1229,7 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 }
-func (h *TER) OnStringlikeArray(arrayType events.ArrayType, value string) {
+func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(S(value))
@@ -1239,7 +1241,7 @@ func (h *TER) OnStringlikeArray(arrayType events.ArrayType, value string) {
 		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
 	}
 }
-func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
+func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(SB())
@@ -1279,21 +1281,24 @@ func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 }
-func (h *TER) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
-func (h *TER) OnArrayData(data []byte)                { h.add(AD(CloneBytes(data))) }
-func (h *TER) OnList()                                { h.add(L()) }
-func (h *TER) OnMap()                                 { h.add(M()) }
-func (h *TER) OnMarkup()                              { h.add(MUP()) }
-func (h *TER) OnMetadata()                            { h.add(META()) }
-func (h *TER) OnComment()                             { h.add(CMT()) }
-func (h *TER) OnEnd()                                 { h.add(E()) }
-func (h *TER) OnMarker()                              { h.add(MARK()) }
-func (h *TER) OnReference()                           { h.add(REF()) }
-func (h *TER) OnConcatenate()                         { h.add(CAT()) }
-func (h *TER) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
-func (h *TER) OnBeginDocument()                       { h.add(BD()) }
-func (h *TER) OnEndDocument()                         { h.add(ED()) }
-func (h *TER) OnNan(signaling bool) {
+func (h *TEventStore) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
+func (h *TEventStore) OnArrayData(data []byte)                { h.add(AD(CloneBytes(data))) }
+func (h *TEventStore) OnList()                                { h.add(L()) }
+func (h *TEventStore) OnMap()                                 { h.add(M()) }
+func (h *TEventStore) OnMarkup()                              { h.add(MUP()) }
+func (h *TEventStore) OnMetadata()                            { h.add(META()) }
+func (h *TEventStore) OnComment()                             { h.add(CMT()) }
+func (h *TEventStore) OnEnd()                                 { h.add(E()) }
+func (h *TEventStore) OnMarker()                              { h.add(MARK()) }
+func (h *TEventStore) OnReference()                           { h.add(REF()) }
+func (h *TEventStore) OnConcatenate()                         { h.add(CAT()) }
+func (h *TEventStore) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
+func (h *TEventStore) OnBeginDocument() {
+	h.Events = h.Events[:0]
+	h.add(BD())
+}
+func (h *TEventStore) OnEndDocument() { h.add(ED()) }
+func (h *TEventStore) OnNan(signaling bool) {
 	if signaling {
 		h.add(SNAN())
 	} else {
