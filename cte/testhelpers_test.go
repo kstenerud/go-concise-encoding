@@ -157,7 +157,7 @@ func decodeToEvents(opts *options.CTEDecoderOptions, document []byte, withRules 
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
 	}
 	r := rules.NewRules(topLevelReceiver, nil)
-	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), r)
+	err = NewOldDecoder(opts).Decode(bytes.NewBuffer(document), r)
 	evts = ter.Events
 	return
 }
@@ -172,14 +172,14 @@ func decodeToEventsNoRules(opts *options.CTEDecoderOptions, document []byte, wit
 	if DebugPrintEvents {
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
 	}
-	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
+	err = NewOldDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
 	evts = ter.Events
 	return
 }
 
 func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := NewOldEncoder(opts)
+	encoder := NewEncoder(opts)
 	encoder.PrepareToEncode(buffer)
 	r := rules.NewRules(encoder, nil)
 	test.InvokeEvents(r, events...)
@@ -188,7 +188,7 @@ func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byt
 
 func encodeEventsNoRules(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
 	buffer := &bytes.Buffer{}
-	encoder := NewOldEncoder(opts)
+	encoder := NewEncoder(opts)
 	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(encoder, events...)
 	return buffer.Bytes()

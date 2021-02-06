@@ -1377,7 +1377,7 @@ func TestCTEComplexComment(t *testing.T) {
 	encOpts.Indent = "    "
 	encoder := NewOldEncoder(encOpts)
 	encoder.PrepareToEncode(encoded)
-	decoder := NewDecoder(nil)
+	decoder := NewOldDecoder(nil)
 	err := decoder.Decode(bytes.NewBuffer(document), encoder)
 	if err != nil {
 		t.Error(err)
@@ -1887,7 +1887,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	encOpts.Indent = "    "
 	encoder := NewOldEncoder(encOpts)
 	encoder.PrepareToEncode(encoded)
-	decoder := NewDecoder(nil)
+	decoder := NewOldDecoder(nil)
 	err := decoder.Decode(bytes.NewBuffer([]byte(document)), encoder)
 	if err != nil {
 		t.Error(err)

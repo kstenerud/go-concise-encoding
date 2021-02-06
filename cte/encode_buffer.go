@@ -27,6 +27,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -45,43 +47,35 @@ type EncodeBuffer struct {
 
 func (_this *EncodeBuffer) WriteNA() {
 	_this.AddString("@na")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteTrue() {
 	_this.AddString("@true")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteFalse() {
 	_this.AddString("@false")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WritePosInfinity() {
 	_this.AddString("@inf")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteNegInfinity() {
 	_this.AddString("-@inf")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteQuietNan() {
 	_this.AddString("@nan")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteSignalingNan() {
 	_this.AddString("@snan")
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteVersion(value uint64) {
 	_this.AddByte('c')
 	_this.WritePositiveInt(value)
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteNan(signaling bool) {
@@ -112,7 +106,6 @@ func (_this *EncodeBuffer) WritePositiveInt(value uint64) {
 	buff := _this.RequireBytes(uintStringMaxByteCount)[:0]
 	used := strconv.AppendUint(buff, value, 10)
 	_this.UseBytes(len(used))
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteNegativeInt(value uint64) {
@@ -129,7 +122,6 @@ func (_this *EncodeBuffer) WriteBigInt(value *big.Int) {
 	var buff [64]byte
 	used := value.Append(buff[:0], 10)
 	_this.AddBytes(used)
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteFloat(value float64) {
@@ -153,7 +145,6 @@ func (_this *EncodeBuffer) WriteFloat(value float64) {
 	buff := _this.RequireBytes(floatStringMaxByteCount)[:0]
 	used := strconv.AppendFloat(buff, value, 'g', -1, 64)
 	_this.UseBytes(len(used))
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteFloatHexNoPrefix(value float64) {
@@ -164,7 +155,6 @@ func (_this *EncodeBuffer) WriteFloatHexNoPrefix(value float64) {
 		used[0] = '-'
 	}
 	_this.UseBytes(len(used) - 2)
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteBigFloat(value *big.Float) {
@@ -184,7 +174,6 @@ func (_this *EncodeBuffer) WriteBigFloat(value *big.Float) {
 	var buff [64]byte
 	used := value.Append(buff[:0], 'g', conversions.BitsToDecimalDigits(int(value.Prec())))
 	_this.AddBytes(used)
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
@@ -206,7 +195,6 @@ func (_this *EncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
 	}
 
 	_this.AddString(value.Text('g'))
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
@@ -229,7 +217,6 @@ func (_this *EncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
 		var buff [64]byte
 		used := value.Append(buff[:0], 'g')
 		_this.AddBytes(used)
-		_this.Flush()
 	}
 }
 
@@ -239,7 +226,6 @@ func (_this *EncodeBuffer) WriteUUID(v []byte) {
 	}
 	_this.AddFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteTime(value time.Time) {
@@ -291,82 +277,96 @@ func (_this *EncodeBuffer) WriteCompactTime(value compact_time.Time) {
 	default:
 		panic(fmt.Errorf("unknown compact time type %v", value.TimeType))
 	}
-	_this.Flush()
+}
+
+func (_this *EncodeBuffer) WriteArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		// TODO: unquoted-safe
+		// TODO: escapes
+		_this.AddByte('"')
+		_this.AddBytes(value)
+		_this.AddByte('"')
+	default:
+		panic(fmt.Errorf("TODO: EncodeBuffer.WriteArray<%v>", arrayType))
+	}
+}
+
+func (_this *EncodeBuffer) WriteStringlikeArray(arrayType events.ArrayType, value string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		// TODO: unquoted-safe
+		// TODO: escapes
+		_this.AddByte('"')
+		_this.AddString(value)
+		_this.AddByte('"')
+	default:
+		panic(fmt.Errorf("TODO: EncodeBuffer.WriteStringlikeArray<%v>", arrayType))
+	}
 }
 
 func (_this *EncodeBuffer) WriteMarkerBegin(id interface{}) {
 	_this.AddFmt("&%v:", id)
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteReference(id interface{}) {
 	_this.AddFmt("$%v", id)
-	_this.Flush()
+}
+
+func (_this *EncodeBuffer) WriteSeparator() {
+	_this.AddByte(':')
 }
 
 func (_this *EncodeBuffer) WriteListBegin() {
 	_this.AddByte('[')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteListEnd() {
 	_this.AddByte(']')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMapBegin() {
 	_this.AddByte('{')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMapEnd() {
 	_this.AddByte('}')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMetaBegin() {
 	_this.AddByte('(')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMetaEnd() {
 	_this.AddByte(')')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMarkupBegin() {
 	_this.AddByte('<')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMarkupContentsBegin() {
 	_this.AddByte(',')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteMarkupEnd() {
 	_this.AddByte('>')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteArrayBegin() {
 	_this.AddByte('|')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteArrayEnd() {
 	_this.AddByte('|')
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteCommentBegin() {
 	_this.AddBytes([]byte{'/', '*'})
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) WriteCommentEnd() {
 	_this.AddBytes([]byte{'*', '/'})
-	_this.Flush()
 }
 
 func (_this *EncodeBuffer) unexpectedError(err error, encoding interface{}) {

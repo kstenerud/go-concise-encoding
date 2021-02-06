@@ -101,7 +101,7 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 // multiple calls to unmarshal.
 type Unmarshaler struct {
 	session builder.Session
-	decoder Decoder
+	decoder OldDecoder
 	opts    options.CTEUnmarshalerOptions
 	rules   rules.Rules
 }

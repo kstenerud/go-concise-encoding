@@ -40,8 +40,8 @@ import (
 )
 
 // Decodes CTE documents.
-type Decoder struct {
-	buffer         ReadBuffer
+type OldDecoder struct {
+	buffer         DecodeBuffer
 	eventReceiver  events.DataEventReceiver
 	containerState []cteDecoderState
 	currentState   cteDecoderState
@@ -50,20 +50,20 @@ type Decoder struct {
 
 // Create a new CTE decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
-func NewDecoder(opts *options.CTEDecoderOptions) *Decoder {
-	_this := &Decoder{}
+func NewOldDecoder(opts *options.CTEDecoderOptions) *OldDecoder {
+	_this := &OldDecoder{}
 	_this.Init(opts)
 	return _this
 }
 
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
-func (_this *Decoder) Init(opts *options.CTEDecoderOptions) {
+func (_this *OldDecoder) Init(opts *options.CTEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 }
 
-func (_this *Decoder) reset() {
+func (_this *OldDecoder) reset() {
 	_this.buffer.Reset()
 	_this.eventReceiver = nil
 	_this.containerState = _this.containerState[:0]
@@ -72,7 +72,7 @@ func (_this *Decoder) reset() {
 
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
-func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
+func (_this *OldDecoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
 		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
@@ -110,7 +110,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	return
 }
 
-func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
+func (_this *OldDecoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
 	return _this.Decode(bytes.NewBuffer(document), eventReceiver)
 }
 
@@ -128,45 +128,45 @@ func chooseLowWater(bufferSize int) int {
 
 // State
 
-func (_this *Decoder) changeState(newState cteDecoderState) {
+func (_this *OldDecoder) changeState(newState cteDecoderState) {
 	_this.currentState = newState
 }
 
-func (_this *Decoder) stackContainer(nextState cteDecoderState) {
+func (_this *OldDecoder) stackContainer(nextState cteDecoderState) {
 	_this.containerState = append(_this.containerState, _this.currentState)
 	_this.changeState(nextState)
 }
 
-func (_this *Decoder) unstackContainer() {
+func (_this *OldDecoder) unstackContainer() {
 	index := len(_this.containerState) - 1
 	_this.changeState(_this.containerState[index])
 	_this.containerState = _this.containerState[:index]
 }
 
-func (_this *Decoder) endObject() {
+func (_this *OldDecoder) endObject() {
 	_this.changeState(cteDecoderStateTransitions[_this.currentState])
 }
 
 // Handlers
 
-type cteDecoderHandlerFunction func(*Decoder)
+type cteDecoderHandlerFunction func(*OldDecoder)
 
-func (_this *Decoder) handleNothing() {
+func (_this *OldDecoder) handleNothing() {
 }
 
-func (_this *Decoder) handleNextState() {
+func (_this *OldDecoder) handleNextState() {
 	cteDecoderStateHandlers[_this.currentState](_this)
 }
 
-func (_this *Decoder) handleObject() {
+func (_this *OldDecoder) handleObject() {
 	charBasedHandlers[_this.buffer.PeekByteAllowEOD()](_this)
 }
 
-func (_this *Decoder) handleInvalidChar() {
+func (_this *OldDecoder) handleInvalidChar() {
 	_this.buffer.Errorf("Unexpected [%v]", _this.buffer.DescribeCurrentChar())
 }
 
-func (_this *Decoder) handleKVSeparator() {
+func (_this *OldDecoder) handleKVSeparator() {
 	_this.buffer.SkipWhitespace()
 	if _this.buffer.PeekByteNoEOD() != '=' {
 		_this.buffer.Errorf("Expected map separator (=) but got [%v]", _this.buffer.DescribeCurrentChar())
@@ -176,11 +176,11 @@ func (_this *Decoder) handleKVSeparator() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleWhitespace() {
+func (_this *OldDecoder) handleWhitespace() {
 	_this.buffer.SkipWhitespace()
 }
 
-func (_this *Decoder) handleVersion() {
+func (_this *OldDecoder) handleVersion() {
 	if b := _this.buffer.PeekByteNoEOD(); b != 'c' && b != 'C' {
 		_this.buffer.Errorf(`Expected document to begin with "c" but got [%v]`, _this.buffer.DescribeCurrentChar())
 	}
@@ -203,7 +203,7 @@ func (_this *Decoder) handleVersion() {
 	_this.eventReceiver.OnVersion(version)
 }
 
-func (_this *Decoder) handleUnquotedString() {
+func (_this *OldDecoder) handleUnquotedString() {
 	_this.buffer.BeginToken()
 	_this.buffer.ReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
 
@@ -217,7 +217,7 @@ func (_this *Decoder) handleUnquotedString() {
 	_this.buffer.UnexpectedChar("unquoted string")
 }
 
-func (_this *Decoder) isOnCommentInitiator() bool {
+func (_this *OldDecoder) isOnCommentInitiator() bool {
 	if _this.buffer.PeekByteAllowEOD() == '/' {
 		_this.buffer.AdvanceByte()
 		b := _this.buffer.PeekByteAllowEOD()
@@ -230,14 +230,14 @@ func (_this *Decoder) isOnCommentInitiator() bool {
 	return false
 }
 
-func (_this *Decoder) handleQuotedString() {
+func (_this *OldDecoder) handleQuotedString() {
 	_this.buffer.AdvanceByte()
 	bytes := _this.buffer.DecodeQuotedString()
 	_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 	_this.endObject()
 }
 
-func (_this *Decoder) handlePositiveNumeric() {
+func (_this *OldDecoder) handlePositiveNumeric() {
 	coefficient, bigCoefficient, digitCount := _this.buffer.DecodeDecimalUint(0, nil)
 	b := _this.buffer.PeekByteAllowEOD()
 	switch b {
@@ -280,7 +280,7 @@ func (_this *Decoder) handlePositiveNumeric() {
 	_this.buffer.UnexpectedChar("numeric")
 }
 
-func (_this *Decoder) handleNegativeNumeric() {
+func (_this *OldDecoder) handleNegativeNumeric() {
 	_this.buffer.AdvanceByte()
 	switch _this.buffer.PeekByteNoEOD() {
 	case '0':
@@ -334,7 +334,7 @@ func (_this *Decoder) handleNegativeNumeric() {
 	_this.buffer.UnexpectedChar("numeric")
 }
 
-func (_this *Decoder) handleOtherBasePositive() {
+func (_this *OldDecoder) handleOtherBasePositive() {
 	_this.buffer.AdvanceByte()
 	b := _this.buffer.PeekByteAllowEOD()
 
@@ -408,7 +408,7 @@ func (_this *Decoder) handleOtherBasePositive() {
 	}
 }
 
-func (_this *Decoder) handleOtherBaseNegative() {
+func (_this *OldDecoder) handleOtherBaseNegative() {
 	_this.buffer.AdvanceByte()
 	b := _this.buffer.ReadByte()
 	switch b {
@@ -469,46 +469,46 @@ func (_this *Decoder) handleOtherBaseNegative() {
 	}
 }
 
-func (_this *Decoder) handleListBegin() {
+func (_this *OldDecoder) handleListBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnList()
 	_this.stackContainer(cteDecoderStateAwaitListItem)
 }
 
-func (_this *Decoder) handleListEnd() {
+func (_this *OldDecoder) handleListEnd() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.unstackContainer()
 	_this.endObject()
 }
 
-func (_this *Decoder) handleMapBegin() {
+func (_this *OldDecoder) handleMapBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMap()
 	_this.stackContainer(cteDecoderStateAwaitMapKey)
 }
 
-func (_this *Decoder) handleMapEnd() {
+func (_this *OldDecoder) handleMapEnd() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.unstackContainer()
 	_this.endObject()
 }
 
-func (_this *Decoder) handleMetadataBegin() {
+func (_this *OldDecoder) handleMetadataBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMetadata()
 	_this.stackContainer(cteDecoderStateAwaitMetaKey)
 }
 
-func (_this *Decoder) handleMetadataEnd() {
+func (_this *OldDecoder) handleMetadataEnd() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.unstackContainer()
 	// Don't transition state because metadata is a pseudo-object
 }
 
-func (_this *Decoder) handleComment() {
+func (_this *OldDecoder) handleComment() {
 	_this.buffer.AdvanceByte()
 	switch _this.buffer.ReadByte() {
 	case '/':
@@ -527,7 +527,7 @@ func (_this *Decoder) handleComment() {
 	}
 }
 
-func (_this *Decoder) handleCommentContent() {
+func (_this *OldDecoder) handleCommentContent() {
 	str, next := _this.buffer.DecodeMultilineComment()
 	if len(str) > 0 {
 		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
@@ -542,19 +542,19 @@ func (_this *Decoder) handleCommentContent() {
 	}
 }
 
-func (_this *Decoder) handleMarkupBegin() {
+func (_this *OldDecoder) handleMarkupBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMarkup()
 	_this.stackContainer(cteDecoderStateAwaitMarkupName)
 }
 
-func (_this *Decoder) handleMarkupContentBegin() {
+func (_this *OldDecoder) handleMarkupContentBegin() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.changeState(cteDecoderStateAwaitMarkupItem)
 }
 
-func (_this *Decoder) handleMarkupContent() {
+func (_this *OldDecoder) handleMarkupContent() {
 	str, next := _this.buffer.DecodeMarkupContent()
 	if len(str) > 0 {
 		_this.eventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
@@ -583,7 +583,7 @@ func (_this *Decoder) handleMarkupContent() {
 	}
 }
 
-func (_this *Decoder) handleMarkupEnd() {
+func (_this *OldDecoder) handleMarkupEnd() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnEnd()
 	_this.eventReceiver.OnEnd()
@@ -591,7 +591,7 @@ func (_this *Decoder) handleMarkupEnd() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleNamedValueOrUUID() {
+func (_this *OldDecoder) handleNamedValueOrUUID() {
 	_this.buffer.AdvanceByte()
 	namedValue := _this.buffer.DecodeNamedValue()
 	switch string(namedValue) {
@@ -666,7 +666,7 @@ func (_this *Decoder) handleNamedValueOrUUID() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleConstant() {
+func (_this *OldDecoder) handleConstant() {
 	_this.buffer.AdvanceByte()
 	name := _this.buffer.DecodeNamedValue()
 	explicitValue := false
@@ -679,21 +679,21 @@ func (_this *Decoder) handleConstant() {
 	_this.eventReceiver.OnConstant(name, explicitValue)
 }
 
-func (_this *Decoder) decodeStringArray(arrayType events.ArrayType) {
+func (_this *OldDecoder) decodeStringArray(arrayType events.ArrayType) {
 	bytes := _this.buffer.DecodeStringArray()
 	_this.eventReceiver.OnArray(arrayType, uint64(len(bytes)), bytes)
 	_this.endObject()
 }
 
-func (_this *Decoder) decodeCustomText() {
+func (_this *OldDecoder) decodeCustomText() {
 	_this.decodeStringArray(events.ArrayTypeCustomText)
 }
 
-func (_this *Decoder) decodeRID() {
+func (_this *OldDecoder) decodeRID() {
 	_this.decodeStringArray(events.ArrayTypeResourceID)
 }
 
-func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
+func (_this *OldDecoder) finishTypedArray(arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
 	switch _this.buffer.PeekByteNoEOD() {
 	case '|':
 		_this.buffer.AdvanceByte()
@@ -705,7 +705,7 @@ func (_this *Decoder) finishTypedArray(arrayType events.ArrayType, digitType str
 	}
 }
 
-func (_this *Decoder) decodeCustomBinary() {
+func (_this *OldDecoder) decodeCustomBinary() {
 	digitType := "hex"
 	var data []uint8
 	for {
@@ -722,7 +722,7 @@ func (_this *Decoder) decodeCustomBinary() {
 	_this.finishTypedArray(events.ArrayTypeCustomBinary, digitType, 1, data)
 }
 
-func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v uint64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayU8(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -738,7 +738,7 @@ func (_this *Decoder) decodeArrayU8(digitType string, decodeElement func() (v ui
 	_this.finishTypedArray(events.ArrayTypeUint8, digitType, 1, data)
 }
 
-func (_this *Decoder) decodeArrayU16(digitType string, decodeElement func() (v uint64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayU16(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -754,7 +754,7 @@ func (_this *Decoder) decodeArrayU16(digitType string, decodeElement func() (v u
 	_this.finishTypedArray(events.ArrayTypeUint16, digitType, 2, data)
 }
 
-func (_this *Decoder) decodeArrayU32(digitType string, decodeElement func() (v uint64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayU32(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -770,7 +770,7 @@ func (_this *Decoder) decodeArrayU32(digitType string, decodeElement func() (v u
 	_this.finishTypedArray(events.ArrayTypeUint32, digitType, 4, data)
 }
 
-func (_this *Decoder) decodeArrayU64(digitType string, decodeElement func() (v uint64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayU64(digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -784,7 +784,7 @@ func (_this *Decoder) decodeArrayU64(digitType string, decodeElement func() (v u
 	_this.finishTypedArray(events.ArrayTypeUint64, digitType, 8, data)
 }
 
-func (_this *Decoder) decodeArrayI8(digitType string, decodeElement func() (v int64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayI8(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -800,7 +800,7 @@ func (_this *Decoder) decodeArrayI8(digitType string, decodeElement func() (v in
 	_this.finishTypedArray(events.ArrayTypeInt8, digitType, 1, data)
 }
 
-func (_this *Decoder) decodeArrayI16(digitType string, decodeElement func() (v int64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayI16(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -816,7 +816,7 @@ func (_this *Decoder) decodeArrayI16(digitType string, decodeElement func() (v i
 	_this.finishTypedArray(events.ArrayTypeInt16, digitType, 2, data)
 }
 
-func (_this *Decoder) decodeArrayI32(digitType string, decodeElement func() (v int64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayI32(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -832,7 +832,7 @@ func (_this *Decoder) decodeArrayI32(digitType string, decodeElement func() (v i
 	_this.finishTypedArray(events.ArrayTypeInt32, digitType, 4, data)
 }
 
-func (_this *Decoder) decodeArrayI64(digitType string, decodeElement func() (v int64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayI64(digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -846,7 +846,7 @@ func (_this *Decoder) decodeArrayI64(digitType string, decodeElement func() (v i
 	_this.finishTypedArray(events.ArrayTypeInt64, digitType, 8, data)
 }
 
-func (_this *Decoder) decodeArrayF16(digitType string, decodeElement func() (v float64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayF16(digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -865,7 +865,7 @@ func (_this *Decoder) decodeArrayF16(digitType string, decodeElement func() (v f
 	_this.finishTypedArray(events.ArrayTypeFloat16, digitType, 2, data)
 }
 
-func (_this *Decoder) decodeArrayF32(digitType string, decodeElement func() (v float64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayF32(digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -884,7 +884,7 @@ func (_this *Decoder) decodeArrayF32(digitType string, decodeElement func() (v f
 	_this.finishTypedArray(events.ArrayTypeFloat32, digitType, 4, data)
 }
 
-func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v float64, digitCount int)) {
+func (_this *OldDecoder) decodeArrayF64(digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
 		_this.buffer.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
@@ -899,7 +899,7 @@ func (_this *Decoder) decodeArrayF64(digitType string, decodeElement func() (v f
 	_this.finishTypedArray(events.ArrayTypeFloat64, digitType, 8, data)
 }
 
-func (_this *Decoder) readArrayType() string {
+func (_this *OldDecoder) readArrayType() string {
 	_this.buffer.BeginToken()
 	_this.buffer.ReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
 	arrayType := _this.buffer.GetToken()
@@ -911,7 +911,7 @@ func (_this *Decoder) readArrayType() string {
 	return string(arrayType)
 }
 
-func (_this *Decoder) handleTypedArrayBegin() {
+func (_this *OldDecoder) handleTypedArrayBegin() {
 	_this.buffer.AdvanceByte()
 	arrayType := _this.readArrayType()
 	switch arrayType {
@@ -1004,7 +1004,7 @@ func (_this *Decoder) handleTypedArrayBegin() {
 	}
 }
 
-func (_this *Decoder) handleReference() {
+func (_this *OldDecoder) handleReference() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnReference()
 	if _this.buffer.PeekByteNoEOD() == '|' {
@@ -1026,7 +1026,7 @@ func (_this *Decoder) handleReference() {
 	_this.endObject()
 }
 
-func (_this *Decoder) handleMarker() {
+func (_this *OldDecoder) handleMarker() {
 	_this.buffer.AdvanceByte()
 	_this.eventReceiver.OnMarker()
 	asString, asUint := _this.buffer.DecodeMarkerID()
@@ -1104,86 +1104,86 @@ var cteDecoderStateTransitions = [cteDecoderStateCount]cteDecoderState{
 }
 
 var cteDecoderStateHandlers = [cteDecoderStateCount]cteDecoderHandlerFunction{
-	cteDecoderStateAwaitObject:            (*Decoder).handleObject,
-	cteDecoderStateAwaitListItem:          (*Decoder).handleObject,
-	cteDecoderStateAwaitCommentItem:       (*Decoder).handleCommentContent,
-	cteDecoderStateAwaitMapKey:            (*Decoder).handleObject,
-	cteDecoderStateAwaitMapKVSeparator:    (*Decoder).handleKVSeparator,
-	cteDecoderStateAwaitMapValue:          (*Decoder).handleObject,
-	cteDecoderStateAwaitMetaKey:           (*Decoder).handleObject,
-	cteDecoderStateAwaitMetaKVSeparator:   (*Decoder).handleKVSeparator,
-	cteDecoderStateAwaitMetaValue:         (*Decoder).handleObject,
-	cteDecoderStateAwaitMarkupName:        (*Decoder).handleObject,
-	cteDecoderStateAwaitMarkupKey:         (*Decoder).handleObject,
-	cteDecoderStateAwaitMarkupKVSeparator: (*Decoder).handleKVSeparator,
-	cteDecoderStateAwaitMarkupValue:       (*Decoder).handleObject,
-	cteDecoderStateAwaitMarkupItem:        (*Decoder).handleMarkupContent,
-	cteDecoderStateAwaitReferenceID:       (*Decoder).handleObject,
+	cteDecoderStateAwaitObject:            (*OldDecoder).handleObject,
+	cteDecoderStateAwaitListItem:          (*OldDecoder).handleObject,
+	cteDecoderStateAwaitCommentItem:       (*OldDecoder).handleCommentContent,
+	cteDecoderStateAwaitMapKey:            (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMapKVSeparator:    (*OldDecoder).handleKVSeparator,
+	cteDecoderStateAwaitMapValue:          (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMetaKey:           (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMetaKVSeparator:   (*OldDecoder).handleKVSeparator,
+	cteDecoderStateAwaitMetaValue:         (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMarkupName:        (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMarkupKey:         (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMarkupKVSeparator: (*OldDecoder).handleKVSeparator,
+	cteDecoderStateAwaitMarkupValue:       (*OldDecoder).handleObject,
+	cteDecoderStateAwaitMarkupItem:        (*OldDecoder).handleMarkupContent,
+	cteDecoderStateAwaitReferenceID:       (*OldDecoder).handleObject,
 }
 
 var charBasedHandlers [0x101]cteDecoderHandlerFunction
 
 func init() {
 	for i := 0; i < 0x100; i++ {
-		charBasedHandlers[i] = (*Decoder).handleInvalidChar
+		charBasedHandlers[i] = (*OldDecoder).handleInvalidChar
 	}
 
-	charBasedHandlers['\r'] = (*Decoder).handleWhitespace
-	charBasedHandlers['\n'] = (*Decoder).handleWhitespace
-	charBasedHandlers['\t'] = (*Decoder).handleWhitespace
-	charBasedHandlers[' '] = (*Decoder).handleWhitespace
+	charBasedHandlers['\r'] = (*OldDecoder).handleWhitespace
+	charBasedHandlers['\n'] = (*OldDecoder).handleWhitespace
+	charBasedHandlers['\t'] = (*OldDecoder).handleWhitespace
+	charBasedHandlers[' '] = (*OldDecoder).handleWhitespace
 
-	charBasedHandlers['!'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['"'] = (*Decoder).handleQuotedString
-	charBasedHandlers['#'] = (*Decoder).handleConstant
-	charBasedHandlers['$'] = (*Decoder).handleReference
-	charBasedHandlers['%'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['&'] = (*Decoder).handleMarker
-	charBasedHandlers['\''] = (*Decoder).handleInvalidChar
-	charBasedHandlers['('] = (*Decoder).handleMetadataBegin
-	charBasedHandlers[')'] = (*Decoder).handleMetadataEnd
-	charBasedHandlers['+'] = (*Decoder).handleInvalidChar
-	charBasedHandlers[','] = (*Decoder).handleMarkupContentBegin
-	charBasedHandlers['-'] = (*Decoder).handleNegativeNumeric
-	charBasedHandlers['.'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['/'] = (*Decoder).handleComment
+	charBasedHandlers['!'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['"'] = (*OldDecoder).handleQuotedString
+	charBasedHandlers['#'] = (*OldDecoder).handleConstant
+	charBasedHandlers['$'] = (*OldDecoder).handleReference
+	charBasedHandlers['%'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['&'] = (*OldDecoder).handleMarker
+	charBasedHandlers['\''] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['('] = (*OldDecoder).handleMetadataBegin
+	charBasedHandlers[')'] = (*OldDecoder).handleMetadataEnd
+	charBasedHandlers['+'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers[','] = (*OldDecoder).handleMarkupContentBegin
+	charBasedHandlers['-'] = (*OldDecoder).handleNegativeNumeric
+	charBasedHandlers['.'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['/'] = (*OldDecoder).handleComment
 
-	charBasedHandlers['0'] = (*Decoder).handleOtherBasePositive
+	charBasedHandlers['0'] = (*OldDecoder).handleOtherBasePositive
 	for i := '1'; i <= '9'; i++ {
-		charBasedHandlers[i] = (*Decoder).handlePositiveNumeric
+		charBasedHandlers[i] = (*OldDecoder).handlePositiveNumeric
 	}
 
-	charBasedHandlers[':'] = (*Decoder).handleInvalidChar
-	charBasedHandlers[';'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['<'] = (*Decoder).handleMarkupBegin
-	charBasedHandlers['>'] = (*Decoder).handleMarkupEnd
-	charBasedHandlers['?'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['@'] = (*Decoder).handleNamedValueOrUUID
+	charBasedHandlers[':'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers[';'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['<'] = (*OldDecoder).handleMarkupBegin
+	charBasedHandlers['>'] = (*OldDecoder).handleMarkupEnd
+	charBasedHandlers['?'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['@'] = (*OldDecoder).handleNamedValueOrUUID
 
 	for i := 'A'; i <= 'Z'; i++ {
-		charBasedHandlers[i] = (*Decoder).handleUnquotedString
+		charBasedHandlers[i] = (*OldDecoder).handleUnquotedString
 	}
 
-	charBasedHandlers['['] = (*Decoder).handleListBegin
-	charBasedHandlers['\\'] = (*Decoder).handleInvalidChar
-	charBasedHandlers[']'] = (*Decoder).handleListEnd
-	charBasedHandlers['^'] = (*Decoder).handleInvalidChar
-	charBasedHandlers['_'] = (*Decoder).handleUnquotedString
+	charBasedHandlers['['] = (*OldDecoder).handleListBegin
+	charBasedHandlers['\\'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers[']'] = (*OldDecoder).handleListEnd
+	charBasedHandlers['^'] = (*OldDecoder).handleInvalidChar
+	charBasedHandlers['_'] = (*OldDecoder).handleUnquotedString
 
 	for i := 'a'; i <= 'z'; i++ {
-		charBasedHandlers[i] = (*Decoder).handleUnquotedString
+		charBasedHandlers[i] = (*OldDecoder).handleUnquotedString
 	}
 
-	charBasedHandlers['{'] = (*Decoder).handleMapBegin
-	charBasedHandlers['|'] = (*Decoder).handleTypedArrayBegin
-	charBasedHandlers['}'] = (*Decoder).handleMapEnd
-	charBasedHandlers['~'] = (*Decoder).handleInvalidChar
+	charBasedHandlers['{'] = (*OldDecoder).handleMapBegin
+	charBasedHandlers['|'] = (*OldDecoder).handleTypedArrayBegin
+	charBasedHandlers['}'] = (*OldDecoder).handleMapEnd
+	charBasedHandlers['~'] = (*OldDecoder).handleInvalidChar
 
 	for i := 0xc0; i < 0xf8; i++ {
-		charBasedHandlers[i] = (*Decoder).handleUnquotedString
+		charBasedHandlers[i] = (*OldDecoder).handleUnquotedString
 	}
 
-	charBasedHandlers[chars.EndOfDocumentMarker] = (*Decoder).handleNothing
+	charBasedHandlers[chars.EndOfDocumentMarker] = (*OldDecoder).handleNothing
 }
 
 var subsecondMagnitudes = []int{

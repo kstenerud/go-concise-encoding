@@ -58,7 +58,7 @@ func (_this *StreamingWriteBuffer) Reset() {
 	_this.used = 0
 }
 
-func (_this *StreamingWriteBuffer) Flush() {
+func (_this *StreamingWriteBuffer) flushUnconditionally() {
 	data := _this.bytes[:_this.used]
 	_this.pos = _this.bytes
 	_this.used = 0
@@ -69,20 +69,22 @@ func (_this *StreamingWriteBuffer) Flush() {
 	}
 }
 
+func (_this *StreamingWriteBuffer) Flush() {
+	if _this.used != 0 {
+		_this.flushUnconditionally()
+	}
+}
+
 func (_this *StreamingWriteBuffer) FlushIfNeeded() {
 	if len(_this.pos) < minWriterFreeSpace {
-		_this.Flush()
+		_this.flushUnconditionally()
 	}
 }
 
 func (_this *StreamingWriteBuffer) growTo(byteCount int) {
 	_this.Flush()
-	currentLength := len(_this.bytes)
-	if currentLength < byteCount {
-		for ; currentLength < byteCount; currentLength *= 2 {
-		}
-
-		_this.bytes = make([]byte, currentLength, currentLength)
+	if len(_this.bytes) < byteCount {
+		_this.bytes = make([]byte, byteCount, byteCount)
 		_this.pos = _this.bytes
 	}
 }
