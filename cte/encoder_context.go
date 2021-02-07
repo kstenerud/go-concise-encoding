@@ -81,6 +81,7 @@ type EncoderContext struct {
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
 	_this.stack(&globalTopLevelEncoder)
+	_this.indenter.Reset()
 }
 
 func (_this *EncoderContext) Reset() {
