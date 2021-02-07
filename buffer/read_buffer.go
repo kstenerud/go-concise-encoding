@@ -56,13 +56,15 @@ func (_this *StreamingReadBuffer) Init(reader io.Reader, bufferSize int, minFree
 	_this.minFreeBytes = minFreeBytes
 }
 
-// Remove all references that won't be needed for re-use so that the GC can reclaim them.
-// Note: This won't free the internal document buffer.
 func (_this *StreamingReadBuffer) Reset() {
-	_this.reader = nil
 	_this.Buffer = _this.Buffer[:0]
 	_this.minFreeBytes = 0
 	_this.isEOF = false
+	_this.readFromReader(len(_this.Buffer))
+}
+
+func (_this *StreamingReadBuffer) SetReader(reader io.Reader) {
+	_this.reader = reader
 }
 
 func (_this *StreamingReadBuffer) ByteAtOffset(offset int) byte {
@@ -80,7 +82,7 @@ func (_this *StreamingReadBuffer) HasByteAtOffset(offset int) bool {
 // of the buffer, in which case positionOffset will be set to the offset from
 // old position to new.
 func (_this *StreamingReadBuffer) RefillIfNecessary(startOffset, position int) (positionOffset int) {
-	if !_this.isEOF && _this.unreadByteCount(position) < _this.minFreeBytes {
+	if !_this.IsEOF() && _this.unreadByteCount(position) < _this.minFreeBytes {
 		return _this.Refill(startOffset)
 	}
 	return 0
@@ -92,7 +94,7 @@ func (_this *StreamingReadBuffer) RefillIfNecessary(startOffset, position int) (
 // of the buffer, in which case positionOffset will be set to the offset from
 // old position to new.
 func (_this *StreamingReadBuffer) Refill(position int) (positionOffset int) {
-	if _this.isEOF {
+	if _this.IsEOF() {
 		return
 	}
 
@@ -113,7 +115,7 @@ func (_this *StreamingReadBuffer) Refill(position int) (positionOffset int) {
 // of the buffer, in which case positionOffset will be set to the offset from
 // old position to new.
 func (_this *StreamingReadBuffer) RequestBytes(position int, byteCount int) (positionOffset int) {
-	if _this.isEOF {
+	if _this.IsEOF() {
 		return
 	}
 
@@ -194,12 +196,19 @@ func (_this *StreamingReadBuffer) increaseSizeTo(position int, byteCount int) {
 
 func (_this *StreamingReadBuffer) readFromReader(startPosition int) {
 	_this.Buffer = _this.Buffer[:cap(_this.Buffer)]
-	bytesRead, err := _this.reader.Read(_this.Buffer[startPosition:])
-	if err != nil {
-		if err != io.EOF {
-			panic(err)
+
+	pos := startPosition
+	for pos < len(_this.Buffer) {
+		bytesRead, err := _this.reader.Read(_this.Buffer[pos:])
+		pos += bytesRead
+		if err != nil {
+			if err != io.EOF {
+				panic(err)
+			}
+			_this.isEOF = true
+			break
 		}
-		_this.isEOF = true
 	}
-	_this.Buffer = _this.Buffer[:startPosition+bytesRead]
+
+	_this.Buffer = _this.Buffer[:pos]
 }

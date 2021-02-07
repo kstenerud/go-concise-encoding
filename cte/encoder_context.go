@@ -32,7 +32,8 @@ type indenter struct {
 	indent []byte
 }
 
-func (_this *indenter) Init() {
+func (_this *indenter) Reset() {
+	_this.indent = _this.indent[:0]
 	_this.indent = append(_this.indent, '\n')
 }
 
@@ -80,10 +81,12 @@ type EncoderContext struct {
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
 	_this.stack(&globalTopLevelEncoder)
-	_this.indenter.Init()
 }
 
 func (_this *EncoderContext) Reset() {
+	_this.indenter.Reset()
+	_this.Stream.Reset()
+	_this.encoderStack = _this.encoderStack[:0]
 }
 
 func (_this *EncoderContext) stack(encoder Encoder) {

@@ -69,6 +69,10 @@ func (_this *DecodeBuffer) Init(reader io.Reader, readBufferSize int, loWaterByt
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
 }
 
+func (_this *DecodeBuffer) SetReader(reader io.Reader) {
+	_this.buffer.SetReader(reader)
+}
+
 func (_this *DecodeBuffer) Reset() {
 	_this.buffer.Reset()
 	_this.readPos = 0

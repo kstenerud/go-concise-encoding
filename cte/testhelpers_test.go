@@ -22,6 +22,7 @@ package cte
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"net/url"
 	"testing"
@@ -157,7 +158,7 @@ func decodeToEvents(opts *options.CTEDecoderOptions, document []byte, withRules 
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
 	}
 	r := rules.NewRules(topLevelReceiver, nil)
-	err = NewOldDecoder(opts).Decode(bytes.NewBuffer(document), r)
+	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), r)
 	evts = ter.Events
 	return
 }
@@ -172,7 +173,7 @@ func decodeToEventsNoRules(opts *options.CTEDecoderOptions, document []byte, wit
 	if DebugPrintEvents {
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
 	}
-	err = NewOldDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
+	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
 	evts = ter.Events
 	return
 }
