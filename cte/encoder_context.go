@@ -162,6 +162,7 @@ func (_this *EncoderContext) BeginConstant(name []byte, explicitValue bool) {
 
 func (_this *EncoderContext) BeginNA() {
 	_this.stack(&globalNAEncoder)
+	_this.CurrentEncoder.Begin(_this)
 }
 
 func (_this *EncoderContext) BeginArray(arayType events.ArrayType) {

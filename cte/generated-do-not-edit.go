@@ -144,9 +144,6 @@ func (_this *topLevelEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64
 func (_this *topLevelEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArrayData", reflect.TypeOf(_this)))
 }
-func (_this *naEncoder) Begin(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to Begin", reflect.TypeOf(_this)))
-}
 func (_this *naEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }

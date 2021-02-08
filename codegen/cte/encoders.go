@@ -87,7 +87,7 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "na",
-		Methods: []string{Bool, True, False, PInt, NInt, Int, BInt, Float,
+		Methods: []string{Begin, Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
 			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},

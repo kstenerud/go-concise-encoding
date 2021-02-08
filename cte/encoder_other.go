@@ -35,6 +35,10 @@ type naEncoder struct{}
 
 var globalNAEncoder naEncoder
 
+func (_this *naEncoder) Begin(ctx *EncoderContext) {
+	ctx.Stream.AddString("@na")
+}
+
 func (_this *naEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	ctx.Stream.WriteSeparator()
 	ctx.unstack()
@@ -147,9 +151,7 @@ func (_this *naEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicit
 }
 func (_this *naEncoder) BeginNA(ctx *EncoderContext) {
 	// Only unstack
-	ctx.Stream.WriteSeparator() // TODO: Remove me
 	ctx.unstack()
-	ctx.Stream.WriteNA() // TODO: Remove me
 }
 func (_this *naEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.Stream.WriteSeparator()

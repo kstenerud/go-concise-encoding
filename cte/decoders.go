@@ -297,6 +297,12 @@ func decodeNamedValueOrUUID(ctx *DecoderContext) {
 	switch string(namedValue) {
 	case "na":
 		ctx.EventReceiver.OnNA()
+		if ctx.Stream.PeekByteAllowEOD() == ':' {
+			ctx.Stream.AdvanceByte()
+			decodeNextValue(ctx)
+		} else {
+			ctx.EventReceiver.OnNA()
+		}
 		return
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
