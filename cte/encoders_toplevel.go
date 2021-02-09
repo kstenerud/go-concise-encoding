@@ -39,115 +39,119 @@ type topLevelEncoder struct{}
 
 var globalTopLevelEncoder topLevelEncoder
 
+func (_this *topLevelEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	// Nothing to do
+}
+
 func (_this *topLevelEncoder) EncodeBool(ctx *EncoderContext, value bool) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteBool(value)
 }
 func (_this *topLevelEncoder) EncodeTrue(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteTrue()
 }
 func (_this *topLevelEncoder) EncodeFalse(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteFalse()
 }
 func (_this *topLevelEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WritePositiveInt(value)
 }
 func (_this *topLevelEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteNegativeInt(value)
 }
 func (_this *topLevelEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteInt(value)
 }
 func (_this *topLevelEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteBigInt(value)
 }
 func (_this *topLevelEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteFloat(value)
 }
 func (_this *topLevelEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteBigFloat(value)
 }
 func (_this *topLevelEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteDecimalFloat(value)
 }
 func (_this *topLevelEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteBigDecimalFloat(value)
 }
 func (_this *topLevelEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteNan(signaling)
 }
 func (_this *topLevelEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteTime(value)
 }
 func (_this *topLevelEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteCompactTime(value)
 }
 func (_this *topLevelEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteUUID(value)
 }
 func (_this *topLevelEncoder) BeginList(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginList()
 }
 func (_this *topLevelEncoder) BeginMap(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginMap()
 }
 func (_this *topLevelEncoder) BeginMarkup(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginMarkup()
 }
 func (_this *topLevelEncoder) BeginMetadata(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginMetadata()
 }
 func (_this *topLevelEncoder) BeginComment(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginComment()
 }
 func (_this *topLevelEncoder) BeginMarker(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginMarker()
 }
 func (_this *topLevelEncoder) BeginReference(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginReference()
 }
 func (_this *topLevelEncoder) BeginConcatenate(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginConcatenate()
 }
 func (_this *topLevelEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginConstant(name, explicitValue)
 }
 func (_this *topLevelEncoder) BeginNA(ctx *EncoderContext) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginNA()
 }
 func (_this *topLevelEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteArray(arrayType, elementCount, data)
 }
 func (_this *topLevelEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteStringlikeArray(arrayType, data)
 }
 func (_this *topLevelEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	ctx.WriteIndent()
+	ctx.WriteCurrentPrefix()
 	ctx.BeginArray(arrayType)
 }

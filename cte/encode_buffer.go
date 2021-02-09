@@ -21,11 +21,14 @@
 package cte
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"math/big"
 	"strconv"
 	"time"
+
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 
@@ -279,14 +282,55 @@ func (_this *EncodeBuffer) WriteCompactTime(value compact_time.Time) {
 	}
 }
 
+func (_this *EncodeBuffer) WritePotentiallyQuotedStringBytes(value []byte) {
+	if len(value) == 0 {
+		_this.AddBytes([]byte{'"', '"'})
+		return
+	}
+
+	escapeCount, requiresQuotes := getStringRequirements(value)
+
+	if !requiresQuotes {
+		_this.AddBytes(value)
+		return
+	}
+
+	if escapeCount == 0 {
+		length := len(value) + 2
+		data := _this.RequireBytes(length)
+		data[0] = '"'
+		copy(data[1:], value)
+		data[length-1] = '"'
+		_this.UseBytes(length)
+		return
+	}
+
+	_this.WriteEscapedQuotedStringBytes(value, escapeCount)
+}
+
+func (_this *EncodeBuffer) WriteEscapedQuotedStringBytes(value []byte, escapeCount int) {
+	// Worst case scenario: All characters that require escaping need a unicode
+	// sequence. In this case, we'd need at least 7 bytes per escaped character.
+	data := _this.RequireBytes(len(value) + escapeCount*6 + 2)
+	bb := bytes.NewBuffer(data[:0])
+
+	// Note: StringBuilder's WriteXYZ() always return nil errors
+	bb.WriteByte('"')
+	for _, ch := range string(value) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeQuoted) {
+			bb.Write(escapeCharQuoted(ch))
+		} else {
+			bb.WriteRune(ch)
+		}
+	}
+	bb.WriteByte('"')
+	_this.UseBytes(bb.Len())
+}
+
 func (_this *EncodeBuffer) WriteArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		// TODO: unquoted-safe
-		// TODO: escapes
-		_this.AddByte('"')
-		_this.AddBytes(value)
-		_this.AddByte('"')
+		_this.WritePotentiallyQuotedStringBytes(value)
 	default:
 		panic(fmt.Errorf("TODO: EncodeBuffer.WriteArray<%v>", arrayType))
 	}
@@ -295,11 +339,8 @@ func (_this *EncodeBuffer) WriteArray(arrayType events.ArrayType, elementCount u
 func (_this *EncodeBuffer) WriteStringlikeArray(arrayType events.ArrayType, value string) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		// TODO: unquoted-safe
-		// TODO: escapes
-		_this.AddByte('"')
-		_this.AddString(value)
-		_this.AddByte('"')
+		// TODO: String version of this
+		_this.WritePotentiallyQuotedStringBytes([]byte(value))
 	default:
 		panic(fmt.Errorf("TODO: EncodeBuffer.WriteStringlikeArray<%v>", arrayType))
 	}

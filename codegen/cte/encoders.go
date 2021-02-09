@@ -33,6 +33,7 @@ import (
 var (
 	Begin  = "Begin(ctx *EncoderContext)"
 	End    = "End(ctx *EncoderContext)"
+	Child  = "ChildContainerFinished(ctx *EncoderContext)"
 	Bool   = "EncodeBool(ctx *EncoderContext, value bool)"
 	True   = "EncodeTrue(ctx *EncoderContext)"
 	False  = "EncodeFalse(ctx *EncoderContext)"
@@ -64,7 +65,7 @@ var (
 	Chunk  = "BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool)"
 	Data   = "EncodeArrayData(ctx *EncoderContext, data []byte)"
 
-	allMethods = []string{Begin, End, Bool, True, False, PInt, NInt, Int,
+	allMethods = []string{Begin, End, Child, Bool, True, False, PInt, NInt, Int,
 		BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
 		Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr, Chunk, Data}
 )
@@ -81,7 +82,7 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "topLevel",
-		Methods: []string{Bool, True, False, PInt, NInt, Int, BInt, Float,
+		Methods: []string{Child, Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
 			Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
@@ -93,7 +94,7 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "list",
-		Methods: []string{Begin, End, Bool, True, False, PInt, NInt, Int,
+		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
 			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
@@ -105,7 +106,7 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "mapValue",
-		Methods: []string{Bool, True, False, PInt, NInt, Int,
+		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
 			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},

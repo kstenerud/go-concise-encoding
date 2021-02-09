@@ -107,9 +107,9 @@ func init() {
 	}
 	decoderFuncsByFirstChar['0'] = decodeOtherBasePositive
 	for i := '1'; i <= '9'; i++ {
-		decoderFuncsByFirstChar[i] = decodePositiveNumeric
+		decoderFuncsByFirstChar[i] = decodeNumericPositive
 	}
-	decoderFuncsByFirstChar['-'] = decodeNegativeNumeric
+	decoderFuncsByFirstChar['-'] = decodeNumericNegative
 	decoderFuncsByFirstChar['@'] = decodeNamedValueOrUUID
 	decoderFuncsByFirstChar['#'] = decodeConstant
 	decoderFuncsByFirstChar['$'] = decodeReference

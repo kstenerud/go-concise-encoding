@@ -42,6 +42,9 @@ func (_this *removemeEncoder) Begin(ctx *EncoderContext) {
 func (_this *removemeEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
+func (_this *removemeEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
+}
 func (_this *removemeEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBool", reflect.TypeOf(_this)))
 }
@@ -147,6 +150,9 @@ func (_this *topLevelEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) 
 func (_this *naEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
+func (_this *naEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
+}
 func (_this *naEncoder) BeginMetadata(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
 }
@@ -164,6 +170,9 @@ func (_this *listEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, mo
 }
 func (_this *listEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArrayData", reflect.TypeOf(_this)))
+}
+func (_this *mapKeyEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *mapKeyEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))

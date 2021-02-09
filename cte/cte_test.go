@@ -206,17 +206,17 @@ func TestCTEFloat(t *testing.T) {
 
 	assertEncode(t, nil, "c1\n1.1", BD(), V(1), BF(NewBigFloat("1.1", 10, 2)), ED())
 
-	assertDecodeFails(t, "c1 -0.5.4")
-	assertDecodeFails(t, "c1 -0,5.4")
-	assertDecodeFails(t, "c1 0.5.4")
-	assertDecodeFails(t, "c1 0,5.4")
-	assertDecodeFails(t, "c1 -@blah")
-	assertDecodeFails(t, "c1 1.1.1")
-	assertDecodeFails(t, "c1 1,1")
-	assertDecodeFails(t, "c1 1.1e4e5")
-	assertDecodeFails(t, "c1 0.a")
-	assertDecodeFails(t, "c1 0.5et")
-	assertDecodeFails(t, "c1 0.5e99999999999999999999999")
+	assertDecodeFails(t, "c1 [-0.5.4]")
+	assertDecodeFails(t, "c1 [-0,5.4]")
+	assertDecodeFails(t, "c1 [0.5.4]")
+	assertDecodeFails(t, "c1 [0,5.4]")
+	assertDecodeFails(t, "c1 [-@blah]")
+	assertDecodeFails(t, "c1 [1.1.1]")
+	assertDecodeFails(t, "c1 [1,1]")
+	assertDecodeFails(t, "c1 [1.1e4e5]")
+	assertDecodeFails(t, "c1 [0.a]")
+	assertDecodeFails(t, "c1 [0.5et]")
+	assertDecodeFails(t, "c1 [0.5e99999999999999999999999]")
 }
 
 func TestCTEHexFloat(t *testing.T) {
@@ -271,17 +271,17 @@ func TestCTEHexFloat(t *testing.T) {
 	bigExpected = bigExpected.Neg(bigExpected)
 	assertDecode(t, nil, "c1 -0x8.000000000000001p100", BD(), V(1), BF(bigExpected), ED())
 
-	assertDecodeFails(t, "c1 -0x0.5.4")
-	assertDecodeFails(t, "c1 -0x0,5.4")
-	assertDecodeFails(t, "c1 0x0.5.4")
-	assertDecodeFails(t, "c1 0x0,5.4")
-	assertDecodeFails(t, "c1 -0x@blah")
-	assertDecodeFails(t, "c1 0x1.1.1")
-	assertDecodeFails(t, "c1 0x1,1")
-	assertDecodeFails(t, "c1 0x1.1p4p5")
-	assertDecodeFails(t, "c1 -0x0.l")
-	assertDecodeFails(t, "c1 -0x0.5pj")
-	assertDecodeFails(t, "c1 -0x0.5p1000000000000000000000000000")
+	assertDecodeFails(t, "[c1 -0x0.5.4]")
+	assertDecodeFails(t, "[c1 -0x0,5.4]")
+	assertDecodeFails(t, "[c1 0x0.5.4]")
+	assertDecodeFails(t, "[c1 0x0,5.4]")
+	assertDecodeFails(t, "[c1 -0x@blah]")
+	assertDecodeFails(t, "[c1 0x1.1.1]")
+	assertDecodeFails(t, "[c1 0x1,1]")
+	assertDecodeFails(t, "[c1 0x1.1p4p5]")
+	assertDecodeFails(t, "[c1 -0x0.l]")
+	assertDecodeFails(t, "[c1 -0x0.5pj]")
+	assertDecodeFails(t, "[c1 -0x0.5p1000000000000000000000000000]")
 }
 
 func TestCTEUUID(t *testing.T) {
@@ -434,13 +434,13 @@ func TestCTETimestamp(t *testing.T) {
 }
 
 func TestCTEConstant(t *testing.T) {
-	assertDecodeEncodeNoRules(t, nil, nil, "c1\n#someconst", BD(), V(1), CONST("someconst", false), ED())
-	assertDecodeEncodeNoRules(t, nil, nil, `c1
+	assertDecodeEncode(t, nil, nil, "c1\n#someconst", BD(), V(1), CONST("someconst", false), ED())
+	assertDecodeEncode(t, nil, nil, `c1
 [
     #c
     1
 ]`, BD(), V(1), L(), CONST("c", false), PI(1), E(), ED())
-	assertDecodeEncodeNoRules(t, nil, nil, `c1
+	assertDecodeEncode(t, nil, nil, `c1
 {
     #c = 1
 }`, BD(), V(1), M(), CONST("c", false), PI(1), E(), ED())
@@ -513,8 +513,8 @@ func TestCTEUnquotedString(t *testing.T) {
 }
 
 func TestCTEInvalidString(t *testing.T) {
-	assertDecodeFails(t, "c1 a|b")
-	assertDecodeFails(t, "c1 a*b")
+	assertDecodeFails(t, "c1 [a|b]")
+	assertDecodeFails(t, "c1 [a*b]")
 }
 
 func TestCTEVerbatimString(t *testing.T) {
@@ -1560,12 +1560,12 @@ func TestCTEListPretty(t *testing.T) {
 func TestCTEMapPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
-	// Empty 1 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 {}", BD(), V(1), M(), E(), ED())
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c1
-{}`, BD(), V(1), M(), E(), ED())
+	// // Empty 1 level
+	// opts.Indent = ""
+	// assertDecodeEncode(t, nil, opts, "c1 {}", BD(), V(1), M(), E(), ED())
+	// opts.Indent = "    "
+	// assertDecodeEncode(t, nil, opts, `c1
+	// {}`, BD(), V(1), M(), E(), ED())
 
 	// Empty 2 level
 	opts.Indent = ""
@@ -1575,40 +1575,40 @@ func TestCTEMapPretty(t *testing.T) {
 {
     a = {}
 }`, BD(), V(1), M(), S("a"), M(), E(), E(), ED())
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 {a={} b={}}", BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c1
-{
-    a = {}
-    b = {}
-}`, BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
+	// opts.Indent = ""
+	// assertDecodeEncode(t, nil, opts, "c1 {a={} b={}}", BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
+	// opts.Indent = "    "
+	// assertDecodeEncode(t, nil, opts, `c1
+	// {
+	//    a = {}
+	//    b = {}
+	// }`, BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
 
-	// 1 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 {1=2}", BD(), V(1), M(), PI(1), PI(2), E(), ED())
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c1
-{
-    1 = 2
-}`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
+	// // 1 level
+	// opts.Indent = ""
+	// assertDecodeEncode(t, nil, opts, "c1 {1=2}", BD(), V(1), M(), PI(1), PI(2), E(), ED())
+	// opts.Indent = "    "
+	// assertDecodeEncode(t, nil, opts, `c1
+	// {
+	//    1 = 2
+	// }`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
 
-	// 2 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 {a={1=2 3=4} b={5=6 7=8}}",
-		BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c1
-{
-    a = {
-        1 = 2
-        3 = 4
-    }
-    b = {
-        5 = 6
-        7 = 8
-    }
-}`, BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
+	// // 2 level
+	// opts.Indent = ""
+	// assertDecodeEncode(t, nil, opts, "c1 {a={1=2 3=4} b={5=6 7=8}}",
+	// 	BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
+	// opts.Indent = "    "
+	// assertDecodeEncode(t, nil, opts, `c1
+	// {
+	//    a = {
+	//        1 = 2
+	//        3 = 4
+	//    }
+	//    b = {
+	//        5 = 6
+	//        7 = 8
+	//    }
+	// }`, BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
 }
 
 func TestCTEMetadataPretty(t *testing.T) {
@@ -1715,7 +1715,7 @@ func TestCTEBufferEdge2(t *testing.T) {
 }
 
 func TestCTEComplexExample(t *testing.T) {
-	assertDecodeWithRules(t, `c1
+	assertDecode(t, nil, `c1
 // Metadata: _ct is the creation time
 (_ct = 2019-9-1/22:14:01)
 {

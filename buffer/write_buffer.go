@@ -53,7 +53,6 @@ func (_this *StreamingWriteBuffer) SetWriter(writer io.Writer) {
 }
 
 func (_this *StreamingWriteBuffer) Reset() {
-	_this.writer = nil
 	_this.pos = _this.bytes
 	_this.used = 0
 }

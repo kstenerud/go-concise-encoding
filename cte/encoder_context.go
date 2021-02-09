@@ -50,10 +50,12 @@ func (_this *indenter) Get() []byte {
 }
 
 type EncoderContext struct {
-	opts           options.CTEEncoderOptions
-	indenter       indenter
-	encoderStack   []Encoder
-	CurrentEncoder Encoder
+	opts                options.CTEEncoderOptions
+	indenter            indenter
+	encoderStack        []Encoder
+	CurrentEncoder      Encoder
+	ContainerHasObjects bool
+	mapPrefix           string
 
 	Stream EncodeBuffer
 
@@ -80,14 +82,15 @@ type EncoderContext struct {
 
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
-	_this.stack(&globalTopLevelEncoder)
-	_this.indenter.Reset()
+	_this.Reset()
 }
 
 func (_this *EncoderContext) Reset() {
 	_this.indenter.Reset()
 	_this.Stream.Reset()
 	_this.encoderStack = _this.encoderStack[:0]
+	_this.stack(&globalTopLevelEncoder)
+	_this.SetStandardIndentPrefix()
 }
 
 func (_this *EncoderContext) stack(encoder Encoder) {
@@ -117,9 +120,36 @@ func (_this *EncoderContext) WriteIndent() {
 	_this.Stream.AddBytes(_this.indenter.Get())
 }
 
+func (_this *EncoderContext) SetMapPrefix(value string) {
+	_this.mapPrefix = value
+}
+
+func (_this *EncoderContext) SetStandardIndentPrefix() {
+	_this.SetMapPrefix(string(_this.indenter.Get()))
+}
+
+func (_this *EncoderContext) SetStandardMapKeyPrefix() {
+	_this.SetMapPrefix(string(_this.indenter.Get()))
+}
+
+func (_this *EncoderContext) SetStandardMapValuePrefix() {
+	_this.SetMapPrefix(" = ")
+}
+
+func (_this *EncoderContext) ClearMapPrefix() {
+	_this.SetMapPrefix("")
+}
+
+func (_this *EncoderContext) WriteCurrentPrefix() {
+	_this.Stream.AddString(_this.mapPrefix)
+	// TODO: Need to do this?
+	// _this.ClearMapPrefix()
+}
+
 func (_this *EncoderContext) EndContainer() {
 	_this.CurrentEncoder.End(_this)
 	_this.unstack()
+	_this.CurrentEncoder.ChildContainerFinished(_this)
 }
 
 func (_this *EncoderContext) BeginList() {

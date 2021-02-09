@@ -919,7 +919,6 @@ Outer:
 				continue Outer
 			}
 		}
-		_this.AssertAtObjectEnd("verbatim string")
 		subtoken := _this.GetSubtoken()
 		return subtoken[:len(subtoken)-sentinelLen]
 	}

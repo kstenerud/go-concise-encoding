@@ -39,6 +39,7 @@ import (
 type Encoder interface {
 	Begin(ctx *EncoderContext)
 	End(ctx *EncoderContext)
+	ChildContainerFinished(ctx *EncoderContext)
 	EncodeBool(ctx *EncoderContext, value bool)
 	EncodeTrue(ctx *EncoderContext)
 	EncodeFalse(ctx *EncoderContext)
@@ -73,7 +74,6 @@ type Encoder interface {
 
 type RootEncoder struct {
 	context EncoderContext
-	buffer  *EncodeBuffer
 }
 
 // Create a new encoder.
@@ -103,7 +103,7 @@ func (_this *RootEncoder) PrepareToEncode(writer io.Writer) {
 }
 
 func (_this *RootEncoder) OnBeginDocument() {
-	// TODO: Reset?
+	_this.context.Reset()
 }
 
 func (_this *RootEncoder) OnVersion(version uint64) {

@@ -38,7 +38,8 @@ func decodeWhitespace(ctx *DecoderContext) {
 	return
 }
 
-func decodeNextValue(ctx *DecoderContext) {
+func decodeByFirstChar(ctx *DecoderContext) {
+	decodeWhitespace(ctx)
 	decoderFunc := decoderFuncsByFirstChar[ctx.Stream.PeekByteAllowEOD()]
 	decoderFunc(ctx)
 }
@@ -73,13 +74,16 @@ func decodeDocumentBegin(ctx *DecoderContext) {
 }
 
 func decodeTopLevel(ctx *DecoderContext) {
-	decodeNextValue(ctx)
-	ctx.EventReceiver.OnEndDocument()
-	ctx.IsDocumentComplete = true
-	return
+	ctx.ChangeDecoder(decodeEndDocument)
+	decodeByFirstChar(ctx)
 }
 
-func decodePositiveNumeric(ctx *DecoderContext) {
+func decodeEndDocument(ctx *DecoderContext) {
+	ctx.EventReceiver.OnEndDocument()
+	ctx.IsDocumentComplete = true
+}
+
+func decodeNumericPositive(ctx *DecoderContext) {
 	coefficient, bigCoefficient, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
 	b := ctx.Stream.PeekByteAllowEOD()
 	switch b {
@@ -118,8 +122,9 @@ func decodePositiveNumeric(ctx *DecoderContext) {
 	ctx.Stream.UnexpectedChar("numeric")
 }
 
-func decodeNegativeNumeric(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte()
+func decodeNumericNegative(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '-'
+
 	switch ctx.Stream.PeekByteNoEOD() {
 	case '0':
 		decodeOtherBaseNegative(ctx)
@@ -169,14 +174,15 @@ func decodeNegativeNumeric(ctx *DecoderContext) {
 }
 
 func decodeOtherBasePositive(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte()
-	b := ctx.Stream.PeekByteAllowEOD()
+	ctx.Stream.AdvanceByte() // Advance past '0'
 
-	if b.HasProperty(chars.CharIsObjectEnd) && b != '.' {
+	b := ctx.Stream.PeekByteAllowEOD()
+	if b.HasProperty(chars.CharIsObjectEnd) {
 		ctx.EventReceiver.OnPositiveInt(0)
 		return
 	}
-	ctx.Stream.AdvanceByte()
+
+	ctx.Stream.AdvanceByte() // Advance past the value now stored in b
 
 	switch b {
 	case 'b':
@@ -236,8 +242,17 @@ func decodeOtherBasePositive(ctx *DecoderContext) {
 }
 
 func decodeOtherBaseNegative(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte()
-	b := ctx.Stream.ReadByte()
+	ctx.Stream.AdvanceByte() // Advance past '0'
+
+	b := ctx.Stream.PeekByteAllowEOD()
+	if b.HasProperty(chars.CharIsObjectEnd) {
+		// -0 has no decimal point (thus type int), so report it as positive 0.
+		ctx.EventReceiver.OnPositiveInt(0)
+		return
+	}
+
+	ctx.Stream.AdvanceByte() // Advance past the value now stored in b
+
 	switch b {
 	case 'b':
 		v, bigV, _ := ctx.Stream.DecodeBinaryUint()
@@ -292,14 +307,15 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 }
 
 func decodeNamedValueOrUUID(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte()
+	ctx.Stream.AdvanceByte() // Advance past '@'
+
 	namedValue := ctx.Stream.DecodeNamedValue()
 	switch string(namedValue) {
 	case "na":
 		ctx.EventReceiver.OnNA()
 		if ctx.Stream.PeekByteAllowEOD() == ':' {
 			ctx.Stream.AdvanceByte()
-			decodeNextValue(ctx)
+			decodeByFirstChar(ctx)
 		} else {
 			ctx.EventReceiver.OnNA()
 		}
@@ -366,7 +382,8 @@ func decodeNamedValueOrUUID(ctx *DecoderContext) {
 }
 
 func decodeQuotedString(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte()
+	ctx.Stream.AdvanceByte() // Advance past '"'
+
 	bytes := ctx.Stream.DecodeQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
@@ -379,12 +396,15 @@ func decodeUnquotedString(ctx *DecoderContext) {
 }
 
 func decodeMapBegin(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '{'
+
+	ctx.EventReceiver.OnMap()
 	ctx.StackDecoder(decodeMapKey)
 }
 
 func decodeMapKey(ctx *DecoderContext) {
 	ctx.ChangeDecoder(decodeMapValue)
-	decodeNextValue(ctx)
+	decodeByFirstChar(ctx)
 }
 
 func decodeMapValue(ctx *DecoderContext) {
@@ -395,57 +415,93 @@ func decodeMapValue(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte()
 	decodeWhitespace(ctx)
 	ctx.ChangeDecoder(decodeMapKey)
-	decodeNextValue(ctx)
+	decodeByFirstChar(ctx)
 }
 
 func decodeMapEnd(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '}'
+
+	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 }
 
 func decodeListBegin(ctx *DecoderContext) {
-	ctx.StackDecoder(decodeNextValue)
+	ctx.Stream.AdvanceByte() // Advance past '['
+
+	ctx.EventReceiver.OnList()
+	ctx.StackDecoder(decodeByFirstChar)
 }
 
 func decodeListEnd(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past ']'
+
+	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 }
 
 func decodeMarkupBegin(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '<'
+
+	ctx.EventReceiver.OnMarkup()
 	panic("TODO: decodeMarkupBegin")
 }
 
 func decodeMarkupContentBegin(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past ','
+
+	ctx.EventReceiver.OnEnd()
 	panic("TODO: decodeMarkupContentBegin")
 }
 
 func decodeMarkupEnd(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '>'
+
+	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 }
 
 func decodeTypedArrayBegin(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '|'
+
 	panic("TODO: decodeTypedArrayBegin")
 }
 
 func decodeConstant(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '#'
+
 	panic("TODO: decodeConstant")
 }
 
 func decodeReference(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '$'
+
+	ctx.EventReceiver.OnReference()
 	panic("TODO: decodeReference")
 }
 
 func decodeMarker(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '&'
+
+	ctx.EventReceiver.OnMarker()
 	panic("TODO: decodeMarker")
 }
 
 func decodeMetadataBegin(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '('
+
+	ctx.EventReceiver.OnMetadata()
 	panic("TODO: decodeMetadataBegin")
 }
 
 func decodeMetadataEnd(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past ')'
+
+	ctx.EventReceiver.OnEnd()
 	panic("TODO: decodeMetadataEnd")
 }
 
 func decodeComment(ctx *DecoderContext) {
+
+	ctx.EventReceiver.OnComment()
 	panic("TODO: decodeComment")
 }
