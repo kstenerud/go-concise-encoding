@@ -31,13 +31,11 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-type removemeEncoder struct{} // TODO: Remove me
-
-// =============================================================================
-
 type topLevelEncoder struct{}
 
 var globalTopLevelEncoder topLevelEncoder
+
+func (_this *topLevelEncoder) String() string { return "topLevelEncoder" }
 
 func (_this *topLevelEncoder) ChildContainerFinished(ctx *EncoderContext) {
 	// Nothing to do
@@ -105,43 +103,43 @@ func (_this *topLevelEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 }
 func (_this *topLevelEncoder) BeginList(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginList()
+	ctx.BeginStandardList()
 }
 func (_this *topLevelEncoder) BeginMap(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginMap()
+	ctx.BeginStandardMap()
 }
 func (_this *topLevelEncoder) BeginMarkup(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginMarkup()
+	ctx.BeginStandardMarkup()
 }
 func (_this *topLevelEncoder) BeginMetadata(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginMetadata()
+	ctx.BeginStandardMetadata()
 }
 func (_this *topLevelEncoder) BeginComment(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginComment()
+	ctx.BeginStandardComment()
 }
 func (_this *topLevelEncoder) BeginMarker(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginMarker()
+	ctx.BeginStandardMarker()
 }
 func (_this *topLevelEncoder) BeginReference(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginReference()
+	ctx.BeginStandardReference()
 }
 func (_this *topLevelEncoder) BeginConcatenate(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginConcatenate()
+	ctx.BeginStandardConcatenate()
 }
 func (_this *topLevelEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginConstant(name, explicitValue)
+	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *topLevelEncoder) BeginNA(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginNA()
+	ctx.BeginStandardNA()
 }
 func (_this *topLevelEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.WriteCurrentPrefix()
@@ -153,5 +151,5 @@ func (_this *topLevelEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayTy
 }
 func (_this *topLevelEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginArray(arrayType)
+	ctx.BeginStandardArray(arrayType)
 }

@@ -77,10 +77,6 @@ type Encoder struct {
 
 var encoders = []Encoder{
 	{
-		Name:    "removeme",
-		Methods: []string{},
-	},
-	{
 		Name: "topLevel",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
@@ -91,6 +87,12 @@ var encoders = []Encoder{
 		Methods: []string{Begin, Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
 			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+	},
+	{
+		Name: "postInvisible",
+		Methods: []string{Bool, True, False, PInt, NInt, Int, BInt, Float,
+			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
+			Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
 	{
 		Name: "list",
@@ -106,6 +108,18 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "mapValue",
+		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
+			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
+			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+	},
+	{
+		Name: "metadataKey",
+		Methods: []string{Begin, End, Bool, True, False, PInt, NInt, Int,
+			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, Meta, Cmt,
+			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+	},
+	{
+		Name: "metadataValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
 			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
@@ -132,15 +146,7 @@ var codeHeader = standard.Header + `package cte
 
 import (
 	"fmt"
-	"math/big"
 	"reflect"
-	"time"
-
-	"github.com/kstenerud/go-concise-encoding/events"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
 )
 `
 

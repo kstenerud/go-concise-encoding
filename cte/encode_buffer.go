@@ -374,11 +374,11 @@ func (_this *EncodeBuffer) WriteMapEnd() {
 	_this.AddByte('}')
 }
 
-func (_this *EncodeBuffer) WriteMetaBegin() {
+func (_this *EncodeBuffer) WriteMetadataBegin() {
 	_this.AddByte('(')
 }
 
-func (_this *EncodeBuffer) WriteMetaEnd() {
+func (_this *EncodeBuffer) WriteMetadataEnd() {
 	_this.AddByte(')')
 }
 

@@ -233,39 +233,39 @@ func (_this *RootEncoder) OnArrayData(data []byte) {
 }
 
 func (_this *RootEncoder) OnConcatenate() {
-	_this.context.BeginConcatenate()
+	_this.context.BeginStandardConcatenate()
 }
 
 func (_this *RootEncoder) OnList() {
-	_this.context.BeginList()
+	_this.context.CurrentEncoder.BeginList(&_this.context)
 }
 
 func (_this *RootEncoder) OnMap() {
-	_this.context.BeginMap()
+	_this.context.CurrentEncoder.BeginMap(&_this.context)
 }
 
 func (_this *RootEncoder) OnMarkup() {
-	_this.context.BeginMarkup()
+	_this.context.CurrentEncoder.BeginMarkup(&_this.context)
 }
 
 func (_this *RootEncoder) OnMetadata() {
-	_this.context.BeginMetadata()
+	_this.context.CurrentEncoder.BeginMetadata(&_this.context)
 }
 
 func (_this *RootEncoder) OnComment() {
-	_this.context.BeginComment()
+	_this.context.CurrentEncoder.BeginComment(&_this.context)
 }
 
 func (_this *RootEncoder) OnEnd() {
-	_this.context.EndContainer()
+	_this.context.CurrentEncoder.End(&_this.context)
 }
 
 func (_this *RootEncoder) OnMarker() {
-	_this.context.BeginMarker()
+	_this.context.CurrentEncoder.BeginMarker(&_this.context)
 }
 
 func (_this *RootEncoder) OnReference() {
-	_this.context.BeginReference()
+	_this.context.CurrentEncoder.BeginReference(&_this.context)
 }
 
 func (_this *RootEncoder) OnConstant(name []byte, explicitValue bool) {

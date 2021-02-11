@@ -55,7 +55,7 @@ type EncoderContext struct {
 	encoderStack        []Encoder
 	CurrentEncoder      Encoder
 	ContainerHasObjects bool
-	mapPrefix           string
+	currentPrefix       string
 
 	Stream EncodeBuffer
 
@@ -89,16 +89,17 @@ func (_this *EncoderContext) Reset() {
 	_this.indenter.Reset()
 	_this.Stream.Reset()
 	_this.encoderStack = _this.encoderStack[:0]
-	_this.stack(&globalTopLevelEncoder)
+	_this.CurrentEncoder = nil
+	_this.Stack(&globalTopLevelEncoder)
 	_this.SetStandardIndentPrefix()
 }
 
-func (_this *EncoderContext) stack(encoder Encoder) {
+func (_this *EncoderContext) Stack(encoder Encoder) {
 	_this.encoderStack = append(_this.encoderStack, encoder)
 	_this.CurrentEncoder = encoder
 }
 
-func (_this *EncoderContext) unstack() {
+func (_this *EncoderContext) Unstack() {
 	_this.encoderStack = _this.encoderStack[:len(_this.encoderStack)-1]
 	_this.CurrentEncoder = _this.encoderStack[len(_this.encoderStack)-1]
 }
@@ -116,86 +117,92 @@ func (_this *EncoderContext) DecreaseIndent() {
 	_this.indenter.decrease()
 }
 
-func (_this *EncoderContext) WriteIndent() {
+func (_this *EncoderContext) WriteBasicIndent() {
 	_this.Stream.AddBytes(_this.indenter.Get())
 }
 
-func (_this *EncoderContext) SetMapPrefix(value string) {
-	_this.mapPrefix = value
+func (_this *EncoderContext) SetIndentPrefix(value string) {
+	_this.currentPrefix = value
 }
 
 func (_this *EncoderContext) SetStandardIndentPrefix() {
-	_this.SetMapPrefix(string(_this.indenter.Get()))
+	_this.SetIndentPrefix(string(_this.indenter.Get()))
 }
 
 func (_this *EncoderContext) SetStandardMapKeyPrefix() {
-	_this.SetMapPrefix(string(_this.indenter.Get()))
+	_this.SetIndentPrefix(string(_this.indenter.Get()))
 }
 
 func (_this *EncoderContext) SetStandardMapValuePrefix() {
-	_this.SetMapPrefix(" = ")
+	_this.SetIndentPrefix(" = ")
 }
 
-func (_this *EncoderContext) ClearMapPrefix() {
-	_this.SetMapPrefix("")
+func (_this *EncoderContext) ClearPrefix() {
+	_this.SetIndentPrefix("")
 }
 
 func (_this *EncoderContext) WriteCurrentPrefix() {
-	_this.Stream.AddString(_this.mapPrefix)
+	_this.Stream.AddString(_this.currentPrefix)
 	// TODO: Need to do this?
 	// _this.ClearMapPrefix()
 }
 
-func (_this *EncoderContext) EndContainer() {
+func (_this *EncoderContext) PerformStandardKVSeparation() {
+	_this.Stream.AddString(" = ")
+	_this.ClearPrefix()
+}
+
+func (_this *EncoderContext) EndContainerXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX() {
 	_this.CurrentEncoder.End(_this)
-	_this.unstack()
+	_this.Unstack()
 	_this.CurrentEncoder.ChildContainerFinished(_this)
 }
 
-func (_this *EncoderContext) BeginList() {
-	_this.stack(&globalListEncoder)
+func (_this *EncoderContext) BeginStandardList() {
+	_this.Stack(&globalListEncoder)
 	_this.CurrentEncoder.Begin(_this)
 }
 
-func (_this *EncoderContext) BeginMap() {
-	_this.stack(&globalMapKeyEncoder)
+func (_this *EncoderContext) BeginStandardMap() {
+	_this.Stack(&globalMapKeyEncoder)
 	_this.CurrentEncoder.Begin(_this)
 }
 
-func (_this *EncoderContext) BeginMarkup() {
+func (_this *EncoderContext) BeginStandardMarkup() {
 	panic(fmt.Errorf("TODO: EncoderContext.BeginMarkup"))
 }
 
-func (_this *EncoderContext) BeginMetadata() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginMetadata"))
-}
-
-func (_this *EncoderContext) BeginComment() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginComment"))
-}
-
-func (_this *EncoderContext) BeginMarker() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginMarker"))
-}
-
-func (_this *EncoderContext) BeginReference() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginReference"))
-}
-
-func (_this *EncoderContext) BeginConcatenate() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginConcatenate"))
-}
-
-func (_this *EncoderContext) BeginConstant(name []byte, explicitValue bool) {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginConstant"))
-}
-
-func (_this *EncoderContext) BeginNA() {
-	_this.stack(&globalNAEncoder)
+func (_this *EncoderContext) BeginStandardMetadata() {
+	_this.Stack(&globalMetadataKeyEncoder)
 	_this.CurrentEncoder.Begin(_this)
 }
 
-func (_this *EncoderContext) BeginArray(arayType events.ArrayType) {
+func (_this *EncoderContext) BeginStandardComment() {
+	panic(fmt.Errorf("TODO: EncoderContext.BeginComment"))
+}
+
+func (_this *EncoderContext) BeginStandardMarker() {
+	panic(fmt.Errorf("TODO: EncoderContext.BeginMarker"))
+}
+
+func (_this *EncoderContext) BeginStandardReference() {
+	panic(fmt.Errorf("TODO: EncoderContext.BeginReference"))
+}
+
+func (_this *EncoderContext) BeginStandardConcatenate() {
+	panic(fmt.Errorf("TODO: EncoderContext.BeginConcatenate"))
+}
+
+func (_this *EncoderContext) BeginStandardConstant(name []byte, explicitValue bool) {
+	panic(fmt.Errorf("TODO: EncoderContext.BeginConstant"))
+}
+
+func (_this *EncoderContext) BeginStandardNA() {
+	_this.Stack(&globalNAEncoder)
+	_this.CurrentEncoder.Begin(_this)
+}
+
+func (_this *EncoderContext) BeginStandardArray(arayType events.ArrayType) {
 	panic(fmt.Errorf("TODO: EncoderContext.BeginArray"))
 }
 

@@ -490,14 +490,35 @@ func decodeMetadataBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '('
 
 	ctx.EventReceiver.OnMetadata()
-	panic("TODO: decodeMetadataBegin")
+	ctx.StackDecoder(decodeMetadataKey)
+}
+
+func decodeMetadataKey(ctx *DecoderContext) {
+	ctx.ChangeDecoder(decodeMetadataValue)
+	decodeByFirstChar(ctx)
+}
+
+func decodeMetadataValue(ctx *DecoderContext) {
+	decodeWhitespace(ctx)
+	if ctx.Stream.PeekByteNoEOD() != '=' {
+		ctx.Stream.Errorf("Expected Metadata separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
+	}
+	ctx.Stream.AdvanceByte()
+	decodeWhitespace(ctx)
+	ctx.ChangeDecoder(decodeMetadataKey)
+	decodeByFirstChar(ctx)
 }
 
 func decodeMetadataEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ')'
 
 	ctx.EventReceiver.OnEnd()
-	panic("TODO: decodeMetadataEnd")
+	ctx.ChangeDecoder(decodeMetadataCompletion)
+}
+
+func decodeMetadataCompletion(ctx *DecoderContext) {
+	ctx.UnstackDecoder()
+	decodeByFirstChar(ctx)
 }
 
 func decodeComment(ctx *DecoderContext) {
