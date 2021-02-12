@@ -460,12 +460,6 @@ func decodeMarkupEnd(ctx *DecoderContext) {
 	ctx.UnstackDecoder()
 }
 
-func decodeTypedArrayBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '|'
-
-	panic("TODO: decodeTypedArrayBegin")
-}
-
 func decodeConstant(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
