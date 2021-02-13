@@ -100,6 +100,9 @@ func (_this *BeginDocumentRule) OnMarker(ctx *Context) {
 func (_this *BeginDocumentRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *BeginDocumentRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *BeginDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
@@ -180,6 +183,9 @@ func (_this *EndDocumentRule) OnMarker(ctx *Context) {
 }
 func (_this *EndDocumentRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *EndDocumentRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *EndDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
@@ -265,6 +271,9 @@ func (_this *TerminalRule) OnMarker(ctx *Context) {
 func (_this *TerminalRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *TerminalRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *TerminalRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
@@ -345,6 +354,9 @@ func (_this *VersionRule) OnMarker(ctx *Context) {
 }
 func (_this *VersionRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *VersionRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *VersionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
@@ -601,6 +613,9 @@ func (_this *MarkupContentsRule) OnMarker(ctx *Context) {
 func (_this *MarkupContentsRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *MarkupContentsRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *MarkupContentsRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
@@ -666,6 +681,9 @@ func (_this *CommentRule) OnMarker(ctx *Context) {
 }
 func (_this *CommentRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *CommentRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *CommentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
@@ -811,6 +829,9 @@ func (_this *ArrayRule) OnMarker(ctx *Context) {
 func (_this *ArrayRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *ArrayRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *ArrayRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
@@ -891,6 +912,9 @@ func (_this *ArrayChunkRule) OnMarker(ctx *Context) {
 }
 func (_this *ArrayChunkRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *ArrayChunkRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *ArrayChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
@@ -973,6 +997,9 @@ func (_this *StringRule) OnMarker(ctx *Context) {
 func (_this *StringRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *StringRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *StringRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
@@ -1053,6 +1080,9 @@ func (_this *StringChunkRule) OnMarker(ctx *Context) {
 }
 func (_this *StringChunkRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *StringChunkRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *StringChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
@@ -1135,6 +1165,9 @@ func (_this *StringBuilderRule) OnMarker(ctx *Context) {
 func (_this *StringBuilderRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *StringBuilderRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *StringBuilderRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
@@ -1216,6 +1249,9 @@ func (_this *StringBuilderChunkRule) OnMarker(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *StringBuilderChunkRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *StringBuilderChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	panic(fmt.Errorf("%v does not allow Array", _this))
 }
@@ -1282,6 +1318,9 @@ func (_this *MarkerIDKeyableRule) OnMarker(ctx *Context) {
 func (_this *MarkerIDKeyableRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *MarkerIDKeyableRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *MarkerIDKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
@@ -1341,6 +1380,9 @@ func (_this *MarkerIDAnyTypeRule) OnMarker(ctx *Context) {
 }
 func (_this *MarkerIDAnyTypeRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *MarkerIDAnyTypeRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *MarkerIDAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
@@ -1471,6 +1513,9 @@ func (_this *ReferenceKeyableRule) OnMarker(ctx *Context) {
 func (_this *ReferenceKeyableRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *ReferenceKeyableRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *ReferenceKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
@@ -1531,10 +1576,88 @@ func (_this *ReferenceAnyTypeRule) OnMarker(ctx *Context) {
 func (_this *ReferenceAnyTypeRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
 }
+func (_this *ReferenceAnyTypeRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
 func (_this *ReferenceAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
 func (_this *ReferenceAnyTypeRule) OnArrayData(ctx *Context, data []byte) {
+	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+}
+func (_this *ConstantKeyableRule) OnBeginDocument(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+}
+func (_this *ConstantKeyableRule) OnEndDocument(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+}
+func (_this *ConstantKeyableRule) OnVersion(ctx *Context, version uint64) {
+	panic(fmt.Errorf("%v does not allow Version", _this))
+}
+func (_this *ConstantKeyableRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
+}
+func (_this *ConstantKeyableRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
+func (_this *ConstantKeyableRule) OnList(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow List", _this))
+}
+func (_this *ConstantKeyableRule) OnMap(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Map", _this))
+}
+func (_this *ConstantKeyableRule) OnMarkup(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Markup", _this))
+}
+func (_this *ConstantKeyableRule) OnMetadata(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Metadata", _this))
+}
+func (_this *ConstantKeyableRule) OnComment(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Comment", _this))
+}
+func (_this *ConstantKeyableRule) OnEnd(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *ConstantKeyableRule) OnMarker(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Marker", _this))
+}
+func (_this *ConstantKeyableRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
+func (_this *ConstantKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+}
+func (_this *ConstantKeyableRule) OnArrayData(ctx *Context, data []byte) {
+	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+}
+func (_this *ConstantAnyTypeRule) OnBeginDocument(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+}
+func (_this *ConstantAnyTypeRule) OnEndDocument(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+}
+func (_this *ConstantAnyTypeRule) OnVersion(ctx *Context, version uint64) {
+	panic(fmt.Errorf("%v does not allow Version", _this))
+}
+func (_this *ConstantAnyTypeRule) OnMetadata(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Metadata", _this))
+}
+func (_this *ConstantAnyTypeRule) OnComment(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Comment", _this))
+}
+func (_this *ConstantAnyTypeRule) OnEnd(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *ConstantAnyTypeRule) OnMarker(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Marker", _this))
+}
+func (_this *ConstantAnyTypeRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
+}
+func (_this *ConstantAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+}
+func (_this *ConstantAnyTypeRule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }
 func (_this *TLReferenceRIDRule) OnBeginDocument(ctx *Context) {
@@ -1599,6 +1722,9 @@ func (_this *TLReferenceRIDRule) OnMarker(ctx *Context) {
 }
 func (_this *TLReferenceRIDRule) OnReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Reference", _this))
+}
+func (_this *TLReferenceRIDRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *TLReferenceRIDRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))

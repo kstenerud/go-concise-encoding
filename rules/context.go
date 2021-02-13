@@ -202,6 +202,22 @@ func (_this *Context) BeginTopLevelReference() {
 	_this.stackRule(&tlReferenceRIDRule, DataTypeKeyable)
 }
 
+func (_this *Context) BeginConstantKeyable(name []byte, explicitValue bool) {
+	if explicitValue {
+		_this.stackRule(&constantKeyableRule, DataTypeKeyable)
+	} else if !_this.opts.AllowUndefinedConstants {
+		panic(fmt.Errorf("Undefined constants are not allowed"))
+	}
+}
+
+func (_this *Context) BeginConstantAnyType(name []byte, explicitValue bool) {
+	if explicitValue {
+		_this.stackRule(&constantAnyTypeRule, DataTypeAnyType)
+	} else if !_this.opts.AllowUndefinedConstants {
+		panic(fmt.Errorf("Undefined constants are not allowed"))
+	}
+}
+
 func (_this *Context) SwitchVersion() {
 	_this.changeRule(&versionRule)
 }

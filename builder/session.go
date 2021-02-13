@@ -78,7 +78,7 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 // the template object.
 // If template is nil, a generic interface type will be used.
 // If opts is nil, default options will be used.
-func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderOptions) *RootBuilder {
+func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderOptions) *BuilderEventReceiver {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
 	if rv.IsValid() {

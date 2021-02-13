@@ -103,7 +103,7 @@ type Unmarshaler struct {
 	session builder.Session
 	decoder OldDecoder
 	opts    options.CTEUnmarshalerOptions
-	rules   rules.Rules
+	rules   rules.RulesEventReceiver
 }
 
 // Create a new unmarshaler with the specified options.

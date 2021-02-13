@@ -1006,6 +1006,12 @@ outer:
 	}
 }
 
+func (_this *DecodeBuffer) DecodeUnquotedString() []byte {
+	_this.BeginToken()
+	_this.ReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
+	return _this.GetToken()
+}
+
 func (_this *DecodeBuffer) DecodeStringArray() []byte {
 	_this.SkipWhitespace()
 	_this.BeginToken()

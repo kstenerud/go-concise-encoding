@@ -259,6 +259,11 @@ func (_this *Context) ValidateFullArrayStringlike(arrayType events.ArrayType, da
 	}
 }
 
+func (_this *Context) ValidateFullArrayStringlikeKeyable(arrayType events.ArrayType, data string) {
+	_this.AssertArrayTypeKeyable(arrayType)
+	_this.ValidateFullArrayStringlike(arrayType, data)
+}
+
 func (_this *Context) ValidateFullArrayKeyable(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.AssertArrayTypeKeyable(arrayType)
 	_this.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -276,6 +281,25 @@ func (_this *Context) ValidateFullArrayComment(arrayType events.ArrayType, eleme
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthAnyType(uint64(len(data)))
 	_this.ValidateContentsComment(data)
+}
+
+func (_this *Context) ValidateFullArrayCommentString(arrayType events.ArrayType, data string) {
+	_this.AssertArrayTypeString(arrayType)
+	_this.ValidateLengthAnyType(uint64(len(data)))
+	_this.ValidateContentsCommentString(data)
+}
+
+func (_this *Context) ValidateFullArrayMarkupContents(arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	_this.AssertArrayTypeString(arrayType)
+	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
+	_this.ValidateLengthAnyType(uint64(len(data)))
+	_this.ValidateContentsComment(data)
+}
+
+func (_this *Context) ValidateFullArrayMarkupContentsString(arrayType events.ArrayType, data string) {
+	_this.AssertArrayTypeString(arrayType)
+	_this.ValidateLengthAnyType(uint64(len(data)))
+	_this.ValidateContentsCommentString(data)
 }
 
 func (_this *Context) ValidateFullArrayRID(arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -374,6 +398,11 @@ func (_this *Context) ValidateContentsCustomText(contents []byte) {
 func (_this *Context) ValidateContentsComment(contents []byte) {
 	// TODO: More specific validation
 	_this.ValidateContentsString(contents)
+}
+
+func (_this *Context) ValidateContentsCommentString(contents string) {
+	// TODO: More specific validation
+	_this.ValidateContentsStringlike(contents)
 }
 
 func (_this *Context) ValidateContentsRID(contents []byte) {

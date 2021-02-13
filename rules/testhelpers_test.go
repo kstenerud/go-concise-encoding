@@ -303,7 +303,7 @@ func assertEventsMaxDepth(t *testing.T, maxDepth int, events ...*test.TEvent) {
 	assertEventsSucceed(t, rules, events...)
 }
 
-func assertRulesOnString(t *testing.T, rules *Rules, value string) {
+func assertRulesOnString(t *testing.T, rules *RulesEventReceiver, value string) {
 	length := len(value)
 	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -312,7 +312,7 @@ func assertRulesOnString(t *testing.T, rules *Rules, value string) {
 	}
 }
 
-func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
+func assertRulesAddBytes(t *testing.T, rules *RulesEventReceiver, value []byte) {
 	length := len(value)
 	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -321,7 +321,7 @@ func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
 	}
 }
 
-func assertRulesAddRID(t *testing.T, rules *Rules, ResourceID string) {
+func assertRulesAddRID(t *testing.T, rules *RulesEventReceiver, ResourceID string) {
 	length := len(ResourceID)
 	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayBegin(events.ArrayTypeResourceID) })
 	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -330,7 +330,7 @@ func assertRulesAddRID(t *testing.T, rules *Rules, ResourceID string) {
 	}
 }
 
-func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
+func assertRulesAddCustomBinary(t *testing.T, rules *RulesEventReceiver, value []byte) {
 	length := len(value)
 	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
 	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -339,7 +339,7 @@ func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
 	}
 }
 
-func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
+func assertRulesAddCustomText(t *testing.T, rules *RulesEventReceiver, value []byte) {
 	length := len(value)
 	test.AssertNoPanic(t, string(value), func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
 	test.AssertNoPanic(t, string(value), func() { rules.OnArrayChunk(uint64(length), false) })
@@ -348,14 +348,14 @@ func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
 	}
 }
 
-func newRulesAfterVersion(opts *options.RuleOptions) *Rules {
+func newRulesAfterVersion(opts *options.RuleOptions) *RulesEventReceiver {
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	rules.OnBeginDocument()
 	rules.OnVersion(version.ConciseEncodingVersion)
 	return rules
 }
 
-func newRulesWithMaxDepth(maxDepth int) *Rules {
+func newRulesWithMaxDepth(maxDepth int) *RulesEventReceiver {
 	opts := options.DefaultRuleOptions()
 	opts.MaxContainerDepth = uint64(maxDepth)
 	return newRulesAfterVersion(opts)

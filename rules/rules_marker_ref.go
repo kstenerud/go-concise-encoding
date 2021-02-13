@@ -56,7 +56,7 @@ func (_this *MarkerIDKeyableRule) OnArray(ctx *Context, arrayType events.ArrayTy
 	ctx.BeginMarkedObjectKeyable(string(data))
 }
 func (_this *MarkerIDKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlike(arrayType, data)
+	ctx.ValidateFullArrayMarkerIDString(arrayType, data)
 	ctx.BeginMarkedObjectKeyable(data)
 }
 func (_this *MarkerIDKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -93,7 +93,7 @@ func (_this *MarkerIDAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayTy
 	ctx.BeginMarkedObjectAnyType(string(data))
 }
 func (_this *MarkerIDAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlike(arrayType, data)
+	ctx.ValidateFullArrayMarkerIDString(arrayType, data)
 	ctx.BeginMarkedObjectAnyType(string(data))
 }
 func (_this *MarkerIDAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -153,6 +153,11 @@ func (_this *MarkedObjectKeyableRule) OnBigDecimalFloat(ctx *Context, value *apd
 func (_this *MarkedObjectKeyableRule) OnReference(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnReference(ctx)
+	ctx.MarkObject(DataTypeKeyable)
+}
+func (_this *MarkedObjectKeyableRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnConstant(ctx, name, explicitValue)
 	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *MarkedObjectKeyableRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -240,6 +245,11 @@ func (_this *MarkedObjectAnyTypeRule) OnMarkup(ctx *Context) {
 func (_this *MarkedObjectAnyTypeRule) OnReference(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnReference(ctx)
+	ctx.MarkObject(DataTypeAnyType)
+}
+func (_this *MarkedObjectAnyTypeRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnConstant(ctx, name, explicitValue)
 	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {

@@ -127,17 +127,6 @@ func (_this *EncoderContext) WriteCurrentPrefix() {
 	// _this.ClearMapPrefix()
 }
 
-func (_this *EncoderContext) PerformStandardKVSeparation() {
-	_this.Stream.AddString(" = ")
-	_this.ClearPrefix()
-}
-
-func (_this *EncoderContext) EndContainerXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX() {
-	_this.CurrentEncoder.End(_this)
-	_this.Unstack()
-	_this.CurrentEncoder.ChildContainerFinished(_this)
-}
-
 func (_this *EncoderContext) BeginStandardList() {
 	_this.Stack(&globalListEncoder)
 	_this.CurrentEncoder.Begin(_this)

@@ -389,9 +389,7 @@ func decodeQuotedString(ctx *DecoderContext) {
 }
 
 func decodeUnquotedString(ctx *DecoderContext) {
-	ctx.Stream.BeginToken()
-	ctx.Stream.ReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
-	bytes := ctx.Stream.GetToken()
+	bytes := ctx.Stream.DecodeUnquotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
@@ -463,7 +461,14 @@ func decodeMarkupEnd(ctx *DecoderContext) {
 func decodeConstant(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
-	panic("TODO: decodeConstant")
+	name := ctx.Stream.DecodeUnquotedString()
+	if ctx.Stream.PeekByteAllowEOD() == ':' {
+		ctx.EventReceiver.OnConstant(name, true)
+		ctx.Stream.AdvanceByte()
+		decodeByFirstChar(ctx)
+	} else {
+		ctx.EventReceiver.OnConstant(name, false)
+	}
 }
 
 func decodeReference(ctx *DecoderContext) {

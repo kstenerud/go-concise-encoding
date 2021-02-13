@@ -72,77 +72,77 @@ type Encoder interface {
 	EncodeArrayData(ctx *EncoderContext, data []byte)
 }
 
-type RootEncoder struct {
+type EncoderEventReceiver struct {
 	context EncoderContext
 }
 
 // Create a new encoder.
 // If opts = nil, defaults are used.
-func NewEncoder(opts *options.CTEEncoderOptions) *RootEncoder {
-	_this := &RootEncoder{}
+func NewEncoder(opts *options.CTEEncoderOptions) *EncoderEventReceiver {
+	_this := &EncoderEventReceiver{}
 	_this.Init(opts)
 	return _this
 }
 
 // Initialize an encoder.
 // If opts = nil, defaults are used.
-func (_this *RootEncoder) Init(opts *options.CTEEncoderOptions) {
+func (_this *EncoderEventReceiver) Init(opts *options.CTEEncoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.context.Init(opts)
 }
 
 // Reset the encoder back to its initial state.
-func (_this *RootEncoder) Reset() {
+func (_this *EncoderEventReceiver) Reset() {
 	_this.context.Reset()
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
 // PrepareToEncode MUST be called before using the encoder.
-func (_this *RootEncoder) PrepareToEncode(writer io.Writer) {
+func (_this *EncoderEventReceiver) PrepareToEncode(writer io.Writer) {
 	_this.context.Stream.SetWriter(writer)
 }
 
-func (_this *RootEncoder) OnBeginDocument() {
+func (_this *EncoderEventReceiver) OnBeginDocument() {
 	_this.context.Reset()
 }
 
-func (_this *RootEncoder) OnVersion(version uint64) {
+func (_this *EncoderEventReceiver) OnVersion(version uint64) {
 	_this.context.Stream.WriteVersion(version)
 }
 
-func (_this *RootEncoder) OnPadding(count int) {
+func (_this *EncoderEventReceiver) OnPadding(count int) {
 	// Nothing to do
 }
 
-func (_this *RootEncoder) OnNA() {
+func (_this *EncoderEventReceiver) OnNA() {
 	_this.context.CurrentEncoder.BeginNA(&_this.context)
 }
 
-func (_this *RootEncoder) OnBool(value bool) {
+func (_this *EncoderEventReceiver) OnBool(value bool) {
 	_this.context.CurrentEncoder.EncodeBool(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnTrue() {
+func (_this *EncoderEventReceiver) OnTrue() {
 	_this.context.CurrentEncoder.EncodeTrue(&_this.context)
 }
 
-func (_this *RootEncoder) OnFalse() {
+func (_this *EncoderEventReceiver) OnFalse() {
 	_this.context.CurrentEncoder.EncodeFalse(&_this.context)
 }
 
-func (_this *RootEncoder) OnPositiveInt(value uint64) {
+func (_this *EncoderEventReceiver) OnPositiveInt(value uint64) {
 	_this.context.CurrentEncoder.EncodePositiveInt(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnNegativeInt(value uint64) {
+func (_this *EncoderEventReceiver) OnNegativeInt(value uint64) {
 	_this.context.CurrentEncoder.EncodeNegativeInt(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnInt(value int64) {
+func (_this *EncoderEventReceiver) OnInt(value int64) {
 	_this.context.CurrentEncoder.EncodeInt(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnBigInt(value *big.Int) {
+func (_this *EncoderEventReceiver) OnBigInt(value *big.Int) {
 	if value == nil {
 		_this.OnNA()
 		return
@@ -151,7 +151,7 @@ func (_this *RootEncoder) OnBigInt(value *big.Int) {
 	_this.context.CurrentEncoder.EncodeBigInt(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnFloat(value float64) {
+func (_this *EncoderEventReceiver) OnFloat(value float64) {
 	if math.IsNaN(value) {
 		_this.OnNan(common.IsSignalingNan(value))
 		return
@@ -160,7 +160,7 @@ func (_this *RootEncoder) OnFloat(value float64) {
 	_this.context.CurrentEncoder.EncodeFloat(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnBigFloat(value *big.Float) {
+func (_this *EncoderEventReceiver) OnBigFloat(value *big.Float) {
 	if value == nil {
 		_this.OnNA()
 		return
@@ -169,7 +169,7 @@ func (_this *RootEncoder) OnBigFloat(value *big.Float) {
 	_this.context.CurrentEncoder.EncodeBigFloat(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnDecimalFloat(value compact_float.DFloat) {
+func (_this *EncoderEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
 	if value.IsNan() {
 		_this.OnNan(value.IsSignalingNan())
 		return
@@ -178,7 +178,7 @@ func (_this *RootEncoder) OnDecimalFloat(value compact_float.DFloat) {
 	_this.context.CurrentEncoder.EncodeDecimalFloat(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnBigDecimalFloat(value *apd.Decimal) {
+func (_this *EncoderEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
 		_this.OnNA()
 		return
@@ -195,82 +195,82 @@ func (_this *RootEncoder) OnBigDecimalFloat(value *apd.Decimal) {
 	_this.context.CurrentEncoder.EncodeBigDecimalFloat(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnNan(signaling bool) {
+func (_this *EncoderEventReceiver) OnNan(signaling bool) {
 	_this.context.CurrentEncoder.EncodeNan(&_this.context, signaling)
 }
 
-func (_this *RootEncoder) OnUUID(value []byte) {
+func (_this *EncoderEventReceiver) OnUUID(value []byte) {
 	_this.context.CurrentEncoder.EncodeUUID(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnTime(value time.Time) {
+func (_this *EncoderEventReceiver) OnTime(value time.Time) {
 	_this.context.CurrentEncoder.EncodeTime(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnCompactTime(value compact_time.Time) {
+func (_this *EncoderEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentEncoder.EncodeCompactTime(&_this.context, value)
 }
 
-func (_this *RootEncoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (_this *EncoderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.context.CurrentEncoder.EncodeArray(&_this.context, arrayType, elementCount, value)
 }
 
-func (_this *RootEncoder) OnStringlikeArray(arrayType events.ArrayType, value string) {
+func (_this *EncoderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
 	_this.context.CurrentEncoder.EncodeStringlikeArray(&_this.context, arrayType, value)
 }
 
-func (_this *RootEncoder) OnArrayBegin(arrayType events.ArrayType) {
+func (_this *EncoderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.CurrentEncoder.BeginArray(&_this.context, arrayType)
 }
 
-func (_this *RootEncoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
+func (_this *EncoderEventReceiver) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
 	_this.context.CurrentEncoder.BeginArrayChunk(&_this.context, elementCount, moreChunksFollow)
 }
 
-func (_this *RootEncoder) OnArrayData(data []byte) {
+func (_this *EncoderEventReceiver) OnArrayData(data []byte) {
 	_this.context.CurrentEncoder.EncodeArrayData(&_this.context, data)
 }
 
-func (_this *RootEncoder) OnConcatenate() {
+func (_this *EncoderEventReceiver) OnConcatenate() {
 	_this.context.BeginStandardConcatenate()
 }
 
-func (_this *RootEncoder) OnList() {
+func (_this *EncoderEventReceiver) OnList() {
 	_this.context.CurrentEncoder.BeginList(&_this.context)
 }
 
-func (_this *RootEncoder) OnMap() {
+func (_this *EncoderEventReceiver) OnMap() {
 	_this.context.CurrentEncoder.BeginMap(&_this.context)
 }
 
-func (_this *RootEncoder) OnMarkup() {
+func (_this *EncoderEventReceiver) OnMarkup() {
 	_this.context.CurrentEncoder.BeginMarkup(&_this.context)
 }
 
-func (_this *RootEncoder) OnMetadata() {
+func (_this *EncoderEventReceiver) OnMetadata() {
 	_this.context.CurrentEncoder.BeginMetadata(&_this.context)
 }
 
-func (_this *RootEncoder) OnComment() {
+func (_this *EncoderEventReceiver) OnComment() {
 	_this.context.CurrentEncoder.BeginComment(&_this.context)
 }
 
-func (_this *RootEncoder) OnEnd() {
+func (_this *EncoderEventReceiver) OnEnd() {
 	_this.context.CurrentEncoder.End(&_this.context)
 }
 
-func (_this *RootEncoder) OnMarker() {
+func (_this *EncoderEventReceiver) OnMarker() {
 	_this.context.CurrentEncoder.BeginMarker(&_this.context)
 }
 
-func (_this *RootEncoder) OnReference() {
+func (_this *EncoderEventReceiver) OnReference() {
 	_this.context.CurrentEncoder.BeginReference(&_this.context)
 }
 
-func (_this *RootEncoder) OnConstant(name []byte, explicitValue bool) {
+func (_this *EncoderEventReceiver) OnConstant(name []byte, explicitValue bool) {
 	// _this.context.CurrentEncoder.OnConstant(name, explicitValue)
 }
 
-func (_this *RootEncoder) OnEndDocument() {
+func (_this *EncoderEventReceiver) OnEndDocument() {
 	_this.context.Stream.Flush()
 }

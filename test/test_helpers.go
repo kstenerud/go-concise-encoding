@@ -732,7 +732,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventConcatenate:
 		receiver.OnConcatenate()
 	case TEventConstant:
-		receiver.OnConstant(_this.V1.([]byte), _this.V2.(bool))
+		receiver.OnConstant([]byte(_this.V1.(string)), _this.V2.(bool))
 	case TEventEndDocument:
 		receiver.OnEndDocument()
 	default:
@@ -815,7 +815,7 @@ func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) 
 func MARK() *TEvent                     { return newTEvent(TEventMarker, nil, nil) }
 func REF() *TEvent                      { return newTEvent(TEventReference, nil, nil) }
 func CAT() *TEvent                      { return newTEvent(TEventConcatenate, nil, nil) }
-func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, []byte(n), e) }
+func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, n, e) }
 func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
 

@@ -36,10 +36,10 @@ import (
 // are properly built. See BuildInitiateList and BuildInitiateMap.
 type topLevelBuilder struct {
 	builderGenerator BuilderGenerator
-	root             *RootBuilder
+	root             *BuilderEventReceiver
 }
 
-func newTopLevelBuilder(root *RootBuilder, builderGenerator BuilderGenerator) ObjectBuilder {
+func newTopLevelBuilder(root *BuilderEventReceiver, builderGenerator BuilderGenerator) ObjectBuilder {
 	return &topLevelBuilder{
 		builderGenerator: builderGenerator,
 		root:             root,

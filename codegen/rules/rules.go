@@ -54,6 +54,7 @@ var (
 	End     = "OnEnd(ctx *Context)"
 	Marker  = "OnMarker(ctx *Context)"
 	Ref     = "OnReference(ctx *Context)"
+	Const   = "OnConstant(ctx *Context, name []byte, explicitValue bool)"
 	Array   = "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)"
 	SArray  = "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)"
 	ABegin  = "OnArrayBegin(ctx *Context, arrayType events.ArrayType)"
@@ -62,7 +63,7 @@ var (
 
 	allMethods = []string{BDoc, EDoc, ECtr, Ver, Pad, Key, NonKey, NA, Int, PInt,
 		BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment,
-		End, Marker, Ref, Array, SArray, ABegin, AChunk, AData}
+		End, Marker, Ref, Const, Array, SArray, ABegin, AChunk, AData}
 )
 
 type RuleClass struct {
@@ -89,35 +90,35 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "TopLevelRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "NARule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ListRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapValueRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupNameRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupValueRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupContentsRule",
@@ -129,15 +130,15 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MetaKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MetaValueRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MetaCompletionRule",
-		Methods: []string{Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Array, SArray, ABegin},
+		Methods: []string{Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ArrayRule",
@@ -173,11 +174,11 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkedObjectKeyableRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkedObjectAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ReferenceKeyableRule",
@@ -186,6 +187,14 @@ var ruleClasses = []RuleClass{
 	{
 		Name:    "ReferenceAnyTypeRule",
 		Methods: []string{Pad, Int, PInt, BInt, Array, SArray, ABegin, ECtr},
+	},
+	{
+		Name:    "ConstantKeyableRule",
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Ref, Array, SArray, ABegin},
+	},
+	{
+		Name:    "ConstantAnyTypeRule",
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Array, SArray, ABegin},
 	},
 	{
 		Name:    "TLReferenceRIDRule",

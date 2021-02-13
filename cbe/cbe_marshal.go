@@ -101,7 +101,7 @@ type Unmarshaler struct {
 	session builder.Session
 	decoder Decoder
 	opts    options.CBEUnmarshalerOptions
-	rules   rules.Rules
+	rules   rules.RulesEventReceiver
 }
 
 // Create a new unmarshaler with the specified options.
