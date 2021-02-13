@@ -28,7 +28,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type arrayEncoderEngine struct {
+type arrayEncoderEngineOld struct {
 	engine                 *encoderEngine
 	stream                 *EncodeBuffer
 	addElementsFunc        func(b []byte)
@@ -41,20 +41,20 @@ type arrayEncoderEngine struct {
 	opts                   *options.CTEEncoderOptions
 }
 
-func (_this *arrayEncoderEngine) Init(engine *encoderEngine, opts *options.CTEEncoderOptions) {
+func (_this *arrayEncoderEngineOld) Init(engine *encoderEngine, opts *options.CTEEncoderOptions) {
 	_this.engine = engine
 	_this.stream = engine.stream
 	_this.arrayChunkLeftover = make([]byte, 0, 16)
 	_this.opts = opts
 }
 
-func (_this *arrayEncoderEngine) Reset() {
+func (_this *arrayEncoderEngineOld) Reset() {
 	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
 	_this.stringBuffer = _this.stringBuffer[:0]
 	_this.remainingChunkElements = 0
 }
 
-func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
+func (_this *arrayEncoderEngineOld) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		_this.beginStringLikeArray(awaitingQuotedString,
@@ -343,7 +343,7 @@ func (_this *arrayEncoderEngine) OnArrayBegin(arrayType events.ArrayType) {
 	}
 }
 
-func (_this *arrayEncoderEngine) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
+func (_this *arrayEncoderEngineOld) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
 	_this.remainingChunkElements = elementCount
 	_this.moreChunksFollow = moreChunksFollow
 
@@ -352,7 +352,7 @@ func (_this *arrayEncoderEngine) OnArrayChunk(elementCount uint64, moreChunksFol
 	}
 }
 
-func (_this *arrayEncoderEngine) OnArrayData(data []byte) {
+func (_this *arrayEncoderEngineOld) OnArrayData(data []byte) {
 	if _this.arrayElementWidth > 1 {
 		leftoverLength := len(_this.arrayChunkLeftover)
 		if leftoverLength > 0 {
@@ -388,7 +388,7 @@ func (_this *arrayEncoderEngine) OnArrayData(data []byte) {
 
 // Utils
 
-func (_this *arrayEncoderEngine) beginArray(newState awaiting, elementWidth int, opener string, addElementsFunc func([]byte)) {
+func (_this *arrayEncoderEngineOld) beginArray(newState awaiting, elementWidth int, opener string, addElementsFunc func([]byte)) {
 	_this.engine.BeginArray(newState)
 	_this.stream.AddString(opener)
 	_this.arrayElementWidth = elementWidth
@@ -398,7 +398,7 @@ func (_this *arrayEncoderEngine) beginArray(newState awaiting, elementWidth int,
 	}
 }
 
-func (_this *arrayEncoderEngine) beginStringLikeArray(newState awaiting, closeFunc func(stringData []byte)) {
+func (_this *arrayEncoderEngineOld) beginStringLikeArray(newState awaiting, closeFunc func(stringData []byte)) {
 	_this.engine.BeginStringLikeArray(newState)
 	_this.arrayElementWidth = 1
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
@@ -408,21 +408,21 @@ func (_this *arrayEncoderEngine) beginStringLikeArray(newState awaiting, closeFu
 	}
 }
 
-func (_this *arrayEncoderEngine) endArray() {
+func (_this *arrayEncoderEngineOld) endArray() {
 	_this.arrayCloseFunc()
 }
 
-func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
+func (_this *arrayEncoderEngineOld) appendStringbuffer(data []byte) {
 	_this.stringBuffer = append(_this.stringBuffer, data...)
 }
 
-func (_this *arrayEncoderEngine) drainStringBuffer() []byte {
+func (_this *arrayEncoderEngineOld) drainStringBuffer() []byte {
 	data := _this.stringBuffer
 	_this.stringBuffer = _this.stringBuffer[:0]
 	return data
 }
 
-func (_this *arrayEncoderEngine) encodeStringArray(arrayType string, contents []byte) {
+func (_this *arrayEncoderEngineOld) encodeStringArray(arrayType string, contents []byte) {
 	contents = asStringArrayContents(contents)
 	contentsLen := len(contents)
 	typeLen := len(arrayType)
@@ -437,158 +437,4 @@ func (_this *arrayEncoderEngine) encodeStringArray(arrayType string, contents []
 	dst = dst[contentsLen:]
 	dst[0] = '|'
 	_this.stream.UseBytes(typeLen + len(contents) + 3)
-}
-
-// ============================================================================
-
-// Data
-
-var arrayFormatsGeneral = []string{
-	options.CTEEncodingFormatUnset:                 " %v",
-	options.CTEEncodingFormatBinary:                " %b",
-	options.CTEEncodingFormatBinaryZeroFilled:      " %b",
-	options.CTEEncodingFormatOctal:                 " %o",
-	options.CTEEncodingFormatOctalZeroFilled:       " %o",
-	options.CTEEncodingFormatHexadecimal:           " %x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: " %x",
-}
-
-var arrayFormats8 = []string{
-	options.CTEEncodingFormatUnset:                 " %v",
-	options.CTEEncodingFormatBinary:                " %b",
-	options.CTEEncodingFormatBinaryZeroFilled:      " %08b",
-	options.CTEEncodingFormatOctal:                 " %o",
-	options.CTEEncodingFormatOctalZeroFilled:       " %03o",
-	options.CTEEncodingFormatHexadecimal:           " %x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: " %02x",
-}
-
-var arrayFormats16 = []string{
-	options.CTEEncodingFormatUnset:                 " %v",
-	options.CTEEncodingFormatBinary:                " %b",
-	options.CTEEncodingFormatBinaryZeroFilled:      " %016b",
-	options.CTEEncodingFormatOctal:                 " %o",
-	options.CTEEncodingFormatOctalZeroFilled:       " %06o",
-	options.CTEEncodingFormatHexadecimal:           " %x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: " %04x",
-}
-
-var arrayFormats32 = []string{
-	options.CTEEncodingFormatUnset:                 " %v",
-	options.CTEEncodingFormatBinary:                " %b",
-	options.CTEEncodingFormatBinaryZeroFilled:      " %032b",
-	options.CTEEncodingFormatOctal:                 " %o",
-	options.CTEEncodingFormatOctalZeroFilled:       " %011o",
-	options.CTEEncodingFormatHexadecimal:           " %x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: " %08x",
-}
-
-var arrayFormats64 = []string{
-	options.CTEEncodingFormatUnset:                 " %v",
-	options.CTEEncodingFormatBinary:                " %b",
-	options.CTEEncodingFormatBinaryZeroFilled:      " %064b",
-	options.CTEEncodingFormatOctal:                 " %o",
-	options.CTEEncodingFormatOctalZeroFilled:       " %022o",
-	options.CTEEncodingFormatHexadecimal:           " %x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: " %016x",
-}
-
-var arrayHeadersUint8 = []string{
-	options.CTEEncodingFormatUnset:                 "|u8",
-	options.CTEEncodingFormatBinary:                "|u8b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|u8b",
-	options.CTEEncodingFormatOctal:                 "|u8o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|u8o",
-	options.CTEEncodingFormatHexadecimal:           "|u8x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|u8x",
-}
-var arrayHeadersUint16 = []string{
-	options.CTEEncodingFormatUnset:                 "|u16",
-	options.CTEEncodingFormatBinary:                "|u16b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|u16b",
-	options.CTEEncodingFormatOctal:                 "|u16o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|u16o",
-	options.CTEEncodingFormatHexadecimal:           "|u16x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|u16x",
-}
-var arrayHeadersUint32 = []string{
-	options.CTEEncodingFormatUnset:                 "|u32",
-	options.CTEEncodingFormatBinary:                "|u32b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|u32b",
-	options.CTEEncodingFormatOctal:                 "|u32o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|u32o",
-	options.CTEEncodingFormatHexadecimal:           "|u32x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|u32x",
-}
-var arrayHeadersUint64 = []string{
-	options.CTEEncodingFormatUnset:                 "|u64",
-	options.CTEEncodingFormatBinary:                "|u64b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|u64b",
-	options.CTEEncodingFormatOctal:                 "|u64o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|u64o",
-	options.CTEEncodingFormatHexadecimal:           "|u64x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|u64x",
-}
-var arrayHeadersInt8 = []string{
-	options.CTEEncodingFormatUnset:                 "|i8",
-	options.CTEEncodingFormatBinary:                "|i8b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|i8b",
-	options.CTEEncodingFormatOctal:                 "|i8o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|i8o",
-	options.CTEEncodingFormatHexadecimal:           "|i8x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|i8x",
-}
-var arrayHeadersInt16 = []string{
-	options.CTEEncodingFormatUnset:                 "|i16",
-	options.CTEEncodingFormatBinary:                "|i16b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|i16b",
-	options.CTEEncodingFormatOctal:                 "|i16o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|i16o",
-	options.CTEEncodingFormatHexadecimal:           "|i16x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|i16x",
-}
-var arrayHeadersInt32 = []string{
-	options.CTEEncodingFormatUnset:                 "|i32",
-	options.CTEEncodingFormatBinary:                "|i32b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|i32b",
-	options.CTEEncodingFormatOctal:                 "|i32o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|i32o",
-	options.CTEEncodingFormatHexadecimal:           "|i32x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|i32x",
-}
-var arrayHeadersInt64 = []string{
-	options.CTEEncodingFormatUnset:                 "|i64",
-	options.CTEEncodingFormatBinary:                "|i64b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|i64b",
-	options.CTEEncodingFormatOctal:                 "|i64o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|i64o",
-	options.CTEEncodingFormatHexadecimal:           "|i64x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|i64x",
-}
-var arrayHeadersFloat16 = []string{
-	options.CTEEncodingFormatUnset:                 "|f16",
-	options.CTEEncodingFormatBinary:                "|f16b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|f16b",
-	options.CTEEncodingFormatOctal:                 "|f16o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|f16o",
-	options.CTEEncodingFormatHexadecimal:           "|f16x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|f16x",
-}
-var arrayHeadersFloat32 = []string{
-	options.CTEEncodingFormatUnset:                 "|f32",
-	options.CTEEncodingFormatBinary:                "|f32b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|f32b",
-	options.CTEEncodingFormatOctal:                 "|f32o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|f32o",
-	options.CTEEncodingFormatHexadecimal:           "|f32x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|f32x",
-}
-var arrayHeadersFloat64 = []string{
-	options.CTEEncodingFormatUnset:                 "|f64",
-	options.CTEEncodingFormatBinary:                "|f64b",
-	options.CTEEncodingFormatBinaryZeroFilled:      "|f64b",
-	options.CTEEncodingFormatOctal:                 "|f64o",
-	options.CTEEncodingFormatOctalZeroFilled:       "|f64o",
-	options.CTEEncodingFormatHexadecimal:           "|f64x",
-	options.CTEEncodingFormatHexadecimalZeroFilled: "|f64x",
 }

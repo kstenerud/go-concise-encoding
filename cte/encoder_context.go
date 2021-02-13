@@ -24,7 +24,6 @@ import (
 	"fmt"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -56,32 +55,13 @@ type EncoderContext struct {
 	CurrentEncoder      Encoder
 	ContainerHasObjects bool
 	currentPrefix       string
-
-	Stream EncodeBuffer
-
-	// ========================================
-	// Arrays
-	// arrayType              events.ArrayType
-	// moreChunksFollow       bool
-	// builtArrayBuffer       []byte
-	// arrayMaxByteCount      uint64
-	// arrayTotalByteCount    uint64
-	// chunkExpectedByteCount uint64
-	// chunkActualByteCount   uint64
-	// utf8RemainderBacking   [4]byte
-	// utf8RemainderBuffer    []byte
-	// ValidateArrayDataFunc  func(data []byte)
-
-	// // Marker/Reference
-	// currentMarkerID   interface{}
-	// markerObjectRule  EventRule
-	// markedObjects     map[interface{}]DataType
-	// forwardReferences map[interface{}]DataType
-	// referenceCount    uint64
+	Stream              EncodeBuffer
+	ArrayEngine         arrayEncoderEngine
 }
 
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
+	_this.ArrayEngine.Init(&_this.Stream, &_this.opts)
 	_this.Reset()
 }
 
@@ -202,8 +182,12 @@ func (_this *EncoderContext) BeginStandardNA() {
 	_this.CurrentEncoder.Begin(_this)
 }
 
-func (_this *EncoderContext) BeginStandardArray(arayType events.ArrayType) {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginArray"))
+func (_this *EncoderContext) BeginStandardArray(arrayType events.ArrayType) {
+	_this.Stack((&globalArrayEncoder))
+	_this.ArrayEngine.BeginArray(arrayType, func() {
+		_this.Unstack()
+		_this.CurrentEncoder.ChildContainerFinished(_this)
+	})
 }
 
 // pre-write (indent)
@@ -226,24 +210,3 @@ func (_this *EncoderContext) BeginStandardArray(arayType events.ArrayType) {
 // - string (quoted, unquoted) (escape/noescape) (trim/notrim)
 // - int (pos or neg) (bin, oct, dec, hex) (with/without prefix)
 // - binary float (dec, hex) (with/without prefix)
-
-// =============================================================================
-
-type ArrayRenderer interface {
-	RenderArrayPortion(ctx *EncoderContext, data []byte)
-	RenderArrayComplete(ctx *EncoderContext, data []byte)
-}
-
-var (
-	arrayRendererNone ArrayRendererNone
-)
-
-type ArrayRendererNone struct{}
-
-func (_this *ArrayRendererNone) RenderArrayPortion(ctx *EncoderContext, data []byte) {
-	panic(fmt.Errorf("BUG: ArrayRendererNone cannot respond to RenderArrayPortion"))
-}
-
-func (_this *ArrayRendererNone) RenderArrayComplete(ctx *EncoderContext, data []byte) {
-	panic(fmt.Errorf("BUG: ArrayRendererNone cannot respond to RenderArrayComplete"))
-}

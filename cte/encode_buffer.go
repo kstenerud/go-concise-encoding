@@ -28,12 +28,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/internal/chars"
-
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/conversions"
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 
 	"github.com/cockroachdb/apd/v2"
@@ -42,7 +39,7 @@ import (
 )
 
 const floatStringMaxByteCount = 24 // From strconv.FormatFloat()
-const uintStringMaxByteCount = 21  // 18446744073709551616
+const uintStringMaxByteCount = 21  // Max uint as string: "18446744073709551616"
 
 type EncodeBuffer struct {
 	buffer.StreamingWriteBuffer
@@ -312,6 +309,7 @@ func (_this *EncodeBuffer) WriteEscapedQuotedStringBytes(value []byte, escapeCou
 	// Worst case scenario: All characters that require escaping need a unicode
 	// sequence. In this case, we'd need at least 7 bytes per escaped character.
 	data := _this.RequireBytes(len(value) + escapeCount*6 + 2)
+	// TODO: Encode directly rather than using bytes.Buffer
 	bb := bytes.NewBuffer(data[:0])
 
 	// Note: StringBuilder's WriteXYZ() always return nil errors
@@ -327,23 +325,45 @@ func (_this *EncodeBuffer) WriteEscapedQuotedStringBytes(value []byte, escapeCou
 	_this.UseBytes(bb.Len())
 }
 
-func (_this *EncodeBuffer) WriteArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		_this.WritePotentiallyQuotedStringBytes(value)
-	default:
-		panic(fmt.Errorf("TODO: EncodeBuffer.WriteArray<%v>", arrayType))
+func (_this *EncodeBuffer) WritePotentiallyEscapedStringArrayContents(value []byte) {
+	if len(value) == 0 {
+		return
 	}
+
+	if !needsEscapesStringlikeArray(value) {
+		_this.AddBytes(value)
+		return
+	}
+
+	// TODO: Encode directly rather than using bytes.Buffer
+	var bb bytes.Buffer
+	bb.Grow(len(value))
+	for _, ch := range string(value) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
+			// Note: StringBuilder's WriteXYZ() always return nil errors
+			bb.Write(escapeCharStringArray(ch))
+		} else {
+			bb.WriteRune(ch)
+		}
+	}
+	_this.AddBytes(bb.Bytes())
+
 }
 
-func (_this *EncodeBuffer) WriteStringlikeArray(arrayType events.ArrayType, value string) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		// TODO: String version of this
-		_this.WritePotentiallyQuotedStringBytes([]byte(value))
-	default:
-		panic(fmt.Errorf("TODO: EncodeBuffer.WriteStringlikeArray<%v>", arrayType))
+var hexToChar = [16]byte{
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+}
+
+func (_this *EncodeBuffer) WriteHexBytes(value []byte) {
+	length := len(value) * 3
+	dst := _this.RequireBytes(length)
+	for i := 0; i < len(value); i++ {
+		b := value[i]
+		dst[i*3] = ' '
+		dst[i*3+1] = hexToChar[b>>4]
+		dst[i*3+2] = hexToChar[b&15]
 	}
+	_this.UseBytes(length)
 }
 
 func (_this *EncodeBuffer) WriteMarkerBegin(id interface{}) {

@@ -216,7 +216,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 	properties.Add(CharIsAZ|CharIsAreaLocation, charRange('A', 'Z')...)
 	properties.Add(CharIsAreaLocation, '_', '-', '+')
 
-	properties.Add(CharIsObjectEnd, '\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':')
+	properties.Add(CharIsObjectEnd, '\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':', '|')
 
 	properties.AddLL(CharNeedsQuote|CharNeedsQuoteFirst, chars.GetRunesWithCriteria(func(char *Char) bool {
 		switch char.Codepoint {

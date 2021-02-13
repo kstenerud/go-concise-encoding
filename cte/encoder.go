@@ -68,7 +68,7 @@ type Encoder interface {
 	EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string)
 	BeginArray(ctx *EncoderContext, arrayType events.ArrayType)
-	BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool)
+	BeginArrayChunk(ctx *EncoderContext, elementCount uint64, moreChunksFollow bool)
 	EncodeArrayData(ctx *EncoderContext, data []byte)
 }
 
@@ -220,16 +220,15 @@ func (_this *RootEncoder) OnStringlikeArray(arrayType events.ArrayType, value st
 }
 
 func (_this *RootEncoder) OnArrayBegin(arrayType events.ArrayType) {
-	// TODO: Stack array prefixer
+	_this.context.CurrentEncoder.BeginArray(&_this.context, arrayType)
 }
 
-func (_this *RootEncoder) OnArrayChunk(length uint64, moreChunksFollow bool) {
-	// TODO: Chunking
+func (_this *RootEncoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
+	_this.context.CurrentEncoder.BeginArrayChunk(&_this.context, elementCount, moreChunksFollow)
 }
 
 func (_this *RootEncoder) OnArrayData(data []byte) {
-	// _this.context.CurrentPrefixer.RenderArrayPortion(&_this.context, value)
-	// TODO: Detect end of array, and unstack
+	_this.context.CurrentEncoder.EncodeArrayData(&_this.context, data)
 }
 
 func (_this *RootEncoder) OnConcatenate() {

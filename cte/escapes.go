@@ -50,7 +50,7 @@ func getStringRequirements(str []byte) (escapeCount int, requiresQuotes bool) {
 	return
 }
 
-func needsEscapesStringLikeArray(str []byte) bool {
+func needsEscapesStringlikeArray(str []byte) bool {
 	for _, ch := range string(str) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
 			return true
@@ -103,7 +103,7 @@ func asPotentialQuotedString(str []byte) (finalString []byte) {
 
 // Wraps a string-encoded array destined for a CTE document.
 func asStringArray(elementType []byte, str []byte) []byte {
-	if needsEscapesStringLikeArray(str) {
+	if needsEscapesStringlikeArray(str) {
 		str = asEscapedStringArrayContent(str)
 	}
 
@@ -118,7 +118,7 @@ func asStringArray(elementType []byte, str []byte) []byte {
 
 // Possibly escapes a string-encoded array destined for a CTE document.
 func asStringArrayContents(str []byte) []byte {
-	if needsEscapesStringLikeArray(str) {
+	if needsEscapesStringlikeArray(str) {
 		return asEscapedStringArrayContent(str)
 	}
 

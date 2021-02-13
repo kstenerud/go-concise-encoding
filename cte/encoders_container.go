@@ -166,11 +166,11 @@ func (_this *listEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *listEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *listEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *listEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareToWrite(ctx)
@@ -308,11 +308,11 @@ func (_this *mapKeyEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *mapKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *mapKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *mapKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -448,11 +448,11 @@ func (_this *mapValueEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *mapValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *mapValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *mapValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -586,11 +586,11 @@ func (_this *metadataKeyEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *metadataKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *metadataKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *metadataKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -726,11 +726,11 @@ func (_this *metadataValueEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *metadataValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *metadataValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *metadataValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)

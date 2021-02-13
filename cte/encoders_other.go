@@ -156,12 +156,12 @@ func (_this *naEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *naEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx)
 }
 func (_this *naEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx)
 }
 func (_this *naEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {

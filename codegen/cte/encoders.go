@@ -124,6 +124,10 @@ var encoders = []Encoder{
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
 			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
+	{
+		Name:    "array",
+		Methods: []string{Chunk, Data},
+	},
 }
 
 func GenerateCode(projectDir string) {
@@ -146,8 +150,17 @@ var codeHeader = standard.Header + `package cte
 
 import (
 	"fmt"
+	"math/big"
 	"reflect"
+	"time"
+
+	"github.com/kstenerud/go-concise-encoding/events"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
 )
+
 `
 
 func contains(lookingFor string, inSlice []string) bool {

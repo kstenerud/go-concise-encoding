@@ -143,11 +143,11 @@ func (_this *topLevelEncoder) BeginNA(ctx *EncoderContext) {
 }
 func (_this *topLevelEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.WriteCurrentPrefix()
-	ctx.Stream.WriteArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *topLevelEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	ctx.WriteCurrentPrefix()
-	ctx.Stream.WriteStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *topLevelEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	ctx.WriteCurrentPrefix()

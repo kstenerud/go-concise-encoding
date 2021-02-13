@@ -43,7 +43,7 @@ import (
 type OldEncoder struct {
 	stream      EncodeBuffer
 	engine      encoderEngine
-	arrayEngine arrayEncoderEngine
+	arrayEngine arrayEncoderEngineOld
 	opts        options.CTEEncoderOptions
 }
 
