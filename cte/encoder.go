@@ -268,7 +268,7 @@ func (_this *EncoderEventReceiver) OnReference() {
 }
 
 func (_this *EncoderEventReceiver) OnConstant(name []byte, explicitValue bool) {
-	// _this.context.CurrentEncoder.OnConstant(name, explicitValue)
+	_this.context.CurrentEncoder.BeginConstant(&_this.context, name, explicitValue)
 }
 
 func (_this *EncoderEventReceiver) OnEndDocument() {

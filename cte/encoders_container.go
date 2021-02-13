@@ -217,6 +217,12 @@ func (_this *mapKeyEncoder) End(ctx *EncoderContext) {
 	ctx.CurrentEncoder.ChildContainerFinished(ctx)
 }
 
+func (_this *mapKeyEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	ctx.SetStandardMapValuePrefix()
+	ctx.ChangeEncoder(&globalMapValueEncoder)
+	ctx.ContainerHasObjects = true
+}
+
 func (_this *mapKeyEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
@@ -493,6 +499,12 @@ func (_this *metadataKeyEncoder) End(ctx *EncoderContext) {
 	}
 	ctx.Stream.WriteMetadataEnd()
 	ctx.ChangeEncoder(&globalPostInvisibleEncoder)
+}
+
+func (_this *metadataKeyEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	ctx.SetStandardMapValuePrefix()
+	ctx.ChangeEncoder(&globalMetadataValueEncoder)
+	ctx.ContainerHasObjects = true
 }
 
 func (_this *metadataKeyEncoder) EncodeBool(ctx *EncoderContext, value bool) {

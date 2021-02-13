@@ -163,7 +163,9 @@ func (_this *EncoderContext) BeginStandardConcatenate() {
 }
 
 func (_this *EncoderContext) BeginStandardConstant(name []byte, explicitValue bool) {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginConstant"))
+	_this.Stream.AddByte('#')
+	_this.Stream.AddBytes(name)
+	_this.Stack(&globalConstantEncoder)
 }
 
 func (_this *EncoderContext) BeginStandardNA() {

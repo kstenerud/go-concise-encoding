@@ -89,6 +89,12 @@ var encoders = []Encoder{
 			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
 	{
+		Name: "constant",
+		Methods: []string{Begin, Bool, True, False, PInt, NInt, Int, BInt, Float,
+			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
+			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+	},
+	{
 		Name: "postInvisible",
 		Methods: []string{Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
@@ -102,7 +108,7 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "mapKey",
-		Methods: []string{Begin, End, Bool, True, False, PInt, NInt, Int,
+		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, Meta, Cmt,
 			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
@@ -114,7 +120,7 @@ var encoders = []Encoder{
 	},
 	{
 		Name: "metadataKey",
-		Methods: []string{Begin, End, Bool, True, False, PInt, NInt, Int,
+		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, Meta, Cmt,
 			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
 	},
