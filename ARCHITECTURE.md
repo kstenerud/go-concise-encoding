@@ -67,7 +67,7 @@ The [root iterator](iterator/iterator_root.go) acts as a top-level iterator, and
 
 Builders are the opposite of iterators, ingesting data events to produce go objects. Builders follow a common builder interface defined in [builder.go](builder/builder.go).
 
-The root builder adapts data events to builder commands, which are then farmed out to more specialized builders to build go objects.
+[`BuilderEventReceiver`](builder/builder_event_rcv.go) adapts data events to builder commands, which are then farmed out to builders to build go objects.
 
 Builders are accessed via a builder session, which like the iterator session caches builders (due to the slowness of reflection). The cache itself stores builder generator functions.
 
@@ -81,7 +81,7 @@ The codecs encode and decode data events into Concise Encoding documents. The [C
 
 ### Rules
 
-The [rules](rules/rules.go) class is structured as a data event receiver, and is designed to sit in between a codec and an iterator or builder to make sure the events contain valid data and happen in a valid order.
+[`RulesEventReceiver`](rules/rules_event_rcv.go) sits in between a codec and an iterator or builder to make sure the events contain valid data and happen in a valid order.
 
 
 

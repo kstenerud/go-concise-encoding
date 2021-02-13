@@ -28,7 +28,7 @@ type boolBuilder struct{}
 
 var globalBoolBuilder = &boolBuilder{}
 
-func generateBoolBuilder(ctx *Context) ObjectBuilder { return globalBoolBuilder }
+func generateBoolBuilder(ctx *Context) Builder { return globalBoolBuilder }
 func (_this *boolBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *boolBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {

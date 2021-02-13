@@ -35,14 +35,14 @@ import (
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
 // are properly built. See BuildInitiateList and BuildInitiateMap.
 type topLevelBuilder struct {
-	builderGenerator BuilderGenerator
-	root             *BuilderEventReceiver
+	builderGenerator          BuilderGenerator
+	containerFinishedCallback func(value reflect.Value)
 }
 
-func newTopLevelBuilder(root *BuilderEventReceiver, builderGenerator BuilderGenerator) ObjectBuilder {
+func newTopLevelBuilder(builderGenerator BuilderGenerator, containerFinishedCallback func(value reflect.Value)) Builder {
 	return &topLevelBuilder{
-		builderGenerator: builderGenerator,
-		root:             root,
+		builderGenerator:          builderGenerator,
+		containerFinishedCallback: containerFinishedCallback,
 	}
 }
 
@@ -133,5 +133,5 @@ func (_this *topLevelBuilder) BuildInitiateMap(ctx *Context) {
 }
 
 func (_this *topLevelBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
-	_this.root.NotifyChildContainerFinished(ctx, value)
+	_this.containerFinishedCallback(value)
 }

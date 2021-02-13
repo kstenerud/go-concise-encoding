@@ -87,7 +87,7 @@ func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderO
 		t = common.TypeInterface
 	}
 
-	return NewRootBuilder(_this, t, opts)
+	return NewBuilder(_this, t, opts)
 }
 
 // Register a specific builder for a type.
@@ -110,7 +110,7 @@ func (_this *Session) GetBuilderGeneratorForType(dstType reflect.Type) BuilderGe
 	var builderGenerator BuilderGenerator
 
 	wg.Add(1)
-	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func(ctx *Context) ObjectBuilder {
+	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func(ctx *Context) Builder {
 		wg.Wait()
 		return builderGenerator(ctx)
 	}))

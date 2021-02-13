@@ -36,7 +36,7 @@ type naBuilder struct{}
 
 var globalNABuilder = &naBuilder{}
 
-func generateNABuilder(ctx *Context) ObjectBuilder { return globalNABuilder }
+func generateNABuilder(ctx *Context) Builder { return globalNABuilder }
 func (_this *naBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *naBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {

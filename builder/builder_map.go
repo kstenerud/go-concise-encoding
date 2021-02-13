@@ -53,7 +53,7 @@ func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, m
 	kvTypes := [2]reflect.Type{mapType.Key(), mapType.Elem()}
 	kvGenerators := [2]BuilderGenerator{getBuilderGeneratorForType(kvTypes[0]), getBuilderGeneratorForType(kvTypes[1])}
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &mapBuilder{
 			mapType:      mapType,
 			kvTypes:      kvTypes,

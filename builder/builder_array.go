@@ -42,7 +42,7 @@ type arrayBuilder struct {
 
 func newArrayBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, containerType reflect.Type) BuilderGenerator {
 	elemBuilderGenerator := getBuilderGeneratorForType(containerType.Elem())
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &arrayBuilder{
 			containerType: containerType,
 			elemGenerator: elemBuilderGenerator,

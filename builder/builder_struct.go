@@ -125,7 +125,7 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 		}
 	}
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &structBuilder{
 			dstType:                dstType,
 			generatorDescs:         generatorDescs,

@@ -38,9 +38,9 @@ type Context struct {
 
 	CustomBinaryBuildFunction  options.CustomBuildFunction
 	CustomTextBuildFunction    options.CustomBuildFunction
-	CurrentBuilder             ObjectBuilder
+	CurrentBuilder             Builder
 	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
-	builderStack               []ObjectBuilder
+	builderStack               []Builder
 
 	chunkedData             []byte
 	chunkRemainingLength    uint64
@@ -60,7 +60,7 @@ func (_this *Context) Init(opts *options.BuilderOptions,
 	_this.CustomBinaryBuildFunction = customBinaryBuildFunction
 	_this.CustomTextBuildFunction = customTextBuildFunction
 	_this.GetBuilderGeneratorForType = getBuilderGeneratorForType
-	_this.builderStack = make([]ObjectBuilder, 0, 16)
+	_this.builderStack = make([]Builder, 0, 16)
 
 	_this.referenceFiller.Init()
 }
@@ -69,19 +69,19 @@ func (_this *Context) updateCurrentBuilder() {
 	_this.CurrentBuilder = _this.builderStack[len(_this.builderStack)-1]
 }
 
-func (_this *Context) StackBuilder(builder ObjectBuilder) {
+func (_this *Context) StackBuilder(builder Builder) {
 	_this.builderStack = append(_this.builderStack, builder)
 	_this.updateCurrentBuilder()
 }
 
-func (_this *Context) UnstackBuilder() ObjectBuilder {
+func (_this *Context) UnstackBuilder() Builder {
 	oldTop := _this.CurrentBuilder
 	_this.builderStack = _this.builderStack[:len(_this.builderStack)-1]
 	_this.updateCurrentBuilder()
 	return oldTop
 }
 
-func (_this *Context) UnstackBuilderAndNotifyChildFinished(container reflect.Value) ObjectBuilder {
+func (_this *Context) UnstackBuilderAndNotifyChildFinished(container reflect.Value) Builder {
 	oldTop := _this.UnstackBuilder()
 	_this.CurrentBuilder.NotifyChildContainerFinished(_this, container)
 	return oldTop
@@ -113,7 +113,7 @@ func (_this *Context) StoreReferencedObject(id interface{}) {
 	_this.CurrentBuilder.BuildFromReference(_this, id)
 }
 
-func (_this *Context) TryBuildFromCustom(builder ObjectBuilder, arrayType events.ArrayType, value []byte, dst reflect.Value) bool {
+func (_this *Context) TryBuildFromCustom(builder Builder, arrayType events.ArrayType, value []byte, dst reflect.Value) bool {
 	switch arrayType {
 	case events.ArrayTypeCustomBinary:
 		if err := _this.CustomBinaryBuildFunction(value, dst); err != nil {

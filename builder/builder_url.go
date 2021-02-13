@@ -37,7 +37,7 @@ type urlBuilder struct{}
 var globalUrlBuilder = &urlBuilder{}
 
 func newUrlBuilderGenerator() BuilderGenerator {
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := globalUrlBuilder
 		ctx.StackBuilder(builder)
 		return builder
@@ -140,7 +140,7 @@ type pUrlBuilder struct{}
 var globalPUrlBuilder = &pUrlBuilder{}
 
 func newPUrlBuilderGenerator() BuilderGenerator {
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := globalPUrlBuilder
 		ctx.StackBuilder(builder)
 		return builder

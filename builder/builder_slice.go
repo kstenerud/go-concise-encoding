@@ -44,7 +44,7 @@ type sliceBuilder struct {
 func newSliceBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
 	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &sliceBuilder{
 			dstType:       dstType,
 			elemGenerator: builderGenerator,

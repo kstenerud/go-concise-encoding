@@ -38,7 +38,7 @@ type interfaceBuilder struct{}
 
 var globalInterfaceBuilder = &interfaceBuilder{}
 
-func generateInterfaceBuilder(ctx *Context) ObjectBuilder { return globalInterfaceBuilder }
+func generateInterfaceBuilder(ctx *Context) Builder { return globalInterfaceBuilder }
 func (_this *interfaceBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *interfaceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {

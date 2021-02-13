@@ -39,7 +39,7 @@ import (
 )
 
 // ObjectBuilder responds to external events to progressively build an object.
-type ObjectBuilder interface {
+type Builder interface {
 
 	// External data and structure events
 	BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value
@@ -78,7 +78,7 @@ type ObjectBuilder interface {
 	NotifyChildContainerFinished(ctx *Context, container reflect.Value)
 }
 
-type BuilderGenerator func(ctx *Context) ObjectBuilder
+type BuilderGenerator func(ctx *Context) Builder
 type BuilderGeneratorGetter func(reflect.Type) BuilderGenerator
 
 // ============================================================================
@@ -86,7 +86,7 @@ type BuilderGeneratorGetter func(reflect.Type) BuilderGenerator
 
 // Report that a builder was given an event that it can't handle.
 // This indicates a bug in the implementation.
-func PanicBadEvent(builder ObjectBuilder, eventFmt string, args ...interface{}) {
+func PanicBadEvent(builder Builder, eventFmt string, args ...interface{}) {
 	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), fmt.Sprintf(eventFmt, args...)))
 }
 
@@ -110,13 +110,13 @@ func PanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
 
 // Report that an error occurred while building from custom binary data.
 // This normally indicates a bug in your custom builder.
-func PanicBuildFromCustomBinary(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+func PanicBuildFromCustomBinary(builder Builder, src []byte, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("error converting custom binary data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
 }
 
 // Report that an error occurred while building from custom text data.
 // This normally indicates a bug in your custom builder.
-func PanicBuildFromCustomText(builder ObjectBuilder, src []byte, dstType reflect.Type, err error) {
+func PanicBuildFromCustomText(builder Builder, src []byte, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
 }
 

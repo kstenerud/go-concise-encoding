@@ -35,8 +35,8 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// BuilderEventReceiver adapts DataEventReceiver to ObjectBuilder, coordinating the
-// build via sub-builders.
+// BuilderEventReceiver adapts DataEventReceiver to ObjectBuilder, passing
+// event contents to builder objects.
 //
 // Use GetBuiltObject() to fetch the final result.
 //
@@ -49,19 +49,15 @@ type BuilderEventReceiver struct {
 	object  reflect.Value
 }
 
-// -----------
-// RootBuilder
-// -----------
-
-// Create a new root builder to build objects of dstType.
+// Create a new builder event receiver that can build objects of dstType.
 // If opts is nil, default options will be used.
-func NewRootBuilder(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *BuilderEventReceiver {
+func NewBuilder(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *BuilderEventReceiver {
 	_this := &BuilderEventReceiver{}
 	_this.Init(session, dstType, opts)
 	return _this
 }
 
-// Initialize this root builder to build objects of dstType.
+// Initialize to build objects of dstType.
 // If opts is nil, default options will be used.
 func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, opts *options.BuilderOptions) {
 	_this.context.Init(opts,
@@ -72,14 +68,16 @@ func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, 
 
 	_this.object = reflect.New(dstType).Elem()
 	generator := session.GetBuilderGeneratorForType(dstType)
-	_this.context.StackBuilder(newTopLevelBuilder(_this, generator))
+	_this.context.StackBuilder(newTopLevelBuilder(generator, func(value reflect.Value) {
+		_this.object = value
+	}))
 }
 
 func (_this *BuilderEventReceiver) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.context.CurrentBuilder)
 }
 
-// Get the object that was built after using this root builder as a DataEventReceiver.
+// Get the object that was built after using this as a DataEventReceiver.
 func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 	// TODO: Verify this behavior
 	if !_this.object.IsValid() {
@@ -96,11 +94,6 @@ func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 		}
 		return nil
 	}
-}
-
-// Callback from topLevelBuilder
-func (_this *BuilderEventReceiver) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
-	_this.object = value
 }
 
 // ---------------------------
@@ -193,13 +186,13 @@ func (_this *BuilderEventReceiver) OnMap() {
 	_this.context.CurrentBuilder.BuildInitiateMap(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnMarkup() {
-	panic("TODO: RootBuilder.OnMarkup")
+	panic("TODO: BuilderEventReceiver.OnMarkup")
 }
 func (_this *BuilderEventReceiver) OnMetadata() {
-	panic("TODO: RootBuilder.OnMetadata")
+	panic("TODO: BuilderEventReceiver.OnMetadata")
 }
 func (_this *BuilderEventReceiver) OnComment() {
-	panic("TODO: RootBuilder.OnComment")
+	panic("TODO: BuilderEventReceiver.OnComment")
 }
 func (_this *BuilderEventReceiver) OnEnd() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)

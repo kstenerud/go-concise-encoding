@@ -41,7 +41,7 @@ type ptrBuilder struct {
 func newPtrBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
 	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		return &ptrBuilder{
 			dstType:       dstType,
 			elemGenerator: builderGenerator,

@@ -97,10 +97,10 @@ func (_this *markerIDBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ re
 type markerObjectBuilder struct {
 	isContainer bool
 	id          interface{}
-	child       ObjectBuilder
+	child       Builder
 }
 
-func newMarkerObjectBuilder(id interface{}, child ObjectBuilder) *markerObjectBuilder {
+func newMarkerObjectBuilder(id interface{}, child Builder) *markerObjectBuilder {
 	return &markerObjectBuilder{
 		id:    id,
 		child: child,

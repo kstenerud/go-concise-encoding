@@ -36,7 +36,7 @@ type ignoreBuilder struct{}
 
 var globalIgnoreBuilder = &ignoreBuilder{}
 
-func generateIgnoreBuilder(ctx *Context) ObjectBuilder { return globalIgnoreBuilder }
+func generateIgnoreBuilder(ctx *Context) Builder { return globalIgnoreBuilder }
 func (_this *ignoreBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *ignoreBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {

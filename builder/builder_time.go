@@ -33,7 +33,7 @@ var globalTimeBuilder = &timeBuilder{}
 
 type timeBuilder struct{}
 
-func generateTimeBuilder(ctx *Context) ObjectBuilder { return globalTimeBuilder }
+func generateTimeBuilder(ctx *Context) Builder { return globalTimeBuilder }
 func (_this *timeBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *timeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
@@ -56,7 +56,7 @@ var globalCompactTimeBuilder = &compactTimeBuilder{}
 
 type compactTimeBuilder struct{}
 
-func generateCompactTimeBuilder(ctx *Context) ObjectBuilder { return globalCompactTimeBuilder }
+func generateCompactTimeBuilder(ctx *Context) Builder { return globalCompactTimeBuilder }
 func (_this *compactTimeBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *compactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
@@ -85,7 +85,7 @@ var globalPCompactTimeBuilder = &pCompactTimeBuilder{}
 
 type pCompactTimeBuilder struct{}
 
-func generatePCompactTimeBuilder(ctx *Context) ObjectBuilder { return &pCompactTimeBuilder{} }
+func generatePCompactTimeBuilder(ctx *Context) Builder { return &pCompactTimeBuilder{} }
 func (_this *pCompactTimeBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *pCompactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
