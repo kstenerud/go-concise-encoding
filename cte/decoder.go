@@ -71,7 +71,6 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	ctx := DecoderContext{}
 	ctx.Init(&_this.opts, reader, eventReceiver)
-	ctx.Stream.Reset() // Must reset before first use
 	ctx.StackDecoder(decodeDocumentBegin)
 
 	for !ctx.IsDocumentComplete {

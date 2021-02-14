@@ -59,22 +59,13 @@ func NewReadBuffer(reader io.Reader, readBufferSize int, loWaterByteCount int) *
 	return _this
 }
 
-// Init the read buffer. The buffer will be empty until RefillIfNecessary() is
-// called.
+// Init the read buffer. You may call this again to re-initialize the buffer.
 //
 // readBufferSize determines the initial size of the buffer, and
 // loWaterByteCount determines when RefillIfNecessary() refills the buffer from
 // the reader.
 func (_this *DecodeBuffer) Init(reader io.Reader, readBufferSize int, loWaterByteCount int) {
 	_this.buffer.Init(reader, readBufferSize, loWaterByteCount)
-}
-
-func (_this *DecodeBuffer) SetReader(reader io.Reader) {
-	_this.buffer.SetReader(reader)
-}
-
-func (_this *DecodeBuffer) Reset() {
-	_this.buffer.Reset()
 	_this.readPos = 0
 	_this.tokenStart = 0
 	_this.subtokenStart = 0

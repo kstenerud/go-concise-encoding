@@ -44,8 +44,7 @@ func NewStreamingReadBuffer(reader io.Reader, bufferSize int, minFreeBytes int) 
 	return _this
 }
 
-// Initialize the buffer. Note that the buffer will be empty until a reset,
-// refill, request, or require method is called.
+// Initialize the buffer. You may call this again to re-initialize the buffer.
 func (_this *StreamingReadBuffer) Init(reader io.Reader, bufferSize int, minFreeBytes int) {
 	if cap(_this.Buffer) < bufferSize {
 		_this.Buffer = make([]byte, 0, bufferSize)
@@ -54,17 +53,8 @@ func (_this *StreamingReadBuffer) Init(reader io.Reader, bufferSize int, minFree
 	}
 	_this.reader = reader
 	_this.minFreeBytes = minFreeBytes
-}
-
-func (_this *StreamingReadBuffer) Reset() {
-	_this.Buffer = _this.Buffer[:0]
-	_this.minFreeBytes = 0
 	_this.isEOF = false
 	_this.readFromReader(len(_this.Buffer))
-}
-
-func (_this *StreamingReadBuffer) SetReader(reader io.Reader) {
-	_this.reader = reader
 }
 
 func (_this *StreamingReadBuffer) ByteAtOffset(offset int) byte {

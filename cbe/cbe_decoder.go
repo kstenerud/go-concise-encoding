@@ -54,11 +54,6 @@ func (_this *Decoder) Init(opts *options.CBEDecoderOptions) {
 	_this.opts = *opts
 }
 
-func (_this *Decoder) reset() {
-	_this.buffer.Reset()
-	_this.eventReceiver = nil
-}
-
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
@@ -73,11 +68,9 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 				}
 			}
 		}
-		_this.reset()
 	}()
 
 	_this.buffer.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
-	_this.buffer.Reset() // Must reset before first use
 	_this.eventReceiver = eventReceiver
 
 	_this.eventReceiver.OnBeginDocument()

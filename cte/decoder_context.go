@@ -39,21 +39,16 @@ func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Rea
 	_this.opts = *opts
 	_this.Stream.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
 	_this.EventReceiver = eventReceiver
-	_this.stack = make([]DecoderFunc, 0, 16)
-}
-
-func (_this *DecoderContext) SetReader(reader io.Reader) {
-	_this.Stream.SetReader(reader)
+	if cap(_this.stack) > 0 {
+		_this.stack = _this.stack[:0]
+	} else {
+		_this.stack = make([]DecoderFunc, 0, 16)
+	}
+	_this.IsDocumentComplete = false
 }
 
 func (_this *DecoderContext) SetEventReceiver(eventReceiver events.DataEventReceiver) {
 	_this.EventReceiver = eventReceiver
-}
-
-func (_this *DecoderContext) Reset() {
-	_this.Stream.Reset()
-	_this.stack = _this.stack[:0]
-	_this.IsDocumentComplete = false
 }
 
 func (_this *DecoderContext) DecodeNext() {

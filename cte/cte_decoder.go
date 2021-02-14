@@ -64,7 +64,6 @@ func (_this *OldDecoder) Init(opts *options.CTEDecoderOptions) {
 }
 
 func (_this *OldDecoder) reset() {
-	_this.buffer.Reset()
 	_this.eventReceiver = nil
 	_this.containerState = _this.containerState[:0]
 	_this.currentState = 0

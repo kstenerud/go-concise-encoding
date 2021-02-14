@@ -71,11 +71,8 @@ func generate() []*A {
 	return a
 }
 
-func BenchmarkCBEMarshal(b *testing.B) {
+func benchmarkMarshal(b *testing.B, marshaler ce.Marshaler) {
 	b.Helper()
-	opts := options.DefaultCBEMarshalerOptions()
-	opts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(opts)
 	data := generate()
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -89,6 +86,20 @@ func BenchmarkCBEMarshal(b *testing.B) {
 		serialSize += len(bytes)
 	}
 	b.ReportMetric(float64(serialSize)/float64(b.N), "B/serial")
+}
+
+func BenchmarkCTEMarshal(b *testing.B) {
+	opts := options.DefaultCTEMarshalerOptions()
+	opts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(opts)
+	benchmarkMarshal(b, marshaler)
+}
+
+func BenchmarkCBEMarshal(b *testing.B) {
+	opts := options.DefaultCBEMarshalerOptions()
+	opts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(opts)
+	benchmarkMarshal(b, marshaler)
 }
 
 func BenchmarkJSONMarshal(b *testing.B) {
@@ -108,14 +119,8 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	b.ReportMetric(float64(serialSize)/float64(b.N), "B/serial")
 }
 
-func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
+func benchmarkUnmarshal(b *testing.B, marshaler ce.Marshaler, unmarshaler ce.Unmarshaler) {
 	b.Helper()
-	marshalOpts := options.DefaultCBEMarshalerOptions()
-	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(marshalOpts)
-	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
-	unmarshalOpts.EnforceRules = false
-	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
 	expectedObjs := generate()
 	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
 	documents := make([][]byte, 0, len(expectedObjs))
@@ -134,7 +139,7 @@ func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
 		document := documents[index]
 		obj, err := unmarshaler.UnmarshalFromDocument(document, template)
 		if err != nil {
-			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
+			b.Fatalf("Unmarshal error: %s (while decoding [%v])", err, describe.D(document))
 		}
 		actualObjs[index] = obj.(*A)
 	}
@@ -142,24 +147,57 @@ func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
 	for i, v := range actualObjs {
 		if v != nil {
 			if !equivalence.IsEquivalent(v, expectedObjs[i]) {
-				b.Fatalf("Expected %v to produce %v but got %v", describe.D(documents[i]), describe.D(expectedObjs[i]), describe.D(v))
+				b.Fatalf("Expected [%v] to produce %v but got %v", describe.D(documents[i]), describe.D(expectedObjs[i]), describe.D(v))
 			}
 		}
 	}
 }
 
+func BenchmarkCTEUnmarshalRules(b *testing.B) {
+	marshalOpts := options.DefaultCTEMarshalerOptions()
+	marshalOpts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	benchmarkUnmarshal(b, marshaler, unmarshaler)
+}
+
+func BenchmarkCTEUnmarshalNoRules(b *testing.B) {
+	marshalOpts := options.DefaultCTEMarshalerOptions()
+	marshalOpts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts.EnforceRules = false
+	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	benchmarkUnmarshal(b, marshaler, unmarshaler)
+}
+
 func BenchmarkCBEUnmarshalRules(b *testing.B) {
-	b.Helper()
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
 	marshaler := ce.NewCBEMarshaler(marshalOpts)
 	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
 	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	benchmarkUnmarshal(b, marshaler, unmarshaler)
+}
+
+func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
+	marshalOpts := options.DefaultCBEMarshalerOptions()
+	marshalOpts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts.EnforceRules = false
+	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	benchmarkUnmarshal(b, marshaler, unmarshaler)
+}
+
+func BenchmarkJSONUnmarshal(b *testing.B) {
+	b.Helper()
 	expectedObjs := generate()
 	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
 	documents := make([][]byte, 0, len(expectedObjs))
 	for _, obj := range expectedObjs {
-		bytes, err := marshaler.MarshalToDocument(obj)
+		bytes, err := json.Marshal(obj)
 		if err != nil {
 			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(obj))
 		}
@@ -167,15 +205,15 @@ func BenchmarkCBEUnmarshalRules(b *testing.B) {
 	}
 	b.ReportAllocs()
 	b.ResetTimer()
-	template := &A{}
 	for i := 0; i < b.N; i++ {
 		index := i % len(expectedObjs)
 		document := documents[index]
-		obj, err := unmarshaler.UnmarshalFromDocument(document, template)
+		obj := &A{}
+		err := json.Unmarshal(document, obj)
 		if err != nil {
 			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
 		}
-		actualObjs[index] = obj.(*A)
+		actualObjs[index] = obj
 	}
 	b.StopTimer()
 	for i, v := range actualObjs {
@@ -255,38 +293,4 @@ func BenchmarkIterator(b *testing.B) {
 		iter.Iterate(objs[index])
 	}
 	b.StopTimer()
-}
-
-func BenchmarkJSONUnmarshal(b *testing.B) {
-	b.Helper()
-	expectedObjs := generate()
-	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
-	documents := make([][]byte, 0, len(expectedObjs))
-	for _, obj := range expectedObjs {
-		bytes, err := json.Marshal(obj)
-		if err != nil {
-			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(obj))
-		}
-		documents = append(documents, bytes)
-	}
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		index := i % len(expectedObjs)
-		document := documents[index]
-		obj := &A{}
-		err := json.Unmarshal(document, obj)
-		if err != nil {
-			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
-		}
-		actualObjs[index] = obj
-	}
-	b.StopTimer()
-	for i, v := range actualObjs {
-		if v != nil {
-			if !equivalence.IsEquivalent(v, expectedObjs[i]) {
-				b.Fatalf("Expected %v to produce %v but got %v", describe.D(documents[i]), describe.D(expectedObjs[i]), describe.D(v))
-			}
-		}
-	}
 }

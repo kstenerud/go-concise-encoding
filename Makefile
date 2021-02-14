@@ -26,17 +26,25 @@ benchmark:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBE* -bench BenchmarkCBE* -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
-benchmarkMarshal:
+benchmarkCBEMarshal:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBEMarshal -bench BenchmarkCBEMarshal -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
-benchmarkUnmarshalRules:
+benchmarkCTEMarshal:
 	$(info To see profile: go tool pprof cpuprofile.out)
-	go test -run BenchmarkCBEUnmarshalRules -bench BenchmarkCBEUnmarshalRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+	go test -run BenchmarkCTEMarshal -bench BenchmarkCTEMarshal -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
-benchmarkUnmarshalNoRules:
+benchmarkCBEUnmarshal:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBEUnmarshalNoRules -bench BenchmarkCBEUnmarshalNoRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
+benchmarkCTEUnmarshal:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkCTEUnmarshalNoRules -bench BenchmarkCTEUnmarshalNoRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
+benchmarkCBEUnmarshalRules:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkCBEUnmarshalRules -bench BenchmarkCBEUnmarshalRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
 benchmarkRules:
 	$(info To see profile: go tool pprof cpuprofile.out)
