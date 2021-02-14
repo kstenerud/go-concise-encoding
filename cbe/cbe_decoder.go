@@ -63,7 +63,6 @@ func (_this *Decoder) reset() {
 // when initializing the decoder will be used.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
@@ -74,9 +73,11 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 				}
 			}
 		}
+		_this.reset()
 	}()
 
 	_this.buffer.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
+	_this.buffer.Reset() // Must reset before first use
 	_this.eventReceiver = eventReceiver
 
 	_this.eventReceiver.OnBeginDocument()
