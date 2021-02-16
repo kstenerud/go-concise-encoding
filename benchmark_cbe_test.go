@@ -21,6 +21,7 @@
 package concise_encoding
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -151,6 +152,41 @@ func benchmarkUnmarshal(b *testing.B, marshaler ce.Marshaler, unmarshaler ce.Unm
 			}
 		}
 	}
+}
+
+func benchmarkDecode(b *testing.B, marshaler ce.Marshaler, decoder ce.Decoder) {
+	b.Helper()
+	expectedObjs := generate()
+	documents := make([][]byte, 0, len(expectedObjs))
+	for _, obj := range expectedObjs {
+		bytes, err := marshaler.MarshalToDocument(obj)
+		if err != nil {
+			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(obj))
+		}
+		documents = append(documents, bytes)
+	}
+	nullReceiver := events.NewNullEventReceiver()
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		index := i % len(expectedObjs)
+		document := documents[index]
+		err := decoder.Decode(bytes.NewBuffer(document), nullReceiver)
+		if err != nil {
+			b.Fatalf("Unmarshal error: %s (while decoding [%v])", err, describe.D(document))
+		}
+	}
+	b.StopTimer()
+}
+
+func BenchmarkCTEDecode(b *testing.B) {
+	marshalOpts := options.DefaultCTEMarshalerOptions()
+	marshalOpts.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	opts := options.DefaultCTEDecoderOptions()
+	opts.BufferSize = 0
+	decoder := ce.NewCTEDecoder(opts)
+	benchmarkDecode(b, marshaler, decoder)
 }
 
 func BenchmarkCTEUnmarshalRules(b *testing.B) {

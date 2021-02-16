@@ -119,8 +119,8 @@ func (_this *OldDecoder) DecodeDocument(document []byte, eventReceiver events.Da
 
 func chooseLowWater(bufferSize int) int {
 	lowWater := bufferSize / 50
-	if lowWater < 30 {
-		lowWater = 30
+	if lowWater < 32 {
+		lowWater = 32
 	}
 	return lowWater
 }

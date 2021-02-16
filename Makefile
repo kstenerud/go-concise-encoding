@@ -46,6 +46,10 @@ benchmarkCBEUnmarshalRules:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBEUnmarshalRules -bench BenchmarkCBEUnmarshalRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
+benchmarkCTEDecode:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkCTEDecode -bench BenchmarkCTEDecode -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
 benchmarkRules:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkRules -bench BenchmarkRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out

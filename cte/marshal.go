@@ -42,7 +42,7 @@ import (
 // multiple calls to marshal.
 type Marshaler struct {
 	session iterator.Session
-	encoder OldEncoder
+	encoder EncoderEventReceiver
 	opts    options.CTEMarshalerOptions
 }
 
@@ -101,7 +101,7 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 // multiple calls to unmarshal.
 type Unmarshaler struct {
 	session builder.Session
-	decoder OldDecoder
+	decoder Decoder
 	opts    options.CTEUnmarshalerOptions
 	rules   rules.RulesEventReceiver
 }
