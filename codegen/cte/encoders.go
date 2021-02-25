@@ -109,8 +109,8 @@ var encoders = []Encoder{
 	{
 		Name: "mapKey",
 		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, Meta, Cmt,
-			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Meta, Cmt,
+			Marker, Ref, Cat, Const, Arr, Str, BArr},
 	},
 	{
 		Name: "mapValue",
@@ -121,14 +121,36 @@ var encoders = []Encoder{
 	{
 		Name: "metadataKey",
 		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, Meta, Cmt,
-			Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Meta, Cmt,
+			Marker, Ref, Cat, Const, Arr, Str, BArr},
 	},
 	{
 		Name: "metadataValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
 			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+	},
+	{
+		Name: "markupName",
+		Methods: []string{Child, Begin, Bool, True, False, PInt, NInt, Int,
+			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID,
+			Marker, Ref, Cat, Const, Arr, Str, BArr},
+	},
+	{
+		Name: "markupKey",
+		Methods: []string{Child, End, Bool, True, False, PInt, NInt, Int,
+			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Meta, Cmt,
+			Marker, Ref, Cat, Const, Arr, Str, BArr},
+	},
+	{
+		Name: "markupValue",
+		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
+			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
+			Markup, Meta, Cmt, Marker, Ref, Cat, Const, NA, Arr, Str, BArr},
+	},
+	{
+		Name:    "markupContents",
+		Methods: []string{Child, Begin, End, Markup, Cmt, Arr, Str, BArr},
 	},
 	{
 		Name:    "array",

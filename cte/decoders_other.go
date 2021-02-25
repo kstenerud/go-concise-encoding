@@ -441,21 +441,54 @@ func decodeMarkupBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '<'
 
 	ctx.EventReceiver.OnMarkup()
-	panic("TODO: decodeMarkupBegin")
+	ctx.StackDecoder(decodeMarkupName)
+}
+
+func decodeMarkupName(ctx *DecoderContext) {
+	decodeByFirstChar(ctx)
+	ctx.ChangeDecoder(decodeMapKey)
 }
 
 func decodeMarkupContentBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ','
 
 	ctx.EventReceiver.OnEnd()
-	panic("TODO: decodeMarkupContentBegin")
+	ctx.BeginMarkupContents()
+}
+
+func decodeMarkupContents(ctx *DecoderContext) {
+	str, next := ctx.Stream.DecodeMarkupContent()
+	if len(str) > 0 {
+		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
+	}
+	switch next {
+	case nextIsCommentBegin:
+		ctx.EventReceiver.OnComment()
+		ctx.StackDecoder(decodeComment)
+	case nextIsCommentEnd:
+		ctx.EventReceiver.OnEnd()
+		ctx.UnstackDecoder()
+	case nextIsSingleLineComment:
+		ctx.EventReceiver.OnComment()
+		contents := ctx.Stream.DecodeSingleLineComment()
+		if len(contents) > 0 {
+			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
+		}
+		ctx.EventReceiver.OnEnd()
+	case nextIsMarkupBegin:
+		ctx.EventReceiver.OnMarkup()
+		ctx.StackDecoder(decodeMarkupBegin)
+	case nextIsMarkupEnd:
+		ctx.EventReceiver.OnEnd()
+		ctx.UnstackDecoder()
+	}
 }
 
 func decodeMarkupEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '>'
 
 	ctx.EventReceiver.OnEnd()
-	ctx.UnstackDecoder()
+	ctx.EndMarkup()
 }
 
 func decodeConstant(ctx *DecoderContext) {
@@ -524,4 +557,10 @@ func decodeComment(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnComment()
 	panic("TODO: decodeComment")
+}
+
+func decodeSuffix(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past ':'
+
+	panic("TODO: decodeSuffix")
 }

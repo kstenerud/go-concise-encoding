@@ -115,8 +115,7 @@ func init() {
 	decoderFuncsByFirstChar['$'] = decodeReference
 	decoderFuncsByFirstChar['&'] = decodeMarker
 	decoderFuncsByFirstChar['/'] = decodeComment
-	// TODO: ':'
-	// decoderFuncsByFirstChar[':'] =
+	decoderFuncsByFirstChar[':'] = decodeSuffix
 	decoderFuncsByFirstChar['{'] = decodeMapBegin
 	decoderFuncsByFirstChar['}'] = decodeMapEnd
 	decoderFuncsByFirstChar['['] = decodeListBegin

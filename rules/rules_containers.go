@@ -290,7 +290,7 @@ func (_this *MarkupValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayT
 
 type MarkupContentsRule struct{}
 
-func (_this *MarkupContentsRule) String() string                                 { return "List Rule" }
+func (_this *MarkupContentsRule) String() string                                 { return "Markup Contents Rule" }
 func (_this *MarkupContentsRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
 func (_this *MarkupContentsRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MarkupContentsRule) OnMarkup(ctx *Context)                          { ctx.BeginMarkup() }

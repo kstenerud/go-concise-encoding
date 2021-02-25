@@ -27,11 +27,16 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
+type DecoderStackEntry struct {
+	DecoderFunc      DecoderFunc
+	IsMarkupContents bool
+}
+
 type DecoderContext struct {
 	opts               options.CTEDecoderOptions
 	Stream             DecodeBuffer
 	EventReceiver      events.DataEventReceiver
-	stack              []DecoderFunc
+	stack              []DecoderStackEntry
 	IsDocumentComplete bool
 }
 
@@ -42,7 +47,7 @@ func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Rea
 	if cap(_this.stack) > 0 {
 		_this.stack = _this.stack[:0]
 	} else {
-		_this.stack = make([]DecoderFunc, 0, 16)
+		_this.stack = make([]DecoderStackEntry, 0, 16)
 	}
 	_this.IsDocumentComplete = false
 }
@@ -52,19 +57,38 @@ func (_this *DecoderContext) SetEventReceiver(eventReceiver events.DataEventRece
 }
 
 func (_this *DecoderContext) DecodeNext() {
-	decoder := _this.stack[len(_this.stack)-1]
-	decoder(_this)
+	entry := _this.stack[len(_this.stack)-1]
+	entry.DecoderFunc(_this)
 }
 
 func (_this *DecoderContext) ChangeDecoder(decoder DecoderFunc) {
-	_this.stack[len(_this.stack)-1] = decoder
+	_this.stack[len(_this.stack)-1] = DecoderStackEntry{
+		DecoderFunc:      decoder,
+		IsMarkupContents: false,
+	}
 }
 
 func (_this *DecoderContext) StackDecoder(decoder DecoderFunc) {
-	_this.stack = append(_this.stack, decoder)
+	_this.stack = append(_this.stack, DecoderStackEntry{
+		DecoderFunc:      decoder,
+		IsMarkupContents: false,
+	})
 }
 
-func (_this *DecoderContext) UnstackDecoder() DecoderFunc {
+func (_this *DecoderContext) UnstackDecoder() DecoderStackEntry {
 	_this.stack = _this.stack[:len(_this.stack)-1]
 	return _this.stack[len(_this.stack)-1]
+}
+
+func (_this *DecoderContext) BeginMarkupContents() {
+	_this.stack[len(_this.stack)-1].IsMarkupContents = true
+	_this.ChangeDecoder(decodeMarkupContents)
+}
+
+func (_this *DecoderContext) EndMarkup() {
+	if !_this.stack[len(_this.stack)-1].IsMarkupContents {
+		// Add second end message
+		_this.EventReceiver.OnEnd()
+	}
+	_this.UnstackDecoder()
 }

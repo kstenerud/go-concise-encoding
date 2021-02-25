@@ -117,6 +117,14 @@ func (_this *EncoderContext) SetStandardMapValuePrefix() {
 	_this.SetIndentPrefix(" = ")
 }
 
+func (_this *EncoderContext) SetMarkupAttributeKeyPrefix() {
+	_this.SetIndentPrefix(" ")
+}
+
+func (_this *EncoderContext) SetMarkupAttributeValuePrefix() {
+	_this.SetIndentPrefix("=")
+}
+
 func (_this *EncoderContext) ClearPrefix() {
 	_this.SetIndentPrefix("")
 }
@@ -138,7 +146,16 @@ func (_this *EncoderContext) BeginStandardMap() {
 }
 
 func (_this *EncoderContext) BeginStandardMarkup() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginMarkup"))
+	_this.Stack(&globalMarkupNameEncoder)
+	_this.CurrentEncoder.Begin(_this)
+}
+
+func (_this *EncoderContext) SwitchToMarkupAttributes() {
+	_this.ChangeEncoder(&globalMarkupKeyEncoder)
+}
+
+func (_this *EncoderContext) SwitchToMarkupContents() {
+	_this.ChangeEncoder(&globalMarkupContentsEncoder)
 }
 
 func (_this *EncoderContext) BeginStandardMetadata() {
