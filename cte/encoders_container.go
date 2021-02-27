@@ -1119,8 +1119,11 @@ var globalMarkupContentsEncoder markupContentsEncoder
 func (_this *markupContentsEncoder) String() string { return "markupContentsEncoder" }
 
 func (_this *markupContentsEncoder) prepareToWrite(ctx *EncoderContext) {
+	if !ctx.ContainerHasObjects {
+		ctx.Stream.AddByte(',')
+		ctx.Stream.AddBytes(ctx.indenter.Get())
+	}
 	ctx.ContainerHasObjects = true
-	ctx.WriteCurrentPrefix()
 }
 
 func (_this *markupContentsEncoder) Begin(ctx *EncoderContext) {
@@ -1152,13 +1155,14 @@ func (_this *markupContentsEncoder) BeginComment(ctx *EncoderContext) {
 }
 func (_this *markupContentsEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.ArrayEngine.EncodeMarkupContentStringData(data)
 }
 func (_this *markupContentsEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.ArrayEngine.EncodeMarkupContentString(data)
 }
 func (_this *markupContentsEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareToWrite(ctx)
+	// TODO: begin content string array
 	ctx.BeginStandardArray(arrayType)
 }

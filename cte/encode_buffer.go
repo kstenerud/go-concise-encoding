@@ -350,6 +350,30 @@ func (_this *EncodeBuffer) WritePotentiallyEscapedStringArrayContents(value []by
 
 }
 
+func (_this *EncodeBuffer) WritePotentiallyEscapedMarkupContents(value []byte) {
+	if len(value) == 0 {
+		return
+	}
+
+	if !needsEscapesMarkup(value) {
+		_this.AddBytes(value)
+		return
+	}
+
+	// TODO: Encode directly rather than using bytes.Buffer
+	var bb bytes.Buffer
+	bb.Grow(len(value))
+	// Note: StringBuilder's WriteXYZ() always return nil errors
+	for _, ch := range string(value) {
+		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
+			bb.Write(escapeCharMarkup(ch))
+		} else {
+			bb.WriteRune(ch)
+		}
+	}
+	_this.AddBytes(bb.Bytes())
+}
+
 var hexToChar = [16]byte{
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 }

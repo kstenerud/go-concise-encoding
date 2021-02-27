@@ -94,7 +94,7 @@ func init() {
 	decoderFuncsByFirstChar['\n'] = decodeWhitespace
 	decoderFuncsByFirstChar['\t'] = decodeWhitespace
 	decoderFuncsByFirstChar[' '] = decodeWhitespace
-	decoderFuncsByFirstChar['"'] = decodeQuotedString
+	decoderFuncsByFirstChar['"'] = advanceAndDecodeQuotedString
 	decoderFuncsByFirstChar['_'] = decodeUnquotedString
 	for i := 'A'; i <= 'Z'; i++ {
 		decoderFuncsByFirstChar[i] = decodeUnquotedString
@@ -105,26 +105,26 @@ func init() {
 	for i := 0xc0; i < 0xf8; i++ {
 		decoderFuncsByFirstChar[i] = decodeUnquotedString
 	}
-	decoderFuncsByFirstChar['0'] = decodeOtherBasePositive
+	decoderFuncsByFirstChar['0'] = advanceAndDecodeOtherBasePositive
 	for i := '1'; i <= '9'; i++ {
 		decoderFuncsByFirstChar[i] = decodeNumericPositive
 	}
-	decoderFuncsByFirstChar['-'] = decodeNumericNegative
-	decoderFuncsByFirstChar['@'] = decodeNamedValueOrUUID
-	decoderFuncsByFirstChar['#'] = decodeConstant
-	decoderFuncsByFirstChar['$'] = decodeReference
-	decoderFuncsByFirstChar['&'] = decodeMarker
+	decoderFuncsByFirstChar['-'] = advanceAndDecodeNumericNegative
+	decoderFuncsByFirstChar['@'] = advanceAndDecodeNamedValueOrUUID
+	decoderFuncsByFirstChar['#'] = advanceAndDecodeConstant
+	decoderFuncsByFirstChar['$'] = advanceAndDecodeReference
+	decoderFuncsByFirstChar['&'] = advanceAndDecodeMarker
 	decoderFuncsByFirstChar['/'] = decodeComment
-	decoderFuncsByFirstChar[':'] = decodeSuffix
-	decoderFuncsByFirstChar['{'] = decodeMapBegin
-	decoderFuncsByFirstChar['}'] = decodeMapEnd
-	decoderFuncsByFirstChar['['] = decodeListBegin
-	decoderFuncsByFirstChar[']'] = decodeListEnd
-	decoderFuncsByFirstChar['<'] = decodeMarkupBegin
-	decoderFuncsByFirstChar[','] = decodeMarkupContentBegin
-	decoderFuncsByFirstChar['>'] = decodeMarkupEnd
-	decoderFuncsByFirstChar['('] = decodeMetadataBegin
-	decoderFuncsByFirstChar[')'] = decodeMetadataEnd
+	decoderFuncsByFirstChar[':'] = advanceAndDecodeSuffix
+	decoderFuncsByFirstChar['{'] = advanceAndDecodeMapBegin
+	decoderFuncsByFirstChar['}'] = advanceAndDecodeMapEnd
+	decoderFuncsByFirstChar['['] = advanceAndDecodeListBegin
+	decoderFuncsByFirstChar[']'] = advanceAndDecodeListEnd
+	decoderFuncsByFirstChar['<'] = advanceAndDecodeMarkupBegin
+	decoderFuncsByFirstChar[','] = advanceAndDecodeMarkupContentBegin
+	decoderFuncsByFirstChar['>'] = advanceAndDecodeMarkupEnd
+	decoderFuncsByFirstChar['('] = advanceAndDecodeMetadataBegin
+	decoderFuncsByFirstChar[')'] = advanceAndDecodeMetadataEnd
 	decoderFuncsByFirstChar['|'] = decodeTypedArrayBegin
 
 	decoderFuncsByFirstChar[chars.EndOfDocumentMarker] = decodeInvalidChar

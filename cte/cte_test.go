@@ -1403,8 +1403,6 @@ func TestCTECommentFollowing(t *testing.T) {
 func TestCTECommentPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 {a=b /**/}", BD(), V(1), M(), S("a"), S("b"), CMT(), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 {
@@ -1412,43 +1410,31 @@ func TestCTECommentPretty(t *testing.T) {
     /**/
 }`, BD(), V(1), M(), S("a"), S("b"), CMT(), E(), E(), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 /**/1", BD(), V(1), CMT(), E(), PI(1), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 /**/
 1`, BD(), V(1), CMT(), E(), PI(1), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 /*a*/1", BD(), V(1), CMT(), S("a"), E(), PI(1), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 /* a */
 1`, BD(), V(1), CMT(), S("a"), E(), PI(1), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 /*/**/*/1", BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 /* /**/ */
 1`, BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 /*/*a*/*/1", BD(), V(1), CMT(), CMT(), S("a"), E(), E(), PI(1), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 /* /* a */ */
 1`, BD(), V(1), CMT(), CMT(), S("a"), E(), E(), PI(1), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 /**/a", BD(), V(1), CMT(), E(), S("a"), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 /**/
 a`, BD(), V(1), CMT(), E(), S("a"), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 [/**/a]", BD(), V(1), L(), CMT(), E(), S("a"), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 [
@@ -1460,28 +1446,20 @@ a`, BD(), V(1), CMT(), E(), S("a"), ED())
 func TestCTEMarkupPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 <a>", BD(), V(1), MUP(), S("a"), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 <a>`, BD(), V(1), MUP(), S("a"), E(), E(), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 <a x=1>", BD(), V(1), MUP(), S("a"), S("x"), PI(1), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 <a x=1>`, BD(), V(1), MUP(), S("a"), S("x"), PI(1), E(), E(), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 <a,aaa>", BD(), V(1), MUP(), S("a"), E(), S("aaa"), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 <a,
     aaa
 >`, BD(), V(1), MUP(), S("a"), E(), S("aaa"), E(), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 <a x=y,aaa>", BD(), V(1), MUP(), S("a"), S("x"), S("y"), E(), S("aaa"), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 <a x=y,
@@ -1498,8 +1476,6 @@ func TestCTEMarkupPretty(t *testing.T) {
 func TestCTEPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 1", BD(), V(1), PI(1), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, "c1\n1", BD(), V(1), PI(1), ED())
 }
@@ -1508,22 +1484,16 @@ func TestCTEListPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
 	// Empty 1 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 []", BD(), V(1), L(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 []`, BD(), V(1), L(), E(), ED())
 
 	// Empty 2 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 [[]]", BD(), V(1), L(), L(), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 [
     []
 ]`, BD(), V(1), L(), L(), E(), E(), ED())
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 [[] []]", BD(), V(1), L(), L(), E(), L(), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 [
@@ -1532,8 +1502,6 @@ func TestCTEListPretty(t *testing.T) {
 ]`, BD(), V(1), L(), L(), E(), L(), E(), E(), ED())
 
 	// 1 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 [1 2]", BD(), V(1), L(), PI(1), PI(2), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 [
@@ -1542,8 +1510,6 @@ func TestCTEListPretty(t *testing.T) {
 ]`, BD(), V(1), L(), PI(1), PI(2), E(), ED())
 
 	// 2 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 [[1 2] [3 4]]", BD(), V(1), L(), L(), PI(1), PI(2), E(), L(), PI(3), PI(4), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 [
@@ -1562,22 +1528,16 @@ func TestCTEMapPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
 	// // Empty 1 level
-	// opts.Indent = ""
-	// assertDecodeEncode(t, nil, opts, "c1 {}", BD(), V(1), M(), E(), ED())
 	// opts.Indent = "    "
 	// assertDecodeEncode(t, nil, opts, `c1
 	// {}`, BD(), V(1), M(), E(), ED())
 
 	// Empty 2 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 {a={}}", BD(), V(1), M(), S("a"), M(), E(), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 {
     a = {}
 }`, BD(), V(1), M(), S("a"), M(), E(), E(), ED())
-	// opts.Indent = ""
-	// assertDecodeEncode(t, nil, opts, "c1 {a={} b={}}", BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
 	// opts.Indent = "    "
 	// assertDecodeEncode(t, nil, opts, `c1
 	// {
@@ -1586,8 +1546,6 @@ func TestCTEMapPretty(t *testing.T) {
 	// }`, BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
 
 	// // 1 level
-	// opts.Indent = ""
-	// assertDecodeEncode(t, nil, opts, "c1 {1=2}", BD(), V(1), M(), PI(1), PI(2), E(), ED())
 	// opts.Indent = "    "
 	// assertDecodeEncode(t, nil, opts, `c1
 	// {
@@ -1595,8 +1553,6 @@ func TestCTEMapPretty(t *testing.T) {
 	// }`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
 
 	// // 2 level
-	// opts.Indent = ""
-	// assertDecodeEncode(t, nil, opts, "c1 {a={1=2 3=4} b={5=6 7=8}}",
 	// 	BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
 	// opts.Indent = "    "
 	// assertDecodeEncode(t, nil, opts, `c1
@@ -1616,17 +1572,11 @@ func TestCTEMetadataPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
 	// Empty 1 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 ()aa", BD(), V(1), META(), E(), S("aa"), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 ()aa`, BD(), V(1), META(), E(), S("aa"), ED())
 
 	// Empty 2 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 (a=()x)aa", BD(), V(1), META(), S("a"), META(), E(), S("x"), E(), S("aa"), ED())
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 (a=()1 b=()2)aa", BD(), V(1), META(), S("a"), META(), E(), PI(1), S("b"), META(), E(), PI(2), E(), S("aa"), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 (
@@ -1635,8 +1585,6 @@ func TestCTEMetadataPretty(t *testing.T) {
 )aa`, BD(), V(1), META(), S("a"), META(), E(), PI(1), S("b"), META(), E(), PI(2), E(), S("aa"), ED())
 
 	// 1 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 (1=2)aa", BD(), V(1), META(), PI(1), PI(2), E(), S("aa"), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 (
@@ -1644,12 +1592,6 @@ func TestCTEMetadataPretty(t *testing.T) {
 )aa`, BD(), V(1), META(), PI(1), PI(2), E(), S("aa"), ED())
 
 	// 2 level
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 (a=(1=2 3=4)x b=(5=6 7=8)y)aa",
-		BD(), V(1), META(),
-		S("a"), META(), PI(1), PI(2), PI(3), PI(4), E(), S("x"),
-		S("b"), META(), PI(5), PI(6), PI(7), PI(8), E(), S("y"),
-		E(), S("aa"), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 (
@@ -1670,14 +1612,10 @@ func TestCTEMetadataPretty(t *testing.T) {
 func TestCTEArrayPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 |u8x 22 33|", BD(), V(1), AU8([]uint8{0x22, 0x33}), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 |u8x 22 33|`, BD(), V(1), AU8([]uint8{0x22, 0x33}), ED())
 
-	opts.Indent = ""
-	assertDecodeEncode(t, nil, opts, "c1 [|u8x 22 33| |u8x 66 77|]", BD(), V(1), L(), AU8([]uint8{0x22, 0x33}), AU8([]uint8{0x66, 0x77}), E(), ED())
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 [

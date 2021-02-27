@@ -62,6 +62,15 @@ func (_this *arrayEncoderEngine) Init(stream *EncodeBuffer, opts *options.CTEEnc
 	_this.opts = opts
 }
 
+func (_this *arrayEncoderEngine) EncodeMarkupContentString(data string) {
+	// TODO: Not this
+	_this.EncodeMarkupContentStringData([]byte(data))
+}
+
+func (_this *arrayEncoderEngine) EncodeMarkupContentStringData(data []uint8) {
+	_this.stream.WritePotentiallyEscapedMarkupContents(data)
+}
+
 func (_this *arrayEncoderEngine) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
 	// TODO: avoid string-to-bytes conversion?
 	_this.EncodeArray(arrayType, uint64(len(data)), []byte(data))
