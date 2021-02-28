@@ -1838,3 +1838,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
 }
+
+func TestX(t *testing.T) {
+	assertDecode(t, nil, "c1 {a=2/**/}", BD(), V(1), M(), S("a"), PI(2), CMT(), E(), E(), ED())
+}

@@ -170,6 +170,7 @@ func advanceAndDecodeCommentEnd(ctx *DecoderContext) {
 	case '/':
 		ctx.UnstackDecoder()
 		ctx.EventReceiver.OnEnd()
+		decodeByFirstChar(ctx)
 	default:
 		ctx.Stream.Errorf("Unexpected comment end char: [%c]", b)
 	}
