@@ -23,10 +23,8 @@ package cte
 import (
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
 func decodeInvalidChar(ctx *DecoderContext) {
@@ -43,6 +41,11 @@ func decodeByFirstChar(ctx *DecoderContext) {
 	b := ctx.Stream.PeekByteAllowEOD()
 	decoderFunc := decoderFuncsByFirstChar[b]
 	decoderFunc(ctx)
+}
+
+func decodePostInvisible(ctx *DecoderContext) {
+	ctx.UnstackDecoder()
+	decodeByFirstChar(ctx)
 }
 
 func decodeDocumentBegin(ctx *DecoderContext) {
@@ -382,118 +385,6 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 	ctx.EventReceiver.OnUUID(namedValue[:16])
 }
 
-func advanceAndDecodeQuotedString(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '"'
-
-	bytes := ctx.Stream.DecodeQuotedString()
-	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
-}
-
-func decodeUnquotedString(ctx *DecoderContext) {
-	bytes := ctx.Stream.DecodeUnquotedString()
-	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
-}
-
-func advanceAndDecodeMapBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '{'
-
-	ctx.EventReceiver.OnMap()
-	ctx.StackDecoder(decodeMapKey)
-}
-
-func decodeMapKey(ctx *DecoderContext) {
-	ctx.ChangeDecoder(decodeMapValue)
-	decodeByFirstChar(ctx)
-}
-
-func decodeMapValue(ctx *DecoderContext) {
-	decodeWhitespace(ctx)
-	if ctx.Stream.PeekByteNoEOD() != '=' {
-		ctx.Stream.Errorf("Expected map separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
-	}
-	ctx.Stream.AdvanceByte()
-	decodeWhitespace(ctx)
-	ctx.ChangeDecoder(decodeMapKey)
-	decodeByFirstChar(ctx)
-}
-
-func advanceAndDecodeMapEnd(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '}'
-
-	ctx.EventReceiver.OnEnd()
-	ctx.UnstackDecoder()
-}
-
-func advanceAndDecodeListBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '['
-
-	ctx.EventReceiver.OnList()
-	ctx.StackDecoder(decodeByFirstChar)
-}
-
-func advanceAndDecodeListEnd(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past ']'
-
-	ctx.EventReceiver.OnEnd()
-	ctx.UnstackDecoder()
-}
-
-func advanceAndDecodeMarkupBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '<'
-	decodeMarkupBegin(ctx)
-}
-
-func decodeMarkupBegin(ctx *DecoderContext) {
-	ctx.EventReceiver.OnMarkup()
-	ctx.StackDecoder(decodeMarkupName)
-}
-
-func decodeMarkupName(ctx *DecoderContext) {
-	decodeByFirstChar(ctx)
-	ctx.ChangeDecoder(decodeMapKey)
-}
-
-func advanceAndDecodeMarkupContentBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past ','
-
-	ctx.EventReceiver.OnEnd()
-	ctx.BeginMarkupContents()
-}
-
-func decodeMarkupContents(ctx *DecoderContext) {
-	str, next := ctx.Stream.DecodeMarkupContent()
-	if len(str) > 0 {
-		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
-	}
-	switch next {
-	case nextIsCommentBegin:
-		ctx.EventReceiver.OnComment()
-		ctx.StackDecoder(decodeComment)
-	case nextIsCommentEnd:
-		ctx.EventReceiver.OnEnd()
-		ctx.UnstackDecoder()
-	case nextIsSingleLineComment:
-		ctx.EventReceiver.OnComment()
-		contents := ctx.Stream.DecodeSingleLineComment()
-		if len(contents) > 0 {
-			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
-		}
-		ctx.EventReceiver.OnEnd()
-	case nextIsMarkupBegin:
-		decodeMarkupBegin(ctx)
-	case nextIsMarkupEnd:
-		ctx.EventReceiver.OnEnd()
-		ctx.UnstackDecoder()
-	}
-}
-
-func advanceAndDecodeMarkupEnd(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '>'
-
-	ctx.EventReceiver.OnEnd()
-	ctx.EndMarkup()
-}
-
 func advanceAndDecodeConstant(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
@@ -519,47 +410,6 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnMarker()
 	panic("TODO: decodeMarker")
-}
-
-func advanceAndDecodeMetadataBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '('
-
-	ctx.EventReceiver.OnMetadata()
-	ctx.StackDecoder(decodeMetadataKey)
-}
-
-func decodeMetadataKey(ctx *DecoderContext) {
-	ctx.ChangeDecoder(decodeMetadataValue)
-	decodeByFirstChar(ctx)
-}
-
-func decodeMetadataValue(ctx *DecoderContext) {
-	decodeWhitespace(ctx)
-	if ctx.Stream.PeekByteNoEOD() != '=' {
-		ctx.Stream.Errorf("Expected Metadata separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
-	}
-	ctx.Stream.AdvanceByte()
-	decodeWhitespace(ctx)
-	ctx.ChangeDecoder(decodeMetadataKey)
-	decodeByFirstChar(ctx)
-}
-
-func advanceAndDecodeMetadataEnd(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past ')'
-
-	ctx.EventReceiver.OnEnd()
-	ctx.ChangeDecoder(decodeMetadataCompletion)
-}
-
-func decodeMetadataCompletion(ctx *DecoderContext) {
-	ctx.UnstackDecoder()
-	decodeByFirstChar(ctx)
-}
-
-func decodeComment(ctx *DecoderContext) {
-
-	ctx.EventReceiver.OnComment()
-	panic("TODO: decodeComment")
 }
 
 func advanceAndDecodeSuffix(ctx *DecoderContext) {

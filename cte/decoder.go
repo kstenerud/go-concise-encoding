@@ -114,7 +114,7 @@ func init() {
 	decoderFuncsByFirstChar['#'] = advanceAndDecodeConstant
 	decoderFuncsByFirstChar['$'] = advanceAndDecodeReference
 	decoderFuncsByFirstChar['&'] = advanceAndDecodeMarker
-	decoderFuncsByFirstChar['/'] = decodeComment
+	decoderFuncsByFirstChar['/'] = advanceAndDecodeComment
 	decoderFuncsByFirstChar[':'] = advanceAndDecodeSuffix
 	decoderFuncsByFirstChar['{'] = advanceAndDecodeMapBegin
 	decoderFuncsByFirstChar['}'] = advanceAndDecodeMapEnd
@@ -125,6 +125,7 @@ func init() {
 	decoderFuncsByFirstChar['>'] = advanceAndDecodeMarkupEnd
 	decoderFuncsByFirstChar['('] = advanceAndDecodeMetadataBegin
 	decoderFuncsByFirstChar[')'] = advanceAndDecodeMetadataEnd
+	decoderFuncsByFirstChar['*'] = advanceAndDecodeCommentEnd
 	decoderFuncsByFirstChar['|'] = decodeTypedArrayBegin
 
 	decoderFuncsByFirstChar[chars.EndOfDocumentMarker] = decodeInvalidChar

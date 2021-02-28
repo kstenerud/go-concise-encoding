@@ -29,6 +29,18 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
+func advanceAndDecodeQuotedString(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '"'
+
+	bytes := ctx.Stream.DecodeQuotedString()
+	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+}
+
+func decodeUnquotedString(ctx *DecoderContext) {
+	bytes := ctx.Stream.DecodeUnquotedString()
+	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+}
+
 func decodeArrayType(ctx *DecoderContext) string {
 	ctx.Stream.BeginToken()
 	ctx.Stream.ReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
