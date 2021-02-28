@@ -164,7 +164,8 @@ func (_this *EncoderContext) BeginStandardMetadata() {
 }
 
 func (_this *EncoderContext) BeginStandardComment() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginComment"))
+	_this.Stack(&globalCommentEncoder)
+	_this.CurrentEncoder.Begin(_this)
 }
 
 func (_this *EncoderContext) BeginStandardMarker() {

@@ -1166,3 +1166,40 @@ func (_this *markupContentsEncoder) BeginArray(ctx *EncoderContext, arrayType ev
 	// TODO: begin content string array
 	ctx.BeginStandardArray(arrayType)
 }
+
+// =============================================================================
+
+type commentEncoder struct{}
+
+var globalCommentEncoder commentEncoder
+
+func (_this *commentEncoder) String() string { return "commentEncoder" }
+
+func (_this *commentEncoder) prepareToWrite(ctx *EncoderContext) {
+}
+
+func (_this *commentEncoder) Begin(ctx *EncoderContext) {
+	ctx.Stream.AddString("/* ")
+}
+
+func (_this *commentEncoder) End(ctx *EncoderContext) {
+	ctx.Stream.AddString(" */")
+	ctx.Unstack()
+}
+
+func (_this *commentEncoder) ChildContainerFinished(ctx *EncoderContext) {
+}
+
+func (_this *commentEncoder) BeginComment(ctx *EncoderContext) {
+	ctx.BeginStandardComment()
+}
+func (_this *commentEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ArrayEngine.EncodeCommentStringData(data)
+}
+func (_this *commentEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	ctx.ArrayEngine.EncodeCommentString(data)
+}
+func (_this *commentEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	// TODO: begin content string array
+	ctx.BeginStandardArray(arrayType)
+}

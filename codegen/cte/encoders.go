@@ -153,6 +153,10 @@ var encoders = []Encoder{
 		Methods: []string{Child, Begin, End, Markup, Cmt, Arr, Str, BArr},
 	},
 	{
+		Name:    "comment",
+		Methods: []string{Child, Begin, End, Cmt, Arr, Str, BArr},
+	},
+	{
 		Name:    "array",
 		Methods: []string{Chunk, Data},
 	},

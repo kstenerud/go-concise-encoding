@@ -62,6 +62,16 @@ func (_this *arrayEncoderEngine) Init(stream *EncodeBuffer, opts *options.CTEEnc
 	_this.opts = opts
 }
 
+func (_this *arrayEncoderEngine) EncodeCommentString(data string) {
+	// TODO: Not this
+	_this.EncodeMarkupContentStringData([]byte(data))
+}
+
+func (_this *arrayEncoderEngine) EncodeCommentStringData(data []uint8) {
+	// TODO: Need anything else?
+	_this.stream.AddBytes(data)
+}
+
 func (_this *arrayEncoderEngine) EncodeMarkupContentString(data string) {
 	// TODO: Not this
 	_this.EncodeMarkupContentStringData([]byte(data))
