@@ -28,7 +28,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
-func TestEncodeDecodeNil(t *testing.T) {
+func TestEncodeDecodeNA(t *testing.T) {
 	assertEncodeDecode(t, BD(), V(1), NA(), NA(), ED())
 }
 

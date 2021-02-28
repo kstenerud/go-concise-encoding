@@ -1361,24 +1361,24 @@ func TestCTEComplexComment(t *testing.T) {
 >`)
 
 	expected := `c1
-/**/
+/*  */
 (
-    /**/
-    a =  /**/
+    /*  */
+    a =  /*  */
     b
-    /**/
-) /**/
+    /*  */
+) /*  */
 <a,
-    /**/
+    /*  */
     <b>
 >`
 
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()
 	encOpts.Indent = "    "
-	encoder := NewOldEncoder(encOpts)
+	encoder := NewEncoder(encOpts)
 	encoder.PrepareToEncode(encoded)
-	decoder := NewOldDecoder(nil)
+	decoder := NewDecoder(nil)
 	err := decoder.Decode(bytes.NewBuffer(document), encoder)
 	if err != nil {
 		t.Error(err)
@@ -1824,9 +1824,9 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()
 	encOpts.Indent = "    "
-	encoder := NewOldEncoder(encOpts)
+	encoder := NewEncoder(encOpts)
 	encoder.PrepareToEncode(encoded)
-	decoder := NewOldDecoder(nil)
+	decoder := NewDecoder(nil)
 	err := decoder.Decode(bytes.NewBuffer([]byte(document)), encoder)
 	if err != nil {
 		t.Error(err)
@@ -1837,4 +1837,9 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
+}
+
+func TestX(t *testing.T) {
+	assertEncode(t, nil, `c1
+@na`, BD(), V(1), NA(), NA(), ED())
 }

@@ -148,7 +148,7 @@ func NewCBEDecoder(opts *options.CBEDecoderOptions) Decoder {
 }
 
 func NewCTEEncoder(opts *options.CTEEncoderOptions) Encoder {
-	return cte.NewOldEncoder(opts)
+	return cte.NewEncoder(opts)
 }
 
 func NewCTEDecoder(opts *options.CTEDecoderOptions) Decoder {
