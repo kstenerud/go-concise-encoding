@@ -191,6 +191,7 @@ func decodeMetadataKey(ctx *DecoderContext) {
 func decodeMetadataValue(ctx *DecoderContext) {
 	decodeWhitespace(ctx)
 	if ctx.Stream.PeekByteNoEOD() != '=' {
+		// TODO: Allow comments before the =
 		ctx.Stream.Errorf("Expected Metadata separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
 	}
 	ctx.Stream.AdvanceByte()

@@ -23,6 +23,8 @@ package cte
 import (
 	"math"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
@@ -398,18 +400,45 @@ func advanceAndDecodeConstant(ctx *DecoderContext) {
 	}
 }
 
-func advanceAndDecodeReference(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '$'
-
-	ctx.EventReceiver.OnReference()
-	panic("TODO: decodeReference")
-}
-
 func advanceAndDecodeMarker(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
 	ctx.EventReceiver.OnMarker()
-	panic("TODO: decodeMarker")
+
+	asString, asUint := ctx.Stream.DecodeMarkerID()
+	if len(asString) > 0 {
+		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
+	} else {
+		ctx.EventReceiver.OnPositiveInt(asUint)
+	}
+	if ctx.Stream.PeekByteNoEOD() != ':' {
+		ctx.Stream.Errorf("Missing colon between marker ID and marked value")
+	}
+	ctx.Stream.AdvanceByte()
+	decodeByFirstChar(ctx)
+}
+
+func advanceAndDecodeReference(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '$'
+
+	ctx.EventReceiver.OnReference()
+
+	if ctx.Stream.PeekByteNoEOD() == '|' {
+		ctx.Stream.AdvanceByte()
+		arrayType := decodeArrayType(ctx)
+		if arrayType != "r" {
+			ctx.Stream.Errorf("%s: Invalid array type for reference ID", arrayType)
+		}
+		decodeRID(ctx)
+		return
+	}
+
+	asString, asUint := ctx.Stream.DecodeMarkerID()
+	if len(asString) > 0 {
+		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
+	} else {
+		ctx.EventReceiver.OnPositiveInt(asUint)
+	}
 }
 
 func advanceAndDecodeSuffix(ctx *DecoderContext) {

@@ -157,6 +157,14 @@ var encoders = []Encoder{
 		Methods: []string{Child, Begin, End, Cmt, Arr, Str, BArr},
 	},
 	{
+		Name:    "reference",
+		Methods: []string{Child, Begin, PInt, Int, BInt, Const, Arr, Str, BArr},
+	},
+	{
+		Name:    "markerID",
+		Methods: []string{Child, Begin, PInt, Int, BInt, Const, Arr, Str, BArr},
+	},
+	{
 		Name:    "array",
 		Methods: []string{Chunk, Data},
 	},

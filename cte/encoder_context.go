@@ -169,11 +169,13 @@ func (_this *EncoderContext) BeginStandardComment() {
 }
 
 func (_this *EncoderContext) BeginStandardMarker() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginMarker"))
+	_this.Stack(&globalMarkerIDEncoder)
+	_this.CurrentEncoder.Begin(_this)
 }
 
 func (_this *EncoderContext) BeginStandardReference() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginReference"))
+	_this.Stack(&globalReferenceEncoder)
+	_this.CurrentEncoder.Begin(_this)
 }
 
 func (_this *EncoderContext) BeginStandardConcatenate() {

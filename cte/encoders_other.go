@@ -405,3 +405,100 @@ func (_this *postInvisibleEncoder) EncodeStringlikeArray(ctx *EncoderContext, ar
 func (_this *postInvisibleEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.removeSelf(ctx).BeginArray(ctx, arrayType)
 }
+
+// =============================================================================
+
+type referenceEncoder struct{}
+
+var globalReferenceEncoder referenceEncoder
+
+func (_this *referenceEncoder) String() string { return "referenceEncoder" }
+
+func (_this *referenceEncoder) complete(ctx *EncoderContext) {
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx)
+}
+
+func (_this *referenceEncoder) Begin(ctx *EncoderContext) {
+	ctx.Stream.AddByte('$')
+}
+
+func (_this *referenceEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	_this.complete(ctx)
+}
+
+func (_this *referenceEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	ctx.Stream.WritePositiveInt(value)
+	_this.complete(ctx)
+}
+func (_this *referenceEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	ctx.Stream.WriteInt(value)
+	_this.complete(ctx)
+}
+func (_this *referenceEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	ctx.Stream.WriteBigInt(value)
+	_this.complete(ctx)
+}
+func (_this *referenceEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
+	panic("TODO: referenceEncoder.BeginConstant")
+}
+func (_this *referenceEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	_this.complete(ctx)
+}
+func (_this *referenceEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	_this.complete(ctx)
+}
+func (_this *referenceEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	ctx.BeginStandardArray(arrayType)
+}
+
+// =============================================================================
+
+type markerIDEncoder struct{}
+
+var globalMarkerIDEncoder markerIDEncoder
+
+func (_this *markerIDEncoder) String() string { return "markerIDEncoder" }
+
+func (_this *markerIDEncoder) complete(ctx *EncoderContext) {
+	ctx.Unstack()
+	ctx.Stream.AddByte(':')
+	ctx.ClearPrefix()
+}
+
+func (_this *markerIDEncoder) Begin(ctx *EncoderContext) {
+	ctx.Stream.AddByte('&')
+}
+
+func (_this *markerIDEncoder) ChildContainerFinished(ctx *EncoderContext) {
+	_this.complete(ctx)
+}
+
+func (_this *markerIDEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	ctx.Stream.WritePositiveInt(value)
+	_this.complete(ctx)
+}
+func (_this *markerIDEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	ctx.Stream.WriteInt(value)
+	_this.complete(ctx)
+}
+func (_this *markerIDEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	ctx.Stream.WriteBigInt(value)
+	_this.complete(ctx)
+}
+func (_this *markerIDEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
+	panic("TODO: markerIDEncoder.BeginConstant")
+}
+func (_this *markerIDEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	_this.complete(ctx)
+}
+func (_this *markerIDEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	_this.complete(ctx)
+}
+func (_this *markerIDEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	ctx.BeginStandardArray(arrayType)
+}

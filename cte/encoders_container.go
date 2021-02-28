@@ -42,6 +42,10 @@ func (_this *listEncoder) prepareToWrite(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 }
 
+func (_this *listEncoder) completeObject(ctx *EncoderContext) {
+	ctx.SetStandardIndentPrefix()
+}
+
 func (_this *listEncoder) Begin(ctx *EncoderContext) {
 	ctx.Stream.WriteListBegin()
 	ctx.IncreaseIndent()
@@ -61,68 +65,83 @@ func (_this *listEncoder) End(ctx *EncoderContext) {
 
 func (_this *listEncoder) ChildContainerFinished(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = true
-	ctx.SetStandardIndentPrefix()
+	_this.completeObject(ctx)
 }
 
 func (_this *listEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeTrue(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteTrue()
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeFalse(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteFalse()
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WritePositiveInt(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNegativeInt(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeInt(ctx *EncoderContext, value int64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteInt(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBigInt(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteFloat(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBigFloat(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteDecimalFloat(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBigDecimalFloat(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNan(signaling)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteTime(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteCompactTime(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteUUID(value)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) BeginList(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
@@ -167,10 +186,12 @@ func (_this *listEncoder) BeginNA(ctx *EncoderContext) {
 func (_this *listEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
 	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
 	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareToWrite(ctx)

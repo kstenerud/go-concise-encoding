@@ -422,7 +422,8 @@ func (_this *TLReferenceRIDRule) OnArrayBegin(ctx *Context, arrayType events.Arr
 	ctx.BeginArrayRIDReference(arrayType)
 }
 func (_this *TLReferenceRIDRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.BeginArrayRIDReference(arrayType)
+	// TODO: Make this properly
+	_this.OnArray(ctx, arrayType, uint64(len(data)), []byte(data))
 }
 func (_this *TLReferenceRIDRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	// Toss out the result because it's a resource ID

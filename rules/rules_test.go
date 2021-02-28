@@ -1049,3 +1049,9 @@ func TestRulesReset(t *testing.T) {
 	rules.Reset()
 	assertEventsSucceed(t, rules, BD(), V(1), L(), MARK(), I(1), S("test"))
 }
+
+func TestTopLevelStringLikeReferenceID(t *testing.T) {
+	opts := options.DefaultRuleOptions()
+	rules := NewRules(events.NewNullEventReceiver(), opts)
+	assertEventsSucceed(t, rules, BD(), V(1), REF(), RID("http://x.y"), ED())
+}
