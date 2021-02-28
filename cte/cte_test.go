@@ -1348,7 +1348,7 @@ func TestCTECommentAfterValue(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1
 [
     a
-    /**/
+    /*  */
 ]`, BD(), V(1), L(), S("a"), CMT(), E(), E(), ED())
 }
 
@@ -1407,12 +1407,12 @@ func TestCTECommentPretty(t *testing.T) {
 	assertDecodeEncode(t, nil, opts, `c1
 {
     a = b
-    /**/
+    /*  */
 }`, BD(), V(1), M(), S("a"), S("b"), CMT(), E(), E(), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-/**/
+/*  */
 1`, BD(), V(1), CMT(), E(), PI(1), ED())
 
 	opts.Indent = "    "
@@ -1422,7 +1422,7 @@ func TestCTECommentPretty(t *testing.T) {
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-/* /**/ */
+/* /*  */ */
 1`, BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
 
 	opts.Indent = "    "
@@ -1432,7 +1432,7 @@ func TestCTECommentPretty(t *testing.T) {
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-/**/
+/*  */
 a`, BD(), V(1), CMT(), E(), S("a"), ED())
 
 	opts.Indent = "    "
@@ -1837,8 +1837,4 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
-}
-
-func TestX(t *testing.T) {
-	assertDecode(t, nil, "c1 {a=2/**/}", BD(), V(1), M(), S("a"), PI(2), CMT(), E(), E(), ED())
 }
