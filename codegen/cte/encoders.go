@@ -33,7 +33,7 @@ import (
 var (
 	Begin  = "Begin(ctx *EncoderContext)"
 	End    = "End(ctx *EncoderContext)"
-	Child  = "ChildContainerFinished(ctx *EncoderContext)"
+	Child  = "ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)"
 	Bool   = "EncodeBool(ctx *EncoderContext, value bool)"
 	True   = "EncodeTrue(ctx *EncoderContext)"
 	False  = "EncodeFalse(ctx *EncoderContext)"

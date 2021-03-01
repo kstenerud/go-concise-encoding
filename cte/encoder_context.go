@@ -197,7 +197,7 @@ func (_this *EncoderContext) BeginStandardArray(arrayType events.ArrayType) {
 	_this.Stack((&globalArrayEncoder))
 	_this.ArrayEngine.BeginArray(arrayType, func() {
 		_this.Unstack()
-		_this.CurrentEncoder.ChildContainerFinished(_this)
+		_this.CurrentEncoder.ChildContainerFinished(_this, true)
 	})
 }
 

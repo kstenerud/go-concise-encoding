@@ -39,7 +39,7 @@ import (
 type Encoder interface {
 	Begin(ctx *EncoderContext)
 	End(ctx *EncoderContext)
-	ChildContainerFinished(ctx *EncoderContext)
+	ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)
 	EncodeBool(ctx *EncoderContext, value bool)
 	EncodeTrue(ctx *EncoderContext)
 	EncodeFalse(ctx *EncoderContext)

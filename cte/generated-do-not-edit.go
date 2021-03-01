@@ -52,7 +52,7 @@ func (_this *topLevelEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) 
 func (_this *naEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
-func (_this *naEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *naEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *naEncoder) BeginMetadata(ctx *EncoderContext) {
@@ -70,7 +70,7 @@ func (_this *naEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
 func (_this *constantEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
-func (_this *constantEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *constantEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *constantEncoder) BeginMetadata(ctx *EncoderContext) {
@@ -91,7 +91,7 @@ func (_this *postInvisibleEncoder) Begin(ctx *EncoderContext) {
 func (_this *postInvisibleEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
-func (_this *postInvisibleEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *postInvisibleEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *postInvisibleEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
@@ -541,7 +541,7 @@ func (_this *arrayEncoder) Begin(ctx *EncoderContext) {
 func (_this *arrayEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
-func (_this *arrayEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *arrayEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *arrayEncoder) EncodeBool(ctx *EncoderContext, value bool) {

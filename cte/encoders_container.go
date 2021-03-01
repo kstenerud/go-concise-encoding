@@ -60,10 +60,10 @@ func (_this *listEncoder) End(ctx *EncoderContext) {
 	}
 	ctx.Stream.WriteListEnd()
 	ctx.Unstack()
-	ctx.CurrentEncoder.ChildContainerFinished(ctx)
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
 
-func (_this *listEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *listEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	ctx.ContainerHasObjects = true
 	_this.completeObject(ctx)
 }
@@ -235,12 +235,14 @@ func (_this *mapKeyEncoder) End(ctx *EncoderContext) {
 	}
 	ctx.Stream.WriteMapEnd()
 	ctx.Unstack()
-	ctx.CurrentEncoder.ChildContainerFinished(ctx)
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
 
-func (_this *mapKeyEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SetStandardMapValuePrefix()
-	ctx.ChangeEncoder(&globalMapValueEncoder)
+func (_this *mapKeyEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SetStandardMapValuePrefix()
+		ctx.ChangeEncoder(&globalMapValueEncoder)
+	}
 	ctx.ContainerHasObjects = true
 }
 
@@ -358,9 +360,11 @@ func (_this *mapValueEncoder) prepareForContainer(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = true
 }
 
-func (_this *mapValueEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SetStandardMapKeyPrefix()
-	ctx.ChangeEncoder(&globalMapKeyEncoder)
+func (_this *mapValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SetStandardMapKeyPrefix()
+		ctx.ChangeEncoder(&globalMapKeyEncoder)
+	}
 	ctx.ContainerHasObjects = true
 }
 
@@ -486,16 +490,15 @@ var globalMetadataKeyEncoder metadataKeyEncoder
 
 func (_this *metadataKeyEncoder) String() string { return "metadataKeyEncoder" }
 
-func (_this *metadataKeyEncoder) prepareToWrite(ctx *EncoderContext) {
+func (_this *metadataKeyEncoder) beginCompleteObject(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 	ctx.SetStandardMapValuePrefix()
 	ctx.ChangeEncoder(&globalMetadataValueEncoder)
 	ctx.ContainerHasObjects = true
 }
 
-func (_this *metadataKeyEncoder) prepareForContainer(ctx *EncoderContext) {
+func (_this *metadataKeyEncoder) beginContainer(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.ContainerHasObjects = true
 }
 
 func (_this *metadataKeyEncoder) Begin(ctx *EncoderContext) {
@@ -514,103 +517,105 @@ func (_this *metadataKeyEncoder) End(ctx *EncoderContext) {
 	ctx.ChangeEncoder(&globalPostInvisibleEncoder)
 }
 
-func (_this *metadataKeyEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SetStandardMapValuePrefix()
-	ctx.ChangeEncoder(&globalMetadataValueEncoder)
+func (_this *metadataKeyEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SetStandardMapValuePrefix()
+		ctx.ChangeEncoder(&globalMetadataValueEncoder)
+	}
 	ctx.ContainerHasObjects = true
 }
 
 func (_this *metadataKeyEncoder) EncodeBool(ctx *EncoderContext, value bool) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBool(value)
 }
 func (_this *metadataKeyEncoder) EncodeTrue(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteTrue()
 }
 func (_this *metadataKeyEncoder) EncodeFalse(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteFalse()
 }
 func (_this *metadataKeyEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WritePositiveInt(value)
 }
 func (_this *metadataKeyEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteNegativeInt(value)
 }
 func (_this *metadataKeyEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteInt(value)
 }
 func (_this *metadataKeyEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBigInt(value)
 }
 func (_this *metadataKeyEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteFloat(value)
 }
 func (_this *metadataKeyEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBigFloat(value)
 }
 func (_this *metadataKeyEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteDecimalFloat(value)
 }
 func (_this *metadataKeyEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBigDecimalFloat(value)
 }
 func (_this *metadataKeyEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteTime(value)
 }
 func (_this *metadataKeyEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteCompactTime(value)
 }
 func (_this *metadataKeyEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteUUID(value)
 }
 func (_this *metadataKeyEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMetadata()
 }
 func (_this *metadataKeyEncoder) BeginComment(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardComment()
 }
 func (_this *metadataKeyEncoder) BeginMarker(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMarker()
 }
 func (_this *metadataKeyEncoder) BeginReference(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardReference()
 }
 func (_this *metadataKeyEncoder) BeginConcatenate(ctx *EncoderContext) {
 	// TODO ?
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardConcatenate()
 }
 func (_this *metadataKeyEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *metadataKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *metadataKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *metadataKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardArray(arrayType)
 }
 
@@ -622,135 +627,135 @@ var globalMetadataValueEncoder metadataValueEncoder
 
 func (_this *metadataValueEncoder) String() string { return "metadataValueEncoder" }
 
-func (_this *metadataValueEncoder) prepareToWrite(ctx *EncoderContext) {
+func (_this *metadataValueEncoder) beginCompleteObject(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 	ctx.SetStandardMapKeyPrefix()
 	ctx.ChangeEncoder(&globalMetadataKeyEncoder)
 	ctx.ContainerHasObjects = true
 }
 
-func (_this *metadataValueEncoder) prepareForContainer(ctx *EncoderContext) {
+func (_this *metadataValueEncoder) beginContainer(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.ContainerHasObjects = true
 }
 
-func (_this *metadataValueEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SetStandardMapKeyPrefix()
-	ctx.ChangeEncoder(&globalMetadataKeyEncoder)
+func (_this *metadataValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SetStandardMapKeyPrefix()
+		ctx.ChangeEncoder(&globalMetadataKeyEncoder)
+	}
 	ctx.ContainerHasObjects = true
 }
 
 func (_this *metadataValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBool(value)
 }
 func (_this *metadataValueEncoder) EncodeTrue(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteTrue()
 }
 func (_this *metadataValueEncoder) EncodeFalse(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteFalse()
 }
 func (_this *metadataValueEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WritePositiveInt(value)
 }
 func (_this *metadataValueEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteNegativeInt(value)
 }
 func (_this *metadataValueEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteInt(value)
 }
 func (_this *metadataValueEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBigInt(value)
 }
 func (_this *metadataValueEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteFloat(value)
 }
 func (_this *metadataValueEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBigFloat(value)
 }
 func (_this *metadataValueEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteDecimalFloat(value)
 }
 func (_this *metadataValueEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBigDecimalFloat(value)
 }
 func (_this *metadataValueEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteNan(signaling)
 }
 func (_this *metadataValueEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteTime(value)
 }
 func (_this *metadataValueEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteCompactTime(value)
 }
 func (_this *metadataValueEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteUUID(value)
 }
 func (_this *metadataValueEncoder) BeginList(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardList()
 }
 func (_this *metadataValueEncoder) BeginMap(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMap()
 }
 func (_this *metadataValueEncoder) BeginMarkup(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMarkup()
 }
 func (_this *metadataValueEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMetadata()
 }
 func (_this *metadataValueEncoder) BeginComment(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.ChangeEncoder(&globalMetadataKeyEncoder)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardComment()
 }
 func (_this *metadataValueEncoder) BeginMarker(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMarker()
 }
 func (_this *metadataValueEncoder) BeginReference(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardReference()
 }
 func (_this *metadataValueEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardConcatenate()
 }
 func (_this *metadataValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *metadataValueEncoder) BeginNA(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardNA()
 }
 func (_this *metadataValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 }
 func (_this *metadataValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	_this.prepareToWrite(ctx)
+	_this.beginCompleteObject(ctx)
 	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 func (_this *metadataValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	_this.prepareForContainer(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardArray(arrayType)
 }
 
@@ -780,8 +785,10 @@ func (_this *markupNameEncoder) Begin(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = false
 }
 
-func (_this *markupNameEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SwitchToMarkupAttributes()
+func (_this *markupNameEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SwitchToMarkupAttributes()
+	}
 }
 
 func (_this *markupNameEncoder) EncodeBool(ctx *EncoderContext, value bool) {
@@ -895,9 +902,11 @@ func (_this *markupKeyEncoder) End(ctx *EncoderContext) {
 	ctx.SwitchToMarkupContents()
 }
 
-func (_this *markupKeyEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SetMarkupAttributeValuePrefix()
-	ctx.ChangeEncoder(&globalMarkupValueEncoder)
+func (_this *markupKeyEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SetMarkupAttributeValuePrefix()
+		ctx.ChangeEncoder(&globalMarkupValueEncoder)
+	}
 }
 
 func (_this *markupKeyEncoder) EncodeBool(ctx *EncoderContext, value bool) {
@@ -1012,9 +1021,11 @@ func (_this *markupValueEncoder) prepareForContainer(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 }
 
-func (_this *markupValueEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.SetMarkupAttributeKeyPrefix()
-	ctx.ChangeEncoder(&globalMarkupKeyEncoder)
+func (_this *markupValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	if isVisibleChild {
+		ctx.SetMarkupAttributeKeyPrefix()
+		ctx.ChangeEncoder(&globalMarkupKeyEncoder)
+	}
 }
 
 func (_this *markupValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
@@ -1139,16 +1150,27 @@ var globalMarkupContentsEncoder markupContentsEncoder
 
 func (_this *markupContentsEncoder) String() string { return "markupContentsEncoder" }
 
-func (_this *markupContentsEncoder) prepareToWrite(ctx *EncoderContext) {
+func (_this *markupContentsEncoder) beginObject(ctx *EncoderContext) {
 	if !ctx.ContainerHasObjects {
 		ctx.Stream.AddByte(',')
-		ctx.Stream.AddBytes(ctx.indenter.Get())
+		ctx.SetStandardIndentPrefix()
 	}
+	ctx.WriteCurrentPrefix()
+	ctx.ClearPrefix()
 	ctx.ContainerHasObjects = true
+}
+
+func (_this *markupContentsEncoder) beginContainer(ctx *EncoderContext) {
+	if !ctx.ContainerHasObjects {
+		ctx.Stream.AddByte(',')
+		ctx.SetStandardIndentPrefix()
+	}
+	ctx.WriteCurrentPrefix()
 }
 
 func (_this *markupContentsEncoder) Begin(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = false
+	ctx.ClearPrefix()
 }
 
 func (_this *markupContentsEncoder) End(ctx *EncoderContext) {
@@ -1158,32 +1180,32 @@ func (_this *markupContentsEncoder) End(ctx *EncoderContext) {
 	}
 	ctx.Stream.WriteMarkupEnd()
 	ctx.Unstack()
-	ctx.CurrentEncoder.ChildContainerFinished(ctx)
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
 
-func (_this *markupContentsEncoder) ChildContainerFinished(ctx *EncoderContext) {
-	ctx.ContainerHasObjects = true
+func (_this *markupContentsEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	ctx.SetStandardIndentPrefix()
+	ctx.ContainerHasObjects = true
 }
 
 func (_this *markupContentsEncoder) BeginMarkup(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardMarkup()
 }
 func (_this *markupContentsEncoder) BeginComment(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
+	_this.beginContainer(ctx)
 	ctx.BeginStandardComment()
 }
 func (_this *markupContentsEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.prepareToWrite(ctx)
+	_this.beginObject(ctx)
 	ctx.ArrayEngine.EncodeMarkupContentStringData(data)
 }
 func (_this *markupContentsEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	_this.prepareToWrite(ctx)
+	_this.beginObject(ctx)
 	ctx.ArrayEngine.EncodeMarkupContentString(data)
 }
 func (_this *markupContentsEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	_this.prepareToWrite(ctx)
+	_this.beginObject(ctx)
 	// TODO: begin content string array
 	ctx.BeginStandardArray(arrayType)
 }
@@ -1196,31 +1218,44 @@ var globalCommentEncoder commentEncoder
 
 func (_this *commentEncoder) String() string { return "commentEncoder" }
 
-func (_this *commentEncoder) prepareToWrite(ctx *EncoderContext) {
+func (_this *commentEncoder) beginItem(ctx *EncoderContext) {
+	ctx.ContainerHasObjects = true
+	ctx.Stream.AddByte(' ')
 }
 
 func (_this *commentEncoder) Begin(ctx *EncoderContext) {
-	ctx.Stream.AddString("/* ")
+	ctx.ContainerHasObjects = false
+	ctx.Stream.AddString("/*")
 }
 
 func (_this *commentEncoder) End(ctx *EncoderContext) {
-	ctx.Stream.AddString(" */")
+	if ctx.ContainerHasObjects {
+		ctx.Stream.AddByte(' ')
+	}
+	ctx.Stream.AddString("*/")
 	ctx.Unstack()
+	ctx.SetStandardIndentPrefix()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, false)
 }
 
-func (_this *commentEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *commentEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	ctx.ContainerHasObjects = true
 }
 
 func (_this *commentEncoder) BeginComment(ctx *EncoderContext) {
+	_this.beginItem(ctx)
 	ctx.BeginStandardComment()
 }
 func (_this *commentEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	_this.beginItem(ctx)
 	ctx.ArrayEngine.EncodeCommentStringData(data)
 }
 func (_this *commentEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	_this.beginItem(ctx)
 	ctx.ArrayEngine.EncodeCommentString(data)
 }
 func (_this *commentEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	_this.beginItem(ctx)
 	// TODO: begin content string array
 	ctx.BeginStandardArray(arrayType)
 }

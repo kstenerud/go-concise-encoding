@@ -1332,15 +1332,15 @@ func TestCTECommentSingleLine(t *testing.T) {
 
 func TestCTECommentMultiline(t *testing.T) {
 	assertDecode(t, nil, "c1 /**/1", BD(), V(1), CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c1 /* */1", BD(), V(1), CMT(), E(), PI(1), ED())
+	assertDecode(t, nil, "c1 /**/1", BD(), V(1), CMT(), E(), PI(1), ED())
 	assertDecode(t, nil, "c1 /* This is a comment */1", BD(), V(1), CMT(), S("This is a comment"), E(), PI(1), ED())
 	assertDecode(t, nil, "c1 /*This is a comment*/1", BD(), V(1), CMT(), S("This is a comment"), E(), PI(1), ED())
 }
 
 func TestCTECommentMultilineNested(t *testing.T) {
 	assertDecode(t, nil, "c1 /*/**/*/1", BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c1 /*/* */*/1", BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c1 /* /* */ */1", BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
+	assertDecode(t, nil, "c1 /*/**/*/1", BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
+	assertDecode(t, nil, "c1 /* /**/ */1", BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
 	assertDecode(t, nil, "c1  /* before/* mid */ after*/1  ", BD(), V(1), CMT(), S("before"), CMT(), S("mid"), E(), S("after"), E(), PI(1), ED())
 }
 
@@ -1348,7 +1348,7 @@ func TestCTECommentAfterValue(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c1
 [
     a
-    /*  */
+    /**/
 ]`, BD(), V(1), L(), S("a"), CMT(), E(), E(), ED())
 }
 
@@ -1361,15 +1361,15 @@ func TestCTEComplexComment(t *testing.T) {
 >`)
 
 	expected := `c1
-/*  */
+/**/
 (
-    /*  */
-    a =  /*  */
+    /**/
+    a = /**/
     b
-    /*  */
-) /*  */
+    /**/
+)/**/
 <a,
-    /*  */
+    /**/
     <b>
 >`
 
@@ -1407,12 +1407,12 @@ func TestCTECommentPretty(t *testing.T) {
 	assertDecodeEncode(t, nil, opts, `c1
 {
     a = b
-    /*  */
+    /**/
 }`, BD(), V(1), M(), S("a"), S("b"), CMT(), E(), E(), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-/*  */
+/**/
 1`, BD(), V(1), CMT(), E(), PI(1), ED())
 
 	opts.Indent = "    "
@@ -1422,7 +1422,7 @@ func TestCTECommentPretty(t *testing.T) {
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-/* /*  */ */
+/* /**/ */
 1`, BD(), V(1), CMT(), CMT(), E(), E(), PI(1), ED())
 
 	opts.Indent = "    "
@@ -1432,7 +1432,7 @@ func TestCTECommentPretty(t *testing.T) {
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
-/*  */
+/**/
 a`, BD(), V(1), CMT(), E(), S("a"), ED())
 
 	opts.Indent = "    "
@@ -1837,9 +1837,4 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
-}
-
-func TestX(t *testing.T) {
-	assertEncode(t, nil, `c1
-@na`, BD(), V(1), NA(), NA(), ED())
 }

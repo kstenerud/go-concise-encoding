@@ -37,7 +37,7 @@ var globalTopLevelEncoder topLevelEncoder
 
 func (_this *topLevelEncoder) String() string { return "topLevelEncoder" }
 
-func (_this *topLevelEncoder) ChildContainerFinished(ctx *EncoderContext) {
+func (_this *topLevelEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	// Nothing to do
 }
 
