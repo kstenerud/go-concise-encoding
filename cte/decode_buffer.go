@@ -1360,6 +1360,14 @@ func (_this *DecodeBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
 
 // Internal
 
+func chooseLowWater(bufferSize int) int {
+	lowWater := bufferSize / 50
+	if lowWater < 32 {
+		lowWater = 32
+	}
+	return lowWater
+}
+
 type nextType int
 
 const (
@@ -1380,4 +1388,17 @@ func init() {
 		lineColCounter[i] = 1
 	}
 	lineColCounter['\n'] = -1
+}
+
+var subsecondMagnitudes = []int{
+	1000000000,
+	100000000,
+	10000000,
+	1000000,
+	100000,
+	10000,
+	1000,
+	100,
+	10,
+	1,
 }
