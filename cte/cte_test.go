@@ -897,10 +897,6 @@ func TestCTEArrayBool(t *testing.T) {
 	// TODO: TestCTEArrayBool
 }
 
-func TestCTEBadArrayType(t *testing.T) {
-	// assertDecodeFails(t, `c1 x"01"`)
-}
-
 func TestCTEChunked(t *testing.T) {
 	assertChunkedStringlike := func(encoded string, startEvent *test.TEvent) {
 		assertEncode(t, nil, encoded, BD(), V(1), startEvent, AC(8, false), AD([]byte("abcdefgh")), ED())
@@ -1396,7 +1392,7 @@ func TestCTECommentFollowing(t *testing.T) {
 	assertDecode(t, nil, "c1 {a=2/**/}", BD(), V(1), M(), S("a"), PI(2), CMT(), E(), E(), ED())
 	assertDecode(t, nil, "c1 {a=-2/**/}", BD(), V(1), M(), S("a"), NI(2), CMT(), E(), E(), ED())
 	// TODO: All other bare values: float, date/time, etc
-	// assertDecode(t, nil, "c1 {a=1.5/**/}", BD(), V(1), M(), S("a"), F(1.5), CMT(), E(), E(), ED())
+	assertDecode(t, nil, "c1 {a=1.5/**/}", BD(), V(1), M(), S("a"), DF(NewDFloat("1.5")), CMT(), E(), E(), ED())
 	// TODO: Also test for //
 }
 
@@ -1528,44 +1524,38 @@ func TestCTEMapPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
 	// // Empty 1 level
-	// opts.Indent = "    "
-	// assertDecodeEncode(t, nil, opts, `c1
-	// {}`, BD(), V(1), M(), E(), ED())
+	assertDecodeEncode(t, nil, opts, `c1
+{}`, BD(), V(1), M(), E(), ED())
 
 	// Empty 2 level
-	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c1
 {
     a = {}
 }`, BD(), V(1), M(), S("a"), M(), E(), E(), ED())
-	// opts.Indent = "    "
-	// assertDecodeEncode(t, nil, opts, `c1
-	// {
-	//    a = {}
-	//    b = {}
-	// }`, BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
+	assertDecodeEncode(t, nil, opts, `c1
+{
+    a = {}
+    b = {}
+}`, BD(), V(1), M(), S("a"), M(), E(), S("b"), M(), E(), E(), ED())
 
-	// // 1 level
-	// opts.Indent = "    "
-	// assertDecodeEncode(t, nil, opts, `c1
-	// {
-	//    1 = 2
-	// }`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
+	// 1 level
+	assertDecodeEncode(t, nil, opts, `c1
+{
+    1 = 2
+}`, BD(), V(1), M(), PI(1), PI(2), E(), ED())
 
-	// // 2 level
-	// 	BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
-	// opts.Indent = "    "
-	// assertDecodeEncode(t, nil, opts, `c1
-	// {
-	//    a = {
-	//        1 = 2
-	//        3 = 4
-	//    }
-	//    b = {
-	//        5 = 6
-	//        7 = 8
-	//    }
-	// }`, BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
+	// 2 level
+	assertDecodeEncode(t, nil, opts, `c1
+{
+    a = {
+        1 = 2
+        3 = 4
+    }
+    b = {
+        5 = 6
+        7 = 8
+    }
+}`, BD(), V(1), M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
 }
 
 func TestCTEMetadataPretty(t *testing.T) {

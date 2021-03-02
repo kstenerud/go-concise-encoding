@@ -77,82 +77,7 @@ func containsEscapes(str []byte) bool {
 	return false
 }
 
-// Wraps a string destined for a CTE document, adding quotes or escapes as
-// necessary.
-func asPotentialQuotedString(str []byte) (finalString []byte) {
-	if len(str) == 0 {
-		return []byte{'"', '"'}
-	}
-
-	escapeCount, requiresQuotes := getStringRequirements(str)
-
-	if !requiresQuotes {
-		return str
-	}
-
-	if escapeCount == 0 {
-		finalString = make([]byte, len(str)+2)
-		copy(finalString[1:], str)
-		finalString[0] = '"'
-		finalString[len(finalString)-1] = '"'
-		return finalString
-	}
-
-	return asEscapedQuotedString(str, escapeCount)
-}
-
-// Wraps a string-encoded array destined for a CTE document.
-func asStringArray(elementType []byte, str []byte) []byte {
-	if needsEscapesStringlikeArray(str) {
-		str = asEscapedStringArrayContent(str)
-	}
-
-	bytes := make([]byte, len(str)+len(elementType)+3)
-	bytes[0] = '|'
-	bytes[len(bytes)-1] = '|'
-	copy(bytes[1:], elementType)
-	bytes[1+len(elementType)] = ' '
-	copy(bytes[2+len(elementType):], str)
-	return bytes
-}
-
-// Possibly escapes a string-encoded array destined for a CTE document.
-func asStringArrayContents(str []byte) []byte {
-	if needsEscapesStringlikeArray(str) {
-		return asEscapedStringArrayContent(str)
-	}
-
-	return str
-}
-
-// Wraps markup content destined for a CTE document.
-func asMarkupContents(str []byte) []byte {
-	if needsEscapesMarkup(str) {
-		return asEscapedMarkupContents(str)
-	}
-
-	return str
-}
-
 // ============================================================================
-
-func asEscapedQuotedString(str []byte, escapeCount int) []byte {
-	var bb bytes.Buffer
-	// Worst case scenario: All characters that require escaping need a unicode
-	// sequence. In this case, we'd need at least 7 bytes per escaped character.
-	bb.Grow(len(str) + escapeCount*6 + 2)
-	// Note: StringBuilder's WriteXYZ() always return nil errors
-	bb.WriteByte('"')
-	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeQuoted) {
-			bb.Write(escapeCharQuoted(ch))
-		} else {
-			bb.WriteRune(ch)
-		}
-	}
-	bb.WriteByte('"')
-	return bb.Bytes()
-}
 
 func escapeCharQuoted(ch rune) []byte {
 	switch ch {
@@ -174,20 +99,6 @@ func escapeCharQuoted(ch rune) []byte {
 	return unicodeEscape(ch)
 }
 
-func asEscapedStringArrayContent(str []byte) []byte {
-	var bb bytes.Buffer
-	bb.Grow(len(str))
-	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
-			// Note: StringBuilder's WriteXYZ() always return nil errors
-			bb.Write(escapeCharStringArray(ch))
-		} else {
-			bb.WriteRune(ch)
-		}
-	}
-	return bb.Bytes()
-}
-
 func unicodeEscape(ch rune) []byte {
 	hex := fmt.Sprintf("%x", ch)
 	return []byte(fmt.Sprintf("\\%d%s", len(hex), hex))
@@ -207,20 +118,6 @@ func escapeCharStringArray(ch rune) []byte {
 		return []byte(`\n`)
 	}
 	return unicodeEscape(ch)
-}
-
-func asEscapedMarkupContents(str []byte) []byte {
-	var bb bytes.Buffer
-	bb.Grow(len(str))
-	// Note: StringBuilder's WriteXYZ() always return nil errors
-	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
-			bb.Write(escapeCharMarkup(ch))
-		} else {
-			bb.WriteRune(ch)
-		}
-	}
-	return bb.Bytes()
 }
 
 func escapeCharMarkup(ch rune) []byte {
