@@ -214,7 +214,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 	properties.Add(CharIsUpperAF, charRange('A', 'F')...)
 	properties.Add(CharIsAZ|CharIsAreaLocation, charRange('a', 'z')...)
 	properties.Add(CharIsAZ|CharIsAreaLocation, charRange('A', 'Z')...)
-	properties.Add(CharIsAreaLocation, '_', '-', '+')
+	properties.Add(CharIsAreaLocation, '_', '-', '+', '/')
 
 	properties.Add(CharIsObjectEnd, '\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':', '|', '/')
 

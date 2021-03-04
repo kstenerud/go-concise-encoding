@@ -38,10 +38,9 @@ func decodeMapKey(ctx *DecoderContext) {
 
 func decodeMapValue(ctx *DecoderContext) {
 	decodeWhitespace(ctx)
-	if ctx.Stream.PeekByteNoEOD() != '=' {
+	if ctx.Stream.ReadByteNoEOD() != '=' {
 		ctx.Stream.Errorf("Expected map separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
 	}
-	ctx.Stream.AdvanceByte()
 	decodeWhitespace(ctx)
 	ctx.ChangeDecoder(decodeMapKey)
 	decodeByFirstChar(ctx)
@@ -87,7 +86,7 @@ func advanceAndDecodeMarkupContentBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ','
 
 	ctx.EventReceiver.OnEnd()
-	ctx.BeginMarkupContents()
+	ctx.ChangeDecoder(decodeMarkupContents)
 }
 
 func decodeMarkupContents(ctx *DecoderContext) {
@@ -128,7 +127,7 @@ func advanceAndDecodeMarkupEnd(ctx *DecoderContext) {
 func advanceAndDecodeComment(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '/'
 
-	b := ctx.Stream.ReadByte()
+	b := ctx.Stream.ReadByteNoEOD()
 	switch b {
 	case '/':
 		ctx.EventReceiver.OnComment()
@@ -165,7 +164,7 @@ func decodeCommentContents(ctx *DecoderContext) {
 func advanceAndDecodeCommentEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '*'
 
-	b := ctx.Stream.ReadByte()
+	b := ctx.Stream.ReadByteNoEOD()
 	switch b {
 	case '/':
 		ctx.UnstackDecoder()
@@ -190,11 +189,10 @@ func decodeMetadataKey(ctx *DecoderContext) {
 
 func decodeMetadataValue(ctx *DecoderContext) {
 	decodeWhitespace(ctx)
-	if ctx.Stream.PeekByteNoEOD() != '=' {
+	if ctx.Stream.ReadByteNoEOD() != '=' {
 		// TODO: Allow comments before the =
 		ctx.Stream.Errorf("Expected Metadata separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
 	}
-	ctx.Stream.AdvanceByte()
 	decodeWhitespace(ctx)
 	ctx.ChangeDecoder(decodeMetadataKey)
 	decodeByFirstChar(ctx)

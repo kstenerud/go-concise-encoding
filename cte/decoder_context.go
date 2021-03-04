@@ -42,7 +42,7 @@ type DecoderContext struct {
 
 func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
 	_this.opts = *opts
-	_this.Stream.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
+	_this.Stream.Init(reader)
 	_this.EventReceiver = eventReceiver
 	if cap(_this.stack) > 0 {
 		_this.stack = _this.stack[:0]
@@ -78,11 +78,6 @@ func (_this *DecoderContext) StackDecoder(decoder DecoderFunc) {
 func (_this *DecoderContext) UnstackDecoder() DecoderStackEntry {
 	_this.stack = _this.stack[:len(_this.stack)-1]
 	return _this.stack[len(_this.stack)-1]
-}
-
-func (_this *DecoderContext) BeginMarkupContents() {
-	_this.stack[len(_this.stack)-1].IsMarkupContents = true
-	_this.ChangeDecoder(decodeMarkupContents)
 }
 
 func (_this *DecoderContext) EndMarkup() {

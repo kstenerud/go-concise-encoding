@@ -824,7 +824,6 @@ func TestCTEArrayUint64(t *testing.T) {
 }
 
 func TestCTEArrayFloat16(t *testing.T) {
-	// defer test.PassThroughPanics(true)()
 	eOpts := options.DefaultCTEEncoderOptions()
 
 	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatHexadecimal
@@ -1160,9 +1159,6 @@ func TestCTEMarkup(t *testing.T) {
 <a,
     \>
 >`, BD(), V(1), MUP(), S("a"), E(), S(">"), E(), ED())
-	assertDecode(t, nil, `c1 <a,\r>`, BD(), V(1), MUP(), S("a"), E(), S("\r"), E(), ED())
-	assertDecode(t, nil, `c1 <a,\n>`, BD(), V(1), MUP(), S("a"), E(), S("\n"), E(), ED())
-	assertDecode(t, nil, `c1 <a,\t>`, BD(), V(1), MUP(), S("a"), E(), S("\t"), E(), ED())
 	assertDecode(t, nil, `c1 <a,\*>`, BD(), V(1), MUP(), S("a"), E(), S("*"), E(), ED())
 	assertDecode(t, nil, `c1 <a,\/>`, BD(), V(1), MUP(), S("a"), E(), S("/"), E(), ED())
 
@@ -1616,7 +1612,7 @@ func TestCTEArrayPretty(t *testing.T) {
 
 func TestCTEMarkupVerbatimPretty(t *testing.T) {
 	assertDecode(t, nil, `c1 <blah, \.# aaa #>`,
-		BD(), V(1), MUP(), S("blah"), E(), S("aaa "), E(), ED())
+		BD(), V(1), MUP(), S("blah"), E(), S("aaa"), E(), ED())
 }
 
 func TestCTEBufferEdge(t *testing.T) {

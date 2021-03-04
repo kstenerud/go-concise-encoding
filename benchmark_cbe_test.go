@@ -111,7 +111,10 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	var serialSize int
 	for i := 0; i < b.N; i++ {
 		o := data[i%len(data)]
-		bytes, err := json.Marshal(o)
+		var buff bytes.Buffer
+		enc := json.NewEncoder(&buff)
+		err := enc.Encode(o)
+		bytes := buff.Bytes()
 		if err != nil {
 			b.Fatalf("Marshal error: %s (while encoding %v)", err, describe.D(o))
 		}
@@ -245,7 +248,8 @@ func BenchmarkJSONUnmarshal(b *testing.B) {
 		index := i % len(expectedObjs)
 		document := documents[index]
 		obj := &A{}
-		err := json.Unmarshal(document, obj)
+		decoder := json.NewDecoder(bytes.NewBuffer(document))
+		err := decoder.Decode(obj)
 		if err != nil {
 			b.Fatalf("Unmarshal error: %s (while decoding %v)", err, describe.D(document))
 		}

@@ -42,21 +42,20 @@ func decodeUnquotedString(ctx *DecoderContext) {
 }
 
 func decodeArrayType(ctx *DecoderContext) string {
-	ctx.Stream.BeginToken()
-	ctx.Stream.ReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
-	arrayType := ctx.Stream.GetToken()
+	ctx.Stream.TokenBegin()
+	ctx.Stream.TokenReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
+	arrayType := ctx.Stream.TokenGet()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
 		arrayType = arrayType[:len(arrayType)-1]
-		ctx.Stream.UngetByte()
+		ctx.Stream.UnreadByte()
 	}
 	common.ASCIIBytesToLower(arrayType)
 	return string(arrayType)
 }
 
 func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
-	switch ctx.Stream.PeekByteNoEOD() {
+	switch ctx.Stream.ReadByteNoEOD() {
 	case '|':
-		ctx.Stream.AdvanceByte()
 		ctx.EventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
 		return
 	default:
@@ -68,6 +67,7 @@ func decodeTypedArrayBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
 	arrayType := decodeArrayType(ctx)
+	ctx.Stream.SkipWhitespace()
 	switch arrayType {
 	case "cb":
 		decodeCustomBinary(ctx)
@@ -175,7 +175,7 @@ func decodeCustomBinary(ctx *DecoderContext) {
 	digitType := "hex"
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := ctx.Stream.DecodeSmallHexUint()
 		if count == 0 {
 			break
@@ -191,7 +191,7 @@ func decodeCustomBinary(ctx *DecoderContext) {
 func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -207,7 +207,7 @@ func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement func() (
 func decodeArrayU16(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -223,7 +223,7 @@ func decodeArrayU16(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayU32(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -239,7 +239,7 @@ func decodeArrayU32(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayU64(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -253,7 +253,7 @@ func decodeArrayU64(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayI8(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -269,7 +269,7 @@ func decodeArrayI8(ctx *DecoderContext, digitType string, decodeElement func() (
 func decodeArrayI16(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -285,7 +285,7 @@ func decodeArrayI16(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayI32(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -301,7 +301,7 @@ func decodeArrayI32(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayI64(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -315,7 +315,7 @@ func decodeArrayI64(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -334,7 +334,7 @@ func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break
@@ -353,7 +353,7 @@ func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayF64(ctx *DecoderContext, digitType string, decodeElement func() (v float64, digitCount int)) {
 	var data []uint8
 	for {
-		ctx.Stream.ReadWhilePropertyNoEOD(chars.CharIsWhitespace)
+		ctx.Stream.SkipWhitespace()
 		v, count := decodeElement()
 		if count == 0 {
 			break

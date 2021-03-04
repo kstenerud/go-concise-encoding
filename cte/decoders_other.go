@@ -54,11 +54,9 @@ func decodeDocumentBegin(ctx *DecoderContext) {
 	// Technically disallowed, but we'll support it anyway.
 	decodeWhitespace(ctx)
 
-	if b := ctx.Stream.PeekByteNoEOD(); b != 'c' && b != 'C' {
+	if b := ctx.Stream.ReadByteNoEOD(); b != 'c' && b != 'C' {
 		ctx.Stream.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.Stream.DescribeCurrentChar())
 	}
-
-	ctx.Stream.AdvanceByte()
 
 	version, bigVersion, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
 	if digitCount == 0 {
@@ -91,22 +89,19 @@ func decodeEndDocument(ctx *DecoderContext) {
 
 func decodeNumericPositive(ctx *DecoderContext) {
 	coefficient, bigCoefficient, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
-	b := ctx.Stream.PeekByteAllowEOD()
+	b := ctx.Stream.ReadByteAllowEOD()
 	switch b {
 	case '-':
-		ctx.Stream.AdvanceByte()
 		v := ctx.Stream.DecodeDate(int64(coefficient))
 		ctx.Stream.AssertAtObjectEnd("date")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
 	case ':':
-		ctx.Stream.AdvanceByte()
 		v := ctx.Stream.DecodeTime(int(coefficient))
 		ctx.Stream.AssertAtObjectEnd("time")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
 	case '.':
-		ctx.Stream.AdvanceByte()
 		value, bigValue, _ := ctx.Stream.DecodeDecimalFloat(1, coefficient, bigCoefficient, digitCount)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
@@ -117,6 +112,7 @@ func decodeNumericPositive(ctx *DecoderContext) {
 		return
 	default:
 		if b.HasProperty(chars.CharIsObjectEnd) {
+			ctx.Stream.UnreadByte()
 			if bigCoefficient != nil {
 				ctx.EventReceiver.OnBigInt(bigCoefficient)
 			} else {
@@ -131,31 +127,30 @@ func decodeNumericPositive(ctx *DecoderContext) {
 func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '-'
 
-	switch ctx.Stream.PeekByteNoEOD() {
+	switch ctx.Stream.ReadByteNoEOD() {
 	case '0':
-		advanceAndDecodeOtherBaseNegative(ctx)
+		decodeOtherBaseNegative(ctx)
 		return
 	case '@':
-		ctx.Stream.AdvanceByte()
 		namedValue := string(ctx.Stream.DecodeNamedValue())
 		if namedValue != "inf" {
 			ctx.Stream.Errorf("Unknown named value: %v", namedValue)
 		}
 		ctx.EventReceiver.OnFloat(math.Inf(-1))
 		return
+	default:
+		ctx.Stream.UnreadByte()
 	}
 
 	coefficient, bigCoefficient, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
-	b := ctx.Stream.PeekByteAllowEOD()
+	b := ctx.Stream.ReadByteAllowEOD()
 	switch b {
 	case '-':
-		ctx.Stream.AdvanceByte()
 		v := ctx.Stream.DecodeDate(-int64(coefficient))
 		ctx.Stream.AssertAtObjectEnd("time")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
 	case '.':
-		ctx.Stream.AdvanceByte()
 		value, bigValue, _ := ctx.Stream.DecodeDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
@@ -166,6 +161,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 		return
 	default:
 		if b.HasProperty(chars.CharIsObjectEnd) {
+			ctx.Stream.UnreadByte()
 			if bigCoefficient != nil {
 				// TODO: More efficient way to negate?
 				bigCoefficient = bigCoefficient.Mul(bigCoefficient, common.BigIntN1)
@@ -182,13 +178,12 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '0'
 
-	b := ctx.Stream.PeekByteAllowEOD()
+	b := ctx.Stream.ReadByteAllowEOD()
 	if b.HasProperty(chars.CharIsObjectEnd) {
+		ctx.Stream.UnreadByte()
 		ctx.EventReceiver.OnPositiveInt(0)
 		return
 	}
-
-	ctx.Stream.AdvanceByte() // Advance past the value now stored in b
 
 	switch b {
 	case 'b':
@@ -242,13 +237,17 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 			ctx.EventReceiver.OnCompactTime(v)
 			return
 		}
-		ctx.Stream.UngetByte()
+		ctx.Stream.UnreadByte()
 		ctx.Stream.UnexpectedChar("numeric base")
 	}
 }
 
 func advanceAndDecodeOtherBaseNegative(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '0'
+	decodeOtherBaseNegative(ctx)
+}
+
+func decodeOtherBaseNegative(ctx *DecoderContext) {
 
 	b := ctx.Stream.PeekByteAllowEOD()
 	if b.HasProperty(chars.CharIsObjectEnd) {
@@ -307,7 +306,7 @@ func advanceAndDecodeOtherBaseNegative(ctx *DecoderContext) {
 			ctx.EventReceiver.OnDecimalFloat(value)
 		}
 	default:
-		ctx.Stream.UngetByte()
+		ctx.Stream.UnreadByte()
 		ctx.Stream.UnexpectedChar("numeric base")
 	}
 }
@@ -349,7 +348,6 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 		namedValue[13] != '-' ||
 		namedValue[18] != '-' ||
 		namedValue[23] != '-' {
-		ctx.Stream.UngetBytes(len(namedValue) + 1)
 		ctx.Stream.Errorf("Malformed UUID or unknown named value: [%s]", string(namedValue))
 	}
 
@@ -362,7 +360,6 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 		case chars.ByteHasProperty(b, chars.CharIsUpperAF):
 			return byte(b - 'A' + 10)
 		default:
-			ctx.Stream.UngetBytes(len(namedValue) + 1)
 			ctx.Stream.Errorf("Unexpected char [%c] in UUID [%s]", b, string(namedValue))
 			return 0
 		}
@@ -426,6 +423,7 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 	if ctx.Stream.PeekByteNoEOD() == '|' {
 		ctx.Stream.AdvanceByte()
 		arrayType := decodeArrayType(ctx)
+		ctx.Stream.SkipWhitespace()
 		if arrayType != "r" {
 			ctx.Stream.Errorf("%s: Invalid array type for reference ID", arrayType)
 		}
