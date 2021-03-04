@@ -42,7 +42,7 @@ type arrayBuilder struct {
 
 func newArrayBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, containerType reflect.Type) BuilderGenerator {
 	elemBuilderGenerator := getBuilderGeneratorForType(containerType.Elem())
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &arrayBuilder{
 			containerType: containerType,
 			elemGenerator: elemBuilderGenerator,
@@ -133,13 +133,19 @@ func (_this *arrayBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 	return object
 }
 
+func (_this *arrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, object)
+	return object
+}
+
 func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)
 	return object
 }
 
-func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
 	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	return object

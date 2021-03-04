@@ -78,7 +78,7 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 // the template object.
 // If template is nil, a generic interface type will be used.
 // If opts is nil, default options will be used.
-func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderOptions) *RootBuilder {
+func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderOptions) *BuilderEventReceiver {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
 	if rv.IsValid() {
@@ -87,7 +87,7 @@ func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderO
 		t = common.TypeInterface
 	}
 
-	return NewRootBuilder(_this, t, opts)
+	return NewBuilder(_this, t, opts)
 }
 
 // Register a specific builder for a type.
@@ -110,7 +110,7 @@ func (_this *Session) GetBuilderGeneratorForType(dstType reflect.Type) BuilderGe
 	var builderGenerator BuilderGenerator
 
 	wg.Add(1)
-	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func(ctx *Context) ObjectBuilder {
+	storedBuilderGenerator, loaded := _this.builderGenerators.LoadOrStore(dstType, BuilderGenerator(func(ctx *Context) Builder {
 		wg.Wait()
 		return builderGenerator(ctx)
 	}))
@@ -222,8 +222,6 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generatePBigFloatBuilder
 		case common.TypePBigDecimalFloat:
 			return generatePBigDecimalFloatBuilder
-		case common.TypePCompactTime:
-			return generatePCompactTimeBuilder
 		default:
 			return newPtrBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}

@@ -60,10 +60,11 @@ type Encoder interface {
 	OnNan(signaling bool)
 	OnUUID(value []byte)
 	OnTime(value time.Time)
-	OnCompactTime(value *compact_time.Time)
+	OnCompactTime(value compact_time.Time)
 	// Warning: Do not store a pointer to value! The underlying contents should
 	// be considered volatile and likely to change after this method returns!
 	OnArray(arrayType events.ArrayType, elementCount uint64, data []byte)
+	OnStringlikeArray(arrayType events.ArrayType, data string)
 	OnArrayBegin(arrayType events.ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
 	OnArrayData(data []byte)

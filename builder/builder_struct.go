@@ -125,7 +125,7 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 		}
 	}
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &structBuilder{
 			dstType:                dstType,
 			generatorDescs:         generatorDescs,
@@ -251,6 +251,35 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 	return object
 }
 
+func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeString:
+		if _this.nextIsKey {
+			if ctx.Options.CaseInsensitiveStructFieldNames {
+				bytes := []byte(value)
+				common.ASCIIBytesToLower(bytes)
+				value = string(bytes)
+			}
+
+			if generatorDesc, ok := _this.generatorDescs[value]; ok {
+				_this.nextBuilderGenerator = generatorDesc.builderGenerator
+				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
+			} else {
+				_this.nextBuilderGenerator = _this.ignoreBuilderGenerator
+				_this.nextIsIgnored = true
+				break
+			}
+		} else {
+			_this.nextBuilderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, _this.nextValue)
+		}
+	default:
+		_this.nextBuilderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, _this.nextValue)
+	}
+	object := _this.nextValue
+	_this.swapKeyValue()
+	return object
+}
+
 func (_this *structBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	_this.nextBuilderGenerator(ctx).BuildFromTime(ctx, value, _this.nextValue)
 	object := _this.nextValue
@@ -258,7 +287,7 @@ func (_this *structBuilder) BuildFromTime(ctx *Context, value time.Time, _ refle
 	return object
 }
 
-func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	_this.nextBuilderGenerator(ctx).BuildFromCompactTime(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()

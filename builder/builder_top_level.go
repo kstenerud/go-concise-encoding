@@ -35,14 +35,14 @@ import (
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
 // are properly built. See BuildInitiateList and BuildInitiateMap.
 type topLevelBuilder struct {
-	builderGenerator BuilderGenerator
-	root             *RootBuilder
+	builderGenerator          BuilderGenerator
+	containerFinishedCallback func(value reflect.Value)
 }
 
-func newTopLevelBuilder(root *RootBuilder, builderGenerator BuilderGenerator) ObjectBuilder {
+func newTopLevelBuilder(builderGenerator BuilderGenerator, containerFinishedCallback func(value reflect.Value)) Builder {
 	return &topLevelBuilder{
-		builderGenerator: builderGenerator,
-		root:             root,
+		builderGenerator:          builderGenerator,
+		containerFinishedCallback: containerFinishedCallback,
 	}
 }
 
@@ -103,12 +103,17 @@ func (_this *topLevelBuilder) BuildFromArray(ctx *Context, arrayType events.Arra
 	return dst
 }
 
+func (_this *topLevelBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	return dst
+}
+
 func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromTime(ctx, value, dst)
 	return dst
 }
 
-func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromCompactTime(ctx, value, dst)
 	return dst
 }
@@ -128,5 +133,5 @@ func (_this *topLevelBuilder) BuildInitiateMap(ctx *Context) {
 }
 
 func (_this *topLevelBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
-	_this.root.NotifyChildContainerFinished(ctx, value)
+	_this.containerFinishedCallback(value)
 }

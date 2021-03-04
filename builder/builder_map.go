@@ -53,7 +53,7 @@ func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, m
 	kvTypes := [2]reflect.Type{mapType.Key(), mapType.Elem()}
 	kvGenerators := [2]BuilderGenerator{getBuilderGeneratorForType(kvTypes[0]), getBuilderGeneratorForType(kvTypes[1])}
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := &mapBuilder{
 			mapType:      mapType,
 			kvTypes:      kvTypes,
@@ -181,6 +181,13 @@ func (_this *mapBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 	return object
 }
 
+func (_this *mapBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.nextGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, object)
+	_this.store(object)
+	return object
+}
+
 func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	// TODO: Why was it this way?
 	// _this.store(reflect.ValueOf(value))
@@ -190,7 +197,7 @@ func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.
 	return object
 }
 
-func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, _ reflect.Value) reflect.Value {
+func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	// TODO: Why was it this way?
 	// _this.store(reflect.ValueOf(value))
 	object := _this.newElem()

@@ -97,10 +97,10 @@ func (_this *markerIDBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ re
 type markerObjectBuilder struct {
 	isContainer bool
 	id          interface{}
-	child       ObjectBuilder
+	child       Builder
 }
 
-func newMarkerObjectBuilder(id interface{}, child ObjectBuilder) *markerObjectBuilder {
+func newMarkerObjectBuilder(id interface{}, child Builder) *markerObjectBuilder {
 	return &markerObjectBuilder{
 		id:    id,
 		child: child,
@@ -184,13 +184,19 @@ func (_this *markerObjectBuilder) BuildFromArray(ctx *Context, arrayType events.
 	return object
 }
 
+func (_this *markerObjectBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	_this.onObjectFinished(ctx, object)
+	return object
+}
+
 func (_this *markerObjectBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromTime(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)
 	return object
 }
 
-func (_this *markerObjectBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *markerObjectBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromCompactTime(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)
 	return object

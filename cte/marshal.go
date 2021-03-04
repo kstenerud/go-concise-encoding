@@ -42,7 +42,7 @@ import (
 // multiple calls to marshal.
 type Marshaler struct {
 	session iterator.Session
-	encoder Encoder
+	encoder EncoderEventReceiver
 	opts    options.CTEMarshalerOptions
 }
 
@@ -103,7 +103,7 @@ type Unmarshaler struct {
 	session builder.Session
 	decoder Decoder
 	opts    options.CTEUnmarshalerOptions
-	rules   rules.Rules
+	rules   rules.RulesEventReceiver
 }
 
 // Create a new unmarshaler with the specified options.

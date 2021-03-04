@@ -37,7 +37,7 @@ type urlBuilder struct{}
 var globalUrlBuilder = &urlBuilder{}
 
 func newUrlBuilderGenerator() BuilderGenerator {
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := globalUrlBuilder
 		ctx.StackBuilder(builder)
 		return builder
@@ -53,6 +53,17 @@ func (_this *urlBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 	default:
 		ctx.UnstackBuilder()
 		return ctx.CurrentBuilder.BuildFromArray(ctx, arrayType, value, dst)
+	}
+	return dst
+}
+
+func (_this *urlBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeResourceID:
+		setRIDFromString(value, dst)
+	default:
+		ctx.UnstackBuilder()
+		return ctx.CurrentBuilder.BuildFromStringlikeArray(ctx, arrayType, value, dst)
 	}
 	return dst
 }
@@ -101,7 +112,7 @@ func (_this *urlBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflec
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromTime(ctx, value, dst)
 }
-func (_this *urlBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *urlBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromCompactTime(ctx, value, dst)
 }
@@ -129,7 +140,7 @@ type pUrlBuilder struct{}
 var globalPUrlBuilder = &pUrlBuilder{}
 
 func newPUrlBuilderGenerator() BuilderGenerator {
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		builder := globalPUrlBuilder
 		ctx.StackBuilder(builder)
 		return builder
@@ -141,6 +152,7 @@ func (_this *pUrlBuilder) String() string { return reflect.TypeOf(_this).String(
 func (_this *pUrlBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	ctx.UnstackBuilder()
+	ctx.NANext()
 	return dst
 }
 
@@ -151,6 +163,17 @@ func (_this *pUrlBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 	default:
 		ctx.UnstackBuilder()
 		return ctx.CurrentBuilder.BuildFromArray(ctx, arrayType, value, dst)
+	}
+	return dst
+}
+
+func (_this *pUrlBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeResourceID:
+		setPRIDFromString(value, dst)
+	default:
+		ctx.UnstackBuilder()
+		return ctx.CurrentBuilder.BuildFromStringlikeArray(ctx, arrayType, value, dst)
 	}
 	return dst
 }
@@ -195,7 +218,7 @@ func (_this *pUrlBuilder) BuildFromTime(ctx *Context, value time.Time, dst refle
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromTime(ctx, value, dst)
 }
-func (_this *pUrlBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pUrlBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return ctx.CurrentBuilder.BuildFromCompactTime(ctx, value, dst)
 }

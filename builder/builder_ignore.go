@@ -36,10 +36,11 @@ type ignoreBuilder struct{}
 
 var globalIgnoreBuilder = &ignoreBuilder{}
 
-func generateIgnoreBuilder(ctx *Context) ObjectBuilder { return globalIgnoreBuilder }
+func generateIgnoreBuilder(ctx *Context) Builder { return globalIgnoreBuilder }
 func (_this *ignoreBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *ignoreBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	ctx.NANext()
 	return dst
 
 }
@@ -84,11 +85,15 @@ func (_this *ignoreBuilder) BuildFromArray(ctx *Context, _ events.ArrayType, _ [
 	return dst
 }
 
+func (_this *ignoreBuilder) BuildFromStringlikeArray(ctx *Context, _ events.ArrayType, _ string, dst reflect.Value) reflect.Value {
+	return dst
+}
+
 func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
 	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ compact_time.Time, dst reflect.Value) reflect.Value {
 	return dst
 }
 

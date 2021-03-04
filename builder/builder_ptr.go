@@ -41,7 +41,7 @@ type ptrBuilder struct {
 func newPtrBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
 	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
 
-	return func(ctx *Context) ObjectBuilder {
+	return func(ctx *Context) Builder {
 		return &ptrBuilder{
 			dstType:       dstType,
 			elemGenerator: builderGenerator,
@@ -59,6 +59,7 @@ func (_this *ptrBuilder) newElem() reflect.Value {
 
 func (_this *ptrBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(_this.dstType))
+	ctx.NANext()
 	return dst
 }
 
@@ -132,6 +133,13 @@ func (_this *ptrBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 	return dst
 }
 
+func (_this *ptrBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	ptr := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, ptr.Elem())
+	dst.Set(ptr)
+	return dst
+}
+
 func (_this *ptrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, ptr.Elem())
@@ -139,7 +147,7 @@ func (_this *ptrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflec
 	return dst
 }
 
-func (_this *ptrBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ptrBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, ptr.Elem())
 	dst.Set(ptr)

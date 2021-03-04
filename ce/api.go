@@ -156,6 +156,6 @@ func NewCTEDecoder(opts *options.CTEDecoderOptions) Decoder {
 }
 
 // Create a new rules data receiver, which will enforce proper concise encoding structure.
-func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) *rules.Rules {
+func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) *rules.RulesEventReceiver {
 	return rules.NewRules(nextReceiver, opts)
 }

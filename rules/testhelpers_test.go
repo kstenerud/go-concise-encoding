@@ -66,23 +66,23 @@ func NewRID(RIDString string) *url.URL {
 	return test.NewRID(RIDString)
 }
 
-func NewDate(year, month, day int) *compact_time.Time {
+func NewDate(year, month, day int) compact_time.Time {
 	return test.NewDate(year, month, day)
 }
 
-func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	return test.NewTime(hour, minute, second, nanosecond, areaLocation)
 }
 
-func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	return test.NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 }
 
-func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	return test.NewTS(year, month, day, hour, minute, second, nanosecond, areaLocation)
 }
 
-func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	return test.NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 }
 
@@ -113,7 +113,6 @@ var (
 	EvUUID   = test.EvUUID
 	EvGT     = test.EvGT
 	EvCT     = test.EvCT
-	EvCTNil  = test.EvCTNil
 	EvL      = test.EvL
 	EvM      = test.EvM
 	EvMUP    = test.EvMUP
@@ -216,7 +215,7 @@ func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v *compact_time.Time) *test.TEvent   { return test.CT(v) }
+func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
@@ -304,7 +303,7 @@ func assertEventsMaxDepth(t *testing.T, maxDepth int, events ...*test.TEvent) {
 	assertEventsSucceed(t, rules, events...)
 }
 
-func assertRulesOnString(t *testing.T, rules *Rules, value string) {
+func assertRulesOnString(t *testing.T, rules *RulesEventReceiver, value string) {
 	length := len(value)
 	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeString) })
 	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -313,7 +312,7 @@ func assertRulesOnString(t *testing.T, rules *Rules, value string) {
 	}
 }
 
-func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
+func assertRulesAddBytes(t *testing.T, rules *RulesEventReceiver, value []byte) {
 	length := len(value)
 	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
 	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -322,7 +321,7 @@ func assertRulesAddBytes(t *testing.T, rules *Rules, value []byte) {
 	}
 }
 
-func assertRulesAddRID(t *testing.T, rules *Rules, ResourceID string) {
+func assertRulesAddRID(t *testing.T, rules *RulesEventReceiver, ResourceID string) {
 	length := len(ResourceID)
 	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayBegin(events.ArrayTypeResourceID) })
 	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -331,7 +330,7 @@ func assertRulesAddRID(t *testing.T, rules *Rules, ResourceID string) {
 	}
 }
 
-func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
+func assertRulesAddCustomBinary(t *testing.T, rules *RulesEventReceiver, value []byte) {
 	length := len(value)
 	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
 	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
@@ -340,7 +339,7 @@ func assertRulesAddCustomBinary(t *testing.T, rules *Rules, value []byte) {
 	}
 }
 
-func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
+func assertRulesAddCustomText(t *testing.T, rules *RulesEventReceiver, value []byte) {
 	length := len(value)
 	test.AssertNoPanic(t, string(value), func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
 	test.AssertNoPanic(t, string(value), func() { rules.OnArrayChunk(uint64(length), false) })
@@ -349,14 +348,14 @@ func assertRulesAddCustomText(t *testing.T, rules *Rules, value []byte) {
 	}
 }
 
-func newRulesAfterVersion(opts *options.RuleOptions) *Rules {
+func newRulesAfterVersion(opts *options.RuleOptions) *RulesEventReceiver {
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	rules.OnBeginDocument()
 	rules.OnVersion(version.ConciseEncodingVersion)
 	return rules
 }
 
-func newRulesWithMaxDepth(maxDepth int) *Rules {
+func newRulesWithMaxDepth(maxDepth int) *RulesEventReceiver {
 	opts := options.DefaultRuleOptions()
 	opts.MaxContainerDepth = uint64(maxDepth)
 	return newRulesAfterVersion(opts)

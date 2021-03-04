@@ -38,11 +38,12 @@ type interfaceBuilder struct{}
 
 var globalInterfaceBuilder = &interfaceBuilder{}
 
-func generateInterfaceBuilder(ctx *Context) ObjectBuilder { return globalInterfaceBuilder }
+func generateInterfaceBuilder(ctx *Context) Builder { return globalInterfaceBuilder }
 func (_this *interfaceBuilder) String() string            { return reflect.TypeOf(_this).String() }
 
 func (_this *interfaceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(common.TypeInterface))
+	ctx.NANext()
 	return dst
 }
 
@@ -114,12 +115,28 @@ func (_this *interfaceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 	return dst
 }
 
+func (_this *interfaceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	switch arrayType {
+	case events.ArrayTypeCustomText:
+		if err := ctx.CustomTextBuildFunction([]byte(value), dst); err != nil {
+			PanicBuildFromCustomText(_this, []byte(value), dst.Type(), err)
+		}
+	case events.ArrayTypeString:
+		dst.Set(reflect.ValueOf(value))
+	case events.ArrayTypeResourceID:
+		setPRIDFromString(value, dst)
+	default:
+		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
+	}
+	return dst
+}
+
 func (_this *interfaceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value *compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
 }

@@ -54,16 +54,10 @@ func (_this *Decoder) Init(opts *options.CBEDecoderOptions) {
 	_this.opts = *opts
 }
 
-func (_this *Decoder) reset() {
-	_this.buffer.Reset()
-	_this.eventReceiver = nil
-}
-
 // Run the complete decode process. The document and data receiver specified
 // when initializing the decoder will be used.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		_this.reset()
 		if !debug.DebugOptions.PassThroughPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
@@ -154,7 +148,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnFalse()
 		case cbeTypeTrue:
 			_this.eventReceiver.OnTrue()
-		case cbeTypeNil:
+		case cbeTypeNA:
 			_this.eventReceiver.OnNA()
 		case cbeTypePadding:
 			_this.eventReceiver.OnPadding(1)

@@ -25,10 +25,13 @@ import (
 	"io"
 )
 
+const minWriterFreeSpace = 300
+
 type StreamingWriteBuffer struct {
-	writer            io.Writer
-	bytes             []byte
-	lastAllocatedSize int
+	writer io.Writer
+	bytes  []byte
+	pos    []byte
+	used   int
 }
 
 func NewWriteBuffer(bufferSize int) *StreamingWriteBuffer {
@@ -38,7 +41,11 @@ func NewWriteBuffer(bufferSize int) *StreamingWriteBuffer {
 }
 
 func (_this *StreamingWriteBuffer) Init(bufferSize int) {
-	_this.bytes = make([]byte, 0, bufferSize)
+	if bufferSize < minWriterFreeSpace*2 {
+		bufferSize = minWriterFreeSpace * 2
+	}
+	_this.bytes = make([]byte, bufferSize, bufferSize)
+	_this.pos = _this.bytes
 }
 
 func (_this *StreamingWriteBuffer) SetWriter(writer io.Writer) {
@@ -46,91 +53,82 @@ func (_this *StreamingWriteBuffer) SetWriter(writer io.Writer) {
 }
 
 func (_this *StreamingWriteBuffer) Reset() {
-	_this.writer = nil
-	_this.bytes = _this.bytes[:0]
+	_this.pos = _this.bytes
+	_this.used = 0
 }
 
-func (_this *StreamingWriteBuffer) Allocate(byteCount int) []byte {
-	length := len(_this.bytes)
-	if cap(_this.bytes)-length < byteCount {
-		_this.Flush()
-		length = 0
-		if cap(_this.bytes) < byteCount {
-			_this.grow(byteCount)
-		}
-	}
-	_this.bytes = _this.bytes[:length+byteCount]
-	_this.lastAllocatedSize = byteCount
-	return _this.bytes[length:]
-}
+func (_this *StreamingWriteBuffer) flushUnconditionally() {
+	data := _this.bytes[:_this.used]
+	_this.pos = _this.bytes
+	_this.used = 0
 
-func (_this *StreamingWriteBuffer) CorrectAllocation(usedByteCount int) {
-	unused := _this.lastAllocatedSize - usedByteCount
-	_this.bytes = _this.bytes[:len(_this.bytes)-unused]
-}
-
-func (_this *StreamingWriteBuffer) EraseLastByte() {
-	_this.bytes = _this.bytes[:len(_this.bytes)-1]
-}
-
-func (_this *StreamingWriteBuffer) Flush() {
-	_, err := _this.writer.Write(_this.bytes)
+	_, err := _this.writer.Write(data)
 	if err != nil {
 		panic(err)
 	}
-	_this.bytes = _this.bytes[:0]
 }
 
-func (_this *StreamingWriteBuffer) AddNonemptyString(str string) {
-	dst := _this.Allocate(len(str))
-	copy(dst, str)
+func (_this *StreamingWriteBuffer) Flush() {
+	if _this.used != 0 {
+		_this.flushUnconditionally()
+	}
 }
 
-func (_this *StreamingWriteBuffer) AddNonemptyBytes(bytes []byte) {
-	dst := _this.Allocate(len(bytes))
-	copy(dst, bytes)
+func (_this *StreamingWriteBuffer) FlushIfNeeded() {
+	if len(_this.pos) < minWriterFreeSpace {
+		_this.flushUnconditionally()
+	}
 }
 
+func (_this *StreamingWriteBuffer) growTo(byteCount int) {
+	_this.Flush()
+	if len(_this.bytes) < byteCount {
+		_this.bytes = make([]byte, byteCount, byteCount)
+		_this.pos = _this.bytes
+	}
+}
+
+// Allocates byteCount + minWriterFreeSpace
+func (_this *StreamingWriteBuffer) RequireBytes(byteCount int) []byte {
+	byteCount += minWriterFreeSpace
+	if byteCount > len(_this.pos) {
+		_this.growTo(byteCount)
+	}
+	return _this.pos
+}
+
+func (_this *StreamingWriteBuffer) UseBytes(usedByteCount int) {
+	_this.used += usedByteCount
+	_this.pos = _this.pos[usedByteCount:]
+}
+
+// Warning: AddByte doesn't check for the end of the buffer
 func (_this *StreamingWriteBuffer) AddByte(b byte) {
-	dst := _this.Allocate(1)
-	dst[0] = b
+	_this.RequireBytes(1)
+	_this.pos[0] = b
+	_this.UseBytes(1)
 }
 
 func (_this *StreamingWriteBuffer) AddString(str string) {
-	if len(str) > 0 {
-		_this.AddNonemptyString(str)
-	}
+	length := len(str)
+	buf := _this.RequireBytes(length)
+	copy(buf, str)
+	_this.UseBytes(length)
 }
 
 func (_this *StreamingWriteBuffer) AddBytes(bytes []byte) {
-	if len(bytes) > 0 {
-		_this.AddNonemptyBytes(bytes)
-	}
+	length := len(bytes)
+	buf := _this.RequireBytes(length)
+	copy(buf, bytes)
+	_this.UseBytes(length)
 }
 
 func (_this *StreamingWriteBuffer) AddFmt(format string, args ...interface{}) {
-	_this.AddNonemptyString(fmt.Sprintf(format, args...))
+	_this.AddString(fmt.Sprintf(format, args...))
 }
 
 // Add a formatted string, but strip the specified number of characters from the
 // beginning of the result before adding.
 func (_this *StreamingWriteBuffer) AddFmtStripped(stripByteCount int, format string, args ...interface{}) {
-	_this.AddNonemptyString(fmt.Sprintf(format, args...)[stripByteCount:])
-}
-
-// ============================================================================
-
-// Internal
-
-func (_this *StreamingWriteBuffer) grow(byteCount int) {
-	length := len(_this.bytes)
-	growAmount := cap(_this.bytes)
-	if byteCount > growAmount {
-		growAmount = byteCount
-	}
-	newCap := cap(_this.bytes) + growAmount
-	newBytes := make([]byte, length+byteCount, newCap)
-	oldBytes := _this.bytes
-	copy(newBytes, oldBytes)
-	_this.bytes = newBytes
+	_this.AddString(fmt.Sprintf(format, args...)[stripByteCount:])
 }

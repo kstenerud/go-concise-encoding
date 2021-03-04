@@ -35,8 +35,8 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-// RootBuilder adapts DataEventReceiver to ObjectBuilder, coordinating the
-// build via sub-builders.
+// BuilderEventReceiver adapts DataEventReceiver to ObjectBuilder, passing
+// event contents to builder objects.
 //
 // Use GetBuiltObject() to fetch the final result.
 //
@@ -44,54 +44,41 @@ import (
 // to recover() at an appropriate location when calling this struct's methods
 // directly (with the exception of constructors, initializers, and
 // GetBuildObject(), which are not designed to panic).
-type RootBuilder struct {
-	dstType              reflect.Type
-	currentBuilder       ObjectBuilder
-	object               reflect.Value
-	referenceFiller      ReferenceFiller
-	chunkedData          []byte
-	chunkedFunction      func([]byte)
-	chunkRemainingLength uint64
-	moreChunksFollow     bool
-	context              Context
+type BuilderEventReceiver struct {
+	context Context
+	object  reflect.Value
 }
 
-// -----------
-// RootBuilder
-// -----------
-
-// Create a new root builder to build objects of dstType.
+// Create a new builder event receiver that can build objects of dstType.
 // If opts is nil, default options will be used.
-func NewRootBuilder(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *RootBuilder {
-	_this := &RootBuilder{}
+func NewBuilder(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *BuilderEventReceiver {
+	_this := &BuilderEventReceiver{}
 	_this.Init(session, dstType, opts)
 	return _this
 }
 
-// Initialize this root builder to build objects of dstType.
+// Initialize to build objects of dstType.
 // If opts is nil, default options will be used.
-func (_this *RootBuilder) Init(session *Session, dstType reflect.Type, opts *options.BuilderOptions) {
-	_this.dstType = dstType
-	_this.context = context(opts,
+func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, opts *options.BuilderOptions) {
+	_this.context.Init(opts,
+		dstType,
 		session.opts.CustomBinaryBuildFunction,
 		session.opts.CustomTextBuildFunction,
-		_this.referenceFiller.NotifyMarker,
-		_this.referenceFiller.NotifyReference,
 		session.GetBuilderGeneratorForType)
-	_this.object = reflect.New(dstType).Elem()
-	_this.chunkedData = make([]byte, 0, 128)
 
+	_this.object = reflect.New(dstType).Elem()
 	generator := session.GetBuilderGeneratorForType(dstType)
-	_this.context.StackBuilder(newTopLevelBuilder(_this, generator))
-	_this.referenceFiller.Init()
+	_this.context.StackBuilder(newTopLevelBuilder(generator, func(value reflect.Value) {
+		_this.object = value
+	}))
 }
 
-func (_this *RootBuilder) String() string {
+func (_this *BuilderEventReceiver) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.context.CurrentBuilder)
 }
 
-// Get the object that was built after using this root builder as a DataEventReceiver.
-func (_this *RootBuilder) GetBuiltObject() interface{} {
+// Get the object that was built after using this as a DataEventReceiver.
+func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 	// TODO: Verify this behavior
 	if !_this.object.IsValid() {
 		return nil
@@ -109,134 +96,119 @@ func (_this *RootBuilder) GetBuiltObject() interface{} {
 	}
 }
 
-// Callback from topLevelBuilder
-func (_this *RootBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
-	_this.object = value
-}
-
 // ---------------------------
 // DataEventReceiver Callbacks
 // ---------------------------
 
-func (_this *RootBuilder) OnBeginDocument()   {}
-func (_this *RootBuilder) OnVersion(_ uint64) {}
-func (_this *RootBuilder) OnPadding(_ int)    {}
-func (_this *RootBuilder) OnNA() {
+func (_this *BuilderEventReceiver) OnBeginDocument()   {}
+func (_this *BuilderEventReceiver) OnVersion(_ uint64) {}
+func (_this *BuilderEventReceiver) OnPadding(_ int)    {}
+func (_this *BuilderEventReceiver) OnNA() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 }
-func (_this *RootBuilder) OnBool(value bool) {
+func (_this *BuilderEventReceiver) OnBool(value bool) {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnTrue() {
+func (_this *BuilderEventReceiver) OnTrue() {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, true, _this.object)
 }
-func (_this *RootBuilder) OnFalse() {
+func (_this *BuilderEventReceiver) OnFalse() {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, false, _this.object)
 }
-func (_this *RootBuilder) OnPositiveInt(value uint64) {
+func (_this *BuilderEventReceiver) OnPositiveInt(value uint64) {
 	_this.context.CurrentBuilder.BuildFromUint(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnNegativeInt(value uint64) {
+func (_this *BuilderEventReceiver) OnNegativeInt(value uint64) {
 	if value <= 0x7fffffffffffffff {
-		_this.context.CurrentBuilder.BuildFromInt(&_this.context, -(int64(value)), _this.object)
+		_this.OnInt(-int64(value))
 		return
 	}
-	bi := &big.Int{}
+	bi := big.Int{}
 	bi.SetUint64(value)
-	_this.context.CurrentBuilder.BuildFromBigInt(&_this.context, bi.Neg(bi), _this.object)
+	_this.OnBigInt(&bi)
 }
-func (_this *RootBuilder) OnInt(value int64) {
+func (_this *BuilderEventReceiver) OnInt(value int64) {
 	_this.context.CurrentBuilder.BuildFromInt(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnBigInt(value *big.Int) {
+func (_this *BuilderEventReceiver) OnBigInt(value *big.Int) {
 	_this.context.CurrentBuilder.BuildFromBigInt(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnFloat(value float64) {
+func (_this *BuilderEventReceiver) OnFloat(value float64) {
 	_this.context.CurrentBuilder.BuildFromFloat(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnBigFloat(value *big.Float) {
+func (_this *BuilderEventReceiver) OnBigFloat(value *big.Float) {
 	_this.context.CurrentBuilder.BuildFromBigFloat(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnDecimalFloat(value compact_float.DFloat) {
+func (_this *BuilderEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
 	_this.context.CurrentBuilder.BuildFromDecimalFloat(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnBigDecimalFloat(value *apd.Decimal) {
+func (_this *BuilderEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 	_this.context.CurrentBuilder.BuildFromBigDecimalFloat(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnNan(signaling bool) {
-	nan := common.QuietNan
+func (_this *BuilderEventReceiver) OnNan(signaling bool) {
 	if signaling {
-		nan = common.SignalingNan
+		_this.OnFloat(common.SignalingNan)
+	} else {
+		_this.OnFloat(common.QuietNan)
 	}
-	_this.context.CurrentBuilder.BuildFromFloat(&_this.context, nan, _this.object)
 }
-func (_this *RootBuilder) OnUUID(value []byte) {
+func (_this *BuilderEventReceiver) OnUUID(value []byte) {
 	_this.context.CurrentBuilder.BuildFromUUID(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnTime(value time.Time) {
+func (_this *BuilderEventReceiver) OnTime(value time.Time) {
 	_this.context.CurrentBuilder.BuildFromTime(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnCompactTime(value *compact_time.Time) {
+func (_this *BuilderEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
-func (_this *RootBuilder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
 }
-func (_this *RootBuilder) OnArrayBegin(arrayType events.ArrayType) {
-	_this.chunkedFunction = func(bytes []byte) {
+func (_this *BuilderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
+}
+func (_this *BuilderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
+	_this.context.BeginArray(func(bytes []byte) {
 		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
 		_this.OnArray(arrayType, elementCount, bytes)
-	}
-	_this.chunkedData = _this.chunkedData[:0]
+	})
 }
-func (_this *RootBuilder) OnArrayChunk(length uint64, moreChunksFollow bool) {
-	_this.chunkRemainingLength = length
-	_this.moreChunksFollow = moreChunksFollow
-	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
-		_this.chunkedFunction(_this.chunkedData)
-		_this.chunkedData = _this.chunkedData[:0]
-	}
+func (_this *BuilderEventReceiver) OnArrayChunk(length uint64, moreChunksFollow bool) {
+	_this.context.BeginArrayChunk(length, moreChunksFollow)
 }
-func (_this *RootBuilder) OnArrayData(data []byte) {
-	_this.chunkedData = append(_this.chunkedData, data...)
-	_this.chunkRemainingLength -= uint64(len(data))
-	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
-		_this.chunkedFunction(_this.chunkedData)
-		_this.chunkedData = _this.chunkedData[:0]
-	}
+func (_this *BuilderEventReceiver) OnArrayData(data []byte) {
+	_this.context.AddArrayData(data)
 }
-func (_this *RootBuilder) OnList() {
+func (_this *BuilderEventReceiver) OnList() {
 	_this.context.CurrentBuilder.BuildInitiateList(&_this.context)
 }
-func (_this *RootBuilder) OnMap() {
+func (_this *BuilderEventReceiver) OnMap() {
 	_this.context.CurrentBuilder.BuildInitiateMap(&_this.context)
 }
-func (_this *RootBuilder) OnMarkup() {
-	panic("TODO: RootBuilder.OnMarkup")
+func (_this *BuilderEventReceiver) OnMarkup() {
+	panic("TODO: BuilderEventReceiver.OnMarkup")
 }
-func (_this *RootBuilder) OnMetadata() {
-	panic("TODO: RootBuilder.OnMetadata")
+func (_this *BuilderEventReceiver) OnMetadata() {
+	panic("TODO: BuilderEventReceiver.OnMetadata")
 }
-func (_this *RootBuilder) OnComment() {
-	panic("TODO: RootBuilder.OnComment")
+func (_this *BuilderEventReceiver) OnComment() {
+	panic("TODO: BuilderEventReceiver.OnComment")
 }
-func (_this *RootBuilder) OnEnd() {
+func (_this *BuilderEventReceiver) OnEnd() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
 }
-func (_this *RootBuilder) OnMarker() {
+func (_this *BuilderEventReceiver) OnMarker() {
 	_this.context.StackBuilder(newMarkerIDBuilder())
 }
-func (_this *RootBuilder) OnReference() {
+func (_this *BuilderEventReceiver) OnReference() {
 	_this.context.StackBuilder(newReferenceIDBuilder())
 }
-func (_this *RootBuilder) OnConcatenate() {
+func (_this *BuilderEventReceiver) OnConcatenate() {
 	_this.context.CurrentBuilder.BuildConcatenate(&_this.context)
 }
-func (_this *RootBuilder) OnConstant(name []byte, explicitValue bool) {
+func (_this *BuilderEventReceiver) OnConstant(name []byte, explicitValue bool) {
 	if !explicitValue {
 		panic(fmt.Errorf("Cannot build from constant %s without explicit value", string(name)))
 	}
 }
-func (_this *RootBuilder) OnEndDocument() {
-	// Nothing to do
-}
+func (_this *BuilderEventReceiver) OnEndDocument() {}

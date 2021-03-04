@@ -72,7 +72,6 @@ func (_this *Context) Init(version uint64, opts *options.RuleOptions) {
 	_this.opts = *opts
 	_this.ExpectedVersion = version
 	_this.stack = make([]contextStackEntry, 0, 16)
-	_this.builtArrayBuffer = make([]byte, 0, 64)
 	_this.Reset()
 }
 
@@ -140,6 +139,10 @@ func (_this *Context) EndContainer() {
 	_this.endContainerLike()
 }
 
+func (_this *Context) BeginNA() {
+	_this.stackRule(&naRule, DataTypeAnyType)
+}
+
 func (_this *Context) BeginList() {
 	_this.beginContainer(&listRule, DataTypeAnyType)
 }
@@ -197,6 +200,22 @@ func (_this *Context) BeginReferenceAnyType() {
 
 func (_this *Context) BeginTopLevelReference() {
 	_this.stackRule(&tlReferenceRIDRule, DataTypeKeyable)
+}
+
+func (_this *Context) BeginConstantKeyable(name []byte, explicitValue bool) {
+	if explicitValue {
+		_this.stackRule(&constantKeyableRule, DataTypeKeyable)
+	} else if !_this.opts.AllowUndefinedConstants {
+		panic(fmt.Errorf("Undefined constants are not allowed"))
+	}
+}
+
+func (_this *Context) BeginConstantAnyType(name []byte, explicitValue bool) {
+	if explicitValue {
+		_this.stackRule(&constantAnyTypeRule, DataTypeAnyType)
+	} else if !_this.opts.AllowUndefinedConstants {
+		panic(fmt.Errorf("Undefined constants are not allowed"))
+	}
 }
 
 func (_this *Context) SwitchVersion() {

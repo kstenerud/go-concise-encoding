@@ -157,7 +157,7 @@ func DefaultCTEEncoderOptions() *CTEEncoderOptions {
 	opts := &CTEEncoderOptions{
 		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
-		Indent:                 "",
+		Indent:                 "    ",
 		MaxColumn:              0,
 		EscapeLineEndings:      true,
 	}

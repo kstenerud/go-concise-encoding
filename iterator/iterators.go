@@ -46,29 +46,28 @@ func iterateTime(context *Context, v reflect.Value) {
 
 func iterateCompactTime(context *Context, v reflect.Value) {
 	ct := v.Interface().(compact_time.Time)
-	context.EventReceiver.OnCompactTime(&ct)
+	context.EventReceiver.OnCompactTime(ct)
 }
 
 func iteratePCompactTime(context *Context, v reflect.Value) {
 	if v.IsNil() {
-		context.EventReceiver.OnNA()
+		context.NotifyNil()
 	} else {
-		context.EventReceiver.OnCompactTime(v.Interface().(*compact_time.Time))
+		context.EventReceiver.OnCompactTime(v.Interface().(compact_time.Time))
 	}
 }
 
 func iterateURL(context *Context, v reflect.Value) {
 	vCopy := v.Interface().(url.URL)
-	bytes := []byte((&vCopy).String())
-	context.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+	context.EventReceiver.OnStringlikeArray(events.ArrayTypeResourceID, (&vCopy).String())
 }
 
 func iteratePURL(context *Context, v reflect.Value) {
 	if v.IsNil() {
-		context.EventReceiver.OnNA()
+		context.NotifyNil()
 	} else {
-		bytes := []byte(v.Interface().(*url.URL).String())
-		context.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+		str := v.Interface().(*url.URL).String()
+		context.EventReceiver.OnStringlikeArray(events.ArrayTypeResourceID, str)
 	}
 }
 
@@ -79,7 +78,7 @@ func iterateBigInt(context *Context, v reflect.Value) {
 
 func iteratePBigInt(context *Context, v reflect.Value) {
 	if v.IsNil() {
-		context.EventReceiver.OnNA()
+		context.NotifyNil()
 	} else {
 		context.EventReceiver.OnBigInt(v.Interface().(*big.Int))
 	}
@@ -92,7 +91,7 @@ func iterateBigFloat(context *Context, v reflect.Value) {
 
 func iteratePBigFloat(context *Context, v reflect.Value) {
 	if v.IsNil() {
-		context.EventReceiver.OnNA()
+		context.NotifyNil()
 	} else {
 		context.EventReceiver.OnBigFloat(v.Interface().(*big.Float))
 	}
@@ -105,7 +104,7 @@ func iterateBigDecimal(context *Context, v reflect.Value) {
 
 func iteratePBigDecimal(context *Context, v reflect.Value) {
 	if v.IsNil() {
-		context.EventReceiver.OnNA()
+		context.NotifyNil()
 	} else {
 		context.EventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
 	}
@@ -132,13 +131,12 @@ func iterateFloat(context *Context, v reflect.Value) {
 }
 
 func iterateString(context *Context, v reflect.Value) {
-	bytes := []byte(v.String())
-	context.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+	context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, v.String())
 }
 
 func iterateInterface(context *Context, v reflect.Value) {
 	if v.IsNil() {
-		context.EventReceiver.OnNA()
+		context.NotifyNil()
 	} else {
 		elem := v.Elem()
 		iterate := context.GetIteratorForType(elem.Type())
@@ -151,7 +149,7 @@ func newPointerIterator(ctx *Context, pointerType reflect.Type) IteratorFunction
 
 	return func(context *Context, v reflect.Value) {
 		if v.IsNil() {
-			context.EventReceiver.OnNA()
+			context.NotifyNil()
 			return
 		}
 		if context.TryAddReference(v) {
@@ -166,7 +164,7 @@ func newSliceOrArrayAsListIterator(ctx *Context, sliceType reflect.Type) Iterato
 
 	return func(context *Context, v reflect.Value) {
 		if v.IsNil() {
-			context.EventReceiver.OnNA()
+			context.NotifyNil()
 			return
 		}
 		if context.TryAddReference(v) {
@@ -188,7 +186,7 @@ func newMapIterator(ctx *Context, mapType reflect.Type) IteratorFunction {
 
 	return func(context *Context, v reflect.Value) {
 		if v.IsNil() {
-			context.EventReceiver.OnNA()
+			context.NotifyNil()
 			return
 		}
 		if context.TryAddReference(v) {
@@ -300,7 +298,7 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 		context.EventReceiver.OnMap()
 
 		for _, field := range fields {
-			context.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(field.Name)), []byte(field.Name))
+			context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
 			field.Iterate(context, v.Field(field.Index))
 		}
 

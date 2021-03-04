@@ -116,7 +116,7 @@ func NewRID(RIDString string) *url.URL {
 	return rid
 }
 
-func NewDate(year, month, day int) *compact_time.Time {
+func NewDate(year, month, day int) compact_time.Time {
 	t, err := compact_time.NewDate(year, month, day)
 	if err != nil {
 		panic(err)
@@ -124,7 +124,7 @@ func NewDate(year, month, day int) *compact_time.Time {
 	return t
 }
 
-func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	t, err := compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
 	if err != nil {
 		panic(err)
@@ -132,7 +132,7 @@ func NewTime(hour, minute, second, nanosecond int, areaLocation string) *compact
 	return t
 }
 
-func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	t, err := compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 	if err != nil {
 		panic(err)
@@ -140,7 +140,7 @@ func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHu
 	return t
 }
 
-func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) *compact_time.Time {
+func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	t, err := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
 	if err != nil {
 		panic(err)
@@ -148,7 +148,7 @@ func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation 
 	return t
 }
 
-func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) *compact_time.Time {
+func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	t, err := compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 	if err != nil {
 		panic(err)
@@ -156,7 +156,7 @@ func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundred
 	return t
 }
 
-func AsGoTime(t *compact_time.Time) time.Time {
+func AsGoTime(t compact_time.Time) time.Time {
 	gt, err := t.AsGoTime()
 	if err != nil {
 		panic(err)
@@ -164,7 +164,7 @@ func AsGoTime(t *compact_time.Time) time.Time {
 	return gt
 }
 
-func AsCompactTime(t time.Time) *compact_time.Time {
+func AsCompactTime(t time.Time) compact_time.Time {
 	ct, err := compact_time.AsCompactTime(t)
 	if err != nil {
 		panic(err)
@@ -271,7 +271,6 @@ var (
 	EvUUID   = UUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvGT     = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
 	EvCT     = CT(NewDate(2020, 1, 1))
-	EvCTNil  = CT(nil)
 	EvL      = L()
 	EvM      = M()
 	EvMUP    = MUP()
@@ -322,7 +321,7 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvNA, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI,
 	EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
-	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvCTNil, EvL, EvM, EvMUP, EvMETA,
+	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvMETA,
 	EvCMT, EvE, EvMARK, EvREF, EvCAT, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
@@ -412,7 +411,7 @@ const (
 	TEventBeginDocument TEventType = iota
 	TEventVersion
 	TEventPadding
-	TEventNil
+	TEventNA
 	TEventBool
 	TEventTrue
 	TEventFalse
@@ -482,7 +481,7 @@ var TEventNames = []string{
 	TEventBeginDocument:     "BD",
 	TEventVersion:           "V",
 	TEventPadding:           "PAD",
-	TEventNil:               "N",
+	TEventNA:                "NA",
 	TEventBool:              "B",
 	TEventTrue:              "TT",
 	TEventFalse:             "FF",
@@ -592,7 +591,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnVersion(_this.V1.(uint64))
 	case TEventPadding:
 		receiver.OnPadding(_this.V1.(int))
-	case TEventNil:
+	case TEventNA:
 		receiver.OnNA()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
@@ -625,19 +624,16 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventTime:
 		receiver.OnTime(_this.V1.(time.Time))
 	case TEventCompactTime:
-		receiver.OnCompactTime(_this.V1.(*compact_time.Time))
+		receiver.OnCompactTime(_this.V1.(compact_time.Time))
 	case TEventString:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+		receiver.OnStringlikeArray(events.ArrayTypeString, _this.V1.(string))
 	case TEventResourceID:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+		receiver.OnStringlikeArray(events.ArrayTypeResourceID, _this.V1.(string))
 	case TEventCustomBinary:
-		bytes := []byte(_this.V1.([]byte))
+		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
 	case TEventCustomText:
-		bytes := []byte(_this.V1.(string))
-		receiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
+		receiver.OnStringlikeArray(events.ArrayTypeCustomText, _this.V1.(string))
 	case TEventArrayBoolean:
 		bitCount := _this.V1.(uint64)
 		bytes := _this.V2.([]byte)
@@ -736,7 +732,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventConcatenate:
 		receiver.OnConcatenate()
 	case TEventConstant:
-		receiver.OnConstant(_this.V1.([]byte), _this.V2.(bool))
+		receiver.OnConstant([]byte(_this.V1.(string)), _this.V2.(bool))
 	case TEventEndDocument:
 		receiver.OnEndDocument()
 	default:
@@ -746,7 +742,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 
 func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	if value == nil {
-		eventType = TEventNil
+		eventType = TEventNA
 	}
 	return newTEvent(eventType, value, nil)
 }
@@ -763,7 +759,7 @@ func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return newTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return newTEvent(TEventVersion, v, nil) }
-func NA() *TEvent                       { return newTEvent(TEventNil, nil, nil) }
+func NA() *TEvent                       { return newTEvent(TEventNA, nil, nil) }
 func PAD(v int) *TEvent                 { return newTEvent(TEventPadding, v, nil) }
 func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
@@ -773,7 +769,7 @@ func NAN() *TEvent                      { return newTEvent(TEventNan, nil, nil) 
 func SNAN() *TEvent                     { return newTEvent(TEventSNan, nil, nil) }
 func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
 func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
-func CT(v *compact_time.Time) *TEvent   { return EventOrNil(TEventCompactTime, v) }
+func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
 func RID(v string) *TEvent              { return newTEvent(TEventResourceID, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
@@ -819,7 +815,7 @@ func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) 
 func MARK() *TEvent                     { return newTEvent(TEventMarker, nil, nil) }
 func REF() *TEvent                      { return newTEvent(TEventReference, nil, nil) }
 func CAT() *TEvent                      { return newTEvent(TEventConcatenate, nil, nil) }
-func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, []byte(n), e) }
+func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, n, e) }
 func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
 
@@ -856,8 +852,6 @@ func EventForValue(value interface{}) *TEvent {
 			return BF(rv.Interface().(*big.Float))
 		case common.TypePBigInt:
 			return BI(rv.Interface().(*big.Int))
-		case common.TypePCompactTime:
-			return CT(rv.Interface().(*compact_time.Time))
 		case common.TypePURL:
 			return RID(rv.Interface().(*url.URL).String())
 		}
@@ -875,7 +869,7 @@ func EventForValue(value interface{}) *TEvent {
 			return BI(&v)
 		case common.TypeCompactTime:
 			v := rv.Interface().(compact_time.Time)
-			return CT(&v)
+			return CT(v)
 		case common.TypeDFloat:
 			v := rv.Interface().(compact_float.DFloat)
 			return DF(v)
@@ -1000,7 +994,7 @@ func (h *TEventPrinter) OnTime(value time.Time) {
 	h.Print(GT(value))
 	h.Next.OnTime(value)
 }
-func (h *TEventPrinter) OnCompactTime(value *compact_time.Time) {
+func (h *TEventPrinter) OnCompactTime(value compact_time.Time) {
 	h.Print(CT(value))
 	h.Next.OnCompactTime(value)
 }
@@ -1044,6 +1038,19 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 	h.Next.OnArray(arrayType, elementCount, value)
+}
+func (h *TEventPrinter) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		h.Print(S(value))
+	case events.ArrayTypeResourceID:
+		h.Print(RID(value))
+	case events.ArrayTypeCustomText:
+		h.Print(CUT(value))
+	default:
+		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
+	}
+	h.Next.OnStringlikeArray(arrayType, value)
 }
 func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
@@ -1153,34 +1160,36 @@ func (h *TEventPrinter) OnNan(signaling bool) {
 
 // Event receiver receives data events and stores them to an array which can be
 // inspected, printed, or played back.
-type TER struct {
+type TEventStore struct {
 	Events []*TEvent
 }
 
-func NewTER() *TER {
-	return &TER{}
+func NewTEventStore() *TEventStore {
+	return &TEventStore{
+		Events: make([]*TEvent, 1024),
+	}
 }
-func (h *TER) add(event *TEvent) {
+func (h *TEventStore) add(event *TEvent) {
 	h.Events = append(h.Events, event)
 }
-func (h *TER) OnVersion(version uint64)                  { h.add(V(version)) }
-func (h *TER) OnPadding(count int)                       { h.add(PAD(count)) }
-func (h *TER) OnNA()                                     { h.add(NA()) }
-func (h *TER) OnBool(value bool)                         { h.add(B(value)) }
-func (h *TER) OnTrue()                                   { h.add(TT()) }
-func (h *TER) OnFalse()                                  { h.add(FF()) }
-func (h *TER) OnPositiveInt(value uint64)                { h.add(PI(value)) }
-func (h *TER) OnNegativeInt(value uint64)                { h.add(NI(value)) }
-func (h *TER) OnInt(value int64)                         { h.add(I(value)) }
-func (h *TER) OnBigInt(value *big.Int)                   { h.add(BI(value)) }
-func (h *TER) OnFloat(value float64)                     { h.add(F(value)) }
-func (h *TER) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
-func (h *TER) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
-func (h *TER) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
-func (h *TER) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
-func (h *TER) OnTime(value time.Time)                    { h.add(GT(value)) }
-func (h *TER) OnCompactTime(value *compact_time.Time)    { h.add(CT(value)) }
-func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+func (h *TEventStore) OnVersion(version uint64)                  { h.add(V(version)) }
+func (h *TEventStore) OnPadding(count int)                       { h.add(PAD(count)) }
+func (h *TEventStore) OnNA()                                     { h.add(NA()) }
+func (h *TEventStore) OnBool(value bool)                         { h.add(B(value)) }
+func (h *TEventStore) OnTrue()                                   { h.add(TT()) }
+func (h *TEventStore) OnFalse()                                  { h.add(FF()) }
+func (h *TEventStore) OnPositiveInt(value uint64)                { h.add(PI(value)) }
+func (h *TEventStore) OnNegativeInt(value uint64)                { h.add(NI(value)) }
+func (h *TEventStore) OnInt(value int64)                         { h.add(I(value)) }
+func (h *TEventStore) OnBigInt(value *big.Int)                   { h.add(BI(value)) }
+func (h *TEventStore) OnFloat(value float64)                     { h.add(F(value)) }
+func (h *TEventStore) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
+func (h *TEventStore) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
+func (h *TEventStore) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
+func (h *TEventStore) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
+func (h *TEventStore) OnTime(value time.Time)                    { h.add(GT(value)) }
+func (h *TEventStore) OnCompactTime(value compact_time.Time)     { h.add(CT(value)) }
+func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(S(string(value)))
@@ -1220,7 +1229,19 @@ func (h *TER) OnArray(arrayType events.ArrayType, elementCount uint64, value []b
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 }
-func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
+func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		h.add(S(value))
+	case events.ArrayTypeResourceID:
+		h.add(RID(value))
+	case events.ArrayTypeCustomText:
+		h.add(CUT(value))
+	default:
+		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
+	}
+}
+func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		h.add(SB())
@@ -1260,21 +1281,24 @@ func (h *TER) OnArrayBegin(arrayType events.ArrayType) {
 		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
 	}
 }
-func (h *TER) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
-func (h *TER) OnArrayData(data []byte)                { h.add(AD(CloneBytes(data))) }
-func (h *TER) OnList()                                { h.add(L()) }
-func (h *TER) OnMap()                                 { h.add(M()) }
-func (h *TER) OnMarkup()                              { h.add(MUP()) }
-func (h *TER) OnMetadata()                            { h.add(META()) }
-func (h *TER) OnComment()                             { h.add(CMT()) }
-func (h *TER) OnEnd()                                 { h.add(E()) }
-func (h *TER) OnMarker()                              { h.add(MARK()) }
-func (h *TER) OnReference()                           { h.add(REF()) }
-func (h *TER) OnConcatenate()                         { h.add(CAT()) }
-func (h *TER) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
-func (h *TER) OnBeginDocument()                       { h.add(BD()) }
-func (h *TER) OnEndDocument()                         { h.add(ED()) }
-func (h *TER) OnNan(signaling bool) {
+func (h *TEventStore) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }
+func (h *TEventStore) OnArrayData(data []byte)                { h.add(AD(CloneBytes(data))) }
+func (h *TEventStore) OnList()                                { h.add(L()) }
+func (h *TEventStore) OnMap()                                 { h.add(M()) }
+func (h *TEventStore) OnMarkup()                              { h.add(MUP()) }
+func (h *TEventStore) OnMetadata()                            { h.add(META()) }
+func (h *TEventStore) OnComment()                             { h.add(CMT()) }
+func (h *TEventStore) OnEnd()                                 { h.add(E()) }
+func (h *TEventStore) OnMarker()                              { h.add(MARK()) }
+func (h *TEventStore) OnReference()                           { h.add(REF()) }
+func (h *TEventStore) OnConcatenate()                         { h.add(CAT()) }
+func (h *TEventStore) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
+func (h *TEventStore) OnBeginDocument() {
+	h.Events = h.Events[:0]
+	h.add(BD())
+}
+func (h *TEventStore) OnEndDocument() { h.add(ED()) }
+func (h *TEventStore) OnNan(signaling bool) {
 	if signaling {
 		h.add(SNAN())
 	} else {
@@ -1338,7 +1362,7 @@ type TestingOuterStruct struct {
 	Time   time.Time
 	PTime  *time.Time
 	CTime  compact_time.Time
-	PCTime *compact_time.Time
+	PCTime compact_time.Time
 	PURL   *url.URL
 	URL    url.URL
 }
@@ -1438,13 +1462,13 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
-		ane("F9", NA())
+		ane("F9", NA(), NA())
 		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())
 		ane("F14", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 		ane("F15", GT(_this.Time))
-		ane("F16", CT(_this.PCTime))
+		ane("F16", CT(_this.CTime))
 		ane("F17", AU8([]byte{1}))
 		ane("F18", S("xyz"))
 		ane("F19", RID("http://example.com"))
@@ -1466,7 +1490,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			SNAN(),
 			UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 			GT(_this.Time),
-			CT(_this.PCTime),
+			CT(_this.CTime),
 			AU8([]byte{1}),
 			S("xyz"),
 			RID("http://example.com"),
@@ -1544,7 +1568,6 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PIS.Inner = baseValue + 16
 	testTime := time.Date(30000+baseValue, time.Month(1), 1, 1, 1, 1, 0, time.UTC)
 	_this.PTime = &testTime
-	_this.PCTime = NewTS(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
-	_this.CTime = *_this.PCTime
+	_this.CTime = NewTS(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
 	_this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
 }

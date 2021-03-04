@@ -40,6 +40,11 @@ type Context struct {
 	TryAddReference TryAddReference
 }
 
+func (_this *Context) NotifyNil() {
+	_this.EventReceiver.OnNA()
+	_this.EventReceiver.OnNA()
+}
+
 func sessionContext(getIteratorFunc GetIteratorForType, lowercaseStructFieldNames bool) Context {
 	return Context{
 		GetIteratorForType:        getIteratorFunc,

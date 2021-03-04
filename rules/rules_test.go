@@ -50,8 +50,8 @@ func TestRulesVersion(t *testing.T) {
 	assertEventsFail(t, rules, V(1))
 }
 
-func TestRulesNil(t *testing.T) {
-	assertEventsMaxDepth(t, 1, NA(), ED())
+func TestRulesNA(t *testing.T) {
+	assertEventsMaxDepth(t, 1, NA(), NA(), ED())
 }
 
 func TestRulesNan(t *testing.T) {
@@ -402,7 +402,7 @@ func TestRulesListSingleItem(t *testing.T) {
 }
 
 func TestRulesMapPair(t *testing.T) {
-	assertEventsMaxDepth(t, 1, M(), B(true), NA(), E(), ED())
+	assertEventsMaxDepth(t, 1, M(), B(true), NA(), NA(), E(), ED())
 }
 
 func TestRulesMarkupSingleItem(t *testing.T) {
@@ -422,17 +422,17 @@ func TestRulesCommentSingleItem(t *testing.T) {
 // ==================
 
 func TestRulesListFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, L(), NA(), NAN(), B(true), F(0.1), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, L(), NA(), NA(), NAN(), B(true), F(0.1), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
 func TestRulesMapFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, M(), B(true), NA(), F(0.1), NAN(), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, M(), B(true), NA(), NA(), F(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
 func TestRulesMetadataFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, META(), B(true), NA(), F(0.1), NAN(), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, META(), B(true), NA(), NA(), F(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), I(1), ED())
 }
 
@@ -1048,4 +1048,10 @@ func TestRulesReset(t *testing.T) {
 	assertEventsFail(t, rules, MARK())
 	rules.Reset()
 	assertEventsSucceed(t, rules, BD(), V(1), L(), MARK(), I(1), S("test"))
+}
+
+func TestTopLevelStringLikeReferenceID(t *testing.T) {
+	opts := options.DefaultRuleOptions()
+	rules := NewRules(events.NewNullEventReceiver(), opts)
+	assertEventsSucceed(t, rules, BD(), V(1), REF(), RID("http://x.y"), ED())
 }

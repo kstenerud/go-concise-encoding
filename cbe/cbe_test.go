@@ -38,7 +38,7 @@ func TestCBEPadding(t *testing.T) {
 }
 
 func TestCBENil(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, typeNil}, BD(), V(1), NA(), ED())
+	assertDecodeEncode(t, []byte{header, version, typeNA, typeNA}, BD(), V(1), NA(), NA(), ED())
 }
 
 func TestCBEBool(t *testing.T) {
@@ -95,7 +95,7 @@ func TestCBEPositiveInt(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, version, typePosInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), V(1), BI(NewBigInt("4722366482869645213696", 10)), ED())
 	assertEncode(t, nil, []byte{header, version, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), V(1), BI(NewBigInt("18446744073709551615", 10)), ED())
 
-	assertEncode(t, nil, []byte{header, version, typeNil}, BD(), V(1), BI(nil), ED())
+	assertEncode(t, nil, []byte{header, version, typeNA, typeNA}, BD(), V(1), BI(nil), NA(), ED())
 }
 
 func TestCBENegativeInt(t *testing.T) {
@@ -159,12 +159,12 @@ func TestCBEBigFloat(t *testing.T) {
 		0xe1, 0xf3, 0xdf, 0xfc, 0xee, 0xac, 0xe5, 0xfe, 0xe1, 0x8f, 0xe2, 0x43},
 		BD(), V(1), BDF(NewBDF("-9.4452837206285466345998345667683453466347345e-5000")), ED())
 
-	assertEncode(t, nil, []byte{header, version, typeNil}, BD(), V(1), BF(nil), ED())
+	assertEncode(t, nil, []byte{header, version, typeNA, typeNA}, BD(), V(1), BF(nil), NA(), ED())
 }
 
 func TestCBEBigDecimalFloat(t *testing.T) {
 	assertEncode(t, nil, []byte{header, version, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), V(1), BDF(NewBDF("9.445283e+5000")), ED())
-	assertEncode(t, nil, []byte{header, version, typeNil}, BD(), V(1), BDF(nil), ED())
+	assertEncode(t, nil, []byte{header, version, typeNA, typeNA}, BD(), V(1), BDF(nil), NA(), ED())
 }
 
 func TestCBEUUIDEOF(t *testing.T) {
@@ -184,7 +184,7 @@ func TestCBETimeEOF(t *testing.T) {
 
 func TestCBETime(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, version, typeDate, 0x95, 0x7f, 0x3e}, BD(), V(1), CT(NewDate(-2000, 12, 21)), ED())
-	assertDecodeEncode(t, []byte{header, version, typeTime, 0xfe, 0x4f, 0xd6, 0xdc, 0x8b, 0x14, 0x01}, BD(), V(1), CT(NewTime(8, 41, 05, 999999999, "")), ED())
+	assertDecodeEncode(t, []byte{header, version, typeTime, 0xfe, 0x4f, 0xd6, 0xdc, 0x8b, 0x14, 0xfd}, BD(), V(1), CT(NewTime(8, 41, 05, 999999999, "")), ED())
 	assertDecodeEncode(t, []byte{header, version, typeTimestamp, 0x01, 0x00, 0x10, 0x02, 00, 0x10, 'E', '/', 'B', 'e', 'r', 'l', 'i', 'n'}, BD(), V(1), CT(NewTS(2000, 1, 1, 0, 0, 0, 0, "Europe/Berlin")), ED())
 	assertDecodeEncode(t, []byte{header, version, typeTimestamp, 0x8d, 0x1c, 0xb0, 0xd7, 0x06, 0x1f, 0x99, 0x12, 0xd5, 0x2e, 0x2f, 0x04}, BD(), V(1), CT(NewTSLL(3190, 8, 31, 0, 54, 47, 394129000, 5994, 1071)), ED())
 

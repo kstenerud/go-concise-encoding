@@ -55,6 +55,10 @@ func (_this *MarkerIDKeyableRule) OnArray(ctx *Context, arrayType events.ArrayTy
 	ctx.ValidateFullArrayMarkerID(arrayType, elementCount, data)
 	ctx.BeginMarkedObjectKeyable(string(data))
 }
+func (_this *MarkerIDKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayMarkerIDString(arrayType, data)
+	ctx.BeginMarkedObjectKeyable(data)
+}
 func (_this *MarkerIDKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginStringBuilder(arrayType, ctx.ValidateContentsMarkerID)
 }
@@ -86,6 +90,10 @@ func (_this *MarkerIDAnyTypeRule) OnBigInt(ctx *Context, value *big.Int) {
 }
 func (_this *MarkerIDAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayMarkerID(arrayType, elementCount, data)
+	ctx.BeginMarkedObjectAnyType(string(data))
+}
+func (_this *MarkerIDAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayMarkerIDString(arrayType, data)
 	ctx.BeginMarkedObjectAnyType(string(data))
 }
 func (_this *MarkerIDAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -147,9 +155,19 @@ func (_this *MarkedObjectKeyableRule) OnReference(ctx *Context) {
 	ctx.CurrentEntry.Rule.OnReference(ctx)
 	ctx.MarkObject(DataTypeKeyable)
 }
+func (_this *MarkedObjectKeyableRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnConstant(ctx, name, explicitValue)
+	ctx.MarkObject(DataTypeKeyable)
+}
 func (_this *MarkedObjectKeyableRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
+	ctx.MarkObject(DataTypeKeyable)
+}
+func (_this *MarkedObjectKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
 	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *MarkedObjectKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -170,6 +188,10 @@ func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx)
 	ctx.MarkObject(DataTypeAnyType)
+}
+func (_this *MarkedObjectAnyTypeRule) OnNA(ctx *Context) {
+	_this.OnNonKeyableObject(ctx)
+	ctx.BeginNA()
 }
 func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context) {
 	ctx.UnstackRule()
@@ -225,9 +247,19 @@ func (_this *MarkedObjectAnyTypeRule) OnReference(ctx *Context) {
 	ctx.CurrentEntry.Rule.OnReference(ctx)
 	ctx.MarkObject(DataTypeAnyType)
 }
+func (_this *MarkedObjectAnyTypeRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnConstant(ctx, name, explicitValue)
+	ctx.MarkObject(DataTypeAnyType)
+}
 func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
+	ctx.MarkObject(DataTypeAnyType)
+}
+func (_this *MarkedObjectAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
 	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -270,6 +302,16 @@ func (_this *ReferenceKeyableRule) OnArray(ctx *Context, arrayType events.ArrayT
 	switch arrayType {
 	case events.ArrayTypeString:
 		ctx.ValidateFullArrayMarkerID(arrayType, elementCount, data)
+		ctx.UnstackRule()
+		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
+	default:
+		panic(fmt.Errorf("Reference ID cannot be type %v", arrayType))
+	}
+}
+func (_this *ReferenceKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		ctx.ValidateFullArrayMarkerIDString(arrayType, data)
 		ctx.UnstackRule()
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
 	default:
@@ -330,6 +372,20 @@ func (_this *ReferenceAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayT
 		panic(fmt.Errorf("Reference ID cannot be type %v", arrayType))
 	}
 }
+func (_this *ReferenceAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	switch arrayType {
+	case events.ArrayTypeString:
+		ctx.ValidateFullArrayMarkerIDString(arrayType, data)
+		ctx.UnstackRule()
+		ctx.ReferenceObject(string(data), AllowAnyType)
+		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
+	case events.ArrayTypeResourceID:
+		ctx.UnstackRule()
+		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
+	default:
+		panic(fmt.Errorf("Reference ID cannot be type %v", arrayType))
+	}
+}
 func (_this *ReferenceAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
@@ -364,6 +420,10 @@ func (_this *TLReferenceRIDRule) OnArray(ctx *Context, arrayType events.ArrayTyp
 }
 func (_this *TLReferenceRIDRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayRIDReference(arrayType)
+}
+func (_this *TLReferenceRIDRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	// TODO: Make this properly
+	_this.OnArray(ctx, arrayType, uint64(len(data)), []byte(data))
 }
 func (_this *TLReferenceRIDRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	// Toss out the result because it's a resource ID
