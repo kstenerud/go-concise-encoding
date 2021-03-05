@@ -215,7 +215,8 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType) {
 
 	if !moreChunksFollow {
 		if elementCount == 0 {
-			_this.eventReceiver.OnArray(arrayType, elementCount, []byte{})
+			_this.eventReceiver.OnArrayBegin(arrayType)
+			_this.eventReceiver.OnArrayChunk(0, false)
 			return
 		}
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
