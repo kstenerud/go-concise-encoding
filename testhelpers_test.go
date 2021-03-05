@@ -22,6 +22,7 @@ package concise_encoding
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"net/url"
 	"testing"
@@ -189,6 +190,7 @@ func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
 	decodeOpts *options.CTEDecoderOptions,
 	events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
 
+	events = test.FilterEventsForCTE(events)
 	document := cteEncode(encodeOpts, events...)
 	return cteDecode(decodeOpts, document)
 }
@@ -199,16 +201,26 @@ func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
 func assertEncodeDecodeCBEOpts(t *testing.T,
 	encodeOpts *options.CBEEncoderOptions,
 	decodeOpts *options.CBEDecoderOptions,
-	expected ...*test.TEvent) {
+	expectedEvents ...*test.TEvent) {
 
-	actual, err := cbeEncodeDecode(encodeOpts, decodeOpts, expected...)
+	var document []byte
+	var actualEvents []*test.TEvent
+	var err error
+
+	test.AssertNoPanic(t, fmt.Sprintf("CBE Encode %v", expectedEvents), func() {
+		document = cbeEncode(encodeOpts, expectedEvents...)
+	})
+
+	test.AssertNoPanic(t, fmt.Sprintf("CBE Decode %v", describe.D(document)), func() {
+		actualEvents, err = cbeDecode(decodeOpts, document)
+	})
 	if err != nil {
-		t.Error(err)
+		t.Errorf("%v while decoding CBE document: %v", err, describe.D(document))
 		return
 	}
 
-	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("CBE: Expected %v but got %v", expected, actual)
+	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+		t.Errorf("CBE: Expected %v but got %v while decoding %v", expectedEvents, actualEvents, describe.D(document))
 	}
 }
 
@@ -219,16 +231,26 @@ func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
 func assertEncodeDecodeCTEOpts(t *testing.T,
 	encodeOpts *options.CTEEncoderOptions,
 	decodeOpts *options.CTEDecoderOptions,
-	expected ...*test.TEvent) {
+	expectedEvents ...*test.TEvent) {
 
-	actual, err := cteEncodeDecode(encodeOpts, decodeOpts, expected...)
+	var document []byte
+	var actualEvents []*test.TEvent
+	var err error
+
+	test.AssertNoPanic(t, fmt.Sprintf("CTE Encode %v", expectedEvents), func() {
+		document = cteEncode(encodeOpts, expectedEvents...)
+	})
+
+	test.AssertNoPanic(t, fmt.Sprintf("CTE Decode %v", string(document)), func() {
+		actualEvents, err = cteDecode(decodeOpts, document)
+	})
 	if err != nil {
-		t.Error(err)
+		t.Errorf("%v while decoding CTE document: %v", err, string(document))
 		return
 	}
 
-	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("CTE: Expected %v but got %v", expected, actual)
+	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+		t.Errorf("CTE: Expected %v but got %v while decoding %v", expectedEvents, actualEvents, string(document))
 	}
 }
 
@@ -244,11 +266,34 @@ func assertEncodeDecodeOpts(t *testing.T,
 	expected ...*test.TEvent) {
 
 	assertEncodeDecodeCBEOpts(t, cbeEncodeOpts, cbeDecodeOpts, expected...)
-	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, expected...)
+	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, test.FilterEventsForCTE(expected)...)
 }
 
 func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
+}
+
+func assertEncodeDecodeSet(t *testing.T, prefix []*test.TEvent, suffix []*test.TEvent, events []*test.TEvent) {
+	for _, event := range events {
+		allEvents := []*test.TEvent{}
+		allEvents = append(allEvents, prefix...)
+		allEvents = append(allEvents, event)
+		allEvents = append(allEvents, test.Completions[event]...)
+		allEvents = append(allEvents, suffix...)
+		assertEncodeDecode(t, allEvents...)
+	}
+}
+
+func assertEncodeDecodeSetTLO(t *testing.T, prefix []*test.TEvent, suffix []*test.TEvent, events []*test.TEvent) {
+	for _, event := range events {
+		allEvents := []*test.TEvent{}
+		allEvents = append(allEvents, prefix...)
+		allEvents = append(allEvents, event)
+		allEvents = append(allEvents, test.Completions[event]...)
+		allEvents = append(allEvents, suffix...)
+		allEvents = test.FilterEventsForTLO(allEvents)
+		assertEncodeDecode(t, allEvents...)
+	}
 }
 
 func assertDecodeCBECTE(t *testing.T,

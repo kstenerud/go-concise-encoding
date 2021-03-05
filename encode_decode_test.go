@@ -446,3 +446,9 @@ func TestWebsiteExampleMetadataComments(t *testing.T) {
 		E(),
 		ED())
 }
+
+func TestEncodeDecodeAllValidTLO(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV}
+	suffix := []*test.TEvent{test.EvED}
+	assertEncodeDecodeSetTLO(t, prefix, suffix, test.ValidTLOValues)
+}

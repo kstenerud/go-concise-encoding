@@ -43,6 +43,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-equivalence"
 )
 
 // ----------------------------------------------------------------------------
@@ -329,6 +330,92 @@ var allEvents = []*TEvent{
 	EvAF64B, EvAUU, EvAUUB,
 }
 
+var Completions = map[*TEvent][]*TEvent{
+	EvNA:     []*TEvent{EvNA},
+	EvBINil:  []*TEvent{EvNA},
+	EvBFNil:  []*TEvent{EvNA},
+	EvBDFNil: []*TEvent{EvNA},
+	EvL:      []*TEvent{EvE},
+	EvM:      []*TEvent{EvE},
+	EvMETA:   []*TEvent{EvE, PI(1)},
+	EvCMT:    []*TEvent{EvE, PI(1)},
+	EvMUP:    []*TEvent{PI(1), EvE, EvE},
+	EvMARK:   []*TEvent{PI(1), PI(50)},
+	EvREF:    []*TEvent{PI(1)},
+	EvCAT:    []*TEvent{PI(1)},
+	EvPAD:    []*TEvent{PI(1)},
+	EvSB:     []*TEvent{AC(0, false)},
+	EvRB:     []*TEvent{AC(0, false)},
+	EvCBB:    []*TEvent{AC(0, false)},
+	EvCTB:    []*TEvent{AC(0, false)},
+	EvABB:    []*TEvent{AC(0, false)},
+	EvAU8B:   []*TEvent{AC(0, false)},
+	EvAU16B:  []*TEvent{AC(0, false)},
+	EvAU32B:  []*TEvent{AC(0, false)},
+	EvAU64B:  []*TEvent{AC(0, false)},
+	EvAI8B:   []*TEvent{AC(0, false)},
+	EvAI16B:  []*TEvent{AC(0, false)},
+	EvAI32B:  []*TEvent{AC(0, false)},
+	EvAI64B:  []*TEvent{AC(0, false)},
+	EvAF16B:  []*TEvent{AC(0, false)},
+	EvAF32B:  []*TEvent{AC(0, false)},
+	EvAF64B:  []*TEvent{AC(0, false)},
+	EvAUUB:   []*TEvent{AC(0, false)},
+}
+
+func isEffectivelyNA(event *TEvent) bool {
+	return event.Type == TEventNA ||
+		event == EvBINil ||
+		event == EvBFNil ||
+		event == EvBDFNil
+}
+
+func FilterAllEvents(events []*TEvent, filter func(*TEvent) []*TEvent) []*TEvent {
+	filtered := []*TEvent{}
+	for _, event := range events {
+		filtered = append(filtered, filter(event)...)
+	}
+	return filtered
+}
+
+func FilterCTE(event *TEvent) []*TEvent {
+	switch event.Type {
+	case TEventPadding:
+		return []*TEvent{}
+	case TEventArrayBooleanBegin, TEventArrayFloat16Begin,
+		TEventArrayFloat32Begin, TEventArrayFloat64Begin,
+		TEventArrayInt8Begin, TEventArrayInt16Begin, TEventArrayInt32Begin,
+		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
+		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUUIDBegin,
+		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
+		TEventStringBegin:
+		return []*TEvent{EvTT}
+	case TEventArrayChunk, TEventArrayData:
+		return []*TEvent{}
+	default:
+		return []*TEvent{event}
+	}
+}
+
+func FilterEventsForCTE(events []*TEvent) []*TEvent {
+	return FilterAllEvents(events, FilterCTE)
+}
+
+func FilterEventsForTLO(events []*TEvent) []*TEvent {
+	filtered := []*TEvent{}
+	var lastEvent *TEvent = EvBD
+	for _, event := range events {
+		if lastEvent.Type == TEventReference && (event.Type == TEventInt || event.Type == TEventPInt || event.Type == TEventBigInt) {
+			filtered = append(filtered, EvRID)
+		} else {
+			filtered = append(filtered, event)
+		}
+		lastEvent = event
+	}
+
+	return filtered
+}
+
 func ComplementaryEvents(events []*TEvent) []*TEvent {
 	complementary := make([]*TEvent, 0, len(allEvents)/2)
 	for _, event := range allEvents {
@@ -551,6 +638,26 @@ func (_this TEventType) String() string {
 	return TEventNames[_this]
 }
 
+func (_this TEventType) IsBoolean() bool {
+	switch _this {
+	case TEventTrue, TEventFalse, TEventBool:
+		return true
+	default:
+		return false
+	}
+}
+
+func (_this TEventType) IsNumeric() bool {
+	switch _this {
+	case TEventPInt, TEventNInt, TEventInt, TEventBigInt, TEventFloat,
+		TEventBigFloat, TEventDecimalFloat, TEventBigDecimalFloat, TEventNan,
+		TEventSNan:
+		return true
+	default:
+		return false
+	}
+}
+
 // ----------------------------------------------------------------------------
 // Stored events
 // ----------------------------------------------------------------------------
@@ -579,6 +686,149 @@ func (_this *TEvent) String() string {
 		return fmt.Sprintf("%v(%v)", str, _this.V1)
 	}
 	return str
+}
+
+func (_this *TEvent) isNan() bool {
+	switch _this.Type {
+	case TEventNan:
+		return true
+	case TEventFloat:
+		f64 := _this.V1.(float64)
+		return math.IsNaN(f64) && !common.IsSignalingNan(f64)
+	case TEventDecimalFloat:
+		return _this.V1.(compact_float.DFloat).IsNan()
+	case TEventBigDecimalFloat:
+		return _this.V1.(*apd.Decimal).Form == apd.NaN
+	default:
+		return false
+	}
+}
+
+func (_this *TEvent) isSignalingNan() bool {
+	switch _this.Type {
+	case TEventSNan:
+		return true
+	case TEventFloat:
+		f64 := _this.V1.(float64)
+		return math.IsNaN(f64) && common.IsSignalingNan(f64)
+	case TEventDecimalFloat:
+		return _this.V1.(compact_float.DFloat).IsSignalingNan()
+	case TEventBigDecimalFloat:
+		return _this.V1.(*apd.Decimal).Form == apd.NaNSignaling
+	default:
+		return false
+	}
+}
+
+func isZeroTZ(tz string) bool {
+	switch tz {
+	case "", "Z", "Zero", "Etc/GMT", "Etc/GMT+0", "Etc/GMT-0", "Etc/GMT0", "Etc/Greenwich",
+		"Etc/UCT", "Etc/Universal", "Etc/UTC", "Etc/Zulu", "Factory", "GMT",
+		"GMT+0", "GMT-0", "GMT0", "Greenwich", "UCT", "Universal", "UTC", "Zulu":
+		return true
+	default:
+		return false
+	}
+}
+
+func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
+	if equivalence.IsEquivalent(_this, that) {
+		return true
+	}
+
+	if _this.Type.IsNumeric() && that.Type.IsNumeric() {
+		if _this.isNan() && that.isNan() {
+			return true
+		}
+		if _this.isSignalingNan() && that.isSignalingNan() {
+			return true
+		}
+
+		var a string
+		if _this.Type == TEventNInt {
+			a = fmt.Sprintf("-%v", _this.V1)
+		} else {
+			a = fmt.Sprintf("%v", _this.V1)
+		}
+
+		var b string
+		if that.Type == TEventNInt {
+			b = fmt.Sprintf("-%v", that.V1)
+		} else {
+			b = fmt.Sprintf("%v", that.V1)
+		}
+
+		return a == b
+	}
+
+	if _this.Type.IsBoolean() && that.Type.IsBoolean() {
+		a := fmt.Sprintf("%v", _this.V1)
+		b := fmt.Sprintf("%v", that.V1)
+		return a == b ||
+			a == "true" && that.Type == TEventTrue ||
+			b == "true" && _this.Type == TEventTrue ||
+			a == "false" && that.Type == TEventFalse ||
+			b == "false" && _this.Type == TEventFalse
+	}
+
+	if _this.Type == TEventTime || _this.Type == TEventCompactTime {
+		var err error
+		var a compact_time.Time
+		var b compact_time.Time
+
+		switch _this.Type {
+		case TEventCompactTime:
+			a = _this.V1.(compact_time.Time)
+		default:
+			a, err = compact_time.AsCompactTime(_this.V1.(time.Time))
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		switch that.Type {
+		case TEventCompactTime:
+			b = that.V1.(compact_time.Time)
+		case TEventTime:
+			b, err = compact_time.AsCompactTime(that.V1.(time.Time))
+			if err != nil {
+				panic(err)
+			}
+		default:
+			return false
+		}
+
+		if isZeroTZ(a.LongAreaLocation) && isZeroTZ(b.LongAreaLocation) {
+			return a.Year == b.Year &&
+				a.Month == b.Month &&
+				a.Day == b.Day &&
+				a.Hour == b.Hour &&
+				a.Minute == b.Minute &&
+				a.Second == b.Second &&
+				a.Nanosecond == b.Nanosecond &&
+				a.TimeType == b.TimeType
+		}
+		return a == b
+	}
+
+	if isEffectivelyNA(_this) && isEffectivelyNA(that) {
+		return true
+	}
+
+	return false
+}
+
+func AreAllEventsEqual(a []*TEvent, b []*TEvent) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, ev := range a {
+		if !ev.isEquivalentTo(b[i]) {
+			return false
+		}
+	}
+	return true
 }
 
 // Invoking a stored event generates the appropriate data event message to
