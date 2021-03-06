@@ -352,6 +352,12 @@ func (_this *DecodeBuffer) SkipWhitespace() {
 	_this.SkipWhileProperty(chars.CharIsWhitespace)
 }
 
+func (_this *DecodeBuffer) DecodeToken() []byte {
+	_this.TokenBegin()
+	_this.TokenReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
+	return _this.TokenGet()
+}
+
 const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 
 func (_this *DecodeBuffer) DecodeSmallBinaryUint() (value uint64, digitCount int) {
@@ -1343,6 +1349,48 @@ func (_this *DecodeBuffer) DecodeMarkerID() (asString []byte, asUint uint64) {
 		_this.Errorf("Missing marker ID")
 	}
 	return
+}
+
+func (_this *DecodeBuffer) ExtractUUID(data []byte) []byte {
+	if len(data) != 36 ||
+		data[8] != '-' ||
+		data[13] != '-' ||
+		data[18] != '-' ||
+		data[23] != '-' {
+		_this.Errorf("Malformed UUID or unknown named value: [%s]", string(data))
+	}
+
+	decodeHex := func(b byte) byte {
+		switch {
+		case chars.ByteHasProperty(b, chars.CharIsDigitBase10):
+			return byte(b - '0')
+		case chars.ByteHasProperty(b, chars.CharIsLowerAF):
+			return byte(b - 'a' + 10)
+		case chars.ByteHasProperty(b, chars.CharIsUpperAF):
+			return byte(b - 'A' + 10)
+		default:
+			_this.Errorf("Unexpected char [%c] in UUID [%s]", b, string(data))
+			return 0
+		}
+	}
+
+	decodeSection := func(src []byte, dst []byte) {
+		iSrc := 0
+		iDst := 0
+		for iSrc < len(src) {
+			dst[iDst] = (decodeHex(src[iSrc]) << 4) | decodeHex(src[iSrc+1])
+			iDst++
+			iSrc += 2
+		}
+	}
+
+	decodeSection(data[:8], data)
+	decodeSection(data[9:13], data[4:])
+	decodeSection(data[14:18], data[6:])
+	decodeSection(data[19:23], data[8:])
+	decodeSection(data[24:36], data[10:])
+
+	return data[:16]
 }
 
 // ============================================================================

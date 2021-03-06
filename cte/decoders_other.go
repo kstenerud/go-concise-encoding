@@ -324,64 +324,19 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 		} else {
 			ctx.EventReceiver.OnNA()
 		}
-		return
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
-		return
 	case "snan":
 		ctx.EventReceiver.OnNan(true)
-		return
 	case "inf":
 		ctx.EventReceiver.OnFloat(math.Inf(1))
-		return
 	case "false":
 		ctx.EventReceiver.OnFalse()
-		return
 	case "true":
 		ctx.EventReceiver.OnTrue()
-		return
+	default:
+		ctx.EventReceiver.OnUUID(ctx.Stream.ExtractUUID(namedValue))
 	}
-
-	// UUID
-	if len(namedValue) != 36 ||
-		namedValue[8] != '-' ||
-		namedValue[13] != '-' ||
-		namedValue[18] != '-' ||
-		namedValue[23] != '-' {
-		ctx.Stream.Errorf("Malformed UUID or unknown named value: [%s]", string(namedValue))
-	}
-
-	decodeHex := func(b byte) byte {
-		switch {
-		case chars.ByteHasProperty(b, chars.CharIsDigitBase10):
-			return byte(b - '0')
-		case chars.ByteHasProperty(b, chars.CharIsLowerAF):
-			return byte(b - 'a' + 10)
-		case chars.ByteHasProperty(b, chars.CharIsUpperAF):
-			return byte(b - 'A' + 10)
-		default:
-			ctx.Stream.Errorf("Unexpected char [%c] in UUID [%s]", b, string(namedValue))
-			return 0
-		}
-	}
-
-	decodeSection := func(src []byte, dst []byte) {
-		iSrc := 0
-		iDst := 0
-		for iSrc < len(src) {
-			dst[iDst] = (decodeHex(src[iSrc]) << 4) | decodeHex(src[iSrc+1])
-			iDst++
-			iSrc += 2
-		}
-	}
-
-	decodeSection(namedValue[:8], namedValue)
-	decodeSection(namedValue[9:13], namedValue[4:])
-	decodeSection(namedValue[14:18], namedValue[6:])
-	decodeSection(namedValue[19:23], namedValue[8:])
-	decodeSection(namedValue[24:36], namedValue[10:])
-
-	ctx.EventReceiver.OnUUID(namedValue[:16])
 }
 
 func advanceAndDecodeConstant(ctx *DecoderContext) {

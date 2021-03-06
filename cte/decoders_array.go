@@ -76,7 +76,7 @@ func decodeTypedArrayBegin(ctx *DecoderContext) {
 	case "r":
 		decodeRID(ctx)
 	case "u":
-		panic("TODO: CTEDecoder: UUID array")
+		decodeArrayUUID(ctx)
 	case "u8":
 		decodeArrayU8(ctx, "integer", ctx.Stream.DecodeSmallUint)
 	case "u8b":
@@ -363,4 +363,21 @@ func decodeArrayF64(ctx *DecoderContext, digitType string, decodeElement func() 
 			uint8(bits>>32), uint8(bits>>40), uint8(bits>>48), uint8(bits>>56))
 	}
 	finishTypedArray(ctx, events.ArrayTypeFloat64, digitType, 8, data)
+}
+
+func decodeArrayUUID(ctx *DecoderContext) {
+	var data []uint8
+	ctx.Stream.SkipWhitespace()
+	for ctx.Stream.PeekByteAllowEOD() != '|' {
+		token := ctx.Stream.DecodeToken()
+		if len(token) == 0 {
+			panic("Error")
+		}
+		if token[0] == '@' {
+			token = token[1:]
+		}
+		data = append(data, ctx.Stream.ExtractUUID(token)...)
+		ctx.Stream.SkipWhitespace()
+	}
+	finishTypedArray(ctx, events.ArrayTypeUUID, "uuid", 16, data)
 }
