@@ -77,6 +77,8 @@ func decodeTypedArrayBegin(ctx *DecoderContext) {
 		decodeRID(ctx)
 	case "u":
 		decodeArrayUUID(ctx)
+	case "b":
+		decodeArrayBoolean(ctx)
 	case "u8":
 		decodeArrayU8(ctx, "integer", ctx.Stream.DecodeSmallUint)
 	case "u8b":
@@ -186,6 +188,35 @@ func decodeCustomBinary(ctx *DecoderContext) {
 		data = append(data, uint8(v))
 	}
 	finishTypedArray(ctx, events.ArrayTypeCustomBinary, digitType, 1, data)
+}
+
+func decodeArrayBoolean(ctx *DecoderContext) {
+	var data []uint8
+	var elemCount uint64
+
+	for {
+		nextByte := byte(0)
+		for i := 0; i < 8; i++ {
+			ctx.Stream.SkipWhitespace()
+			b := ctx.Stream.ReadByteNoEOD()
+			switch b {
+			case '|':
+				if i > 0 {
+					data = append(data, nextByte)
+				}
+				ctx.EventReceiver.OnArray(events.ArrayTypeBoolean, elemCount, data)
+				return
+			case '0':
+				// Nothing to do
+			case '1':
+				nextByte |= byte(1 << i)
+			default:
+				ctx.Stream.UnexpectedChar("boolean array")
+			}
+			elemCount++
+		}
+		data = append(data, nextByte)
+	}
 }
 
 func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {

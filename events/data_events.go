@@ -42,6 +42,10 @@ const (
 	ArrayTypeResourceID
 	ArrayTypeCustomText
 	ArrayTypeCustomBinary
+	// Note: Boolean arrays are passed in the CBE boolean array representation,
+	// meaning that the low bit is in the least significant position of the
+	// first byte in the byte array, and the trailing upper bits of the last
+	// byte are cleared.
 	ArrayTypeBoolean
 	ArrayTypeUint8
 	ArrayTypeUint16

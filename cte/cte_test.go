@@ -538,6 +538,29 @@ func TestCTERID(t *testing.T) {
 |r http://x.com/\||`, BD(), V(1), RID(`http://x.com/|`), ED())
 }
 
+func TestCTEArrayBoolean(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, "c1\n|b|", BD(), V(1), AB(0, []byte{}), ED())
+	assertDecodeEncode(t, nil, nil, "c1\n|b 0|", BD(), V(1), AB(1, []byte{0x00}), ED())
+	assertDecodeEncode(t, nil, nil, "c1\n|b 1|", BD(), V(1), AB(1, []byte{0x01}), ED())
+	assertDecodeEncode(t, nil, nil, "c1\n|b 1011001|", BD(), V(1), AB(7, []byte{0b1001101}), ED())
+	assertDecodeEncode(t, nil, nil, "c1\n|b 10110011|", BD(), V(1), AB(8, []byte{0b11001101}), ED())
+	assertDecodeEncode(t, nil, nil, "c1\n|b 101100111|", BD(), V(1), AB(9, []byte{0b11001101, 0b1}), ED())
+
+	assertEncode(t, nil, "c1\n|b|", BD(), V(1), ABB(), AC(0, false), ED())
+	assertEncode(t, nil, "c1\n|b 0|", BD(), V(1), ABB(), AC(1, false), AD([]byte{0x00}), ED())
+	assertEncode(t, nil, "c1\n|b 1|", BD(), V(1), ABB(), AC(1, false), AD([]byte{0x01}), ED())
+	assertEncode(t, nil, "c1\n|b 1011001|", BD(), V(1), ABB(), AC(7, false), AD([]byte{0b1001101}), ED())
+	assertEncode(t, nil, "c1\n|b 10110011|", BD(), V(1), ABB(), AC(8, false), AD([]byte{0b11001101}), ED())
+	assertEncode(t, nil, "c1\n|b 101100111|", BD(), V(1), ABB(), AC(9, false), AD([]byte{0b11001101, 0b1}), ED())
+
+	assertDecode(t, nil, "c1\n|b |", BD(), V(1), AB(0, []byte{}), ED())
+	assertDecode(t, nil, "c1\n|b 0 |", BD(), V(1), AB(1, []byte{0x00}), ED())
+	assertDecode(t, nil, "c1\n|b 1 |", BD(), V(1), AB(1, []byte{0x01}), ED())
+	assertDecode(t, nil, "c1\n|b 1 01 1 001 |", BD(), V(1), AB(7, []byte{0b1001101}), ED())
+	assertDecode(t, nil, "c1\n|b 1 0 1 1 0 0 1 1 |", BD(), V(1), AB(8, []byte{0b11001101}), ED())
+	assertDecode(t, nil, "c1\n|b  10  110 0 1 1   1    |", BD(), V(1), AB(9, []byte{0b11001101, 0b1}), ED())
+}
+
 func TestCTEArrayUintX(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c1\n|u8x f1 93|", BD(), V(1), AU8([]byte{0xf1, 0x93}), ED())
 	assertDecode(t, nil, "c1\n|u8x f 93 |", BD(), V(1), AU8([]byte{0xf, 0x93}), ED())
