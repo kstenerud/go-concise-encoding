@@ -167,6 +167,10 @@ func (_this *arrayEncoderEngine) AddArrayData(data []byte) {
 
 // Utils
 
+func (_this *arrayEncoderEngine) beginArrayBoolean(onComplete func()) {
+	panic("TODO: arrayEncoderEngine.beginArrayBoolean")
+}
+
 func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
 	_this.arrayElementWidth = 1
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
@@ -415,6 +419,7 @@ func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
 // Data
 
 var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
+	events.ArrayTypeBoolean:      (*arrayEncoderEngine).beginArrayBoolean,
 	events.ArrayTypeString:       (*arrayEncoderEngine).beginArrayString,
 	events.ArrayTypeResourceID:   (*arrayEncoderEngine).beginArrayResourceID,
 	events.ArrayTypeCustomText:   (*arrayEncoderEngine).beginArrayCustomText,
