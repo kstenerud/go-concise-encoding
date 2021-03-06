@@ -244,7 +244,7 @@ func TestCBEStringEOF(t *testing.T) {
 }
 
 func TestCBEString(t *testing.T) {
-	assertDecode(t, nil, []byte{header, version, typeString, 0x00}, BD(), V(1), S(""), ED())
+	assertDecode(t, nil, []byte{header, version, typeString, 0x00}, BD(), V(1), SB(), AC(0, false), ED())
 	assertDecode(t, nil, []byte{header, version, typeString, 0x02, 'a'}, BD(), V(1), S("a"), ED())
 	assertDecodeEncode(t, []byte{header, version, typeString, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), S("00000000001111111111"), ED())
 }
@@ -255,7 +255,7 @@ func TestCBERIDEOF(t *testing.T) {
 }
 
 func TestCBERID(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x00}, BD(), V(1), RID(""), ED())
+	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x00}, BD(), V(1), RB(), AC(0, false), ED())
 	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x02, 'a'}, BD(), V(1), RID("a"), ED())
 	assertDecodeEncode(t, []byte{header, version, TypeRID, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), RID("00000000001111111111"), ED())
 }
@@ -266,7 +266,7 @@ func TestCBECustomBinaryEOF(t *testing.T) {
 }
 
 func TestCBECustomBinary(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, typeCustomBinary, 0x00}, BD(), V(1), CUB([]byte("")), ED())
+	assertDecodeEncode(t, []byte{header, version, typeCustomBinary, 0x00}, BD(), V(1), CBB(), AC(0, false), ED())
 	assertDecodeEncode(t, []byte{header, version, typeCustomBinary, 0x02, 'a'}, BD(), V(1), CUB([]byte("a")), ED())
 	assertDecodeEncode(t, []byte{header, version, typeCustomBinary, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), CUB([]byte("00000000001111111111")), ED())
 }
@@ -277,7 +277,7 @@ func TestCBECustomTextEOF(t *testing.T) {
 }
 
 func TestCBECustomText(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, version, typeCustomText, 0x00}, BD(), V(1), CUT(""), ED())
+	assertDecodeEncode(t, []byte{header, version, typeCustomText, 0x00}, BD(), V(1), CTB(), AC(0, false), ED())
 	assertDecodeEncode(t, []byte{header, version, typeCustomText, 0x02, 'a'}, BD(), V(1), CUT("a"), ED())
 	assertDecodeEncode(t, []byte{header, version, typeCustomText, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), V(1), CUT("00000000001111111111"), ED())
 }
