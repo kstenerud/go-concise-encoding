@@ -150,6 +150,9 @@ func (_this *EncodeBuffer) WriteFloat(value float64) {
 func (_this *EncodeBuffer) WriteFloatHexNoPrefix(value float64) {
 	buff := _this.RequireBytes(floatStringMaxByteCount)[:0]
 	used := strconv.AppendFloat(buff, value, 'x', -1, 64)
+	if bytes.HasSuffix(used, []byte("p+00")) {
+		used = used[:len(used)-4]
+	}
 	copy(used, used[2:])
 	if value < 0 {
 		used[0] = '-'

@@ -404,6 +404,7 @@ func (_this *arrayEncoderEngine) beginArrayUUID(onComplete func()) {
 	_this.stream.AddString("|u")
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
+			_this.stream.AddByte(' ')
 			_this.stream.WriteUUID(data)
 			data = data[elemWidth:]
 		}

@@ -747,12 +747,12 @@ func (_this *DecodeBuffer) DecodeHexFloat(sign int64, coefficient uint64, bigCoe
 	exponent := 0
 	fractionalDigitCount := 0
 	coefficient, bigCoefficient, fractionalDigitCount = _this.DecodeHexUint(coefficient, bigCoefficient)
-	if fractionalDigitCount == 0 {
+	b := _this.PeekByteAllowEOD()
+	if fractionalDigitCount == 0 && b != 'p' && b != 'P' {
 		_this.UnexpectedChar("hex float fractional")
 	}
 	digitCount = coefficientDigitCount + fractionalDigitCount
 
-	b := _this.PeekByteAllowEOD()
 	if b == 'p' || b == 'P' {
 		_this.AdvanceByte()
 		exponentSign := 1
@@ -838,7 +838,13 @@ func (_this *DecodeBuffer) DecodeSmallHexFloat() (value float64, digitCount int)
 			_this.Errorf("Value too big for element")
 		}
 		return f, digitCount
-	case b.HasProperty(chars.CharIsWhitespace):
+	case b == 'p' || b == 'P':
+		f, bigF, digitCount := _this.DecodeHexFloat(sign, u, nil, coefficientDigitCount)
+		if bigF != nil {
+			_this.Errorf("Value too big for element")
+		}
+		return f, digitCount
+	case b.HasProperty(chars.CharIsObjectEnd):
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
 		_this.UnexpectedChar("hex float")
