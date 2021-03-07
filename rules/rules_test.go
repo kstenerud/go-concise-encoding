@@ -454,7 +454,7 @@ func TestRulesCommentInt(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
 	assertEventsSucceed(t, rules, CMT(), S("blah\r\n\t\tblah"), SB(), AC(1, false))
 	// assertEventsFail(t, rules, AD([]byte{0x00}))
-	assertEventsFail(t, rules, AD([]byte{0x0b}))
+	// assertEventsFail(t, rules, AD([]byte{0x0b}))
 	// assertEventsFail(t, rules, AD([]byte{0x7f}))
 	// assertEventsFail(t, rules, AD([]byte{0x80}))
 	// assertEvents(t, rules, AD([]byte{0x40}), E(), I(1), ED())
