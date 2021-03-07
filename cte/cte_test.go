@@ -31,6 +31,11 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
+// TODO: Remove this when releasing V1
+func TestCTEVersion1(t *testing.T) {
+	assertDecode(t, nil, "c1 1", BD(), V(ceVer), PI(1), ED())
+}
+
 func TestCTEVersion(t *testing.T) {
 	// Valid
 	assertDecodeEncode(t, nil, nil, "c0\n1", BD(), V(ceVer), PI(1), ED())

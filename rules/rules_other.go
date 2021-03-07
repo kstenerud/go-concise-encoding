@@ -57,10 +57,7 @@ type VersionRule struct{}
 func (_this *VersionRule) String() string { return "Version Rule" }
 func (_this *VersionRule) OnVersion(ctx *Context, version uint64) {
 	if version != ctx.ExpectedVersion {
-		// TODO: Remove when releasing V1
-		if version != 1 {
-			panic(fmt.Errorf("expected version %v but got version %v", ctx.ExpectedVersion, version))
-		}
+		panic(fmt.Errorf("expected version %v but got version %v", ctx.ExpectedVersion, version))
 	}
 	ctx.SwitchTopLevel()
 }

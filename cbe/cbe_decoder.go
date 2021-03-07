@@ -81,7 +81,12 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	if docHeader != cbeDocumentHeader {
 		_this.buffer.errorf("First byte of CBE document must be 0x%02x (found 0x%02x)", cbeDocumentHeader, docHeader)
 	}
-	_this.eventReceiver.OnVersion(_this.buffer.DecodeVersion())
+	ver := _this.buffer.DecodeVersion()
+	// TODO: Remove this when releasing V1
+	if ver == 1 {
+		ver = 0
+	}
+	_this.eventReceiver.OnVersion(ver)
 
 	for _this.buffer.HasUnreadData() {
 		_this.buffer.RefillIfNecessary()

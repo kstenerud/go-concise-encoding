@@ -28,6 +28,11 @@ import (
 	"time"
 )
 
+// TODO: Remove this when releasing V1
+func TestCBEVersion1(t *testing.T) {
+	assertDecode(t, nil, []byte{header, 1, 1}, BD(), V(ceVer), I(1), ED())
+}
+
 func TestCBEVersion(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, 1}, BD(), V(ceVer), I(1), ED())
 }

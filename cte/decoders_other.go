@@ -65,6 +65,10 @@ func decodeDocumentBegin(ctx *DecoderContext) {
 	if bigVersion != nil {
 		ctx.Stream.Errorf("Version too big")
 	}
+	// TODO: Remove this when releasing V1
+	if version == 1 {
+		version = 0
+	}
 
 	b := ctx.Stream.PeekByteNoEOD()
 	if !chars.ByteHasProperty(b, chars.CharIsWhitespace) {

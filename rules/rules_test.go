@@ -48,10 +48,6 @@ func TestRulesVersion(t *testing.T) {
 	assertEventsFail(t, rules, V(9))
 	assertEventsSucceed(t, rules, V(ceVer))
 	assertEventsFail(t, rules, V(ceVer))
-
-	// TODO: Remove this when releasing V1
-	rules = NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsSucceed(t, rules, BD(), V(1))
 }
 
 func TestRulesNA(t *testing.T) {
