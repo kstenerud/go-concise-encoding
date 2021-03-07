@@ -38,6 +38,10 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
+const (
+	ceVer = version.ConciseEncodingVersion
+)
+
 func NewBytes(count int, startIndex int) []byte {
 	return test.GenerateBytes(count, startIndex)
 }
@@ -351,7 +355,7 @@ func assertRulesAddCustomText(t *testing.T, rules *RulesEventReceiver, value []b
 func newRulesAfterVersion(opts *options.RuleOptions) *RulesEventReceiver {
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	rules.OnBeginDocument()
-	rules.OnVersion(version.ConciseEncodingVersion)
+	rules.OnVersion(ceVer)
 	return rules
 }
 

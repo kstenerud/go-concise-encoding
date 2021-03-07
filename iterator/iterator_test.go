@@ -235,7 +235,7 @@ func TestIterateStruct(t *testing.T) {
 }
 
 func TestIterateNilOpts(t *testing.T) {
-	expected := []*test.TEvent{BD(), V(1), I(1), ED()}
+	expected := []*test.TEvent{BD(), V(ceVer), I(1), ED()}
 	receiver := test.NewTEventStore()
 	iterateObject(1, receiver, nil, nil)
 
@@ -255,7 +255,7 @@ func TestIterateRecurse(t *testing.T) {
 	}
 	obj.R = obj
 
-	expected := []*test.TEvent{BD(), V(1), MARK(), PI(0), M(), S("i"), I(50), S("r"), REF(), PI(0), E(), ED()}
+	expected := []*test.TEvent{BD(), V(ceVer), MARK(), PI(0), M(), S("i"), I(50), S("r"), REF(), PI(0), E(), ED()}
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true

@@ -27,6 +27,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/version"
+
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -41,8 +43,8 @@ import (
 )
 
 const (
-	header  = 0x03
-	version = 1
+	header = 0x03
+	ceVer  = version.ConciseEncodingVersion
 
 	typeDecimal      = 0x65
 	typePosInt       = 0x66

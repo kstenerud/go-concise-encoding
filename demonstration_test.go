@@ -41,11 +41,11 @@ func demonstrateCTEMarshal() {
 		return
 	}
 	fmt.Printf("Marshaled CTE: %v\n", string(buffer.Bytes()))
-	// Prints: Marshaled CTE: c1 {"a key"=2.5 900=2020-01-15/13:41:00.000599}
+	// Prints: Marshaled CTE: c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}
 }
 
 func demonstrateCTEUnmarshal() {
-	data := bytes.NewBuffer([]byte(`c1 {"a key"=2.5 900=2020-01-15/13:41:00.000599}`))
+	data := bytes.NewBuffer([]byte(`c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}`))
 
 	value, err := ce.UnmarshalCTE(data, nil, nil)
 	if err != nil {
@@ -72,7 +72,7 @@ func demonstrateCBEMarshal() {
 }
 
 func demonstrateCBEUnmarshal() {
-	data := bytes.NewBuffer([]byte{0x03, 0x01, 0x79, 0x85, 0x61, 0x20, 0x6b, 0x65,
+	data := bytes.NewBuffer([]byte{0x03, ceVer, 0x79, 0x85, 0x61, 0x20, 0x6b, 0x65,
 		0x79, 0x70, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x9b, 0xbc, 0x12,
 		0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x7b})
 

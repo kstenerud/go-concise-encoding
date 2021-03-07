@@ -37,17 +37,21 @@ import (
 func TestRulesBeginDocument(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsFail(t, rules, V(1))
-	assertEventsSucceed(t, rules, BD(), V(1))
+	assertEventsFail(t, rules, V(ceVer))
+	assertEventsSucceed(t, rules, BD(), V(ceVer))
 }
 
 func TestRulesVersion(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	assertEventsSucceed(t, rules, BD())
-	assertEventsFail(t, rules, V(2))
-	assertEventsSucceed(t, rules, V(1))
-	assertEventsFail(t, rules, V(1))
+	assertEventsFail(t, rules, V(9))
+	assertEventsSucceed(t, rules, V(ceVer))
+	assertEventsFail(t, rules, V(ceVer))
+
+	// TODO: Remove this when releasing V1
+	rules = NewRules(events.NewNullEventReceiver(), opts)
+	assertEventsSucceed(t, rules, BD(), V(1))
 }
 
 func TestRulesNA(t *testing.T) {
@@ -1041,17 +1045,17 @@ func TestRulesReset(t *testing.T) {
 	assertEventsSucceed(t, rules, L())
 	rules.Reset()
 	assertEventsFail(t, rules, E())
-	assertEventsSucceed(t, rules, BD(), V(1), L(), L(), I(1), I(1), I(1), E())
+	assertEventsSucceed(t, rules, BD(), V(ceVer), L(), L(), I(1), I(1), I(1), E())
 	assertEventsFail(t, rules, I(1))
 	rules.Reset()
-	assertEventsSucceed(t, rules, BD(), V(1), L(), MARK(), I(1), S("test"), MARK(), I(2), S("more tests"))
+	assertEventsSucceed(t, rules, BD(), V(ceVer), L(), MARK(), I(1), S("test"), MARK(), I(2), S("more tests"))
 	assertEventsFail(t, rules, MARK())
 	rules.Reset()
-	assertEventsSucceed(t, rules, BD(), V(1), L(), MARK(), I(1), S("test"))
+	assertEventsSucceed(t, rules, BD(), V(ceVer), L(), MARK(), I(1), S("test"))
 }
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsSucceed(t, rules, BD(), V(1), REF(), RID("http://x.y"), ED())
+	assertEventsSucceed(t, rules, BD(), V(ceVer), REF(), RID("http://x.y"), ED())
 }

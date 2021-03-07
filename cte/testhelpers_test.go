@@ -27,6 +27,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/version"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
@@ -37,6 +39,10 @@ import (
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
+)
+
+const (
+	ceVer = version.ConciseEncodingVersion
 )
 
 func NewBigInt(str string, base int) *big.Int {

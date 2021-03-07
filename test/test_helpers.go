@@ -32,6 +32,8 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/kstenerud/go-concise-encoding/version"
+
 	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
@@ -248,7 +250,7 @@ func CloneBytes(bytes []byte) []byte {
 var (
 	EvBD     = BD()
 	EvED     = ED()
-	EvV      = V(1)
+	EvV      = V(version.ConciseEncodingVersion)
 	EvPAD    = PAD(1)
 	EvNA     = NA()
 	EvB      = B(true)

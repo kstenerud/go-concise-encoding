@@ -26,6 +26,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/version"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -34,6 +36,10 @@ import (
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
+)
+
+const (
+	ceVer = version.ConciseEncodingVersion
 )
 
 func NewBigInt(str string, base int) *big.Int {
@@ -166,7 +172,7 @@ func assertIterateWithOptions(t *testing.T,
 	obj interface{},
 	events ...*test.TEvent) {
 
-	expected := append([]*test.TEvent{BD(), V(1)}, events...)
+	expected := append([]*test.TEvent{BD(), V(ceVer)}, events...)
 	expected = append(expected, ED())
 	receiver := test.NewTEventStore()
 	iterateObject(obj, receiver, sessionOptions, iteratorOptions)

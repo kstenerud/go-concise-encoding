@@ -15,6 +15,26 @@ Concise Encoding is convenient like JSON, in a twin text/binary format with full
 
 
 
+Prerelease
+----------
+
+Please note that this library is still officially in the prerelease stage. The most common functionality is in-place and tested, but there are still some parts to do:
+
+* Concatenation
+* Media type
+* Constants (partially implemented)
+* Proper validation of markup and comment strings
+* Extremely large values aren't tested well
+* Everything marked with a `TODO` in the code
+
+### Prerelease Document Version
+
+The official Concise Encoding version during pre-release is `0`. Please use this version in your documents so as not to cause issues with old, potentially incompatible documents once the final release occurs. After release, document version 0 will be retired permanently, and considered invalid (there will be no backwards compatibility with the pre-release).
+
+The pre-release library will also accept version `1` even though it's technically not correct, but will always emit version `0`.
+
+
+
 Example Tool
 ------------
 

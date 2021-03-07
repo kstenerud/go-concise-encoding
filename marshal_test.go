@@ -46,7 +46,7 @@ type SomeStruct struct {
 }
 
 func TestDemonstrateRecursiveStructInMap(t *testing.T) {
-	document := "c1 {my-value = &1:{a=100 b=test c=$1}}"
+	document := "c0 {my-value = &1:{a=100 b=test c=$1}}"
 	template := map[string]*SomeStruct{}
 	result, err := ce.UnmarshalCTEFromDocument([]byte(document), template, nil)
 	if err != nil {
@@ -63,14 +63,14 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
-	// Prints: Re-encoded CTE: c1 {my-value=&0:{A=100 B=test C=$0}}
+	// Prints: Re-encoded CTE: c0 {my-value=&0:{A=100 B=test C=$0}}
 
 	encodedDocument, err = ce.MarshalCBEToDocument(v, nil)
 	if err != nil {
 		t.Error(err)
 	}
 	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
-	// Prints: Re-encoded CBE: [3 1 121 136 109 121 45 118 97 108 117 101 151 0 121 129 97 100 129 98 132 116 101 115 116 129 99 152 0 123 123]
+	// Prints: Re-encoded CBE: [3 0 121 136 109 121 45 118 97 108 117 101 151 0 121 129 97 100 129 98 132 116 101 115 116 129 99 152 0 123 123]
 }
 
 func TestEmptyListWithIndents(t *testing.T) {
@@ -81,7 +81,7 @@ func TestEmptyListWithIndents(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expected := "c1\n[]"
+	expected := "c0\n[]"
 	actual := string(encodedDocument)
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)

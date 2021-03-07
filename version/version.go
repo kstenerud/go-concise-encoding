@@ -21,4 +21,5 @@
 // Which version of concise encoding this library adheres to.
 package version
 
-const ConciseEncodingVersion = 1
+// Version will be 0 until release
+const ConciseEncodingVersion = 0
