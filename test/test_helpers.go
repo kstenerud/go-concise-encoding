@@ -397,11 +397,25 @@ func FilterCTE(event *TEvent) []*TEvent {
 	}
 }
 
-func FilterEventsForCTE(events []*TEvent) []*TEvent {
-	return FilterAllEvents(events, FilterCTE)
+func FilterContainer(event *TEvent) []*TEvent {
+	switch event.Type {
+	case TEventEnd:
+		return []*TEvent{}
+	default:
+		return []*TEvent{event}
+	}
 }
 
-func FilterEventsForTLO(events []*TEvent) []*TEvent {
+func FilterKey(event *TEvent) []*TEvent {
+	switch event.Type {
+	case TEventEnd, TEventReference:
+		return []*TEvent{}
+	default:
+		return []*TEvent{event}
+	}
+}
+
+func FilterEventsSwitchToRIDRefs(events []*TEvent) []*TEvent {
 	filtered := []*TEvent{}
 	var lastEvent *TEvent = EvBD
 	for _, event := range events {
@@ -414,6 +428,18 @@ func FilterEventsForTLO(events []*TEvent) []*TEvent {
 	}
 
 	return filtered
+}
+
+func FilterEventsForCTE(events []*TEvent) []*TEvent {
+	return FilterAllEvents(events, FilterCTE)
+}
+
+func FilterEventsForContainer(events []*TEvent) []*TEvent {
+	return FilterAllEvents(events, FilterContainer)
+}
+
+func FilterEventsForKey(events []*TEvent) []*TEvent {
+	return FilterAllEvents(events, FilterKey)
 }
 
 func ComplementaryEvents(events []*TEvent) []*TEvent {

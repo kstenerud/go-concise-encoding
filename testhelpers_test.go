@@ -291,7 +291,19 @@ func assertEncodeDecodeSetTLO(t *testing.T, prefix []*test.TEvent, suffix []*tes
 		allEvents = append(allEvents, event)
 		allEvents = append(allEvents, test.Completions[event]...)
 		allEvents = append(allEvents, suffix...)
-		allEvents = test.FilterEventsForTLO(allEvents)
+		allEvents = test.FilterEventsSwitchToRIDRefs(allEvents)
+		assertEncodeDecode(t, allEvents...)
+	}
+}
+
+func assertEncodeDecodeSetContainer(t *testing.T, prefix []*test.TEvent, suffix []*test.TEvent, events []*test.TEvent) {
+	for _, event := range events {
+		allEvents := []*test.TEvent{}
+		allEvents = append(allEvents, prefix...)
+		allEvents = append(allEvents, event)
+		allEvents = append(allEvents, test.Completions[event]...)
+		allEvents = append(allEvents, suffix...)
+		allEvents = test.FilterEventsSwitchToRIDRefs(allEvents)
 		assertEncodeDecode(t, allEvents...)
 	}
 }

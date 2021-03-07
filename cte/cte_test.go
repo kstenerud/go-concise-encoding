@@ -1847,3 +1847,11 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
 }
+
+func TestMapValueComment(t *testing.T) {
+	assertEncode(t, nil, `c1
+{
+    1 = /**/
+    1
+}`, BD(), V(1), M(), PI(1), CMT(), E(), PI(1), E(), ED())
+}

@@ -452,3 +452,21 @@ func TestEncodeDecodeAllValidTLO(t *testing.T) {
 	suffix := []*test.TEvent{test.EvED}
 	assertEncodeDecodeSetTLO(t, prefix, suffix, test.ValidTLOValues)
 }
+
+func TestEncodeDecodeAllValidList(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvL}
+	suffix := []*test.TEvent{test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidListValues))
+}
+
+func TestEncodeDecodeAllValidMapKey(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvM}
+	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
+}
+
+func TestEncodeDecodeAllValidMapValue(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvM, test.EvPI}
+	suffix := []*test.TEvent{test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
+}

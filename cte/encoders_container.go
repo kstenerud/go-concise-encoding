@@ -446,7 +446,6 @@ func (_this *mapValueEncoder) BeginMetadata(ctx *EncoderContext) {
 }
 func (_this *mapValueEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
-	ctx.ChangeEncoder(&globalMapKeyEncoder)
 	ctx.BeginStandardComment()
 }
 func (_this *mapValueEncoder) BeginMarker(ctx *EncoderContext) {
@@ -1106,7 +1105,6 @@ func (_this *markupValueEncoder) BeginMetadata(ctx *EncoderContext) {
 }
 func (_this *markupValueEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
-	ctx.ChangeEncoder(&globalMarkupKeyEncoder)
 	ctx.BeginStandardComment()
 }
 func (_this *markupValueEncoder) BeginMarker(ctx *EncoderContext) {
@@ -1206,7 +1204,7 @@ func (_this *markupContentsEncoder) EncodeStringlikeArray(ctx *EncoderContext, a
 }
 func (_this *markupContentsEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.beginObject(ctx)
-	// TODO: begin content string array
+	// TODO: begin markup content string array instead of standard array
 	ctx.BeginStandardArray(arrayType)
 }
 
@@ -1256,6 +1254,6 @@ func (_this *commentEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayTyp
 }
 func (_this *commentEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.beginItem(ctx)
-	// TODO: begin content string array
+	// TODO: begin comment content string array instead of standard array
 	ctx.BeginStandardArray(arrayType)
 }
