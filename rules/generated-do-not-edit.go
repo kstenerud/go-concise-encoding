@@ -628,9 +628,6 @@ func (_this *CommentRule) OnBeginDocument(ctx *Context) {
 func (_this *CommentRule) OnEndDocument(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow EndDocument", _this))
 }
-func (_this *CommentRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
-}
 func (_this *CommentRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }

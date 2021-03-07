@@ -310,11 +310,11 @@ func (_this *MarkupContentsRule) OnArrayBegin(ctx *Context, arrayType events.Arr
 
 type CommentRule struct{}
 
-func (_this *CommentRule) String() string                   { return "Comment Rule" }
-func (_this *CommentRule) OnChildCommentEnded(ctx *Context) { /* Nothing to do */ }
-func (_this *CommentRule) OnPadding(ctx *Context)           { /* Nothing to do */ }
-func (_this *CommentRule) OnComment(ctx *Context)           { ctx.BeginComment() }
-func (_this *CommentRule) OnEnd(ctx *Context)               { ctx.UnstackRule() }
+func (_this *CommentRule) String() string                                 { return "Comment Rule" }
+func (_this *CommentRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
+func (_this *CommentRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *CommentRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *CommentRule) OnEnd(ctx *Context)                             { ctx.UnstackRule() }
 func (_this *CommentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayComment(arrayType, elementCount, data)
 }

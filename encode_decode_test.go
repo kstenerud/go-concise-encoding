@@ -470,3 +470,45 @@ func TestEncodeDecodeAllValidMapValue(t *testing.T) {
 	suffix := []*test.TEvent{test.EvE, test.EvED}
 	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
 }
+
+func TestEncodeDecodeAllValidMetadataKey(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMETA}
+	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvPI, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
+}
+
+func TestEncodeDecodeAllValidMetadataValue(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMETA, test.EvPI}
+	suffix := []*test.TEvent{test.EvE, test.EvPI, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
+}
+
+func TestEncodeDecodeAllValidMarkupName(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP}
+	suffix := []*test.TEvent{test.EvE, test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMarkupNames))
+}
+
+func TestEncodeDecodeAllValidMarkupKey(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI}
+	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
+}
+
+func TestEncodeDecodeAllValidMarkupValue(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI, test.EvPI}
+	suffix := []*test.TEvent{test.EvE, test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
+}
+
+func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI, test.EvE}
+	suffix := []*test.TEvent{test.EvE, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMarkupContents))
+}
+
+func TestEncodeDecodeAllValidCommentContents(t *testing.T) {
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvCMT}
+	suffix := []*test.TEvent{test.EvE, test.EvPI, test.EvED}
+	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidCommentValues))
+}

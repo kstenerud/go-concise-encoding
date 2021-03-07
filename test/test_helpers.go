@@ -337,13 +337,13 @@ var Completions = map[*TEvent][]*TEvent{
 	EvBDFNil: []*TEvent{EvNA},
 	EvL:      []*TEvent{EvE},
 	EvM:      []*TEvent{EvE},
-	EvMETA:   []*TEvent{EvE, PI(1)},
-	EvCMT:    []*TEvent{EvE, PI(1)},
-	EvMUP:    []*TEvent{PI(1), EvE, EvE},
-	EvMARK:   []*TEvent{PI(1), PI(50)},
-	EvREF:    []*TEvent{PI(1)},
-	EvCAT:    []*TEvent{PI(1)},
-	EvPAD:    []*TEvent{PI(1)},
+	EvMETA:   []*TEvent{EvE, S("a")},
+	EvCMT:    []*TEvent{EvE, S("a")},
+	EvMUP:    []*TEvent{S("a"), EvE, EvE},
+	EvMARK:   []*TEvent{S("a"), S("m")},
+	EvREF:    []*TEvent{S("a")},
+	EvCAT:    []*TEvent{S("a")},
+	EvPAD:    []*TEvent{S("a")},
 	EvSB:     []*TEvent{AC(0, false)},
 	EvRB:     []*TEvent{AC(0, false)},
 	EvCBB:    []*TEvent{AC(0, false)},
@@ -389,7 +389,7 @@ func FilterCTE(event *TEvent) []*TEvent {
 		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUUIDBegin,
 		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
 		TEventStringBegin:
-		return []*TEvent{EvTT}
+		return []*TEvent{S("x")}
 	case TEventArrayChunk, TEventArrayData:
 		return []*TEvent{}
 	default:
@@ -419,7 +419,7 @@ func FilterEventsSwitchToRIDRefs(events []*TEvent) []*TEvent {
 	filtered := []*TEvent{}
 	var lastEvent *TEvent = EvBD
 	for _, event := range events {
-		if lastEvent.Type == TEventReference && (event.Type == TEventInt || event.Type == TEventPInt || event.Type == TEventBigInt) {
+		if lastEvent.Type == TEventReference && (event.Type == TEventInt || event.Type == TEventPInt || event.Type == TEventBigInt || event.Type == TEventString) {
 			filtered = append(filtered, EvRID)
 		} else {
 			filtered = append(filtered, event)

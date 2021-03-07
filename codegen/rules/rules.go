@@ -126,7 +126,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "CommentRule",
-		Methods: []string{Pad, Comment, End, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Comment, End, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MetaKeyRule",
