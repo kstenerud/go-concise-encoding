@@ -1855,3 +1855,8 @@ func TestMapValueComment(t *testing.T) {
     1
 }`, BD(), V(1), M(), PI(1), CMT(), E(), PI(1), E(), ED())
 }
+
+func TestEmptyDocument(t *testing.T) {
+	assertDecode(t, nil, `c1 @na`, BD(), V(1), NA(), NA(), ED())
+	assertDecode(t, nil, `c1 @na:@na`, BD(), V(1), NA(), NA(), ED())
+}

@@ -320,9 +320,12 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 		ctx.EventReceiver.OnNA()
 		if ctx.Stream.PeekByteAllowEOD() == ':' {
 			ctx.Stream.AdvanceByte()
+			ctx.JustDecodedNA = true
 			decodeByFirstChar(ctx)
-		} else {
+		} else if !ctx.JustDecodedNA {
 			ctx.EventReceiver.OnNA()
+		} else {
+			ctx.JustDecodedNA = false
 		}
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
