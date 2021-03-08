@@ -71,7 +71,10 @@ func TestCTEVersion(t *testing.T) {
 
 func TestCTENA(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), V(ceVer), NA(), NA(), ED())
+	assertDecode(t, nil, "c0\n@na:@na", BD(), V(ceVer), NA(), NA(), ED())
 	assertDecodeFails(t, "c0 -@na")
+	assertDecodeFails(t, "c0 @na:@na:1")
+	assertDecodeFails(t, "c0 @na:@na:@na")
 }
 
 func TestCTEBool(t *testing.T) {
