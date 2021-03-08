@@ -38,7 +38,7 @@ type DecoderContext struct {
 	EventReceiver      events.DataEventReceiver
 	stack              []DecoderStackEntry
 	IsDocumentComplete bool
-	JustDecodedNA      bool
+	IsDecodingNAReason bool
 }
 
 func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
@@ -51,7 +51,7 @@ func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Rea
 		_this.stack = make([]DecoderStackEntry, 0, 16)
 	}
 	_this.IsDocumentComplete = false
-	_this.JustDecodedNA = false
+	_this.IsDecodingNAReason = false
 }
 
 func (_this *DecoderContext) SetEventReceiver(eventReceiver events.DataEventReceiver) {

@@ -75,6 +75,7 @@ func TestCTENA(t *testing.T) {
 	assertDecodeFails(t, "c0 -@na")
 	assertDecodeFails(t, "c0 @na:@na:1")
 	assertDecodeFails(t, "c0 @na:@na:@na")
+	assertDecodeFails(t, "c0 [@na:@na:1]")
 }
 
 func TestCTEBool(t *testing.T) {
