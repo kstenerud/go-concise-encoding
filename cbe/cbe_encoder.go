@@ -372,7 +372,7 @@ func (_this *Encoder) OnReference() {
 }
 
 func (_this *Encoder) OnConcatenate() {
-	_this.encodeType(cbeTypeConcatenate)
+	panic("TODO: Remove CBE Encoder OnConcatenate")
 }
 
 func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
@@ -598,9 +598,9 @@ func (_this *Encoder) encodeNaN(signaling bool) {
 }
 
 func (_this *Encoder) encodeArrayHeader(arrayType events.ArrayType) {
-	if isTypedArray[arrayType] {
+	if isPlane2Array[arrayType] {
 		dst := _this.buff.RequireBytes(2)
-		dst[0] = byte(cbeTypeArray)
+		dst[0] = byte(cbeTypePlane2)
 		dst[1] = byte(arrayTypeToCBEType[arrayType])
 		_this.buff.UseBytes(2)
 	} else {

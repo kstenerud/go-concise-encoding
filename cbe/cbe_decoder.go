@@ -173,9 +173,9 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.decodeArray(events.ArrayTypeCustomBinary)
 		case cbeTypeCustomText:
 			_this.decodeArray(events.ArrayTypeCustomText)
-		case cbeTypeArray:
+		case cbeTypePlane2:
 			cbeType := _this.buffer.DecodeType()
-			arrayType := cbeTypeToArrayType[cbeType]
+			arrayType := cbePlane2TypeToArrayType[cbeType]
 			if arrayType == events.ArrayTypeInvalid {
 				panic(fmt.Errorf("0x%02x: Unsupported typed array type", cbeType))
 			}
@@ -184,8 +184,6 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnMarker()
 		case cbeTypeReference:
 			_this.eventReceiver.OnReference()
-		case cbeTypeConcatenate:
-			_this.eventReceiver.OnConcatenate()
 		case cbeTypeDate:
 			_this.eventReceiver.OnCompactTime(_this.buffer.DecodeDate())
 		case cbeTypeTime:
