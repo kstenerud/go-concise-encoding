@@ -59,7 +59,6 @@ func (_this *ptrBuilder) newElem() reflect.Value {
 
 func (_this *ptrBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(_this.dstType))
-	ctx.NANext()
 	return dst
 }
 

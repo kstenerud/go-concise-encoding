@@ -40,6 +40,7 @@ type Encoder interface {
 	Begin(ctx *EncoderContext)
 	End(ctx *EncoderContext)
 	ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)
+	EncodeNA(ctx *EncoderContext)
 	EncodeBool(ctx *EncoderContext, value bool)
 	EncodeTrue(ctx *EncoderContext)
 	EncodeFalse(ctx *EncoderContext)
@@ -64,7 +65,7 @@ type Encoder interface {
 	BeginReference(ctx *EncoderContext)
 	BeginConcatenate(ctx *EncoderContext)
 	BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool)
-	BeginNA(ctx *EncoderContext)
+	BeginNACat(ctx *EncoderContext)
 	EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string)
 	BeginArray(ctx *EncoderContext, arrayType events.ArrayType)
@@ -115,7 +116,7 @@ func (_this *EncoderEventReceiver) OnPadding(count int) {
 }
 
 func (_this *EncoderEventReceiver) OnNA() {
-	_this.context.CurrentEncoder.BeginNA(&_this.context)
+	_this.context.CurrentEncoder.EncodeNA(&_this.context)
 }
 
 func (_this *EncoderEventReceiver) OnBool(value bool) {

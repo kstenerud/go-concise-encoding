@@ -93,7 +93,7 @@ var ruleClasses = []RuleClass{
 		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "NARule",
+		Name:    "NACatRule",
 		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{

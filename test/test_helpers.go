@@ -333,36 +333,32 @@ var allEvents = []*TEvent{
 }
 
 var Completions = map[*TEvent][]*TEvent{
-	EvNA:     []*TEvent{EvNA},
-	EvBINil:  []*TEvent{EvNA},
-	EvBFNil:  []*TEvent{EvNA},
-	EvBDFNil: []*TEvent{EvNA},
-	EvL:      []*TEvent{EvE},
-	EvM:      []*TEvent{EvE},
-	EvMETA:   []*TEvent{EvE, S("a")},
-	EvCMT:    []*TEvent{EvE, S("a")},
-	EvMUP:    []*TEvent{S("a"), EvE, EvE},
-	EvMARK:   []*TEvent{S("a"), S("m")},
-	EvREF:    []*TEvent{S("a")},
-	EvCAT:    []*TEvent{S("a")},
-	EvPAD:    []*TEvent{S("a")},
-	EvSB:     []*TEvent{AC(0, false)},
-	EvRB:     []*TEvent{AC(0, false)},
-	EvCBB:    []*TEvent{AC(0, false)},
-	EvCTB:    []*TEvent{AC(0, false)},
-	EvABB:    []*TEvent{AC(0, false)},
-	EvAU8B:   []*TEvent{AC(0, false)},
-	EvAU16B:  []*TEvent{AC(0, false)},
-	EvAU32B:  []*TEvent{AC(0, false)},
-	EvAU64B:  []*TEvent{AC(0, false)},
-	EvAI8B:   []*TEvent{AC(0, false)},
-	EvAI16B:  []*TEvent{AC(0, false)},
-	EvAI32B:  []*TEvent{AC(0, false)},
-	EvAI64B:  []*TEvent{AC(0, false)},
-	EvAF16B:  []*TEvent{AC(0, false)},
-	EvAF32B:  []*TEvent{AC(0, false)},
-	EvAF64B:  []*TEvent{AC(0, false)},
-	EvAUUB:   []*TEvent{AC(0, false)},
+	EvL:     []*TEvent{EvE},
+	EvM:     []*TEvent{EvE},
+	EvMETA:  []*TEvent{EvE, S("a")},
+	EvCMT:   []*TEvent{EvE, S("a")},
+	EvMUP:   []*TEvent{S("a"), EvE, EvE},
+	EvMARK:  []*TEvent{S("a"), S("m")},
+	EvREF:   []*TEvent{S("a")},
+	EvCAT:   []*TEvent{S("a")},
+	EvPAD:   []*TEvent{S("a")},
+	EvSB:    []*TEvent{AC(0, false)},
+	EvRB:    []*TEvent{AC(0, false)},
+	EvCBB:   []*TEvent{AC(0, false)},
+	EvCTB:   []*TEvent{AC(0, false)},
+	EvABB:   []*TEvent{AC(0, false)},
+	EvAU8B:  []*TEvent{AC(0, false)},
+	EvAU16B: []*TEvent{AC(0, false)},
+	EvAU32B: []*TEvent{AC(0, false)},
+	EvAU64B: []*TEvent{AC(0, false)},
+	EvAI8B:  []*TEvent{AC(0, false)},
+	EvAI16B: []*TEvent{AC(0, false)},
+	EvAI32B: []*TEvent{AC(0, false)},
+	EvAI64B: []*TEvent{AC(0, false)},
+	EvAF16B: []*TEvent{AC(0, false)},
+	EvAF32B: []*TEvent{AC(0, false)},
+	EvAF64B: []*TEvent{AC(0, false)},
+	EvAUUB:  []*TEvent{AC(0, false)},
 }
 
 func isEffectivelyNA(event *TEvent) bool {
@@ -1740,7 +1736,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
-		ane("F9", NA(), NA())
+		ane("F9", NA())
 		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())

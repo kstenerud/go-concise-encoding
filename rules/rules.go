@@ -89,7 +89,7 @@ var (
 	terminalRule            TerminalRule
 	versionRule             VersionRule
 	topLevelRule            TopLevelRule
-	naRule                  NARule
+	naCatRule               NACatRule
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule

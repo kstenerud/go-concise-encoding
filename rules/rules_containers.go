@@ -33,13 +33,10 @@ import (
 
 type ListRule struct{}
 
-func (_this *ListRule) String() string                  { return "List Rule" }
-func (_this *ListRule) OnKeyableObject(ctx *Context)    { /* Nothing to do */ }
-func (_this *ListRule) OnNonKeyableObject(ctx *Context) { /* Nothing to do */ }
-func (_this *ListRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
-}
+func (_this *ListRule) String() string                                          { return "List Rule" }
+func (_this *ListRule) OnKeyableObject(ctx *Context)                            { /* Nothing to do */ }
+func (_this *ListRule) OnNonKeyableObject(ctx *Context)                         { /* Nothing to do */ }
+func (_this *ListRule) OnNA(ctx *Context)                                       { /* Nothing to do */ }
 func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType)          { /* Nothing to do */ }
 func (_this *ListRule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
 func (_this *ListRule) OnInt(ctx *Context, value int64)                         { /* Nothing to do */ }
@@ -113,24 +110,17 @@ func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) 
 
 type MapValueRule struct{}
 
-func (_this *MapValueRule) String() string                  { return "Map Value Rule" }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context)    { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
-}
+func (_this *MapValueRule) String() string                                 { return "Map Value Rule" }
+func (_this *MapValueRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnNA(ctx *Context)                              { ctx.SwitchMapKey() }
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMapKey() }
 func (_this *MapValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapValueRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnPositiveInt(ctx *Context, value uint64) {
-	ctx.SwitchMapKey()
-}
-func (_this *MapValueRule) OnBigInt(ctx *Context, value *big.Int) { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnFloat(ctx *Context, value float64)   { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnBigFloat(ctx *Context, value *big.Float) {
-	ctx.SwitchMapKey()
-}
+func (_this *MapValueRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchMapKey() }
 func (_this *MapValueRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
 	ctx.SwitchMapKey()
 }
@@ -238,26 +228,17 @@ func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayTyp
 
 type MarkupValueRule struct{}
 
-func (_this *MarkupValueRule) String() string                  { return "Markup Attribute Value Rule" }
-func (_this *MarkupValueRule) OnKeyableObject(ctx *Context)    { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
-}
+func (_this *MarkupValueRule) String() string                                 { return "Markup Attribute Value Rule" }
+func (_this *MarkupValueRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnNA(ctx *Context)                              { ctx.SwitchMarkupKey() }
 func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMarkupKey() }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnPositiveInt(ctx *Context, value uint64) {
-	ctx.SwitchMarkupKey()
-}
-func (_this *MarkupValueRule) OnBigInt(ctx *Context, value *big.Int) {
-	ctx.SwitchMarkupKey()
-}
-func (_this *MarkupValueRule) OnFloat(ctx *Context, value float64) { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnBigFloat(ctx *Context, value *big.Float) {
-	ctx.SwitchMarkupKey()
-}
+func (_this *MarkupValueRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchMarkupKey() }
 func (_this *MarkupValueRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
 	ctx.SwitchMarkupKey()
 }
@@ -368,13 +349,10 @@ func (_this *MetaKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType)
 
 type MetaValueRule struct{}
 
-func (_this *MetaValueRule) String() string                  { return "Metadata Value Rule" }
-func (_this *MetaValueRule) OnKeyableObject(ctx *Context)    { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
-}
+func (_this *MetaValueRule) String() string                                 { return "Metadata Value Rule" }
+func (_this *MetaValueRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMetadataKey() }
+func (_this *MetaValueRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchMetadataKey() }
+func (_this *MetaValueRule) OnNA(ctx *Context)                              { ctx.SwitchMetadataKey() }
 func (_this *MetaValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMetadataKey() }
 func (_this *MetaValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MetaValueRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMetadataKey() }
@@ -424,8 +402,8 @@ func (_this *MetaCompletionRule) OnNonKeyableObject(ctx *Context) {
 	ctx.CurrentEntry.Rule.OnNonKeyableObject(ctx)
 }
 func (_this *MetaCompletionRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNA(ctx)
 }
 func (_this *MetaCompletionRule) OnPadding(ctx *Context) { /* Nothing to do */ }
 func (_this *MetaCompletionRule) OnInt(ctx *Context, value int64) {

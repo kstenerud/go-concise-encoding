@@ -63,7 +63,7 @@ const (
 	cbeTypeEndContainer cbeTypeField = 0x7b
 	cbeTypeFalse        cbeTypeField = 0x7c
 	cbeTypeTrue         cbeTypeField = 0x7d
-	cbeTypeNA          cbeTypeField = 0x7e
+	cbeTypeNA           cbeTypeField = 0x7e
 	cbeTypePadding      cbeTypeField = 0x7f
 	cbeTypeString0      cbeTypeField = 0x80
 	cbeTypeString1      cbeTypeField = 0x81

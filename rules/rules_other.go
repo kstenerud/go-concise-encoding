@@ -66,26 +66,17 @@ func (_this *VersionRule) OnVersion(ctx *Context, version uint64) {
 
 type TopLevelRule struct{}
 
-func (_this *TopLevelRule) String() string                  { return "Top Level Rule" }
-func (_this *TopLevelRule) OnKeyableObject(ctx *Context)    { ctx.SwitchEndDocument() }
-func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchEndDocument() }
-func (_this *TopLevelRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
-}
+func (_this *TopLevelRule) String() string                                 { return "Top Level Rule" }
+func (_this *TopLevelRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnNA(ctx *Context)                              { ctx.SwitchEndDocument() }
 func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchEndDocument() }
 func (_this *TopLevelRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *TopLevelRule) OnInt(ctx *Context, value int64)                { ctx.SwitchEndDocument() }
-func (_this *TopLevelRule) OnPositiveInt(ctx *Context, value uint64) {
-	ctx.SwitchEndDocument()
-}
-func (_this *TopLevelRule) OnBigInt(ctx *Context, value *big.Int) {
-	ctx.SwitchEndDocument()
-}
-func (_this *TopLevelRule) OnFloat(ctx *Context, value float64) { ctx.SwitchEndDocument() }
-func (_this *TopLevelRule) OnBigFloat(ctx *Context, value *big.Float) {
-	ctx.SwitchEndDocument()
-}
+func (_this *TopLevelRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchEndDocument() }
 func (_this *TopLevelRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
 	ctx.SwitchEndDocument()
 }
@@ -116,40 +107,40 @@ func (_this *TopLevelRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType
 
 // =============================================================================
 
-type NARule struct{}
+type NACatRule struct{}
 
-func (_this *NARule) String() string                                          { return "NA Rule" }
-func (_this *NARule) OnKeyableObject(ctx *Context)                            { ctx.UnstackRule() }
-func (_this *NARule) OnNonKeyableObject(ctx *Context)                         { ctx.UnstackRule() }
-func (_this *NARule) OnNA(ctx *Context)                                       { ctx.UnstackRule() }
-func (_this *NARule) OnChildContainerEnded(ctx *Context, _ DataType)          { ctx.UnstackRule() }
-func (_this *NARule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
-func (_this *NARule) OnInt(ctx *Context, value int64)                         { ctx.UnstackRule() }
-func (_this *NARule) OnPositiveInt(ctx *Context, value uint64)                { ctx.UnstackRule() }
-func (_this *NARule) OnBigInt(ctx *Context, value *big.Int)                   { ctx.UnstackRule() }
-func (_this *NARule) OnFloat(ctx *Context, value float64)                     { ctx.UnstackRule() }
-func (_this *NARule) OnBigFloat(ctx *Context, value *big.Float)               { ctx.UnstackRule() }
-func (_this *NARule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) { ctx.UnstackRule() }
-func (_this *NARule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { ctx.UnstackRule() }
-func (_this *NARule) OnList(ctx *Context)                                     { ctx.BeginList() }
-func (_this *NARule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
-func (_this *NARule) OnMarkup(ctx *Context)                                   { ctx.BeginMarkup() }
-func (_this *NARule) OnMetadata(ctx *Context)                                 { ctx.BeginMetadata() }
-func (_this *NARule) OnComment(ctx *Context)                                  { ctx.BeginComment() }
-func (_this *NARule) OnMarker(ctx *Context)                                   { ctx.BeginMarkerAnyType() }
-func (_this *NARule) OnReference(ctx *Context)                                { ctx.BeginTopLevelReference() }
-func (_this *NARule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
+func (_this *NACatRule) String() string                                          { return "NA (Cat) Rule" }
+func (_this *NACatRule) OnKeyableObject(ctx *Context)                            { ctx.UnstackRule() }
+func (_this *NACatRule) OnNonKeyableObject(ctx *Context)                         { ctx.UnstackRule() }
+func (_this *NACatRule) OnNA(ctx *Context)                                       { ctx.UnstackRule() }
+func (_this *NACatRule) OnChildContainerEnded(ctx *Context, _ DataType)          { ctx.UnstackRule() }
+func (_this *NACatRule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
+func (_this *NACatRule) OnInt(ctx *Context, value int64)                         { ctx.UnstackRule() }
+func (_this *NACatRule) OnPositiveInt(ctx *Context, value uint64)                { ctx.UnstackRule() }
+func (_this *NACatRule) OnBigInt(ctx *Context, value *big.Int)                   { ctx.UnstackRule() }
+func (_this *NACatRule) OnFloat(ctx *Context, value float64)                     { ctx.UnstackRule() }
+func (_this *NACatRule) OnBigFloat(ctx *Context, value *big.Float)               { ctx.UnstackRule() }
+func (_this *NACatRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) { ctx.UnstackRule() }
+func (_this *NACatRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { ctx.UnstackRule() }
+func (_this *NACatRule) OnList(ctx *Context)                                     { ctx.BeginList() }
+func (_this *NACatRule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
+func (_this *NACatRule) OnMarkup(ctx *Context)                                   { ctx.BeginMarkup() }
+func (_this *NACatRule) OnMetadata(ctx *Context)                                 { ctx.BeginMetadata() }
+func (_this *NACatRule) OnComment(ctx *Context)                                  { ctx.BeginComment() }
+func (_this *NACatRule) OnMarker(ctx *Context)                                   { ctx.BeginMarkerAnyType() }
+func (_this *NACatRule) OnReference(ctx *Context)                                { ctx.BeginTopLevelReference() }
+func (_this *NACatRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
 	ctx.BeginConstantAnyType(name, explicitValue)
 }
-func (_this *NARule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+func (_this *NACatRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.UnstackRule()
 }
-func (_this *NARule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+func (_this *NACatRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	ctx.UnstackRule()
 }
-func (_this *NARule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+func (_this *NACatRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -234,8 +225,9 @@ func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *ConstantAnyTypeRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNA(ctx)
+	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnKeyableObject(ctx *Context) {
 	ctx.UnstackRule()

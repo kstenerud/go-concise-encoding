@@ -41,6 +41,10 @@ func (_this *topLevelEncoder) ChildContainerFinished(ctx *EncoderContext, isVisi
 	// Nothing to do
 }
 
+func (_this *topLevelEncoder) EncodeNA(ctx *EncoderContext) {
+	ctx.WriteCurrentPrefix()
+	ctx.Stream.WriteNA()
+}
 func (_this *topLevelEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteBool(value)
@@ -136,10 +140,6 @@ func (_this *topLevelEncoder) BeginConcatenate(ctx *EncoderContext) {
 func (_this *topLevelEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	ctx.WriteCurrentPrefix()
 	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *topLevelEncoder) BeginNA(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.BeginStandardNA()
 }
 func (_this *topLevelEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.WriteCurrentPrefix()

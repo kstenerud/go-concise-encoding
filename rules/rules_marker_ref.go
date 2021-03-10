@@ -190,8 +190,9 @@ func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnNA(ctx *Context) {
-	_this.OnNonKeyableObject(ctx)
-	ctx.BeginNA()
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNA(ctx)
+	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context) {
 	ctx.UnstackRule()

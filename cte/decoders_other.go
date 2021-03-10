@@ -321,23 +321,10 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 	namedValue := ctx.Stream.DecodeNamedValue()
 	switch string(namedValue) {
 	case "na":
+		ctx.EventReceiver.OnNA()
 		hasReason := ctx.Stream.PeekByteAllowEOD() == ':'
-
-		if ctx.IsDecodingNAReason {
-			ctx.IsDecodingNAReason = false
-			if !hasReason {
-				ctx.EventReceiver.OnNA()
-			}
-			// If hasReason is true, the next decode will catch the error.
-		} else {
-			ctx.EventReceiver.OnNA()
-			if hasReason {
-				ctx.IsDecodingNAReason = true
-				ctx.Stream.AdvanceByte()
-				decodeByFirstChar(ctx)
-			} else {
-				ctx.EventReceiver.OnNA()
-			}
+		if hasReason {
+			panic("TODO: NA reason")
 		}
 	case "nan":
 		ctx.EventReceiver.OnNan(false)

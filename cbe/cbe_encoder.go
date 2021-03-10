@@ -270,7 +270,6 @@ func (_this *Encoder) OnTime(value time.Time) {
 func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	if value.IsZeroValue() {
 		_this.encodeType(cbeTypeNA)
-		_this.encodeType(cbeTypeNA)
 		return
 	}
 

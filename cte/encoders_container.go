@@ -68,6 +68,11 @@ func (_this *listEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleC
 	_this.completeObject(ctx)
 }
 
+func (_this *listEncoder) EncodeNA(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.Stream.WriteNA()
+	_this.completeObject(ctx)
+}
 func (_this *listEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
@@ -178,10 +183,6 @@ func (_this *listEncoder) BeginConcatenate(ctx *EncoderContext) {
 func (_this *listEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *listEncoder) BeginNA(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.BeginStandardNA()
 }
 func (_this *listEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
@@ -368,6 +369,10 @@ func (_this *mapValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisi
 	ctx.ContainerHasObjects = true
 }
 
+func (_this *mapValueEncoder) EncodeNA(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.Stream.WriteNA()
+}
 func (_this *mapValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
@@ -463,10 +468,6 @@ func (_this *mapValueEncoder) BeginConcatenate(ctx *EncoderContext) {
 func (_this *mapValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *mapValueEncoder) BeginNA(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardNA()
 }
 func (_this *mapValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
@@ -645,6 +646,10 @@ func (_this *metadataValueEncoder) ChildContainerFinished(ctx *EncoderContext, i
 	ctx.ContainerHasObjects = true
 }
 
+func (_this *metadataValueEncoder) EncodeNA(ctx *EncoderContext) {
+	_this.beginCompleteObject(ctx)
+	ctx.Stream.WriteNA()
+}
 func (_this *metadataValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteBool(value)
@@ -740,10 +745,6 @@ func (_this *metadataValueEncoder) BeginConcatenate(ctx *EncoderContext) {
 func (_this *metadataValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.beginContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *metadataValueEncoder) BeginNA(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardNA()
 }
 func (_this *metadataValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.beginCompleteObject(ctx)
@@ -1027,6 +1028,10 @@ func (_this *markupValueEncoder) ChildContainerFinished(ctx *EncoderContext, isV
 	}
 }
 
+func (_this *markupValueEncoder) EncodeNA(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.Stream.WriteNA()
+}
 func (_this *markupValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
@@ -1122,10 +1127,6 @@ func (_this *markupValueEncoder) BeginConcatenate(ctx *EncoderContext) {
 func (_this *markupValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *markupValueEncoder) BeginNA(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardNA()
 }
 func (_this *markupValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)

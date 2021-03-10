@@ -35,7 +35,7 @@ type bigDecimalFloatBuilder struct{}
 var globalBigDecimalFloatBuilder = &bigDecimalFloatBuilder{}
 
 func generateBigDecimalFloatBuilder(ctx *Context) Builder { return globalBigDecimalFloatBuilder }
-func (_this *bigDecimalFloatBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *bigDecimalFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *bigDecimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setBigDecimalFloatFromInt(value, dst)
@@ -73,7 +73,7 @@ type bigFloatBuilder struct{}
 var globalBigFloatBuilder = &bigFloatBuilder{}
 
 func generateBigFloatBuilder(ctx *Context) Builder { return globalBigFloatBuilder }
-func (_this *bigFloatBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *bigFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *bigFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setBigFloatFromInt(value, dst)
@@ -111,7 +111,7 @@ type bigIntBuilder struct{}
 var globalBigIntBuilder = &bigIntBuilder{}
 
 func generateBigIntBuilder(ctx *Context) Builder { return globalBigIntBuilder }
-func (_this *bigIntBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *bigIntBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *bigIntBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setBigIntFromInt(value, dst)
@@ -149,7 +149,7 @@ type decimalFloatBuilder struct{}
 var globalDecimalFloatBuilder = &decimalFloatBuilder{}
 
 func generateDecimalFloatBuilder(ctx *Context) Builder { return globalDecimalFloatBuilder }
-func (_this *decimalFloatBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *decimalFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *decimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromInt(value, dst)
@@ -187,7 +187,7 @@ type floatBuilder struct{}
 var globalFloatBuilder = &floatBuilder{}
 
 func generateFloatBuilder(ctx *Context) Builder { return globalFloatBuilder }
-func (_this *floatBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *floatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *floatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setFloatFromInt(value, dst)
@@ -225,7 +225,7 @@ type intBuilder struct{}
 var globalIntBuilder = &intBuilder{}
 
 func generateIntBuilder(ctx *Context) Builder { return globalIntBuilder }
-func (_this *intBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *intBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *intBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setIntFromInt(value, dst)
@@ -263,11 +263,10 @@ type pBigDecimalFloatBuilder struct{}
 var globalPBigDecimalFloatBuilder = &pBigDecimalFloatBuilder{}
 
 func generatePBigDecimalFloatBuilder(ctx *Context) Builder { return globalPBigDecimalFloatBuilder }
-func (_this *pBigDecimalFloatBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *pBigDecimalFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *pBigDecimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*apd.Decimal)(nil)))
-	ctx.NANext()
 	return dst
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
@@ -306,11 +305,10 @@ type pBigFloatBuilder struct{}
 var globalPBigFloatBuilder = &pBigFloatBuilder{}
 
 func generatePBigFloatBuilder(ctx *Context) Builder { return globalPBigFloatBuilder }
-func (_this *pBigFloatBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *pBigFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *pBigFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Float)(nil)))
-	ctx.NANext()
 	return dst
 }
 func (_this *pBigFloatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
@@ -349,11 +347,10 @@ type pBigIntBuilder struct{}
 var globalPBigIntBuilder = &pBigIntBuilder{}
 
 func generatePBigIntBuilder(ctx *Context) Builder { return globalPBigIntBuilder }
-func (_this *pBigIntBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *pBigIntBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *pBigIntBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Int)(nil)))
-	ctx.NANext()
 	return dst
 }
 func (_this *pBigIntBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
@@ -395,7 +392,7 @@ type uintBuilder struct {
 var globalUintBuilder = &uintBuilder{}
 
 func generateUintBuilder(ctx *Context) Builder { return globalUintBuilder }
-func (_this *uintBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *uintBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *uintBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	setUintFromInt(value, dst)

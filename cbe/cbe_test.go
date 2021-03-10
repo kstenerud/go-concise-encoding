@@ -42,8 +42,8 @@ func TestCBEPadding(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typePadding, typePadding, typePadding}, BD(), V(ceVer), PAD(1), PAD(1), PAD(1), ED())
 }
 
-func TestCBENil(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeNA, typeNA}, BD(), V(ceVer), NA(), NA(), ED())
+func TestCBENA(t *testing.T) {
+	assertDecodeEncode(t, []byte{header, ceVer, typeNA}, BD(), V(ceVer), NA(), ED())
 }
 
 func TestCBEBool(t *testing.T) {

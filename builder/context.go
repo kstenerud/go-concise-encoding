@@ -91,10 +91,6 @@ func (_this *Context) IgnoreNext() {
 	_this.StackBuilder(globalIgnoreBuilder)
 }
 
-func (_this *Context) NANext() {
-	_this.StackBuilder(globalNABuilder)
-}
-
 func (_this *Context) NotifyMarker(id interface{}, value reflect.Value) {
 	_this.referenceFiller.NotifyMarker(id, value)
 }

@@ -391,22 +391,22 @@ func (_this *TopLevelRule) OnArrayChunk(ctx *Context, length uint64, moreChunksF
 func (_this *TopLevelRule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }
-func (_this *NARule) OnBeginDocument(ctx *Context) {
+func (_this *NACatRule) OnBeginDocument(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
 }
-func (_this *NARule) OnEndDocument(ctx *Context) {
+func (_this *NACatRule) OnEndDocument(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow EndDocument", _this))
 }
-func (_this *NARule) OnVersion(ctx *Context, version uint64) {
+func (_this *NACatRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *NARule) OnEnd(ctx *Context) {
+func (_this *NACatRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
-func (_this *NARule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+func (_this *NACatRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
-func (_this *NARule) OnArrayData(ctx *Context, data []byte) {
+func (_this *NACatRule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }
 func (_this *ListRule) OnBeginDocument(ctx *Context) {

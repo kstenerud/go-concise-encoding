@@ -70,8 +70,7 @@ func TestCTEVersion(t *testing.T) {
 }
 
 func TestCTENA(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), V(ceVer), NA(), NA(), ED())
-	assertDecode(t, nil, "c0\n@na:@na", BD(), V(ceVer), NA(), NA(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), V(ceVer), NA(), ED())
 	assertDecodeFails(t, "c0 -@na")
 	assertDecodeFails(t, "c0 @na:@na:1")
 	assertDecodeFails(t, "c0 @na:@na:@na")
@@ -1280,7 +1279,7 @@ func TestCTEMapMetadata(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), V(ceVer), NA(), NA(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), V(ceVer), NA(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@nan", BD(), V(ceVer), NAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@snan", BD(), V(ceVer), SNAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@inf", BD(), V(ceVer), F(math.Inf(1)), ED())
@@ -1866,6 +1865,6 @@ func TestMapValueComment(t *testing.T) {
 }
 
 func TestEmptyDocument(t *testing.T) {
-	assertDecode(t, nil, `c0 @na`, BD(), V(ceVer), NA(), NA(), ED())
-	assertDecode(t, nil, `c0 @na:@na`, BD(), V(ceVer), NA(), NA(), ED())
+	assertDecodeEncode(t, nil, nil, `c0
+@na`, BD(), V(ceVer), NA(), ED())
 }

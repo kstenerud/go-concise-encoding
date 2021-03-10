@@ -188,9 +188,10 @@ func (_this *EncoderContext) BeginStandardConstant(name []byte, explicitValue bo
 	_this.Stack(&globalConstantEncoder)
 }
 
-func (_this *EncoderContext) BeginStandardNA() {
-	_this.Stack(&globalNAEncoder)
-	_this.CurrentEncoder.Begin(_this)
+func (_this *EncoderContext) BeginConcatenatedNA() {
+	panic("TODO: EncoderContext.BeginConcatenatedNA")
+	// _this.Stack(&globalNACatEncoder)
+	// _this.CurrentEncoder.Begin(_this)
 }
 
 func (_this *EncoderContext) BeginStandardArray(arrayType events.ArrayType) {

@@ -152,7 +152,6 @@ func (_this *pUrlBuilder) String() string { return reflect.TypeOf(_this).String(
 func (_this *pUrlBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	ctx.UnstackBuilder()
-	ctx.NANext()
 	return dst
 }
 
