@@ -21,8 +21,6 @@
 package cte
 
 import (
-	"fmt"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
@@ -178,23 +176,22 @@ func (_this *EncoderContext) BeginStandardReference() {
 	_this.CurrentEncoder.Begin(_this)
 }
 
-func (_this *EncoderContext) BeginStandardConcatenate() {
-	panic(fmt.Errorf("TODO: EncoderContext.BeginConcatenate"))
-}
-
 func (_this *EncoderContext) BeginStandardConstant(name []byte, explicitValue bool) {
 	_this.Stream.AddByte('#')
 	_this.Stream.AddBytes(name)
 	_this.Stack(&globalConstantEncoder)
 }
 
-func (_this *EncoderContext) BeginConcatenatedNA() {
-	panic("TODO: EncoderContext.BeginConcatenatedNA")
-	// _this.Stack(&globalNACatEncoder)
-	// _this.CurrentEncoder.Begin(_this)
+func (_this *EncoderContext) BeginNACat() {
+	_this.Stream.WriteNA()
+	_this.Stream.WriteConcat()
+	_this.Stack(&globalPostInvisibleEncoder)
 }
 
 func (_this *EncoderContext) BeginStandardArray(arrayType events.ArrayType) {
+	if arrayType == events.ArrayTypeResourceIDConcat {
+		_this.Stack(&globalPostStreamRIDCatEncoder)
+	}
 	_this.Stack((&globalArrayEncoder))
 	_this.ArrayEngine.BeginArray(arrayType, func() {
 		_this.Unstack()
@@ -202,23 +199,38 @@ func (_this *EncoderContext) BeginStandardArray(arrayType events.ArrayType) {
 	})
 }
 
-// pre-write (indent)
-// post-write (lf?)
-// list-type
-// map-type (key section, value section)
-// array-type
-// metadata follow
-// comment follow
+func (_this *EncoderContext) BeginPotentialRIDCat(arrayType events.ArrayType) {
+	if arrayType == events.ArrayTypeResourceIDConcat {
+		_this.Stack(&globalPostRIDCatEncoder)
+	}
+}
 
-// string in comment
-// string in markup contents
-// string as ID
-// int as ID
-// constant name
-// custom string
-// NA stuff
+func (_this *EncoderContext) WriteStringlikeArray(arrayType events.ArrayType, data string) {
+	// TODO: avoid string-to-bytes conversion?
+	_this.ArrayEngine.EncodeArray(arrayType, uint64(len(data)), []byte(data))
+	_this.BeginPotentialRIDCat(arrayType)
+}
 
-// Types that can be printed differently:
-// - string (quoted, unquoted) (escape/noescape) (trim/notrim)
-// - int (pos or neg) (bin, oct, dec, hex) (with/without prefix)
-// - binary float (dec, hex) (with/without prefix)
+func (_this *EncoderContext) WriteArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	_this.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	_this.BeginPotentialRIDCat(arrayType)
+}
+
+func (_this *EncoderContext) WriteCommentString(data string) {
+	// TODO: Not this
+	_this.WriteMarkupContentStringData([]byte(data))
+}
+
+func (_this *EncoderContext) WriteCommentStringData(data []uint8) {
+	// TODO: Need anything else?
+	_this.Stream.AddBytes(data)
+}
+
+func (_this *EncoderContext) WriteMarkupContentString(data string) {
+	// TODO: Not this
+	_this.WriteMarkupContentStringData([]byte(data))
+}
+
+func (_this *EncoderContext) WriteMarkupContentStringData(data []uint8) {
+	_this.Stream.WritePotentiallyEscapedMarkupContents(data)
+}

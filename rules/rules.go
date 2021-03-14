@@ -43,6 +43,7 @@ type EventRule interface {
 	OnKeyableObject(ctx *Context)
 	OnNonKeyableObject(ctx *Context)
 	OnNA(ctx *Context)
+	OnNACat(ctx *Context)
 	OnInt(ctx *Context, value int64)
 	OnPositiveInt(ctx *Context, value uint64)
 	OnBigInt(ctx *Context, value *big.Int)
@@ -105,6 +106,7 @@ var (
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule
 	stringChunkRule         StringChunkRule
+	ridCatRule              RIDCatRule
 	markerIDKeyableRule     MarkerIDKeyableRule
 	markerIDAnyTypeRule     MarkerIDAnyTypeRule
 	markedObjectKeyableRule MarkedObjectKeyableRule

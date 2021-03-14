@@ -88,7 +88,6 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
@@ -99,7 +98,7 @@ func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v compact_time.Time) *test.TEvent   { return test.CT(v) }
+func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }

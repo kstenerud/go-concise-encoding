@@ -66,10 +66,14 @@ func (_this *VersionRule) OnVersion(ctx *Context, version uint64) {
 
 type TopLevelRule struct{}
 
-func (_this *TopLevelRule) String() string                                 { return "Top Level Rule" }
-func (_this *TopLevelRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchEndDocument() }
-func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchEndDocument() }
-func (_this *TopLevelRule) OnNA(ctx *Context)                              { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) String() string                  { return "Top Level Rule" }
+func (_this *TopLevelRule) OnKeyableObject(ctx *Context)    { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnNA(ctx *Context)               { ctx.SwitchEndDocument() }
+func (_this *TopLevelRule) OnNACat(ctx *Context) {
+	ctx.SwitchEndDocument()
+	ctx.BeginNACat()
+}
 func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchEndDocument() }
 func (_this *TopLevelRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *TopLevelRule) OnInt(ctx *Context, value int64)                { ctx.SwitchEndDocument() }
@@ -96,12 +100,15 @@ func (_this *TopLevelRule) OnConstant(ctx *Context, name []byte, explicitValue b
 func (_this *TopLevelRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.SwitchEndDocument()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *TopLevelRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	ctx.SwitchEndDocument()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *TopLevelRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -141,6 +148,47 @@ func (_this *NACatRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayTy
 	ctx.UnstackRule()
 }
 func (_this *NACatRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type RIDCatRule struct{}
+
+func (_this *RIDCatRule) String() string                                 { return "Resource ID (Cat) Rule" }
+func (_this *RIDCatRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.UnstackRule() }
+func (_this *RIDCatRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *RIDCatRule) OnInt(ctx *Context, value int64) {
+	if value < 0 {
+		panic(fmt.Errorf("Resource ID concatenation cannot be a negative integer (%v)", value))
+	}
+	ctx.UnstackRule()
+}
+func (_this *RIDCatRule) OnPositiveInt(ctx *Context, value uint64) { ctx.UnstackRule() }
+func (_this *RIDCatRule) OnBigInt(ctx *Context, value *big.Int) {
+	if value.Sign() < 0 {
+		panic(fmt.Errorf("Resource ID concatenation cannot be a negative integer (%v)", value))
+	}
+	ctx.UnstackRule()
+}
+func (_this *RIDCatRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	if arrayType != events.ArrayTypeString {
+		panic(fmt.Errorf("Resource ID concatenation cannot be a %v array type", arrayType))
+	}
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	ctx.UnstackRule()
+}
+func (_this *RIDCatRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	if arrayType != events.ArrayTypeString {
+		panic(fmt.Errorf("Resource ID concatenation cannot be a %v array type", arrayType))
+	}
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	ctx.UnstackRule()
+}
+func (_this *RIDCatRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	if arrayType != events.ArrayTypeString {
+		panic(fmt.Errorf("Resource ID concatenation cannot be a %v array type", arrayType))
+	}
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -222,52 +270,46 @@ func (_this *ConstantAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ 
 func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx)
-	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *ConstantAnyTypeRule) OnNA(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnNA(ctx)
-	ctx.MarkObject(DataTypeKeyable)
+}
+func (_this *ConstantAnyTypeRule) OnNACat(ctx *Context) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNACat(ctx)
 }
 func (_this *ConstantAnyTypeRule) OnKeyableObject(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnInt(ctx *Context, value int64) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnInt(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnPositiveInt(ctx *Context, value uint64) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnPositiveInt(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnBigInt(ctx *Context, value *big.Int) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnBigInt(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnFloat(ctx *Context, value float64) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnFloat(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnBigFloat(ctx *Context, value *big.Float) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnBigFloat(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnDecimalFloat(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnBigDecimalFloat(ctx, value)
-	ctx.MarkObject(DataTypeKeyable)
 }
 func (_this *ConstantAnyTypeRule) OnList(ctx *Context) {
 	ctx.ParentRule().OnList(ctx)
@@ -281,23 +323,19 @@ func (_this *ConstantAnyTypeRule) OnMarkup(ctx *Context) {
 func (_this *ConstantAnyTypeRule) OnReference(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnReference(ctx)
-	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *ConstantAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *ConstantAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *ConstantAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.ParentRule().OnArrayBegin(ctx, arrayType)
 }
 func (_this *ConstantAnyTypeRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	ctx.MarkObject(cType)
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, cType)
 }

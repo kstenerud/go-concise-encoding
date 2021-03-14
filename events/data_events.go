@@ -133,6 +133,7 @@ type DataEventReceiver interface {
 	OnVersion(version uint64)
 	OnPadding(count int)
 	OnNA()
+	OnNACat()
 	OnBool(value bool)
 	OnTrue()
 	OnFalse()
@@ -155,7 +156,6 @@ type DataEventReceiver interface {
 	OnEnd()
 	OnMarker()
 	OnReference()
-	OnConcatenate()
 	OnConstant(name []byte, explicitValue bool)
 
 	// WARNING: Do not directly store pointers to the data passed via array or
@@ -181,6 +181,7 @@ func (_this *NullEventReceiver) OnBeginDocument()                    {}
 func (_this *NullEventReceiver) OnVersion(uint64)                    {}
 func (_this *NullEventReceiver) OnPadding(int)                       {}
 func (_this *NullEventReceiver) OnNA()                               {}
+func (_this *NullEventReceiver) OnNACat()                            {}
 func (_this *NullEventReceiver) OnBool(bool)                         {}
 func (_this *NullEventReceiver) OnTrue()                             {}
 func (_this *NullEventReceiver) OnFalse()                            {}
@@ -209,6 +210,5 @@ func (_this *NullEventReceiver) OnComment()                          {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker()                           {}
 func (_this *NullEventReceiver) OnReference()                        {}
-func (_this *NullEventReceiver) OnConcatenate()                      {}
 func (_this *NullEventReceiver) OnConstant(_ []byte, _ bool)         {}
 func (_this *NullEventReceiver) OnEndDocument()                      {}

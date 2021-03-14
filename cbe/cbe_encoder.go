@@ -96,6 +96,11 @@ func (_this *Encoder) OnNA() {
 	_this.encodeType(cbeTypeNA)
 }
 
+func (_this *Encoder) OnNACat() {
+	_this.encodeType(cbeTypePlane2)
+	_this.encodeType(cbeTypeNACat)
+}
+
 func (_this *Encoder) OnBool(value bool) {
 	if value {
 		_this.OnTrue()
@@ -369,10 +374,6 @@ func (_this *Encoder) OnMarker() {
 
 func (_this *Encoder) OnReference() {
 	_this.encodeType(cbeTypeReference)
-}
-
-func (_this *Encoder) OnConcatenate() {
-	panic("TODO: Remove CBE Encoder OnConcatenate")
 }
 
 func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {

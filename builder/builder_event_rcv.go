@@ -106,6 +106,10 @@ func (_this *BuilderEventReceiver) OnPadding(_ int)    {}
 func (_this *BuilderEventReceiver) OnNA() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 }
+func (_this *BuilderEventReceiver) OnNACat() {
+	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
+	panic("TODO: BuilderEventReceiver.OnNACat")
+}
 func (_this *BuilderEventReceiver) OnBool(value bool) {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)
 }
@@ -202,9 +206,6 @@ func (_this *BuilderEventReceiver) OnMarker() {
 }
 func (_this *BuilderEventReceiver) OnReference() {
 	_this.context.StackBuilder(newReferenceIDBuilder())
-}
-func (_this *BuilderEventReceiver) OnConcatenate() {
-	_this.context.CurrentBuilder.BuildConcatenate(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnConstant(name []byte, explicitValue bool) {
 	if !explicitValue {

@@ -29,96 +29,96 @@ import (
 )
 
 func TestEncodeDecodeNA(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), NA(), ED())
+	assertEncodeDecode(t, BD(), EvV, NA(), ED())
 }
 
 func TestEncodeDecodeTrue(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), TT(), ED())
+	assertEncodeDecode(t, BD(), EvV, TT(), ED())
 }
 
 func TestEncodeDecodeFalse(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), FF(), ED())
+	assertEncodeDecode(t, BD(), EvV, FF(), ED())
 }
 
 func TestEncodeDecodePositiveInt(t *testing.T) {
-	assertEncodeDecodeCTE(t, BD(), V(ceVer), PI(0), ED())
-	assertEncodeDecodeCTE(t, BD(), V(ceVer), PI(1), ED())
-	assertEncodeDecodeCBE(t, BD(), V(ceVer), I(0), ED())
-	assertEncodeDecodeCBE(t, BD(), V(ceVer), I(1), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), PI(104), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), PI(10405), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), PI(999999), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), PI(7234859234423), ED())
+	assertEncodeDecodeCTE(t, BD(), EvV, PI(0), ED())
+	assertEncodeDecodeCTE(t, BD(), EvV, PI(1), ED())
+	assertEncodeDecodeCBE(t, BD(), EvV, I(0), ED())
+	assertEncodeDecodeCBE(t, BD(), EvV, I(1), ED())
+	assertEncodeDecode(t, BD(), EvV, PI(104), ED())
+	assertEncodeDecode(t, BD(), EvV, PI(10405), ED())
+	assertEncodeDecode(t, BD(), EvV, PI(999999), ED())
+	assertEncodeDecode(t, BD(), EvV, PI(7234859234423), ED())
 }
 
 func TestEncodeDecodeNegativeInt(t *testing.T) {
-	assertEncodeDecodeCTE(t, BD(), V(ceVer), NI(1), ED())
-	assertEncodeDecodeCBE(t, BD(), V(ceVer), I(-1), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), NI(104), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), NI(10405), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), NI(999999), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), NI(7234859234423), ED())
+	assertEncodeDecodeCTE(t, BD(), EvV, NI(1), ED())
+	assertEncodeDecodeCBE(t, BD(), EvV, I(-1), ED())
+	assertEncodeDecode(t, BD(), EvV, NI(104), ED())
+	assertEncodeDecode(t, BD(), EvV, NI(10405), ED())
+	assertEncodeDecode(t, BD(), EvV, NI(999999), ED())
+	assertEncodeDecode(t, BD(), EvV, NI(7234859234423), ED())
 }
 
 func TestEncodeDecodeFloat(t *testing.T) {
 	// CTE will convert to decimal float
-	assertEncodeDecodeCBE(t, BD(), V(ceVer), F(1.5), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), DF(test.NewDFloat("1.5")), ED())
-	assertEncodeDecodeCBE(t, BD(), V(ceVer), F(-51.455e-16), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), DF(test.NewDFloat("-51.455e-16")), ED())
+	assertEncodeDecodeCBE(t, BD(), EvV, F(1.5), ED())
+	assertEncodeDecode(t, BD(), EvV, DF(test.NewDFloat("1.5")), ED())
+	assertEncodeDecodeCBE(t, BD(), EvV, F(-51.455e-16), ED())
+	assertEncodeDecode(t, BD(), EvV, DF(test.NewDFloat("-51.455e-16")), ED())
 }
 
 func TestEncodeDecodeNan(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), NAN(), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), SNAN(), ED())
+	assertEncodeDecode(t, BD(), EvV, NAN(), ED())
+	assertEncodeDecode(t, BD(), EvV, SNAN(), ED())
 }
 
 func TestEncodeDecodeUUID(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), UUID([]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}), ED())
+	assertEncodeDecode(t, BD(), EvV, UUID([]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}), ED())
 }
 
 func TestEncodeDecodeTime(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewDate(2000, 1, 1)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewDate(2000, 1, 1)), ED())
 
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTime(1, 45, 0, 0, "")), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTime(23, 59, 59, 101000000, "")), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTimeLL(10, 0, 1, 930000000, 8992, 110)), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTimeLL(10, 0, 1, 930000000, 0, 0)), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTimeLL(10, 0, 1, 930000000, 100, 100)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTime(1, 45, 0, 0, "")), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTime(23, 59, 59, 101000000, "")), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 8992, 110)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 0, 0)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 100, 100)), ED())
 
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTS(2000, 1, 1, 19, 31, 44, 901554000, "")), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTS(-50000, 12, 29, 1, 1, 1, 305, "Etc/UTC")), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), CT(test.NewTSLL(2954, 8, 31, 12, 31, 15, 335523, 3154, 16004)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTS(2000, 1, 1, 19, 31, 44, 901554000, "")), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTS(-50000, 12, 29, 1, 1, 1, 305, "Etc/UTC")), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTSLL(2954, 8, 31, 12, 31, 15, 335523, 3154, 16004)), ED())
 }
 
 func TestEncodeDecodeBytes(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), AU8([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
+	assertEncodeDecode(t, BD(), EvV, AU8([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
 func TestEncodeDecodeCustom(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), CUB([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
+	assertEncodeDecode(t, BD(), EvV, CUB([]byte{1, 2, 3, 4, 5, 6, 7}), ED())
 }
 
 func TestEncodeDecodeRID(t *testing.T) {
 	// TODO: More complex tests
-	assertEncodeDecode(t, BD(), V(ceVer), RID("http://example.com"), ED())
+	assertEncodeDecode(t, BD(), EvV, RID("http://example.com"), ED())
 }
 
 func TestEncodeDecodeString(t *testing.T) {
 	// TODO: More complex tests
-	assertEncodeDecode(t, BD(), V(ceVer), S("A string"), ED())
+	assertEncodeDecode(t, BD(), EvV, S("A string"), ED())
 }
 
 func TestEncodeDecodeList(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), L(), E(), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), L(), PI(1000), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, L(), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, L(), PI(1000), E(), ED())
 }
 
 func TestEncodeDecodeMap(t *testing.T) {
-	assertEncodeDecode(t, BD(), V(ceVer), M(), E(), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), M(), S("a"), NI(1000), E(), ED())
-	assertEncodeDecode(t, BD(), V(ceVer), M(), S("some NA"), NA(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, M(), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, M(), S("a"), NI(1000), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, M(), S("some NA"), NA(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }
 
 func TestWebsiteExampleNumericTypes(t *testing.T) {
@@ -150,7 +150,7 @@ func TestWebsiteExampleNumericTypes(t *testing.T) {
 		0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x65, 0x80, 0x00, 0x88, 0x69, 0x6e,
 		0x66, 0x69, 0x6e, 0x69, 0x74, 0x79, 0x65, 0x82, 0x00, 0x8a, 0x6e, 0x2d,
 		0x69, 0x6e, 0x66, 0x69, 0x6e, 0x69, 0x74, 0x79, 0x65, 0x83, 0x00, 0x7b},
-		BD(), V(ceVer), M(),
+		BD(), EvV, M(),
 		S("boolean"), TT(),
 		S("binary-int"), NI(0b10001011),
 		S("octal-int"), PI(0o644),
@@ -187,7 +187,7 @@ func TestWebsiteExampleStrings(t *testing.T) {
 		0x85, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x91, 0x2e, 0x6d, 0x61, 0x69, 0x6c,
 		0x74, 0x6f, 0x3a, 0x6d, 0x65, 0x40, 0x73, 0x6f, 0x6d, 0x65, 0x77, 0x68,
 		0x65, 0x72, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x7b},
-		BD(), V(ceVer), M(),
+		BD(), EvV, M(),
 		S("unquoted-string"), S("no-quotes-needed"),
 		S("quoted-string"), S("A string delimited by quotes"),
 		S("url"), RID("https://example.com/"),
@@ -215,7 +215,7 @@ func TestWebsiteExampleOtherTypes(t *testing.T) {
 		0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x9b, 0x46, 0x36, 0x56, 0xc6,
 		0x1e, 0xae, 0xbd, 0xa3, 0x00, 0x8d, 0x6e, 0x6f, 0x74, 0x2d, 0x61, 0x76,
 		0x61, 0x69, 0x6c, 0x61, 0x62, 0x6c, 0x65, 0x7e, 0x7b},
-		BD(), V(ceVer), M(),
+		BD(), EvV, M(),
 		S("uuid"), UUID([]byte{0xf1, 0xce, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66, 0x55, 0x44, 0x00, 0x00}),
 		S("date"), CT(test.NewDate(2019, 7, 1)),
 		S("time"), CT(test.NewTime(18, 4, 0, 940231541, "Europe/Prague")),
@@ -260,7 +260,7 @@ func TestWebsiteExampleContainersArrays(t *testing.T) {
 		0x1c, 0x3a, 0x44, 0x1b, 0xd9, 0x8d, 0x66, 0x6c, 0x6f, 0x61, 0x74, 0x33,
 		0x32, 0x2d, 0x61, 0x72, 0x72, 0x61, 0x79, 0x94, 0x71, 0x04, 0x76, 0x84,
 		0x5f, 0x50, 0xea, 0x30, 0x12, 0xad, 0x7b},
-		BD(), V(ceVer), M(),
+		BD(), EvV, M(),
 		S("list"), L(), PI(1), DF(NewDFloat("2.5")), S("a string"), E(),
 		S("map"), M(), S("one"), PI(1), PI(2), S("two"), S("today"), CT(test.NewDate(2020, 9, 10)), E(),
 		S("bytes"), AU8([]byte{0x01, 0xff, 0xde, 0xad, 0xbe, 0xef}),
@@ -310,7 +310,7 @@ func TestWebsiteExampleMarkup(t *testing.T) {
 		0x75, 0x74, 0x2e, 0x54, 0x65, 0x78, 0x74, 0x20, 0x2b, 0x20, 0x22, 0x21,
 		0x22, 0x29, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x7b,
 		0x88, 0x4e, 0x61, 0x6d, 0x65, 0x20, 0x6d, 0x65, 0x21, 0x7b, 0x7b, 0x7b},
-		BD(), V(ceVer), M(),
+		BD(), EvV, M(),
 		S("main-view"), MUP(), S("View"), E(),
 		MUP(), S("Image"), S("src"), RID("images/avatar-image.jpg"), E(), E(),
 		MUP(), S("Text"), S("id"), S("HelloText"), E(),
@@ -356,7 +356,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
 		0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x78, 0x79, 0x7a, 0x2e, 0x63,
 		0x6f, 0x6d, 0x2f, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x2e,
 		0x63, 0x74, 0x65, 0x23, 0x73, 0x6f, 0x6d, 0x65, 0x5f, 0x69, 0x64, 0x7b},
-		BD(), V(ceVer), M(),
+		BD(), EvV, M(),
 		S("marked_object"), MARK(), S("id1"), M(),
 		S("description"), S("This map will be referenced later as $id1"),
 		S("value"), F(math.Inf(-1)),
@@ -426,7 +426,7 @@ func TestWebsiteExampleMetadataComments(t *testing.T) {
 		0x62, 0x6f, 0x75, 0x74, 0x20, 0x61, 0x5f, 0x6c, 0x69, 0x73, 0x74, 0x7b,
 		0x86, 0x61, 0x5f, 0x6c, 0x69, 0x73, 0x74, 0x7a, 0x01, 0x02, 0x03, 0x7b,
 		0x7b},
-		BD(), V(ceVer),
+		BD(), EvV,
 		CMT(), S("Metadata about the entire documents"), E(),
 		META(),
 		CMT(), S("_ct is the creation time, _d is description, _v is version."), E(),

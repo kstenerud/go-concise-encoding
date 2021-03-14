@@ -46,6 +46,7 @@ type Encoder interface {
 	OnVersion(version uint64)
 	OnPadding(count int)
 	OnNA()
+	OnNACat()
 	OnBool(value bool)
 	OnTrue()
 	OnFalse()
@@ -76,6 +77,5 @@ type Encoder interface {
 	OnEnd()
 	OnMarker()
 	OnReference()
-	OnConcatenate()
 	OnConstant(name []byte, explicitValue bool)
 }

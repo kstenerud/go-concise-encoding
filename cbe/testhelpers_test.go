@@ -42,6 +42,8 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
+var EvV = test.EvV
+
 const (
 	header = 0x03
 	ceVer  = version.ConciseEncodingVersion
@@ -72,6 +74,7 @@ const (
 	typeFalse        = 0x7c
 	typeTrue         = 0x7d
 	typeNA           = 0x7e
+	typeNACat        = 0x7e
 	typePadding      = 0x7f
 	typeString0      = 0x80
 	typeString1      = 0x81
@@ -91,9 +94,10 @@ const (
 	typeString15     = 0x8f
 	typeString       = 0x90
 	TypeRID          = 0x91
+	TypeRIDCat       = 0x91
 	typeCustomBinary = 0x92
 	typeCustomText   = 0x93
-	typeArray        = 0x94
+	typePlane2       = 0x94
 	typeReserved95   = 0x95
 	typeReserved96   = 0x96
 	typeMarker       = 0x97
@@ -150,8 +154,8 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
+func NACat() *test.TEvent                    { return test.NACat() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
@@ -164,6 +168,7 @@ func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
+func RIDCat(v string) *test.TEvent           { return test.RIDCat(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -180,6 +185,7 @@ func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
+func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }
@@ -247,7 +253,7 @@ func assertDecode(t *testing.T, opts *options.CBEDecoderOptions, document []byte
 
 	if len(expectedEvents) > 0 {
 		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
+			t.Errorf("Expected document %v to decode to events %v but got %v", describe.D(document), expectedEvents, actualEvents)
 			return
 		}
 	}
@@ -265,7 +271,7 @@ func assertDecodeWithRules(t *testing.T, opts *options.CBEDecoderOptions, docume
 
 	if len(expectedEvents) > 0 {
 		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected events %v but got %v", expectedEvents, actualEvents)
+			t.Errorf("Expected document %v to decode to events %v but got %v", describe.D(document), expectedEvents, actualEvents)
 			return
 		}
 	}
@@ -284,7 +290,7 @@ func assertDecodeFails(t *testing.T, document []byte) {
 func assertEncode(t *testing.T, opts *options.CBEEncoderOptions, expectedDocument []byte, events ...*test.TEvent) (successful bool) {
 	actualDocument := encodeEvents(opts, events...)
 	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected document %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
+		t.Errorf("Expected encoded document %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
 		return
 	}
 	successful = true
@@ -313,7 +319,7 @@ func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (su
 		return
 	}
 	if !equivalence.IsEquivalent(document, expectedDocument) {
-		t.Errorf("Expected document %v but got %v", describe.D(expectedDocument), describe.D(document))
+		t.Errorf("Expected encoded document %v but got %v", describe.D(expectedDocument), describe.D(document))
 		return
 	}
 	successful = true

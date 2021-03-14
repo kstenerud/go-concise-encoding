@@ -210,6 +210,7 @@ func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
+func NACat() *test.TEvent                    { return test.NACat() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
@@ -222,6 +223,7 @@ func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
+func RIDCat(v string) *test.TEvent           { return test.RIDCat(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -239,6 +241,7 @@ func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func AUU(v []byte) *test.TEvent              { return test.AUU(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
+func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }
@@ -268,7 +271,12 @@ func CONST(n string, e bool) *test.TEvent    { return test.CONST(n, e) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
+var DebugPrintEvents = false
+
 func InvokeEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
+	if DebugPrintEvents {
+		receiver = test.NewStdoutTEventPrinter(receiver)
+	}
 	test.InvokeEvents(receiver, events...)
 }
 

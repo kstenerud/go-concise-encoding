@@ -73,6 +73,10 @@ func (_this *listEncoder) EncodeNA(ctx *EncoderContext) {
 	ctx.Stream.WriteNA()
 	_this.completeObject(ctx)
 }
+func (_this *listEncoder) BeginNACat(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.BeginNACat()
+}
 func (_this *listEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
@@ -176,22 +180,18 @@ func (_this *listEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *listEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *listEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *listEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 	_this.completeObject(ctx)
 }
 func (_this *listEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
@@ -319,22 +319,17 @@ func (_this *mapKeyEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *mapKeyEncoder) BeginConcatenate(ctx *EncoderContext) {
-	// TODO ?
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *mapKeyEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *mapKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *mapKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *mapKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -372,6 +367,10 @@ func (_this *mapValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisi
 func (_this *mapValueEncoder) EncodeNA(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNA()
+}
+func (_this *mapValueEncoder) BeginNACat(ctx *EncoderContext) {
+	_this.prepareForContainer(ctx)
+	ctx.BeginNACat()
 }
 func (_this *mapValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -461,21 +460,17 @@ func (_this *mapValueEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *mapValueEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *mapValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *mapValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *mapValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *mapValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -597,22 +592,17 @@ func (_this *metadataKeyEncoder) BeginReference(ctx *EncoderContext) {
 	_this.beginContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *metadataKeyEncoder) BeginConcatenate(ctx *EncoderContext) {
-	// TODO ?
-	_this.beginContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *metadataKeyEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.beginContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *metadataKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.beginCompleteObject(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *metadataKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.beginCompleteObject(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *metadataKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.beginContainer(ctx)
@@ -649,6 +639,10 @@ func (_this *metadataValueEncoder) ChildContainerFinished(ctx *EncoderContext, i
 func (_this *metadataValueEncoder) EncodeNA(ctx *EncoderContext) {
 	_this.beginCompleteObject(ctx)
 	ctx.Stream.WriteNA()
+}
+func (_this *metadataValueEncoder) BeginNACat(ctx *EncoderContext) {
+	_this.beginContainer(ctx)
+	ctx.BeginNACat()
 }
 func (_this *metadataValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.beginCompleteObject(ctx)
@@ -738,21 +732,17 @@ func (_this *metadataValueEncoder) BeginReference(ctx *EncoderContext) {
 	_this.beginContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *metadataValueEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *metadataValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.beginContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *metadataValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.beginCompleteObject(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *metadataValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.beginCompleteObject(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *metadataValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.beginContainer(ctx)
@@ -855,22 +845,17 @@ func (_this *markupNameEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *markupNameEncoder) BeginConcatenate(ctx *EncoderContext) {
-	// TODO ?
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *markupNameEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *markupNameEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *markupNameEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *markupNameEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -981,22 +966,17 @@ func (_this *markupKeyEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *markupKeyEncoder) BeginConcatenate(ctx *EncoderContext) {
-	// TODO ?
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *markupKeyEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *markupKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *markupKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *markupKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -1031,6 +1011,10 @@ func (_this *markupValueEncoder) ChildContainerFinished(ctx *EncoderContext, isV
 func (_this *markupValueEncoder) EncodeNA(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNA()
+}
+func (_this *markupValueEncoder) BeginNACat(ctx *EncoderContext) {
+	_this.prepareForContainer(ctx)
+	ctx.BeginNACat()
 }
 func (_this *markupValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -1120,21 +1104,17 @@ func (_this *markupValueEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *markupValueEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *markupValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *markupValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *markupValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *markupValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
@@ -1197,11 +1177,11 @@ func (_this *markupContentsEncoder) BeginComment(ctx *EncoderContext) {
 }
 func (_this *markupContentsEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.beginObject(ctx)
-	ctx.ArrayEngine.EncodeMarkupContentStringData(data)
+	ctx.WriteMarkupContentStringData(data)
 }
 func (_this *markupContentsEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.beginObject(ctx)
-	ctx.ArrayEngine.EncodeMarkupContentString(data)
+	ctx.WriteMarkupContentString(data)
 }
 func (_this *markupContentsEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.beginObject(ctx)
@@ -1247,11 +1227,11 @@ func (_this *commentEncoder) BeginComment(ctx *EncoderContext) {
 }
 func (_this *commentEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.beginItem(ctx)
-	ctx.ArrayEngine.EncodeCommentStringData(data)
+	ctx.WriteCommentStringData(data)
 }
 func (_this *commentEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.beginItem(ctx)
-	ctx.ArrayEngine.EncodeCommentString(data)
+	ctx.WriteCommentString(data)
 }
 func (_this *commentEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.beginItem(ctx)

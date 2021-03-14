@@ -42,6 +42,8 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
+var EvV = test.EvV
+
 const (
 	ceVer = version.ConciseEncodingVersion
 )
@@ -93,7 +95,6 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
@@ -283,8 +284,7 @@ func assertEncodeDecodeSet(t *testing.T, prefix []*test.TEvent, suffix []*test.T
 	for _, event := range events {
 		allEvents := []*test.TEvent{}
 		allEvents = append(allEvents, prefix...)
-		allEvents = append(allEvents, event)
-		allEvents = append(allEvents, test.Completions[event]...)
+		allEvents = append(allEvents, test.FilterAddCompletion(event)...)
 		allEvents = append(allEvents, suffix...)
 		assertEncodeDecode(t, allEvents...)
 	}
@@ -294,8 +294,7 @@ func assertEncodeDecodeSetTLO(t *testing.T, prefix []*test.TEvent, suffix []*tes
 	for _, event := range events {
 		allEvents := []*test.TEvent{}
 		allEvents = append(allEvents, prefix...)
-		allEvents = append(allEvents, event)
-		allEvents = append(allEvents, test.Completions[event]...)
+		allEvents = append(allEvents, test.FilterAddCompletion(event)...)
 		allEvents = append(allEvents, suffix...)
 		allEvents = test.FilterEventsSwitchToRIDRefs(allEvents)
 		assertEncodeDecode(t, allEvents...)
@@ -306,8 +305,7 @@ func assertEncodeDecodeSetContainer(t *testing.T, prefix []*test.TEvent, suffix 
 	for _, event := range events {
 		allEvents := []*test.TEvent{}
 		allEvents = append(allEvents, prefix...)
-		allEvents = append(allEvents, event)
-		allEvents = append(allEvents, test.Completions[event]...)
+		allEvents = append(allEvents, test.FilterAddCompletion(event)...)
 		allEvents = append(allEvents, suffix...)
 		allEvents = test.FilterEventsSwitchToRIDRefs(allEvents)
 		assertEncodeDecode(t, allEvents...)

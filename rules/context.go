@@ -194,6 +194,12 @@ func (_this *Context) BeginReferenceKeyable() {
 	_this.stackRule(&referenceKeyableRule, DataTypeKeyable)
 }
 
+func (_this *Context) BeginPotentialRIDCat(arrayType events.ArrayType) {
+	if arrayType == events.ArrayTypeResourceIDConcat {
+		_this.stackRule(&ridCatRule, DataTypeKeyable)
+	}
+}
+
 func (_this *Context) BeginReferenceAnyType() {
 	_this.stackRule(&referenceAnyTypeRule, DataTypeAnyType)
 }

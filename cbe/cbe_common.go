@@ -173,5 +173,5 @@ var cbePlane2TypeToArrayType = [256]events.ArrayType{
 	cbeTypeArrayFloat32: events.ArrayTypeFloat32,
 	cbeTypeArrayFloat64: events.ArrayTypeFloat64,
 	cbeTypeArrayUUID:    events.ArrayTypeUUID,
-	cbeTypeRIDCat:       events.ArrayTypeResourceID,
+	cbeTypeRIDCat:       events.ArrayTypeResourceIDConcat,
 }

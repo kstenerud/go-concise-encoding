@@ -118,7 +118,7 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
-	case events.ArrayTypeResourceID:
+	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
 		_this.beginArray(arrayType, &stringRule, DataTypeAnyType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
@@ -157,13 +157,9 @@ func (_this *Context) BeginArrayString(arrayType events.ArrayType) {
 	_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 }
 
-func (_this *Context) BeginArrayRID(arrayType events.ArrayType) {
-	_this.AssertArrayTypeRID(arrayType)
-	_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
-}
-
 func (_this *Context) BeginArrayRIDReference(arrayType events.ArrayType) {
 	_this.AssertArrayTypeRID(arrayType)
+	_this.BeginPotentialRIDCat(arrayType)
 	_this.beginArray(arrayType, &stringRule, DataTypeAnyType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 }
 
@@ -229,7 +225,7 @@ func (_this *Context) ValidateFullArrayAnyType(arrayType events.ArrayType, eleme
 		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthString(uint64(len(data)))
 		_this.ValidateContentsString(data)
-	case events.ArrayTypeResourceID:
+	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthRID(uint64(len(data)))
 		_this.ValidateContentsRID(data)
@@ -248,7 +244,7 @@ func (_this *Context) ValidateFullArrayStringlike(arrayType events.ArrayType, da
 	case events.ArrayTypeString:
 		_this.ValidateLengthString(uint64(len(data)))
 		_this.ValidateContentsStringlike(data)
-	case events.ArrayTypeResourceID:
+	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		_this.ValidateLengthRID(uint64(len(data)))
 		_this.ValidateContentsRIDString(data)
 	case events.ArrayTypeCustomText:
@@ -350,7 +346,7 @@ func (_this *Context) AssertArrayTypeString(arrayType events.ArrayType) {
 }
 
 func (_this *Context) AssertArrayTypeRID(arrayType events.ArrayType) {
-	if arrayType != events.ArrayTypeResourceID {
+	if arrayType != events.ArrayTypeResourceID && arrayType != events.ArrayTypeResourceIDConcat {
 		panic(fmt.Errorf("Expected a resource ID array type but got %v", arrayType))
 	}
 }

@@ -46,7 +46,6 @@ var (
 	Time           = "BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value"
 	CTime          = "BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value"
 	Ref            = "BuildFromReference(ctx *Context, id interface{})"
-	Cat            = "BuildConcatenate(ctx *Context)"
 	ListInit       = "BuildInitiateList(ctx *Context)"
 	MapInit        = "BuildInitiateMap(ctx *Context)"
 	End            = "BuildEndContainer(ctx *Context)"
@@ -56,7 +55,7 @@ var (
 
 	allMethods = []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 		BigDFloat, UUID, Array, SArray, Time, CTime, ListInit, MapInit, List,
-		Map, End, Ref, Cat, NotifyFinished}
+		Map, End, Ref, NotifyFinished}
 )
 
 type Builder struct {

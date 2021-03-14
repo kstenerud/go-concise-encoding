@@ -45,6 +45,10 @@ type EncodeBuffer struct {
 	buffer.StreamingWriteBuffer
 }
 
+func (_this *EncodeBuffer) WriteConcat() {
+	_this.AddByte(':')
+}
+
 func (_this *EncodeBuffer) WriteNA() {
 	_this.AddString("@na")
 }

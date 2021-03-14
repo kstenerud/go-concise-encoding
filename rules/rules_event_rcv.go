@@ -97,6 +97,12 @@ func (_this *RulesEventReceiver) OnNA() {
 	_this.receiver.OnNA()
 }
 
+func (_this *RulesEventReceiver) OnNACat() {
+	_this.context.NotifyNewObject()
+	_this.context.CurrentEntry.Rule.OnNACat(&_this.context)
+	_this.receiver.OnNACat()
+}
+
 func (_this *RulesEventReceiver) OnBool(value bool) {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context)
@@ -246,10 +252,6 @@ func (_this *RulesEventReceiver) OnArrayChunk(length uint64, moreChunksFollow bo
 func (_this *RulesEventReceiver) OnArrayData(data []byte) {
 	_this.context.CurrentEntry.Rule.OnArrayData(&_this.context, data)
 	_this.receiver.OnArrayData(data)
-}
-
-func (_this *RulesEventReceiver) OnConcatenate() {
-	panic("TODO: Rules.OnConcatenate")
 }
 
 func (_this *RulesEventReceiver) OnList() {

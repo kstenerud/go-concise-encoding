@@ -26,8 +26,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/version"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -38,9 +36,7 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
-const (
-	ceVer = version.ConciseEncodingVersion
-)
+var EvV = test.EvV
 
 func NewBigInt(str string, base int) *big.Int {
 	return test.NewBigInt(str, base)
@@ -93,7 +89,6 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
@@ -172,7 +167,7 @@ func assertIterateWithOptions(t *testing.T,
 	obj interface{},
 	events ...*test.TEvent) {
 
-	expected := append([]*test.TEvent{BD(), V(ceVer)}, events...)
+	expected := append([]*test.TEvent{BD(), EvV}, events...)
 	expected = append(expected, ED())
 	receiver := test.NewTEventStore()
 	iterateObject(obj, receiver, sessionOptions, iteratorOptions)

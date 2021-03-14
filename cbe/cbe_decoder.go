@@ -175,11 +175,16 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.decodeArray(events.ArrayTypeCustomText)
 		case cbeTypePlane2:
 			cbeType := _this.buffer.DecodeType()
-			arrayType := cbePlane2TypeToArrayType[cbeType]
-			if arrayType == events.ArrayTypeInvalid {
-				panic(fmt.Errorf("0x%02x: Unsupported typed array type", cbeType))
+			switch cbeType {
+			case cbeTypeNACat:
+				_this.eventReceiver.OnNACat()
+			default:
+				arrayType := cbePlane2TypeToArrayType[cbeType]
+				if arrayType == events.ArrayTypeInvalid {
+					panic(fmt.Errorf("0x%02x: Unsupported plane 2 type", cbeType))
+				}
+				_this.decodeArray(arrayType)
 			}
-			_this.decodeArray(arrayType)
 		case cbeTypeMarker:
 			_this.eventReceiver.OnMarker()
 		case cbeTypeReference:

@@ -141,10 +141,6 @@ func (_this *naCatEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *naCatEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *naCatEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
@@ -189,6 +185,10 @@ func (_this *constantEncoder) EncodeNA(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNA()
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+func (_this *constantEncoder) BeginNACat(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.BeginNACat()
 }
 func (_this *constantEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -285,10 +285,6 @@ func (_this *constantEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *constantEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.BeginStandardConcatenate()
-}
 func (_this *constantEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
@@ -324,6 +320,9 @@ func (_this *postInvisibleEncoder) removeSelf(ctx *EncoderContext) Encoder {
 
 func (_this *postInvisibleEncoder) EncodeNA(ctx *EncoderContext) {
 	_this.removeSelf(ctx).EncodeNA(ctx)
+}
+func (_this *postInvisibleEncoder) BeginNACat(ctx *EncoderContext) {
+	_this.removeSelf(ctx).BeginNACat(ctx)
 }
 func (_this *postInvisibleEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.removeSelf(ctx).EncodeBool(ctx, value)
@@ -390,9 +389,6 @@ func (_this *postInvisibleEncoder) BeginMarker(ctx *EncoderContext) {
 }
 func (_this *postInvisibleEncoder) BeginReference(ctx *EncoderContext) {
 	_this.removeSelf(ctx).BeginReference(ctx)
-}
-func (_this *postInvisibleEncoder) BeginConcatenate(ctx *EncoderContext) {
-	_this.removeSelf(ctx).BeginConcatenate(ctx)
 }
 func (_this *postInvisibleEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.removeSelf(ctx).BeginConstant(ctx, name, explicitValue)
@@ -501,5 +497,95 @@ func (_this *markerIDEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayTy
 	_this.complete(ctx)
 }
 func (_this *markerIDEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	ctx.BeginStandardArray(arrayType)
+}
+
+// =============================================================================
+
+type postRIDCatEncoder struct{}
+
+var globalPostRIDCatEncoder postRIDCatEncoder
+
+func (_this *postRIDCatEncoder) String() string { return "postRIDCatEncoder" }
+
+func (_this *postRIDCatEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	ctx.Unstack()
+}
+
+func (_this *postRIDCatEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	ctx.Stream.WriteConcat()
+	ctx.Stream.WritePositiveInt(value)
+	ctx.Unstack()
+}
+func (_this *postRIDCatEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	ctx.Stream.WriteConcat()
+	ctx.Stream.WriteInt(value)
+	ctx.Unstack()
+}
+func (_this *postRIDCatEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	ctx.Stream.WriteConcat()
+	ctx.Stream.WriteBigInt(value)
+	ctx.Unstack()
+}
+func (_this *postRIDCatEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.Stream.WriteConcat()
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.Unstack()
+}
+func (_this *postRIDCatEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	ctx.Stream.WriteConcat()
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.Unstack()
+}
+func (_this *postRIDCatEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	ctx.Stream.WriteConcat()
+	ctx.BeginStandardArray(arrayType)
+}
+
+// =============================================================================
+
+type postStreamRIDCatEncoder struct{}
+
+var globalPostStreamRIDCatEncoder postStreamRIDCatEncoder
+
+func (_this *postStreamRIDCatEncoder) String() string { return "postStreamRIDCatEncoder" }
+
+func (_this *postStreamRIDCatEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+
+func (_this *postStreamRIDCatEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	ctx.Stream.WriteConcat()
+	ctx.Stream.WritePositiveInt(value)
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+func (_this *postStreamRIDCatEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	ctx.Stream.WriteConcat()
+	ctx.Stream.WriteInt(value)
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+func (_this *postStreamRIDCatEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	ctx.Stream.WriteConcat()
+	ctx.Stream.WriteBigInt(value)
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+func (_this *postStreamRIDCatEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.Stream.WriteConcat()
+	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+func (_this *postStreamRIDCatEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	ctx.Stream.WriteConcat()
+	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.Unstack()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+}
+func (_this *postStreamRIDCatEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	ctx.Stream.WriteConcat()
 	ctx.BeginStandardArray(arrayType)
 }

@@ -192,7 +192,12 @@ func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 func (_this *MarkedObjectAnyTypeRule) OnNA(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnNA(ctx)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(DataTypeAnyType)
+}
+func (_this *MarkedObjectAnyTypeRule) OnNACat(ctx *Context) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNACat(ctx)
+	ctx.MarkObject(DataTypeAnyType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context) {
 	ctx.UnstackRule()
@@ -366,7 +371,7 @@ func (_this *ReferenceAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayT
 		ctx.UnstackRule()
 		ctx.ReferenceObject(string(data), AllowAnyType)
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
-	case events.ArrayTypeResourceID:
+	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		ctx.UnstackRule()
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
 	default:
@@ -380,7 +385,7 @@ func (_this *ReferenceAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType eve
 		ctx.UnstackRule()
 		ctx.ReferenceObject(string(data), AllowAnyType)
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
-	case events.ArrayTypeResourceID:
+	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		ctx.UnstackRule()
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
 	default:
@@ -391,7 +396,7 @@ func (_this *ReferenceAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.A
 	switch arrayType {
 	case events.ArrayTypeString:
 		ctx.BeginStringBuilder(arrayType, ctx.ValidateContentsMarkerID)
-	case events.ArrayTypeResourceID:
+	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		ctx.BeginArrayRIDReference(arrayType)
 	default:
 		panic(fmt.Errorf("Reference ID cannot be type %v", arrayType))

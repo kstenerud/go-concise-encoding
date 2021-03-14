@@ -37,6 +37,7 @@ func (_this *ListRule) String() string                                          
 func (_this *ListRule) OnKeyableObject(ctx *Context)                            { /* Nothing to do */ }
 func (_this *ListRule) OnNonKeyableObject(ctx *Context)                         { /* Nothing to do */ }
 func (_this *ListRule) OnNA(ctx *Context)                                       { /* Nothing to do */ }
+func (_this *ListRule) OnNACat(ctx *Context)                                    { ctx.BeginNACat() }
 func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType)          { /* Nothing to do */ }
 func (_this *ListRule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
 func (_this *ListRule) OnInt(ctx *Context, value int64)                         { /* Nothing to do */ }
@@ -59,11 +60,14 @@ func (_this *ListRule) OnConstant(ctx *Context, name []byte, explicitValue bool)
 }
 func (_this *ListRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *ListRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *ListRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -97,12 +101,15 @@ func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte, explicitValue boo
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
 	ctx.SwitchMapValue()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
 	ctx.SwitchMapValue()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayKeyable(arrayType)
 }
 
@@ -110,10 +117,14 @@ func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) 
 
 type MapValueRule struct{}
 
-func (_this *MapValueRule) String() string                                 { return "Map Value Rule" }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnNA(ctx *Context)                              { ctx.SwitchMapKey() }
+func (_this *MapValueRule) String() string                  { return "Map Value Rule" }
+func (_this *MapValueRule) OnKeyableObject(ctx *Context)    { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnNA(ctx *Context)               { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnNACat(ctx *Context) {
+	ctx.SwitchMapKey()
+	ctx.BeginNACat()
+}
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMapKey() }
 func (_this *MapValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapValueRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMapKey() }
@@ -140,12 +151,15 @@ func (_this *MapValueRule) OnConstant(ctx *Context, name []byte, explicitValue b
 func (_this *MapValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.SwitchMapKey()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	ctx.SwitchMapKey()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -215,12 +229,15 @@ func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte, explicitValue 
 func (_this *MarkupKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
 	ctx.SwitchMarkupValue()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
 	ctx.SwitchMarkupValue()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayKeyable(arrayType)
 }
 
@@ -228,10 +245,14 @@ func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayTyp
 
 type MarkupValueRule struct{}
 
-func (_this *MarkupValueRule) String() string                                 { return "Markup Attribute Value Rule" }
-func (_this *MarkupValueRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnNA(ctx *Context)                              { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) String() string                  { return "Markup Attribute Value Rule" }
+func (_this *MarkupValueRule) OnKeyableObject(ctx *Context)    { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnNA(ctx *Context)               { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnNACat(ctx *Context) {
+	ctx.SwitchMarkupKey()
+	ctx.BeginNACat()
+}
 func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMarkupKey() }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMarkupKey() }
@@ -258,12 +279,15 @@ func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte, explicitValu
 func (_this *MarkupValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.SwitchMarkupKey()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	ctx.SwitchMarkupKey()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -336,12 +360,15 @@ func (_this *MetaKeyRule) OnConstant(ctx *Context, name []byte, explicitValue bo
 func (_this *MetaKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
 	ctx.SwitchMetadataValue()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MetaKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
 	ctx.SwitchMetadataValue()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MetaKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayKeyable(arrayType)
 }
 
@@ -349,10 +376,14 @@ func (_this *MetaKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType)
 
 type MetaValueRule struct{}
 
-func (_this *MetaValueRule) String() string                                 { return "Metadata Value Rule" }
-func (_this *MetaValueRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnNonKeyableObject(ctx *Context)                { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnNA(ctx *Context)                              { ctx.SwitchMetadataKey() }
+func (_this *MetaValueRule) String() string                  { return "Metadata Value Rule" }
+func (_this *MetaValueRule) OnKeyableObject(ctx *Context)    { ctx.SwitchMetadataKey() }
+func (_this *MetaValueRule) OnNonKeyableObject(ctx *Context) { ctx.SwitchMetadataKey() }
+func (_this *MetaValueRule) OnNA(ctx *Context)               { ctx.SwitchMetadataKey() }
+func (_this *MetaValueRule) OnNACat(ctx *Context) {
+	ctx.SwitchMetadataKey()
+	ctx.BeginNACat()
+}
 func (_this *MetaValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMetadataKey() }
 func (_this *MetaValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MetaValueRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMetadataKey() }
@@ -379,12 +410,15 @@ func (_this *MetaValueRule) OnConstant(ctx *Context, name []byte, explicitValue 
 func (_this *MetaValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.SwitchMetadataKey()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MetaValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	ctx.SwitchMetadataKey()
+	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MetaValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -404,6 +438,10 @@ func (_this *MetaCompletionRule) OnNonKeyableObject(ctx *Context) {
 func (_this *MetaCompletionRule) OnNA(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnNA(ctx)
+}
+func (_this *MetaCompletionRule) OnNACat(ctx *Context) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNACat(ctx)
 }
 func (_this *MetaCompletionRule) OnPadding(ctx *Context) { /* Nothing to do */ }
 func (_this *MetaCompletionRule) OnInt(ctx *Context, value int64) {

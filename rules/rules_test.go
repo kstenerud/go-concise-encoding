@@ -37,8 +37,8 @@ import (
 func TestRulesBeginDocument(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsFail(t, rules, V(ceVer))
-	assertEventsSucceed(t, rules, BD(), V(ceVer))
+	assertEventsFail(t, rules, EvV)
+	assertEventsSucceed(t, rules, BD(), EvV)
 }
 
 func TestRulesVersion(t *testing.T) {
@@ -46,12 +46,16 @@ func TestRulesVersion(t *testing.T) {
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	assertEventsSucceed(t, rules, BD())
 	assertEventsFail(t, rules, V(9))
-	assertEventsSucceed(t, rules, V(ceVer))
-	assertEventsFail(t, rules, V(ceVer))
+	assertEventsSucceed(t, rules, EvV)
+	assertEventsFail(t, rules, EvV)
 }
 
 func TestRulesNA(t *testing.T) {
 	assertEventsMaxDepth(t, 1, NA(), ED())
+}
+
+func TestRulesNACat(t *testing.T) {
+	assertEventsMaxDepth(t, 1, NACat(), I(1), ED())
 }
 
 func TestRulesNan(t *testing.T) {
@@ -135,6 +139,7 @@ func TestRulesArrayOneshot(t *testing.T) {
 
 func TestRulesResourceIDOneshot(t *testing.T) {
 	assertEventsMaxDepth(t, 1, RID("http://example.com"), ED())
+	assertEventsMaxDepth(t, 1, RIDCat("http://example.com"), I(1), ED())
 }
 
 func TestRulesCustomOneshot(t *testing.T) {
@@ -153,6 +158,12 @@ func TestRulesReference(t *testing.T) {
 		REF(), S("a"), REF(), RID("http://example.com"), REF(), I(100),
 		REF(), I(5), S("test"), E())
 	assertEventsFail(t, rules, ED())
+
+	rules = newRulesWithMaxDepth(10)
+
+	assertEventsSucceed(t, rules, L(), MARK(), S("a"), F(0.1), MARK(), I(100), GT(time.Now()),
+		REF(), S("a"), REF(), RIDCat("http://example.com"), I(1), REF(), I(100),
+		REF(), I(5), S("test"), E())
 }
 
 func TestRulesConstant(t *testing.T) {
@@ -1041,17 +1052,17 @@ func TestRulesReset(t *testing.T) {
 	assertEventsSucceed(t, rules, L())
 	rules.Reset()
 	assertEventsFail(t, rules, E())
-	assertEventsSucceed(t, rules, BD(), V(ceVer), L(), L(), I(1), I(1), I(1), E())
+	assertEventsSucceed(t, rules, BD(), EvV, L(), L(), I(1), I(1), I(1), E())
 	assertEventsFail(t, rules, I(1))
 	rules.Reset()
-	assertEventsSucceed(t, rules, BD(), V(ceVer), L(), MARK(), I(1), S("test"), MARK(), I(2), S("more tests"))
+	assertEventsSucceed(t, rules, BD(), EvV, L(), MARK(), I(1), S("test"), MARK(), I(2), S("more tests"))
 	assertEventsFail(t, rules, MARK())
 	rules.Reset()
-	assertEventsSucceed(t, rules, BD(), V(ceVer), L(), MARK(), I(1), S("test"))
+	assertEventsSucceed(t, rules, BD(), EvV, L(), MARK(), I(1), S("test"))
 }
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsSucceed(t, rules, BD(), V(ceVer), REF(), RID("http://x.y"), ED())
+	assertEventsSucceed(t, rules, BD(), EvV, REF(), RID("http://x.y"), ED())
 }

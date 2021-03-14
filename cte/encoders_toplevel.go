@@ -45,6 +45,10 @@ func (_this *topLevelEncoder) EncodeNA(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteNA()
 }
+func (_this *topLevelEncoder) BeginNACat(ctx *EncoderContext) {
+	ctx.WriteCurrentPrefix()
+	ctx.BeginNACat()
+}
 func (_this *topLevelEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	ctx.WriteCurrentPrefix()
 	ctx.Stream.WriteBool(value)
@@ -133,21 +137,17 @@ func (_this *topLevelEncoder) BeginReference(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 	ctx.BeginStandardReference()
 }
-func (_this *topLevelEncoder) BeginConcatenate(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.BeginStandardConcatenate()
-}
 func (_this *topLevelEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	ctx.WriteCurrentPrefix()
 	ctx.BeginStandardConstant(name, explicitValue)
 }
 func (_this *topLevelEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.WriteCurrentPrefix()
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+	ctx.WriteArray(arrayType, elementCount, data)
 }
 func (_this *topLevelEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	ctx.WriteCurrentPrefix()
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
+	ctx.WriteStringlikeArray(arrayType, data)
 }
 func (_this *topLevelEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	ctx.WriteCurrentPrefix()

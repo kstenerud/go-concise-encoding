@@ -160,17 +160,20 @@ func decodeTypedArrayBegin(ctx *DecoderContext) {
 	}
 }
 
-func decodeStringArray(ctx *DecoderContext, arrayType events.ArrayType) {
-	bytes := ctx.Stream.DecodeStringArray()
-	ctx.EventReceiver.OnArray(arrayType, uint64(len(bytes)), bytes)
-}
-
 func decodeCustomText(ctx *DecoderContext) {
-	decodeStringArray(ctx, events.ArrayTypeCustomText)
+	bytes := ctx.Stream.DecodeStringArray()
+	ctx.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
 }
 
 func decodeRID(ctx *DecoderContext) {
-	decodeStringArray(ctx, events.ArrayTypeResourceID)
+	bytes := ctx.Stream.DecodeStringArray()
+	if ctx.Stream.PeekByteAllowEOD() == ':' {
+		ctx.Stream.AdvanceByte()
+		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
+		decodeByFirstChar(ctx)
+		return
+	}
+	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
 }
 
 func decodeCustomBinary(ctx *DecoderContext) {

@@ -27,8 +27,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/version"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
@@ -41,9 +39,7 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
-const (
-	ceVer = version.ConciseEncodingVersion
-)
+var EvV = test.EvV
 
 func NewBigInt(str string, base int) *big.Int {
 	return test.NewBigInt(str, base)
@@ -92,8 +88,8 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
+func NACat() *test.TEvent                    { return test.NACat() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
@@ -106,6 +102,7 @@ func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
+func RIDCat(v string) *test.TEvent           { return test.RIDCat(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -122,6 +119,7 @@ func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
+func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }
@@ -183,7 +181,7 @@ func assertDecode(t *testing.T, opts *options.CTEDecoderOptions, document string
 	}
 
 	if len(expectedEvents) > 0 {
-		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
+		if !test.AreAllEventsEqual(actualEvents, expectedEvents) {
 			t.Errorf("Expected document [%v] to decode to events %v but got %v", document, expectedEvents, actualEvents)
 			return
 		}

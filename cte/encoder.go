@@ -41,6 +41,7 @@ type Encoder interface {
 	End(ctx *EncoderContext)
 	ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)
 	EncodeNA(ctx *EncoderContext)
+	BeginNACat(ctx *EncoderContext)
 	EncodeBool(ctx *EncoderContext, value bool)
 	EncodeTrue(ctx *EncoderContext)
 	EncodeFalse(ctx *EncoderContext)
@@ -63,9 +64,7 @@ type Encoder interface {
 	BeginComment(ctx *EncoderContext)
 	BeginMarker(ctx *EncoderContext)
 	BeginReference(ctx *EncoderContext)
-	BeginConcatenate(ctx *EncoderContext)
 	BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool)
-	BeginNACat(ctx *EncoderContext)
 	EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string)
 	BeginArray(ctx *EncoderContext, arrayType events.ArrayType)
@@ -117,6 +116,10 @@ func (_this *EncoderEventReceiver) OnPadding(count int) {
 
 func (_this *EncoderEventReceiver) OnNA() {
 	_this.context.CurrentEncoder.EncodeNA(&_this.context)
+}
+
+func (_this *EncoderEventReceiver) OnNACat() {
+	_this.context.CurrentEncoder.BeginNACat(&_this.context)
 }
 
 func (_this *EncoderEventReceiver) OnBool(value bool) {
@@ -230,10 +233,6 @@ func (_this *EncoderEventReceiver) OnArrayChunk(elementCount uint64, moreChunksF
 
 func (_this *EncoderEventReceiver) OnArrayData(data []byte) {
 	_this.context.CurrentEncoder.EncodeArrayData(&_this.context, data)
-}
-
-func (_this *EncoderEventReceiver) OnConcatenate() {
-	_this.context.BeginStandardConcatenate()
 }
 
 func (_this *EncoderEventReceiver) OnList() {
