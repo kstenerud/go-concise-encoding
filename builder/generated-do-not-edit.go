@@ -1383,13 +1383,58 @@ func (_this *ptrBuilder) BuildEndContainer(ctx *Context) {
 func (_this *ptrBuilder) BuildFromReference(ctx *Context, id interface{}) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
 }
-func (_this *pUrlBuilder) BuildBeginListContents(ctx *Context) {
+func (_this *pRidBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *pRidBuilder) BuildInitiateList(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildInitiateList", reflect.TypeOf(_this)))
+}
+func (_this *pRidBuilder) BuildInitiateMap(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildInitiateMap", reflect.TypeOf(_this)))
+}
+func (_this *pRidBuilder) BuildBeginListContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
 }
-func (_this *pUrlBuilder) BuildBeginMapContents(ctx *Context) {
+func (_this *pRidBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
 }
-func (_this *pUrlBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
+func (_this *pRidBuilder) BuildEndContainer(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+}
+func (_this *pRidBuilder) BuildFromReference(ctx *Context, id interface{}) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+}
+func (_this *pRidBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *referenceIDBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
@@ -2061,12 +2106,108 @@ func (_this *uint64SliceBuilder) BuildFromReference(ctx *Context, id interface{}
 func (_this *uint64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *urlBuilder) BuildBeginListContents(ctx *Context) {
+func (_this *ridBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridBuilder) BuildInitiateList(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildInitiateList", reflect.TypeOf(_this)))
+}
+func (_this *ridBuilder) BuildInitiateMap(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildInitiateMap", reflect.TypeOf(_this)))
+}
+func (_this *ridBuilder) BuildBeginListContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
 }
-func (_this *urlBuilder) BuildBeginMapContents(ctx *Context) {
+func (_this *ridBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
 }
-func (_this *urlBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
+func (_this *ridBuilder) BuildEndContainer(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+}
+func (_this *ridBuilder) BuildFromReference(ctx *Context, id interface{}) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+}
+func (_this *ridBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
+	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+}
+func (_this *ridCatBuilder) BuildInitiateList(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildInitiateList", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) BuildInitiateMap(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildInitiateMap", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) BuildBeginListContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) BuildBeginMapContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) BuildEndContainer(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) BuildFromReference(ctx *Context, id interface{}) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+}
+func (_this *ridCatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }

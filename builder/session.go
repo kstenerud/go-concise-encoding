@@ -200,7 +200,7 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 		case common.TypeCompactTime:
 			return generateCompactTimeBuilder
 		case common.TypeURL:
-			return newUrlBuilderGenerator()
+			return generateUrlBuilder
 		case common.TypeDFloat:
 			return generateDecimalFloatBuilder
 		case common.TypeBigInt:
@@ -215,7 +215,7 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 	case reflect.Ptr:
 		switch dstType {
 		case common.TypePURL:
-			return newPUrlBuilderGenerator()
+			return generatePRidBuilder
 		case common.TypePBigInt:
 			return generatePBigIntBuilder
 		case common.TypePBigFloat:

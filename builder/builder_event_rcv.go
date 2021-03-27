@@ -108,7 +108,7 @@ func (_this *BuilderEventReceiver) OnNA() {
 }
 func (_this *BuilderEventReceiver) OnNACat() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
-	panic("TODO: BuilderEventReceiver.OnNACat")
+	_this.context.IgnoreNext()
 }
 func (_this *BuilderEventReceiver) OnBool(value bool) {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)
@@ -166,10 +166,18 @@ func (_this *BuilderEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
+	if arrayType == events.ArrayTypeResourceIDConcat {
+		_this.context.BeginRIDCat(string(value))
+	} else {
+		_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
+	}
 }
 func (_this *BuilderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
-	_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
+	if arrayType == events.ArrayTypeResourceIDConcat {
+		_this.context.BeginRIDCat(value)
+	} else {
+		_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
+	}
 }
 func (_this *BuilderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.BeginArray(func(bytes []byte) {

@@ -89,6 +89,7 @@ func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func NA() *test.TEvent                       { return test.NA() }
+func NACat() *test.TEvent                    { return test.NACat() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
@@ -101,6 +102,7 @@ func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
+func RIDCat(v string) *test.TEvent           { return test.RIDCat(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -117,6 +119,7 @@ func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
+func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }

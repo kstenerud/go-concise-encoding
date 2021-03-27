@@ -25,11 +25,15 @@
 package builder
 
 import (
+	"fmt"
+	"net/url"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
+
+type concatCompletion func(concat interface{})
 
 type Context struct {
 	Options         options.BuilderOptions
@@ -41,6 +45,8 @@ type Context struct {
 	CurrentBuilder             Builder
 	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
 	builderStack               []Builder
+
+	concatLeft string
 
 	chunkedData             []byte
 	chunkRemainingLength    uint64
@@ -145,4 +151,18 @@ func (_this *Context) AddArrayData(data []byte) {
 		_this.arrayCompletionCallback(_this.chunkedData)
 		_this.chunkedData = _this.chunkedData[:0]
 	}
+}
+
+func (_this *Context) BeginRIDCat(concatLeft string) {
+	_this.concatLeft = concatLeft
+	_this.StackBuilder(globalRidCatBuilder)
+}
+
+func (_this *Context) CompleteRIDCat(concatRight interface{}) {
+	value, err := url.Parse(fmt.Sprintf("%v%v", _this.concatLeft, concatRight))
+	if err != nil {
+		panic(err)
+	}
+	_this.UnstackBuilder()
+	_this.CurrentBuilder.NotifyChildContainerFinished(_this, reflect.ValueOf(value))
 }

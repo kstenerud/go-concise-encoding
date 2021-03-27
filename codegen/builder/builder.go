@@ -193,8 +193,8 @@ var builders = []Builder{
 		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, SArray, Time, CTime, List, Map, NotifyFinished},
 	},
 	{
-		Name:    "pUrl",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, SArray, Time, CTime, ListInit, MapInit, End, Ref},
+		Name:    "pRid",
+		Methods: []string{Nil, Array, SArray},
 	},
 	{
 		Name:    "referenceID",
@@ -257,8 +257,12 @@ var builders = []Builder{
 		Methods: []string{Nil, Array, List},
 	},
 	{
-		Name:    "url",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, SArray, Time, CTime, ListInit, MapInit, End, Ref},
+		Name:    "rid",
+		Methods: []string{Array, SArray},
+	},
+	{
+		Name:    "ridCat",
+		Methods: []string{Int, Uint, BigInt, Array, SArray},
 	},
 }
 

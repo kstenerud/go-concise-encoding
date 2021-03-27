@@ -1305,3 +1305,16 @@ func TestBuilderStructTags(t *testing.T) {
 		S("test"), S("Something"),
 		E())
 }
+
+func TestBuilderNACat(t *testing.T) {
+	assertBuild(t, nil, NACat(), I(1))
+	assertBuild(t, nil, NACat(), M(), I(1), S("test"), E())
+}
+
+func TestBuilderRIDCat(t *testing.T) {
+	pURL := NewRID("http://x.com/1")
+
+	// assertBuild(t, pURL, RID("http://x.com1"))
+	// assertBuild(t, *pURL, RIDCat("http://x.com/1"))
+	assertBuild(t, *pURL, RIDCat("http://x.com/"), I(1))
+}
