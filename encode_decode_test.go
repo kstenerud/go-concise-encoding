@@ -29,7 +29,7 @@ import (
 )
 
 func TestEncodeDecodeNA(t *testing.T) {
-	assertEncodeDecode(t, BD(), EvV, NA(), ED())
+	assertEncodeDecode(t, BD(), EvV, NA(), TT(), ED())
 }
 
 func TestEncodeDecodeTrue(t *testing.T) {
@@ -118,7 +118,7 @@ func TestEncodeDecodeList(t *testing.T) {
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, BD(), EvV, M(), E(), ED())
 	assertEncodeDecode(t, BD(), EvV, M(), S("a"), NI(1000), E(), ED())
-	assertEncodeDecode(t, BD(), EvV, M(), S("some NA"), NA(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, M(), S("some NA"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }
 
 func TestWebsiteExampleNumericTypes(t *testing.T) {
@@ -206,21 +206,20 @@ func TestWebsiteExampleOtherTypes(t *testing.T) {
     date = 2019-07-01
     time = 18:04:00.940231541/Europe/Prague
     timestamp = 2010-07-15/13:28:15.415942344
-    not-available = @na
+    nil = @nil
 }`, []byte{0x03, ceVer, 0x79, 0x84, 0x75, 0x75, 0x69, 0x64, 0x73, 0xf1, 0xce,
 		0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66, 0x55, 0x44,
 		0x00, 0x00, 0x84, 0x64, 0x61, 0x74, 0x65, 0x99, 0xe1, 0x4c, 0x00, 0x84,
 		0x74, 0x69, 0x6d, 0x65, 0x9a, 0xaf, 0x5b, 0x56, 0xc0, 0x01, 0x42, 0xfe,
 		0x10, 0x45, 0x2f, 0x50, 0x72, 0x61, 0x67, 0x75, 0x65, 0x89, 0x74, 0x69,
 		0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x9b, 0x46, 0x36, 0x56, 0xc6,
-		0x1e, 0xae, 0xbd, 0xa3, 0x00, 0x8d, 0x6e, 0x6f, 0x74, 0x2d, 0x61, 0x76,
-		0x61, 0x69, 0x6c, 0x61, 0x62, 0x6c, 0x65, 0x7e, 0x7b},
+		0x1e, 0xae, 0xbd, 0xa3, 0x00, 0x83, 0x6e, 0x69, 0x6c, 0x7e, 0x7b},
 		BD(), EvV, M(),
 		S("uuid"), UUID([]byte{0xf1, 0xce, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66, 0x55, 0x44, 0x00, 0x00}),
 		S("date"), CT(test.NewDate(2019, 7, 1)),
 		S("time"), CT(test.NewTime(18, 4, 0, 940231541, "Europe/Prague")),
 		S("timestamp"), CT(test.NewTS(2010, 7, 15, 13, 28, 15, 415942344, "Etc/UTC")),
-		S("not-available"), NA(),
+		S("nil"), N(),
 		E(), ED())
 }
 
@@ -334,7 +333,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
     marked_object    = &id1:{
         description = "This map will be referenced later as $id1"
         value = -@inf
-        child_elements = @na
+        child_elements = @nil
         recursive = $id1
     }
     ref1             = $id1
@@ -360,7 +359,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
 		S("marked_object"), MARK(), S("id1"), M(),
 		S("description"), S("This map will be referenced later as $id1"),
 		S("value"), F(math.Inf(-1)),
-		S("child_elements"), NA(),
+		S("child_elements"), N(),
 		S("recursive"), REF(), S("id1"),
 		E(),
 		S("ref1"), REF(), S("id1"),

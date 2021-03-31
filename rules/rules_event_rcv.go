@@ -97,10 +97,10 @@ func (_this *RulesEventReceiver) OnNA() {
 	_this.receiver.OnNA()
 }
 
-func (_this *RulesEventReceiver) OnNACat() {
+func (_this *RulesEventReceiver) OnNil() {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnNACat(&_this.context)
-	_this.receiver.OnNACat()
+	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context)
+	_this.receiver.OnNil()
 }
 
 func (_this *RulesEventReceiver) OnBool(value bool) {
@@ -141,7 +141,7 @@ func (_this *RulesEventReceiver) OnInt(value int64) {
 
 func (_this *RulesEventReceiver) OnBigInt(value *big.Int) {
 	if value == nil {
-		_this.OnNA()
+		_this.OnNil()
 		return
 	}
 
@@ -163,7 +163,7 @@ func (_this *RulesEventReceiver) OnFloat(value float64) {
 
 func (_this *RulesEventReceiver) OnBigFloat(value *big.Float) {
 	if value == nil {
-		_this.OnNA()
+		_this.OnNil()
 		return
 	}
 
@@ -185,7 +185,7 @@ func (_this *RulesEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
 
 func (_this *RulesEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
-		_this.OnNA()
+		_this.OnNil()
 		return
 	}
 	if value.Form == apd.NaNSignaling {

@@ -103,10 +103,10 @@ func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 func (_this *BuilderEventReceiver) OnBeginDocument()   {}
 func (_this *BuilderEventReceiver) OnVersion(_ uint64) {}
 func (_this *BuilderEventReceiver) OnPadding(_ int)    {}
-func (_this *BuilderEventReceiver) OnNA() {
+func (_this *BuilderEventReceiver) OnNil() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 }
-func (_this *BuilderEventReceiver) OnNACat() {
+func (_this *BuilderEventReceiver) OnNA() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 	_this.context.IgnoreNext()
 }

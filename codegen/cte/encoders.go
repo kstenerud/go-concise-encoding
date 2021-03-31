@@ -34,7 +34,7 @@ var (
 	Begin  = "Begin(ctx *EncoderContext)"
 	End    = "End(ctx *EncoderContext)"
 	Child  = "ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)"
-	NA     = "EncodeNA(ctx *EncoderContext)"
+	Nil    = "EncodeNil(ctx *EncoderContext)"
 	Bool   = "EncodeBool(ctx *EncoderContext, value bool)"
 	True   = "EncodeTrue(ctx *EncoderContext)"
 	False  = "EncodeFalse(ctx *EncoderContext)"
@@ -58,14 +58,14 @@ var (
 	Marker = "BeginMarker(ctx *EncoderContext)"
 	Ref    = "BeginReference(ctx *EncoderContext)"
 	Const  = "BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool)"
-	NACat  = "BeginNACat(ctx *EncoderContext)"
+	NA     = "BeginNA(ctx *EncoderContext)"
 	Arr    = "EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8)"
 	Str    = "EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string)"
 	BArr   = "BeginArray(ctx *EncoderContext, arrayType events.ArrayType)"
 	Chunk  = "BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool)"
 	Data   = "EncodeArrayData(ctx *EncoderContext, data []byte)"
 
-	allMethods = []string{Begin, End, Child, NA, NACat, Bool, True, False, PInt,
+	allMethods = []string{Begin, End, Child, NA, Nil, Bool, True, False, PInt,
 		NInt, Int, BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID,
 		List, Map, Markup, Meta, Cmt, Marker, Ref, Const, Arr, Str,
 		BArr, Chunk, Data}
@@ -81,25 +81,25 @@ var encoders = []Encoder{
 		Name: "topLevel",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
-			Cmt, Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "constant",
 		Methods: []string{Begin, Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
-			Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "postInvisible",
 		Methods: []string{Bool, True, False, PInt, NInt, Int, BInt, Float,
 			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
-			Cmt, Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "list",
 		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "mapKey",
@@ -111,7 +111,7 @@ var encoders = []Encoder{
 		Name: "mapValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "metadataKey",
@@ -123,7 +123,7 @@ var encoders = []Encoder{
 		Name: "metadataValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "markupName",
@@ -141,7 +141,7 @@ var encoders = []Encoder{
 		Name: "markupValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, NACat, Arr, Str, BArr},
+			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name:    "markupContents",

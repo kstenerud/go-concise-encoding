@@ -91,7 +91,7 @@ func advanceAndDecodeMarkupContentBegin(ctx *DecoderContext) {
 
 func decodeMarkupContents(ctx *DecoderContext) {
 	ctx.stack[len(ctx.stack)-1].IsMarkupContents = true
-	str, next := ctx.Stream.DecodeMarkupContent()
+	str, next := ctx.Stream.ReadMarkupContent()
 	if len(str) > 0 {
 		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
 	}
@@ -104,7 +104,7 @@ func decodeMarkupContents(ctx *DecoderContext) {
 		ctx.UnstackDecoder()
 	case nextIsSingleLineComment:
 		ctx.EventReceiver.OnComment()
-		contents := ctx.Stream.DecodeSingleLineComment()
+		contents := ctx.Stream.ReadSingleLineComment()
 		if len(contents) > 0 {
 			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
@@ -131,7 +131,7 @@ func advanceAndDecodeComment(ctx *DecoderContext) {
 	switch b {
 	case '/':
 		ctx.EventReceiver.OnComment()
-		contents := ctx.Stream.DecodeSingleLineComment()
+		contents := ctx.Stream.ReadSingleLineComment()
 		if len(contents) > 0 {
 			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
@@ -146,7 +146,7 @@ func advanceAndDecodeComment(ctx *DecoderContext) {
 }
 
 func decodeCommentContents(ctx *DecoderContext) {
-	str, next := ctx.Stream.DecodeMultilineComment()
+	str, next := ctx.Stream.ReadMultilineComment()
 	if len(str) > 0 {
 		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
 	}

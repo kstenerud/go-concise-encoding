@@ -31,136 +31,136 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-type naCatEncoder struct{}
+type naEncoder struct{}
 
-var globalNACatEncoder naCatEncoder
+var globalNAEncoder naEncoder
 
-func (_this *naCatEncoder) String() string { return "naCatEncoder" }
+func (_this *naEncoder) String() string { return "naEncoder" }
 
-func (_this *naCatEncoder) Begin(ctx *EncoderContext) {
-	ctx.Stream.AddString("@na")
+func (_this *naEncoder) Begin(ctx *EncoderContext) {
+	ctx.Stream.WriteString("@na")
 }
 
-func (_this *naCatEncoder) prepareToWrite(ctx *EncoderContext) {
+func (_this *naEncoder) prepareToWrite(ctx *EncoderContext) {
 	ctx.Stream.WriteSeparator()
 	ctx.Unstack()
 }
 
-func (_this *naCatEncoder) EncodeBool(ctx *EncoderContext, value bool) {
+func (_this *naEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBool(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeTrue(ctx *EncoderContext) {
+func (_this *naEncoder) EncodeTrue(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteTrue()
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeFalse(ctx *EncoderContext) {
+func (_this *naEncoder) EncodeFalse(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteFalse()
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+func (_this *naEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WritePositiveInt(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
+func (_this *naEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNegativeInt(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+func (_this *naEncoder) EncodeInt(ctx *EncoderContext, value int64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteInt(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+func (_this *naEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBigInt(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
+func (_this *naEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteFloat(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
+func (_this *naEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBigFloat(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
+func (_this *naEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteDecimalFloat(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
+func (_this *naEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteBigDecimalFloat(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
+func (_this *naEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteNan(signaling)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
+func (_this *naEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteTime(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
+func (_this *naEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteCompactTime(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
+func (_this *naEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteUUID(value)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) BeginList(ctx *EncoderContext) {
+func (_this *naEncoder) BeginList(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardList()
 }
-func (_this *naCatEncoder) BeginMap(ctx *EncoderContext) {
+func (_this *naEncoder) BeginMap(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardMap()
 }
-func (_this *naCatEncoder) BeginMarkup(ctx *EncoderContext) {
+func (_this *naEncoder) BeginMarkup(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardMarkup()
 }
-func (_this *naCatEncoder) BeginMarker(ctx *EncoderContext) {
+func (_this *naEncoder) BeginMarker(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardMarker()
 }
-func (_this *naCatEncoder) BeginReference(ctx *EncoderContext) {
+func (_this *naEncoder) BeginReference(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardReference()
 }
-func (_this *naCatEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
+func (_this *naEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardConstant(name, explicitValue)
 }
-func (_this *naCatEncoder) BeginNA(ctx *EncoderContext) {
+func (_this *naEncoder) BeginNA(ctx *EncoderContext) {
 	// Only unstack
 	ctx.Unstack()
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+func (_this *naEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.prepareToWrite(ctx)
 	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+func (_this *naEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
 	_this.prepareToWrite(ctx)
 	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
-func (_this *naCatEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+func (_this *naEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardArray(arrayType)
 }
@@ -181,14 +181,14 @@ func (_this *constantEncoder) prepareToWrite(ctx *EncoderContext) {
 	ctx.Unstack()
 }
 
-func (_this *constantEncoder) EncodeNA(ctx *EncoderContext) {
+func (_this *constantEncoder) BeginNA(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteNA()
-	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
+	ctx.BeginNA()
 }
-func (_this *constantEncoder) BeginNACat(ctx *EncoderContext) {
+func (_this *constantEncoder) EncodeNil(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
-	ctx.BeginNACat()
+	ctx.Stream.WriteNil()
+	ctx.CurrentEncoder.ChildContainerFinished(ctx, true)
 }
 func (_this *constantEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -318,11 +318,11 @@ func (_this *postInvisibleEncoder) removeSelf(ctx *EncoderContext) Encoder {
 	return ctx.CurrentEncoder
 }
 
-func (_this *postInvisibleEncoder) EncodeNA(ctx *EncoderContext) {
-	_this.removeSelf(ctx).EncodeNA(ctx)
+func (_this *postInvisibleEncoder) BeginNA(ctx *EncoderContext) {
+	_this.removeSelf(ctx).BeginNA(ctx)
 }
-func (_this *postInvisibleEncoder) BeginNACat(ctx *EncoderContext) {
-	_this.removeSelf(ctx).BeginNACat(ctx)
+func (_this *postInvisibleEncoder) EncodeNil(ctx *EncoderContext) {
+	_this.removeSelf(ctx).EncodeNil(ctx)
 }
 func (_this *postInvisibleEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.removeSelf(ctx).EncodeBool(ctx, value)
@@ -417,7 +417,7 @@ func (_this *referenceEncoder) complete(ctx *EncoderContext) {
 }
 
 func (_this *referenceEncoder) Begin(ctx *EncoderContext) {
-	ctx.Stream.AddByte('$')
+	ctx.Stream.WriteByte('$')
 }
 
 func (_this *referenceEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
@@ -461,12 +461,12 @@ func (_this *markerIDEncoder) String() string { return "markerIDEncoder" }
 
 func (_this *markerIDEncoder) complete(ctx *EncoderContext) {
 	ctx.Unstack()
-	ctx.Stream.AddByte(':')
+	ctx.Stream.WriteByte(':')
 	ctx.ClearPrefix()
 }
 
 func (_this *markerIDEncoder) Begin(ctx *EncoderContext) {
-	ctx.Stream.AddByte('&')
+	ctx.Stream.WriteByte('&')
 }
 
 func (_this *markerIDEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {

@@ -51,11 +51,11 @@ func TestRulesVersion(t *testing.T) {
 }
 
 func TestRulesNA(t *testing.T) {
-	assertEventsMaxDepth(t, 1, NA(), ED())
+	assertEventsMaxDepth(t, 1, NA(), I(1), ED())
 }
 
-func TestRulesNACat(t *testing.T) {
-	assertEventsMaxDepth(t, 1, NACat(), I(1), ED())
+func TestRulesNil(t *testing.T) {
+	assertEventsMaxDepth(t, 1, N(), ED())
 }
 
 func TestRulesNan(t *testing.T) {
@@ -413,7 +413,7 @@ func TestRulesListSingleItem(t *testing.T) {
 }
 
 func TestRulesMapPair(t *testing.T) {
-	assertEventsMaxDepth(t, 1, M(), B(true), NA(), E(), ED())
+	assertEventsMaxDepth(t, 1, M(), B(true), N(), E(), ED())
 }
 
 func TestRulesMarkupSingleItem(t *testing.T) {
@@ -433,17 +433,17 @@ func TestRulesCommentSingleItem(t *testing.T) {
 // ==================
 
 func TestRulesListFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, L(), NA(), NAN(), B(true), F(0.1), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, L(), N(), NAN(), B(true), F(0.1), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
 func TestRulesMapFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, M(), B(true), NA(), F(0.1), NAN(), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, M(), B(true), N(), F(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
 func TestRulesMetadataFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, META(), B(true), NA(), F(0.1), NAN(), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, META(), B(true), N(), F(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), I(1), ED())
 }
 

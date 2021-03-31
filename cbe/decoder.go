@@ -34,7 +34,7 @@ import (
 
 // Decodes CBE documents.
 type Decoder struct {
-	buffer        ReadBuffer
+	buffer        Reader
 	eventReceiver events.DataEventReceiver
 	opts          options.CBEDecoderOptions
 }
@@ -52,6 +52,7 @@ func NewDecoder(opts *options.CBEDecoderOptions) *Decoder {
 func (_this *Decoder) Init(opts *options.CBEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
+	_this.buffer.Init()
 }
 
 // Run the complete decode process. The document and data receiver specified
@@ -70,12 +71,10 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		}
 	}()
 
-	_this.buffer.Init(reader, _this.opts.BufferSize, chooseLowWater(_this.opts.BufferSize))
+	_this.buffer.SetReader(reader)
 	_this.eventReceiver = eventReceiver
 
 	_this.eventReceiver.OnBeginDocument()
-
-	_this.buffer.RefillIfNecessary()
 
 	docHeader := _this.buffer.DecodeUint8()
 	if docHeader != cbeDocumentHeader {
@@ -88,9 +87,12 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	}
 	_this.eventReceiver.OnVersion(ver)
 
-	for _this.buffer.HasUnreadData() {
-		_this.buffer.RefillIfNecessary()
-		cbeType := _this.buffer.DecodeType()
+	// TODO: Need to query rules to see when to stop
+	for {
+		cbeType, isEOF := _this.buffer.DecodeTypeWithEOFCheck()
+		if isEOF {
+			break
+		}
 		switch cbeType {
 		case cbeTypeDecimal:
 			value, bigValue := _this.buffer.DecodeDecimalFloat()
@@ -153,8 +155,8 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 			_this.eventReceiver.OnFalse()
 		case cbeTypeTrue:
 			_this.eventReceiver.OnTrue()
-		case cbeTypeNA:
-			_this.eventReceiver.OnNA()
+		case cbeTypeNil:
+			_this.eventReceiver.OnNil()
 		case cbeTypePadding:
 			_this.eventReceiver.OnPadding(1)
 		case cbeTypeString0:
@@ -176,8 +178,8 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		case cbeTypePlane2:
 			cbeType := _this.buffer.DecodeType()
 			switch cbeType {
-			case cbeTypeNACat:
-				_this.eventReceiver.OnNACat()
+			case cbeTypeNA:
+				_this.eventReceiver.OnNA()
 			default:
 				arrayType := cbePlane2TypeToArrayType[cbeType]
 				if arrayType == events.ArrayTypeInvalid {
@@ -246,14 +248,6 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType) {
 		elementCount, moreChunksFollow = _this.buffer.DecodeArrayChunkHeader()
 		validateLength(elementCount)
 	}
-}
-
-func chooseLowWater(bufferSize int) int {
-	lowWater := bufferSize / 50
-	if lowWater < 30 {
-		lowWater = 30
-	}
-	return lowWater
 }
 
 func (_this *Decoder) decodeSmallString(length int) []byte {

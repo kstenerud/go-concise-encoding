@@ -43,6 +43,9 @@ func (_this *BeginDocumentRule) OnChildContainerEnded(ctx *Context, cType DataTy
 func (_this *BeginDocumentRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *BeginDocumentRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *BeginDocumentRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -51,12 +54,6 @@ func (_this *BeginDocumentRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *BeginDocumentRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *BeginDocumentRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *BeginDocumentRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *BeginDocumentRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -130,6 +127,9 @@ func (_this *EndDocumentRule) OnChildContainerEnded(ctx *Context, cType DataType
 func (_this *EndDocumentRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *EndDocumentRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *EndDocumentRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -138,12 +138,6 @@ func (_this *EndDocumentRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *EndDocumentRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *EndDocumentRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *EndDocumentRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *EndDocumentRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -220,6 +214,9 @@ func (_this *TerminalRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 func (_this *TerminalRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *TerminalRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *TerminalRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -228,12 +225,6 @@ func (_this *TerminalRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *TerminalRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *TerminalRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *TerminalRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *TerminalRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -307,6 +298,9 @@ func (_this *VersionRule) OnEndDocument(ctx *Context) {
 func (_this *VersionRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
 }
+func (_this *VersionRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *VersionRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -315,12 +309,6 @@ func (_this *VersionRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *VersionRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *VersionRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *VersionRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *VersionRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -403,25 +391,25 @@ func (_this *TopLevelRule) OnArrayChunk(ctx *Context, length uint64, moreChunksF
 func (_this *TopLevelRule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }
-func (_this *NACatRule) OnBeginDocument(ctx *Context) {
+func (_this *NARule) OnBeginDocument(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
 }
-func (_this *NACatRule) OnEndDocument(ctx *Context) {
+func (_this *NARule) OnEndDocument(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow EndDocument", _this))
 }
-func (_this *NACatRule) OnVersion(ctx *Context, version uint64) {
+func (_this *NARule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *NACatRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *NARule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *NACatRule) OnEnd(ctx *Context) {
+func (_this *NARule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
-func (_this *NACatRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+func (_this *NARule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
-func (_this *NACatRule) OnArrayData(ctx *Context, data []byte) {
+func (_this *NARule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }
 func (_this *ListRule) OnBeginDocument(ctx *Context) {
@@ -448,14 +436,11 @@ func (_this *MapKeyRule) OnEndDocument(ctx *Context) {
 func (_this *MapKeyRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *MapKeyRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
 func (_this *MapKeyRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *MapKeyRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *MapKeyRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
 }
 func (_this *MapKeyRule) OnList(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow List", _this))
@@ -499,14 +484,11 @@ func (_this *MarkupNameRule) OnEndDocument(ctx *Context) {
 func (_this *MarkupNameRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *MarkupNameRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
 func (_this *MarkupNameRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *MarkupNameRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *MarkupNameRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
 }
 func (_this *MarkupNameRule) OnList(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow List", _this))
@@ -541,14 +523,11 @@ func (_this *MarkupKeyRule) OnEndDocument(ctx *Context) {
 func (_this *MarkupKeyRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *MarkupKeyRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
 func (_this *MarkupKeyRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *MarkupKeyRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *MarkupKeyRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
 }
 func (_this *MarkupKeyRule) OnList(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow List", _this))
@@ -592,17 +571,14 @@ func (_this *MarkupContentsRule) OnEndDocument(ctx *Context) {
 func (_this *MarkupContentsRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *MarkupContentsRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *MarkupContentsRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *MarkupContentsRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *MarkupContentsRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *MarkupContentsRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *MarkupContentsRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -658,17 +634,14 @@ func (_this *CommentRule) OnEndDocument(ctx *Context) {
 func (_this *CommentRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *CommentRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *CommentRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *CommentRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *CommentRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *CommentRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *CommentRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -727,14 +700,11 @@ func (_this *MetaKeyRule) OnEndDocument(ctx *Context) {
 func (_this *MetaKeyRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *MetaKeyRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
 func (_this *MetaKeyRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *MetaKeyRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *MetaKeyRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
 }
 func (_this *MetaKeyRule) OnList(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow List", _this))
@@ -802,6 +772,9 @@ func (_this *ArrayRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 func (_this *ArrayRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *ArrayRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *ArrayRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -810,12 +783,6 @@ func (_this *ArrayRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *ArrayRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *ArrayRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *ArrayRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *ArrayRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -889,6 +856,9 @@ func (_this *ArrayChunkRule) OnChildContainerEnded(ctx *Context, cType DataType)
 func (_this *ArrayChunkRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *ArrayChunkRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *ArrayChunkRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -897,12 +867,6 @@ func (_this *ArrayChunkRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *ArrayChunkRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *ArrayChunkRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *ArrayChunkRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *ArrayChunkRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -976,6 +940,9 @@ func (_this *StringRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 func (_this *StringRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *StringRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *StringRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -984,12 +951,6 @@ func (_this *StringRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *StringRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *StringRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *StringRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *StringRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -1063,6 +1024,9 @@ func (_this *StringChunkRule) OnChildContainerEnded(ctx *Context, cType DataType
 func (_this *StringChunkRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *StringChunkRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *StringChunkRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -1071,12 +1035,6 @@ func (_this *StringChunkRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *StringChunkRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *StringChunkRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *StringChunkRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *StringChunkRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -1150,6 +1108,9 @@ func (_this *StringBuilderRule) OnChildContainerEnded(ctx *Context, cType DataTy
 func (_this *StringBuilderRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *StringBuilderRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *StringBuilderRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -1158,12 +1119,6 @@ func (_this *StringBuilderRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *StringBuilderRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *StringBuilderRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *StringBuilderRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *StringBuilderRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -1237,6 +1192,9 @@ func (_this *StringBuilderChunkRule) OnChildContainerEnded(ctx *Context, cType D
 func (_this *StringBuilderChunkRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *StringBuilderChunkRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *StringBuilderChunkRule) OnPadding(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Padding", _this))
 }
@@ -1245,12 +1203,6 @@ func (_this *StringBuilderChunkRule) OnKeyableObject(ctx *Context) {
 }
 func (_this *StringBuilderChunkRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *StringBuilderChunkRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *StringBuilderChunkRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *StringBuilderChunkRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -1321,17 +1273,14 @@ func (_this *MarkerIDKeyableRule) OnEndDocument(ctx *Context) {
 func (_this *MarkerIDKeyableRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *MarkerIDKeyableRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *MarkerIDKeyableRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *MarkerIDKeyableRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *MarkerIDKeyableRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *MarkerIDKeyableRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *MarkerIDKeyableRule) OnFloat(ctx *Context, value float64) {
 	panic(fmt.Errorf("%v does not allow Float", _this))
@@ -1387,17 +1336,14 @@ func (_this *MarkerIDAnyTypeRule) OnEndDocument(ctx *Context) {
 func (_this *MarkerIDAnyTypeRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *MarkerIDAnyTypeRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *MarkerIDAnyTypeRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *MarkerIDAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *MarkerIDAnyTypeRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *MarkerIDAnyTypeRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *MarkerIDAnyTypeRule) OnFloat(ctx *Context, value float64) {
 	panic(fmt.Errorf("%v does not allow Float", _this))
@@ -1453,14 +1399,11 @@ func (_this *MarkedObjectKeyableRule) OnEndDocument(ctx *Context) {
 func (_this *MarkedObjectKeyableRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *MarkedObjectKeyableRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
 func (_this *MarkedObjectKeyableRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *MarkedObjectKeyableRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *MarkedObjectKeyableRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
 }
 func (_this *MarkedObjectKeyableRule) OnList(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow List", _this))
@@ -1498,6 +1441,9 @@ func (_this *MarkedObjectAnyTypeRule) OnEndDocument(ctx *Context) {
 func (_this *MarkedObjectAnyTypeRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *MarkedObjectAnyTypeRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *MarkedObjectAnyTypeRule) OnMetadata(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
@@ -1525,17 +1471,14 @@ func (_this *ReferenceKeyableRule) OnEndDocument(ctx *Context) {
 func (_this *ReferenceKeyableRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *ReferenceKeyableRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *ReferenceKeyableRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *ReferenceKeyableRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *ReferenceKeyableRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *ReferenceKeyableRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *ReferenceKeyableRule) OnFloat(ctx *Context, value float64) {
 	panic(fmt.Errorf("%v does not allow Float", _this))
@@ -1591,17 +1534,14 @@ func (_this *ReferenceAnyTypeRule) OnEndDocument(ctx *Context) {
 func (_this *ReferenceAnyTypeRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *ReferenceAnyTypeRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *ReferenceAnyTypeRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *ReferenceAnyTypeRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *ReferenceAnyTypeRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *ReferenceAnyTypeRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *ReferenceAnyTypeRule) OnFloat(ctx *Context, value float64) {
 	panic(fmt.Errorf("%v does not allow Float", _this))
@@ -1657,14 +1597,11 @@ func (_this *ConstantKeyableRule) OnEndDocument(ctx *Context) {
 func (_this *ConstantKeyableRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
-func (_this *ConstantKeyableRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
 func (_this *ConstantKeyableRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
 }
-func (_this *ConstantKeyableRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
+func (_this *ConstantKeyableRule) OnNonKeyableObject(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
 }
 func (_this *ConstantKeyableRule) OnList(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow List", _this))
@@ -1735,17 +1672,14 @@ func (_this *TLReferenceRIDRule) OnEndDocument(ctx *Context) {
 func (_this *TLReferenceRIDRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *TLReferenceRIDRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *TLReferenceRIDRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *TLReferenceRIDRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *TLReferenceRIDRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *TLReferenceRIDRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *TLReferenceRIDRule) OnInt(ctx *Context, value int64) {
 	panic(fmt.Errorf("%v does not allow Int", _this))
@@ -1810,17 +1744,14 @@ func (_this *RIDCatRule) OnEndDocument(ctx *Context) {
 func (_this *RIDCatRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
 }
+func (_this *RIDCatRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
 func (_this *RIDCatRule) OnKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow KeyableObject", _this))
 }
 func (_this *RIDCatRule) OnNonKeyableObject(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *RIDCatRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *RIDCatRule) OnNACat(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NACat", _this))
 }
 func (_this *RIDCatRule) OnFloat(ctx *Context, value float64) {
 	panic(fmt.Errorf("%v does not allow Float", _this))

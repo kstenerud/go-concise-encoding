@@ -42,12 +42,12 @@ func TestCBEPadding(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typePadding, typePadding, typePadding}, BD(), EvV, PAD(1), PAD(1), PAD(1), ED())
 }
 
-func TestCBENA(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeNA}, BD(), EvV, NA(), ED())
+func TestCBENil(t *testing.T) {
+	assertDecodeEncode(t, []byte{header, ceVer, typeNil}, BD(), EvV, N(), ED())
 }
 
-func TestCBENACat(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeNACat, 1}, BD(), EvV, NACat(), I(1), ED())
+func TestCBENA(t *testing.T) {
+	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeNA, 1}, BD(), EvV, NA(), I(1), ED())
 }
 
 func TestCBEBool(t *testing.T) {
@@ -104,7 +104,7 @@ func TestCBEPositiveInt(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typePosInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), EvV, BI(NewBigInt("4722366482869645213696", 10)), ED())
 	assertEncode(t, nil, []byte{header, ceVer, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), EvV, BI(NewBigInt("18446744073709551615", 10)), ED())
 
-	assertEncode(t, nil, []byte{header, ceVer, typeNA, typeNA}, BD(), EvV, BI(nil), NA(), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNil}, BD(), EvV, BI(nil), ED())
 }
 
 func TestCBENegativeInt(t *testing.T) {
@@ -168,12 +168,12 @@ func TestCBEBigFloat(t *testing.T) {
 		0xe1, 0xf3, 0xdf, 0xfc, 0xee, 0xac, 0xe5, 0xfe, 0xe1, 0x8f, 0xe2, 0x43},
 		BD(), EvV, BDF(NewBDF("-9.4452837206285466345998345667683453466347345e-5000")), ED())
 
-	assertEncode(t, nil, []byte{header, ceVer, typeNA, typeNA}, BD(), EvV, BF(nil), NA(), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNil}, BD(), EvV, BF(nil), ED())
 }
 
 func TestCBEBigDecimalFloat(t *testing.T) {
 	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), EvV, BDF(NewBDF("9.445283e+5000")), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeNA, typeNA}, BD(), EvV, BDF(nil), NA(), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNil}, BD(), EvV, BDF(nil), ED())
 }
 
 func TestCBEUUIDEOF(t *testing.T) {

@@ -70,12 +70,15 @@ func TestCTEVersion(t *testing.T) {
 }
 
 func TestCTENA(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), EvV, NA(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@na:1", BD(), EvV, NACat(), I(1), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n@na:1", BD(), EvV, NA(), I(1), ED())
 	assertDecodeFails(t, "c0 -@na")
 	assertDecodeFails(t, "c0 @na:@na:1")
 	assertDecodeFails(t, "c0 @na:@na:@na")
 	assertDecodeFails(t, "c0 [@na:@na:1]")
+}
+
+func TestCTENil(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, "c0\n@nil", BD(), EvV, N(), ED())
 }
 
 func TestCTEBool(t *testing.T) {
@@ -1007,7 +1010,7 @@ func TestCTEMap(t *testing.T) {
 	assertDecode(t, nil, "c0 {  1 = 2 3=4 \t}", BD(), EvV, M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    na = @na
+    nil = @nil
     1.5 = 1000
 }`)
 
@@ -1282,7 +1285,7 @@ func TestCTEMapMetadata(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@na", BD(), EvV, NA(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n@nil", BD(), EvV, N(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@nan", BD(), EvV, NAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@snan", BD(), EvV, SNAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@inf", BD(), EvV, F(math.Inf(1)), ED())
@@ -1695,7 +1698,8 @@ func TestCTEComplexExample(t *testing.T) {
     date             = 2019-7-1
     time             = 18:04:00.940231541/E/Prague
     timestamp        = 2010-7-15/13:28:15.415942344/Z
-    na               = @na
+    nil               = @nil
+    na               = @na:123
     bytes            = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url              = |r https://example.com/|
     email            = |r mailto:me@somewhere.com|
@@ -1710,7 +1714,7 @@ case is three Z characters, specified earlier as a sentinel.ZZZ"
     marked_object    = &tag1:{
                                 description = "This map will be referenced later using $tag1"
                                 value = -@inf
-                                child_elements = @na
+                                child_elements = @nil
                                 recursive = $tag1
                             }
     ref1             = $tag1
@@ -1763,7 +1767,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     date = 2019-07-01
     time = 18:04:00.940231541/E/Prague
     timestamp = 2010-07-15/13:28:15.415942344/Z
-    na = @na
+    nil = @nil
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url = |r https://example.com/|
     email = |r mailto:me@somewhere.com|
@@ -1771,7 +1775,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
         value = -@inf
-        child_elements = @na
+        child_elements = @nil
         recursive = $tag1
     }
     ref1 = $tag1
@@ -1816,7 +1820,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     date = 2019-07-01
     time = 18:04:00.940231541/Europe/Prague
     timestamp = 2010-07-15/13:28:15.415942344
-    na = @na
+    nil = @nil
     bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     url = |r https://example.com/|
     email = |r mailto:me@somewhere.com|
@@ -1824,7 +1828,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     marked_object = &tag1:{
         description = "This map will be referenced later using $tag1"
         value = -@inf
-        child_elements = @na
+        child_elements = @nil
         recursive = $tag1
     }
     ref1 = $tag1
@@ -1869,7 +1873,7 @@ func TestMapValueComment(t *testing.T) {
 
 func TestEmptyDocument(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-@na`, BD(), EvV, NA(), ED())
+@nil`, BD(), EvV, N(), ED())
 }
 
 func TestRIDCat(t *testing.T) {

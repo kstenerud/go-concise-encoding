@@ -44,7 +44,7 @@ func (_this *arrayEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
 // =============================================================================
 
 type arrayEncoderEngine struct {
-	stream                 *EncodeBuffer
+	stream                 *Writer
 	addElementsFunc        func(b []byte)
 	onComplete             func()
 	arrayElementBitWidth   int
@@ -58,7 +58,7 @@ type arrayEncoderEngine struct {
 	opts                   *options.CTEEncoderOptions
 }
 
-func (_this *arrayEncoderEngine) Init(stream *EncodeBuffer, opts *options.CTEEncoderOptions) {
+func (_this *arrayEncoderEngine) Init(stream *Writer, opts *options.CTEEncoderOptions) {
 	_this.stream = stream
 	_this.arrayChunkLeftover = _this.arrayChunkBacking[:]
 	_this.opts = opts
@@ -84,11 +84,11 @@ func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, element
 	case events.ArrayTypeString:
 		_this.stream.WritePotentiallyQuotedStringBytes(data)
 	case events.ArrayTypeResourceID:
-		_this.stream.AddString("|r ")
+		_this.stream.WriteString("|r ")
 		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
 		_this.stream.WriteArrayEnd()
 	case events.ArrayTypeCustomText:
-		_this.stream.AddString("|ct ")
+		_this.stream.WriteString("|ct ")
 		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
 		_this.stream.WriteArrayEnd()
 	default:
@@ -118,7 +118,7 @@ func (_this *arrayEncoderEngine) BeginArray(arrayType events.ArrayType, onComple
 
 func (_this *arrayEncoderEngine) handleFirstElement(data []byte) {
 	if !_this.hasWrittenElements && len(data) > 0 {
-		_this.stream.AddByte(' ')
+		_this.stream.WriteByte(' ')
 		_this.hasWrittenElements = true
 	}
 }
@@ -138,9 +138,9 @@ func (_this *arrayEncoderEngine) addBooleanArrayData(data []byte) {
 		b := data[0]
 		for i := 0; i < 8; i++ {
 			if (b & (1 << i)) != 0 {
-				_this.stream.AddByte('1')
+				_this.stream.WriteByte('1')
 			} else {
-				_this.stream.AddByte('0')
+				_this.stream.WriteByte('0')
 			}
 		}
 		data = data[:len(data)-1]
@@ -151,9 +151,9 @@ func (_this *arrayEncoderEngine) addBooleanArrayData(data []byte) {
 		b := data[0]
 		for i := 0; i < int(count); i++ {
 			if (b & (1 << i)) != 0 {
-				_this.stream.AddByte('1')
+				_this.stream.WriteByte('1')
 			} else {
-				_this.stream.AddByte('0')
+				_this.stream.WriteByte('0')
 			}
 		}
 		_this.remainingChunkElements -= count
@@ -206,7 +206,7 @@ func (_this *arrayEncoderEngine) AddArrayData(data []byte) {
 
 func (_this *arrayEncoderEngine) beginArrayBoolean(onComplete func()) {
 	_this.setElementBitWidth(1)
-	_this.stream.AddString("|b")
+	_this.stream.WriteString("|b")
 }
 
 func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
@@ -220,7 +220,7 @@ func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.AddString("|r")
+	_this.stream.WriteString("|r")
 	_this.addElementsFunc = func(data []byte) {
 		_this.handleFirstElement(data)
 		_this.appendStringbuffer(data)
@@ -234,7 +234,7 @@ func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayCustomText(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.AddString("|ct")
+	_this.stream.WriteString("|ct")
 	_this.addElementsFunc = func(data []byte) {
 		_this.handleFirstElement(data)
 		_this.appendStringbuffer(data)
@@ -248,17 +248,17 @@ func (_this *arrayEncoderEngine) beginArrayCustomText(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayCustomBinary(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.AddString("|cb")
+	_this.stream.WriteString("|cb")
 	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
 }
 
 func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.AddString(arrayHeadersUint8[_this.opts.DefaultFormats.Array.Uint8])
+	_this.stream.WriteString(arrayHeadersUint8[_this.opts.DefaultFormats.Array.Uint8])
 	format := arrayFormats8[_this.opts.DefaultFormats.Array.Uint8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
-			_this.stream.AddFmt(format, b)
+			_this.stream.WriteFmt(format, b)
 		}
 	}
 }
@@ -266,11 +266,11 @@ func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersUint16[_this.opts.DefaultFormats.Array.Uint16])
+	_this.stream.WriteString(arrayHeadersUint16[_this.opts.DefaultFormats.Array.Uint16])
 	format := arrayFormats16[_this.opts.DefaultFormats.Array.Uint16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddFmt(format, uint(data[0])|(uint(data[1])<<8))
+			_this.stream.WriteFmt(format, uint(data[0])|(uint(data[1])<<8))
 			data = data[elemWidth:]
 		}
 	}
@@ -279,11 +279,11 @@ func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersUint32[_this.opts.DefaultFormats.Array.Uint32])
+	_this.stream.WriteString(arrayHeadersUint32[_this.opts.DefaultFormats.Array.Uint32])
 	format := arrayFormats32[_this.opts.DefaultFormats.Array.Uint32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddFmt(format, uint(data[0])|(uint(data[1])<<8)|(uint(data[2])<<16)|(uint(data[3])<<24))
+			_this.stream.WriteFmt(format, uint(data[0])|(uint(data[1])<<8)|(uint(data[2])<<16)|(uint(data[3])<<24))
 			data = data[elemWidth:]
 		}
 	}
@@ -292,11 +292,11 @@ func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersUint64[_this.opts.DefaultFormats.Array.Uint64])
+	_this.stream.WriteString(arrayHeadersUint64[_this.opts.DefaultFormats.Array.Uint64])
 	format := arrayFormats64[_this.opts.DefaultFormats.Array.Uint64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddFmt(format, uint64(data[0])|(uint64(data[1])<<8)|(uint64(data[2])<<16)|(uint64(data[3])<<24)|
+			_this.stream.WriteFmt(format, uint64(data[0])|(uint64(data[1])<<8)|(uint64(data[2])<<16)|(uint64(data[3])<<24)|
 				(uint64(data[4])<<32)|(uint64(data[5])<<40)|(uint64(data[6])<<48)|(uint64(data[7])<<56))
 			data = data[elemWidth:]
 		}
@@ -305,11 +305,11 @@ func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.AddString(arrayHeadersInt8[_this.opts.DefaultFormats.Array.Int8])
+	_this.stream.WriteString(arrayHeadersInt8[_this.opts.DefaultFormats.Array.Int8])
 	format := arrayFormats8[_this.opts.DefaultFormats.Array.Int8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
-			_this.stream.AddFmt(format, int8(b))
+			_this.stream.WriteFmt(format, int8(b))
 		}
 	}
 }
@@ -317,11 +317,11 @@ func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersInt16[_this.opts.DefaultFormats.Array.Int16])
+	_this.stream.WriteString(arrayHeadersInt16[_this.opts.DefaultFormats.Array.Int16])
 	format := arrayFormats16[_this.opts.DefaultFormats.Array.Int16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddFmt(format, int16(data[0])|(int16(data[1])<<8))
+			_this.stream.WriteFmt(format, int16(data[0])|(int16(data[1])<<8))
 			data = data[elemWidth:]
 		}
 	}
@@ -330,11 +330,11 @@ func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersInt32[_this.opts.DefaultFormats.Array.Int32])
+	_this.stream.WriteString(arrayHeadersInt32[_this.opts.DefaultFormats.Array.Int32])
 	format := arrayFormats32[_this.opts.DefaultFormats.Array.Int32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddFmt(format, int32(data[0])|(int32(data[1])<<8)|(int32(data[2])<<16)|(int32(data[3])<<24))
+			_this.stream.WriteFmt(format, int32(data[0])|(int32(data[1])<<8)|(int32(data[2])<<16)|(int32(data[3])<<24))
 			data = data[elemWidth:]
 		}
 	}
@@ -343,11 +343,11 @@ func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersInt64[_this.opts.DefaultFormats.Array.Int64])
+	_this.stream.WriteString(arrayHeadersInt64[_this.opts.DefaultFormats.Array.Int64])
 	format := arrayFormats64[_this.opts.DefaultFormats.Array.Int64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddFmt(format, int64(data[0])|(int64(data[1])<<8)|(int64(data[2])<<16)|(int64(data[3])<<24)|
+			_this.stream.WriteFmt(format, int64(data[0])|(int64(data[1])<<8)|(int64(data[2])<<16)|(int64(data[3])<<24)|
 				(int64(data[4])<<32)|(int64(data[5])<<40)|(int64(data[6])<<48)|(int64(data[7])<<56))
 			data = data[elemWidth:]
 		}
@@ -357,18 +357,18 @@ func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersFloat16[_this.opts.DefaultFormats.Array.Float16])
+	_this.stream.WriteString(arrayHeadersFloat16[_this.opts.DefaultFormats.Array.Float16])
 	if _this.opts.DefaultFormats.Array.Float16 == options.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				bits := (uint32(data[0]) << 16) | (uint32(data[1]) << 24)
 				v := math.Float32frombits(bits)
 				if v < 0 {
-					_this.stream.AddString(" -")
-					_this.stream.AddFmtStripped(3, "%x", v)
+					_this.stream.WriteString(" -")
+					_this.stream.WriteFmtStripped(3, "%x", v)
 				} else {
-					_this.stream.AddString(" ")
-					_this.stream.AddFmtStripped(2, "%x", v)
+					_this.stream.WriteString(" ")
+					_this.stream.WriteFmtStripped(2, "%x", v)
 				}
 				data = data[elemWidth:]
 			}
@@ -380,7 +380,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			bits := (uint32(data[0]) << 16) | (uint32(data[1]) << 24)
-			_this.stream.AddFmt(format, math.Float32frombits(bits))
+			_this.stream.WriteFmt(format, math.Float32frombits(bits))
 			data = data[elemWidth:]
 		}
 	}
@@ -389,11 +389,11 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersFloat32[_this.opts.DefaultFormats.Array.Float32])
+	_this.stream.WriteString(arrayHeadersFloat32[_this.opts.DefaultFormats.Array.Float32])
 	if _this.opts.DefaultFormats.Array.Float32 == options.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
-				_this.stream.AddByte(' ')
+				_this.stream.WriteByte(' ')
 				bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
 				v := math.Float32frombits(bits)
 				_this.stream.WriteFloatHexNoPrefix(float64(v))
@@ -407,7 +407,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
-			_this.stream.AddFmt(format, math.Float32frombits(bits))
+			_this.stream.WriteFmt(format, math.Float32frombits(bits))
 			data = data[elemWidth:]
 		}
 	}
@@ -416,11 +416,11 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString(arrayHeadersFloat64[_this.opts.DefaultFormats.Array.Float64])
+	_this.stream.WriteString(arrayHeadersFloat64[_this.opts.DefaultFormats.Array.Float64])
 	if _this.opts.DefaultFormats.Array.Float64 == options.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
-				_this.stream.AddByte(' ')
+				_this.stream.WriteByte(' ')
 				bits := uint64(data[0]) | (uint64(data[1]) << 8) | (uint64(data[2]) << 16) | (uint64(data[3]) << 24) |
 					(uint64(data[4]) << 32) | (uint64(data[5]) << 40) | (uint64(data[6]) << 48) | (uint64(data[7]) << 56)
 				v := math.Float64frombits(bits)
@@ -436,7 +436,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 		for len(data) > 0 {
 			bits := uint64(data[0]) | (uint64(data[1]) << 8) | (uint64(data[2]) << 16) | (uint64(data[3]) << 24) |
 				(uint64(data[4]) << 32) | (uint64(data[5]) << 40) | (uint64(data[6]) << 48) | (uint64(data[7]) << 56)
-			_this.stream.AddFmt(format, math.Float64frombits(bits))
+			_this.stream.WriteFmt(format, math.Float64frombits(bits))
 			data = data[elemWidth:]
 		}
 	}
@@ -445,10 +445,10 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUUID(onComplete func()) {
 	const elemWidth = 16
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.AddString("|u")
+	_this.stream.WriteString("|u")
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.AddByte(' ')
+			_this.stream.WriteByte(' ')
 			_this.stream.WriteUUID(data)
 			data = data[elemWidth:]
 		}

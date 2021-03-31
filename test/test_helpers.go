@@ -253,7 +253,7 @@ var (
 	EvV      = V(version.ConciseEncodingVersion)
 	EvPAD    = PAD(1)
 	EvNA     = NA()
-	EvNACat  = NACat()
+	EvN      = N()
 	EvB      = B(true)
 	EvTT     = TT()
 	EvFF     = FF()
@@ -324,7 +324,7 @@ var (
 )
 
 var allEvents = []*TEvent{
-	EvBD, EvED, EvV, EvPAD, EvNA, EvNACat, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
+	EvBD, EvED, EvV, EvPAD, EvNA, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvMETA, EvCMT, EvE,
 	EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRIDCat, EvRB, EvRBCat,
@@ -335,7 +335,7 @@ var allEvents = []*TEvent{
 }
 
 var completions = map[*TEvent][]*TEvent{
-	EvNACat:  []*TEvent{EvPI},
+	EvNA:     []*TEvent{EvPI},
 	EvL:      []*TEvent{EvE},
 	EvM:      []*TEvent{EvE},
 	EvMETA:   []*TEvent{EvE, S("a")},
@@ -371,8 +371,8 @@ func FilterAddCompletion(event *TEvent) []*TEvent {
 	return filtered
 }
 
-func isEffectivelyNA(event *TEvent) bool {
-	return event.Type == TEventNA ||
+func isEffectivelyNil(event *TEvent) bool {
+	return event.Type == TEventNil ||
 		event == EvBINil ||
 		event == EvBFNil ||
 		event == EvBDFNil
@@ -518,7 +518,7 @@ var (
 	InvalidMarkerIDs = ComplementaryEvents(ValidMarkerIDs)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMETA, EvCMT, EvMARK}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvNA, EvE, EvAC, EvAD, EvMETA, EvCMT, EvMARK}
 
 	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvRID, EvRIDCat, EvRB, EvRBCat}
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
@@ -535,7 +535,7 @@ const (
 	TEventVersion
 	TEventPadding
 	TEventNA
-	TEventNACat
+	TEventNil
 	TEventBool
 	TEventTrue
 	TEventFalse
@@ -607,7 +607,7 @@ var TEventNames = []string{
 	TEventVersion:            "V",
 	TEventPadding:            "PAD",
 	TEventNA:                 "NA",
-	TEventNACat:              "NACat",
+	TEventNil:                "N",
 	TEventBool:               "B",
 	TEventTrue:               "TT",
 	TEventFalse:              "FF",
@@ -851,7 +851,7 @@ func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
 		return a == b
 	}
 
-	if isEffectivelyNA(_this) && isEffectivelyNA(that) {
+	if isEffectivelyNil(_this) && isEffectivelyNil(that) {
 		return true
 	}
 
@@ -883,8 +883,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnPadding(_this.V1.(int))
 	case TEventNA:
 		receiver.OnNA()
-	case TEventNACat:
-		receiver.OnNACat()
+	case TEventNil:
+		receiver.OnNil()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
 	case TEventTrue:
@@ -1036,7 +1036,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 
 func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	if value == nil {
-		eventType = TEventNA
+		eventType = TEventNil
 	}
 	return newTEvent(eventType, value, nil)
 }
@@ -1054,7 +1054,7 @@ func DF(v compact_float.DFloat) *TEvent { return newTEvent(TEventDecimalFloat, v
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return newTEvent(TEventVersion, v, nil) }
 func NA() *TEvent                       { return newTEvent(TEventNA, nil, nil) }
-func NACat() *TEvent                    { return newTEvent(TEventNACat, nil, nil) }
+func N() *TEvent                        { return newTEvent(TEventNil, nil, nil) }
 func PAD(v int) *TEvent                 { return newTEvent(TEventPadding, v, nil) }
 func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
@@ -1119,7 +1119,7 @@ func ED() *TEvent                       { return newTEvent(TEventEndDocument, ni
 func EventForValue(value interface{}) *TEvent {
 	rv := reflect.ValueOf(value)
 	if !rv.IsValid() {
-		return NA()
+		return N()
 	}
 	switch rv.Kind() {
 	case reflect.Bool:
@@ -1139,7 +1139,7 @@ func EventForValue(value interface{}) *TEvent {
 		}
 	case reflect.Ptr:
 		if rv.IsNil() {
-			return NA()
+			return N()
 		}
 		switch rv.Type() {
 		case common.TypePBigDecimalFloat:
@@ -1215,9 +1215,9 @@ func (h *TEventPrinter) OnNA() {
 	h.Print(NA())
 	h.Next.OnNA()
 }
-func (h *TEventPrinter) OnNACat() {
-	h.Print(NACat())
-	h.Next.OnNACat()
+func (h *TEventPrinter) OnNil() {
+	h.Print(N())
+	h.Next.OnNil()
 }
 func (h *TEventPrinter) OnBool(value bool) {
 	h.Print(B(value))
@@ -1477,7 +1477,7 @@ func (h *TEventStore) add(event *TEvent) {
 func (h *TEventStore) OnVersion(version uint64)                  { h.add(V(version)) }
 func (h *TEventStore) OnPadding(count int)                       { h.add(PAD(count)) }
 func (h *TEventStore) OnNA()                                     { h.add(NA()) }
-func (h *TEventStore) OnNACat()                                  { h.add(NACat()) }
+func (h *TEventStore) OnNil()                                    { h.add(N()) }
 func (h *TEventStore) OnBool(value bool)                         { h.add(B(value)) }
 func (h *TEventStore) OnTrue()                                   { h.add(TT()) }
 func (h *TEventStore) OnFalse()                                  { h.add(FF()) }
@@ -1770,7 +1770,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
-		ane("F9", NA())
+		ane("F9", N())
 		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())
@@ -1792,7 +1792,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			BF(NewBigFloat("1.1", 10, 2)),
 			DF(NewDFloat("1.1")),
 			BDF(NewBDF("1.1")),
-			NA(),
+			N(),
 			BI(NewBigInt("1000", 10)),
 			NAN(),
 			SNAN(),

@@ -68,14 +68,14 @@ func (_this *listEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleC
 	_this.completeObject(ctx)
 }
 
-func (_this *listEncoder) EncodeNA(ctx *EncoderContext) {
+func (_this *listEncoder) BeginNA(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteNA()
-	_this.completeObject(ctx)
+	ctx.BeginNA()
 }
-func (_this *listEncoder) BeginNACat(ctx *EncoderContext) {
+func (_this *listEncoder) EncodeNil(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
-	ctx.BeginNACat()
+	ctx.Stream.WriteNil()
+	_this.completeObject(ctx)
 }
 func (_this *listEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -202,7 +202,7 @@ func (_this *listEncoder) BeginArray(ctx *EncoderContext, arrayType events.Array
 // =============================================================================
 
 func encodeMapSeparator(ctx *EncoderContext) {
-	ctx.Stream.AddString(" = ")
+	ctx.Stream.WriteString(" = ")
 }
 
 type mapKeyEncoder struct{}
@@ -364,13 +364,13 @@ func (_this *mapValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisi
 	ctx.ContainerHasObjects = true
 }
 
-func (_this *mapValueEncoder) EncodeNA(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteNA()
-}
-func (_this *mapValueEncoder) BeginNACat(ctx *EncoderContext) {
+func (_this *mapValueEncoder) BeginNA(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
-	ctx.BeginNACat()
+	ctx.BeginNA()
+}
+func (_this *mapValueEncoder) EncodeNil(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.Stream.WriteNil()
 }
 func (_this *mapValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -636,13 +636,13 @@ func (_this *metadataValueEncoder) ChildContainerFinished(ctx *EncoderContext, i
 	ctx.ContainerHasObjects = true
 }
 
-func (_this *metadataValueEncoder) EncodeNA(ctx *EncoderContext) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteNA()
-}
-func (_this *metadataValueEncoder) BeginNACat(ctx *EncoderContext) {
+func (_this *metadataValueEncoder) BeginNA(ctx *EncoderContext) {
 	_this.beginContainer(ctx)
-	ctx.BeginNACat()
+	ctx.BeginNA()
+}
+func (_this *metadataValueEncoder) EncodeNil(ctx *EncoderContext) {
+	_this.beginCompleteObject(ctx)
+	ctx.Stream.WriteNil()
 }
 func (_this *metadataValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.beginCompleteObject(ctx)
@@ -1008,13 +1008,13 @@ func (_this *markupValueEncoder) ChildContainerFinished(ctx *EncoderContext, isV
 	}
 }
 
-func (_this *markupValueEncoder) EncodeNA(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteNA()
-}
-func (_this *markupValueEncoder) BeginNACat(ctx *EncoderContext) {
+func (_this *markupValueEncoder) BeginNA(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
-	ctx.BeginNACat()
+	ctx.BeginNA()
+}
+func (_this *markupValueEncoder) EncodeNil(ctx *EncoderContext) {
+	_this.prepareToWrite(ctx)
+	ctx.Stream.WriteNil()
 }
 func (_this *markupValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	_this.prepareToWrite(ctx)
@@ -1131,7 +1131,7 @@ func (_this *markupContentsEncoder) String() string { return "markupContentsEnco
 
 func (_this *markupContentsEncoder) beginObject(ctx *EncoderContext) {
 	if !ctx.ContainerHasObjects {
-		ctx.Stream.AddByte(',')
+		ctx.Stream.WriteByte(',')
 		ctx.SetStandardIndentPrefix()
 	}
 	ctx.WriteCurrentPrefix()
@@ -1141,7 +1141,7 @@ func (_this *markupContentsEncoder) beginObject(ctx *EncoderContext) {
 
 func (_this *markupContentsEncoder) beginContainer(ctx *EncoderContext) {
 	if !ctx.ContainerHasObjects {
-		ctx.Stream.AddByte(',')
+		ctx.Stream.WriteByte(',')
 		ctx.SetStandardIndentPrefix()
 	}
 	ctx.WriteCurrentPrefix()
@@ -1199,19 +1199,19 @@ func (_this *commentEncoder) String() string { return "commentEncoder" }
 
 func (_this *commentEncoder) beginItem(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = true
-	ctx.Stream.AddByte(' ')
+	ctx.Stream.WriteByte(' ')
 }
 
 func (_this *commentEncoder) Begin(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = false
-	ctx.Stream.AddString("/*")
+	ctx.Stream.WriteString("/*")
 }
 
 func (_this *commentEncoder) End(ctx *EncoderContext) {
 	if ctx.ContainerHasObjects {
-		ctx.Stream.AddByte(' ')
+		ctx.Stream.WriteByte(' ')
 	}
-	ctx.Stream.AddString("*/")
+	ctx.Stream.WriteString("*/")
 	ctx.Unstack()
 	ctx.SetStandardIndentPrefix()
 	ctx.CurrentEncoder.ChildContainerFinished(ctx, false)

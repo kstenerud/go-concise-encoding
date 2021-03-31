@@ -53,19 +53,19 @@ type EncoderContext struct {
 	CurrentEncoder      Encoder
 	ContainerHasObjects bool
 	currentPrefix       string
-	Stream              EncodeBuffer
+	Stream              Writer
 	ArrayEngine         arrayEncoderEngine
 }
 
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
 	_this.ArrayEngine.Init(&_this.Stream, &_this.opts)
+	_this.Stream.Init()
 	_this.Reset()
 }
 
 func (_this *EncoderContext) Reset() {
 	_this.indenter.Reset()
-	_this.Stream.Reset()
 	_this.encoderStack = _this.encoderStack[:0]
 	_this.CurrentEncoder = nil
 	_this.Stack(&globalTopLevelEncoder)
@@ -96,7 +96,7 @@ func (_this *EncoderContext) DecreaseIndent() {
 }
 
 func (_this *EncoderContext) WriteBasicIndent() {
-	_this.Stream.AddBytes(_this.indenter.Get())
+	_this.Stream.WriteBytes(_this.indenter.Get())
 }
 
 func (_this *EncoderContext) SetIndentPrefix(value string) {
@@ -128,7 +128,7 @@ func (_this *EncoderContext) ClearPrefix() {
 }
 
 func (_this *EncoderContext) WriteCurrentPrefix() {
-	_this.Stream.AddString(_this.currentPrefix)
+	_this.Stream.WriteString(_this.currentPrefix)
 	// TODO: Need to do this?
 	// _this.ClearMapPrefix()
 }
@@ -177,12 +177,12 @@ func (_this *EncoderContext) BeginStandardReference() {
 }
 
 func (_this *EncoderContext) BeginStandardConstant(name []byte, explicitValue bool) {
-	_this.Stream.AddByte('#')
-	_this.Stream.AddBytes(name)
+	_this.Stream.WriteByte('#')
+	_this.Stream.WriteBytes(name)
 	_this.Stack(&globalConstantEncoder)
 }
 
-func (_this *EncoderContext) BeginNACat() {
+func (_this *EncoderContext) BeginNA() {
 	_this.Stream.WriteNA()
 	_this.Stream.WriteConcat()
 	_this.Stack(&globalPostInvisibleEncoder)
@@ -223,7 +223,7 @@ func (_this *EncoderContext) WriteCommentString(data string) {
 
 func (_this *EncoderContext) WriteCommentStringData(data []uint8) {
 	// TODO: Need anything else?
-	_this.Stream.AddBytes(data)
+	_this.Stream.WriteBytes(data)
 }
 
 func (_this *EncoderContext) WriteMarkupContentString(data string) {

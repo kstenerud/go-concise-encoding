@@ -58,7 +58,7 @@ func decodeDocumentBegin(ctx *DecoderContext) {
 		ctx.Stream.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.Stream.DescribeCurrentChar())
 	}
 
-	version, bigVersion, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
+	version, bigVersion, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
 	if digitCount == 0 {
 		ctx.Stream.UnexpectedChar("version number")
 	}
@@ -92,21 +92,21 @@ func decodeEndDocument(ctx *DecoderContext) {
 }
 
 func decodeNumericPositive(ctx *DecoderContext) {
-	coefficient, bigCoefficient, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
+	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
 	b := ctx.Stream.ReadByteAllowEOD()
 	switch b {
 	case '-':
-		v := ctx.Stream.DecodeDate(int64(coefficient))
+		v := ctx.Stream.ReadDate(int64(coefficient))
 		ctx.Stream.AssertAtObjectEnd("date")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
 	case ':':
-		v := ctx.Stream.DecodeTime(int(coefficient))
+		v := ctx.Stream.ReadTime(int(coefficient))
 		ctx.Stream.AssertAtObjectEnd("time")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
 	case '.':
-		value, bigValue, _ := ctx.Stream.DecodeDecimalFloat(1, coefficient, bigCoefficient, digitCount)
+		value, bigValue, _ := ctx.Stream.ReadDecimalFloat(1, coefficient, bigCoefficient, digitCount)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			ctx.EventReceiver.OnBigDecimalFloat(bigValue)
@@ -136,7 +136,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 		decodeOtherBaseNegative(ctx)
 		return
 	case '@':
-		namedValue := string(ctx.Stream.DecodeNamedValue())
+		namedValue := string(ctx.Stream.ReadNamedValue())
 		if namedValue != "inf" {
 			ctx.Stream.Errorf("Unknown named value: %v", namedValue)
 		}
@@ -146,16 +146,16 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 		ctx.Stream.UnreadByte()
 	}
 
-	coefficient, bigCoefficient, digitCount := ctx.Stream.DecodeDecimalUint(0, nil)
+	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
 	b := ctx.Stream.ReadByteAllowEOD()
 	switch b {
 	case '-':
-		v := ctx.Stream.DecodeDate(-int64(coefficient))
+		v := ctx.Stream.ReadDate(-int64(coefficient))
 		ctx.Stream.AssertAtObjectEnd("time")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
 	case '.':
-		value, bigValue, _ := ctx.Stream.DecodeDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
+		value, bigValue, _ := ctx.Stream.ReadDecimalFloat(-1, coefficient, bigCoefficient, digitCount)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			ctx.EventReceiver.OnBigDecimalFloat(bigValue)
@@ -191,7 +191,7 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 
 	switch b {
 	case 'b':
-		v, bigV, _ := ctx.Stream.DecodeBinaryUint()
+		v, bigV, _ := ctx.Stream.ReadBinaryUint()
 		ctx.Stream.AssertAtObjectEnd("binary integer")
 		if bigV != nil {
 			ctx.EventReceiver.OnBigInt(bigV)
@@ -199,7 +199,7 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 			ctx.EventReceiver.OnPositiveInt(v)
 		}
 	case 'o':
-		v, bigV, _ := ctx.Stream.DecodeOctalUint()
+		v, bigV, _ := ctx.Stream.ReadOctalUint()
 		ctx.Stream.AssertAtObjectEnd("octal integer")
 		if bigV != nil {
 			ctx.EventReceiver.OnBigInt(bigV)
@@ -207,10 +207,10 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 			ctx.EventReceiver.OnPositiveInt(v)
 		}
 	case 'x':
-		v, bigV, digitCount := ctx.Stream.DecodeHexUint(0, nil)
+		v, bigV, digitCount := ctx.Stream.ReadHexUint(0, nil)
 		if ctx.Stream.PeekByteAllowEOD() == '.' {
 			ctx.Stream.AdvanceByte()
-			fv, bigFV, _ := ctx.Stream.DecodeHexFloat(1, v, bigV, digitCount)
+			fv, bigFV, _ := ctx.Stream.ReadHexFloat(1, v, bigV, digitCount)
 			ctx.Stream.AssertAtObjectEnd("hex float")
 			if bigFV != nil {
 				ctx.EventReceiver.OnBigFloat(bigFV)
@@ -226,7 +226,7 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 			}
 		}
 	case '.':
-		value, bigValue, _ := ctx.Stream.DecodeDecimalFloat(1, 0, nil, 0)
+		value, bigValue, _ := ctx.Stream.ReadDecimalFloat(1, 0, nil, 0)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			ctx.EventReceiver.OnBigDecimalFloat(bigValue)
@@ -236,7 +236,7 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 	default:
 		if b.HasProperty(chars.CharIsDigitBase10) && ctx.Stream.PeekByteNoEOD() == ':' {
 			ctx.Stream.AdvanceByte()
-			v := ctx.Stream.DecodeTime(int(b - '0'))
+			v := ctx.Stream.ReadTime(int(b - '0'))
 			ctx.Stream.AssertAtObjectEnd("time")
 			ctx.EventReceiver.OnCompactTime(v)
 			return
@@ -264,7 +264,7 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 
 	switch b {
 	case 'b':
-		v, bigV, _ := ctx.Stream.DecodeBinaryUint()
+		v, bigV, _ := ctx.Stream.ReadBinaryUint()
 		ctx.Stream.AssertAtObjectEnd("binary integer")
 		if bigV != nil {
 			bigV = bigV.Neg(bigV)
@@ -273,7 +273,7 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 			ctx.EventReceiver.OnNegativeInt(v)
 		}
 	case 'o':
-		v, bigV, _ := ctx.Stream.DecodeOctalUint()
+		v, bigV, _ := ctx.Stream.ReadOctalUint()
 		ctx.Stream.AssertAtObjectEnd("octal integer")
 		if bigV != nil {
 			bigV = bigV.Neg(bigV)
@@ -282,10 +282,10 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 			ctx.EventReceiver.OnNegativeInt(v)
 		}
 	case 'x':
-		v, bigV, digitCount := ctx.Stream.DecodeHexUint(0, nil)
+		v, bigV, digitCount := ctx.Stream.ReadHexUint(0, nil)
 		if ctx.Stream.PeekByteAllowEOD() == '.' {
 			ctx.Stream.AdvanceByte()
-			fv, bigFV, _ := ctx.Stream.DecodeHexFloat(-1, v, bigV, digitCount)
+			fv, bigFV, _ := ctx.Stream.ReadHexFloat(-1, v, bigV, digitCount)
 			ctx.Stream.AssertAtObjectEnd("hex float")
 			if bigFV != nil {
 				ctx.EventReceiver.OnBigFloat(bigFV)
@@ -302,7 +302,7 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 			}
 		}
 	case '.':
-		value, bigValue, _ := ctx.Stream.DecodeDecimalFloat(-1, 0, nil, 0)
+		value, bigValue, _ := ctx.Stream.ReadDecimalFloat(-1, 0, nil, 0)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
 			ctx.EventReceiver.OnBigDecimalFloat(bigValue)
@@ -318,17 +318,17 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '@'
 
-	namedValue := ctx.Stream.DecodeNamedValue()
+	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "na":
-		hasReason := ctx.Stream.PeekByteAllowEOD() == ':'
-		if hasReason {
-			ctx.Stream.AdvanceByte()
-			ctx.EventReceiver.OnNACat()
-			decodeByFirstChar(ctx)
-		} else {
-			ctx.EventReceiver.OnNA()
+		if ctx.Stream.ReadByteNoEOD() != ':' {
+			ctx.Stream.UnreadByte()
+			ctx.Stream.UnexpectedChar("NA")
 		}
+		ctx.EventReceiver.OnNA()
+		decodeByFirstChar(ctx)
+	case "nil":
+		ctx.EventReceiver.OnNil()
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
 	case "snan":
@@ -347,7 +347,7 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 func advanceAndDecodeConstant(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
-	name := ctx.Stream.DecodeUnquotedString()
+	name := ctx.Stream.ReadUnquotedString()
 	if ctx.Stream.PeekByteAllowEOD() == ':' {
 		ctx.EventReceiver.OnConstant(name, true)
 		ctx.Stream.AdvanceByte()
@@ -362,7 +362,7 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnMarker()
 
-	asString, asUint := ctx.Stream.DecodeMarkerID()
+	asString, asUint := ctx.Stream.ReadMarkerID()
 	if len(asString) > 0 {
 		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
 	} else {
@@ -391,7 +391,7 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 		return
 	}
 
-	asString, asUint := ctx.Stream.DecodeMarkerID()
+	asString, asUint := ctx.Stream.ReadMarkerID()
 	if len(asString) > 0 {
 		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
 	} else {

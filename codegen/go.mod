@@ -1,3 +1,3 @@
 module github.com/kstenerud/go-concise-encoding/codegen
 
-go 1.13
+go 1.14

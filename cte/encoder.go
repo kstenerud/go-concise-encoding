@@ -40,8 +40,8 @@ type Encoder interface {
 	Begin(ctx *EncoderContext)
 	End(ctx *EncoderContext)
 	ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)
-	EncodeNA(ctx *EncoderContext)
-	BeginNACat(ctx *EncoderContext)
+	EncodeNil(ctx *EncoderContext)
+	BeginNA(ctx *EncoderContext)
 	EncodeBool(ctx *EncoderContext, value bool)
 	EncodeTrue(ctx *EncoderContext)
 	EncodeFalse(ctx *EncoderContext)
@@ -114,12 +114,12 @@ func (_this *EncoderEventReceiver) OnPadding(count int) {
 	// Nothing to do
 }
 
-func (_this *EncoderEventReceiver) OnNA() {
-	_this.context.CurrentEncoder.EncodeNA(&_this.context)
+func (_this *EncoderEventReceiver) OnNil() {
+	_this.context.CurrentEncoder.EncodeNil(&_this.context)
 }
 
-func (_this *EncoderEventReceiver) OnNACat() {
-	_this.context.CurrentEncoder.BeginNACat(&_this.context)
+func (_this *EncoderEventReceiver) OnNA() {
+	_this.context.CurrentEncoder.BeginNA(&_this.context)
 }
 
 func (_this *EncoderEventReceiver) OnBool(value bool) {
@@ -272,5 +272,5 @@ func (_this *EncoderEventReceiver) OnConstant(name []byte, explicitValue bool) {
 }
 
 func (_this *EncoderEventReceiver) OnEndDocument() {
-	_this.context.Stream.Flush()
+	// Nothing to do
 }

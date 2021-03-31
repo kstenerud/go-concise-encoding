@@ -41,13 +41,13 @@ func (_this *topLevelEncoder) ChildContainerFinished(ctx *EncoderContext, isVisi
 	// Nothing to do
 }
 
-func (_this *topLevelEncoder) EncodeNA(ctx *EncoderContext) {
+func (_this *topLevelEncoder) BeginNA(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.Stream.WriteNA()
+	ctx.BeginNA()
 }
-func (_this *topLevelEncoder) BeginNACat(ctx *EncoderContext) {
+func (_this *topLevelEncoder) EncodeNil(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
-	ctx.BeginNACat()
+	ctx.Stream.WriteNil()
 }
 func (_this *topLevelEncoder) EncodeBool(ctx *EncoderContext, value bool) {
 	ctx.WriteCurrentPrefix()

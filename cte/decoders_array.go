@@ -32,12 +32,12 @@ import (
 func advanceAndDecodeQuotedString(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '"'
 
-	bytes := ctx.Stream.DecodeQuotedString()
+	bytes := ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
 func decodeUnquotedString(ctx *DecoderContext) {
-	bytes := ctx.Stream.DecodeUnquotedString()
+	bytes := ctx.Stream.ReadUnquotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
@@ -80,93 +80,93 @@ func decodeTypedArrayBegin(ctx *DecoderContext) {
 	case "b":
 		decodeArrayBoolean(ctx)
 	case "u8":
-		decodeArrayU8(ctx, "integer", ctx.Stream.DecodeSmallUint)
+		decodeArrayU8(ctx, "integer", ctx.Stream.ReadSmallUint)
 	case "u8b":
-		decodeArrayU8(ctx, "binary", ctx.Stream.DecodeSmallBinaryUint)
+		decodeArrayU8(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
 	case "u8o":
-		decodeArrayU8(ctx, "octal", ctx.Stream.DecodeSmallOctalUint)
+		decodeArrayU8(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
 	case "u8x":
-		decodeArrayU8(ctx, "hex", ctx.Stream.DecodeSmallHexUint)
+		decodeArrayU8(ctx, "hex", ctx.Stream.ReadSmallHexUint)
 	case "u16":
-		decodeArrayU16(ctx, "integer", ctx.Stream.DecodeSmallUint)
+		decodeArrayU16(ctx, "integer", ctx.Stream.ReadSmallUint)
 	case "u16b":
-		decodeArrayU16(ctx, "binary", ctx.Stream.DecodeSmallBinaryUint)
+		decodeArrayU16(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
 	case "u16o":
-		decodeArrayU16(ctx, "octal", ctx.Stream.DecodeSmallOctalUint)
+		decodeArrayU16(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
 	case "u16x":
-		decodeArrayU16(ctx, "hex", ctx.Stream.DecodeSmallHexUint)
+		decodeArrayU16(ctx, "hex", ctx.Stream.ReadSmallHexUint)
 	case "u32":
-		decodeArrayU32(ctx, "integer", ctx.Stream.DecodeSmallUint)
+		decodeArrayU32(ctx, "integer", ctx.Stream.ReadSmallUint)
 	case "u32b":
-		decodeArrayU32(ctx, "binary", ctx.Stream.DecodeSmallBinaryUint)
+		decodeArrayU32(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
 	case "u32o":
-		decodeArrayU32(ctx, "octal", ctx.Stream.DecodeSmallOctalUint)
+		decodeArrayU32(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
 	case "u32x":
-		decodeArrayU32(ctx, "hex", ctx.Stream.DecodeSmallHexUint)
+		decodeArrayU32(ctx, "hex", ctx.Stream.ReadSmallHexUint)
 	case "u64":
-		decodeArrayU64(ctx, "integer", ctx.Stream.DecodeSmallUint)
+		decodeArrayU64(ctx, "integer", ctx.Stream.ReadSmallUint)
 	case "u64b":
-		decodeArrayU64(ctx, "binary", ctx.Stream.DecodeSmallBinaryUint)
+		decodeArrayU64(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
 	case "u64o":
-		decodeArrayU64(ctx, "octal", ctx.Stream.DecodeSmallOctalUint)
+		decodeArrayU64(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
 	case "u64x":
-		decodeArrayU64(ctx, "hex", ctx.Stream.DecodeSmallHexUint)
+		decodeArrayU64(ctx, "hex", ctx.Stream.ReadSmallHexUint)
 	case "i8":
-		decodeArrayI8(ctx, "integer", ctx.Stream.DecodeSmallInt)
+		decodeArrayI8(ctx, "integer", ctx.Stream.ReadSmallInt)
 	case "i8b":
-		decodeArrayI8(ctx, "binary", ctx.Stream.DecodeSmallBinaryInt)
+		decodeArrayI8(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
 	case "i8o":
-		decodeArrayI8(ctx, "octal", ctx.Stream.DecodeSmallOctalInt)
+		decodeArrayI8(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
 	case "i8x":
-		decodeArrayI8(ctx, "hex", ctx.Stream.DecodeSmallHexInt)
+		decodeArrayI8(ctx, "hex", ctx.Stream.ReadSmallHexInt)
 	case "i16":
-		decodeArrayI16(ctx, "integer", ctx.Stream.DecodeSmallInt)
+		decodeArrayI16(ctx, "integer", ctx.Stream.ReadSmallInt)
 	case "i16b":
-		decodeArrayI16(ctx, "binary", ctx.Stream.DecodeSmallBinaryInt)
+		decodeArrayI16(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
 	case "i16o":
-		decodeArrayI16(ctx, "octal", ctx.Stream.DecodeSmallOctalInt)
+		decodeArrayI16(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
 	case "i16x":
-		decodeArrayI16(ctx, "hex", ctx.Stream.DecodeSmallHexInt)
+		decodeArrayI16(ctx, "hex", ctx.Stream.ReadSmallHexInt)
 	case "i32":
-		decodeArrayI32(ctx, "integer", ctx.Stream.DecodeSmallInt)
+		decodeArrayI32(ctx, "integer", ctx.Stream.ReadSmallInt)
 	case "i32b":
-		decodeArrayI32(ctx, "binary", ctx.Stream.DecodeSmallBinaryInt)
+		decodeArrayI32(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
 	case "i32o":
-		decodeArrayI32(ctx, "octal", ctx.Stream.DecodeSmallOctalInt)
+		decodeArrayI32(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
 	case "i32x":
-		decodeArrayI32(ctx, "hex", ctx.Stream.DecodeSmallHexInt)
+		decodeArrayI32(ctx, "hex", ctx.Stream.ReadSmallHexInt)
 	case "i64":
-		decodeArrayI64(ctx, "integer", ctx.Stream.DecodeSmallInt)
+		decodeArrayI64(ctx, "integer", ctx.Stream.ReadSmallInt)
 	case "i64b":
-		decodeArrayI64(ctx, "binary", ctx.Stream.DecodeSmallBinaryInt)
+		decodeArrayI64(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
 	case "i64o":
-		decodeArrayI64(ctx, "octal", ctx.Stream.DecodeSmallOctalInt)
+		decodeArrayI64(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
 	case "i64x":
-		decodeArrayI64(ctx, "hex", ctx.Stream.DecodeSmallHexInt)
+		decodeArrayI64(ctx, "hex", ctx.Stream.ReadSmallHexInt)
 	case "f16":
-		decodeArrayF16(ctx, "float", ctx.Stream.DecodeSmallFloat)
+		decodeArrayF16(ctx, "float", ctx.Stream.ReadSmallFloat)
 	case "f16x":
-		decodeArrayF16(ctx, "hex float", ctx.Stream.DecodeSmallHexFloat)
+		decodeArrayF16(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
 	case "f32":
-		decodeArrayF32(ctx, "float", ctx.Stream.DecodeSmallFloat)
+		decodeArrayF32(ctx, "float", ctx.Stream.ReadSmallFloat)
 	case "f32x":
-		decodeArrayF32(ctx, "hex float", ctx.Stream.DecodeSmallHexFloat)
+		decodeArrayF32(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
 	case "f64":
-		decodeArrayF64(ctx, "float", ctx.Stream.DecodeSmallFloat)
+		decodeArrayF64(ctx, "float", ctx.Stream.ReadSmallFloat)
 	case "f64x":
-		decodeArrayF64(ctx, "hex float", ctx.Stream.DecodeSmallHexFloat)
+		decodeArrayF64(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
 	default:
 		ctx.Stream.Errorf("%s: Unhandled array type", arrayType)
 	}
 }
 
 func decodeCustomText(ctx *DecoderContext) {
-	bytes := ctx.Stream.DecodeStringArray()
+	bytes := ctx.Stream.ReadStringArray()
 	ctx.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
 }
 
 func decodeRID(ctx *DecoderContext) {
-	bytes := ctx.Stream.DecodeStringArray()
+	bytes := ctx.Stream.ReadStringArray()
 	if ctx.Stream.PeekByteAllowEOD() == ':' {
 		ctx.Stream.AdvanceByte()
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
@@ -181,7 +181,7 @@ func decodeCustomBinary(ctx *DecoderContext) {
 	var data []uint8
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := ctx.Stream.DecodeSmallHexUint()
+		v, count := ctx.Stream.ReadSmallHexUint()
 		if count == 0 {
 			break
 		}
@@ -403,7 +403,7 @@ func decodeArrayUUID(ctx *DecoderContext) {
 	var data []uint8
 	ctx.Stream.SkipWhitespace()
 	for ctx.Stream.PeekByteAllowEOD() != '|' {
-		token := ctx.Stream.DecodeToken()
+		token := ctx.Stream.ReadToken()
 		if len(token) == 0 {
 			panic("Error")
 		}

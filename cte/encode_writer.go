@@ -28,10 +28,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/buffer"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	ceio "github.com/kstenerud/go-concise-encoding/internal/io"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -41,48 +41,52 @@ import (
 const floatStringMaxByteCount = 24 // From strconv.FormatFloat()
 const uintStringMaxByteCount = 21  // Max uint as string: "18446744073709551616"
 
-type EncodeBuffer struct {
-	buffer.StreamingWriteBuffer
+type Writer struct {
+	ceio.Writer
 }
 
-func (_this *EncodeBuffer) WriteConcat() {
-	_this.AddByte(':')
+func (_this *Writer) WriteConcat() {
+	_this.WriteByte(':')
 }
 
-func (_this *EncodeBuffer) WriteNA() {
-	_this.AddString("@na")
+func (_this *Writer) WriteNA() {
+	_this.WriteString("@na")
 }
 
-func (_this *EncodeBuffer) WriteTrue() {
-	_this.AddString("@true")
+func (_this *Writer) WriteNil() {
+	_this.WriteString("@nil")
 }
 
-func (_this *EncodeBuffer) WriteFalse() {
-	_this.AddString("@false")
+func (_this *Writer) WriteTrue() {
+	_this.WriteString("@true")
 }
 
-func (_this *EncodeBuffer) WritePosInfinity() {
-	_this.AddString("@inf")
+func (_this *Writer) WriteFalse() {
+	_this.WriteString("@false")
 }
 
-func (_this *EncodeBuffer) WriteNegInfinity() {
-	_this.AddString("-@inf")
+func (_this *Writer) WritePosInfinity() {
+	_this.WriteString("@inf")
 }
 
-func (_this *EncodeBuffer) WriteQuietNan() {
-	_this.AddString("@nan")
+func (_this *Writer) WriteNegInfinity() {
+	_this.WriteString("-@inf")
 }
 
-func (_this *EncodeBuffer) WriteSignalingNan() {
-	_this.AddString("@snan")
+func (_this *Writer) WriteQuietNan() {
+	_this.WriteString("@nan")
 }
 
-func (_this *EncodeBuffer) WriteVersion(value uint64) {
-	_this.AddByte('c')
+func (_this *Writer) WriteSignalingNan() {
+	_this.WriteString("@snan")
+}
+
+func (_this *Writer) WriteVersion(value uint64) {
+	_this.WriteByte('c')
 	_this.WritePositiveInt(value)
 }
 
-func (_this *EncodeBuffer) WriteNan(signaling bool) {
+func (_this *Writer) WriteNan(signaling bool) {
 	if signaling {
 		_this.WriteSignalingNan()
 	} else {
@@ -90,7 +94,7 @@ func (_this *EncodeBuffer) WriteNan(signaling bool) {
 	}
 }
 
-func (_this *EncodeBuffer) WriteBool(value bool) {
+func (_this *Writer) WriteBool(value bool) {
 	if value {
 		_this.WriteTrue()
 	} else {
@@ -98,7 +102,7 @@ func (_this *EncodeBuffer) WriteBool(value bool) {
 	}
 }
 
-func (_this *EncodeBuffer) WriteInt(value int64) {
+func (_this *Writer) WriteInt(value int64) {
 	if value >= 0 {
 		_this.WritePositiveInt(uint64(value))
 	} else {
@@ -106,18 +110,18 @@ func (_this *EncodeBuffer) WriteInt(value int64) {
 	}
 }
 
-func (_this *EncodeBuffer) WritePositiveInt(value uint64) {
-	buff := _this.RequireBytes(uintStringMaxByteCount)[:0]
-	used := strconv.AppendUint(buff, value, 10)
-	_this.UseBytes(len(used))
+func (_this *Writer) WritePositiveInt(value uint64) {
+	_this.ExpandBuffer(uintStringMaxByteCount)
+	used := strconv.AppendUint(_this.Buffer[:0], value, 10)
+	_this.FlushBuffer(0, len(used))
 }
 
-func (_this *EncodeBuffer) WriteNegativeInt(value uint64) {
-	_this.AddByte('-')
+func (_this *Writer) WriteNegativeInt(value uint64) {
+	_this.WriteByte('-')
 	_this.WritePositiveInt(value)
 }
 
-func (_this *EncodeBuffer) WriteBigInt(value *big.Int) {
+func (_this *Writer) WriteBigInt(value *big.Int) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -125,10 +129,10 @@ func (_this *EncodeBuffer) WriteBigInt(value *big.Int) {
 
 	var buff [64]byte
 	used := value.Append(buff[:0], 10)
-	_this.AddBytes(used)
+	_this.WriteBytes(used)
 }
 
-func (_this *EncodeBuffer) WriteFloat(value float64) {
+func (_this *Writer) WriteFloat(value float64) {
 	if math.IsNaN(value) {
 		if common.IsSignalingNan(value) {
 			_this.WriteSignalingNan()
@@ -146,25 +150,26 @@ func (_this *EncodeBuffer) WriteFloat(value float64) {
 		return
 	}
 
-	buff := _this.RequireBytes(floatStringMaxByteCount)[:0]
-	used := strconv.AppendFloat(buff, value, 'g', -1, 64)
-	_this.UseBytes(len(used))
+	_this.ExpandBuffer(floatStringMaxByteCount)
+	used := strconv.AppendFloat(_this.Buffer[:0], value, 'g', -1, 64)
+	_this.FlushBuffer(0, len(used))
 }
 
-func (_this *EncodeBuffer) WriteFloatHexNoPrefix(value float64) {
-	buff := _this.RequireBytes(floatStringMaxByteCount)[:0]
-	used := strconv.AppendFloat(buff, value, 'x', -1, 64)
+func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
+	_this.ExpandBuffer(floatStringMaxByteCount)
+	used := strconv.AppendFloat(_this.Buffer[:0], value, 'x', -1, 64)
+	end := len(used)
 	if bytes.HasSuffix(used, []byte("p+00")) {
-		used = used[:len(used)-4]
+		end -= 4
 	}
-	copy(used, used[2:])
+	start := 2
 	if value < 0 {
-		used[0] = '-'
+		used[start] = '-'
 	}
-	_this.UseBytes(len(used) - 2)
+	_this.FlushBuffer(start, end)
 }
 
-func (_this *EncodeBuffer) WriteBigFloat(value *big.Float) {
+func (_this *Writer) WriteBigFloat(value *big.Float) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -180,10 +185,10 @@ func (_this *EncodeBuffer) WriteBigFloat(value *big.Float) {
 
 	var buff [64]byte
 	used := value.Append(buff[:0], 'g', conversions.BitsToDecimalDigits(int(value.Prec())))
-	_this.AddBytes(used)
+	_this.WriteBytes(used)
 }
 
-func (_this *EncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
+func (_this *Writer) WriteDecimalFloat(value compact_float.DFloat) {
 	if value.IsNan() {
 		if value.IsSignalingNan() {
 			_this.WriteSignalingNan()
@@ -201,10 +206,10 @@ func (_this *EncodeBuffer) WriteDecimalFloat(value compact_float.DFloat) {
 		return
 	}
 
-	_this.AddString(value.Text('g'))
+	_this.WriteString(value.Text('g'))
 }
 
-func (_this *EncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
+func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
 		_this.WriteNA()
 		return
@@ -223,19 +228,19 @@ func (_this *EncodeBuffer) WriteBigDecimalFloat(value *apd.Decimal) {
 	default:
 		var buff [64]byte
 		used := value.Append(buff[:0], 'g')
-		_this.AddBytes(used)
+		_this.WriteBytes(used)
 	}
 }
 
-func (_this *EncodeBuffer) WriteUUID(v []byte) {
+func (_this *Writer) WriteUUID(v []byte) {
 	if len(v) != 16 {
 		panic(fmt.Errorf("expected UUID length 16 but got %v", len(v)))
 	}
-	_this.AddFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+	_this.WriteFmt("@%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
 }
 
-func (_this *EncodeBuffer) WriteTime(value time.Time) {
+func (_this *Writer) WriteTime(value time.Time) {
 	t, err := compact_time.AsCompactTime(value)
 	if err != nil {
 		_this.unexpectedError(err, value)
@@ -243,7 +248,7 @@ func (_this *EncodeBuffer) WriteTime(value time.Time) {
 	_this.WriteCompactTime(t)
 }
 
-func (_this *EncodeBuffer) WriteCompactTime(value compact_time.Time) {
+func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 	if value.IsZeroValue() {
 		_this.WriteNA()
 		return
@@ -275,70 +280,64 @@ func (_this *EncodeBuffer) WriteCompactTime(value compact_time.Time) {
 	}
 	switch value.TimeType {
 	case compact_time.TypeDate:
-		_this.AddFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
+		_this.WriteFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
 	case compact_time.TypeTime:
-		_this.AddFmt("%02d:%02d:%02d%s%s", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
+		_this.WriteFmt("%02d:%02d:%02d%s%s", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	case compact_time.TypeTimestamp:
-		_this.AddFmt("%d-%02d-%02d/%02d:%02d:%02d%s%s",
+		_this.WriteFmt("%d-%02d-%02d/%02d:%02d:%02d%s%s",
 			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
 	default:
 		panic(fmt.Errorf("unknown compact time type %v", value.TimeType))
 	}
 }
 
-func (_this *EncodeBuffer) WritePotentiallyQuotedStringBytes(value []byte) {
+func (_this *Writer) WritePotentiallyQuotedStringBytes(value []byte) {
 	if len(value) == 0 {
-		_this.AddBytes([]byte{'"', '"'})
+		_this.WriteBytes([]byte{'"', '"'})
 		return
 	}
 
 	escapeCount, requiresQuotes := getStringRequirements(value)
 
 	if !requiresQuotes {
-		_this.AddBytes(value)
+		_this.WriteBytes(value)
 		return
 	}
 
 	if escapeCount == 0 {
-		length := len(value) + 2
-		data := _this.RequireBytes(length)
-		data[0] = '"'
-		copy(data[1:], value)
-		data[length-1] = '"'
-		_this.UseBytes(length)
+		_this.WriteByte('"')
+		_this.WriteBytes(value)
+		_this.WriteByte('"')
 		return
 	}
 
 	_this.WriteEscapedQuotedStringBytes(value, escapeCount)
 }
 
-func (_this *EncodeBuffer) WriteEscapedQuotedStringBytes(value []byte, escapeCount int) {
+func (_this *Writer) WriteEscapedQuotedStringBytes(value []byte, escapeCount int) {
 	// Worst case scenario: All characters that require escaping need a unicode
 	// sequence. In this case, we'd need at least 7 bytes per escaped character.
-	data := _this.RequireBytes(len(value) + escapeCount*6 + 2)
-	// TODO: Encode directly rather than using bytes.Buffer
-	bb := bytes.NewBuffer(data[:0])
+	// data := _this.RequireBytes(len(value) + escapeCount*6 + 2)
 
-	// Note: StringBuilder's WriteXYZ() always return nil errors
-	bb.WriteByte('"')
+	_this.WriteByte('"')
 	for _, ch := range string(value) {
 		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeQuoted) {
-			bb.Write(escapeCharQuoted(ch))
+			// TODO: render escapes into buffer to avoid allocs
+			_this.WriteBytes(escapeCharQuoted(ch))
 		} else {
-			bb.WriteRune(ch)
+			_this.WriteRune(ch)
 		}
 	}
-	bb.WriteByte('"')
-	_this.UseBytes(bb.Len())
+	_this.WriteByte('"')
 }
 
-func (_this *EncodeBuffer) WritePotentiallyEscapedStringArrayContents(value []byte) {
+func (_this *Writer) WritePotentiallyEscapedStringArrayContents(value []byte) {
 	if len(value) == 0 {
 		return
 	}
 
 	if !needsEscapesStringlikeArray(value) {
-		_this.AddBytes(value)
+		_this.WriteBytes(value)
 		return
 	}
 
@@ -353,17 +352,17 @@ func (_this *EncodeBuffer) WritePotentiallyEscapedStringArrayContents(value []by
 			bb.WriteRune(ch)
 		}
 	}
-	_this.AddBytes(bb.Bytes())
+	_this.WriteBytes(bb.Bytes())
 
 }
 
-func (_this *EncodeBuffer) WritePotentiallyEscapedMarkupContents(value []byte) {
+func (_this *Writer) WritePotentiallyEscapedMarkupContents(value []byte) {
 	if len(value) == 0 {
 		return
 	}
 
 	if !needsEscapesMarkup(value) {
-		_this.AddBytes(value)
+		_this.WriteBytes(value)
 		return
 	}
 
@@ -378,89 +377,90 @@ func (_this *EncodeBuffer) WritePotentiallyEscapedMarkupContents(value []byte) {
 			bb.WriteRune(ch)
 		}
 	}
-	_this.AddBytes(bb.Bytes())
+	_this.WriteBytes(bb.Bytes())
 }
 
 var hexToChar = [16]byte{
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 }
 
-func (_this *EncodeBuffer) WriteHexBytes(value []byte) {
+func (_this *Writer) WriteHexBytes(value []byte) {
 	length := len(value) * 3
-	dst := _this.RequireBytes(length)
+	_this.ExpandBuffer(length)
+	dst := _this.Buffer
 	for i := 0; i < len(value); i++ {
 		b := value[i]
 		dst[i*3] = ' '
 		dst[i*3+1] = hexToChar[b>>4]
 		dst[i*3+2] = hexToChar[b&15]
 	}
-	_this.UseBytes(length)
+	_this.FlushBuffer(0, length)
 }
 
-func (_this *EncodeBuffer) WriteMarkerBegin(id interface{}) {
-	_this.AddFmt("&%v:", id)
+func (_this *Writer) WriteMarkerBegin(id interface{}) {
+	_this.WriteFmt("&%v:", id)
 }
 
-func (_this *EncodeBuffer) WriteReference(id interface{}) {
-	_this.AddFmt("$%v", id)
+func (_this *Writer) WriteReference(id interface{}) {
+	_this.WriteFmt("$%v", id)
 }
 
-func (_this *EncodeBuffer) WriteSeparator() {
-	_this.AddByte(':')
+func (_this *Writer) WriteSeparator() {
+	_this.WriteByte(':')
 }
 
-func (_this *EncodeBuffer) WriteListBegin() {
-	_this.AddByte('[')
+func (_this *Writer) WriteListBegin() {
+	_this.WriteByte('[')
 }
 
-func (_this *EncodeBuffer) WriteListEnd() {
-	_this.AddByte(']')
+func (_this *Writer) WriteListEnd() {
+	_this.WriteByte(']')
 }
 
-func (_this *EncodeBuffer) WriteMapBegin() {
-	_this.AddByte('{')
+func (_this *Writer) WriteMapBegin() {
+	_this.WriteByte('{')
 }
 
-func (_this *EncodeBuffer) WriteMapEnd() {
-	_this.AddByte('}')
+func (_this *Writer) WriteMapEnd() {
+	_this.WriteByte('}')
 }
 
-func (_this *EncodeBuffer) WriteMetadataBegin() {
-	_this.AddByte('(')
+func (_this *Writer) WriteMetadataBegin() {
+	_this.WriteByte('(')
 }
 
-func (_this *EncodeBuffer) WriteMetadataEnd() {
-	_this.AddByte(')')
+func (_this *Writer) WriteMetadataEnd() {
+	_this.WriteByte(')')
 }
 
-func (_this *EncodeBuffer) WriteMarkupBegin() {
-	_this.AddByte('<')
+func (_this *Writer) WriteMarkupBegin() {
+	_this.WriteByte('<')
 }
 
-func (_this *EncodeBuffer) WriteMarkupContentsBegin() {
-	_this.AddByte(',')
+func (_this *Writer) WriteMarkupContentsBegin() {
+	_this.WriteByte(',')
 }
 
-func (_this *EncodeBuffer) WriteMarkupEnd() {
-	_this.AddByte('>')
+func (_this *Writer) WriteMarkupEnd() {
+	_this.WriteByte('>')
 }
 
-func (_this *EncodeBuffer) WriteArrayBegin() {
-	_this.AddByte('|')
+func (_this *Writer) WriteArrayBegin() {
+	_this.WriteByte('|')
 }
 
-func (_this *EncodeBuffer) WriteArrayEnd() {
-	_this.AddByte('|')
+func (_this *Writer) WriteArrayEnd() {
+	_this.WriteByte('|')
 }
 
-func (_this *EncodeBuffer) WriteCommentBegin() {
-	_this.AddBytes([]byte{'/', '*'})
+func (_this *Writer) WriteCommentBegin() {
+	_this.WriteBytes([]byte{'/', '*'})
 }
 
-func (_this *EncodeBuffer) WriteCommentEnd() {
-	_this.AddBytes([]byte{'*', '/'})
+func (_this *Writer) WriteCommentEnd() {
+	_this.WriteBytes([]byte{'*', '/'})
 }
 
-func (_this *EncodeBuffer) unexpectedError(err error, encoding interface{}) {
+func (_this *Writer) unexpectedError(err error, encoding interface{}) {
 	panic(fmt.Errorf("unexpected error [%v] while encoding %v", err, encoding))
 }

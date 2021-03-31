@@ -41,7 +41,7 @@ type Context struct {
 }
 
 func (_this *Context) NotifyNil() {
-	_this.EventReceiver.OnNA()
+	_this.EventReceiver.OnNil()
 }
 
 func sessionContext(getIteratorFunc GetIteratorForType, lowercaseStructFieldNames bool) Context {

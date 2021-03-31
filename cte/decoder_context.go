@@ -34,7 +34,7 @@ type DecoderStackEntry struct {
 
 type DecoderContext struct {
 	opts               options.CTEDecoderOptions
-	Stream             DecodeBuffer
+	Stream             Reader
 	EventReceiver      events.DataEventReceiver
 	stack              []DecoderStackEntry
 	IsDocumentComplete bool
