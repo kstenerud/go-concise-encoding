@@ -59,7 +59,6 @@ func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, m
 			kvTypes:      kvTypes,
 			kvGenerators: kvGenerators,
 		}
-		builder.reset()
 		return builder
 	}
 }
@@ -106,8 +105,10 @@ func (_this *mapBuilder) newElem() reflect.Value {
 
 func (_this *mapBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator(ctx).BuildFromNil(ctx, object)
-	_this.store(object)
+	if _this.container.IsValid() {
+		_this.nextGenerator(ctx).BuildFromNil(ctx, object)
+		_this.store(object)
+	}
 	return object
 }
 
@@ -216,12 +217,12 @@ func (_this *mapBuilder) BuildInitiateMap(ctx *Context) {
 
 func (_this *mapBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
-	_this.reset()
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
 func (_this *mapBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
+	_this.reset()
 }
 
 func (_this *mapBuilder) BuildFromReference(ctx *Context, id interface{}) {

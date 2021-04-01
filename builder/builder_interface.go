@@ -141,19 +141,19 @@ func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value compact_
 }
 
 func (_this *interfaceBuilder) BuildInitiateList(ctx *Context) {
-	ctx.StackBuilder(interfaceSliceBuilderGenerator(ctx))
+	interfaceSliceBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildInitiateMap(ctx *Context) {
-	ctx.StackBuilder(interfaceMapBuilderGenerator(ctx))
+	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildBeginListContents(ctx *Context) {
-	ctx.StackBuilder(interfaceSliceBuilderGenerator(ctx))
+	interfaceSliceBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
-	ctx.StackBuilder(interfaceMapBuilderGenerator(ctx))
+	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id interface{}) {

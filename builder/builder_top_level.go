@@ -122,7 +122,8 @@ func (_this *topLevelBuilder) BuildInitiateList(ctx *Context) {
 	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf((*interfaceBuilder)(nil)) {
 		_this.builderGenerator = interfaceSliceBuilderGenerator
 	}
-	_this.builderGenerator(ctx).BuildBeginListContents(ctx)
+	builder := _this.builderGenerator(ctx)
+	builder.BuildBeginListContents(ctx)
 }
 
 func (_this *topLevelBuilder) BuildInitiateMap(ctx *Context) {

@@ -47,7 +47,6 @@ func newArrayBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter,
 			containerType: containerType,
 			elemGenerator: elemBuilderGenerator,
 		}
-		builder.reset()
 		return builder
 	}
 }
@@ -161,12 +160,12 @@ func (_this *arrayBuilder) BuildInitiateMap(ctx *Context) {
 
 func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
-	_this.reset()
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
 func (_this *arrayBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
+	_this.reset()
 }
 
 func (_this *arrayBuilder) BuildFromReference(ctx *Context, id interface{}) {

@@ -49,7 +49,6 @@ func newSliceBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter,
 			dstType:       dstType,
 			elemGenerator: builderGenerator,
 		}
-		builder.reset()
 		return builder
 	}
 }
@@ -75,7 +74,9 @@ func (_this *sliceBuilder) storeValue(value reflect.Value) {
 func (_this *sliceBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromNil(ctx, object)
-	_this.storeValue(object)
+	if _this.ppContainer != nil {
+		_this.storeValue(object)
+	}
 	return object
 }
 
@@ -180,12 +181,12 @@ func (_this *sliceBuilder) BuildInitiateMap(ctx *Context) {
 
 func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {
 	object := **_this.ppContainer
-	_this.reset()
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
 func (_this *sliceBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
+	_this.reset()
 }
 
 func (_this *sliceBuilder) BuildFromReference(ctx *Context, id interface{}) {

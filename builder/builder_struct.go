@@ -132,7 +132,6 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 			nameBuilderGenerator:   nameBuilderGenerator,
 			ignoreBuilderGenerator: ignoreBuilderGenerator,
 		}
-		builder.reset()
 		return builder
 	}
 }
@@ -304,12 +303,12 @@ func (_this *structBuilder) BuildInitiateMap(ctx *Context) {
 
 func (_this *structBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
-	_this.reset()
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
 func (_this *structBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
+	_this.reset()
 }
 
 func (_this *structBuilder) BuildFromReference(ctx *Context, id interface{}) {
