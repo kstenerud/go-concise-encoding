@@ -86,6 +86,7 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 // Marshal a go object into a CBE document, returning the document as a byte slice.
 func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, err error) {
 	var buff bytes.Buffer
+	buff.Grow(128)
 	err = _this.Marshal(object, &buff)
 	document = buff.Bytes()
 	return

@@ -251,6 +251,10 @@ func (_this *Session) getDefaultIteratorForType(t reflect.Type) IteratorFunction
 			return iteratePBigFloat
 		case common.TypePBigDecimalFloat:
 			return iteratePBigDecimal
+		case common.TypePTime:
+			return iteratePTime
+		case common.TypePCompactTime:
+			return iteratePCompactTime
 		default:
 			return newPointerIterator(&_this.context, t)
 		}

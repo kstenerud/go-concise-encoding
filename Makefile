@@ -34,6 +34,10 @@ benchmarkCTEMarshal:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCTEMarshal -bench BenchmarkCTEMarshal -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
+benchmarkJSONMarshal:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkJSONMarshal -bench BenchmarkJSONMarshal -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
 benchmarkCBEUnmarshal:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBEUnmarshalNoRules -bench BenchmarkCBEUnmarshalNoRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
@@ -45,6 +49,10 @@ benchmarkCTEUnmarshal:
 benchmarkCBEUnmarshalRules:
 	$(info To see profile: go tool pprof cpuprofile.out)
 	go test -run BenchmarkCBEUnmarshalRules -bench BenchmarkCBEUnmarshalRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
+
+benchmarkJSONUnmarshal:
+	$(info To see profile: go tool pprof cpuprofile.out)
+	go test -run BenchmarkJSONUnmarshalNoRules -bench BenchmarkJSONUnmarshalNoRules -benchmem -memprofile memprofile.out -cpuprofile cpuprofile.out
 
 benchmarkCTEDecode:
 	$(info To see profile: go tool pprof cpuprofile.out)

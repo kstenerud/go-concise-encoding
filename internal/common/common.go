@@ -43,7 +43,9 @@ var (
 	TypeString         = reflect.TypeOf("")
 	TypeBytes          = reflect.TypeOf([]uint8{})
 	TypeTime           = reflect.TypeOf(time.Time{})
+	TypePTime          = reflect.TypeOf((*time.Time)(nil))
 	TypeCompactTime    = reflect.TypeOf(compact_time.Time{})
+	TypePCompactTime   = reflect.TypeOf((*compact_time.Time)(nil))
 	TypeDFloat         = reflect.TypeOf(compact_float.DFloat{})
 
 	TypeBigInt  = reflect.TypeOf(big.Int{})
