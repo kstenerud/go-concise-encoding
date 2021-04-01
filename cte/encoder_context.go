@@ -52,7 +52,7 @@ type EncoderContext struct {
 	encoderStack        []Encoder
 	CurrentEncoder      Encoder
 	ContainerHasObjects bool
-	currentPrefix       string
+	currentPrefix       []byte
 	Stream              Writer
 	ArrayEngine         arrayEncoderEngine
 }
@@ -99,38 +99,36 @@ func (_this *EncoderContext) WriteBasicIndent() {
 	_this.Stream.WriteBytes(_this.indenter.Get())
 }
 
-func (_this *EncoderContext) SetIndentPrefix(value string) {
+func (_this *EncoderContext) SetIndentPrefix(value []byte) {
 	_this.currentPrefix = value
 }
 
 func (_this *EncoderContext) SetStandardIndentPrefix() {
-	_this.SetIndentPrefix(string(_this.indenter.Get()))
+	_this.SetIndentPrefix(_this.indenter.Get())
 }
 
 func (_this *EncoderContext) SetStandardMapKeyPrefix() {
-	_this.SetIndentPrefix(string(_this.indenter.Get()))
+	_this.SetIndentPrefix(_this.indenter.Get())
 }
 
 func (_this *EncoderContext) SetStandardMapValuePrefix() {
-	_this.SetIndentPrefix(" = ")
+	_this.SetIndentPrefix(mapValuePrefix)
 }
 
 func (_this *EncoderContext) SetMarkupAttributeKeyPrefix() {
-	_this.SetIndentPrefix(" ")
+	_this.SetIndentPrefix(markupAttributeKeyPrefix)
 }
 
 func (_this *EncoderContext) SetMarkupAttributeValuePrefix() {
-	_this.SetIndentPrefix("=")
+	_this.SetIndentPrefix(markupAttributeValuePrefix)
 }
 
 func (_this *EncoderContext) ClearPrefix() {
-	_this.SetIndentPrefix("")
+	_this.SetIndentPrefix(emptyPrefix)
 }
 
 func (_this *EncoderContext) WriteCurrentPrefix() {
-	_this.Stream.WriteString(_this.currentPrefix)
-	// TODO: Need to do this?
-	// _this.ClearMapPrefix()
+	_this.Stream.WriteBytes(_this.currentPrefix)
 }
 
 func (_this *EncoderContext) BeginStandardList() {
@@ -234,3 +232,12 @@ func (_this *EncoderContext) WriteMarkupContentString(data string) {
 func (_this *EncoderContext) WriteMarkupContentStringData(data []uint8) {
 	_this.Stream.WritePotentiallyEscapedMarkupContents(data)
 }
+
+// ============================================================================
+
+var (
+	emptyPrefix                = []byte{}
+	mapValuePrefix             = []byte{' ', '=', ' '}
+	markupAttributeKeyPrefix   = []byte{' '}
+	markupAttributeValuePrefix = []byte{'='}
+)
