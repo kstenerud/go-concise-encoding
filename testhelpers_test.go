@@ -504,17 +504,3 @@ func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 	assertCBEMarshalUnmarshal(t, expected)
 	// assertCTEMarshalUnmarshal(t, expected)
 }
-
-func assertMarshalUnmarshalWithBufferSize(t *testing.T, bufferSize int, expected interface{}) {
-	cbeMarshalOptions := options.DefaultCBEMarshalerOptions()
-	cbeMarshalOptions.Encoder.BufferSize = bufferSize
-	cbeUnmarshalOptions := options.DefaultCBEUnmarshalerOptions()
-	cbeUnmarshalOptions.Decoder.BufferSize = bufferSize
-	assertCBEMarshalUnmarshalWithOptions(t, cbeMarshalOptions, cbeUnmarshalOptions, expected)
-
-	cteMarshalOptions := options.DefaultCTEMarshalerOptions()
-	cteMarshalOptions.Encoder.BufferSize = bufferSize
-	cteUnmarshalOptions := options.DefaultCTEUnmarshalerOptions()
-	cteUnmarshalOptions.Decoder.BufferSize = bufferSize
-	assertCTEMarshalUnmarshalWithOptions(t, cteMarshalOptions, cteUnmarshalOptions, expected)
-}

@@ -186,9 +186,7 @@ func BenchmarkCTEDecode(b *testing.B) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
 	marshaler := ce.NewCTEMarshaler(marshalOpts)
-	opts := options.DefaultCTEDecoderOptions()
-	opts.BufferSize = 0
-	decoder := ce.NewCTEDecoder(opts)
+	decoder := ce.NewCTEDecoder(nil)
 	benchmarkDecode(b, marshaler, decoder)
 }
 

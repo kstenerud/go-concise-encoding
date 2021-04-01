@@ -49,16 +49,12 @@ const (
 // CTE Decoder
 
 type CTEDecoderOptions struct {
-	// The size of the underlying buffer to use when decoding a document.
-	BufferSize int
-
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
 	ConciseEncodingVersion uint64
 }
 
 func DefaultCTEDecoderOptions() *CTEDecoderOptions {
 	return &CTEDecoderOptions{
-		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
@@ -66,10 +62,6 @@ func DefaultCTEDecoderOptions() *CTEDecoderOptions {
 func (_this *CTEDecoderOptions) WithDefaultsApplied() *CTEDecoderOptions {
 	if _this == nil {
 		return DefaultCTEDecoderOptions()
-	}
-
-	if _this.BufferSize < 64 {
-		_this.BufferSize = 64
 	}
 
 	if _this.ConciseEncodingVersion == 0 {
@@ -87,8 +79,6 @@ func (_this *CTEDecoderOptions) Validate() error {
 // CTE Encoder
 
 type CTEEncoderOptions struct {
-	BufferSize int
-
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
 	ConciseEncodingVersion uint64
 
@@ -155,7 +145,6 @@ func (_this CTEEncodingFormat) String() string {
 
 func DefaultCTEEncoderOptions() *CTEEncoderOptions {
 	opts := &CTEEncoderOptions{
-		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 		Indent:                 "    ",
 		MaxColumn:              0,

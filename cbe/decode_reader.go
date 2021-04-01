@@ -53,92 +53,51 @@ func (_this *Reader) SetReader(reader io.Reader) {
 	_this.reader = reader
 }
 
-func (_this *Reader) readIntoBuffer(count int) {
-	_this.expandBuffer(count)
-	dst := _this.buffer[:count]
-	for len(dst) > 0 {
-		if bytesRead, err := _this.reader.Read(dst); err != nil {
-			_this.unexpectedError(err)
-		} else {
-			dst = dst[bytesRead:]
-		}
-	}
-	return
-}
-
-func (_this *Reader) DecodeUint8() uint8 {
+func (_this *Reader) ReadUint8() uint8 {
 	if _, err := _this.reader.Read(_this.buffer[:1]); err != nil {
 		_this.unexpectedError(err)
 	}
 	return _this.buffer[0]
 }
 
-func (_this *Reader) DecodeUint16() uint16 {
+func (_this *Reader) ReadUint16() uint16 {
 	_this.readIntoBuffer(2)
 	return uint16(_this.buffer[0]) | uint16(_this.buffer[1])<<8
 }
 
-func (_this *Reader) DecodeUint32() uint32 {
+func (_this *Reader) ReadUint32() uint32 {
 	_this.readIntoBuffer(4)
 	return uint32(_this.buffer[0]) | uint32(_this.buffer[1])<<8 | uint32(_this.buffer[2])<<16 | uint32(_this.buffer[3])<<24
 }
 
-func (_this *Reader) DecodeUint64() uint64 {
+func (_this *Reader) ReadUint64() uint64 {
 	_this.readIntoBuffer(8)
 	return uint64(_this.buffer[0]) | uint64(_this.buffer[1])<<8 | uint64(_this.buffer[2])<<16 | uint64(_this.buffer[3])<<24 |
 		uint64(_this.buffer[4])<<32 | uint64(_this.buffer[5])<<40 | uint64(_this.buffer[6])<<48 | uint64(_this.buffer[7])<<56
 }
 
-func (_this *Reader) DecodeVersion() uint64 {
-	return _this.DecodeSmallULEB128("version", 0xffffffffffffffff)
+func (_this *Reader) ReadVersion() uint64 {
+	return _this.readSmallULEB128("version", math.MaxUint64)
 }
 
-func (_this *Reader) DecodeTypeWithEOFCheck() (t cbeTypeField, isEOF bool) {
+func (_this *Reader) ReadTypeWithEOFCheck() cbeTypeField {
 	if _, err := _this.reader.Read(_this.buffer[:1]); err != nil {
 		if err == io.EOF {
-			isEOF = true
-			return
+			return cbeTypeEOF
 		}
 		_this.unexpectedError(err)
 	}
 
-	t = cbeTypeField(_this.buffer[0])
-	return
+	return cbeTypeField(_this.buffer[0])
 }
 
-func (_this *Reader) DecodeType() cbeTypeField {
-	return cbeTypeField(_this.DecodeUint8())
+func (_this *Reader) ReadType() cbeTypeField {
+	return cbeTypeField(_this.ReadUint8())
 }
 
-func (_this *Reader) DecodeULEB128() (asUint uint64, asBig *big.Int) {
-	asUint, asBig, _, err := uleb128.DecodeWithByteBuffer(_this.reader, _this.buffer)
-	if err != nil {
-		_this.unexpectedError(err)
-	}
-	return
-}
-
-func (_this *Reader) DecodeSmallULEB128(name string, maxValue uint64) uint64 {
-	asUint, asBig, _, err := uleb128.DecodeWithByteBuffer(_this.reader, _this.buffer)
-	if err != nil {
-		_this.unexpectedError(err)
-	}
-
-	if asBig != nil {
-		_this.errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue)
-	}
-	if asUint > maxValue {
-		_this.errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue)
-	}
-	return asUint
-}
-
-// TODO: Check max big.int bit count
-const maxBigIntBitCount = 8192
-
-func (_this *Reader) DecodeUint() (asUint uint64, asBig *big.Int) {
-	byteCount := _this.DecodeSmallULEB128("uint length field", maxBigIntBitCount/8)
-	bytes := _this.DecodeBytes(int(byteCount))
+func (_this *Reader) ReadUint() (asUint uint64, asBig *big.Int) {
+	byteCount := _this.readSmallULEB128("uint length field", maxBigIntBitCount/8)
+	bytes := _this.ReadBytes(int(byteCount))
 	if byteCount <= 8 {
 		for i := 0; i < len(bytes); i++ {
 			asUint |= uint64(bytes[i]) << (i * 8)
@@ -167,19 +126,19 @@ func (_this *Reader) DecodeUint() (asUint uint64, asBig *big.Int) {
 	return
 }
 
-func (_this *Reader) DecodeFloat16() float32 {
-	return math.Float32frombits(uint32(_this.DecodeUint16()) << 16)
+func (_this *Reader) ReadFloat16() float32 {
+	return math.Float32frombits(uint32(_this.ReadUint16()) << 16)
 }
 
-func (_this *Reader) DecodeFloat32() float32 {
-	return math.Float32frombits(_this.DecodeUint32())
+func (_this *Reader) ReadFloat32() float32 {
+	return math.Float32frombits(_this.ReadUint32())
 }
 
-func (_this *Reader) DecodeFloat64() float64 {
-	return math.Float64frombits(_this.DecodeUint64())
+func (_this *Reader) ReadFloat64() float64 {
+	return math.Float64frombits(_this.ReadUint64())
 }
 
-func (_this *Reader) DecodeDecimalFloat() (compact_float.DFloat, *apd.Decimal) {
+func (_this *Reader) ReadDecimalFloat() (compact_float.DFloat, *apd.Decimal) {
 	value, bigValue, _, err := compact_float.DecodeWithByteBuffer(_this.reader, _this.buffer)
 	if err != nil {
 		_this.unexpectedError(err)
@@ -188,7 +147,7 @@ func (_this *Reader) DecodeDecimalFloat() (compact_float.DFloat, *apd.Decimal) {
 	return value, bigValue
 }
 
-func (_this *Reader) DecodeDate() compact_time.Time {
+func (_this *Reader) ReadDate() compact_time.Time {
 	value, _, err := compact_time.DecodeDateWithBuffer(_this.reader, _this.buffer)
 	if err != nil {
 		_this.unexpectedError(err)
@@ -197,7 +156,7 @@ func (_this *Reader) DecodeDate() compact_time.Time {
 	return value
 }
 
-func (_this *Reader) DecodeTime() compact_time.Time {
+func (_this *Reader) ReadTime() compact_time.Time {
 	value, _, err := compact_time.DecodeTimeWithBuffer(_this.reader, _this.buffer)
 	if err != nil {
 		_this.unexpectedError(err)
@@ -206,7 +165,7 @@ func (_this *Reader) DecodeTime() compact_time.Time {
 	return value
 }
 
-func (_this *Reader) DecodeTimestamp() compact_time.Time {
+func (_this *Reader) ReadTimestamp() compact_time.Time {
 	value, _, err := compact_time.DecodeTimestampWithBuffer(_this.reader, _this.buffer)
 	if err != nil {
 		_this.unexpectedError(err)
@@ -215,15 +174,12 @@ func (_this *Reader) DecodeTimestamp() compact_time.Time {
 	return value
 }
 
-func (_this *Reader) DecodeArrayChunkHeader() (length uint64, moreChunksFollow bool) {
-	asUint, asBig := _this.DecodeULEB128()
-	if asBig != nil {
-		_this.errorf("Chunk header length field is too big")
-	}
-	return asUint >> 1, asUint&1 == 1
+func (_this *Reader) ReadArrayChunkHeader() (length uint64, moreChunksFollow bool) {
+	header := _this.readSmallULEB128("array chunk header", math.MaxUint64)
+	return header >> 1, header&1 == 1
 }
 
-func (_this *Reader) DecodeBytes(byteCount int) []byte {
+func (_this *Reader) ReadBytes(byteCount int) []byte {
 	_this.readIntoBuffer(byteCount)
 	return _this.buffer[:byteCount]
 }
@@ -232,7 +188,38 @@ func (_this *Reader) DecodeBytes(byteCount int) []byte {
 
 // Internal
 
+// TODO: Check max big.int bit count
+const maxBigIntBitCount = 8192
+
 const decoderStartBufferSize = 127
+
+func (_this *Reader) readSmallULEB128(name string, maxValue uint64) uint64 {
+	asUint, asBig, _, err := uleb128.DecodeWithByteBuffer(_this.reader, _this.buffer)
+	if err != nil {
+		_this.unexpectedError(err)
+	}
+
+	if asBig != nil {
+		_this.errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue)
+	}
+	if asUint > maxValue {
+		_this.errorf("%v: %v is too big (max allowed value = %v)", asBig, name, maxValue)
+	}
+	return asUint
+}
+
+func (_this *Reader) readIntoBuffer(count int) {
+	_this.expandBuffer(count)
+	dst := _this.buffer[:count]
+	for len(dst) > 0 {
+		if bytesRead, err := _this.reader.Read(dst); err != nil {
+			_this.unexpectedError(err)
+		} else {
+			dst = dst[bytesRead:]
+		}
+	}
+	return
+}
 
 func (_this *Reader) expandBuffer(size int) {
 	if len(_this.buffer) < size {

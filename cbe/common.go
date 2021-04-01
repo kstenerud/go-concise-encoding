@@ -35,7 +35,7 @@ import (
 
 const cbeDocumentHeader = byte(0x03)
 
-type cbeTypeField uint8
+type cbeTypeField uint16
 
 const (
 	cbeTypeDecimal      cbeTypeField = 0x65
@@ -110,6 +110,9 @@ const (
 	cbeTypeArrayUUID    = cbeTypeUUID
 	cbeTypeRIDCat       = cbeTypeRID
 	cbeTypeNA           = cbeTypeNil
+
+	// Special code to mark EOF
+	cbeTypeEOF = 0x100
 )
 
 const (

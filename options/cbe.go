@@ -28,16 +28,12 @@ import (
 // CBE Decoder
 
 type CBEDecoderOptions struct {
-	// The size of the underlying buffer to use when decoding a document.
-	BufferSize int
-
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
 	ConciseEncodingVersion uint64
 }
 
 func DefaultCBEDecoderOptions() *CBEDecoderOptions {
 	return &CBEDecoderOptions{
-		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
@@ -45,10 +41,6 @@ func DefaultCBEDecoderOptions() *CBEDecoderOptions {
 func (_this *CBEDecoderOptions) WithDefaultsApplied() *CBEDecoderOptions {
 	if _this == nil {
 		return DefaultCBEDecoderOptions()
-	}
-
-	if _this.BufferSize < 64 {
-		_this.BufferSize = 64
 	}
 
 	if _this.ConciseEncodingVersion == 0 {
@@ -66,16 +58,12 @@ func (_this *CBEDecoderOptions) Validate() error {
 // CBE Encoder
 
 type CBEEncoderOptions struct {
-	// The size of the underlying buffer to use when encoding a document.
-	BufferSize int
-
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
 	ConciseEncodingVersion uint64
 }
 
 func DefaultCBEEncoderOptions() *CBEEncoderOptions {
 	return &CBEEncoderOptions{
-		BufferSize:             4096,
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
@@ -83,10 +71,6 @@ func DefaultCBEEncoderOptions() *CBEEncoderOptions {
 func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
 	if _this == nil {
 		return DefaultCBEEncoderOptions()
-	}
-
-	if _this.BufferSize < 64 {
-		_this.BufferSize = 64
 	}
 
 	if _this.ConciseEncodingVersion == 0 {
