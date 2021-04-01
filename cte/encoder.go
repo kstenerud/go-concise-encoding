@@ -22,11 +22,8 @@ package cte
 
 import (
 	"io"
-	"math"
 	"math/big"
 	"time"
-
-	"github.com/kstenerud/go-concise-encoding/internal/common"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -147,55 +144,22 @@ func (_this *EncoderEventReceiver) OnInt(value int64) {
 }
 
 func (_this *EncoderEventReceiver) OnBigInt(value *big.Int) {
-	if value == nil {
-		_this.OnNA()
-		return
-	}
-
 	_this.context.CurrentEncoder.EncodeBigInt(&_this.context, value)
 }
 
 func (_this *EncoderEventReceiver) OnFloat(value float64) {
-	if math.IsNaN(value) {
-		_this.OnNan(common.IsSignalingNan(value))
-		return
-	}
-
 	_this.context.CurrentEncoder.EncodeFloat(&_this.context, value)
 }
 
 func (_this *EncoderEventReceiver) OnBigFloat(value *big.Float) {
-	if value == nil {
-		_this.OnNA()
-		return
-	}
-
 	_this.context.CurrentEncoder.EncodeBigFloat(&_this.context, value)
 }
 
 func (_this *EncoderEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
-	if value.IsNan() {
-		_this.OnNan(value.IsSignalingNan())
-		return
-	}
-
 	_this.context.CurrentEncoder.EncodeDecimalFloat(&_this.context, value)
 }
 
 func (_this *EncoderEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
-	if value == nil {
-		_this.OnNA()
-		return
-	}
-	if value.Form == apd.NaNSignaling {
-		_this.OnNan(true)
-		return
-	}
-	if value.Form == apd.NaN {
-		_this.OnNan(false)
-		return
-	}
-
 	_this.context.CurrentEncoder.EncodeBigDecimalFloat(&_this.context, value)
 }
 
