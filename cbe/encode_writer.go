@@ -39,7 +39,7 @@ type Writer struct {
 
 func (_this *Writer) WriteULEB(value uint64) {
 	byteCount := uleb128.EncodeUint64ToBytes(value, _this.Buffer)
-	_this.FlushBuffer(0, byteCount)
+	_this.FlushBuffer(byteCount)
 }
 
 func (_this *Writer) WriteType(t cbeTypeField) {
@@ -49,14 +49,14 @@ func (_this *Writer) WriteType(t cbeTypeField) {
 func (_this *Writer) WriteTyped8Bits(typeValue cbeTypeField, value byte) {
 	_this.Buffer[0] = byte(typeValue)
 	_this.Buffer[1] = byte(value)
-	_this.FlushBuffer(0, 2)
+	_this.FlushBuffer(2)
 }
 
 func (_this *Writer) WriteTyped16Bits(typeValue cbeTypeField, value uint16) {
 	_this.Buffer[0] = byte(typeValue)
 	_this.Buffer[1] = byte(value)
 	_this.Buffer[2] = byte(value >> 8)
-	_this.FlushBuffer(0, 3)
+	_this.FlushBuffer(3)
 }
 
 func (_this *Writer) WriteTyped32Bits(typeValue cbeTypeField, value uint32) {
@@ -65,7 +65,7 @@ func (_this *Writer) WriteTyped32Bits(typeValue cbeTypeField, value uint32) {
 	_this.Buffer[2] = byte(value >> 8)
 	_this.Buffer[3] = byte(value >> 16)
 	_this.Buffer[4] = byte(value >> 24)
-	_this.FlushBuffer(0, 5)
+	_this.FlushBuffer(5)
 }
 
 func (_this *Writer) WriteTyped64Bits(typeValue cbeTypeField, value uint64) {
@@ -78,7 +78,7 @@ func (_this *Writer) WriteTyped64Bits(typeValue cbeTypeField, value uint64) {
 	_this.Buffer[6] = byte(value >> 40)
 	_this.Buffer[7] = byte(value >> 48)
 	_this.Buffer[8] = byte(value >> 56)
-	_this.FlushBuffer(0, 9)
+	_this.FlushBuffer(9)
 }
 
 func (_this *Writer) WriteTypedInt(cbeType cbeTypeField, value uint64) {
@@ -90,7 +90,7 @@ func (_this *Writer) WriteTypedInt(cbeType cbeTypeField, value uint64) {
 		accum >>= 8
 	}
 	_this.Buffer[1] = byte(byteCount)
-	_this.FlushBuffer(0, byteCount+2)
+	_this.FlushBuffer(byteCount + 2)
 }
 
 func (_this *Writer) WriteTypedBigInt(cbeType cbeTypeField, value *big.Int) {
@@ -139,7 +139,7 @@ func (_this *Writer) WriteFloat64(value float64) {
 func (_this *Writer) WriteDecimalFloat(value compact_float.DFloat) {
 	_this.Buffer[0] = byte(cbeTypeDecimal)
 	count := compact_float.EncodeToBytes(value, _this.Buffer[1:])
-	_this.FlushBuffer(0, count+1)
+	_this.FlushBuffer(count + 1)
 }
 
 func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
@@ -147,7 +147,7 @@ func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
 
 	_this.Buffer[0] = byte(cbeTypeDecimal)
 	count := compact_float.EncodeBigToBytes(value, _this.Buffer[1:])
-	_this.FlushBuffer(0, count+1)
+	_this.FlushBuffer(count + 1)
 }
 
 func (_this *Writer) WriteZero(sign int) {
@@ -159,7 +159,7 @@ func (_this *Writer) WriteZero(sign int) {
 	} else {
 		count = compact_float.EncodeZero(_this.Buffer[1:])
 	}
-	_this.FlushBuffer(0, count+1)
+	_this.FlushBuffer(count + 1)
 }
 
 func (_this *Writer) WriteInfinity(sign int) {
@@ -171,7 +171,7 @@ func (_this *Writer) WriteInfinity(sign int) {
 	} else {
 		count = compact_float.EncodeInfinity(_this.Buffer[1:])
 	}
-	_this.FlushBuffer(0, count+1)
+	_this.FlushBuffer(count + 1)
 }
 
 func (_this *Writer) WriteNaN(signaling bool) {
@@ -183,12 +183,12 @@ func (_this *Writer) WriteNaN(signaling bool) {
 	} else {
 		count = compact_float.EncodeQuietNan(_this.Buffer[1:])
 	}
-	_this.FlushBuffer(0, count+1)
+	_this.FlushBuffer(count + 1)
 }
 
 func (_this *Writer) WriteArrayHeader(arrayType events.ArrayType) {
 	byteCount := _this.WriteArrayHeaderToBytes(arrayType, _this.Buffer)
-	_this.FlushBuffer(0, byteCount)
+	_this.FlushBuffer(byteCount)
 }
 
 func (_this *Writer) WriteArrayChunkHeader(elementCount uint64, moreChunksFollow uint64) {
@@ -198,7 +198,7 @@ func (_this *Writer) WriteArrayChunkHeader(elementCount uint64, moreChunksFollow
 func (_this *Writer) WriteArrayAndChunkHeader(arrayType events.ArrayType, elementCount uint64, moreChunksFollow uint64) {
 	byteCount := _this.WriteArrayHeaderToBytes(arrayType, _this.Buffer)
 	byteCount += _this.WriteArrayChunkHeaderToBytes(elementCount, moreChunksFollow, _this.Buffer[byteCount:])
-	_this.FlushBuffer(0, byteCount)
+	_this.FlushBuffer(byteCount)
 }
 
 func (_this *Writer) WriteArrayHeaderToBytes(arrayType events.ArrayType, buffer []byte) int {

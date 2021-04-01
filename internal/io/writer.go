@@ -59,26 +59,26 @@ func (_this *Writer) ExpandBuffer(size int) {
 	}
 }
 
-func (_this *Writer) FlushBuffer(start int, end int) {
-	_this.WriteBytes(_this.Buffer[start:end])
+func (_this *Writer) FlushBuffer(count int) {
+	_this.writeBytes(_this.Buffer[:count])
+}
+
+func (_this *Writer) FlushBufferPortion(start, end int) {
+	_this.writeBytes(_this.Buffer[start:end])
 }
 
 func (_this *Writer) WriteByte(b byte) {
 	_this.Buffer[0] = b
-	_this.FlushBuffer(0, 1)
+	_this.FlushBuffer(1)
 }
 
 func (_this *Writer) WriteRune(r rune) {
 	n := utf8.EncodeRune(_this.Buffer, r)
-	_this.FlushBuffer(0, n)
-}
-
-func (_this *Writer) WriteString(str string) {
-	_this.stringWriter.WriteString(str)
+	_this.FlushBuffer(n)
 }
 
 func (_this *Writer) WriteBytes(b []byte) {
-	_this.writer.Write(b)
+	_this.writeBytes(b)
 }
 
 func (_this *Writer) WriteFmt(format string, args ...interface{}) {
@@ -89,6 +89,18 @@ func (_this *Writer) WriteFmt(format string, args ...interface{}) {
 // beginning of the result before adding.
 func (_this *Writer) WriteFmtStripped(stripByteCount int, format string, args ...interface{}) {
 	_this.WriteString(fmt.Sprintf(format, args...)[stripByteCount:])
+}
+
+func (_this *Writer) WriteString(str string) {
+	if _, err := _this.stringWriter.WriteString(str); err != nil {
+		panic(err)
+	}
+}
+
+func (_this *Writer) writeBytes(b []byte) {
+	if _, err := _this.writer.Write(b); err != nil {
+		panic(err)
+	}
 }
 
 // ============================================================================
@@ -107,6 +119,6 @@ func (_this *StringWriterAdapter) WriteString(str string) (n int, err error) {
 	n = len(str)
 	_this.writer.ExpandBuffer(n)
 	copy(_this.writer.Buffer, str)
-	_this.writer.FlushBuffer(0, n)
+	_this.writer.FlushBuffer(n)
 	return
 }

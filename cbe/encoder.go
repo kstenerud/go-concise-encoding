@@ -84,7 +84,7 @@ func (_this *Encoder) OnPadding(count int) {
 	for i := 0; i < count; i++ {
 		_this.writer.Buffer[i] = byte(cbeTypePadding)
 	}
-	_this.writer.FlushBuffer(0, count)
+	_this.writer.FlushBuffer(count)
 }
 
 func (_this *Encoder) OnBeginDocument() {
@@ -265,7 +265,7 @@ func (_this *Encoder) OnTime(value time.Time) {
 	_this.writer.ExpandBuffer(compact_time.EncodedSizeGoTime(value) + 1)
 	_this.writer.Buffer[0] = byte(cbeTypeTimestamp)
 	count := compact_time.EncodeGoTimestampToBytes(value, _this.writer.Buffer[1:])
-	_this.writer.FlushBuffer(0, count+1)
+	_this.writer.FlushBuffer(count + 1)
 }
 
 var ctimeToCBEType = [...]cbeTypeField{
@@ -283,7 +283,7 @@ func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	_this.writer.ExpandBuffer(value.EncodedSize() + 1)
 	_this.writer.Buffer[0] = byte(ctimeToCBEType[value.TimeType])
 	count := value.EncodeToBytes(_this.writer.Buffer[1:])
-	_this.writer.FlushBuffer(0, count+1)
+	_this.writer.FlushBuffer(count + 1)
 }
 
 func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {

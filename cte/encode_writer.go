@@ -113,7 +113,7 @@ func (_this *Writer) WriteInt(value int64) {
 func (_this *Writer) WritePositiveInt(value uint64) {
 	_this.ExpandBuffer(uintStringMaxByteCount)
 	used := strconv.AppendUint(_this.Buffer[:0], value, 10)
-	_this.FlushBuffer(0, len(used))
+	_this.FlushBuffer(len(used))
 }
 
 func (_this *Writer) WriteNegativeInt(value uint64) {
@@ -152,7 +152,7 @@ func (_this *Writer) WriteFloat(value float64) {
 
 	_this.ExpandBuffer(floatStringMaxByteCount)
 	used := strconv.AppendFloat(_this.Buffer[:0], value, 'g', -1, 64)
-	_this.FlushBuffer(0, len(used))
+	_this.FlushBuffer(len(used))
 }
 
 func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
@@ -166,7 +166,7 @@ func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
 	if value < 0 {
 		used[start] = '-'
 	}
-	_this.FlushBuffer(start, end)
+	_this.FlushBufferPortion(start, end)
 }
 
 func (_this *Writer) WriteBigFloat(value *big.Float) {
@@ -394,7 +394,7 @@ func (_this *Writer) WriteHexBytes(value []byte) {
 		dst[i*3+1] = hexToChar[b>>4]
 		dst[i*3+2] = hexToChar[b&15]
 	}
-	_this.FlushBuffer(0, length)
+	_this.FlushBuffer(length)
 }
 
 func (_this *Writer) WriteMarkerBegin(id interface{}) {
