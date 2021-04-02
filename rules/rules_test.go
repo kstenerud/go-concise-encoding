@@ -815,6 +815,20 @@ func TestRulesMarkerReference(t *testing.T) {
 	assertEventsMaxDepth(t, 9, L(), MARK(), I(1), TT(), MARK(), I(2), REF(), I(1), E())
 }
 
+func TestRulesMarkerReference2(t *testing.T) {
+	assertEventsMaxDepth(t, 9, META(),
+		S("keys"),
+		L(),
+		MARK(), I(1), S("foo"),
+		MARK(), I(2), S("bar"),
+		E(),
+		E(),
+		M(),
+		REF(), I(1), I(1),
+		REF(), I(2), I(2),
+		E())
+}
+
 // ================
 // Error conditions
 // ================

@@ -1338,6 +1338,19 @@ func TestCTEMarkerReference(t *testing.T) {
 }`)
 }
 
+func TestCTEMarkerReference2(t *testing.T) {
+	assertDecode(t, nil, `c0 (keys = &1:foo){$1 = 1}`,
+		BD(), EvV,
+		META(),
+		S("keys"),
+		MARK(), I(1), S("foo"),
+		E(),
+		M(),
+		REF(), I(1), I(1),
+		E(),
+		ED())
+}
+
 func TestCTEComment(t *testing.T) {
 	// TODO: Better comment formatting
 	assertDecodeEncode(t, nil, nil, `c0

@@ -77,6 +77,16 @@ const (
 	AllowAnyType = AllowKeyable | DataTypeAnyType
 )
 
+var dataTypeNames = [...]string{
+	DataTypeInvalid: "invalid",
+	DataTypeAnyType: "any",
+	DataTypeKeyable: "keyable",
+}
+
+func (_this DataType) String() string {
+	return dataTypeNames[_this]
+}
+
 const keyableTypes = (1 << events.ArrayTypeString) | (1 << events.ArrayTypeResourceID)
 
 func isKeyableType(arrayType events.ArrayType) bool {

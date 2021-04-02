@@ -251,12 +251,22 @@ func (_this *MarkedObjectAnyTypeRule) OnConstant(ctx *Context, name []byte, expl
 func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-	ctx.MarkObject(DataTypeAnyType)
+	switch arrayType {
+	case events.ArrayTypeString, events.ArrayTypeResourceID:
+		ctx.MarkObject(DataTypeKeyable)
+	default:
+		ctx.MarkObject(DataTypeAnyType)
+	}
 }
 func (_this *MarkedObjectAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-	ctx.MarkObject(DataTypeAnyType)
+	switch arrayType {
+	case events.ArrayTypeString, events.ArrayTypeResourceID:
+		ctx.MarkObject(DataTypeKeyable)
+	default:
+		ctx.MarkObject(DataTypeAnyType)
+	}
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.ParentRule().OnArrayBegin(ctx, arrayType)
