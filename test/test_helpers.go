@@ -838,17 +838,7 @@ func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
 			return false
 		}
 
-		if isZeroTZ(a.LongAreaLocation) && isZeroTZ(b.LongAreaLocation) {
-			return a.Year == b.Year &&
-				a.Month == b.Month &&
-				a.Day == b.Day &&
-				a.Hour == b.Hour &&
-				a.Minute == b.Minute &&
-				a.Second == b.Second &&
-				a.Nanosecond == b.Nanosecond &&
-				a.TimeType == b.TimeType
-		}
-		return a == b
+		return a.IsEquivalentTo(&b)
 	}
 
 	if isEffectivelyNil(_this) && isEffectivelyNil(that) {

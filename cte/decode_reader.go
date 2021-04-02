@@ -1171,7 +1171,8 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 	}
 
 	if b == '/' {
-		if chars.ByteHasProperty(_this.PeekByteNoEOD(), chars.CharIsDigitBase10) {
+		next := _this.PeekByteNoEOD()
+		if chars.ByteHasProperty(next, chars.CharIsDigitBase10) || next == '-' {
 			lat, long := _this.ReadLatLong()
 			t, err := compact_time.NewTimeLatLong(hour, int(minute), int(second), nanosecond, lat, long)
 			if err != nil {
@@ -1204,6 +1205,11 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 }
 
 func (_this *Reader) ReadLatLongPortion(name string) (value int) {
+	sign := 1
+	if _this.PeekByteNoEOD() == '-' {
+		_this.AdvanceByte()
+		sign = -1
+	}
 	whole, _, digitCount := _this.ReadDecimalUint(0, nil)
 	switch digitCount {
 	case 1, 2, 3:
@@ -1232,7 +1238,7 @@ func (_this *Reader) ReadLatLongPortion(name string) (value int) {
 		_this.UnreadByte()
 	}
 
-	return int(whole*100 + fractional)
+	return sign * int(whole*100+fractional)
 }
 
 func (_this *Reader) ReadLatLong() (latitudeHundredths, longitudeHundredths int) {

@@ -383,6 +383,9 @@ func TestCTETimestamp(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/13:41:00.000599", BD(), EvV, CT(test.NewTS(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 	assertDecode(t, nil, "c0 2020-01-15/13:41:00.000599", BD(), EvV, CT(test.NewTS(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/10:00:01.93/89.92/1.10", BD(), EvV, CT(test.NewTSLL(2020, 1, 15, 10, 0, 1, 930000000, 8992, 110)), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/10:00:01.93/89.92/-1.10", BD(), EvV, CT(test.NewTSLL(2020, 1, 15, 10, 0, 1, 930000000, 8992, -110)), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/10:00:01.93/-89.92/1.10", BD(), EvV, CT(test.NewTSLL(2020, 1, 15, 10, 0, 1, 930000000, -8992, 110)), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/10:00:01.93/-89.92/-1.10", BD(), EvV, CT(test.NewTSLL(2020, 1, 15, 10, 0, 1, 930000000, -8992, -110)), ED())
 
 	assertDecodeFails(t, "c0 0-01-01/19:31:44.901554")
 	assertDecodeFails(t, "c0 1a-01-01/19:31:44.901554")
