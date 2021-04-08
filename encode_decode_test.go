@@ -143,18 +143,6 @@ func TestEncodeDecodeAllValidMapValue(t *testing.T) {
 	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
 }
 
-func TestEncodeDecodeAllValidMetadataKey(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMETA}
-	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvPI, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
-}
-
-func TestEncodeDecodeAllValidMetadataValue(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMETA, test.EvPI}
-	suffix := []*test.TEvent{test.EvE, test.EvPI, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
-}
-
 func TestEncodeDecodeAllValidMarkupName(t *testing.T) {
 	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP}
 	suffix := []*test.TEvent{test.EvE, test.EvE, test.EvED}
@@ -187,27 +175,24 @@ func TestEncodeDecodeAllValidCommentContents(t *testing.T) {
 
 func TestDecodeEncodeMapReferences(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, nil, nil, `c0
-(
+{
     keys = [
         &1:foo
         &2:bar
     ]
-){
     $1 = 1
     $2 = 2
 }`,
-		[]byte{0x03, 0x00, 0x77, 0x84, 0x6b, 0x65, 0x79, 0x73, 0x7a, 0x97, 0x01,
+		[]byte{0x03, 0x00, 0x79, 0x84, 0x6b, 0x65, 0x79, 0x73, 0x7a, 0x97, 0x01,
 			0x83, 0x66, 0x6f, 0x6f, 0x97, 0x02, 0x83, 0x62, 0x61, 0x72, 0x7b,
-			0x7b, 0x79, 0x98, 0x01, 0x01, 0x98, 0x02, 0x02, 0x7b},
+			0x98, 0x01, 0x01, 0x98, 0x02, 0x02, 0x7b},
 		BD(), EvV,
-		META(),
+		M(),
 		S("keys"),
 		L(),
 		MARK(), PI(1), S("foo"),
 		MARK(), PI(2), S("bar"),
 		E(),
-		E(),
-		M(),
 		REF(), PI(1), PI(1),
 		REF(), PI(2), PI(2),
 		E(),

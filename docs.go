@@ -6,7 +6,7 @@
 //
 // If all you're interested in is (de)serializing to go objects, the marshaler
 // API is sufficient. The codecs provide more control over the process, and
-// can handle more data types (such as comments and metadata). The event
+// can handle more data types (such as comments). The event
 // handlers, builders and iterators are the lowest level API, providing maximum
 // control but the highest complexity.
 //

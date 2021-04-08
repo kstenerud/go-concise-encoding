@@ -151,7 +151,6 @@ type DataEventReceiver interface {
 	OnList()
 	OnMap()
 	OnMarkup()
-	OnMetadata()
 	OnComment()
 	OnEnd()
 	OnMarker()
@@ -205,7 +204,6 @@ func (_this *NullEventReceiver) OnArrayData([]byte)                  {}
 func (_this *NullEventReceiver) OnList()                             {}
 func (_this *NullEventReceiver) OnMap()                              {}
 func (_this *NullEventReceiver) OnMarkup()                           {}
-func (_this *NullEventReceiver) OnMetadata()                         {}
 func (_this *NullEventReceiver) OnComment()                          {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker()                           {}

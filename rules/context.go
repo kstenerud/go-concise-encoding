@@ -155,10 +155,6 @@ func (_this *Context) BeginMarkup() {
 	_this.beginContainer(&markupNameRule, DataTypeAnyType)
 }
 
-func (_this *Context) BeginMetadata() {
-	_this.beginContainer(&metadataKeyRule, DataTypeInvalid)
-}
-
 func (_this *Context) BeginComment() {
 	_this.beginContainer(&commentRule, DataTypeInvalid)
 }
@@ -257,18 +253,6 @@ func (_this *Context) SwitchMapKey() {
 
 func (_this *Context) SwitchMapValue() {
 	_this.changeRule(&mapValueRule)
-}
-
-func (_this *Context) SwitchMetadataKey() {
-	_this.changeRule(&metadataKeyRule)
-}
-
-func (_this *Context) SwitchMetadataValue() {
-	_this.changeRule(&metadataValueRule)
-}
-
-func (_this *Context) SwitchMetadataCompletion() {
-	_this.changeRule(&metadataCompleteRule)
 }
 
 func (_this *Context) SwitchMarkupKey() {

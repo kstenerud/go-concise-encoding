@@ -53,7 +53,6 @@ type EventRule interface {
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
 	OnMarkup(ctx *Context)
-	OnMetadata(ctx *Context)
 	OnComment(ctx *Context)
 	OnEnd(ctx *Context)
 	OnMarker(ctx *Context)
@@ -108,9 +107,6 @@ var (
 	markupValueRule         MarkupValueRule
 	markupContentsRule      MarkupContentsRule
 	commentRule             CommentRule
-	metadataKeyRule         MetaKeyRule
-	metadataValueRule       MetaValueRule
-	metadataCompleteRule    MetaCompletionRule
 	arrayRule               ArrayRule
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule

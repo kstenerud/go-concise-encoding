@@ -451,14 +451,12 @@ func TestCBEReference(t *testing.T) {
 func TestCBEContainers(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1, typeEndContainer}, BD(), EvV, L(), I(1), E(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeMap, 1, typeEndContainer}, BD(), EvV, M(), I(1), E(), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeMetadata, 1, typeEndContainer}, BD(), EvV, META(), I(1), E(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeComment, 1, typeEndContainer}, BD(), EvV, CMT(), I(1), E(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeMarkup, 1, typeEndContainer, typeEndContainer}, BD(), EvV, MUP(), I(1), E(), E(), ED())
 
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1,
 		typeList, typeString1, 'a', typeEndContainer,
 		typeMap, typeString1, 'a', 100, typeEndContainer,
-		typeMetadata, typeString1, 'a', 100, typeEndContainer,
 		typeComment, typeString1, 'a', typeEndContainer,
 		typeMarkup, typeString1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
 		typeEndContainer,
@@ -466,7 +464,6 @@ func TestCBEContainers(t *testing.T) {
 		BD(), EvV, L(), I(1),
 		L(), S("a"), E(),
 		M(), S("a"), I(100), E(),
-		META(), S("a"), I(100), E(),
 		CMT(), S("a"), E(),
 		MUP(), S("a"), S("a"), I(50), E(), S("a"), E(),
 		E(), ED())

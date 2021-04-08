@@ -121,10 +121,6 @@ func (_this *topLevelEncoder) BeginMarkup(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 	ctx.BeginStandardMarkup()
 }
-func (_this *topLevelEncoder) BeginMetadata(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.BeginStandardMetadata()
-}
 func (_this *topLevelEncoder) BeginComment(ctx *EncoderContext) {
 	ctx.WriteCurrentPrefix()
 	ctx.BeginStandardComment()

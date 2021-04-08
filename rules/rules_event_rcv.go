@@ -272,12 +272,6 @@ func (_this *RulesEventReceiver) OnMarkup() {
 	_this.receiver.OnMarkup()
 }
 
-func (_this *RulesEventReceiver) OnMetadata() {
-	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnMetadata(&_this.context)
-	_this.receiver.OnMetadata()
-}
-
 func (_this *RulesEventReceiver) OnComment() {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnComment(&_this.context)

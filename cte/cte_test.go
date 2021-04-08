@@ -1122,16 +1122,6 @@ func TestCTEMapMap(t *testing.T) {
 }`, BD(), EvV, M(), PI(1), M(), S("a"), S("b"), E(), S("test"), M(), E(), E(), ED())
 }
 
-func TestCTEMetadata(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-()a`, BD(), EvV, META(), E(), S("a"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-(
-    1 = 2
-)a`, BD(), EvV, META(), PI(1), PI(2), E(), S("a"), ED())
-	assertDecode(t, nil, "c0 (  1 = 2 3=4 \t)a", BD(), EvV, META(), PI(1), PI(2), PI(3), PI(4), E(), S("a"), ED())
-}
-
 func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 <a>`, BD(), EvV, MUP(), S("a"), E(), E(), ED())
@@ -1234,59 +1224,6 @@ func TestCTEMarkupComment(t *testing.T) {
 	assertDecode(t, nil, "c0 <a,x /*blah*/ x>", BD(), EvV, MUP(), S("a"), E(), S("x "), CMT(), S("blah"), E(), S("x"), E(), ED())
 }
 
-func TestCTEMapMetadata(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    ()a
-]`, BD(), EvV, L(), PI(1), META(), E(), S("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = ()a
-}`, BD(), EvV, M(), PI(1), META(), E(), S("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = {}
-}`, BD(), EvV, M(), PI(1), M(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = (){}
-}`, BD(), EvV, M(), PI(1), META(), E(), M(), E(), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    ()()1 = ()()a
-}`, BD(), EvV, M(), META(), E(), META(), E(), PI(1), META(), E(), META(), E(), S("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    ()()1 = ()(){}
-}`, BD(), EvV, M(), META(), E(), META(), E(), PI(1), META(), E(), META(), E(), M(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    ()()1 = ()()[]
-}`, BD(), EvV, M(), META(), E(), META(), E(), PI(1), META(), E(), META(), E(), L(), E(), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-(
-    x = y
-){
-    (
-        x = y
-    )1 = (
-        x = y
-    )(
-        x = y
-    ){
-        a = b
-    }
-}`, BD(), EvV,
-		META(), S("x"), S("y"), E(), M(),
-		META(), S("x"), S("y"), E(), PI(1),
-		META(), S("x"), S("y"), E(),
-		META(), S("x"), S("y"), E(),
-		M(), S("a"), S("b"), E(), E(), ED())
-}
-
 func TestCTENamed(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\n@nil", BD(), EvV, N(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n@nan", BD(), EvV, NAN(), ED())
@@ -1339,13 +1276,11 @@ func TestCTEMarkerReference(t *testing.T) {
 }
 
 func TestCTEMarkerReference2(t *testing.T) {
-	assertDecode(t, nil, `c0 (keys = &1:foo){$1 = 1}`,
+	assertDecode(t, nil, `c0 {keys = &1:foo $1 = 1}`,
 		BD(), EvV,
-		META(),
+		M(),
 		S("keys"),
 		MARK(), I(1), S("foo"),
-		E(),
-		M(),
 		REF(), I(1), I(1),
 		E(),
 		ED())
@@ -1399,24 +1334,25 @@ func TestCTECommentAfterValue(t *testing.T) {
 
 func TestCTEComplexComment(t *testing.T) {
 	document := []byte(`c0
-/**/ ( /**/ a= /**/ b /**/ ) /**/
+/**/ { /**/ a= /**/ b /**/ c= /**/
 <a,
     /**/
     <b>
->`)
+>}`)
 
 	expected := `c0
 /**/
-(
+{
     /**/
     a = /**/
     b
     /**/
-)/**/
-<a,
-    /**/
-    <b>
->`
+    c = /**/
+    <a,
+        /**/
+        <b>
+    >
+}`
 
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()
@@ -1607,47 +1543,6 @@ func TestCTEMapPretty(t *testing.T) {
 }`, BD(), EvV, M(), S("a"), M(), PI(1), PI(2), PI(3), PI(4), E(), S("b"), M(), PI(5), PI(6), PI(7), PI(8), E(), E(), ED())
 }
 
-func TestCTEMetadataPretty(t *testing.T) {
-	opts := options.DefaultCTEEncoderOptions()
-
-	// Empty 1 level
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c0
-()aa`, BD(), EvV, META(), E(), S("aa"), ED())
-
-	// Empty 2 level
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c0
-(
-    a = ()1
-    b = ()2
-)aa`, BD(), EvV, META(), S("a"), META(), E(), PI(1), S("b"), META(), E(), PI(2), E(), S("aa"), ED())
-
-	// 1 level
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c0
-(
-    1 = 2
-)aa`, BD(), EvV, META(), PI(1), PI(2), E(), S("aa"), ED())
-
-	// 2 level
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, `c0
-(
-    a = (
-        1 = 2
-        3 = 4
-    )x
-    b = (
-        5 = 6
-        7 = 8
-    )y
-)aa`, BD(), EvV, META(),
-		S("a"), META(), PI(1), PI(2), PI(3), PI(4), E(), S("x"),
-		S("b"), META(), PI(5), PI(6), PI(7), PI(8), E(), S("y"),
-		E(), S("aa"), ED())
-}
-
 func TestCTEArrayPretty(t *testing.T) {
 	opts := options.DefaultCTEEncoderOptions()
 
@@ -1694,12 +1589,9 @@ func TestCTEBufferEdge2(t *testing.T) {
 
 func TestCTEComplexExample(t *testing.T) {
 	assertDecode(t, nil, `c0
-// Metadata: _ct is the creation time
-(_ct = 2019-9-1/22:14:01)
 {
     /* /* Nested comments are allowed */ */
     // There are no commas in maps and lists
-    (info = "something interesting about a_list")
     a_list           = [1 2 "a string"]
     map              = {2=two 3=3000 1=one}
     string           = "A string value"
@@ -1757,15 +1649,10 @@ case is three Z characters, specified earlier as a sentinel.ZZZ"
 
 func TestCTEEncodeDecodeExample(t *testing.T) {
 	document := `c0
-/* _ct is the creation time, in this case referring to the entire document */
-(
-    _ct = 2019-09-01/22:14:01
-){
+{
     /* Comments look very C-like, except: /* Nested comments are allowed! */ */
     /* Notice that there are no commas in maps and lists */
-    (
-        info = "something interesting about a_list"
-    )a_list = [
+    a_list = [
         1
         2
         "a string"
@@ -1810,15 +1697,10 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 }`
 
 	expected := `c0
-/* _ct is the creation time, in this case referring to the entire document */
-(
-    _ct = 2019-09-01/22:14:01
-){
+{
     /* Comments look very C-like, except: /* Nested comments are allowed! */ */
     /* Notice that there are no commas in maps and lists */
-    (
-        info = "something interesting about a_list"
-    )a_list = [
+    a_list = [
         1
         2
         "a string"

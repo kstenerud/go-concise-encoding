@@ -200,9 +200,6 @@ func (_this *BuilderEventReceiver) OnMap() {
 func (_this *BuilderEventReceiver) OnMarkup() {
 	panic("TODO: BuilderEventReceiver.OnMarkup")
 }
-func (_this *BuilderEventReceiver) OnMetadata() {
-	panic("TODO: BuilderEventReceiver.OnMetadata")
-}
 func (_this *BuilderEventReceiver) OnComment() {
 	panic("TODO: BuilderEventReceiver.OnComment")
 }

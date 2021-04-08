@@ -425,14 +425,6 @@ func (_this *Writer) WriteMapEnd() {
 	_this.WriteByte('}')
 }
 
-func (_this *Writer) WriteMetadataBegin() {
-	_this.WriteByte('(')
-}
-
-func (_this *Writer) WriteMetadataEnd() {
-	_this.WriteByte(')')
-}
-
 func (_this *Writer) WriteMarkupBegin() {
 	_this.WriteByte('<')
 }

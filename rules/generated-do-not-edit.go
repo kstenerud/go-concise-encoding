@@ -85,9 +85,6 @@ func (_this *BeginDocumentRule) OnMap(ctx *Context) {
 func (_this *BeginDocumentRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *BeginDocumentRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *BeginDocumentRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -168,9 +165,6 @@ func (_this *EndDocumentRule) OnMap(ctx *Context) {
 }
 func (_this *EndDocumentRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *EndDocumentRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *EndDocumentRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -256,9 +250,6 @@ func (_this *TerminalRule) OnMap(ctx *Context) {
 func (_this *TerminalRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *TerminalRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *TerminalRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -339,9 +330,6 @@ func (_this *VersionRule) OnMap(ctx *Context) {
 }
 func (_this *VersionRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *VersionRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *VersionRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -499,9 +487,6 @@ func (_this *MarkupNameRule) OnMap(ctx *Context) {
 func (_this *MarkupNameRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *MarkupNameRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *MarkupNameRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -607,9 +592,6 @@ func (_this *MarkupContentsRule) OnList(ctx *Context) {
 func (_this *MarkupContentsRule) OnMap(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Map", _this))
 }
-func (_this *MarkupContentsRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *MarkupContentsRule) OnMarker(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -673,9 +655,6 @@ func (_this *CommentRule) OnMap(ctx *Context) {
 func (_this *CommentRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *CommentRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *CommentRule) OnMarker(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -689,75 +668,6 @@ func (_this *CommentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFo
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
 func (_this *CommentRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
-}
-func (_this *MetaKeyRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
-}
-func (_this *MetaKeyRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
-}
-func (_this *MetaKeyRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
-}
-func (_this *MetaKeyRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *MetaKeyRule) OnNonKeyableObject(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NonKeyableObject", _this))
-}
-func (_this *MetaKeyRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
-}
-func (_this *MetaKeyRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
-}
-func (_this *MetaKeyRule) OnMarkup(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *MetaKeyRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
-}
-func (_this *MetaKeyRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
-}
-func (_this *MetaValueRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
-}
-func (_this *MetaValueRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
-}
-func (_this *MetaValueRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
-}
-func (_this *MetaValueRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
-}
-func (_this *MetaValueRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
-}
-func (_this *MetaValueRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
-}
-func (_this *MetaCompletionRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
-}
-func (_this *MetaCompletionRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
-}
-func (_this *MetaCompletionRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
-}
-func (_this *MetaCompletionRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
-}
-func (_this *MetaCompletionRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
-}
-func (_this *MetaCompletionRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
-}
-func (_this *MetaCompletionRule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }
 func (_this *ArrayRule) OnBeginDocument(ctx *Context) {
@@ -813,9 +723,6 @@ func (_this *ArrayRule) OnMap(ctx *Context) {
 }
 func (_this *ArrayRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *ArrayRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *ArrayRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -898,9 +805,6 @@ func (_this *ArrayChunkRule) OnMap(ctx *Context) {
 func (_this *ArrayChunkRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *ArrayChunkRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *ArrayChunkRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -981,9 +885,6 @@ func (_this *StringRule) OnMap(ctx *Context) {
 }
 func (_this *StringRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *StringRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *StringRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -1066,9 +967,6 @@ func (_this *StringChunkRule) OnMap(ctx *Context) {
 func (_this *StringChunkRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *StringChunkRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *StringChunkRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1149,9 +1047,6 @@ func (_this *StringBuilderRule) OnMap(ctx *Context) {
 }
 func (_this *StringBuilderRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *StringBuilderRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *StringBuilderRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -1234,9 +1129,6 @@ func (_this *StringBuilderChunkRule) OnMap(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *StringBuilderChunkRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1303,9 +1195,6 @@ func (_this *MarkerIDKeyableRule) OnMap(ctx *Context) {
 func (_this *MarkerIDKeyableRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *MarkerIDKeyableRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *MarkerIDKeyableRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1366,9 +1255,6 @@ func (_this *MarkerIDAnyTypeRule) OnMap(ctx *Context) {
 func (_this *MarkerIDAnyTypeRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *MarkerIDAnyTypeRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *MarkerIDAnyTypeRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1414,9 +1300,6 @@ func (_this *MarkedObjectKeyableRule) OnMap(ctx *Context) {
 func (_this *MarkedObjectKeyableRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *MarkedObjectKeyableRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *MarkedObjectKeyableRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1443,9 +1326,6 @@ func (_this *MarkedObjectAnyTypeRule) OnVersion(ctx *Context, version uint64) {
 }
 func (_this *MarkedObjectAnyTypeRule) OnNA(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow NA", _this))
-}
-func (_this *MarkedObjectAnyTypeRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *MarkedObjectAnyTypeRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -1500,9 +1380,6 @@ func (_this *ReferenceKeyableRule) OnMap(ctx *Context) {
 }
 func (_this *ReferenceKeyableRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *ReferenceKeyableRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *ReferenceKeyableRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -1564,9 +1441,6 @@ func (_this *ReferenceAnyTypeRule) OnMap(ctx *Context) {
 func (_this *ReferenceAnyTypeRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *ReferenceAnyTypeRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *ReferenceAnyTypeRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1612,9 +1486,6 @@ func (_this *ConstantKeyableRule) OnMap(ctx *Context) {
 func (_this *ConstantKeyableRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *ConstantKeyableRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *ConstantKeyableRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1641,9 +1512,6 @@ func (_this *ConstantAnyTypeRule) OnEndDocument(ctx *Context) {
 }
 func (_this *ConstantAnyTypeRule) OnVersion(ctx *Context, version uint64) {
 	panic(fmt.Errorf("%v does not allow Version", _this))
-}
-func (_this *ConstantAnyTypeRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *ConstantAnyTypeRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
@@ -1711,9 +1579,6 @@ func (_this *TLReferenceRIDRule) OnMap(ctx *Context) {
 func (_this *TLReferenceRIDRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
-func (_this *TLReferenceRIDRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
-}
 func (_this *TLReferenceRIDRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))
 }
@@ -1773,9 +1638,6 @@ func (_this *RIDCatRule) OnMap(ctx *Context) {
 }
 func (_this *RIDCatRule) OnMarkup(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
-}
-func (_this *RIDCatRule) OnMetadata(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Metadata", _this))
 }
 func (_this *RIDCatRule) OnComment(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Comment", _this))

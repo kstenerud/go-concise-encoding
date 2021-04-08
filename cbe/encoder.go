@@ -337,10 +337,6 @@ func (_this *Encoder) OnMarkup() {
 	_this.writer.WriteType(cbeTypeMarkup)
 }
 
-func (_this *Encoder) OnMetadata() {
-	_this.writer.WriteType(cbeTypeMetadata)
-}
-
 func (_this *Encoder) OnComment() {
 	_this.writer.WriteType(cbeTypeComment)
 }

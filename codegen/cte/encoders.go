@@ -53,7 +53,6 @@ var (
 	List   = "BeginList(ctx *EncoderContext)"
 	Map    = "BeginMap(ctx *EncoderContext)"
 	Markup = "BeginMarkup(ctx *EncoderContext)"
-	Meta   = "BeginMetadata(ctx *EncoderContext)"
 	Cmt    = "BeginComment(ctx *EncoderContext)"
 	Marker = "BeginMarker(ctx *EncoderContext)"
 	Ref    = "BeginReference(ctx *EncoderContext)"
@@ -67,7 +66,7 @@ var (
 
 	allMethods = []string{Begin, End, Child, NA, Nil, Bool, True, False, PInt,
 		NInt, Int, BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID,
-		List, Map, Markup, Meta, Cmt, Marker, Ref, Const, Arr, Str,
+		List, Map, Markup, Cmt, Marker, Ref, Const, Arr, Str,
 		BArr, Chunk, Data}
 )
 
@@ -80,7 +79,7 @@ var encoders = []Encoder{
 	{
 		Name: "topLevel",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int, BInt, Float,
-			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
+			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
 			Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
@@ -92,38 +91,26 @@ var encoders = []Encoder{
 	{
 		Name: "postInvisible",
 		Methods: []string{Bool, True, False, PInt, NInt, Int, BInt, Float,
-			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup, Meta,
+			BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map, Markup,
 			Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "list",
 		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
+			Markup, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "mapKey",
 		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Meta, Cmt,
+			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Cmt,
 			Marker, Ref, Const, Arr, Str, BArr},
 	},
 	{
 		Name: "mapValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
-	},
-	{
-		Name: "metadataKey",
-		Methods: []string{Child, Begin, End, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Meta, Cmt,
-			Marker, Ref, Const, Arr, Str, BArr},
-	},
-	{
-		Name: "metadataValue",
-		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
+			Markup, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name: "markupName",
@@ -134,14 +121,14 @@ var encoders = []Encoder{
 	{
 		Name: "markupKey",
 		Methods: []string{Child, End, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Meta, Cmt,
+			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID, Cmt,
 			Marker, Ref, Const, Arr, Str, BArr},
 	},
 	{
 		Name: "markupValue",
 		Methods: []string{Child, Bool, True, False, PInt, NInt, Int,
 			BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, List, Map,
-			Markup, Meta, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
+			Markup, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
 		Name:    "markupContents",

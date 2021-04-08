@@ -72,7 +72,6 @@ type Encoder interface {
 	OnList()
 	OnMap()
 	OnMarkup()
-	OnMetadata()
 	OnComment()
 	OnEnd()
 	OnMarker()

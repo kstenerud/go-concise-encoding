@@ -164,10 +164,6 @@ func (_this *listEncoder) BeginMarkup(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardMarkup()
 }
-func (_this *listEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.BeginStandardMetadata()
-}
 func (_this *listEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareToWrite(ctx)
 	ctx.BeginStandardComment()
@@ -302,10 +298,6 @@ func (_this *mapKeyEncoder) EncodeCompactTime(ctx *EncoderContext, value compact
 func (_this *mapKeyEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteUUID(value)
-}
-func (_this *mapKeyEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardMetadata()
 }
 func (_this *mapKeyEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
@@ -444,10 +436,6 @@ func (_this *mapValueEncoder) BeginMarkup(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardMarkup()
 }
-func (_this *mapValueEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardMetadata()
-}
 func (_this *mapValueEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardComment()
@@ -474,278 +462,6 @@ func (_this *mapValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayTy
 }
 func (_this *mapValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
 	_this.prepareForContainer(ctx)
-	ctx.BeginStandardArray(arrayType)
-}
-
-// =============================================================================
-
-type metadataKeyEncoder struct{}
-
-var globalMetadataKeyEncoder metadataKeyEncoder
-
-func (_this *metadataKeyEncoder) String() string { return "metadataKeyEncoder" }
-
-func (_this *metadataKeyEncoder) beginCompleteObject(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.SetStandardMapValuePrefix()
-	ctx.ChangeEncoder(&globalMetadataValueEncoder)
-	ctx.ContainerHasObjects = true
-}
-
-func (_this *metadataKeyEncoder) beginContainer(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-}
-
-func (_this *metadataKeyEncoder) Begin(ctx *EncoderContext) {
-	ctx.Stream.WriteMetadataBegin()
-	ctx.IncreaseIndent()
-	ctx.SetStandardMapKeyPrefix()
-	ctx.ContainerHasObjects = false
-}
-
-func (_this *metadataKeyEncoder) End(ctx *EncoderContext) {
-	ctx.DecreaseIndent()
-	if ctx.ContainerHasObjects {
-		ctx.WriteBasicIndent()
-	}
-	ctx.Stream.WriteMetadataEnd()
-	ctx.ChangeEncoder(&globalPostInvisibleEncoder)
-}
-
-func (_this *metadataKeyEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
-	if isVisibleChild {
-		ctx.SetStandardMapValuePrefix()
-		ctx.ChangeEncoder(&globalMetadataValueEncoder)
-	}
-	ctx.ContainerHasObjects = true
-}
-
-func (_this *metadataKeyEncoder) EncodeBool(ctx *EncoderContext, value bool) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBool(value)
-}
-func (_this *metadataKeyEncoder) EncodeTrue(ctx *EncoderContext) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteTrue()
-}
-func (_this *metadataKeyEncoder) EncodeFalse(ctx *EncoderContext) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteFalse()
-}
-func (_this *metadataKeyEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WritePositiveInt(value)
-}
-func (_this *metadataKeyEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteNegativeInt(value)
-}
-func (_this *metadataKeyEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteInt(value)
-}
-func (_this *metadataKeyEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBigInt(value)
-}
-func (_this *metadataKeyEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteFloat(value)
-}
-func (_this *metadataKeyEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBigFloat(value)
-}
-func (_this *metadataKeyEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteDecimalFloat(value)
-}
-func (_this *metadataKeyEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBigDecimalFloat(value)
-}
-func (_this *metadataKeyEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteTime(value)
-}
-func (_this *metadataKeyEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteCompactTime(value)
-}
-func (_this *metadataKeyEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteUUID(value)
-}
-func (_this *metadataKeyEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardMetadata()
-}
-func (_this *metadataKeyEncoder) BeginComment(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardComment()
-}
-func (_this *metadataKeyEncoder) BeginMarker(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardMarker()
-}
-func (_this *metadataKeyEncoder) BeginReference(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardReference()
-}
-func (_this *metadataKeyEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *metadataKeyEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.beginCompleteObject(ctx)
-	ctx.WriteArray(arrayType, elementCount, data)
-}
-func (_this *metadataKeyEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	_this.beginCompleteObject(ctx)
-	ctx.WriteStringlikeArray(arrayType, data)
-}
-func (_this *metadataKeyEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardArray(arrayType)
-}
-
-// =============================================================================
-
-type metadataValueEncoder struct{}
-
-var globalMetadataValueEncoder metadataValueEncoder
-
-func (_this *metadataValueEncoder) String() string { return "metadataValueEncoder" }
-
-func (_this *metadataValueEncoder) beginCompleteObject(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.SetStandardMapKeyPrefix()
-	ctx.ChangeEncoder(&globalMetadataKeyEncoder)
-	ctx.ContainerHasObjects = true
-}
-
-func (_this *metadataValueEncoder) beginContainer(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-}
-
-func (_this *metadataValueEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
-	if isVisibleChild {
-		ctx.SetStandardMapKeyPrefix()
-		ctx.ChangeEncoder(&globalMetadataKeyEncoder)
-	}
-	ctx.ContainerHasObjects = true
-}
-
-func (_this *metadataValueEncoder) BeginNA(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginNA()
-}
-func (_this *metadataValueEncoder) EncodeNil(ctx *EncoderContext) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteNil()
-}
-func (_this *metadataValueEncoder) EncodeBool(ctx *EncoderContext, value bool) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBool(value)
-}
-func (_this *metadataValueEncoder) EncodeTrue(ctx *EncoderContext) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteTrue()
-}
-func (_this *metadataValueEncoder) EncodeFalse(ctx *EncoderContext) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteFalse()
-}
-func (_this *metadataValueEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WritePositiveInt(value)
-}
-func (_this *metadataValueEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteNegativeInt(value)
-}
-func (_this *metadataValueEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteInt(value)
-}
-func (_this *metadataValueEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBigInt(value)
-}
-func (_this *metadataValueEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteFloat(value)
-}
-func (_this *metadataValueEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBigFloat(value)
-}
-func (_this *metadataValueEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteDecimalFloat(value)
-}
-func (_this *metadataValueEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteBigDecimalFloat(value)
-}
-func (_this *metadataValueEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteNan(signaling)
-}
-func (_this *metadataValueEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteTime(value)
-}
-func (_this *metadataValueEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteCompactTime(value)
-}
-func (_this *metadataValueEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
-	_this.beginCompleteObject(ctx)
-	ctx.Stream.WriteUUID(value)
-}
-func (_this *metadataValueEncoder) BeginList(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardList()
-}
-func (_this *metadataValueEncoder) BeginMap(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardMap()
-}
-func (_this *metadataValueEncoder) BeginMarkup(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardMarkup()
-}
-func (_this *metadataValueEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardMetadata()
-}
-func (_this *metadataValueEncoder) BeginComment(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardComment()
-}
-func (_this *metadataValueEncoder) BeginMarker(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardMarker()
-}
-func (_this *metadataValueEncoder) BeginReference(ctx *EncoderContext) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardReference()
-}
-func (_this *metadataValueEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	_this.beginContainer(ctx)
-	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *metadataValueEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.beginCompleteObject(ctx)
-	ctx.WriteArray(arrayType, elementCount, data)
-}
-func (_this *metadataValueEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	_this.beginCompleteObject(ctx)
-	ctx.WriteStringlikeArray(arrayType, data)
-}
-func (_this *metadataValueEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	_this.beginContainer(ctx)
 	ctx.BeginStandardArray(arrayType)
 }
 
@@ -950,10 +666,6 @@ func (_this *markupKeyEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	_this.prepareToWrite(ctx)
 	ctx.Stream.WriteUUID(value)
 }
-func (_this *markupKeyEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardMetadata()
-}
 func (_this *markupKeyEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardComment()
@@ -1087,10 +799,6 @@ func (_this *markupValueEncoder) BeginMap(ctx *EncoderContext) {
 func (_this *markupValueEncoder) BeginMarkup(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)
 	ctx.BeginStandardMarkup()
-}
-func (_this *markupValueEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardMetadata()
 }
 func (_this *markupValueEncoder) BeginComment(ctx *EncoderContext) {
 	_this.prepareForContainer(ctx)

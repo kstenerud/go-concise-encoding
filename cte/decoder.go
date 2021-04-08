@@ -123,8 +123,6 @@ func init() {
 	decoderFuncsByFirstChar['<'] = advanceAndDecodeMarkupBegin
 	decoderFuncsByFirstChar[','] = advanceAndDecodeMarkupContentBegin
 	decoderFuncsByFirstChar['>'] = advanceAndDecodeMarkupEnd
-	decoderFuncsByFirstChar['('] = advanceAndDecodeMetadataBegin
-	decoderFuncsByFirstChar[')'] = advanceAndDecodeMetadataEnd
 	decoderFuncsByFirstChar['*'] = advanceAndDecodeCommentEnd
 	decoderFuncsByFirstChar['|'] = decodeTypedArrayBegin
 

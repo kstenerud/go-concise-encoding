@@ -138,8 +138,6 @@ EOF:
 			eventReceiver.OnUUID(_this.reader.ReadBytes(16))
 		case cbeTypeComment:
 			eventReceiver.OnComment()
-		case cbeTypeMetadata:
-			eventReceiver.OnMetadata()
 		case cbeTypeMarkup:
 			eventReceiver.OnMarkup()
 		case cbeTypeMap:

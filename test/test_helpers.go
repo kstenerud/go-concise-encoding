@@ -278,7 +278,6 @@ var (
 	EvL      = L()
 	EvM      = M()
 	EvMUP    = MUP()
-	EvMETA   = META()
 	EvCMT    = CMT()
 	EvE      = E()
 	EvMARK   = MARK()
@@ -326,7 +325,7 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvNA, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
-	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvMETA, EvCMT, EvE,
+	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvCMT, EvE,
 	EvMARK, EvREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRIDCat, EvRB, EvRBCat,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16, EvAU16B,
 	EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B, EvAI32,
@@ -338,7 +337,6 @@ var completions = map[*TEvent][]*TEvent{
 	EvNA:     []*TEvent{EvPI},
 	EvL:      []*TEvent{EvE},
 	EvM:      []*TEvent{EvE},
-	EvMETA:   []*TEvent{EvE, S("a")},
 	EvCMT:    []*TEvent{EvE, S("a")},
 	EvMUP:    []*TEvent{S("a"), EvE, EvE},
 	EvMARK:   []*TEvent{S("a"), S("m")},
@@ -486,7 +484,7 @@ var (
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvREF, EvMETA, EvCMT, EvE,
+		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvREF, EvCMT, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
@@ -518,7 +516,7 @@ var (
 	InvalidMarkerIDs = ComplementaryEvents(ValidMarkerIDs)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvNA, EvE, EvAC, EvAD, EvMETA, EvCMT, EvMARK}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvNA, EvE, EvAC, EvAD, EvCMT, EvMARK}
 
 	ValidReferenceIDs   = []*TEvent{EvPAD, EvS, EvSB, EvPI, EvI, EvBI, EvRID, EvRIDCat, EvRB, EvRBCat}
 	InvalidReferenceIDs = ComplementaryEvents(ValidReferenceIDs)
@@ -593,7 +591,6 @@ const (
 	TEventList
 	TEventMap
 	TEventMarkup
-	TEventMetadata
 	TEventComment
 	TEventEnd
 	TEventMarker
@@ -665,7 +662,6 @@ var TEventNames = []string{
 	TEventList:               "L",
 	TEventMap:                "M",
 	TEventMarkup:             "MUP",
-	TEventMetadata:           "META",
 	TEventComment:            "CMT",
 	TEventEnd:                "E",
 	TEventMarker:             "MARK",
@@ -1005,8 +1001,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnMap()
 	case TEventMarkup:
 		receiver.OnMarkup()
-	case TEventMetadata:
-		receiver.OnMetadata()
 	case TEventComment:
 		receiver.OnComment()
 	case TEventEnd:
@@ -1096,7 +1090,6 @@ func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, n
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
 func M() *TEvent                        { return newTEvent(TEventMap, nil, nil) }
 func MUP() *TEvent                      { return newTEvent(TEventMarkup, nil, nil) }
-func META() *TEvent                     { return newTEvent(TEventMetadata, nil, nil) }
 func CMT() *TEvent                      { return newTEvent(TEventComment, nil, nil) }
 func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func MARK() *TEvent                     { return newTEvent(TEventMarker, nil, nil) }
@@ -1409,10 +1402,6 @@ func (h *TEventPrinter) OnMarkup() {
 	h.Print(MUP())
 	h.Next.OnMarkup()
 }
-func (h *TEventPrinter) OnMetadata() {
-	h.Print(META())
-	h.Next.OnMetadata()
-}
 func (h *TEventPrinter) OnComment() {
 	h.Print(CMT())
 	h.Next.OnComment()
@@ -1585,7 +1574,6 @@ func (h *TEventStore) OnArrayData(data []byte)                { h.add(AD(CloneBy
 func (h *TEventStore) OnList()                                { h.add(L()) }
 func (h *TEventStore) OnMap()                                 { h.add(M()) }
 func (h *TEventStore) OnMarkup()                              { h.add(MUP()) }
-func (h *TEventStore) OnMetadata()                            { h.add(META()) }
 func (h *TEventStore) OnComment()                             { h.add(CMT()) }
 func (h *TEventStore) OnEnd()                                 { h.add(E()) }
 func (h *TEventStore) OnMarker()                              { h.add(MARK()) }

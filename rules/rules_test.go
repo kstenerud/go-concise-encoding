@@ -396,10 +396,6 @@ func TestRulesMarkupEmpty(t *testing.T) {
 	assertEventsMaxDepth(t, 2, MUP(), S("a"), E(), E(), ED())
 }
 
-func TestRulesMetadataEmpty(t *testing.T) {
-	assertEventsMaxDepth(t, 1, META(), E(), I(1), ED())
-}
-
 func TestRulesCommentEmpty(t *testing.T) {
 	assertEventsMaxDepth(t, 1, CMT(), E(), I(1), ED())
 }
@@ -420,10 +416,6 @@ func TestRulesMarkupSingleItem(t *testing.T) {
 	assertEventsMaxDepth(t, 2, MUP(), S("abcdef"), I(-1), B(true), E(), S("a"), E(), ED())
 }
 
-func TestRulesMetadataSingleItem(t *testing.T) {
-	assertEventsMaxDepth(t, 1, META(), I(1), B(true), E(), I(1), ED())
-}
-
 func TestRulesCommentSingleItem(t *testing.T) {
 	assertEventsMaxDepth(t, 2, CMT(), S("a"), E(), I(1), ED())
 }
@@ -440,11 +432,6 @@ func TestRulesListFilled(t *testing.T) {
 func TestRulesMapFilled(t *testing.T) {
 	assertEventsMaxDepth(t, 2, M(), B(true), N(), F(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
-}
-
-func TestRulesMetadataFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, META(), B(true), N(), F(0.1), NAN(), I(1), I(-1),
-		GT(time.Now()), AU8(NewBytes(1, 0)), E(), I(1), ED())
 }
 
 func TestRulesMapList(t *testing.T) {
@@ -473,11 +460,6 @@ func TestRulesCommentInt(t *testing.T) {
 
 func TestRulesCommentMap(t *testing.T) {
 	assertEventsMaxDepth(t, 3, M(), CMT(), S("a"), E(), I(1), I(-1), E(), ED())
-}
-
-func TestRulesMetadataCommentMap(t *testing.T) {
-	assertEventsMaxDepth(t, 4, M(), META(), I(1), B(true), E(), CMT(), S("a"),
-		E(), I(-1), META(), I(1), B(true), E(), I(-1), E(), ED())
 }
 
 func TestRulesMarkup(t *testing.T) {
@@ -554,46 +536,6 @@ func TestRulesAllowedTypesMapValue(t *testing.T) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
 			assertEventsSucceed(t, rules, M(), TT())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(ValidMapValues...)
-	assertFail(InvalidMapValues...)
-}
-
-func TestRulesAllowedTypesMetadataKey(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, META())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, META())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(ValidMapKeys...)
-	assertFail(InvalidMapKeys...)
-}
-
-func TestRulesAllowedTypesMetadataValue(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, META(), TT())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, META(), TT())
 			assertEventsFail(t, rules, event)
 		}
 	}
@@ -816,14 +758,12 @@ func TestRulesMarkerReference(t *testing.T) {
 }
 
 func TestRulesMarkerReference2(t *testing.T) {
-	assertEventsMaxDepth(t, 9, META(),
+	assertEventsMaxDepth(t, 9, M(),
 		S("keys"),
 		L(),
 		MARK(), I(1), S("foo"),
 		MARK(), I(2), S("bar"),
 		E(),
-		E(),
-		M(),
 		REF(), I(1), I(1),
 		REF(), I(2), I(2),
 		E())
@@ -833,18 +773,6 @@ func TestRulesMarkerReference2(t *testing.T) {
 // Error conditions
 // ================
 
-func TestRulesErrorOnlyMetadata(t *testing.T) {
-	rules := newRulesWithMaxDepth(1)
-	assertEventsSucceed(t, rules, META(), E())
-	assertEventsFail(t, rules, ED())
-}
-
-func TestRulesErrorListOnlyMetadata(t *testing.T) {
-	rules := newRulesWithMaxDepth(2)
-	assertEventsSucceed(t, rules, L(), META(), E())
-	assertEventsFail(t, rules, E())
-}
-
 func TestRulesErrorOnEndTooManyTimes(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 	assertEventsSucceed(t, rules, L(), E())
@@ -852,10 +780,6 @@ func TestRulesErrorOnEndTooManyTimes(t *testing.T) {
 
 	rules = newRulesWithMaxDepth(10)
 	assertEventsSucceed(t, rules, M(), E())
-	assertEventsFail(t, rules, E())
-
-	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, META(), E())
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
@@ -874,10 +798,6 @@ func TestRulesErrorUnendedContainer(t *testing.T) {
 
 	rules = newRulesWithMaxDepth(10)
 	assertEventsSucceed(t, rules, M())
-	assertEventsFail(t, rules, ED())
-
-	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, META())
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)

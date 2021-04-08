@@ -57,7 +57,6 @@ type Encoder interface {
 	BeginList(ctx *EncoderContext)
 	BeginMap(ctx *EncoderContext)
 	BeginMarkup(ctx *EncoderContext)
-	BeginMetadata(ctx *EncoderContext)
 	BeginComment(ctx *EncoderContext)
 	BeginMarker(ctx *EncoderContext)
 	BeginReference(ctx *EncoderContext)
@@ -209,10 +208,6 @@ func (_this *EncoderEventReceiver) OnMap() {
 
 func (_this *EncoderEventReceiver) OnMarkup() {
 	_this.context.CurrentEncoder.BeginMarkup(&_this.context)
-}
-
-func (_this *EncoderEventReceiver) OnMetadata() {
-	_this.context.CurrentEncoder.BeginMetadata(&_this.context)
 }
 
 func (_this *EncoderEventReceiver) OnComment() {

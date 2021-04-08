@@ -174,38 +174,3 @@ func advanceAndDecodeCommentEnd(ctx *DecoderContext) {
 		ctx.Stream.Errorf("Unexpected comment end char: [%c]", b)
 	}
 }
-
-func advanceAndDecodeMetadataBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '('
-
-	ctx.EventReceiver.OnMetadata()
-	ctx.StackDecoder(decodeMetadataKey)
-}
-
-func decodeMetadataKey(ctx *DecoderContext) {
-	ctx.ChangeDecoder(decodeMetadataValue)
-	decodeByFirstChar(ctx)
-}
-
-func decodeMetadataValue(ctx *DecoderContext) {
-	decodeWhitespace(ctx)
-	if ctx.Stream.ReadByteNoEOD() != '=' {
-		// TODO: Allow comments before the =
-		ctx.Stream.Errorf("Expected Metadata separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
-	}
-	decodeWhitespace(ctx)
-	ctx.ChangeDecoder(decodeMetadataKey)
-	decodeByFirstChar(ctx)
-}
-
-func advanceAndDecodeMetadataEnd(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past ')'
-
-	ctx.EventReceiver.OnEnd()
-	ctx.ChangeDecoder(decodeMetadataCompletion)
-}
-
-func decodeMetadataCompletion(ctx *DecoderContext) {
-	ctx.UnstackDecoder()
-	decodeByFirstChar(ctx)
-}

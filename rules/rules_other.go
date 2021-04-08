@@ -89,7 +89,6 @@ func (_this *TopLevelRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 func (_this *TopLevelRule) OnList(ctx *Context)      { ctx.BeginList() }
 func (_this *TopLevelRule) OnMap(ctx *Context)       { ctx.BeginMap() }
 func (_this *TopLevelRule) OnMarkup(ctx *Context)    { ctx.BeginMarkup() }
-func (_this *TopLevelRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
 func (_this *TopLevelRule) OnComment(ctx *Context)   { ctx.BeginComment() }
 func (_this *TopLevelRule) OnMarker(ctx *Context)    { ctx.BeginMarkerAnyType() }
 func (_this *TopLevelRule) OnReference(ctx *Context) { ctx.BeginTopLevelReference() }
@@ -130,7 +129,6 @@ func (_this *NARule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { 
 func (_this *NARule) OnList(ctx *Context)                                     { ctx.BeginList() }
 func (_this *NARule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
 func (_this *NARule) OnMarkup(ctx *Context)                                   { ctx.BeginMarkup() }
-func (_this *NARule) OnMetadata(ctx *Context)                                 { ctx.BeginMetadata() }
 func (_this *NARule) OnComment(ctx *Context)                                  { ctx.BeginComment() }
 func (_this *NARule) OnMarker(ctx *Context)                                   { ctx.BeginMarkerAnyType() }
 func (_this *NARule) OnReference(ctx *Context)                                { ctx.BeginTopLevelReference() }

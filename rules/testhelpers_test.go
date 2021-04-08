@@ -120,7 +120,6 @@ var (
 	EvL      = test.EvL
 	EvM      = test.EvM
 	EvMUP    = test.EvMUP
-	EvMETA   = test.EvMETA
 	EvCMT    = test.EvCMT
 	EvE      = test.EvE
 	EvMARK   = test.EvMARK
@@ -262,7 +261,6 @@ func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP() *test.TEvent                      { return test.MUP() }
-func META() *test.TEvent                     { return test.META() }
 func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
 func MARK() *test.TEvent                     { return test.MARK() }

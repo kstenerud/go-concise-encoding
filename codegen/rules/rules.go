@@ -49,7 +49,6 @@ var (
 	List    = "OnList(ctx *Context)"
 	Map     = "OnMap(ctx *Context)"
 	Markup  = "OnMarkup(ctx *Context)"
-	Meta    = "OnMetadata(ctx *Context)"
 	Comment = "OnComment(ctx *Context)"
 	End     = "OnEnd(ctx *Context)"
 	Marker  = "OnMarker(ctx *Context)"
@@ -62,7 +61,7 @@ var (
 	AData   = "OnArrayData(ctx *Context, data []byte)"
 
 	allMethods = []string{BDoc, EDoc, ECtr, Ver, NA, Pad, Key, NonKey, Int,
-		PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta,
+		PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup,
 		Comment, End, Marker, Ref, Const, Array, SArray, ABegin, AChunk, AData}
 )
 
@@ -90,23 +89,23 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "TopLevelRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "NARule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ListRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupNameRule",
@@ -114,11 +113,11 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkupKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupContentsRule",
@@ -127,18 +126,6 @@ var ruleClasses = []RuleClass{
 	{
 		Name:    "CommentRule",
 		Methods: []string{ECtr, Pad, Comment, End, Array, SArray, ABegin},
-	},
-	{
-		Name:    "MetaKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Meta, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
-	},
-	{
-		Name:    "MetaValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
-	},
-	{
-		Name:    "MetaCompletionRule",
-		Methods: []string{NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Meta, Comment, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ArrayRule",

@@ -55,9 +55,6 @@ func (_this *constantEncoder) End(ctx *EncoderContext) {
 func (_this *constantEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *constantEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
-}
 func (_this *constantEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
 }
@@ -124,42 +121,6 @@ func (_this *mapValueEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64
 func (_this *mapValueEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArrayData", reflect.TypeOf(_this)))
 }
-func (_this *metadataKeyEncoder) BeginNA(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginNA", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) EncodeNil(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNil", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
-	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNan", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) BeginList(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) BeginMap(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMap", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) BeginMarkup(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
-}
-func (_this *metadataKeyEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArrayData", reflect.TypeOf(_this)))
-}
-func (_this *metadataValueEncoder) Begin(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to Begin", reflect.TypeOf(_this)))
-}
-func (_this *metadataValueEncoder) End(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
-}
-func (_this *metadataValueEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
-}
-func (_this *metadataValueEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArrayData", reflect.TypeOf(_this)))
-}
 func (_this *markupNameEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
@@ -180,9 +141,6 @@ func (_this *markupNameEncoder) BeginMap(ctx *EncoderContext) {
 }
 func (_this *markupNameEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
-}
-func (_this *markupNameEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
 }
 func (_this *markupNameEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
@@ -289,9 +247,6 @@ func (_this *markupContentsEncoder) BeginList(ctx *EncoderContext) {
 func (_this *markupContentsEncoder) BeginMap(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMap", reflect.TypeOf(_this)))
 }
-func (_this *markupContentsEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
-}
 func (_this *markupContentsEncoder) BeginMarker(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarker", reflect.TypeOf(_this)))
 }
@@ -367,9 +322,6 @@ func (_this *commentEncoder) BeginMap(ctx *EncoderContext) {
 func (_this *commentEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
 }
-func (_this *commentEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
-}
 func (_this *commentEncoder) BeginMarker(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarker", reflect.TypeOf(_this)))
 }
@@ -439,9 +391,6 @@ func (_this *referenceEncoder) BeginMap(ctx *EncoderContext) {
 func (_this *referenceEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
 }
-func (_this *referenceEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
-}
 func (_this *referenceEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
 }
@@ -510,9 +459,6 @@ func (_this *markerIDEncoder) BeginMap(ctx *EncoderContext) {
 }
 func (_this *markerIDEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
-}
-func (_this *markerIDEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
 }
 func (_this *markerIDEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
@@ -598,9 +544,6 @@ func (_this *arrayEncoder) BeginMap(ctx *EncoderContext) {
 func (_this *arrayEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
 }
-func (_this *arrayEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
-}
 func (_this *arrayEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
 }
@@ -679,9 +622,6 @@ func (_this *postRIDCatEncoder) BeginMap(ctx *EncoderContext) {
 func (_this *postRIDCatEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
 }
-func (_this *postRIDCatEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
-}
 func (_this *postRIDCatEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
 }
@@ -756,9 +696,6 @@ func (_this *postStreamRIDCatEncoder) BeginMap(ctx *EncoderContext) {
 }
 func (_this *postStreamRIDCatEncoder) BeginMarkup(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarkup", reflect.TypeOf(_this)))
-}
-func (_this *postStreamRIDCatEncoder) BeginMetadata(ctx *EncoderContext) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BeginMetadata", reflect.TypeOf(_this)))
 }
 func (_this *postStreamRIDCatEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))

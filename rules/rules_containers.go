@@ -49,7 +49,6 @@ func (_this *ListRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      
 func (_this *ListRule) OnList(ctx *Context)                                     { ctx.BeginList() }
 func (_this *ListRule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
 func (_this *ListRule) OnMarkup(ctx *Context)                                   { ctx.BeginMarkup() }
-func (_this *ListRule) OnMetadata(ctx *Context)                                 { ctx.BeginMetadata() }
 func (_this *ListRule) OnComment(ctx *Context)                                  { ctx.BeginComment() }
 func (_this *ListRule) OnEnd(ctx *Context)                                      { ctx.EndContainer() }
 func (_this *ListRule) OnMarker(ctx *Context)                                   { ctx.BeginMarkerAnyType() }
@@ -89,7 +88,6 @@ func (_this *MapKeyRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat
 func (_this *MapKeyRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 	ctx.SwitchMapValue()
 }
-func (_this *MapKeyRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
 func (_this *MapKeyRule) OnComment(ctx *Context)   { ctx.BeginComment() }
 func (_this *MapKeyRule) OnEnd(ctx *Context)       { ctx.EndContainer() }
 func (_this *MapKeyRule) OnMarker(ctx *Context)    { ctx.BeginMarkerKeyable() }
@@ -139,7 +137,6 @@ func (_this *MapValueRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 func (_this *MapValueRule) OnList(ctx *Context)      { ctx.BeginList() }
 func (_this *MapValueRule) OnMap(ctx *Context)       { ctx.BeginMap() }
 func (_this *MapValueRule) OnMarkup(ctx *Context)    { ctx.BeginMarkup() }
-func (_this *MapValueRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
 func (_this *MapValueRule) OnComment(ctx *Context)   { ctx.BeginComment() }
 func (_this *MapValueRule) OnMarker(ctx *Context)    { ctx.BeginMarkerAnyType() }
 func (_this *MapValueRule) OnReference(ctx *Context) { ctx.BeginReferenceAnyType() }
@@ -216,7 +213,6 @@ func (_this *MarkupKeyRule) OnDecimalFloat(ctx *Context, value compact_float.DFl
 func (_this *MarkupKeyRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 	ctx.SwitchMarkupValue()
 }
-func (_this *MarkupKeyRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
 func (_this *MarkupKeyRule) OnComment(ctx *Context)   { ctx.BeginComment() }
 func (_this *MarkupKeyRule) OnEnd(ctx *Context)       { ctx.SwitchMarkupContents() }
 func (_this *MarkupKeyRule) OnMarker(ctx *Context)    { ctx.BeginMarkerKeyable() }
@@ -266,7 +262,6 @@ func (_this *MarkupValueRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal
 func (_this *MarkupValueRule) OnList(ctx *Context)      { ctx.BeginList() }
 func (_this *MarkupValueRule) OnMap(ctx *Context)       { ctx.BeginMap() }
 func (_this *MarkupValueRule) OnMarkup(ctx *Context)    { ctx.BeginMarkup() }
-func (_this *MarkupValueRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
 func (_this *MarkupValueRule) OnComment(ctx *Context)   { ctx.BeginComment() }
 func (_this *MarkupValueRule) OnMarker(ctx *Context)    { ctx.BeginMarkerAnyType() }
 func (_this *MarkupValueRule) OnReference(ctx *Context) { ctx.BeginReferenceAnyType() }
@@ -325,186 +320,4 @@ func (_this *CommentRule) OnStringlikeArray(ctx *Context, arrayType events.Array
 }
 func (_this *CommentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayComment(arrayType)
-}
-
-// =============================================================================
-
-type MetaKeyRule struct{}
-
-func (_this *MetaKeyRule) String() string                                 { return "Metadata Key Rule" }
-func (_this *MetaKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MetaKeyRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchMetadataValue() }
-func (_this *MetaKeyRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
-	ctx.SwitchMetadataValue()
-}
-func (_this *MetaKeyRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMetadataValue()
-}
-func (_this *MetaKeyRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
-func (_this *MetaKeyRule) OnComment(ctx *Context)   { ctx.BeginComment() }
-func (_this *MetaKeyRule) OnEnd(ctx *Context)       { ctx.SwitchMetadataCompletion() }
-func (_this *MetaKeyRule) OnMarker(ctx *Context)    { ctx.BeginMarkerKeyable() }
-func (_this *MetaKeyRule) OnReference(ctx *Context) { ctx.BeginReferenceKeyable() }
-func (_this *MetaKeyRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantKeyable(name, explicitValue)
-}
-func (_this *MetaKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
-	ctx.SwitchMetadataValue()
-	ctx.BeginPotentialRIDCat(arrayType)
-}
-func (_this *MetaKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
-	ctx.SwitchMetadataValue()
-	ctx.BeginPotentialRIDCat(arrayType)
-}
-func (_this *MetaKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
-	ctx.BeginArrayKeyable(arrayType)
-}
-
-// =============================================================================
-
-type MetaValueRule struct{}
-
-func (_this *MetaValueRule) String() string                                 { return "Metadata Value Rule" }
-func (_this *MetaValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnNA(ctx *Context) {
-	ctx.SwitchMetadataKey()
-	ctx.BeginNA()
-}
-func (_this *MetaValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MetaValueRule) OnKeyableObject(ctx *Context)              { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnNonKeyableObject(ctx *Context)           { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnInt(ctx *Context, value int64)           { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnPositiveInt(ctx *Context, value uint64)  { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnBigInt(ctx *Context, value *big.Int)     { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnFloat(ctx *Context, value float64)       { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnBigFloat(ctx *Context, value *big.Float) { ctx.SwitchMetadataKey() }
-func (_this *MetaValueRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
-	ctx.SwitchMetadataKey()
-}
-func (_this *MetaValueRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMetadataKey()
-}
-func (_this *MetaValueRule) OnList(ctx *Context)      { ctx.BeginList() }
-func (_this *MetaValueRule) OnMap(ctx *Context)       { ctx.BeginMap() }
-func (_this *MetaValueRule) OnMarkup(ctx *Context)    { ctx.BeginMarkup() }
-func (_this *MetaValueRule) OnMetadata(ctx *Context)  { ctx.BeginMetadata() }
-func (_this *MetaValueRule) OnComment(ctx *Context)   { ctx.BeginComment() }
-func (_this *MetaValueRule) OnMarker(ctx *Context)    { ctx.BeginMarkerAnyType() }
-func (_this *MetaValueRule) OnReference(ctx *Context) { ctx.BeginReferenceAnyType() }
-func (_this *MetaValueRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantAnyType(name, explicitValue)
-}
-func (_this *MetaValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	ctx.SwitchMetadataKey()
-	ctx.BeginPotentialRIDCat(arrayType)
-}
-func (_this *MetaValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlike(arrayType, data)
-	ctx.SwitchMetadataKey()
-	ctx.BeginPotentialRIDCat(arrayType)
-}
-func (_this *MetaValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
-	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type MetaCompletionRule struct{}
-
-func (_this *MetaCompletionRule) String() string { return "Metadata Completion Rule" }
-func (_this *MetaCompletionRule) OnNA(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnNA(ctx)
-}
-func (_this *MetaCompletionRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *MetaCompletionRule) OnKeyableObject(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx)
-}
-func (_this *MetaCompletionRule) OnNonKeyableObject(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnNonKeyableObject(ctx)
-}
-func (_this *MetaCompletionRule) OnInt(ctx *Context, value int64) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnInt(ctx, value)
-}
-func (_this *MetaCompletionRule) OnPositiveInt(ctx *Context, value uint64) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnPositiveInt(ctx, value)
-}
-func (_this *MetaCompletionRule) OnBigInt(ctx *Context, value *big.Int) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnBigInt(ctx, value)
-}
-func (_this *MetaCompletionRule) OnFloat(ctx *Context, value float64) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnFloat(ctx, value)
-}
-func (_this *MetaCompletionRule) OnBigFloat(ctx *Context, value *big.Float) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnBigFloat(ctx, value)
-}
-func (_this *MetaCompletionRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnDecimalFloat(ctx, value)
-}
-func (_this *MetaCompletionRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnBigDecimalFloat(ctx, value)
-}
-func (_this *MetaCompletionRule) OnList(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnList(ctx)
-}
-func (_this *MetaCompletionRule) OnMap(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnMap(ctx)
-}
-func (_this *MetaCompletionRule) OnMarkup(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnMarkup(ctx)
-}
-func (_this *MetaCompletionRule) OnMetadata(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnMetadata(ctx)
-}
-func (_this *MetaCompletionRule) OnComment(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnComment(ctx)
-}
-func (_this *MetaCompletionRule) OnMarker(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnMarker(ctx)
-}
-func (_this *MetaCompletionRule) OnReference(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnReference(ctx)
-}
-func (_this *MetaCompletionRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnConstant(ctx, name, explicitValue)
-}
-func (_this *MetaCompletionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-}
-func (_this *MetaCompletionRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-}
-func (_this *MetaCompletionRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnArrayBegin(ctx, arrayType)
 }

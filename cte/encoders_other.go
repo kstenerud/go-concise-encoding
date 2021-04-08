@@ -378,9 +378,6 @@ func (_this *postInvisibleEncoder) BeginMap(ctx *EncoderContext) {
 func (_this *postInvisibleEncoder) BeginMarkup(ctx *EncoderContext) {
 	_this.removeSelf(ctx).BeginMarkup(ctx)
 }
-func (_this *postInvisibleEncoder) BeginMetadata(ctx *EncoderContext) {
-	_this.removeSelf(ctx).BeginMetadata(ctx)
-}
 func (_this *postInvisibleEncoder) BeginComment(ctx *EncoderContext) {
 	_this.removeSelf(ctx).BeginComment(ctx)
 }

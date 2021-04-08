@@ -154,11 +154,6 @@ func (_this *EncoderContext) SwitchToMarkupContents() {
 	_this.ChangeEncoder(&globalMarkupContentsEncoder)
 }
 
-func (_this *EncoderContext) BeginStandardMetadata() {
-	_this.Stack(&globalMetadataKeyEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
 func (_this *EncoderContext) BeginStandardComment() {
 	_this.Stack(&globalCommentEncoder)
 	_this.CurrentEncoder.Begin(_this)

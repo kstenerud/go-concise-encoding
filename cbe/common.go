@@ -55,8 +55,8 @@ const (
 	cbeTypeUUID         cbeTypeField = 0x73
 	cbeTypeReserved74   cbeTypeField = 0x74
 	cbeTypeReserved75   cbeTypeField = 0x75
-	cbeTypeComment      cbeTypeField = 0x76
-	cbeTypeMetadata     cbeTypeField = 0x77
+	cbeTypeRelationship cbeTypeField = 0x76
+	cbeTypeComment      cbeTypeField = 0x77
 	cbeTypeMarkup       cbeTypeField = 0x78
 	cbeTypeMap          cbeTypeField = 0x79
 	cbeTypeList         cbeTypeField = 0x7a
