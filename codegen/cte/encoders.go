@@ -50,6 +50,7 @@ var (
 	Time   = "EncodeTime(ctx *EncoderContext, value time.Time)"
 	CTime  = "EncodeCompactTime(ctx *EncoderContext, value compact_time.Time)"
 	UUID   = "EncodeUUID(ctx *EncoderContext, value []byte)"
+	ID     = "EncodeIdentifier(ctx *EncoderContext, value []byte)"
 	List   = "BeginList(ctx *EncoderContext)"
 	Map    = "BeginMap(ctx *EncoderContext)"
 	Markup = "BeginMarkup(ctx *EncoderContext)"
@@ -65,7 +66,7 @@ var (
 	Data   = "EncodeArrayData(ctx *EncoderContext, data []byte)"
 
 	allMethods = []string{Begin, End, Child, NA, Nil, Bool, True, False, PInt,
-		NInt, Int, BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID,
+		NInt, Int, BInt, Float, BFloat, DFloat, BDF, Nan, Time, CTime, UUID, ID,
 		List, Map, Markup, Cmt, Marker, Ref, Const, Arr, Str,
 		BArr, Chunk, Data}
 )
@@ -113,10 +114,8 @@ var encoders = []Encoder{
 			Markup, Cmt, Marker, Ref, Const, NA, Nil, Arr, Str, BArr},
 	},
 	{
-		Name: "markupName",
-		Methods: []string{Child, Begin, Bool, True, False, PInt, NInt, Int,
-			BInt, Float, BFloat, DFloat, BDF, Time, CTime, UUID,
-			Marker, Ref, Const, Arr, Str, BArr},
+		Name:    "markupName",
+		Methods: []string{Begin, ID},
 	},
 	{
 		Name: "markupKey",
@@ -140,11 +139,11 @@ var encoders = []Encoder{
 	},
 	{
 		Name:    "reference",
-		Methods: []string{Child, Begin, PInt, Int, BInt, Const, Arr, Str, BArr},
+		Methods: []string{Child, Begin, ID, Arr, Str, BArr},
 	},
 	{
 		Name:    "markerID",
-		Methods: []string{Child, Begin, PInt, Int, BInt, Const, Arr, Str, BArr},
+		Methods: []string{Begin, ID},
 	},
 	{
 		Name:    "array",

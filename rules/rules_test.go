@@ -91,9 +91,10 @@ func TestRulesBigInt(t *testing.T) {
 }
 
 func TestRulesBigIntAsID(t *testing.T) {
-	assertEventsMaxDepth(t, 10, L(), MARK(), BI(NewBigInt("10", 10)), I(0), REF(), I(10), E(), ED())
-
 	rules := newRulesWithMaxDepth(10)
+	assertEventsFail(t, rules, L(), MARK(), BI(NewBigInt("10", 10)), I(0), REF(), I(10), E(), ED())
+
+	rules = newRulesWithMaxDepth(10)
 	assertEventsSucceed(t, rules, MARK())
 	assertEventsFail(t, rules, BI(NewBigInt("10000000000000000000000000000000000000000000", 10)))
 }
@@ -148,22 +149,28 @@ func TestRulesCustomOneshot(t *testing.T) {
 }
 
 func TestRulesMarker(t *testing.T) {
-	assertEventsMaxDepth(t, 10, L(), MARK(), S("a"), F(0.1), MARK(), I(100), GT(time.Now()), E(), ED())
+	assertEventsMaxDepth(t, 10, L(), MARK(), ID("a"), F(0.1), MARK(), ID("blah"), GT(time.Now()), E(), ED())
 }
 
 func TestRulesReference(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 
-	assertEventsSucceed(t, rules, L(), MARK(), S("a"), F(0.1), MARK(), I(100), GT(time.Now()),
-		REF(), S("a"), REF(), RID("http://example.com"), REF(), I(100),
-		REF(), I(5), S("test"), E())
-	assertEventsFail(t, rules, ED())
+	assertEventsSucceed(t, rules, L(), MARK(), ID("a"), F(0.1), MARK(), ID("blah"), GT(time.Now()),
+		REF(), ID("a"),
+		REF(), RID("http://example.com"),
+		REF(), ID("blah"),
+		S("test"),
+		E())
 
 	rules = newRulesWithMaxDepth(10)
 
-	assertEventsSucceed(t, rules, L(), MARK(), S("a"), F(0.1), MARK(), I(100), GT(time.Now()),
-		REF(), S("a"), REF(), RIDCat("http://example.com"), I(1), REF(), I(100),
-		REF(), I(5), S("test"), E())
+	assertEventsSucceed(t, rules, L(),
+		MARK(), ID("a"), F(0.1),
+		MARK(), ID("blah"), GT(time.Now()),
+		REF(), ID("a"), REF(), RIDCat("http://example.com"), S("1"),
+		REF(), ID("blah"),
+		S("test"),
+		E())
 }
 
 func TestRulesConstant(t *testing.T) {
@@ -393,7 +400,7 @@ func TestRulesMapEmpty(t *testing.T) {
 }
 
 func TestRulesMarkupEmpty(t *testing.T) {
-	assertEventsMaxDepth(t, 2, MUP(), S("a"), E(), E(), ED())
+	assertEventsMaxDepth(t, 2, MUP(), ID("a"), E(), E(), ED())
 }
 
 func TestRulesCommentEmpty(t *testing.T) {
@@ -413,7 +420,7 @@ func TestRulesMapPair(t *testing.T) {
 }
 
 func TestRulesMarkupSingleItem(t *testing.T) {
-	assertEventsMaxDepth(t, 2, MUP(), S("abcdef"), I(-1), B(true), E(), S("a"), E(), ED())
+	assertEventsMaxDepth(t, 2, MUP(), ID("abcdef"), I(-1), B(true), E(), S("a"), E(), ED())
 }
 
 func TestRulesCommentSingleItem(t *testing.T) {
@@ -463,7 +470,7 @@ func TestRulesCommentMap(t *testing.T) {
 }
 
 func TestRulesMarkup(t *testing.T) {
-	assertEventsMaxDepth(t, 2, MUP(), S("a"), I(1), I(-1), E(), S("a"), E(), ED())
+	assertEventsMaxDepth(t, 2, MUP(), ID("a"), I(1), I(-1), E(), S("a"), E(), ED())
 }
 
 // =============
@@ -588,14 +595,14 @@ func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
 	assertSuccess := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP(), S("a"))
+			assertEventsSucceed(t, rules, MUP(), ID("a"))
 			assertEventsSucceed(t, rules, event)
 		}
 	}
 	assertFail := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP(), S("a"))
+			assertEventsSucceed(t, rules, MUP(), ID("a"))
 			assertEventsFail(t, rules, event)
 		}
 	}
@@ -608,14 +615,14 @@ func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
 	assertSuccess := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP(), S("a"), TT())
+			assertEventsSucceed(t, rules, MUP(), ID("a"), TT())
 			assertEventsSucceed(t, rules, event)
 		}
 	}
 	assertFail := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP(), S("a"), TT())
+			assertEventsSucceed(t, rules, MUP(), ID("a"), TT())
 			assertEventsFail(t, rules, event)
 		}
 	}
@@ -628,14 +635,14 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 	assertSuccess := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP(), S("a"), E())
+			assertEventsSucceed(t, rules, MUP(), ID("a"), E())
 			assertEventsSucceed(t, rules, event)
 		}
 	}
 	assertFail := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP(), S("a"), E())
+			assertEventsSucceed(t, rules, MUP(), ID("a"), E())
 			assertEventsFail(t, rules, event)
 		}
 	}
@@ -717,14 +724,14 @@ func TestRulesAllowedTypesMarkerValue(t *testing.T) {
 	assertSuccess := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MARK(), I(1))
+			assertEventsSucceed(t, rules, MARK(), ID("1"))
 			assertEventsSucceed(t, rules, event)
 		}
 	}
 	assertFail := func(events ...*test.TEvent) {
 		for _, event := range events {
 			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MARK(), I(1))
+			assertEventsSucceed(t, rules, MARK(), ID("1"))
 			assertEventsFail(t, rules, event)
 		}
 	}
@@ -754,18 +761,18 @@ func TestRulesAllowedTypesReferenceID(t *testing.T) {
 }
 
 func TestRulesMarkerReference(t *testing.T) {
-	assertEventsMaxDepth(t, 9, L(), MARK(), I(1), TT(), MARK(), I(2), REF(), I(1), E())
+	assertEventsMaxDepth(t, 9, L(), MARK(), ID("1"), TT(), MARK(), ID("2"), REF(), ID("1"), E())
 }
 
 func TestRulesMarkerReference2(t *testing.T) {
 	assertEventsMaxDepth(t, 9, M(),
 		S("keys"),
 		L(),
-		MARK(), I(1), S("foo"),
-		MARK(), I(2), S("bar"),
+		MARK(), ID("1"), S("foo"),
+		MARK(), ID("2"), S("bar"),
 		E(),
-		REF(), I(1), I(1),
-		REF(), I(2), I(2),
+		REF(), ID("1"), I(1),
+		REF(), ID("2"), I(2),
 		E())
 }
 
@@ -787,7 +794,7 @@ func TestRulesErrorOnEndTooManyTimes(t *testing.T) {
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP(), S("a"), E(), E())
+	assertEventsSucceed(t, rules, MUP(), ID("a"), E(), E())
 	assertEventsFail(t, rules, E())
 }
 
@@ -809,11 +816,11 @@ func TestRulesErrorUnendedContainer(t *testing.T) {
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP(), S("a"))
+	assertEventsSucceed(t, rules, MUP(), ID("a"))
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP(), S("a"), E())
+	assertEventsSucceed(t, rules, MUP(), ID("a"), E())
 	assertEventsFail(t, rules, ED())
 }
 
@@ -836,25 +843,25 @@ func TestRulesErrorArrayTooFewBytes(t *testing.T) {
 
 func TestRulesErrorMarkupNameLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
-	assertEventsSucceed(t, rules, MUP(), SB())
-	assertEventsFail(t, rules, AD([]byte{}))
+	assertEventsSucceed(t, rules, MUP())
+	assertEventsFail(t, rules, ID(""))
 }
 
 func TestRulesErrorMarkerIDLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
-	assertEventsSucceed(t, rules, MARK(), SB())
-	assertEventsFail(t, rules, AD([]byte{}))
+	assertEventsSucceed(t, rules, MARK())
+	assertEventsFail(t, rules, ID(""))
 }
 
 func TestRulesErrorReferenceIDLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(3)
-	assertEventsSucceed(t, rules, L(), REF(), SB())
-	assertEventsFail(t, rules, AD([]byte{}))
+	assertEventsSucceed(t, rules, L(), REF())
+	assertEventsFail(t, rules, ID(""))
 }
 
 func TestRulesErrorRefMissingMarker(t *testing.T) {
 	rules := newRulesWithMaxDepth(5)
-	assertEventsSucceed(t, rules, L(), REF(), S("test"), E())
+	assertEventsSucceed(t, rules, L(), REF(), ID("test"), E())
 	assertEventsFail(t, rules, ED())
 }
 
@@ -865,13 +872,13 @@ func TestRulesResourceIDLength0_1(t *testing.T) {
 
 func TestRulesErrorDuplicateMarkerID(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, L(), MARK(), S("test"), TT(), MARK())
+	assertEventsSucceed(t, rules, L(), MARK(), ID("test"), TT(), MARK())
 	// TODO: Can we check for duplicate markers before the marked object is read?
-	assertEventsFail(t, rules, S("test"), FF())
+	assertEventsFail(t, rules, ID("test"), FF())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, L(), MARK(), I(100), TT(), MARK())
-	assertEventsFail(t, rules, I(100), FF())
+	assertEventsSucceed(t, rules, L(), MARK(), ID("100"), TT(), MARK())
+	assertEventsFail(t, rules, ID("100"), FF())
 }
 
 func TestRulesErrorInvalidMarkerID(t *testing.T) {
@@ -940,19 +947,15 @@ func TestRulesMaxResourceIDLength(t *testing.T) {
 }
 
 func TestRulesMaxIDLength(t *testing.T) {
-	maxIDLength := 50
+	maxIDLength := 127
 	opts := options.DefaultRuleOptions()
 	rules := newRulesAfterVersion(opts)
 	assertEventsSucceed(t, rules, MARK())
-	assertEventsFail(t, rules, S(string(NewString(maxIDLength+1, 0))))
-
-	rules = newRulesAfterVersion(opts)
-	assertEventsSucceed(t, rules, MARK(), SB(), AC(uint64(maxIDLength-3), true), AD(NewBytes(maxIDLength-3, 64)), AC(4, false))
-	assertEventsFail(t, rules, AD(NewBytes(4, 64)))
+	assertEventsFail(t, rules, ID(string(NewString(maxIDLength+1, 0))))
 
 	rules = newRulesAfterVersion(opts)
 	assertEventsSucceed(t, rules, REF())
-	assertEventsFail(t, rules, S(string(NewString(maxIDLength+1, 0))))
+	assertEventsFail(t, rules, ID(string(NewString(maxIDLength+1, 0))))
 }
 
 func TestRulesMaxContainerDepth(t *testing.T) {
@@ -973,7 +976,7 @@ func TestRulesMaxReferenceCount(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxReferenceCount = 2
 	rules := newRulesAfterVersion(opts)
-	assertEventsSucceed(t, rules, L(), MARK(), S("test"), TT(), MARK(), I(10), TT())
+	assertEventsSucceed(t, rules, L(), MARK(), ID("test"), TT(), MARK(), ID("10"), TT())
 	assertEventsFail(t, rules, MARK())
 }
 
@@ -989,14 +992,23 @@ func TestRulesReset(t *testing.T) {
 	assertEventsSucceed(t, rules, BD(), EvV, L(), L(), I(1), I(1), I(1), E())
 	assertEventsFail(t, rules, I(1))
 	rules.Reset()
-	assertEventsSucceed(t, rules, BD(), EvV, L(), MARK(), I(1), S("test"), MARK(), I(2), S("more tests"))
+	assertEventsSucceed(t, rules, BD(), EvV, L(), MARK(), ID("1"), S("test"), MARK(), ID("2"), S("more tests"))
 	assertEventsFail(t, rules, MARK())
 	rules.Reset()
-	assertEventsSucceed(t, rules, BD(), EvV, L(), MARK(), I(1), S("test"))
+	assertEventsSucceed(t, rules, BD(), EvV, L(), MARK(), ID("1"), S("test"))
 }
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
 	assertEventsSucceed(t, rules, BD(), EvV, REF(), RID("http://x.y"), ED())
+}
+
+func TestRulesForwardReference(t *testing.T) {
+	rules := newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, M(),
+		S("marked"), MARK(), ID("x"), M(),
+		S("recursive"), REF(), ID("x"),
+		E(),
+		E())
 }

@@ -23,26 +23,13 @@ package cte
 import (
 	"bytes"
 	"fmt"
-	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
-func getStringRequirements(str []byte) (escapeCount int, requiresQuotes bool) {
-	if len(str) == 0 {
-		return 0, true
-	}
-
-	firstRune, _ := utf8.DecodeRune(str)
-	if chars.RuneHasProperty(firstRune, chars.CharNeedsQuoteFirst) {
-		requiresQuotes = true
-	}
-
+func getEscapeCount(str []byte) (escapeCount int) {
 	for _, ch := range string(str) {
 		props := chars.GetRuneProperty(ch)
-		if props.HasProperty(chars.CharNeedsQuote) {
-			requiresQuotes = true
-		}
 		if props.HasProperty(chars.CharNeedsEscapeQuoted) {
 			escapeCount++
 		}

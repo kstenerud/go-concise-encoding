@@ -21,6 +21,7 @@
 package cte
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -37,6 +38,7 @@ type DecoderContext struct {
 	Stream             Reader
 	EventReceiver      events.DataEventReceiver
 	stack              []DecoderStackEntry
+	CommentDepth       int
 	IsDocumentComplete bool
 }
 
@@ -78,6 +80,21 @@ func (_this *DecoderContext) StackDecoder(decoder DecoderFunc) {
 func (_this *DecoderContext) UnstackDecoder() DecoderStackEntry {
 	_this.stack = _this.stack[:len(_this.stack)-1]
 	return _this.stack[len(_this.stack)-1]
+}
+
+func (_this *DecoderContext) BeginComment() {
+	_this.CommentDepth++
+	_this.EventReceiver.OnComment()
+	_this.StackDecoder(decodeCommentContents)
+}
+
+func (_this *DecoderContext) EndComment() {
+	_this.CommentDepth--
+	_this.EventReceiver.OnEnd()
+	_this.UnstackDecoder()
+	if _this.CommentDepth <= 0 {
+		_this.StackDecoder(decodePostInvisible)
+	}
 }
 
 func (_this *DecoderContext) EndMarkup() {

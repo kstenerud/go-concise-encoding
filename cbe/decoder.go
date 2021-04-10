@@ -140,6 +140,7 @@ EOF:
 			eventReceiver.OnComment()
 		case cbeTypeMarkup:
 			eventReceiver.OnMarkup()
+			eventReceiver.OnIdentifier(_this.reader.ReadIdentifier())
 		case cbeTypeMap:
 			eventReceiver.OnMap()
 		case cbeTypeList:
@@ -186,8 +187,10 @@ EOF:
 			}
 		case cbeTypeMarker:
 			eventReceiver.OnMarker()
+			eventReceiver.OnIdentifier(_this.reader.ReadIdentifier())
 		case cbeTypeReference:
 			eventReceiver.OnReference()
+			eventReceiver.OnIdentifier(_this.reader.ReadIdentifier())
 		case cbeTypeDate:
 			eventReceiver.OnCompactTime(_this.reader.ReadDate())
 		case cbeTypeTime:

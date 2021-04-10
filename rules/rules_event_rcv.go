@@ -226,6 +226,13 @@ func (_this *RulesEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.receiver.OnCompactTime(value)
 }
 
+func (_this *RulesEventReceiver) OnIdentifier(value []byte) {
+	_this.context.NotifyNewObject()
+	_this.context.ValidateIdentifier(value)
+	_this.context.CurrentEntry.Rule.OnIdentifier(&_this.context, value)
+	_this.receiver.OnIdentifier(value)
+}
+
 func (_this *RulesEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnArray(&_this.context, arrayType, elementCount, value)

@@ -54,6 +54,7 @@ type Encoder interface {
 	EncodeTime(ctx *EncoderContext, value time.Time)
 	EncodeCompactTime(ctx *EncoderContext, value compact_time.Time)
 	EncodeUUID(ctx *EncoderContext, value []byte)
+	EncodeIdentifier(ctx *EncoderContext, value []byte)
 	BeginList(ctx *EncoderContext)
 	BeginMap(ctx *EncoderContext)
 	BeginMarkup(ctx *EncoderContext)
@@ -168,6 +169,10 @@ func (_this *EncoderEventReceiver) OnNan(signaling bool) {
 
 func (_this *EncoderEventReceiver) OnUUID(value []byte) {
 	_this.context.CurrentEncoder.EncodeUUID(&_this.context, value)
+}
+
+func (_this *EncoderEventReceiver) OnIdentifier(value []byte) {
+	_this.context.CurrentEncoder.EncodeIdentifier(&_this.context, value)
 }
 
 func (_this *EncoderEventReceiver) OnTime(value time.Time) {

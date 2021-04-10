@@ -198,6 +198,15 @@ func (_this *EncoderContext) BeginPotentialRIDCat(arrayType events.ArrayType) {
 	}
 }
 
+func (_this *EncoderContext) WriteStringIdentifier(data string) {
+	// TODO: Not this
+	_this.WriteIdentifier([]byte(data))
+}
+
+func (_this *EncoderContext) WriteIdentifier(data []byte) {
+	_this.Stream.WriteBytes(data)
+}
+
 func (_this *EncoderContext) WriteStringlikeArray(arrayType events.ArrayType, data string) {
 	// TODO: avoid string-to-bytes conversion?
 	_this.ArrayEngine.EncodeArray(arrayType, uint64(len(data)), []byte(data))

@@ -21,6 +21,8 @@
 package cte
 
 import (
+	"fmt"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
@@ -78,7 +80,7 @@ func decodeMarkupBegin(ctx *DecoderContext) {
 }
 
 func decodeMarkupName(ctx *DecoderContext) {
-	decodeByFirstChar(ctx)
+	decodeIdentifier(ctx)
 	ctx.ChangeDecoder(decodeMapKey)
 }
 
@@ -97,11 +99,9 @@ func decodeMarkupContents(ctx *DecoderContext) {
 	}
 	switch next {
 	case nextIsCommentBegin:
-		ctx.EventReceiver.OnComment()
-		ctx.StackDecoder(decodeCommentContents)
+		ctx.BeginComment()
 	case nextIsCommentEnd:
-		ctx.EventReceiver.OnEnd()
-		ctx.UnstackDecoder()
+		ctx.EndComment()
 	case nextIsSingleLineComment:
 		ctx.EventReceiver.OnComment()
 		contents := ctx.Stream.ReadSingleLineComment()
@@ -138,8 +138,7 @@ func advanceAndDecodeComment(ctx *DecoderContext) {
 		ctx.EventReceiver.OnEnd()
 		ctx.StackDecoder(decodePostInvisible)
 	case '*':
-		ctx.EventReceiver.OnComment()
-		ctx.StackDecoder(decodeCommentContents)
+		ctx.BeginComment()
 	default:
 		ctx.Stream.Errorf("Unexpected comment initiator: [%c]", b)
 	}
@@ -152,12 +151,9 @@ func decodeCommentContents(ctx *DecoderContext) {
 	}
 	switch next {
 	case nextIsCommentBegin:
-		ctx.EventReceiver.OnComment()
-		ctx.StackDecoder(decodeCommentContents)
+		ctx.BeginComment()
 	case nextIsCommentEnd:
-		ctx.EventReceiver.OnEnd()
-		ctx.UnstackDecoder()
-		ctx.StackDecoder(decodePostInvisible)
+		ctx.EndComment()
 	}
 }
 

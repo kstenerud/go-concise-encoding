@@ -60,7 +60,7 @@ type Context struct {
 	ValidateArrayDataFunc  func(data []byte)
 
 	// Marker/Reference
-	currentMarkerID   interface{}
+	currentMarkerID   string
 	markerObjectRule  EventRule
 	markedObjects     map[interface{}]DataType
 	forwardReferences map[interface{}]DataType
@@ -176,13 +176,13 @@ func (_this *Context) BeginMarkerAnyType() {
 	_this.stackRule(&markerIDAnyTypeRule, DataTypeAnyType)
 }
 
-func (_this *Context) BeginMarkedObjectKeyable(id interface{}) {
-	_this.currentMarkerID = id
+func (_this *Context) BeginMarkedObjectKeyable(id []byte) {
+	_this.currentMarkerID = string(id)
 	_this.changeRule(&markedObjectKeyableRule)
 }
 
-func (_this *Context) BeginMarkedObjectAnyType(id interface{}) {
-	_this.currentMarkerID = id
+func (_this *Context) BeginMarkedObjectAnyType(id []byte) {
+	_this.currentMarkerID = string(id)
 	_this.changeRule(&markedObjectAnyTypeRule)
 }
 
@@ -281,19 +281,20 @@ func (_this *Context) MarkObject(dataType DataType) {
 	}
 }
 
-func (_this *Context) ReferenceObject(id interface{}, allowedDataTypes DataType) {
-	if dataType, exists := _this.markedObjects[id]; exists {
+func (_this *Context) ReferenceObject(id []byte, allowedDataTypes DataType) {
+	idAsString := string(id)
+	if dataType, exists := _this.markedObjects[idAsString]; exists {
 		if dataType&allowedDataTypes == 0 {
-			panic(fmt.Errorf("Marked object id [%v] of type %v is not a valid type to be referenced here", id, dataType))
+			panic(fmt.Errorf("Marked object id [%v] of type %v is not a valid type to be referenced here", idAsString, dataType))
 		}
 		return
 	}
 
-	current := _this.forwardReferences[id]
+	current := _this.forwardReferences[idAsString]
 	if current == 0 {
 		current = allowedDataTypes
 	} else {
 		current &= allowedDataTypes
 	}
-	_this.forwardReferences[id] = current
+	_this.forwardReferences[idAsString] = current
 }

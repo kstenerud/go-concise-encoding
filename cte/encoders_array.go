@@ -82,7 +82,7 @@ func (_this *arrayEncoderEngine) EncodeStringlikeArray(arrayType events.ArrayTyp
 func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		_this.stream.WritePotentiallyQuotedStringBytes(data)
+		_this.stream.WriteQuotedStringBytes(data)
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteString("|r ")
 		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
@@ -213,7 +213,16 @@ func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
 	_this.setElementByteWidth(1)
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
 	_this.onComplete = func() {
-		_this.stream.WritePotentiallyQuotedStringBytes(_this.stringBuffer)
+		_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
+		onComplete()
+	}
+}
+
+func (_this *arrayEncoderEngine) beginArrayIdentifier(onComplete func()) {
+	_this.setElementByteWidth(1)
+	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
+	_this.onComplete = func() {
+		_this.stream.WriteBytes(_this.stringBuffer)
 		onComplete()
 	}
 }

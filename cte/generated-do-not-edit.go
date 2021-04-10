@@ -43,6 +43,9 @@ func (_this *topLevelEncoder) Begin(ctx *EncoderContext) {
 func (_this *topLevelEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
+func (_this *topLevelEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
+}
 func (_this *topLevelEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
 }
@@ -54,6 +57,9 @@ func (_this *constantEncoder) End(ctx *EncoderContext) {
 }
 func (_this *constantEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
+}
+func (_this *constantEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *constantEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
@@ -73,11 +79,17 @@ func (_this *postInvisibleEncoder) End(ctx *EncoderContext) {
 func (_this *postInvisibleEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
+func (_this *postInvisibleEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
+}
 func (_this *postInvisibleEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
 }
 func (_this *postInvisibleEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArrayData", reflect.TypeOf(_this)))
+}
+func (_this *listEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *listEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
@@ -93,6 +105,9 @@ func (_this *mapKeyEncoder) EncodeNil(ctx *EncoderContext) {
 }
 func (_this *mapKeyEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNan", reflect.TypeOf(_this)))
+}
+func (_this *mapKeyEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *mapKeyEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
@@ -115,6 +130,9 @@ func (_this *mapValueEncoder) Begin(ctx *EncoderContext) {
 func (_this *mapValueEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
+func (_this *mapValueEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
+}
 func (_this *mapValueEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
 }
@@ -124,14 +142,59 @@ func (_this *mapValueEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) 
 func (_this *markupNameEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
 }
+func (_this *markupNameEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
+}
 func (_this *markupNameEncoder) BeginNA(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginNA", reflect.TypeOf(_this)))
 }
 func (_this *markupNameEncoder) EncodeNil(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNil", reflect.TypeOf(_this)))
 }
+func (_this *markupNameEncoder) EncodeBool(ctx *EncoderContext, value bool) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBool", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeTrue(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeTrue", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeFalse(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeFalse", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodePositiveInt", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNegativeInt", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeInt", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBigInt", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeFloat", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBigFloat", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeDecimalFloat", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBigDecimalFloat", reflect.TypeOf(_this)))
+}
 func (_this *markupNameEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNan", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeTime", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeCompactTime", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeUUID", reflect.TypeOf(_this)))
 }
 func (_this *markupNameEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
@@ -144,6 +207,24 @@ func (_this *markupNameEncoder) BeginMarkup(ctx *EncoderContext) {
 }
 func (_this *markupNameEncoder) BeginComment(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginComment", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) BeginMarker(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginMarker", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) BeginReference(ctx *EncoderContext) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginReference", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginConstant", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArray", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeStringlikeArray", reflect.TypeOf(_this)))
+}
+func (_this *markupNameEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginArray", reflect.TypeOf(_this)))
 }
 func (_this *markupNameEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
@@ -162,6 +243,9 @@ func (_this *markupKeyEncoder) EncodeNil(ctx *EncoderContext) {
 }
 func (_this *markupKeyEncoder) EncodeNan(ctx *EncoderContext, signaling bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNan", reflect.TypeOf(_this)))
+}
+func (_this *markupKeyEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *markupKeyEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
@@ -183,6 +267,9 @@ func (_this *markupValueEncoder) Begin(ctx *EncoderContext) {
 }
 func (_this *markupValueEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
+}
+func (_this *markupValueEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *markupValueEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
@@ -240,6 +327,9 @@ func (_this *markupContentsEncoder) EncodeCompactTime(ctx *EncoderContext, value
 }
 func (_this *markupContentsEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeUUID", reflect.TypeOf(_this)))
+}
+func (_this *markupContentsEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *markupContentsEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
@@ -313,6 +403,9 @@ func (_this *commentEncoder) EncodeCompactTime(ctx *EncoderContext, value compac
 func (_this *commentEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeUUID", reflect.TypeOf(_this)))
 }
+func (_this *commentEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
+}
 func (_this *commentEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
 }
@@ -355,8 +448,17 @@ func (_this *referenceEncoder) EncodeTrue(ctx *EncoderContext) {
 func (_this *referenceEncoder) EncodeFalse(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeFalse", reflect.TypeOf(_this)))
 }
+func (_this *referenceEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodePositiveInt", reflect.TypeOf(_this)))
+}
 func (_this *referenceEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNegativeInt", reflect.TypeOf(_this)))
+}
+func (_this *referenceEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeInt", reflect.TypeOf(_this)))
+}
+func (_this *referenceEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBigInt", reflect.TypeOf(_this)))
 }
 func (_this *referenceEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeFloat", reflect.TypeOf(_this)))
@@ -400,6 +502,9 @@ func (_this *referenceEncoder) BeginMarker(ctx *EncoderContext) {
 func (_this *referenceEncoder) BeginReference(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginReference", reflect.TypeOf(_this)))
 }
+func (_this *referenceEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginConstant", reflect.TypeOf(_this)))
+}
 func (_this *referenceEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
 }
@@ -408,6 +513,9 @@ func (_this *referenceEncoder) EncodeArrayData(ctx *EncoderContext, data []byte)
 }
 func (_this *markerIDEncoder) End(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to End", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+	panic(fmt.Errorf("BUG: %v cannot respond to ChildContainerFinished", reflect.TypeOf(_this)))
 }
 func (_this *markerIDEncoder) BeginNA(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginNA", reflect.TypeOf(_this)))
@@ -424,8 +532,17 @@ func (_this *markerIDEncoder) EncodeTrue(ctx *EncoderContext) {
 func (_this *markerIDEncoder) EncodeFalse(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeFalse", reflect.TypeOf(_this)))
 }
+func (_this *markerIDEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodePositiveInt", reflect.TypeOf(_this)))
+}
 func (_this *markerIDEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeNegativeInt", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) EncodeInt(ctx *EncoderContext, value int64) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeInt", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeBigInt", reflect.TypeOf(_this)))
 }
 func (_this *markerIDEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeFloat", reflect.TypeOf(_this)))
@@ -468,6 +585,18 @@ func (_this *markerIDEncoder) BeginMarker(ctx *EncoderContext) {
 }
 func (_this *markerIDEncoder) BeginReference(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginReference", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginConstant", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeArray", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeStringlikeArray", reflect.TypeOf(_this)))
+}
+func (_this *markerIDEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BeginArray", reflect.TypeOf(_this)))
 }
 func (_this *markerIDEncoder) BeginArrayChunk(ctx *EncoderContext, length uint64, moreChunksFollow bool) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginArrayChunk", reflect.TypeOf(_this)))
@@ -534,6 +663,9 @@ func (_this *arrayEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_
 }
 func (_this *arrayEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeUUID", reflect.TypeOf(_this)))
+}
+func (_this *arrayEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *arrayEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
@@ -613,6 +745,9 @@ func (_this *postRIDCatEncoder) EncodeCompactTime(ctx *EncoderContext, value com
 func (_this *postRIDCatEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeUUID", reflect.TypeOf(_this)))
 }
+func (_this *postRIDCatEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
+}
 func (_this *postRIDCatEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))
 }
@@ -687,6 +822,9 @@ func (_this *postStreamRIDCatEncoder) EncodeCompactTime(ctx *EncoderContext, val
 }
 func (_this *postStreamRIDCatEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to EncodeUUID", reflect.TypeOf(_this)))
+}
+func (_this *postStreamRIDCatEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to EncodeIdentifier", reflect.TypeOf(_this)))
 }
 func (_this *postStreamRIDCatEncoder) BeginList(ctx *EncoderContext) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BeginList", reflect.TypeOf(_this)))

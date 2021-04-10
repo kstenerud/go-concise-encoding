@@ -36,9 +36,9 @@ func advanceAndDecodeQuotedString(ctx *DecoderContext) {
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
-func decodeUnquotedString(ctx *DecoderContext) {
-	bytes := ctx.Stream.ReadUnquotedString()
-	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+func decodeIdentifier(ctx *DecoderContext) {
+	bytes := ctx.Stream.ReadIdentifier()
+	ctx.EventReceiver.OnIdentifier(bytes)
 }
 
 func decodeArrayType(ctx *DecoderContext) string {

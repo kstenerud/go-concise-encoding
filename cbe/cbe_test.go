@@ -38,8 +38,8 @@ func TestCBEVersion(t *testing.T) {
 }
 
 func TestCBEPadding(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typePadding}, BD(), EvV, PAD(1), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePadding, typePadding, typePadding}, BD(), EvV, PAD(1), PAD(1), PAD(1), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typePadding, 1}, BD(), EvV, PAD(1), I(1), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typePadding, typePadding, typePadding, 1}, BD(), EvV, PAD(1), PAD(1), PAD(1), I(1), ED())
 }
 
 func TestCBENil(t *testing.T) {
@@ -439,33 +439,32 @@ func TestCBEArrayUUID(t *testing.T) {
 }
 
 func TestCBEMarker(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, typeString1, 'a'}, BD(), EvV, MARK(), I(1), S("a"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, typeString1, 'a', typeString4, 't', 'e', 's', 't'}, BD(), EvV, MARK(), S("a"), S("test"), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, 'x', typeString1, 'a'}, BD(), EvV, MARK(), ID("x"), S("a"), ED())
 }
 
 func TestCBEReference(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeReference, 1}, BD(), EvV, REF(), I(1), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeReference, typeString1, 'a'}, BD(), EvV, REF(), S("a"), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeList, typeMarker, 1, 'x', typeString1, 'a', typeReference, 1, 'x', typeEndContainer},
+		BD(), EvV, L(), MARK(), ID("x"), S("a"), REF(), ID("x"), E(), ED())
 }
 
 func TestCBEContainers(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1, typeEndContainer}, BD(), EvV, L(), I(1), E(), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeMap, 1, typeEndContainer}, BD(), EvV, M(), I(1), E(), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeComment, 1, typeEndContainer}, BD(), EvV, CMT(), I(1), E(), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeMarkup, 1, typeEndContainer, typeEndContainer}, BD(), EvV, MUP(), I(1), E(), E(), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeMap, 1, 1, typeEndContainer}, BD(), EvV, M(), I(1), I(1), E(), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeComment, typeString1, 'a', typeEndContainer, 1}, BD(), EvV, CMT(), S("a"), E(), I(1), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeMarkup, 1, 'a', typeEndContainer, typeEndContainer}, BD(), EvV, MUP(), ID("a"), E(), E(), ED())
 
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1,
 		typeList, typeString1, 'a', typeEndContainer,
 		typeMap, typeString1, 'a', 100, typeEndContainer,
 		typeComment, typeString1, 'a', typeEndContainer,
-		typeMarkup, typeString1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
+		typeMarkup, 1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
 		typeEndContainer,
 	},
 		BD(), EvV, L(), I(1),
 		L(), S("a"), E(),
 		M(), S("a"), I(100), E(),
 		CMT(), S("a"), E(),
-		MUP(), S("a"), S("a"), I(50), E(), S("a"), E(),
+		MUP(), ID("a"), S("a"), I(50), E(), S("a"), E(),
 		E(), ED())
 }
 

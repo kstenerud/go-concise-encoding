@@ -46,6 +46,7 @@ var (
 	BFloat  = "OnBigFloat(ctx *Context, value *big.Float)"
 	DFloat  = "OnDecimalFloat(ctx *Context, value compact_float.DFloat)"
 	BDFloat = "OnBigDecimalFloat(ctx *Context, value *apd.Decimal)"
+	ID      = "OnIdentifier(ctx *Context, value []byte)"
 	List    = "OnList(ctx *Context)"
 	Map     = "OnMap(ctx *Context)"
 	Markup  = "OnMarkup(ctx *Context)"
@@ -61,7 +62,7 @@ var (
 	AData   = "OnArrayData(ctx *Context, data []byte)"
 
 	allMethods = []string{BDoc, EDoc, ECtr, Ver, NA, Pad, Key, NonKey, Int,
-		PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup,
+		PInt, BInt, Float, BFloat, DFloat, BDFloat, ID, List, Map, Markup,
 		Comment, End, Marker, Ref, Const, Array, SArray, ABegin, AChunk, AData}
 )
 
@@ -109,7 +110,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkupNameRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{Pad, ID},
 	},
 	{
 		Name:    "MarkupKeyRule",
@@ -153,11 +154,11 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkerIDKeyableRule",
-		Methods: []string{Pad, Int, PInt, BInt, Array, SArray, ABegin, ECtr},
+		Methods: []string{Pad, ID},
 	},
 	{
 		Name:    "MarkerIDAnyTypeRule",
-		Methods: []string{Pad, Int, PInt, BInt, Array, SArray, ABegin, ECtr},
+		Methods: []string{Pad, ID},
 	},
 	{
 		Name:    "MarkedObjectKeyableRule",
@@ -169,11 +170,11 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "ReferenceKeyableRule",
-		Methods: []string{Pad, Int, PInt, BInt, Array, SArray, ABegin, ECtr},
+		Methods: []string{Pad, ID},
 	},
 	{
 		Name:    "ReferenceAnyTypeRule",
-		Methods: []string{Pad, Int, PInt, BInt, Array, SArray, ABegin, ECtr},
+		Methods: []string{Pad, ID, Array, SArray, ABegin, ECtr},
 	},
 	{
 		Name:    "ConstantKeyableRule",

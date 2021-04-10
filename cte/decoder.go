@@ -95,16 +95,6 @@ func init() {
 	decoderFuncsByFirstChar['\t'] = decodeWhitespace
 	decoderFuncsByFirstChar[' '] = decodeWhitespace
 	decoderFuncsByFirstChar['"'] = advanceAndDecodeQuotedString
-	decoderFuncsByFirstChar['_'] = decodeUnquotedString
-	for i := 'A'; i <= 'Z'; i++ {
-		decoderFuncsByFirstChar[i] = decodeUnquotedString
-	}
-	for i := 'a'; i <= 'z'; i++ {
-		decoderFuncsByFirstChar[i] = decodeUnquotedString
-	}
-	for i := 0xc0; i < 0xf8; i++ {
-		decoderFuncsByFirstChar[i] = decodeUnquotedString
-	}
 	decoderFuncsByFirstChar['0'] = advanceAndDecodeOtherBasePositive
 	for i := '1'; i <= '9'; i++ {
 		decoderFuncsByFirstChar[i] = decodeNumericPositive

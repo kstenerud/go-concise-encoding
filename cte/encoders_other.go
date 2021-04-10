@@ -421,20 +421,9 @@ func (_this *referenceEncoder) ChildContainerFinished(ctx *EncoderContext, isVis
 	_this.complete(ctx)
 }
 
-func (_this *referenceEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	ctx.Stream.WritePositiveInt(value)
+func (_this *referenceEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	ctx.WriteIdentifier(value)
 	_this.complete(ctx)
-}
-func (_this *referenceEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	ctx.Stream.WriteInt(value)
-	_this.complete(ctx)
-}
-func (_this *referenceEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	ctx.Stream.WriteBigInt(value)
-	_this.complete(ctx)
-}
-func (_this *referenceEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	panic("TODO: referenceEncoder.BeginConstant")
 }
 func (_this *referenceEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
@@ -466,35 +455,9 @@ func (_this *markerIDEncoder) Begin(ctx *EncoderContext) {
 	ctx.Stream.WriteByte('&')
 }
 
-func (_this *markerIDEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
+func (_this *markerIDEncoder) EncodeIdentifier(ctx *EncoderContext, value []byte) {
+	ctx.WriteIdentifier(value)
 	_this.complete(ctx)
-}
-
-func (_this *markerIDEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	ctx.Stream.WritePositiveInt(value)
-	_this.complete(ctx)
-}
-func (_this *markerIDEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	ctx.Stream.WriteInt(value)
-	_this.complete(ctx)
-}
-func (_this *markerIDEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	ctx.Stream.WriteBigInt(value)
-	_this.complete(ctx)
-}
-func (_this *markerIDEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	panic("TODO: markerIDEncoder.BeginConstant")
-}
-func (_this *markerIDEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ArrayEngine.EncodeArray(arrayType, elementCount, data)
-	_this.complete(ctx)
-}
-func (_this *markerIDEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	ctx.ArrayEngine.EncodeStringlikeArray(arrayType, data)
-	_this.complete(ctx)
-}
-func (_this *markerIDEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	ctx.BeginStandardArray(arrayType)
 }
 
 // =============================================================================

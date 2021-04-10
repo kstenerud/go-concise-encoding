@@ -162,36 +162,10 @@ func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType
 
 type MarkupNameRule struct{}
 
-func (_this *MarkupNameRule) String() string                                 { return "Markup Name Rule" }
-func (_this *MarkupNameRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MarkupNameRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchMarkupKey() }
-func (_this *MarkupNameRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+func (_this *MarkupNameRule) String() string         { return "Markup Name Rule" }
+func (_this *MarkupNameRule) OnPadding(ctx *Context) { /* Nothing to do */ }
+func (_this *MarkupNameRule) OnIdentifier(ctx *Context, value []byte) {
 	ctx.SwitchMarkupKey()
-}
-func (_this *MarkupNameRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMarkupKey()
-}
-func (_this *MarkupNameRule) OnMarker(ctx *Context)    { ctx.BeginMarkerKeyable() }
-func (_this *MarkupNameRule) OnReference(ctx *Context) { ctx.BeginReferenceKeyable() }
-func (_this *MarkupNameRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantKeyable(name, explicitValue)
-}
-func (_this *MarkupNameRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
-	ctx.SwitchMarkupKey()
-}
-func (_this *MarkupNameRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
-	ctx.SwitchMarkupKey()
-}
-func (_this *MarkupNameRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayKeyable(arrayType)
 }
 
 // =============================================================================

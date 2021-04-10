@@ -81,6 +81,11 @@ func (_this *Writer) WriteBytes(b []byte) {
 	_this.writeBytes(b)
 }
 
+func (_this *Writer) WriteIdentifier(b []byte) {
+	_this.WriteByte(byte(len(b)))
+	_this.WriteBytes(b)
+}
+
 func (_this *Writer) WriteFmt(format string, args ...interface{}) {
 	_this.WriteString(fmt.Sprintf(format, args...))
 }

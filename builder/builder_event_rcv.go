@@ -165,6 +165,9 @@ func (_this *BuilderEventReceiver) OnTime(value time.Time) {
 func (_this *BuilderEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
+func (_this *BuilderEventReceiver) OnIdentifier(value []byte) {
+	panic("TODO: BuilderEventReceiver.OnIdentifier")
+}
 func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	if arrayType == events.ArrayTypeResourceIDConcat {
 		_this.context.BeginRIDCat(string(value))

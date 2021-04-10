@@ -219,6 +219,16 @@ func (_this *Context) EndChunkStringBuilder() {
 
 // Validation
 
+func (_this *Context) ValidateIdentifier(data []uint8) {
+	if len(data) == 0 {
+		panic(fmt.Errorf("Identifier cannot be empty"))
+	}
+	if len(data) > 127 {
+		panic(fmt.Errorf("Identifier is too long (%v bytes)", len(data)))
+	}
+	// TODO: Validate characters
+}
+
 func (_this *Context) ValidateFullArrayAnyType(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	switch arrayType {
 	case events.ArrayTypeString:
@@ -420,13 +430,8 @@ func (_this *Context) ValidateContentsMarkerIDString(contents string) {
 		panic(fmt.Errorf("Marker ID string cannot be empty"))
 	}
 
-	ch, _ := utf8.DecodeRuneInString(contents)
-	if chars.RuneHasProperty(ch, chars.CharNeedsQuoteFirst) {
-		panic(fmt.Errorf("ID [%s] first character is invalid", contents))
-	}
-
-	runeCount := 1
-	for _, ch = range contents {
+	runeCount := 0
+	for _, ch := range contents {
 		runeCount++
 		if chars.RuneHasProperty(ch, chars.CharNeedsQuote) {
 			panic(fmt.Errorf("ID [%s] contains an invalid character", contents))

@@ -473,17 +473,6 @@ var globalMarkupNameEncoder markupNameEncoder
 
 func (_this *markupNameEncoder) String() string { return "markupNameEncoder" }
 
-func (_this *markupNameEncoder) prepareToWrite(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.SetMarkupAttributeKeyPrefix()
-	ctx.SwitchToMarkupAttributes()
-}
-
-func (_this *markupNameEncoder) prepareForContainer(ctx *EncoderContext) {
-	ctx.WriteCurrentPrefix()
-	ctx.SetMarkupAttributeKeyPrefix()
-}
-
 func (_this *markupNameEncoder) Begin(ctx *EncoderContext) {
 	ctx.Stream.WriteMarkupBegin()
 	ctx.IncreaseIndent()
@@ -491,91 +480,11 @@ func (_this *markupNameEncoder) Begin(ctx *EncoderContext) {
 	ctx.ContainerHasObjects = false
 }
 
-func (_this *markupNameEncoder) ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool) {
-	if isVisibleChild {
-		ctx.SwitchToMarkupAttributes()
-	}
-}
-
-func (_this *markupNameEncoder) EncodeBool(ctx *EncoderContext, value bool) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteBool(value)
-}
-func (_this *markupNameEncoder) EncodeTrue(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteTrue()
-}
-func (_this *markupNameEncoder) EncodeFalse(ctx *EncoderContext) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteFalse()
-}
-func (_this *markupNameEncoder) EncodePositiveInt(ctx *EncoderContext, value uint64) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WritePositiveInt(value)
-}
-func (_this *markupNameEncoder) EncodeNegativeInt(ctx *EncoderContext, value uint64) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteNegativeInt(value)
-}
-func (_this *markupNameEncoder) EncodeInt(ctx *EncoderContext, value int64) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteInt(value)
-}
-func (_this *markupNameEncoder) EncodeBigInt(ctx *EncoderContext, value *big.Int) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteBigInt(value)
-}
-func (_this *markupNameEncoder) EncodeFloat(ctx *EncoderContext, value float64) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteFloat(value)
-}
-func (_this *markupNameEncoder) EncodeBigFloat(ctx *EncoderContext, value *big.Float) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteBigFloat(value)
-}
-func (_this *markupNameEncoder) EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteDecimalFloat(value)
-}
-func (_this *markupNameEncoder) EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteBigDecimalFloat(value)
-}
-func (_this *markupNameEncoder) EncodeTime(ctx *EncoderContext, value time.Time) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteTime(value)
-}
-func (_this *markupNameEncoder) EncodeCompactTime(ctx *EncoderContext, value compact_time.Time) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteCompactTime(value)
-}
-func (_this *markupNameEncoder) EncodeUUID(ctx *EncoderContext, value []byte) {
-	_this.prepareToWrite(ctx)
-	ctx.Stream.WriteUUID(value)
-}
-func (_this *markupNameEncoder) BeginMarker(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardMarker()
-}
-func (_this *markupNameEncoder) BeginReference(ctx *EncoderContext) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardReference()
-}
-func (_this *markupNameEncoder) BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardConstant(name, explicitValue)
-}
-func (_this *markupNameEncoder) EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.prepareToWrite(ctx)
-	ctx.WriteArray(arrayType, elementCount, data)
-}
-func (_this *markupNameEncoder) EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string) {
-	_this.prepareToWrite(ctx)
-	ctx.WriteStringlikeArray(arrayType, data)
-}
-func (_this *markupNameEncoder) BeginArray(ctx *EncoderContext, arrayType events.ArrayType) {
-	_this.prepareForContainer(ctx)
-	ctx.BeginStandardArray(arrayType)
+func (_this *markupNameEncoder) EncodeIdentifier(ctx *EncoderContext, data []uint8) {
+	ctx.WriteCurrentPrefix()
+	ctx.SetMarkupAttributeKeyPrefix()
+	ctx.SwitchToMarkupAttributes()
+	ctx.WriteIdentifier(data)
 }
 
 // =============================================================================

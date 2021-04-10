@@ -1043,7 +1043,7 @@ func (_this *Reader) ReadQuotedString() []byte {
 	}
 }
 
-func (_this *Reader) ReadUnquotedString() []byte {
+func (_this *Reader) ReadIdentifier() []byte {
 	_this.TokenBegin()
 	_this.TokenReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
 	return _this.TokenGet()
@@ -1338,23 +1338,6 @@ func (_this *Reader) ReadMarkupContent() ([]byte, nextType) {
 
 		}
 	}
-}
-
-// Decode a marker ID. asString will be empty if the result is an integer.
-func (_this *Reader) ReadMarkerID() (asString []byte, asUint uint64) {
-
-	b := _this.PeekByteNoEOD()
-	switch {
-	case chars.ByteHasProperty(b, chars.CharIsDigitBase10):
-		asUint, _ = _this.ReadSmallUint()
-	case !chars.ByteHasProperty(b, chars.CharNeedsQuoteFirst):
-		_this.TokenBegin()
-		_this.TokenReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
-		asString = _this.TokenGet()
-	default:
-		_this.Errorf("Missing marker ID")
-	}
-	return
 }
 
 func (_this *Reader) ExtractUUID(data []byte) []byte {

@@ -23,8 +23,6 @@ package cte
 import (
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
@@ -347,7 +345,7 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 func advanceAndDecodeConstant(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
-	name := ctx.Stream.ReadUnquotedString()
+	name := ctx.Stream.ReadIdentifier()
 	if ctx.Stream.PeekByteAllowEOD() == ':' {
 		ctx.EventReceiver.OnConstant(name, true)
 		ctx.Stream.AdvanceByte()
@@ -362,12 +360,7 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnMarker()
 
-	asString, asUint := ctx.Stream.ReadMarkerID()
-	if len(asString) > 0 {
-		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
-	} else {
-		ctx.EventReceiver.OnPositiveInt(asUint)
-	}
+	ctx.EventReceiver.OnIdentifier(ctx.Stream.ReadIdentifier())
 	if ctx.Stream.PeekByteNoEOD() != ':' {
 		ctx.Stream.Errorf("Missing colon between marker ID and marked value")
 	}
@@ -391,12 +384,7 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 		return
 	}
 
-	asString, asUint := ctx.Stream.ReadMarkerID()
-	if len(asString) > 0 {
-		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(asString)), asString)
-	} else {
-		ctx.EventReceiver.OnPositiveInt(asUint)
-	}
+	ctx.EventReceiver.OnIdentifier(ctx.Stream.ReadIdentifier())
 }
 
 func advanceAndDecodeSuffix(ctx *DecoderContext) {

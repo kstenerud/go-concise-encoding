@@ -161,6 +161,7 @@ type DataEventReceiver interface {
 	// UUID handlers! The underlying contents should be considered volatile and
 	// likely to change after the method returns (the decoders re-use memory).
 	OnUUID(value []byte)
+	OnIdentifier(value []byte)
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
 	OnArrayBegin(arrayType ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
@@ -194,6 +195,7 @@ func (_this *NullEventReceiver) OnDecimalFloat(compact_float.DFloat) {}
 func (_this *NullEventReceiver) OnBigDecimalFloat(*apd.Decimal)      {}
 func (_this *NullEventReceiver) OnNan(bool)                          {}
 func (_this *NullEventReceiver) OnUUID([]byte)                       {}
+func (_this *NullEventReceiver) OnIdentifier([]byte)                 {}
 func (_this *NullEventReceiver) OnTime(time.Time)                    {}
 func (_this *NullEventReceiver) OnCompactTime(compact_time.Time)     {}
 func (_this *NullEventReceiver) OnArray(ArrayType, uint64, []byte)   {}

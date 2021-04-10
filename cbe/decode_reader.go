@@ -184,6 +184,18 @@ func (_this *Reader) ReadBytes(byteCount int) []byte {
 	return _this.buffer[:byteCount]
 }
 
+func (_this *Reader) ReadIdentifier() []byte {
+	_this.readIntoBuffer(1)
+	length := int(_this.buffer[0])
+	if length > 127 {
+		panic(fmt.Errorf("Identifier is too long (%v)", length))
+	}
+	if length == 0 {
+		panic(fmt.Errorf("Identifier cannot be empty"))
+	}
+	return _this.ReadBytes(length)
+}
+
 // ============================================================================
 
 // Internal

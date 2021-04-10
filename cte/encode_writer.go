@@ -291,18 +291,13 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 	}
 }
 
-func (_this *Writer) WritePotentiallyQuotedStringBytes(value []byte) {
+func (_this *Writer) WriteQuotedStringBytes(value []byte) {
 	if len(value) == 0 {
 		_this.WriteBytes([]byte{'"', '"'})
 		return
 	}
 
-	escapeCount, requiresQuotes := getStringRequirements(value)
-
-	if !requiresQuotes {
-		_this.WriteBytes(value)
-		return
-	}
+	escapeCount := getEscapeCount(value)
 
 	if escapeCount == 0 {
 		_this.WriteByte('"')

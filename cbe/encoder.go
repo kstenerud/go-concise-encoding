@@ -286,6 +286,10 @@ func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	_this.writer.FlushBuffer(count + 1)
 }
 
+func (_this *Encoder) OnIdentifier(value []byte) {
+	_this.writer.WriteIdentifier(value)
+}
+
 func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	if arrayType == events.ArrayTypeString && elementCount <= maxSmallStringLength {
 		_this.writer.WriteType(cbeTypeString0 + cbeTypeField(elementCount))

@@ -50,6 +50,7 @@ type EventRule interface {
 	OnBigFloat(ctx *Context, value *big.Float)
 	OnDecimalFloat(ctx *Context, value compact_float.DFloat)
 	OnBigDecimalFloat(ctx *Context, value *apd.Decimal)
+	OnIdentifier(ctx *Context, value []byte)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
 	OnMarkup(ctx *Context)
