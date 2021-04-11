@@ -21,77 +21,119 @@
 package cte
 
 import (
-	"fmt"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
-func advanceAndDecodeMapBegin(ctx *DecoderContext) {
+type advanceAndDecodeMapBegin struct{}
+
+var global_advanceAndDecodeMapBegin advanceAndDecodeMapBegin
+
+func (_this advanceAndDecodeMapBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '{'
 
 	ctx.EventReceiver.OnMap()
-	ctx.StackDecoder(decodeMapKey)
+	ctx.StackDecoder(global_decodeMapKey)
 }
 
-func decodeMapKey(ctx *DecoderContext) {
-	ctx.ChangeDecoder(decodeMapValue)
-	decodeByFirstChar(ctx)
+type decodeMapKey struct{}
+
+var global_decodeMapKey decodeMapKey
+
+func (_this decodeMapKey) Run(ctx *DecoderContext) {
+	ctx.ChangeDecoder(global_decodeMapValue)
+	global_decodeByFirstChar.Run(ctx)
 }
 
-func decodeMapValue(ctx *DecoderContext) {
-	decodeWhitespace(ctx)
+type decodeMapValue struct{}
+
+var global_decodeMapValue decodeMapValue
+
+func (_this decodeMapValue) Run(ctx *DecoderContext) {
+	global_decodeWhitespace.Run(ctx)
 	if ctx.Stream.ReadByteNoEOD() != '=' {
 		ctx.Stream.Errorf("Expected map separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
 	}
-	decodeWhitespace(ctx)
-	ctx.ChangeDecoder(decodeMapKey)
-	decodeByFirstChar(ctx)
+	global_decodeWhitespace.Run(ctx)
+	ctx.ChangeDecoder(global_decodeMapKey)
+	global_decodeByFirstChar.Run(ctx)
 }
 
-func advanceAndDecodeMapEnd(ctx *DecoderContext) {
+type advanceAndDecodeMapEnd struct{}
+
+var global_advanceAndDecodeMapEnd advanceAndDecodeMapEnd
+
+func (_this advanceAndDecodeMapEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '}'
 
 	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 }
 
-func advanceAndDecodeListBegin(ctx *DecoderContext) {
+type advanceAndDecodeListBegin struct{}
+
+var global_advanceAndDecodeListBegin advanceAndDecodeListBegin
+
+func (_this advanceAndDecodeListBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '['
 
 	ctx.EventReceiver.OnList()
-	ctx.StackDecoder(decodeByFirstChar)
+	ctx.StackDecoder(global_decodeByFirstChar)
 }
 
-func advanceAndDecodeListEnd(ctx *DecoderContext) {
+type advanceAndDecodeListEnd struct{}
+
+var global_advanceAndDecodeListEnd advanceAndDecodeListEnd
+
+func (_this advanceAndDecodeListEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ']'
 
 	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 }
 
-func advanceAndDecodeMarkupBegin(ctx *DecoderContext) {
+type advanceAndDecodeMarkupBegin struct{}
+
+var global_advanceAndDecodeMarkupBegin advanceAndDecodeMarkupBegin
+
+func (_this advanceAndDecodeMarkupBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '<'
-	decodeMarkupBegin(ctx)
+	global_decodeMarkupBegin.Run(ctx)
 }
 
-func decodeMarkupBegin(ctx *DecoderContext) {
+type decodeMarkupBegin struct{}
+
+var global_decodeMarkupBegin decodeMarkupBegin
+
+func (_this decodeMarkupBegin) Run(ctx *DecoderContext) {
 	ctx.EventReceiver.OnMarkup()
-	ctx.StackDecoder(decodeMarkupName)
+	ctx.StackDecoder(global_decodeMarkupName)
 }
 
-func decodeMarkupName(ctx *DecoderContext) {
-	decodeIdentifier(ctx)
-	ctx.ChangeDecoder(decodeMapKey)
+type decodeMarkupName struct{}
+
+var global_decodeMarkupName decodeMarkupName
+
+func (_this decodeMarkupName) Run(ctx *DecoderContext) {
+	global_decodeIdentifier.Run(ctx)
+	ctx.ChangeDecoder(global_decodeMapKey)
 }
 
-func advanceAndDecodeMarkupContentBegin(ctx *DecoderContext) {
+type advanceAndDecodeMarkupContentBegin struct{}
+
+var global_advanceAndDecodeMarkupContentBegin advanceAndDecodeMarkupContentBegin
+
+func (_this advanceAndDecodeMarkupContentBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ','
 
 	ctx.EventReceiver.OnEnd()
-	ctx.ChangeDecoder(decodeMarkupContents)
+	ctx.ChangeDecoder(global_decodeMarkupContents)
 }
 
-func decodeMarkupContents(ctx *DecoderContext) {
+type decodeMarkupContents struct{}
+
+var global_decodeMarkupContents decodeMarkupContents
+
+func (_this decodeMarkupContents) Run(ctx *DecoderContext) {
 	ctx.stack[len(ctx.stack)-1].IsMarkupContents = true
 	str, next := ctx.Stream.ReadMarkupContent()
 	if len(str) > 0 {
@@ -110,21 +152,29 @@ func decodeMarkupContents(ctx *DecoderContext) {
 		}
 		ctx.EventReceiver.OnEnd()
 	case nextIsMarkupBegin:
-		decodeMarkupBegin(ctx)
+		global_decodeMarkupBegin.Run(ctx)
 	case nextIsMarkupEnd:
 		ctx.EventReceiver.OnEnd()
 		ctx.UnstackDecoder()
 	}
 }
 
-func advanceAndDecodeMarkupEnd(ctx *DecoderContext) {
+type advanceAndDecodeMarkupEnd struct{}
+
+var global_advanceAndDecodeMarkupEnd advanceAndDecodeMarkupEnd
+
+func (_this advanceAndDecodeMarkupEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '>'
 
 	ctx.EventReceiver.OnEnd()
 	ctx.EndMarkup()
 }
 
-func advanceAndDecodeComment(ctx *DecoderContext) {
+type advanceAndDecodeComment struct{}
+
+var global_advanceAndDecodeComment advanceAndDecodeComment
+
+func (_this advanceAndDecodeComment) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '/'
 
 	b := ctx.Stream.ReadByteNoEOD()
@@ -136,7 +186,7 @@ func advanceAndDecodeComment(ctx *DecoderContext) {
 			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
 		}
 		ctx.EventReceiver.OnEnd()
-		ctx.StackDecoder(decodePostInvisible)
+		ctx.StackDecoder(global_decodePostInvisible)
 	case '*':
 		ctx.BeginComment()
 	default:
@@ -144,7 +194,11 @@ func advanceAndDecodeComment(ctx *DecoderContext) {
 	}
 }
 
-func decodeCommentContents(ctx *DecoderContext) {
+type decodeCommentContents struct{}
+
+var global_decodeCommentContents decodeCommentContents
+
+func (_this decodeCommentContents) Run(ctx *DecoderContext) {
 	str, next := ctx.Stream.ReadMultilineComment()
 	if len(str) > 0 {
 		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
@@ -157,7 +211,11 @@ func decodeCommentContents(ctx *DecoderContext) {
 	}
 }
 
-func advanceAndDecodeCommentEnd(ctx *DecoderContext) {
+type advanceAndDecodeCommentEnd struct{}
+
+var global_advanceAndDecodeCommentEnd advanceAndDecodeCommentEnd
+
+func (_this advanceAndDecodeCommentEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '*'
 
 	b := ctx.Stream.ReadByteNoEOD()
@@ -165,7 +223,7 @@ func advanceAndDecodeCommentEnd(ctx *DecoderContext) {
 	case '/':
 		ctx.UnstackDecoder()
 		ctx.EventReceiver.OnEnd()
-		decodeByFirstChar(ctx)
+		global_decodeByFirstChar.Run(ctx)
 	default:
 		ctx.Stream.Errorf("Unexpected comment end char: [%c]", b)
 	}

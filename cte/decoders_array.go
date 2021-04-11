@@ -29,14 +29,22 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
-func advanceAndDecodeQuotedString(ctx *DecoderContext) {
+type advanceAndDecodeQuotedString struct{}
+
+var global_advanceAndDecodeQuotedString advanceAndDecodeQuotedString
+
+func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '"'
 
 	bytes := ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
-func decodeIdentifier(ctx *DecoderContext) {
+type decodeIdentifier struct{}
+
+var global_decodeIdentifier decodeIdentifier
+
+func (_this decodeIdentifier) Run(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadIdentifier()
 	ctx.EventReceiver.OnIdentifier(bytes)
 }
@@ -63,7 +71,11 @@ func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType
 	}
 }
 
-func decodeTypedArrayBegin(ctx *DecoderContext) {
+type decodeTypedArrayBegin struct{}
+
+var global_decodeTypedArrayBegin decodeTypedArrayBegin
+
+func (_this decodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
 	arrayType := decodeArrayType(ctx)
@@ -170,7 +182,7 @@ func decodeRID(ctx *DecoderContext) {
 	if ctx.Stream.PeekByteAllowEOD() == ':' {
 		ctx.Stream.AdvanceByte()
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
-		decodeByFirstChar(ctx)
+		global_decodeByFirstChar.Run(ctx)
 		return
 	}
 	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)

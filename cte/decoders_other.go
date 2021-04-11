@@ -27,30 +27,49 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
-func decodeInvalidChar(ctx *DecoderContext) {
+type decodeInvalidChar struct{}
+
+var global_decodeInvalidChar decodeInvalidChar
+
+func (_this decodeInvalidChar) Run(ctx *DecoderContext) {
 	ctx.Stream.Errorf("Unexpected [%v]", ctx.Stream.DescribeCurrentChar())
 }
 
-func decodeWhitespace(ctx *DecoderContext) {
+type decodeWhitespace struct{}
+
+var global_decodeWhitespace decodeWhitespace
+
+func (_this decodeWhitespace) Run(ctx *DecoderContext) {
 	ctx.Stream.SkipWhitespace()
-	return
 }
 
-func decodeByFirstChar(ctx *DecoderContext) {
-	decodeWhitespace(ctx)
+type decodeByFirstChar struct{}
+
+var global_decodeByFirstChar decodeByFirstChar
+
+func (_this decodeByFirstChar) Run(ctx *DecoderContext) {
+	global_decodeWhitespace.Run(ctx)
 	b := ctx.Stream.PeekByteAllowEOD()
-	decoderFunc := decoderFuncsByFirstChar[b]
-	decoderFunc(ctx)
+	decoderOp := decoderOpsByFirstChar[b]
+	decoderOp.Run(ctx)
 }
 
-func decodePostInvisible(ctx *DecoderContext) {
+type decodePostInvisible struct{}
+
+var global_decodePostInvisible decodePostInvisible
+
+func (_this decodePostInvisible) Run(ctx *DecoderContext) {
 	ctx.UnstackDecoder()
-	decodeByFirstChar(ctx)
+	global_decodeByFirstChar.Run(ctx)
 }
 
-func decodeDocumentBegin(ctx *DecoderContext) {
+type decodeDocumentBegin struct{}
+
+var global_decodeDocumentBegin decodeDocumentBegin
+
+func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 	// Technically disallowed, but we'll support it anyway.
-	decodeWhitespace(ctx)
+	global_decodeWhitespace.Run(ctx)
 
 	if b := ctx.Stream.ReadByteNoEOD(); b != 'c' && b != 'C' {
 		ctx.Stream.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.Stream.DescribeCurrentChar())
@@ -72,24 +91,36 @@ func decodeDocumentBegin(ctx *DecoderContext) {
 	if !chars.ByteHasProperty(b, chars.CharIsWhitespace) {
 		ctx.Stream.UnexpectedChar("whitespace after version")
 	}
-	decodeWhitespace(ctx)
+	global_decodeWhitespace.Run(ctx)
 
 	ctx.EventReceiver.OnBeginDocument()
 	ctx.EventReceiver.OnVersion(version)
-	ctx.ChangeDecoder(decodeTopLevel)
+	ctx.ChangeDecoder(global_decodeTopLevel)
 }
 
-func decodeTopLevel(ctx *DecoderContext) {
-	ctx.ChangeDecoder(decodeEndDocument)
-	decodeByFirstChar(ctx)
+type decodeTopLevel struct{}
+
+var global_decodeTopLevel decodeTopLevel
+
+func (_this decodeTopLevel) Run(ctx *DecoderContext) {
+	ctx.ChangeDecoder(global_decodeEndDocument)
+	global_decodeByFirstChar.Run(ctx)
 }
 
-func decodeEndDocument(ctx *DecoderContext) {
+type decodeEndDocument struct{}
+
+var global_decodeEndDocument decodeEndDocument
+
+func (_this decodeEndDocument) Run(ctx *DecoderContext) {
 	ctx.EventReceiver.OnEndDocument()
 	ctx.IsDocumentComplete = true
 }
 
-func decodeNumericPositive(ctx *DecoderContext) {
+type decodeNumericPositive struct{}
+
+var global_decodeNumericPositive decodeNumericPositive
+
+func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
 	b := ctx.Stream.ReadByteAllowEOD()
 	switch b {
@@ -126,12 +157,16 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	ctx.Stream.UnexpectedChar("numeric")
 }
 
-func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
+type advanceAndDecodeNumericNegative struct{}
+
+var global_advanceAndDecodeNumericNegative advanceAndDecodeNumericNegative
+
+func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '-'
 
 	switch ctx.Stream.ReadByteNoEOD() {
 	case '0':
-		decodeOtherBaseNegative(ctx)
+		global_decodeOtherBaseNegative.Run(ctx)
 		return
 	case '@':
 		namedValue := string(ctx.Stream.ReadNamedValue())
@@ -177,7 +212,11 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	ctx.Stream.UnexpectedChar("numeric")
 }
 
-func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
+type advanceAndDecodeOtherBasePositive struct{}
+
+var global_advanceAndDecodeOtherBasePositive advanceAndDecodeOtherBasePositive
+
+func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '0'
 
 	b := ctx.Stream.ReadByteAllowEOD()
@@ -244,12 +283,20 @@ func advanceAndDecodeOtherBasePositive(ctx *DecoderContext) {
 	}
 }
 
-func advanceAndDecodeOtherBaseNegative(ctx *DecoderContext) {
+type advanceAndDecodeOtherBaseNegative struct{}
+
+var global_advanceAndDecodeOtherBaseNegative advanceAndDecodeOtherBaseNegative
+
+func (_this advanceAndDecodeOtherBaseNegative) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '0'
-	decodeOtherBaseNegative(ctx)
+	global_decodeOtherBaseNegative.Run(ctx)
 }
 
-func decodeOtherBaseNegative(ctx *DecoderContext) {
+type decodeOtherBaseNegative struct{}
+
+var global_decodeOtherBaseNegative decodeOtherBaseNegative
+
+func (_this decodeOtherBaseNegative) Run(ctx *DecoderContext) {
 
 	b := ctx.Stream.PeekByteAllowEOD()
 	if b.HasProperty(chars.CharIsObjectEnd) {
@@ -313,7 +360,11 @@ func decodeOtherBaseNegative(ctx *DecoderContext) {
 	}
 }
 
-func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
+type advanceAndDecodeNamedValueOrUUID struct{}
+
+var global_advanceAndDecodeNamedValueOrUUID advanceAndDecodeNamedValueOrUUID
+
+func (_this advanceAndDecodeNamedValueOrUUID) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '@'
 
 	namedValue := ctx.Stream.ReadNamedValue()
@@ -324,7 +375,7 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 			ctx.Stream.UnexpectedChar("NA")
 		}
 		ctx.EventReceiver.OnNA()
-		decodeByFirstChar(ctx)
+		global_decodeByFirstChar.Run(ctx)
 	case "nil":
 		ctx.EventReceiver.OnNil()
 	case "nan":
@@ -342,20 +393,28 @@ func advanceAndDecodeNamedValueOrUUID(ctx *DecoderContext) {
 	}
 }
 
-func advanceAndDecodeConstant(ctx *DecoderContext) {
+type advanceAndDecodeConstant struct{}
+
+var global_advanceAndDecodeConstant advanceAndDecodeConstant
+
+func (_this advanceAndDecodeConstant) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
 	name := ctx.Stream.ReadIdentifier()
 	if ctx.Stream.PeekByteAllowEOD() == ':' {
 		ctx.EventReceiver.OnConstant(name, true)
 		ctx.Stream.AdvanceByte()
-		decodeByFirstChar(ctx)
+		global_decodeByFirstChar.Run(ctx)
 	} else {
 		ctx.EventReceiver.OnConstant(name, false)
 	}
 }
 
-func advanceAndDecodeMarker(ctx *DecoderContext) {
+type advanceAndDecodeMarker struct{}
+
+var global_advanceAndDecodeMarker advanceAndDecodeMarker
+
+func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
 	ctx.EventReceiver.OnMarker()
@@ -365,10 +424,14 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 		ctx.Stream.Errorf("Missing colon between marker ID and marked value")
 	}
 	ctx.Stream.AdvanceByte()
-	decodeByFirstChar(ctx)
+	global_decodeByFirstChar.Run(ctx)
 }
 
-func advanceAndDecodeReference(ctx *DecoderContext) {
+type advanceAndDecodeReference struct{}
+
+var global_advanceAndDecodeReference advanceAndDecodeReference
+
+func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
 	ctx.EventReceiver.OnReference()
@@ -387,7 +450,11 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 	ctx.EventReceiver.OnIdentifier(ctx.Stream.ReadIdentifier())
 }
 
-func advanceAndDecodeSuffix(ctx *DecoderContext) {
+type advanceAndDecodeSuffix struct{}
+
+var global_advanceAndDecodeSuffix advanceAndDecodeSuffix
+
+func (_this advanceAndDecodeSuffix) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ':'
 
 	panic("TODO: decodeSuffix")

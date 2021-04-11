@@ -1641,43 +1641,43 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 {
     /* Comments look very C-like, except: /* Nested comments are allowed! */ */
     /* Notice that there are no commas in maps and lists */
-    a_list = [
+    "a_list" = [
         1
         2
         "a string"
     ]
-    map = {
-        2 = two
+    "map" = {
+        2 = "two"
         3 = 3000
-        1 = one
+        1 = "one"
     }
-    string = "A string value"
-    boolean = @true
+    "string" = "A string value"
+    "boolean" = @true
     "regular int" = -10000000
     "decimal float" = -14.125
-    uuid = @f1ce4567-e89b-12d3-a456-426655440000
-    date = 2019-07-01
-    time = 18:04:00.940231541/E/Prague
-    timestamp = 2010-07-15/13:28:15.415942344/Z
-    nil = @nil
-    bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    url = |r https://example.com/|
-    email = |r mailto:me@somewhere.com|
+    "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
+    "date" = 2019-07-01
+    "time" = 18:04:00.940231541/E/Prague
+    "timestamp" = 2010-07-15/13:28:15.415942344/Z
+    "nil" = @nil
+    "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
+    "url" = |r https://example.com/|
+    "email" = |r mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
-    marked_object = &tag1:{
-        description = "This map will be referenced later using $tag1"
-        value = -@inf
-        child_elements = @nil
-        recursive = $tag1
+    "marked_object" = &tag1:{
+        "description" = "This map will be referenced later using $tag1"
+        "value" = -@inf
+        "child_elements" = @nil
+        "recursive" = $tag1
     }
-    ref1 = $tag1
-    ref2 = $tag1
-    outside_ref = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
+    "ref1" = $tag1
+    "ref2" = $tag1
+    "outside_ref" = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
     // The markup type is good for presentation data
-    html_compatible = <html xmlns=|r http://www.w3.org/1999/xhtml| "xml:lang"=en,
+    "html_compatible" = <html "xmlns"=|r http://www.w3.org/1999/xhtml| "xml:lang"="en",
         <body,
             Please choose from the following widgets:
-            <div id=parent style=normal ref-id=1,
+            <div "id"="parent" "style"="normal" "ref-id"=1,
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
             >
@@ -1689,42 +1689,42 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 {
     /* Comments look very C-like, except: /* Nested comments are allowed! */ */
     /* Notice that there are no commas in maps and lists */
-    a_list = [
+    "a_list" = [
         1
         2
         "a string"
     ]
-    map = {
-        2 = two
+    "map" = {
+        2 = "two"
         3 = 3000
-        1 = one
+        1 = "one"
     }
-    string = "A string value"
-    boolean = @true
+    "string" = "A string value"
+    "boolean" = @true
     "regular int" = -10000000
     "decimal float" = -14.125
-    uuid = @f1ce4567-e89b-12d3-a456-426655440000
-    date = 2019-07-01
-    time = 18:04:00.940231541/Europe/Prague
-    timestamp = 2010-07-15/13:28:15.415942344
-    nil = @nil
-    bytes = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    url = |r https://example.com/|
-    email = |r mailto:me@somewhere.com|
+    "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
+    "date" = 2019-07-01
+    "time" = 18:04:00.940231541/Europe/Prague
+    "timestamp" = 2010-07-15/13:28:15.415942344
+    "nil" = @nil
+    "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
+    "url" = |r https://example.com/|
+    "email" = |r mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
-    marked_object = &tag1:{
-        description = "This map will be referenced later using $tag1"
-        value = -@inf
-        child_elements = @nil
-        recursive = $tag1
+    "marked_object" = &tag1:{
+        "description" = "This map will be referenced later using $tag1"
+        "value" = -@inf
+        "child_elements" = @nil
+        "recursive" = $tag1
     }
-    ref1 = $tag1
-    ref2 = $tag1
-    outside_ref = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
+    "ref1" = $tag1
+    "ref2" = $tag1
+    "outside_ref" = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
     /* The markup type is good for presentation data */
-    html_compatible = <html xmlns=|r http://www.w3.org/1999/xhtml| "xml:lang"=en,
+    "html_compatible" = <html "xmlns"=|r http://www.w3.org/1999/xhtml| "xml:lang"="en",
         <body,
-            Please choose from the following widgets: <div id=parent style=normal ref-id=1,
+            Please choose from the following widgets: <div "id"="parent" "style"="normal" "ref-id"=1,
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
             >

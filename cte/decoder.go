@@ -34,7 +34,9 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
-type DecoderFunc func(ctx *DecoderContext)
+type DecoderOp interface {
+	Run(*DecoderContext)
+}
 
 type Decoder struct {
 	opts options.CTEDecoderOptions
@@ -71,7 +73,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	ctx := DecoderContext{}
 	ctx.Init(&_this.opts, reader, eventReceiver)
-	ctx.StackDecoder(decodeDocumentBegin)
+	ctx.StackDecoder(global_decodeDocumentBegin)
 
 	for !ctx.IsDocumentComplete {
 		ctx.DecodeNext()
@@ -83,38 +85,38 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 	return _this.Decode(bytes.NewBuffer(document), eventReceiver)
 }
 
-var decoderFuncsByFirstChar [0x101]DecoderFunc
+var decoderOpsByFirstChar [0x101]DecoderOp
 
 func init() {
 	for i := 0; i < 0x100; i++ {
-		decoderFuncsByFirstChar[i] = decodeInvalidChar
+		decoderOpsByFirstChar[i] = global_decodeInvalidChar
 	}
 
-	decoderFuncsByFirstChar['\r'] = decodeWhitespace
-	decoderFuncsByFirstChar['\n'] = decodeWhitespace
-	decoderFuncsByFirstChar['\t'] = decodeWhitespace
-	decoderFuncsByFirstChar[' '] = decodeWhitespace
-	decoderFuncsByFirstChar['"'] = advanceAndDecodeQuotedString
-	decoderFuncsByFirstChar['0'] = advanceAndDecodeOtherBasePositive
+	decoderOpsByFirstChar['\r'] = global_decodeWhitespace
+	decoderOpsByFirstChar['\n'] = global_decodeWhitespace
+	decoderOpsByFirstChar['\t'] = global_decodeWhitespace
+	decoderOpsByFirstChar[' '] = global_decodeWhitespace
+	decoderOpsByFirstChar['"'] = global_advanceAndDecodeQuotedString
+	decoderOpsByFirstChar['0'] = global_advanceAndDecodeOtherBasePositive
 	for i := '1'; i <= '9'; i++ {
-		decoderFuncsByFirstChar[i] = decodeNumericPositive
+		decoderOpsByFirstChar[i] = global_decodeNumericPositive
 	}
-	decoderFuncsByFirstChar['-'] = advanceAndDecodeNumericNegative
-	decoderFuncsByFirstChar['@'] = advanceAndDecodeNamedValueOrUUID
-	decoderFuncsByFirstChar['#'] = advanceAndDecodeConstant
-	decoderFuncsByFirstChar['$'] = advanceAndDecodeReference
-	decoderFuncsByFirstChar['&'] = advanceAndDecodeMarker
-	decoderFuncsByFirstChar['/'] = advanceAndDecodeComment
-	decoderFuncsByFirstChar[':'] = advanceAndDecodeSuffix
-	decoderFuncsByFirstChar['{'] = advanceAndDecodeMapBegin
-	decoderFuncsByFirstChar['}'] = advanceAndDecodeMapEnd
-	decoderFuncsByFirstChar['['] = advanceAndDecodeListBegin
-	decoderFuncsByFirstChar[']'] = advanceAndDecodeListEnd
-	decoderFuncsByFirstChar['<'] = advanceAndDecodeMarkupBegin
-	decoderFuncsByFirstChar[','] = advanceAndDecodeMarkupContentBegin
-	decoderFuncsByFirstChar['>'] = advanceAndDecodeMarkupEnd
-	decoderFuncsByFirstChar['*'] = advanceAndDecodeCommentEnd
-	decoderFuncsByFirstChar['|'] = decodeTypedArrayBegin
+	decoderOpsByFirstChar['-'] = global_advanceAndDecodeNumericNegative
+	decoderOpsByFirstChar['@'] = global_advanceAndDecodeNamedValueOrUUID
+	decoderOpsByFirstChar['#'] = global_advanceAndDecodeConstant
+	decoderOpsByFirstChar['$'] = global_advanceAndDecodeReference
+	decoderOpsByFirstChar['&'] = global_advanceAndDecodeMarker
+	decoderOpsByFirstChar['/'] = global_advanceAndDecodeComment
+	decoderOpsByFirstChar[':'] = global_advanceAndDecodeSuffix
+	decoderOpsByFirstChar['{'] = global_advanceAndDecodeMapBegin
+	decoderOpsByFirstChar['}'] = global_advanceAndDecodeMapEnd
+	decoderOpsByFirstChar['['] = global_advanceAndDecodeListBegin
+	decoderOpsByFirstChar[']'] = global_advanceAndDecodeListEnd
+	decoderOpsByFirstChar['<'] = global_advanceAndDecodeMarkupBegin
+	decoderOpsByFirstChar[','] = global_advanceAndDecodeMarkupContentBegin
+	decoderOpsByFirstChar['>'] = global_advanceAndDecodeMarkupEnd
+	decoderOpsByFirstChar['*'] = global_advanceAndDecodeCommentEnd
+	decoderOpsByFirstChar['|'] = global_decodeTypedArrayBegin
 
-	decoderFuncsByFirstChar[chars.EndOfDocumentMarker] = decodeInvalidChar
+	decoderOpsByFirstChar[chars.EndOfDocumentMarker] = global_decodeInvalidChar
 }
