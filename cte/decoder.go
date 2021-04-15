@@ -101,8 +101,13 @@ func init() {
 	for i := '1'; i <= '9'; i++ {
 		decoderOpsByFirstChar[i] = global_decodeNumericPositive
 	}
+	decoderOpsByFirstChar['f'] = global_decodeNamedValueF
+	decoderOpsByFirstChar['i'] = global_decodeNamedValueI
+	decoderOpsByFirstChar['n'] = global_decodeNamedValueN
+	decoderOpsByFirstChar['s'] = global_decodeNamedValueS
+	decoderOpsByFirstChar['t'] = global_decodeNamedValueT
 	decoderOpsByFirstChar['-'] = global_advanceAndDecodeNumericNegative
-	decoderOpsByFirstChar['@'] = global_advanceAndDecodeNamedValueOrUUID
+	decoderOpsByFirstChar['@'] = global_advanceAndDecodeUUID
 	decoderOpsByFirstChar['#'] = global_advanceAndDecodeConstant
 	decoderOpsByFirstChar['$'] = global_advanceAndDecodeReference
 	decoderOpsByFirstChar['&'] = global_advanceAndDecodeMarker

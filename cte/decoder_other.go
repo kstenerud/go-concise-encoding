@@ -164,19 +164,18 @@ var global_advanceAndDecodeNumericNegative advanceAndDecodeNumericNegative
 func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '-'
 
-	switch ctx.Stream.ReadByteNoEOD() {
+	switch ctx.Stream.PeekByteNoEOD() {
 	case '0':
+		ctx.Stream.AdvanceByte() // Advance past '0'
 		global_decodeOtherBaseNegative.Run(ctx)
 		return
-	case '@':
+	case 'i':
 		namedValue := string(ctx.Stream.ReadNamedValue())
 		if namedValue != "inf" {
 			ctx.Stream.Errorf("Unknown named value: %v", namedValue)
 		}
 		ctx.EventReceiver.OnFloat(math.Inf(-1))
 		return
-	default:
-		ctx.Stream.UnreadByte()
 	}
 
 	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
@@ -360,13 +359,39 @@ func (_this decodeOtherBaseNegative) Run(ctx *DecoderContext) {
 	}
 }
 
-type advanceAndDecodeNamedValueOrUUID struct{}
+type decodeNamedValueF struct{}
 
-var global_advanceAndDecodeNamedValueOrUUID advanceAndDecodeNamedValueOrUUID
+var global_decodeNamedValueF decodeNamedValueF
 
-func (_this advanceAndDecodeNamedValueOrUUID) Run(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '@'
+func (_this decodeNamedValueF) Run(ctx *DecoderContext) {
+	namedValue := ctx.Stream.ReadNamedValue()
+	switch string(namedValue) {
+	case "false":
+		ctx.EventReceiver.OnFalse()
+	default:
+		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+	}
+}
 
+type decodeNamedValueI struct{}
+
+var global_decodeNamedValueI decodeNamedValueI
+
+func (_this decodeNamedValueI) Run(ctx *DecoderContext) {
+	namedValue := ctx.Stream.ReadNamedValue()
+	switch string(namedValue) {
+	case "inf":
+		ctx.EventReceiver.OnFloat(math.Inf(1))
+	default:
+		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+	}
+}
+
+type decodeNamedValueN struct{}
+
+var global_decodeNamedValueN decodeNamedValueN
+
+func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "na":
@@ -376,21 +401,50 @@ func (_this advanceAndDecodeNamedValueOrUUID) Run(ctx *DecoderContext) {
 		}
 		ctx.EventReceiver.OnNA()
 		global_decodeByFirstChar.Run(ctx)
-	case "nil":
-		ctx.EventReceiver.OnNil()
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
+	case "nil":
+		ctx.EventReceiver.OnNil()
+	default:
+		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+	}
+}
+
+type decodeNamedValueS struct{}
+
+var global_decodeNamedValueS decodeNamedValueS
+
+func (_this decodeNamedValueS) Run(ctx *DecoderContext) {
+	namedValue := ctx.Stream.ReadNamedValue()
+	switch string(namedValue) {
 	case "snan":
 		ctx.EventReceiver.OnNan(true)
-	case "inf":
-		ctx.EventReceiver.OnFloat(math.Inf(1))
-	case "false":
-		ctx.EventReceiver.OnFalse()
+	default:
+		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+	}
+}
+
+type decodeNamedValueT struct{}
+
+var global_decodeNamedValueT decodeNamedValueT
+
+func (_this decodeNamedValueT) Run(ctx *DecoderContext) {
+	namedValue := ctx.Stream.ReadNamedValue()
+	switch string(namedValue) {
 	case "true":
 		ctx.EventReceiver.OnTrue()
 	default:
-		ctx.EventReceiver.OnUUID(ctx.Stream.ExtractUUID(namedValue))
+		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
 	}
+}
+
+type advanceAndDecodeUUID struct{}
+
+var global_advanceAndDecodeUUID advanceAndDecodeUUID
+
+func (_this advanceAndDecodeUUID) Run(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '@'
+	ctx.EventReceiver.OnUUID(ctx.Stream.ExtractUUID(ctx.Stream.ReadNamedValue()))
 }
 
 type advanceAndDecodeConstant struct{}

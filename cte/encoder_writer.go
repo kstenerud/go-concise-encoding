@@ -50,35 +50,35 @@ func (_this *Writer) WriteConcat() {
 }
 
 func (_this *Writer) WriteNA() {
-	_this.WriteString("@na:")
+	_this.WriteString("na:")
 }
 
 func (_this *Writer) WriteNil() {
-	_this.WriteString("@nil")
+	_this.WriteString("nil")
 }
 
 func (_this *Writer) WriteTrue() {
-	_this.WriteString("@true")
+	_this.WriteString("true")
 }
 
 func (_this *Writer) WriteFalse() {
-	_this.WriteString("@false")
+	_this.WriteString("false")
 }
 
 func (_this *Writer) WritePosInfinity() {
-	_this.WriteString("@inf")
+	_this.WriteString("inf")
 }
 
 func (_this *Writer) WriteNegInfinity() {
-	_this.WriteString("-@inf")
+	_this.WriteString("-inf")
 }
 
 func (_this *Writer) WriteQuietNan() {
-	_this.WriteString("@nan")
+	_this.WriteString("nan")
 }
 
 func (_this *Writer) WriteSignalingNan() {
-	_this.WriteString("@snan")
+	_this.WriteString("snan")
 }
 
 func (_this *Writer) WriteVersion(value uint64) {

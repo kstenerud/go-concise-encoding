@@ -70,28 +70,28 @@ func TestCTEVersion(t *testing.T) {
 }
 
 func TestCTENA(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@na:1", BD(), EvV, NA(), I(1), ED())
-	assertDecodeFails(t, "c0 -@na")
-	assertDecodeFails(t, "c0 @na:@na:1")
-	assertDecodeFails(t, "c0 @na:@na:@na")
-	assertDecodeFails(t, "c0 [@na:@na:1]")
+	assertDecodeEncode(t, nil, nil, "c0\nna:1", BD(), EvV, NA(), I(1), ED())
+	assertDecodeFails(t, "c0 -na")
+	assertDecodeFails(t, "c0 na:na:1")
+	assertDecodeFails(t, "c0 na:na:na")
+	assertDecodeFails(t, "c0 [na:na:1]")
 }
 
 func TestCTENil(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@nil", BD(), EvV, N(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nnil", BD(), EvV, N(), ED())
 }
 
 func TestCTEBool(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@true", BD(), EvV, TT(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@false", BD(), EvV, FF(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\ntrue", BD(), EvV, TT(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nfalse", BD(), EvV, FF(), ED())
 
-	assertEncode(t, nil, "c0\n@false", BD(), EvV, B(false), ED())
-	assertEncode(t, nil, "c0\n@true", BD(), EvV, B(true), ED())
+	assertEncode(t, nil, "c0\nfalse", BD(), EvV, B(false), ED())
+	assertEncode(t, nil, "c0\ntrue", BD(), EvV, B(true), ED())
 
-	assertDecodeFails(t, "c0 @truer")
-	assertDecodeFails(t, "c0 @falser")
-	assertDecodeFails(t, "c0 -@true")
-	assertDecodeFails(t, "c0 -@false")
+	assertDecodeFails(t, "c0 truer")
+	assertDecodeFails(t, "c0 falser")
+	assertDecodeFails(t, "c0 -true")
+	assertDecodeFails(t, "c0 -false")
 }
 
 func TestCTEDecimalInt(t *testing.T) {
@@ -213,8 +213,8 @@ func TestCTEFloat(t *testing.T) {
 	assertDecode(t, nil, "c0 0.1_50000000000_00000000000_000000000000_0000000000000000_1e+100_0_0",
 		BD(), EvV, BDF(NewBDF("0.1500000000000000000000000000000000000000000000000001e+10000")), ED())
 
-	assertEncode(t, nil, "c0\n@nan", BD(), EvV, F(common.QuietNan), ED())
-	assertEncode(t, nil, "c0\n@snan", BD(), EvV, F(common.SignalingNan), ED())
+	assertEncode(t, nil, "c0\nnan", BD(), EvV, F(common.QuietNan), ED())
+	assertEncode(t, nil, "c0\nsnan", BD(), EvV, F(common.SignalingNan), ED())
 
 	assertEncode(t, nil, "c0\n1.1", BD(), EvV, BF(NewBigFloat("1.1", 10, 2)), ED())
 
@@ -222,7 +222,7 @@ func TestCTEFloat(t *testing.T) {
 	assertDecodeFails(t, "c0 [-0,5.4]")
 	assertDecodeFails(t, "c0 [0.5.4]")
 	assertDecodeFails(t, "c0 [0,5.4]")
-	assertDecodeFails(t, "c0 [-@blah]")
+	assertDecodeFails(t, "c0 [-blah]")
 	assertDecodeFails(t, "c0 [1.1.1]")
 	assertDecodeFails(t, "c0 [1,1]")
 	assertDecodeFails(t, "c0 [1.1e4e5]")
@@ -287,7 +287,7 @@ func TestCTEHexFloat(t *testing.T) {
 	assertDecodeFails(t, "[c1 -0x0,5.4]")
 	assertDecodeFails(t, "[c1 0x0.5.4]")
 	assertDecodeFails(t, "[c1 0x0,5.4]")
-	assertDecodeFails(t, "[c1 -0x@blah]")
+	assertDecodeFails(t, "[c1 -0xblah]")
 	assertDecodeFails(t, "[c1 0x1.1.1]")
 	assertDecodeFails(t, "[c1 0x1,1]")
 	assertDecodeFails(t, "[c1 0x1.1p4p5]")
@@ -1003,7 +1003,7 @@ func TestCTEMap(t *testing.T) {
 	assertDecode(t, nil, "c0 {  1 = 2 3=4 \t}", BD(), EvV, M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    "nil" = @nil
+    "nil" = nil
     1.5 = 1000
 }`)
 
@@ -1014,12 +1014,12 @@ func TestCTEMap(t *testing.T) {
 
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    "a" = @inf
+    "a" = inf
     "b" = 1
 }`)
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    "a" = -@inf
+    "a" = -inf
     "b" = 1
 }`)
 }
@@ -1215,13 +1215,13 @@ func TestCTEMarkupComment(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@nil", BD(), EvV, N(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@nan", BD(), EvV, NAN(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@snan", BD(), EvV, SNAN(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@inf", BD(), EvV, F(math.Inf(1)), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n-@inf", BD(), EvV, F(math.Inf(-1)), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@false", BD(), EvV, FF(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@true", BD(), EvV, TT(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nnil", BD(), EvV, N(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nnan", BD(), EvV, NAN(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nsnan", BD(), EvV, SNAN(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\ninf", BD(), EvV, F(math.Inf(1)), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n-inf", BD(), EvV, F(math.Inf(-1)), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nfalse", BD(), EvV, FF(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\ntrue", BD(), EvV, TT(), ED())
 }
 
 func TestCTEMarker(t *testing.T) {
@@ -1279,7 +1279,7 @@ func TestCTEComment(t *testing.T) {
 	// TODO: Better comment formatting
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    "a" = @inf
+    "a" = inf
     /* test */
     "b" = 1
 }`)
@@ -1584,7 +1584,7 @@ func TestCTEComplexExample(t *testing.T) {
     "a_list"         = [1 2 "a string"]
     "map"            = {2="two" 3=3000 1="one"}
     "string"         = "A string value"
-    "boolean"        = @true
+    "boolean"        = true
     "binary int"     = -0b10001011
     "octal int"      = 0o644
     "regular int"    = -10000000
@@ -1595,8 +1595,8 @@ func TestCTEComplexExample(t *testing.T) {
     "date"           = 2019-7-1
     "time"           = 18:04:00.940231541/E/Prague
     "timestamp"      = 2010-7-15/13:28:15.415942344/Z
-    "nil"            = @nil
-    "na"             = @na:123
+    "nil"            = nil
+    "na"             = na:123
     "bytes"          = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     "url"            = |r https://example.com/|
     "email"          = |r mailto:me@somewhere.com|
@@ -1610,8 +1610,8 @@ backticks (`+"`"+`). Verbatim processing stops at the end sequence, which in thi
 case is three Z characters, specified earlier as a sentinel.ZZZ"
     "marked_object"  = &tag1:{
                                 "description" = "This map will be referenced later using $tag1"
-                                "value" = -@inf
-                                "child_elements" = @nil
+                                "value" = -inf
+                                "child_elements" = nil
                                 "recursive" = $tag1
                             }
     "ref1"            = $tag1
@@ -1652,22 +1652,22 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
         1 = "one"
     }
     "string" = "A string value"
-    "boolean" = @true
+    "boolean" = true
     "regular int" = -10000000
     "decimal float" = -14.125
     "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/E/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344/Z
-    "nil" = @nil
+    "nil" = nil
     "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     "url" = |r https://example.com/|
     "email" = |r mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
-        "value" = -@inf
-        "child_elements" = @nil
+        "value" = -inf
+        "child_elements" = nil
         "recursive" = $tag1
     }
     "ref1" = $tag1
@@ -1700,22 +1700,22 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
         1 = "one"
     }
     "string" = "A string value"
-    "boolean" = @true
+    "boolean" = true
     "regular int" = -10000000
     "decimal float" = -14.125
     "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/Europe/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344
-    "nil" = @nil
+    "nil" = nil
     "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     "url" = |r https://example.com/|
     "email" = |r mailto:me@somewhere.com|
     1.5 = "Keys don't have to be strings"
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
-        "value" = -@inf
-        "child_elements" = @nil
+        "value" = -inf
+        "child_elements" = nil
         "recursive" = $tag1
     }
     "ref1" = $tag1
@@ -1760,7 +1760,7 @@ func TestMapValueComment(t *testing.T) {
 
 func TestEmptyDocument(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-@nil`, BD(), EvV, N(), ED())
+nil`, BD(), EvV, N(), ED())
 }
 
 func TestRIDCat(t *testing.T) {
