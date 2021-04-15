@@ -105,17 +105,8 @@ type decodeMarkupBegin struct{}
 var global_decodeMarkupBegin decodeMarkupBegin
 
 func (_this decodeMarkupBegin) Run(ctx *DecoderContext) {
-	ctx.EventReceiver.OnMarkup()
-	ctx.StackDecoder(global_decodeMarkupName)
-}
-
-type decodeMarkupName struct{}
-
-var global_decodeMarkupName decodeMarkupName
-
-func (_this decodeMarkupName) Run(ctx *DecoderContext) {
-	global_decodeIdentifier.Run(ctx)
-	ctx.ChangeDecoder(global_decodeMapKey)
+	ctx.EventReceiver.OnMarkup(ctx.Stream.ReadIdentifier())
+	ctx.StackDecoder(global_decodeMapKey)
 }
 
 type advanceAndDecodeMarkupContentBegin struct{}

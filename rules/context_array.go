@@ -121,9 +121,9 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
 		_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
-		_this.beginArray(arrayType, &stringRule, DataTypeAnyType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
+		_this.beginArray(arrayType, &stringRule, DataTypeNonKeyable, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
 	default:
-		_this.beginArray(arrayType, &arrayRule, DataTypeAnyType, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
+		_this.beginArray(arrayType, &arrayRule, DataTypeNonKeyable, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
 	}
 }
 
@@ -160,7 +160,7 @@ func (_this *Context) BeginArrayString(arrayType events.ArrayType) {
 func (_this *Context) BeginArrayRIDReference(arrayType events.ArrayType) {
 	_this.AssertArrayTypeRID(arrayType)
 	_this.BeginPotentialRIDCat(arrayType)
-	_this.beginArray(arrayType, &stringRule, DataTypeAnyType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
+	_this.beginArray(arrayType, &stringRule, DataTypeNonKeyable, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 }
 
 func (_this *Context) BeginArrayComment(arrayType events.ArrayType) {
@@ -444,4 +444,14 @@ func (_this *Context) ValidateContentsMarkerIDString(contents string) {
 
 func (_this *Context) ValidateNothing(_ []byte) {
 	// Nothing to check
+}
+
+func (_this *Context) ValidateResourceID(contents []byte) {
+	_this.ValidateLengthRID(uint64(len(contents)))
+	_this.ValidateContentsRID(contents)
+}
+
+func (_this *Context) ValidateResourceIDString(contents string) {
+	_this.ValidateLengthRID(uint64(len(contents)))
+	_this.ValidateContentsRIDString(contents)
 }

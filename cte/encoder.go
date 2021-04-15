@@ -33,42 +33,6 @@ import (
 	"github.com/kstenerud/go-compact-time"
 )
 
-type Encoder interface {
-	Begin(ctx *EncoderContext)
-	End(ctx *EncoderContext)
-	ChildContainerFinished(ctx *EncoderContext, isVisibleChild bool)
-	EncodeNil(ctx *EncoderContext)
-	BeginNA(ctx *EncoderContext)
-	EncodeBool(ctx *EncoderContext, value bool)
-	EncodeTrue(ctx *EncoderContext)
-	EncodeFalse(ctx *EncoderContext)
-	EncodePositiveInt(ctx *EncoderContext, value uint64)
-	EncodeNegativeInt(ctx *EncoderContext, value uint64)
-	EncodeInt(ctx *EncoderContext, value int64)
-	EncodeBigInt(ctx *EncoderContext, value *big.Int)
-	EncodeFloat(ctx *EncoderContext, value float64)
-	EncodeBigFloat(ctx *EncoderContext, value *big.Float)
-	EncodeDecimalFloat(ctx *EncoderContext, value compact_float.DFloat)
-	EncodeBigDecimalFloat(ctx *EncoderContext, value *apd.Decimal)
-	EncodeNan(ctx *EncoderContext, signaling bool)
-	EncodeTime(ctx *EncoderContext, value time.Time)
-	EncodeCompactTime(ctx *EncoderContext, value compact_time.Time)
-	EncodeUUID(ctx *EncoderContext, value []byte)
-	EncodeIdentifier(ctx *EncoderContext, value []byte)
-	BeginList(ctx *EncoderContext)
-	BeginMap(ctx *EncoderContext)
-	BeginMarkup(ctx *EncoderContext)
-	BeginComment(ctx *EncoderContext)
-	BeginMarker(ctx *EncoderContext)
-	BeginReference(ctx *EncoderContext)
-	BeginConstant(ctx *EncoderContext, name []byte, explicitValue bool)
-	EncodeArray(ctx *EncoderContext, arrayType events.ArrayType, elementCount uint64, data []uint8)
-	EncodeStringlikeArray(ctx *EncoderContext, arrayType events.ArrayType, data string)
-	BeginArray(ctx *EncoderContext, arrayType events.ArrayType)
-	BeginArrayChunk(ctx *EncoderContext, elementCount uint64, moreChunksFollow bool)
-	EncodeArrayData(ctx *EncoderContext, data []byte)
-}
-
 type EncoderEventReceiver struct {
 	context EncoderContext
 }
@@ -90,7 +54,6 @@ func (_this *EncoderEventReceiver) Init(opts *options.CTEEncoderOptions) {
 
 // Reset the encoder back to its initial state.
 func (_this *EncoderEventReceiver) Reset() {
-	_this.context.Reset()
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.
@@ -100,11 +63,12 @@ func (_this *EncoderEventReceiver) PrepareToEncode(writer io.Writer) {
 }
 
 func (_this *EncoderEventReceiver) OnBeginDocument() {
-	_this.context.Reset()
+	_this.context.Begin()
 }
 
 func (_this *EncoderEventReceiver) OnVersion(version uint64) {
 	_this.context.Stream.WriteVersion(version)
+	_this.context.WriteIndent()
 }
 
 func (_this *EncoderEventReceiver) OnPadding(count int) {
@@ -112,127 +76,212 @@ func (_this *EncoderEventReceiver) OnPadding(count int) {
 }
 
 func (_this *EncoderEventReceiver) OnNil() {
-	_this.context.CurrentEncoder.EncodeNil(&_this.context)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteNil()
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnNA() {
-	_this.context.CurrentEncoder.BeginNA(&_this.context)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteNA()
+	_this.context.Stack(concatDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnBool(value bool) {
-	_this.context.CurrentEncoder.EncodeBool(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteBool(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnTrue() {
-	_this.context.CurrentEncoder.EncodeTrue(&_this.context)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteTrue()
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnFalse() {
-	_this.context.CurrentEncoder.EncodeFalse(&_this.context)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteFalse()
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnPositiveInt(value uint64) {
-	_this.context.CurrentEncoder.EncodePositiveInt(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WritePositiveInt(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnNegativeInt(value uint64) {
-	_this.context.CurrentEncoder.EncodeNegativeInt(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteNegativeInt(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnInt(value int64) {
-	_this.context.CurrentEncoder.EncodeInt(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteInt(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnBigInt(value *big.Int) {
-	_this.context.CurrentEncoder.EncodeBigInt(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteBigInt(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnFloat(value float64) {
-	_this.context.CurrentEncoder.EncodeFloat(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteFloat(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnBigFloat(value *big.Float) {
-	_this.context.CurrentEncoder.EncodeBigFloat(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteBigFloat(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
-	_this.context.CurrentEncoder.EncodeDecimalFloat(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteDecimalFloat(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
-	_this.context.CurrentEncoder.EncodeBigDecimalFloat(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteBigDecimalFloat(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnNan(signaling bool) {
-	_this.context.CurrentEncoder.EncodeNan(&_this.context, signaling)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteNan(signaling)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnUUID(value []byte) {
-	_this.context.CurrentEncoder.EncodeUUID(&_this.context, value)
-}
-
-func (_this *EncoderEventReceiver) OnIdentifier(value []byte) {
-	_this.context.CurrentEncoder.EncodeIdentifier(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteUUID(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnTime(value time.Time) {
-	_this.context.CurrentEncoder.EncodeTime(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteTime(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnCompactTime(value compact_time.Time) {
-	_this.context.CurrentEncoder.EncodeCompactTime(&_this.context, value)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteCompactTime(value)
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	_this.context.CurrentEncoder.EncodeArray(&_this.context, arrayType, elementCount, value)
+	_this.context.BeforeValue()
+	_this.context.EncodeArray(arrayType, elementCount, value)
+	switch arrayType {
+	case events.ArrayTypeResourceIDConcat:
+		_this.context.Stack(concatDecorator)
+	default:
+		_this.context.AfterValue()
+	}
 }
 
 func (_this *EncoderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
-	_this.context.CurrentEncoder.EncodeStringlikeArray(&_this.context, arrayType, value)
+	_this.context.BeforeValue()
+	_this.context.EncodeStringlikeArray(arrayType, value)
+	switch arrayType {
+	case events.ArrayTypeResourceIDConcat:
+		_this.context.Stack(concatDecorator)
+	default:
+		_this.context.AfterValue()
+	}
 }
 
 func (_this *EncoderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
-	_this.context.CurrentEncoder.BeginArray(&_this.context, arrayType)
+	_this.context.BeforeValue()
+	var completion func()
+	switch arrayType {
+	case events.ArrayTypeResourceIDConcat:
+		completion = func() { _this.context.Stack(concatDecorator) }
+	default:
+		completion = func() { _this.context.AfterValue() }
+	}
+
+	_this.context.BeginArray(arrayType, completion)
 }
 
 func (_this *EncoderEventReceiver) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
-	_this.context.CurrentEncoder.BeginArrayChunk(&_this.context, elementCount, moreChunksFollow)
+	_this.context.BeginArrayChunk(elementCount, moreChunksFollow)
 }
 
 func (_this *EncoderEventReceiver) OnArrayData(data []byte) {
-	_this.context.CurrentEncoder.EncodeArrayData(&_this.context, data)
+	_this.context.EncodeArrayData(data)
 }
 
 func (_this *EncoderEventReceiver) OnList() {
-	_this.context.CurrentEncoder.BeginList(&_this.context)
+	_this.context.BeforeValue()
+	_this.context.BeginContainer()
+	_this.context.Stream.WriteListBegin()
+	_this.context.Indent()
+	_this.context.Stack(listDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnMap() {
-	_this.context.CurrentEncoder.BeginMap(&_this.context)
+	_this.context.BeforeValue()
+	_this.context.BeginContainer()
+	_this.context.Stream.WriteMapBegin()
+	_this.context.Indent()
+	_this.context.Stack(mapKeyDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnMarkup() {
-	_this.context.CurrentEncoder.BeginMarkup(&_this.context)
+func (_this *EncoderEventReceiver) OnMarkup(id []byte) {
+	_this.context.BeforeValue()
+	_this.context.BeginContainer()
+	_this.context.Stream.WriteMarkupBegin(id)
+	_this.context.Indent()
+	_this.context.Stack(markupKeyDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnComment() {
-	_this.context.CurrentEncoder.BeginComment(&_this.context)
+	_this.context.BeforeComment()
+	_this.context.BeginContainer()
+	_this.context.Stream.WriteCommentBegin()
+	_this.context.Stack(commentDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnEnd() {
-	_this.context.CurrentEncoder.End(&_this.context)
+	_this.context.EndContainer()
 }
 
-func (_this *EncoderEventReceiver) OnMarker() {
-	_this.context.CurrentEncoder.BeginMarker(&_this.context)
+func (_this *EncoderEventReceiver) OnMarker(id []byte) {
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteMarkerBegin(id)
+	_this.context.Stack(concatDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnReference() {
-	_this.context.CurrentEncoder.BeginReference(&_this.context)
+func (_this *EncoderEventReceiver) OnReference(id []byte) {
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteReference(id)
+	_this.context.AfterValue()
+}
+
+func (_this *EncoderEventReceiver) OnRIDReference() {
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteReferenceBegin()
+	_this.context.Stack(concatDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnConstant(name []byte, explicitValue bool) {
-	_this.context.CurrentEncoder.BeginConstant(&_this.context, name, explicitValue)
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteConstant(name)
+	if explicitValue {
+		_this.context.Stream.WriteConcat()
+		_this.context.Stack(concatDecorator)
+	} else {
+		_this.context.AfterValue()
+	}
 }
 
 func (_this *EncoderEventReceiver) OnEndDocument() {

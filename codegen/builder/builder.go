@@ -45,7 +45,7 @@ var (
 	SArray         = "BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value"
 	Time           = "BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value"
 	CTime          = "BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value"
-	Ref            = "BuildFromReference(ctx *Context, id interface{})"
+	Ref            = "BuildFromReference(ctx *Context, id []byte)"
 	ListInit       = "BuildInitiateList(ctx *Context)"
 	MapInit        = "BuildInitiateMap(ctx *Context)"
 	End            = "BuildEndContainer(ctx *Context)"
@@ -165,10 +165,6 @@ var builders = []Builder{
 		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, SArray, Time, CTime, ListInit, MapInit, Map, End, Ref, NotifyFinished},
 	},
 	{
-		Name:    "markerID",
-		Methods: []string{Int, Uint, BigInt},
-	},
-	{
 		Name:    "markerObject",
 		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UUID, Array, SArray, Time, CTime, MapInit, ListInit, End, NotifyFinished},
 	},
@@ -195,10 +191,6 @@ var builders = []Builder{
 	{
 		Name:    "pRid",
 		Methods: []string{Nil, Array, SArray},
-	},
-	{
-		Name:    "referenceID",
-		Methods: []string{Int, Uint, BigInt},
 	},
 	{
 		Name:    "slice",
@@ -262,7 +254,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "ridCat",
-		Methods: []string{Int, Uint, BigInt, Array, SArray},
+		Methods: []string{Array, SArray},
 	},
 }
 

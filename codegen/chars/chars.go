@@ -55,8 +55,6 @@ const (
 	CharNeedsEscapeArray
 	CharNeedsEscapeMarkup
 	CharIsCommentUnsafe
-	CharNeedsQuote
-	CharNeedsQuoteFirst
 	CharPropertyEnd
 	CharIsTextUnsafe
 	NoProperties CharProperty = 0
@@ -79,8 +77,6 @@ var charPropertyNames = map[CharProperty]string{
 	CharNeedsEscapeArray:  "CharNeedsEscapeArray",
 	CharNeedsEscapeMarkup: "CharNeedsEscapeMarkup",
 	CharIsCommentUnsafe:   "CharIsCommentUnsafe",
-	CharNeedsQuote:        "CharNeedsQuote",
-	CharNeedsQuoteFirst:   "CharNeedsQuoteFirst",
 	CharIsTextUnsafe:      "CharIsTextUnsafe",
 }
 
@@ -154,9 +150,7 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 	properties.Add(CharIsTextUnsafe|
 		CharNeedsEscapeArray|
 		CharNeedsEscapeMarkup|
-		CharNeedsEscapeQuoted|
-		CharNeedsQuote|
-		CharNeedsQuoteFirst,
+		CharNeedsEscapeQuoted,
 		chars.GetRunesWithCriteria(func(char *Char) bool {
 			switch char.Codepoint {
 			case '\r', '\n', '\t', ' ': // Allowed whitespace
@@ -217,25 +211,6 @@ func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties 
 	properties.Add(CharIsAreaLocation, '_', '-', '+', '/')
 
 	properties.Add(CharIsObjectEnd, '\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':', '|', '/')
-
-	properties.AddLL(CharNeedsQuote|CharNeedsQuoteFirst, chars.GetRunesWithCriteria(func(char *Char) bool {
-		switch char.Codepoint {
-		case '_', '-':
-			return false
-		}
-		if char.Codepoint >= '0' && char.Codepoint <= '9' {
-			return false
-		}
-		if char.Codepoint >= 'a' && char.Codepoint <= 'z' {
-			return false
-		}
-		if char.Codepoint >= 'A' && char.Codepoint <= 'Z' {
-			return false
-		}
-		return char.Codepoint <= 0x7f
-	})...)
-	properties.AddLL(CharNeedsQuoteFirst, '-')
-	properties.Add(CharNeedsQuoteFirst, charRange('0', '9')...)
 
 	properties.AddLL(CharNeedsEscapeQuoted, '\\', '"')
 	properties.AddLL(CharNeedsEscapeArray, '\\', '|', '\t', '\r', '\n')

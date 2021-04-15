@@ -189,7 +189,7 @@ func (_this *sliceBuilder) BuildBeginListContents(ctx *Context) {
 	_this.reset()
 }
 
-func (_this *sliceBuilder) BuildFromReference(ctx *Context, id interface{}) {
+func (_this *sliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 	ppContainer := _this.ppContainer
 	index := (**ppContainer).Len()
 	elem := _this.newElem()

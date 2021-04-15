@@ -225,7 +225,7 @@ func (_this *mapBuilder) BuildBeginMapContents(ctx *Context) {
 	_this.reset()
 }
 
-func (_this *mapBuilder) BuildFromReference(ctx *Context, id interface{}) {
+func (_this *mapBuilder) BuildFromReference(ctx *Context, id []byte) {
 	container := _this.container
 	key := _this.key
 	tempValue := _this.newElem()

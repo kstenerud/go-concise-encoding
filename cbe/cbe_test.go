@@ -272,8 +272,8 @@ func TestCBERID(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, TypeRID, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), EvV, RID("00000000001111111111"), ED())
 
 	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, TypeRIDCat, 0x00, 1}, BD(), EvV, RBCat(), AC(0, false), I(1), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, TypeRIDCat, 0x02, 'a', 1}, BD(), EvV, RIDCat("a"), I(1), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, TypeRIDCat, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 1}, BD(), EvV, RIDCat("00000000001111111111"), I(1), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, TypeRIDCat, 0x02, 'a', typeString1, '1'}, BD(), EvV, RIDCat("a"), S("1"), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, TypeRIDCat, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', typeString1, '1'}, BD(), EvV, RIDCat("00000000001111111111"), S("1"), ED())
 }
 
 func TestCBECustomBinaryEOF(t *testing.T) {
@@ -439,19 +439,19 @@ func TestCBEArrayUUID(t *testing.T) {
 }
 
 func TestCBEMarker(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, 'x', typeString1, 'a'}, BD(), EvV, MARK(), ID("x"), S("a"), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, 'x', typeString1, 'a'}, BD(), EvV, MARK("x"), S("a"), ED())
 }
 
 func TestCBEReference(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, typeMarker, 1, 'x', typeString1, 'a', typeReference, 1, 'x', typeEndContainer},
-		BD(), EvV, L(), MARK(), ID("x"), S("a"), REF(), ID("x"), E(), ED())
+		BD(), EvV, L(), MARK("x"), S("a"), REF("x"), E(), ED())
 }
 
 func TestCBEContainers(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1, typeEndContainer}, BD(), EvV, L(), I(1), E(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeMap, 1, 1, typeEndContainer}, BD(), EvV, M(), I(1), I(1), E(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeComment, typeString1, 'a', typeEndContainer, 1}, BD(), EvV, CMT(), S("a"), E(), I(1), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeMarkup, 1, 'a', typeEndContainer, typeEndContainer}, BD(), EvV, MUP(), ID("a"), E(), E(), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeMarkup, 1, 'a', typeEndContainer, typeEndContainer}, BD(), EvV, MUP("a"), E(), E(), ED())
 
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1,
 		typeList, typeString1, 'a', typeEndContainer,
@@ -464,7 +464,7 @@ func TestCBEContainers(t *testing.T) {
 		L(), S("a"), E(),
 		M(), S("a"), I(100), E(),
 		CMT(), S("a"), E(),
-		MUP(), ID("a"), S("a"), I(50), E(), S("a"), E(),
+		MUP("a"), S("a"), I(50), E(), S("a"), E(),
 		E(), ED())
 }
 
@@ -508,4 +508,8 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
 	v := []interface{}{sl, sl, sl}
 	assertMarshalUnmarshal(t, v, []byte{header, ceVer, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
+}
+
+func TestRIDReference(t *testing.T) {
+	assertDecode(t, nil, []byte{header, ceVer, 0x94, 0x98, 0x91, 0x02, 'a'}, BD(), EvV, RIDREF(), RID("a"), ED())
 }

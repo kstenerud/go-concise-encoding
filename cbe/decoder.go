@@ -139,8 +139,7 @@ EOF:
 		case cbeTypeComment:
 			eventReceiver.OnComment()
 		case cbeTypeMarkup:
-			eventReceiver.OnMarkup()
-			eventReceiver.OnIdentifier(_this.reader.ReadIdentifier())
+			eventReceiver.OnMarkup(_this.reader.ReadIdentifier())
 		case cbeTypeMap:
 			eventReceiver.OnMap()
 		case cbeTypeList:
@@ -178,6 +177,8 @@ EOF:
 			switch cbeType {
 			case cbeTypeNA:
 				eventReceiver.OnNA()
+			case cbeTypeRIDReference:
+				eventReceiver.OnRIDReference()
 			default:
 				arrayType := cbePlane2TypeToArrayType[cbeType]
 				if arrayType == events.ArrayTypeInvalid {
@@ -186,11 +187,9 @@ EOF:
 				_this.decodeArray(arrayType, eventReceiver)
 			}
 		case cbeTypeMarker:
-			eventReceiver.OnMarker()
-			eventReceiver.OnIdentifier(_this.reader.ReadIdentifier())
+			eventReceiver.OnMarker(_this.reader.ReadIdentifier())
 		case cbeTypeReference:
-			eventReceiver.OnReference()
-			eventReceiver.OnIdentifier(_this.reader.ReadIdentifier())
+			eventReceiver.OnReference(_this.reader.ReadIdentifier())
 		case cbeTypeDate:
 			eventReceiver.OnCompactTime(_this.reader.ReadDate())
 		case cbeTypeTime:

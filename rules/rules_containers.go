@@ -23,36 +23,29 @@
 package rules
 
 import (
-	"math/big"
-
 	"github.com/kstenerud/go-concise-encoding/events"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
 )
 
 type ListRule struct{}
 
-func (_this *ListRule) String() string                                          { return "List Rule" }
-func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType)          { /* Nothing to do */ }
-func (_this *ListRule) OnNA(ctx *Context)                                       { ctx.BeginNA() }
-func (_this *ListRule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
-func (_this *ListRule) OnKeyableObject(ctx *Context)                            { /* Nothing to do */ }
-func (_this *ListRule) OnNonKeyableObject(ctx *Context)                         { /* Nothing to do */ }
-func (_this *ListRule) OnInt(ctx *Context, value int64)                         { /* Nothing to do */ }
-func (_this *ListRule) OnPositiveInt(ctx *Context, value uint64)                { /* Nothing to do */ }
-func (_this *ListRule) OnBigInt(ctx *Context, value *big.Int)                   { /* Nothing to do */ }
-func (_this *ListRule) OnFloat(ctx *Context, value float64)                     { /* Nothing to do */ }
-func (_this *ListRule) OnBigFloat(ctx *Context, value *big.Float)               { /* Nothing to do */ }
-func (_this *ListRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) { /* Nothing to do */ }
-func (_this *ListRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { /* Nothing to do */ }
-func (_this *ListRule) OnList(ctx *Context)                                     { ctx.BeginList() }
-func (_this *ListRule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
-func (_this *ListRule) OnMarkup(ctx *Context)                                   { ctx.BeginMarkup() }
-func (_this *ListRule) OnComment(ctx *Context)                                  { ctx.BeginComment() }
-func (_this *ListRule) OnEnd(ctx *Context)                                      { ctx.EndContainer() }
-func (_this *ListRule) OnMarker(ctx *Context)                                   { ctx.BeginMarkerAnyType() }
-func (_this *ListRule) OnReference(ctx *Context)                                { ctx.BeginReferenceAnyType() }
+func (_this *ListRule) String() string                                 { return "List Rule" }
+func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
+func (_this *ListRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
+func (_this *ListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *ListRule) OnKeyableObject(ctx *Context, _ string)         { /* Nothing to do */ }
+func (_this *ListRule) OnNonKeyableObject(ctx *Context, _ string)      { /* Nothing to do */ }
+func (_this *ListRule) OnList(ctx *Context)                            { ctx.BeginList() }
+func (_this *ListRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
+func (_this *ListRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
+func (_this *ListRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *ListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
+func (_this *ListRule) OnMarker(ctx *Context, identifier []byte)       { ctx.BeginMarkerAnyType(identifier) }
+func (_this *ListRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+}
+func (_this *ListRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
+}
 func (_this *ListRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
 	ctx.BeginConstantAnyType(name, explicitValue)
 }
@@ -76,22 +69,16 @@ type MapKeyRule struct{}
 func (_this *MapKeyRule) String() string                                 { return "Map Key Rule" }
 func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMapValue() }
 func (_this *MapKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MapKeyRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMapValue() }
-func (_this *MapKeyRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMapValue() }
-func (_this *MapKeyRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchMapValue() }
-func (_this *MapKeyRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchMapValue() }
-func (_this *MapKeyRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchMapValue() }
-func (_this *MapKeyRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchMapValue() }
-func (_this *MapKeyRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ string)         { ctx.SwitchMapValue() }
+func (_this *MapKeyRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *MapKeyRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
+func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerKeyable(identifier)
+}
+func (_this *MapKeyRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceKeyable(identifier)
 	ctx.SwitchMapValue()
 }
-func (_this *MapKeyRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMapValue()
-}
-func (_this *MapKeyRule) OnComment(ctx *Context)   { ctx.BeginComment() }
-func (_this *MapKeyRule) OnEnd(ctx *Context)       { ctx.EndContainer() }
-func (_this *MapKeyRule) OnMarker(ctx *Context)    { ctx.BeginMarkerKeyable() }
-func (_this *MapKeyRule) OnReference(ctx *Context) { ctx.BeginReferenceKeyable() }
 func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
 	ctx.BeginConstantKeyable(name, explicitValue)
 }
@@ -121,25 +108,22 @@ func (_this *MapValueRule) OnNA(ctx *Context) {
 	ctx.BeginNA()
 }
 func (_this *MapValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context)              { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context)           { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnInt(ctx *Context, value int64)           { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnPositiveInt(ctx *Context, value uint64)  { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnBigInt(ctx *Context, value *big.Int)     { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnFloat(ctx *Context, value float64)       { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnBigFloat(ctx *Context, value *big.Float) { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ string)    { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ string) { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnList(ctx *Context)                       { ctx.BeginList() }
+func (_this *MapValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
+func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
+func (_this *MapValueRule) OnComment(ctx *Context)                    { ctx.BeginComment() }
+func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier)
+}
+func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
 	ctx.SwitchMapKey()
 }
-func (_this *MapValueRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMapKey()
+func (_this *MapValueRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
 }
-func (_this *MapValueRule) OnList(ctx *Context)      { ctx.BeginList() }
-func (_this *MapValueRule) OnMap(ctx *Context)       { ctx.BeginMap() }
-func (_this *MapValueRule) OnMarkup(ctx *Context)    { ctx.BeginMarkup() }
-func (_this *MapValueRule) OnComment(ctx *Context)   { ctx.BeginComment() }
-func (_this *MapValueRule) OnMarker(ctx *Context)    { ctx.BeginMarkerAnyType() }
-func (_this *MapValueRule) OnReference(ctx *Context) { ctx.BeginReferenceAnyType() }
 func (_this *MapValueRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
 	ctx.BeginConstantAnyType(name, explicitValue)
 }
@@ -160,37 +144,21 @@ func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType
 
 // =============================================================================
 
-type MarkupNameRule struct{}
-
-func (_this *MarkupNameRule) String() string         { return "Markup Name Rule" }
-func (_this *MarkupNameRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *MarkupNameRule) OnIdentifier(ctx *Context, value []byte) {
-	ctx.SwitchMarkupKey()
-}
-
-// =============================================================================
-
 type MarkupKeyRule struct{}
 
 func (_this *MarkupKeyRule) String() string                                 { return "Markup Attribute Key Rule" }
 func (_this *MarkupKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMarkupValue() }
 func (_this *MarkupKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context)                   { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnInt(ctx *Context, value int64)                { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnPositiveInt(ctx *Context, value uint64)       { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnBigInt(ctx *Context, value *big.Int)          { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnFloat(ctx *Context, value float64)            { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnBigFloat(ctx *Context, value *big.Float)      { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ string)         { ctx.SwitchMarkupValue() }
+func (_this *MarkupKeyRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *MarkupKeyRule) OnEnd(ctx *Context)                             { ctx.SwitchMarkupContents() }
+func (_this *MarkupKeyRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerKeyable(identifier)
+}
+func (_this *MarkupKeyRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceKeyable(identifier)
 	ctx.SwitchMarkupValue()
 }
-func (_this *MarkupKeyRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMarkupValue()
-}
-func (_this *MarkupKeyRule) OnComment(ctx *Context)   { ctx.BeginComment() }
-func (_this *MarkupKeyRule) OnEnd(ctx *Context)       { ctx.SwitchMarkupContents() }
-func (_this *MarkupKeyRule) OnMarker(ctx *Context)    { ctx.BeginMarkerKeyable() }
-func (_this *MarkupKeyRule) OnReference(ctx *Context) { ctx.BeginReferenceKeyable() }
 func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
 	ctx.BeginConstantKeyable(name, explicitValue)
 }
@@ -220,25 +188,22 @@ func (_this *MarkupValueRule) OnNA(ctx *Context) {
 	ctx.BeginNA()
 }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MarkupValueRule) OnKeyableObject(ctx *Context)              { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context)           { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnInt(ctx *Context, value int64)           { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnPositiveInt(ctx *Context, value uint64)  { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnBigInt(ctx *Context, value *big.Int)     { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnFloat(ctx *Context, value float64)       { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnBigFloat(ctx *Context, value *big.Float) { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ string)    { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ string) { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnList(ctx *Context)                       { ctx.BeginList() }
+func (_this *MarkupValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
+func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
+func (_this *MarkupValueRule) OnComment(ctx *Context)                    { ctx.BeginComment() }
+func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier)
+}
+func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
 	ctx.SwitchMarkupKey()
 }
-func (_this *MarkupValueRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
-	ctx.SwitchMarkupKey()
+func (_this *MarkupValueRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
 }
-func (_this *MarkupValueRule) OnList(ctx *Context)      { ctx.BeginList() }
-func (_this *MarkupValueRule) OnMap(ctx *Context)       { ctx.BeginMap() }
-func (_this *MarkupValueRule) OnMarkup(ctx *Context)    { ctx.BeginMarkup() }
-func (_this *MarkupValueRule) OnComment(ctx *Context)   { ctx.BeginComment() }
-func (_this *MarkupValueRule) OnMarker(ctx *Context)    { ctx.BeginMarkerAnyType() }
-func (_this *MarkupValueRule) OnReference(ctx *Context) { ctx.BeginReferenceAnyType() }
 func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
 	ctx.BeginConstantAnyType(name, explicitValue)
 }
@@ -264,9 +229,11 @@ type MarkupContentsRule struct{}
 func (_this *MarkupContentsRule) String() string                                 { return "Markup Contents Rule" }
 func (_this *MarkupContentsRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
 func (_this *MarkupContentsRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MarkupContentsRule) OnMarkup(ctx *Context)                          { ctx.BeginMarkup() }
-func (_this *MarkupContentsRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *MarkupContentsRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
+func (_this *MarkupContentsRule) OnMarkup(ctx *Context, identifier []byte) {
+	ctx.BeginMarkup(identifier)
+}
+func (_this *MarkupContentsRule) OnComment(ctx *Context) { ctx.BeginComment() }
+func (_this *MarkupContentsRule) OnEnd(ctx *Context)     { ctx.EndContainer() }
 func (_this *MarkupContentsRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayMarkupContents(arrayType, elementCount, data)
 }

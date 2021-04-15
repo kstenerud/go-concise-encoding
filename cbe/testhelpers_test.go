@@ -164,7 +164,6 @@ func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
 func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
-func ID(v string) *test.TEvent               { return test.ID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
@@ -206,11 +205,12 @@ func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
-func MUP() *test.TEvent                      { return test.MUP() }
+func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
-func MARK() *test.TEvent                     { return test.MARK() }
-func REF() *test.TEvent                      { return test.REF() }
+func MARK(id string) *test.TEvent            { return test.MARK(id) }
+func REF(id string) *test.TEvent             { return test.REF(id) }
+func RIDREF() *test.TEvent                   { return test.RIDREF() }
 func CONST(n string, e bool) *test.TEvent    { return test.CONST(n, e) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
@@ -245,7 +245,7 @@ func encodeEvents(opts *options.CBEEncoderOptions, events ...*test.TEvent) []byt
 func assertDecode(t *testing.T, opts *options.CBEDecoderOptions, document []byte, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
 	actualEvents, err := decodeToEvents(opts, document)
 	if err != nil {
-		t.Errorf("While decoding %v: %v", describe.D(document), err)
+		t.Errorf("Error [%v] while decoding %v", err, describe.D(document))
 		return
 	}
 
@@ -263,14 +263,14 @@ func assertDecode(t *testing.T, opts *options.CBEDecoderOptions, document []byte
 func assertDecodeFails(t *testing.T, document []byte) {
 	_, err := decodeToEvents(nil, document)
 	if err == nil {
-		t.Errorf("Expected decode to fail")
+		t.Errorf("Expected decode to fail in document %v", describe.D(document))
 	}
 }
 
 func assertEncode(t *testing.T, opts *options.CBEEncoderOptions, expectedDocument []byte, events ...*test.TEvent) (successful bool) {
 	actualDocument := encodeEvents(opts, events...)
 	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected encoded document %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
+		t.Errorf("Expected encoded document %v but got %v after sending events %v", describe.D(expectedDocument), describe.D(actualDocument), events)
 		return
 	}
 	successful = true
@@ -295,11 +295,11 @@ func assertDecodeEncode(t *testing.T, document []byte, expectedEvents ...*test.T
 func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (successful bool) {
 	document, err := NewMarshaler(nil).MarshalToDocument(value)
 	if err != nil {
-		t.Errorf("While marshaling %v: %v", describe.D(value), err)
+		t.Errorf("Error [%v] while marshaling %v", err, describe.D(value))
 		return
 	}
 	if !equivalence.IsEquivalent(document, expectedDocument) {
-		t.Errorf("Expected encoded document %v but got %v", describe.D(expectedDocument), describe.D(document))
+		t.Errorf("Expected encoded document %v but got %v while marshaling %v", describe.D(expectedDocument), describe.D(document), describe.D(value))
 		return
 	}
 	successful = true
@@ -309,12 +309,12 @@ func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (su
 func assertUnmarshal(t *testing.T, expectedValue interface{}, document []byte) (successful bool) {
 	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
 	if err != nil {
-		t.Errorf("While unmarshaling %v: %v", describe.D(document), err)
+		t.Errorf("Error [%v] while unmarshaling %v", err, describe.D(document))
 		return
 	}
 
 	if !equivalence.IsEquivalent(actualValue, expectedValue) {
-		t.Errorf("Expected unmarshaled [%v] but got [%v]", describe.D(expectedValue), describe.D(actualValue))
+		t.Errorf("Expected unmarshaled [%v] but got [%v] while unmarshaling %v", describe.D(expectedValue), describe.D(actualValue), describe.D(document))
 		return
 	}
 	successful = true

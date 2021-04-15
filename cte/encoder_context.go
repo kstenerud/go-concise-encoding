@@ -47,180 +47,110 @@ func (_this *indenter) Get() []byte {
 }
 
 type EncoderContext struct {
-	opts                options.CTEEncoderOptions
-	indenter            indenter
-	encoderStack        []Encoder
-	CurrentEncoder      Encoder
-	ContainerHasObjects bool
-	currentPrefix       []byte
-	Stream              Writer
-	ArrayEngine         arrayEncoderEngine
+	opts                         options.CTEEncoderOptions
+	indenter                     indenter
+	stack                        []EncoderDecorator
+	Decorator                    EncoderDecorator
+	ContainerHasObjects          bool
+	Stream                       Writer
+	ArrayEngine                  arrayEncoderEngine
+	LastMarkupContentsWasComment bool
 }
 
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
 	_this.opts = *opts
 	_this.ArrayEngine.Init(&_this.Stream, &_this.opts)
 	_this.Stream.Init()
-	_this.Reset()
 }
 
-func (_this *EncoderContext) Reset() {
+func (_this *EncoderContext) Begin() {
 	_this.indenter.Reset()
-	_this.encoderStack = _this.encoderStack[:0]
-	_this.CurrentEncoder = nil
-	_this.Stack(&globalTopLevelEncoder)
-	_this.SetStandardIndentPrefix()
+	_this.stack = _this.stack[:0]
+	_this.Decorator = nil
+	_this.Stack(&topLevelDecorator)
 }
 
-func (_this *EncoderContext) Stack(encoder Encoder) {
-	_this.encoderStack = append(_this.encoderStack, encoder)
-	_this.CurrentEncoder = encoder
+func (_this *EncoderContext) BeforeValue() {
+	_this.Decorator.BeforeValue(_this)
+}
+
+func (_this *EncoderContext) AfterValue() {
+	_this.Decorator.AfterValue(_this)
+	_this.ContainerHasObjects = true
+}
+
+func (_this *EncoderContext) BeforeComment() {
+	_this.Decorator.BeforeComment(_this)
+}
+
+func (_this *EncoderContext) AfterComment() {
+	_this.Decorator.AfterComment(_this)
+	_this.ContainerHasObjects = true
+}
+
+func (_this *EncoderContext) BeginContainer() {
+	_this.ContainerHasObjects = false
+}
+
+func (_this *EncoderContext) EndContainer() {
+	_this.Decorator.EndContainer(_this)
+}
+
+func (_this *EncoderContext) Stack(decorator EncoderDecorator) {
+	_this.stack = append(_this.stack, decorator)
+	_this.Decorator = decorator
 }
 
 func (_this *EncoderContext) Unstack() {
-	_this.encoderStack = _this.encoderStack[:len(_this.encoderStack)-1]
-	_this.CurrentEncoder = _this.encoderStack[len(_this.encoderStack)-1]
+	_this.stack = _this.stack[:len(_this.stack)-1]
+	_this.Decorator = _this.stack[len(_this.stack)-1]
 }
 
-func (_this *EncoderContext) ChangeEncoder(encoder Encoder) {
-	_this.encoderStack[len(_this.encoderStack)-1] = encoder
-	_this.CurrentEncoder = encoder
+func (_this *EncoderContext) Switch(decorator EncoderDecorator) {
+	_this.stack[len(_this.stack)-1] = decorator
+	_this.Decorator = decorator
 }
 
-func (_this *EncoderContext) IncreaseIndent() {
+func (_this *EncoderContext) Indent() {
 	_this.indenter.increase()
 }
 
-func (_this *EncoderContext) DecreaseIndent() {
+func (_this *EncoderContext) Unindent() {
 	_this.indenter.decrease()
 }
 
-func (_this *EncoderContext) WriteBasicIndent() {
+func (_this *EncoderContext) WriteIndent() {
 	_this.Stream.WriteBytes(_this.indenter.Get())
-}
-
-func (_this *EncoderContext) SetIndentPrefix(value []byte) {
-	_this.currentPrefix = value
-}
-
-func (_this *EncoderContext) SetStandardIndentPrefix() {
-	_this.SetIndentPrefix(_this.indenter.Get())
-}
-
-func (_this *EncoderContext) SetStandardMapKeyPrefix() {
-	_this.SetIndentPrefix(_this.indenter.Get())
-}
-
-func (_this *EncoderContext) SetStandardMapValuePrefix() {
-	_this.SetIndentPrefix(mapValuePrefix)
-}
-
-func (_this *EncoderContext) SetMarkupAttributeKeyPrefix() {
-	_this.SetIndentPrefix(markupAttributeKeyPrefix)
-}
-
-func (_this *EncoderContext) SetMarkupAttributeValuePrefix() {
-	_this.SetIndentPrefix(markupAttributeValuePrefix)
-}
-
-func (_this *EncoderContext) ClearPrefix() {
-	_this.SetIndentPrefix(emptyPrefix)
-}
-
-func (_this *EncoderContext) WriteCurrentPrefix() {
-	_this.Stream.WriteBytes(_this.currentPrefix)
-}
-
-func (_this *EncoderContext) BeginStandardList() {
-	_this.Stack(&globalListEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
-func (_this *EncoderContext) BeginStandardMap() {
-	_this.Stack(&globalMapKeyEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
-func (_this *EncoderContext) BeginStandardMarkup() {
-	_this.Stack(&globalMarkupNameEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
-func (_this *EncoderContext) SwitchToMarkupAttributes() {
-	_this.ChangeEncoder(&globalMarkupKeyEncoder)
-}
-
-func (_this *EncoderContext) SwitchToMarkupContents() {
-	_this.ChangeEncoder(&globalMarkupContentsEncoder)
-}
-
-func (_this *EncoderContext) BeginStandardComment() {
-	_this.Stack(&globalCommentEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
-func (_this *EncoderContext) BeginStandardMarker() {
-	_this.Stack(&globalMarkerIDEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
-func (_this *EncoderContext) BeginStandardReference() {
-	_this.Stack(&globalReferenceEncoder)
-	_this.CurrentEncoder.Begin(_this)
-}
-
-func (_this *EncoderContext) BeginStandardConstant(name []byte, explicitValue bool) {
-	_this.Stream.WriteByte('#')
-	_this.Stream.WriteBytes(name)
-	_this.Stack(&globalConstantEncoder)
-}
-
-func (_this *EncoderContext) BeginNA() {
-	_this.Stream.WriteNA()
-	_this.Stream.WriteConcat()
-	_this.Stack(&globalPostInvisibleEncoder)
-}
-
-func (_this *EncoderContext) BeginStandardArray(arrayType events.ArrayType) {
-	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.Stack(&globalPostStreamRIDCatEncoder)
-	}
-	_this.Stack((&globalArrayEncoder))
-	_this.ArrayEngine.BeginArray(arrayType, func() {
-		_this.Unstack()
-		_this.CurrentEncoder.ChildContainerFinished(_this, true)
-	})
-}
-
-func (_this *EncoderContext) BeginPotentialRIDCat(arrayType events.ArrayType) {
-	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.Stack(&globalPostRIDCatEncoder)
-	}
-}
-
-func (_this *EncoderContext) WriteStringIdentifier(data string) {
-	// TODO: Not this
-	_this.WriteIdentifier([]byte(data))
 }
 
 func (_this *EncoderContext) WriteIdentifier(data []byte) {
 	_this.Stream.WriteBytes(data)
 }
 
-func (_this *EncoderContext) WriteStringlikeArray(arrayType events.ArrayType, data string) {
+func (_this *EncoderContext) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
 	// TODO: avoid string-to-bytes conversion?
-	_this.ArrayEngine.EncodeArray(arrayType, uint64(len(data)), []byte(data))
-	_this.BeginPotentialRIDCat(arrayType)
+	_this.ArrayEngine.EncodeArray(_this.Decorator.GetStringContext(), arrayType, uint64(len(data)), []byte(data))
 }
 
-func (_this *EncoderContext) WriteArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.ArrayEngine.EncodeArray(arrayType, elementCount, data)
-	_this.BeginPotentialRIDCat(arrayType)
+func (_this *EncoderContext) EncodeArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	_this.ArrayEngine.EncodeArray(_this.Decorator.GetStringContext(), arrayType, elementCount, data)
+}
+
+func (_this *EncoderContext) BeginArray(arrayType events.ArrayType, completion func()) {
+	_this.ArrayEngine.BeginArray(_this.Decorator.GetStringContext(), arrayType, completion)
+}
+
+func (_this *EncoderContext) BeginArrayChunk(elementCount uint64, moreChunksFollow bool) {
+	_this.ArrayEngine.BeginChunk(elementCount, moreChunksFollow)
+}
+
+func (_this *EncoderContext) EncodeArrayData(data []byte) {
+	_this.ArrayEngine.AddArrayData(data)
 }
 
 func (_this *EncoderContext) WriteCommentString(data string) {
 	// TODO: Not this
-	_this.WriteMarkupContentStringData([]byte(data))
+	_this.WriteCommentStringData([]byte(data))
 }
 
 func (_this *EncoderContext) WriteCommentStringData(data []uint8) {

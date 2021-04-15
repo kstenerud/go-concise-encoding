@@ -286,10 +286,6 @@ func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	_this.writer.FlushBuffer(count + 1)
 }
 
-func (_this *Encoder) OnIdentifier(value []byte) {
-	_this.writer.WriteIdentifier(value)
-}
-
 func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	if arrayType == events.ArrayTypeString && elementCount <= maxSmallStringLength {
 		_this.writer.WriteType(cbeTypeString0 + cbeTypeField(elementCount))
@@ -337,8 +333,9 @@ func (_this *Encoder) OnMap() {
 	_this.writer.WriteType(cbeTypeMap)
 }
 
-func (_this *Encoder) OnMarkup() {
+func (_this *Encoder) OnMarkup(id []byte) {
 	_this.writer.WriteType(cbeTypeMarkup)
+	_this.writer.WriteIdentifier(id)
 }
 
 func (_this *Encoder) OnComment() {
@@ -349,11 +346,18 @@ func (_this *Encoder) OnEnd() {
 	_this.writer.WriteType(cbeTypeEndContainer)
 }
 
-func (_this *Encoder) OnMarker() {
+func (_this *Encoder) OnMarker(id []byte) {
 	_this.writer.WriteType(cbeTypeMarker)
+	_this.writer.WriteIdentifier(id)
 }
 
-func (_this *Encoder) OnReference() {
+func (_this *Encoder) OnReference(id []byte) {
+	_this.writer.WriteType(cbeTypeReference)
+	_this.writer.WriteIdentifier(id)
+}
+
+func (_this *Encoder) OnRIDReference() {
+	_this.writer.WriteType(cbeTypePlane2)
 	_this.writer.WriteType(cbeTypeReference)
 }
 

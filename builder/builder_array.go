@@ -168,7 +168,7 @@ func (_this *arrayBuilder) BuildBeginListContents(ctx *Context) {
 	_this.reset()
 }
 
-func (_this *arrayBuilder) BuildFromReference(ctx *Context, id interface{}) {
+func (_this *arrayBuilder) BuildFromReference(ctx *Context, id []byte) {
 	container := _this.container
 	index := _this.elemIndex
 	_this.elemIndex++

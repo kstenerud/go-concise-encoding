@@ -37,33 +37,26 @@ var (
 	Ver     = "OnVersion(ctx *Context, version uint64)"
 	NA      = "OnNA(ctx *Context)"
 	Pad     = "OnPadding(ctx *Context)"
-	Key     = "OnKeyableObject(ctx *Context)"
-	NonKey  = "OnNonKeyableObject(ctx *Context)"
-	Int     = "OnInt(ctx *Context, value int64)"
-	PInt    = "OnPositiveInt(ctx *Context, value uint64)"
-	BInt    = "OnBigInt(ctx *Context, value *big.Int)"
-	Float   = "OnFloat(ctx *Context, value float64)"
-	BFloat  = "OnBigFloat(ctx *Context, value *big.Float)"
-	DFloat  = "OnDecimalFloat(ctx *Context, value compact_float.DFloat)"
-	BDFloat = "OnBigDecimalFloat(ctx *Context, value *apd.Decimal)"
-	ID      = "OnIdentifier(ctx *Context, value []byte)"
+	Key     = "OnKeyableObject(ctx *Context, objType string)"
+	NonKey  = "OnNonKeyableObject(ctx *Context, objType string)"
 	List    = "OnList(ctx *Context)"
 	Map     = "OnMap(ctx *Context)"
-	Markup  = "OnMarkup(ctx *Context)"
+	Markup  = "OnMarkup(ctx *Context, identifier []byte)"
 	Comment = "OnComment(ctx *Context)"
 	End     = "OnEnd(ctx *Context)"
-	Marker  = "OnMarker(ctx *Context)"
-	Ref     = "OnReference(ctx *Context)"
-	Const   = "OnConstant(ctx *Context, name []byte, explicitValue bool)"
+	Marker  = "OnMarker(ctx *Context, identifier []byte)"
+	Ref     = "OnReference(ctx *Context, identifier []byte)"
+	RIDRef  = "OnRIDReference(ctx *Context)"
+	Const   = "OnConstant(ctx *Context, identifier []byte, explicitValue bool)"
 	Array   = "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)"
 	SArray  = "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)"
 	ABegin  = "OnArrayBegin(ctx *Context, arrayType events.ArrayType)"
 	AChunk  = "OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)"
 	AData   = "OnArrayData(ctx *Context, data []byte)"
 
-	allMethods = []string{BDoc, EDoc, ECtr, Ver, NA, Pad, Key, NonKey, Int,
-		PInt, BInt, Float, BFloat, DFloat, BDFloat, ID, List, Map, Markup,
-		Comment, End, Marker, Ref, Const, Array, SArray, ABegin, AChunk, AData}
+	allMethods = []string{BDoc, EDoc, ECtr, Ver, NA, Pad, Key, NonKey, List, Map,
+		Markup, Comment, End, Marker, Ref, RIDRef, Const, Array, SArray, ABegin,
+		AChunk, AData}
 )
 
 type RuleClass struct {
@@ -90,35 +83,31 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "TopLevelRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Marker, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "NARule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ListRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, End, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
-	},
-	{
-		Name:    "MarkupNameRule",
-		Methods: []string{Pad, ID},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupKeyRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupContentsRule",
@@ -153,44 +142,28 @@ var ruleClasses = []RuleClass{
 		Methods: []string{AData},
 	},
 	{
-		Name:    "MarkerIDKeyableRule",
-		Methods: []string{Pad, ID},
-	},
-	{
-		Name:    "MarkerIDAnyTypeRule",
-		Methods: []string{Pad, ID},
-	},
-	{
 		Name:    "MarkedObjectKeyableRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Ref, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkedObjectAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Const, Array, SArray, ABegin},
-	},
-	{
-		Name:    "ReferenceKeyableRule",
-		Methods: []string{Pad, ID},
-	},
-	{
-		Name:    "ReferenceAnyTypeRule",
-		Methods: []string{Pad, ID, Array, SArray, ABegin, ECtr},
+		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ConstantKeyableRule",
-		Methods: []string{ECtr, Pad, Key, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ConstantAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, Int, PInt, BInt, Float, BFloat, DFloat, BDFloat, List, Map, Markup, Ref, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, List, Map, Markup, Array, SArray, ABegin},
 	},
 	{
-		Name:    "TLReferenceRIDRule",
+		Name:    "RIDReferenceRule",
 		Methods: []string{Pad, Array, SArray, ABegin, ECtr},
 	},
 	{
 		Name:    "RIDCatRule",
-		Methods: []string{Pad, Int, PInt, BInt, Array, SArray, ABegin, ECtr},
+		Methods: []string{Pad, Array, SArray, ABegin, ECtr},
 	},
 }
 
@@ -213,12 +186,8 @@ var codeHeader = standard.Header + `package rules
 
 import (
 	"fmt"
-	"math/big"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
 )
 
 `
@@ -248,10 +217,16 @@ func generateBadEventMethod(rule RuleClass, methodSignature string, writer io.Wr
 	methodName := methodSignature[:strings.Index(methodSignature, "(")]
 	openMethod(rule, methodSignature, writer)
 	id := methodName[2:]
-
-	format := "\tpanic(fmt.Errorf(\"%%v does not allow %s\", _this))\n"
-	if _, err := writer.Write([]byte(fmt.Sprintf(format, id))); err != nil {
-		panic(err)
+	if id == "KeyableObject" || id == "NonKeyableObject" {
+		format := "\tpanic(fmt.Errorf(\"%%v does not allow %%s\", _this, objType))\n"
+		if _, err := writer.Write([]byte(fmt.Sprintf(format))); err != nil {
+			panic(err)
+		}
+	} else {
+		format := "\tpanic(fmt.Errorf(\"%%v does not allow %s\", _this))\n"
+		if _, err := writer.Write([]byte(fmt.Sprintf(format, id))); err != nil {
+			panic(err)
+		}
 	}
 
 	closeMethod(writer)

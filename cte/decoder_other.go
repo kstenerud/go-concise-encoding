@@ -417,9 +417,7 @@ var global_advanceAndDecodeMarker advanceAndDecodeMarker
 func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
-	ctx.EventReceiver.OnMarker()
-
-	ctx.EventReceiver.OnIdentifier(ctx.Stream.ReadIdentifier())
+	ctx.EventReceiver.OnMarker(ctx.Stream.ReadIdentifier())
 	if ctx.Stream.PeekByteNoEOD() != ':' {
 		ctx.Stream.Errorf("Missing colon between marker ID and marked value")
 	}
@@ -434,9 +432,8 @@ var global_advanceAndDecodeReference advanceAndDecodeReference
 func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
-	ctx.EventReceiver.OnReference()
-
 	if ctx.Stream.PeekByteNoEOD() == '|' {
+		ctx.EventReceiver.OnRIDReference()
 		ctx.Stream.AdvanceByte()
 		arrayType := decodeArrayType(ctx)
 		ctx.Stream.SkipWhitespace()
@@ -447,7 +444,7 @@ func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 		return
 	}
 
-	ctx.EventReceiver.OnIdentifier(ctx.Stream.ReadIdentifier())
+	ctx.EventReceiver.OnReference(ctx.Stream.ReadIdentifier())
 }
 
 type advanceAndDecodeSuffix struct{}

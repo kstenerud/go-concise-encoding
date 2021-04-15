@@ -116,7 +116,7 @@ func (_this *ignoreBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildFromReference(ctx *Context, _ interface{}) {
+func (_this *ignoreBuilder) BuildFromReference(ctx *Context, _ []byte) {
 	// Ignore this directive
 }
 

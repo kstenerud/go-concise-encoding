@@ -21,6 +21,7 @@
 package iterator
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -96,6 +97,17 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 // ============================================================================
 // Internal
 
+func (_this *RootObjectIterator) getNamedReference(ptr duplicates.TypedPointer) (name []byte, exists bool) {
+	num, exists := _this.namedReferences[ptr]
+	if !exists {
+		num = _this.nextMarkerName
+		_this.namedReferences[ptr] = num
+		_this.nextMarkerName++
+	}
+	// TODO: Use common buffer instead
+	return []byte(fmt.Sprintf("%v", num)), exists
+}
+
 func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateReferenceEvent bool) {
 	if !_this.opts.RecursionSupport {
 		return false
@@ -106,17 +118,12 @@ func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateRefer
 		return false
 	}
 
-	name, exists := _this.namedReferences[ptr]
+	name, exists := _this.getNamedReference(ptr)
 	if !exists {
-		name = _this.nextMarkerName
-		_this.nextMarkerName++
-		_this.namedReferences[ptr] = name
-		_this.context.EventReceiver.OnMarker()
-		_this.context.EventReceiver.OnPositiveInt(uint64(name))
+		_this.context.EventReceiver.OnMarker(name)
 		return false
 	}
 
-	_this.context.EventReceiver.OnReference()
-	_this.context.EventReceiver.OnPositiveInt(uint64(name))
+	_this.context.EventReceiver.OnReference(name)
 	return true
 }

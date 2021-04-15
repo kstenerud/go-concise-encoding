@@ -1206,47 +1206,47 @@ func TestBuilderByteArrayBytes(t *testing.T) {
 
 func TestBuilderMarkerSlice(t *testing.T) {
 	// Reference in same container
-	assertBuild(t, []int{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
-	assertBuild(t, []int{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
-	assertBuild(t, []string{"abcdef", "abcdef"}, L(), MARK(), PI(1), S("abcdef"), REF(), PI(1), E())
-	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), MARK(), PI(1), L(), PI(100), E(), REF(), PI(1), E())
-	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), REF(), PI(1), MARK(), PI(1), L(), PI(100), E(), E())
-	assertBuild(t, [][]int{[]int{100, 100}, []int{100, 100}}, L(), REF(), PI(1), MARK(), PI(1), L(), PI(100), PI(100), E(), E())
+	assertBuild(t, []int{100, 100}, L(), MARK("1"), PI(100), REF("1"), E())
+	assertBuild(t, []int{100, 100}, L(), REF("1"), MARK("1"), PI(100), E())
+	assertBuild(t, []string{"abcdef", "abcdef"}, L(), MARK("1"), S("abcdef"), REF("1"), E())
+	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), MARK("1"), L(), PI(100), E(), REF("1"), E())
+	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), REF("1"), MARK("1"), L(), PI(100), E(), E())
+	assertBuild(t, [][]int{[]int{100, 100}, []int{100, 100}}, L(), REF("1"), MARK("1"), L(), PI(100), PI(100), E(), E())
 
 	// Reference in different container
-	assertBuild(t, [][]int{[]int{100, 100}, []int{100}}, L(), L(), REF(), PI(1), REF(), PI(1), E(), L(), MARK(), PI(1), PI(100), E(), E())
+	assertBuild(t, [][]int{[]int{100, 100}, []int{100}}, L(), L(), REF("1"), REF("1"), E(), L(), MARK("1"), PI(100), E(), E())
 
 	// Referenced containers
-	assertBuild(t, [][]int{[]int{}, []int{}}, L(), MARK(), PI(1), L(), E(), REF(), PI(1), E())
-	assertBuild(t, [][]int{[]int{}, []int{}}, L(), REF(), PI(1), MARK(), PI(1), L(), E(), E())
+	assertBuild(t, [][]int{[]int{}, []int{}}, L(), MARK("1"), L(), E(), REF("1"), E())
+	assertBuild(t, [][]int{[]int{}, []int{}}, L(), REF("1"), MARK("1"), L(), E(), E())
 	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
-		L(), REF(), PI(1), MARK(), PI(1), M(), PI(100), PI(100), E(), E())
+		L(), REF("1"), MARK("1"), M(), PI(100), PI(100), E(), E())
 	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
-		L(), MARK(), PI(1), M(), PI(100), PI(100), E(), REF(), PI(1), E())
+		L(), MARK("1"), M(), PI(100), PI(100), E(), REF("1"), E())
 
 	// Interface
-	assertBuild(t, []interface{}{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
-	assertBuild(t, []interface{}{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
+	assertBuild(t, []interface{}{100, 100}, L(), REF("1"), MARK("1"), PI(100), E())
+	assertBuild(t, []interface{}{100, 100}, L(), MARK("1"), PI(100), REF("1"), E())
 
 	// Recursive interface
 	rintf := make([]interface{}, 1)
 	rintf[0] = rintf
-	assertBuild(t, rintf, MARK(), PI(1), L(), REF(), PI(1), E())
+	assertBuild(t, rintf, MARK("1"), L(), REF("1"), E())
 }
 
 func TestBuilderMarkerArray(t *testing.T) {
-	assertBuild(t, [2]int{100, 100}, L(), MARK(), PI(1), PI(100), REF(), PI(1), E())
-	assertBuild(t, [2]int{100, 100}, L(), REF(), PI(1), MARK(), PI(1), PI(100), E())
+	assertBuild(t, [2]int{100, 100}, L(), MARK("1"), PI(100), REF("1"), E())
+	assertBuild(t, [2]int{100, 100}, L(), REF("1"), MARK("1"), PI(100), E())
 }
 
 func TestBuilderMarkerMap(t *testing.T) {
 	assertBuild(t, map[int]int8{1: 100, 2: 100, 3: 100},
-		M(), PI(1), REF(), PI(5), PI(2), MARK(), PI(5), PI(100), PI(3), REF(), PI(5), E())
+		M(), PI(1), REF("5"), PI(2), MARK("5"), PI(100), PI(3), REF("5"), E())
 
 	rmap := make(map[int]interface{})
 	rmap[0] = rmap
 	assertBuild(t, rmap,
-		MARK(), PI(1), M(), PI(0), REF(), PI(1), E())
+		MARK("1"), M(), PI(0), REF("1"), E())
 
 }
 
@@ -1261,12 +1261,12 @@ func TestBuilderSelfReferential(t *testing.T) {
 	}
 	v.Next = v
 	assertBuild(t, v,
-		MARK(), PI(1),
+		MARK("1"),
 		M(),
 		S("Value"),
 		PI(100),
 		S("Next"),
-		REF(), PI(1),
+		REF("1"),
 		E())
 }
 
@@ -1284,10 +1284,10 @@ func TestBuilderRefStruct(t *testing.T) {
 		S1:  "test",
 		S2:  "test",
 	}, M(),
-		S("I16"), REF(), PI(1),
-		S("F32"), MARK(), PI(1), PI(1000),
-		S("S1"), MARK(), PI(2), S("test"),
-		S("S2"), REF(), PI(2),
+		S("I16"), REF("1"),
+		S("F32"), MARK("1"), PI(1000),
+		S("S1"), MARK("2"), S("test"),
+		S("S2"), REF("2"),
 		E())
 }
 
@@ -1325,7 +1325,9 @@ func TestBuilderNA(t *testing.T) {
 func TestBuilderRIDCat(t *testing.T) {
 	pURL := NewRID("http://x.com/1")
 
-	// assertBuild(t, pURL, RID("http://x.com1"))
+	assertBuild(t, pURL, RID("http://x.com/1"))
+	// TODO: These are still broken
+	// assertBuild(t, pURL, RID("http://x.com/"), S("1"))
 	// assertBuild(t, *pURL, RIDCat("http://x.com/1"))
-	assertBuild(t, *pURL, RIDCat("http://x.com/"), I(1))
+	assertBuild(t, *pURL, RIDCat("http://x.com/"), S("1"))
 }

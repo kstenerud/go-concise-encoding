@@ -74,25 +74,37 @@ func (_this *arrayEncoderEngine) setElementByteWidth(width int) {
 	_this.arrayElementByteWidth = width
 }
 
-func (_this *arrayEncoderEngine) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
+func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringContext, arrayType events.ArrayType, data string) {
 	// TODO: avoid string-to-bytes conversion?
-	_this.EncodeArray(arrayType, uint64(len(data)), []byte(data))
+	_this.EncodeArray(stringContext, arrayType, uint64(len(data)), []byte(data))
 }
 
-func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
+func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		_this.stream.WriteQuotedStringBytes(data)
+		switch stringContext {
+		case stringContextDefault:
+			_this.stream.WriteQuotedStringBytes(data)
+		case stringContextComment:
+			_this.stream.WriteBytes(data)
+		case stringContextMarkup:
+			_this.stream.WritePotentiallyEscapedMarkupContents(data)
+		}
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteString("|r ")
 		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
 		_this.stream.WriteArrayEnd()
+	case events.ArrayTypeResourceIDConcat:
+		_this.stream.WriteString("|r ")
+		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
+		_this.stream.WriteArrayEnd()
+		_this.stream.WriteConcat()
 	case events.ArrayTypeCustomText:
 		_this.stream.WriteString("|ct ")
 		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
 		_this.stream.WriteArrayEnd()
 	default:
-		_this.BeginArray(arrayType, func() {})
+		_this.BeginArray(stringContext, arrayType, func() {})
 		_this.BeginChunk(elementCount, false)
 		if elementCount > 0 {
 			_this.AddArrayData(data)
@@ -100,7 +112,7 @@ func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, element
 	}
 }
 
-func (_this *arrayEncoderEngine) BeginArray(arrayType events.ArrayType, onComplete func()) {
+func (_this *arrayEncoderEngine) BeginArray(stringContext stringContext, arrayType events.ArrayType, onComplete func()) {
 	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
 	_this.stringBuffer = _this.stringBuffer[:0]
 	_this.remainingChunkElements = 0

@@ -144,11 +144,12 @@ func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
-func MUP() *test.TEvent                      { return test.MUP() }
+func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
-func MARK() *test.TEvent                     { return test.MARK() }
-func REF() *test.TEvent                      { return test.REF() }
+func MARK(id string) *test.TEvent            { return test.MARK(id) }
+func REF(id string) *test.TEvent             { return test.REF(id) }
+func RIDREF() *test.TEvent                   { return test.RIDREF() }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
@@ -222,7 +223,7 @@ func assertEncodeDecodeCBEOpts(t *testing.T,
 		actualEvents, err = cbeDecode(decodeOpts, document)
 	})
 	if err != nil {
-		t.Errorf("%v while decoding CBE document: %v", err, describe.D(document))
+		t.Errorf("Error [%v] while decoding CBE document %v", err, describe.D(document))
 		return
 	}
 
@@ -252,7 +253,7 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 		actualEvents, err = cteDecode(decodeOpts, document)
 	})
 	if err != nil {
-		t.Errorf("%v while decoding CTE document: %v", err, string(document))
+		t.Errorf("Error [%v] while decoding CTE document: %v", err, string(document))
 		return
 	}
 

@@ -60,7 +60,7 @@ type Context struct {
 	ValidateArrayDataFunc  func(data []byte)
 
 	// Marker/Reference
-	currentMarkerID   string
+	markerID          string
 	markerObjectRule  EventRule
 	markedObjects     map[interface{}]DataType
 	forwardReferences map[interface{}]DataType
@@ -140,64 +140,51 @@ func (_this *Context) EndContainer() {
 }
 
 func (_this *Context) BeginNA() {
-	_this.stackRule(&naRule, DataTypeAnyType)
+	_this.stackRule(&naRule, DataTypeNonKeyable)
 }
 
 func (_this *Context) BeginList() {
-	_this.beginContainer(&listRule, DataTypeAnyType)
+	_this.beginContainer(&listRule, DataTypeNonKeyable)
 }
 
 func (_this *Context) BeginMap() {
-	_this.beginContainer(&mapKeyRule, DataTypeAnyType)
+	_this.beginContainer(&mapKeyRule, DataTypeNonKeyable)
 }
 
-func (_this *Context) BeginMarkup() {
-	_this.beginContainer(&markupNameRule, DataTypeAnyType)
+func (_this *Context) BeginMarkup(identifier []byte) {
+	_this.beginContainer(&markupKeyRule, DataTypeNonKeyable)
 }
 
 func (_this *Context) BeginComment() {
 	_this.beginContainer(&commentRule, DataTypeInvalid)
 }
 
-func (_this *Context) assertReferenceCount() {
-	newReferenceCount := _this.referenceCount + 1
-	if newReferenceCount > _this.opts.MaxReferenceCount {
-		panic(fmt.Errorf("Too many marked objects (%d). Max is %d", newReferenceCount, _this.opts.MaxReferenceCount))
-	}
+func (_this *Context) BeginMarkerKeyable(id []byte) {
+	_this.markerID = string(id)
+	_this.stackRule(&markedObjectKeyableRule, DataTypeKeyable)
 }
 
-func (_this *Context) BeginMarkerKeyable() {
-	_this.assertReferenceCount()
-	_this.stackRule(&markerIDKeyableRule, DataTypeKeyable)
+func (_this *Context) BeginMarkerAnyType(id []byte) {
+	_this.markerID = string(id)
+	_this.stackRule(&markedObjectAnyTypeRule, DataTypeNonKeyable)
 }
 
-func (_this *Context) BeginMarkerAnyType() {
-	_this.assertReferenceCount()
-	_this.stackRule(&markerIDAnyTypeRule, DataTypeAnyType)
+func (_this *Context) BeginRIDReference() {
+	_this.stackRule(&ridReferenceRule, DataTypeNonKeyable)
 }
 
-func (_this *Context) BeginMarkedObjectKeyable(id []byte) {
-	_this.currentMarkerID = string(id)
-	_this.changeRule(&markedObjectKeyableRule)
+func (_this *Context) ReferenceKeyable(identifier []byte) {
+	_this.ReferenceObject(identifier, AllowKeyable)
 }
 
-func (_this *Context) BeginMarkedObjectAnyType(id []byte) {
-	_this.currentMarkerID = string(id)
-	_this.changeRule(&markedObjectAnyTypeRule)
-}
-
-func (_this *Context) BeginReferenceKeyable() {
-	_this.stackRule(&referenceKeyableRule, DataTypeKeyable)
+func (_this *Context) ReferenceAnyType(identifier []byte) {
+	_this.ReferenceObject(identifier, AllowAnyType)
 }
 
 func (_this *Context) BeginPotentialRIDCat(arrayType events.ArrayType) {
 	if arrayType == events.ArrayTypeResourceIDConcat {
 		_this.stackRule(&ridCatRule, DataTypeKeyable)
 	}
-}
-
-func (_this *Context) BeginReferenceAnyType() {
-	_this.stackRule(&referenceAnyTypeRule, DataTypeAnyType)
 }
 
 func (_this *Context) BeginTopLevelReference() {
@@ -214,7 +201,7 @@ func (_this *Context) BeginConstantKeyable(name []byte, explicitValue bool) {
 
 func (_this *Context) BeginConstantAnyType(name []byte, explicitValue bool) {
 	if explicitValue {
-		_this.stackRule(&constantAnyTypeRule, DataTypeAnyType)
+		_this.stackRule(&constantAnyTypeRule, DataTypeNonKeyable)
 	} else if !_this.opts.AllowUndefinedConstants {
 		panic(fmt.Errorf("Undefined constants are not allowed"))
 	}
@@ -268,15 +255,21 @@ func (_this *Context) SwitchMarkupContents() {
 }
 
 func (_this *Context) MarkObject(dataType DataType) {
-	if _, exists := _this.markedObjects[_this.currentMarkerID]; exists {
-		panic(fmt.Errorf("Marker ID [%v] already exists", _this.currentMarkerID))
+	newReferenceCount := _this.referenceCount + 1
+	if newReferenceCount > _this.opts.MaxReferenceCount {
+		panic(fmt.Errorf("Too many marked objects (%d). Max is %d", newReferenceCount, _this.opts.MaxReferenceCount))
+	}
+
+	id := _this.markerID
+	if _, exists := _this.markedObjects[id]; exists {
+		panic(fmt.Errorf("Marker ID [%v] already exists", id))
 	}
 	_this.referenceCount++
-	_this.markedObjects[_this.currentMarkerID] = dataType
-	if allowedDataTypes, exists := _this.forwardReferences[_this.currentMarkerID]; exists {
-		delete(_this.forwardReferences, _this.currentMarkerID)
+	_this.markedObjects[id] = dataType
+	if allowedDataTypes, exists := _this.forwardReferences[id]; exists {
+		delete(_this.forwardReferences, id)
 		if allowedDataTypes&dataType == 0 {
-			panic(fmt.Errorf("Forward reference to marker ID [%v] cannot accept type %v", _this.currentMarkerID, dataType))
+			panic(fmt.Errorf("Forward reference to marker ID [%v] cannot accept type %v", id, dataType))
 		}
 	}
 }

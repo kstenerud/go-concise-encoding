@@ -109,6 +109,7 @@ const (
 	cbeTypeArrayFloat64 = cbeTypeFloat64
 	cbeTypeArrayUUID    = cbeTypeUUID
 	cbeTypeRIDCat       = cbeTypeRID
+	cbeTypeRIDReference = cbeTypeReference
 	cbeTypeNA           = cbeTypeNil
 
 	// Special code to mark EOF

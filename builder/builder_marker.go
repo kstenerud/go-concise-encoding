@@ -27,80 +27,19 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
-type referenceIDBuilder struct{}
-
-var globalReferenceIDBuilder = &referenceIDBuilder{}
-
-func newReferenceIDBuilder() *referenceIDBuilder { return globalReferenceIDBuilder }
-func (_this *referenceIDBuilder) String() string { return reflect.TypeOf(_this).String() }
-
-func (_this *referenceIDBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
-	if value < 0 {
-		PanicBadEvent(_this, "Negative Int")
-	}
-	ctx.StoreReferencedObject(value)
-	return reflect.ValueOf(value)
-}
-
-func (_this *referenceIDBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
-	ctx.StoreReferencedObject(value)
-	return reflect.ValueOf(value)
-}
-
-func (_this *referenceIDBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
-	if common.IsBigIntNegative(value) || !value.IsUint64() {
-		PanicBadEvent(_this, "BigInt")
-	}
-	ctx.StoreReferencedObject(value.Uint64())
-	return reflect.ValueOf(value)
-}
-
-// ============================================================================
-
-type markerIDBuilder struct{}
-
-var globalMarkerIDBuilder = &markerIDBuilder{}
-
-func newMarkerIDBuilder() *markerIDBuilder    { return globalMarkerIDBuilder }
-func (_this *markerIDBuilder) String() string { return reflect.TypeOf(_this).String() }
-
-func (_this *markerIDBuilder) BuildFromInt(ctx *Context, value int64, _ reflect.Value) reflect.Value {
-	if value < 0 {
-		PanicBadEvent(_this, "Negative Int")
-	}
-	ctx.BeginMarkerObject(value)
-	return reflect.ValueOf(value)
-}
-
-func (_this *markerIDBuilder) BuildFromUint(ctx *Context, value uint64, _ reflect.Value) reflect.Value {
-	ctx.BeginMarkerObject(value)
-	return reflect.ValueOf(value)
-}
-
-func (_this *markerIDBuilder) BuildFromBigInt(ctx *Context, value *big.Int, _ reflect.Value) reflect.Value {
-	if common.IsBigIntNegative(value) || !value.IsUint64() {
-		PanicBadEvent(_this, "BigInt")
-	}
-	ctx.BeginMarkerObject(value.Uint64())
-	return reflect.ValueOf(value)
-}
-
-// ============================================================================
-
 type markerObjectBuilder struct {
 	isContainer bool
-	id          interface{}
+	id          []byte
 	child       Builder
 }
 
-func newMarkerObjectBuilder(id interface{}, child Builder) *markerObjectBuilder {
+func newMarkerObjectBuilder(id []byte, child Builder) *markerObjectBuilder {
 	return &markerObjectBuilder{
 		id:    id,
 		child: child,

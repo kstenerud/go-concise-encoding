@@ -50,7 +50,7 @@ func (_this *Writer) WriteConcat() {
 }
 
 func (_this *Writer) WriteNA() {
-	_this.WriteString("@na")
+	_this.WriteString("@na:")
 }
 
 func (_this *Writer) WriteNil() {
@@ -392,12 +392,24 @@ func (_this *Writer) WriteHexBytes(value []byte) {
 	_this.FlushBuffer(length)
 }
 
-func (_this *Writer) WriteMarkerBegin(id interface{}) {
-	_this.WriteFmt("&%v:", id)
+func (_this *Writer) WriteMarkerBegin(id []byte) {
+	_this.WriteByte('&')
+	_this.WriteBytes(id)
+	_this.WriteByte(':')
 }
 
-func (_this *Writer) WriteReference(id interface{}) {
-	_this.WriteFmt("$%v", id)
+func (_this *Writer) WriteReferenceBegin() {
+	_this.WriteByte('$')
+}
+
+func (_this *Writer) WriteReference(id []byte) {
+	_this.WriteByte('$')
+	_this.WriteBytes(id)
+}
+
+func (_this *Writer) WriteConstant(id []byte) {
+	_this.WriteByte('#')
+	_this.WriteBytes(id)
 }
 
 func (_this *Writer) WriteSeparator() {
@@ -416,12 +428,25 @@ func (_this *Writer) WriteMapBegin() {
 	_this.WriteByte('{')
 }
 
+func (_this *Writer) WriteMapValueSeparator() {
+	_this.WriteBytes([]byte{' ', '=', ' '})
+}
+
 func (_this *Writer) WriteMapEnd() {
 	_this.WriteByte('}')
 }
 
-func (_this *Writer) WriteMarkupBegin() {
+func (_this *Writer) WriteMarkupBegin(id []byte) {
 	_this.WriteByte('<')
+	_this.WriteBytes(id)
+}
+
+func (_this *Writer) WriteMarkupKeySeparator() {
+	_this.WriteByte(' ')
+}
+
+func (_this *Writer) WriteMarkupValueSeparator() {
+	_this.WriteByte('=')
 }
 
 func (_this *Writer) WriteMarkupContentsBegin() {

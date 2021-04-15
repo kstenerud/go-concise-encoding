@@ -21,7 +21,6 @@
 package builder
 
 import (
-	"math/big"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -114,18 +113,5 @@ func (_this *ridCatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	default:
 		PanicBadEvent(_this, "BuildFromStringlikeArray(%v)", arrayType)
 	}
-	return dst
-}
-
-func (_this *ridCatBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	ctx.CompleteRIDCat(value)
-	return dst
-}
-func (_this *ridCatBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	ctx.CompleteRIDCat(value)
-	return dst
-}
-func (_this *ridCatBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	ctx.CompleteRIDCat(value)
 	return dst
 }

@@ -31,7 +31,6 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/codegen/builder"
 	"github.com/kstenerud/go-concise-encoding/codegen/chars"
-	"github.com/kstenerud/go-concise-encoding/codegen/cte"
 	"github.com/kstenerud/go-concise-encoding/codegen/rules"
 )
 
@@ -47,7 +46,6 @@ func main() {
 
 	builder.GenerateCode(projectPath)
 	rules.GenerateCode(projectPath)
-	cte.GenerateCode(projectPath)
 }
 
 func printHelp() {

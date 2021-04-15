@@ -311,7 +311,7 @@ func (_this *structBuilder) BuildBeginMapContents(ctx *Context) {
 	_this.reset()
 }
 
-func (_this *structBuilder) BuildFromReference(ctx *Context, id interface{}) {
+func (_this *structBuilder) BuildFromReference(ctx *Context, id []byte) {
 	nextValue := _this.nextValue
 	_this.swapKeyValue()
 	ctx.NotifyReference(id, func(object reflect.Value) {

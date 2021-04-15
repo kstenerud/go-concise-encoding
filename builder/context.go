@@ -33,8 +33,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type concatCompletion func(concat interface{})
-
 type Context struct {
 	Options         options.BuilderOptions
 	dstType         reflect.Type
@@ -97,22 +95,16 @@ func (_this *Context) IgnoreNext() {
 	_this.StackBuilder(globalIgnoreBuilder)
 }
 
-func (_this *Context) NotifyMarker(id interface{}, value reflect.Value) {
+func (_this *Context) NotifyMarker(id []byte, value reflect.Value) {
 	_this.referenceFiller.NotifyMarker(id, value)
 }
-func (_this *Context) NotifyReference(lookingForID interface{}, valueSetter func(value reflect.Value)) {
+func (_this *Context) NotifyReference(lookingForID []byte, valueSetter func(value reflect.Value)) {
 	_this.referenceFiller.NotifyReference(lookingForID, valueSetter)
 }
 
-func (_this *Context) BeginMarkerObject(id interface{}) {
-	_this.UnstackBuilder()
+func (_this *Context) BeginMarkerObject(id []byte) {
 	marker := newMarkerObjectBuilder(id, _this.CurrentBuilder)
 	_this.StackBuilder(marker)
-}
-
-func (_this *Context) StoreReferencedObject(id interface{}) {
-	_this.UnstackBuilder()
-	_this.CurrentBuilder.BuildFromReference(_this, id)
 }
 
 func (_this *Context) TryBuildFromCustom(builder Builder, arrayType events.ArrayType, value []byte, dst reflect.Value) bool {
@@ -158,7 +150,7 @@ func (_this *Context) BeginRIDCat(concatLeft string) {
 	_this.StackBuilder(globalRidCatBuilder)
 }
 
-func (_this *Context) CompleteRIDCat(concatRight interface{}) {
+func (_this *Context) CompleteRIDCat(concatRight string) {
 	value, err := url.Parse(fmt.Sprintf("%v%v", _this.concatLeft, concatRight))
 	if err != nil {
 		panic(err)

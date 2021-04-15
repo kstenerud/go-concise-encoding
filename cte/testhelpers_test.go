@@ -98,7 +98,6 @@ func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
 func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
-func ID(v string) *test.TEvent               { return test.ID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
@@ -140,11 +139,12 @@ func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
-func MUP() *test.TEvent                      { return test.MUP() }
+func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
-func MARK() *test.TEvent                     { return test.MARK() }
-func REF() *test.TEvent                      { return test.REF() }
+func MARK(id string) *test.TEvent            { return test.MARK(id) }
+func REF(id string) *test.TEvent             { return test.REF(id) }
+func RIDREF() *test.TEvent                   { return test.RIDREF() }
 func CONST(n string, e bool) *test.TEvent    { return test.CONST(n, e) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }

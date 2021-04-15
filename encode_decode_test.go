@@ -143,26 +143,20 @@ func TestEncodeDecodeAllValidMapValue(t *testing.T) {
 	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
 }
 
-func TestEncodeDecodeAllValidMarkupName(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP}
-	suffix := []*test.TEvent{test.EvE, test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMarkupNames))
-}
-
 func TestEncodeDecodeAllValidMarkupKey(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI}
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP}
 	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvE, test.EvED}
 	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
 }
 
 func TestEncodeDecodeAllValidMarkupValue(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI, test.EvPI}
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI}
 	suffix := []*test.TEvent{test.EvE, test.EvE, test.EvED}
 	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
 }
 
 func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI, test.EvE}
+	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvE}
 	suffix := []*test.TEvent{test.EvE, test.EvED}
 	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMarkupContents))
 }
@@ -176,25 +170,25 @@ func TestEncodeDecodeAllValidCommentContents(t *testing.T) {
 func TestDecodeEncodeMapReferences(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, nil, nil, `c0
 {
-    keys = [
-        &1:foo
-        &2:bar
+    "keys" = [
+        &1:"foo"
+        &2:"bar"
     ]
     $1 = 1
     $2 = 2
 }`,
 		[]byte{0x03, 0x00, 0x79, 0x84, 0x6b, 0x65, 0x79, 0x73, 0x7a, 0x97, 0x01,
-			0x83, 0x66, 0x6f, 0x6f, 0x97, 0x02, 0x83, 0x62, 0x61, 0x72, 0x7b,
-			0x98, 0x01, 0x01, 0x98, 0x02, 0x02, 0x7b},
+			0x31, 0x83, 0x66, 0x6f, 0x6f, 0x97, 0x01, 0x32, 0x83, 0x62, 0x61,
+			0x72, 0x7b, 0x98, 0x01, 0x31, 0x01, 0x98, 0x01, 0x32, 0x02, 0x7b},
 		BD(), EvV,
 		M(),
 		S("keys"),
 		L(),
-		MARK(), PI(1), S("foo"),
-		MARK(), PI(2), S("bar"),
+		MARK("1"), S("foo"),
+		MARK("2"), S("bar"),
 		E(),
-		REF(), PI(1), PI(1),
-		REF(), PI(2), PI(2),
+		REF("1"), PI(1),
+		REF("2"), PI(2),
 		E(),
 		ED())
 }

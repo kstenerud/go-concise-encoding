@@ -165,9 +165,6 @@ func (_this *BuilderEventReceiver) OnTime(value time.Time) {
 func (_this *BuilderEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
-func (_this *BuilderEventReceiver) OnIdentifier(value []byte) {
-	panic("TODO: BuilderEventReceiver.OnIdentifier")
-}
 func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	if arrayType == events.ArrayTypeResourceIDConcat {
 		_this.context.BeginRIDCat(string(value))
@@ -200,7 +197,7 @@ func (_this *BuilderEventReceiver) OnList() {
 func (_this *BuilderEventReceiver) OnMap() {
 	_this.context.CurrentBuilder.BuildInitiateMap(&_this.context)
 }
-func (_this *BuilderEventReceiver) OnMarkup() {
+func (_this *BuilderEventReceiver) OnMarkup(id []byte) {
 	panic("TODO: BuilderEventReceiver.OnMarkup")
 }
 func (_this *BuilderEventReceiver) OnComment() {
@@ -209,11 +206,14 @@ func (_this *BuilderEventReceiver) OnComment() {
 func (_this *BuilderEventReceiver) OnEnd() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
 }
-func (_this *BuilderEventReceiver) OnMarker() {
-	_this.context.StackBuilder(newMarkerIDBuilder())
+func (_this *BuilderEventReceiver) OnMarker(id []byte) {
+	_this.context.BeginMarkerObject(id)
 }
-func (_this *BuilderEventReceiver) OnReference() {
-	_this.context.StackBuilder(newReferenceIDBuilder())
+func (_this *BuilderEventReceiver) OnReference(id []byte) {
+	_this.context.CurrentBuilder.BuildFromReference(&_this.context, id)
+}
+func (_this *BuilderEventReceiver) OnRIDReference() {
+	panic("TODO: BuilderEventReceiver.OnRIDReference")
 }
 func (_this *BuilderEventReceiver) OnConstant(name []byte, explicitValue bool) {
 	if !explicitValue {

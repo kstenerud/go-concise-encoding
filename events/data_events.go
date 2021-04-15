@@ -118,6 +118,10 @@ var arrayTypeElementSizes = [...]int{
 // actions based on those events. Generally, this is used to drive complex
 // object builders, and also the encoders.
 //
+// WARNING: Do not directly store slice data! The underlying contents should be
+// considered volatile and likely to change after the method returns (the
+// decoders re-use memory).
+//
 // IMPORTANT: DataEventReceiver's methods signal errors via panics, not
 // returned errors.
 // You must use recover() in code that calls DataEventReceiver methods. The
@@ -145,23 +149,19 @@ type DataEventReceiver interface {
 	OnBigFloat(value *big.Float)
 	OnDecimalFloat(value compact_float.DFloat)
 	OnBigDecimalFloat(value *apd.Decimal)
+	OnUUID(value []byte)
 	OnNan(signaling bool)
 	OnTime(value time.Time)
 	OnCompactTime(value compact_time.Time)
 	OnList()
 	OnMap()
-	OnMarkup()
+	OnMarkup(identifier []byte)
 	OnComment()
 	OnEnd()
-	OnMarker()
-	OnReference()
-	OnConstant(name []byte, explicitValue bool)
-
-	// WARNING: Do not directly store pointers to the data passed via array or
-	// UUID handlers! The underlying contents should be considered volatile and
-	// likely to change after the method returns (the decoders re-use memory).
-	OnUUID(value []byte)
-	OnIdentifier(value []byte)
+	OnMarker(identifier []byte)
+	OnReference(identifier []byte)
+	OnRIDReference()
+	OnConstant(identifier []byte, explicitValue bool)
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
 	OnArrayBegin(arrayType ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
@@ -205,10 +205,11 @@ func (_this *NullEventReceiver) OnArrayChunk(uint64, bool)           {}
 func (_this *NullEventReceiver) OnArrayData([]byte)                  {}
 func (_this *NullEventReceiver) OnList()                             {}
 func (_this *NullEventReceiver) OnMap()                              {}
-func (_this *NullEventReceiver) OnMarkup()                           {}
+func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
 func (_this *NullEventReceiver) OnComment()                          {}
 func (_this *NullEventReceiver) OnEnd()                              {}
-func (_this *NullEventReceiver) OnMarker()                           {}
-func (_this *NullEventReceiver) OnReference()                        {}
+func (_this *NullEventReceiver) OnMarker([]byte)                     {}
+func (_this *NullEventReceiver) OnReference([]byte)                  {}
+func (_this *NullEventReceiver) OnRIDReference()                     {}
 func (_this *NullEventReceiver) OnConstant(_ []byte, _ bool)         {}
 func (_this *NullEventReceiver) OnEndDocument()                      {}

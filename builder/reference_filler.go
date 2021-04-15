@@ -29,8 +29,8 @@ import (
 // ReferenceFiller tracks markers and references encountered in a document,
 // filling out references when their corresponding markers are found.
 type ReferenceFiller struct {
-	markedValues         map[interface{}]reflect.Value
-	unresolvedReferences map[interface{}][]func(reflect.Value)
+	markedValues         map[string]reflect.Value
+	unresolvedReferences map[string][]func(reflect.Value)
 }
 
 // Create and initialize a new ReferenceFiller
@@ -42,28 +42,30 @@ func NewReferenceFiller() *ReferenceFiller {
 
 // Initialize an existing ReferenceFiller
 func (_this *ReferenceFiller) Init() {
-	_this.markedValues = make(map[interface{}]reflect.Value)
-	_this.unresolvedReferences = make(map[interface{}][]func(reflect.Value))
+	_this.markedValues = make(map[string]reflect.Value)
+	_this.unresolvedReferences = make(map[string][]func(reflect.Value))
 }
 
 // Notify that a new marker has been found.
-func (_this *ReferenceFiller) NotifyMarker(id interface{}, value reflect.Value) {
-	_this.markedValues[id] = value
-	if setters, ok := _this.unresolvedReferences[id]; ok {
+func (_this *ReferenceFiller) NotifyMarker(id []byte, value reflect.Value) {
+	idAsString := string(id)
+	_this.markedValues[idAsString] = value
+	if setters, ok := _this.unresolvedReferences[idAsString]; ok {
 		for _, setter := range setters {
 			setter(value)
 		}
-		delete(_this.unresolvedReferences, id)
+		delete(_this.unresolvedReferences, idAsString)
 	}
 }
 
 // Notify that a new reference has been found. valueSetter will be called when
 // the marker with lookingForID is found (possibly immediately if it already has
 // been found).
-func (_this *ReferenceFiller) NotifyReference(lookingForID interface{}, valueSetter func(value reflect.Value)) {
-	if value, ok := _this.markedValues[lookingForID]; ok {
+func (_this *ReferenceFiller) NotifyReference(lookingForID []byte, valueSetter func(value reflect.Value)) {
+	idAsString := string(lookingForID)
+	if value, ok := _this.markedValues[idAsString]; ok {
 		valueSetter(value)
 		return
 	}
-	_this.unresolvedReferences[lookingForID] = append(_this.unresolvedReferences[lookingForID], valueSetter)
+	_this.unresolvedReferences[idAsString] = append(_this.unresolvedReferences[idAsString], valueSetter)
 }

@@ -40,15 +40,6 @@ func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
-type decodeIdentifier struct{}
-
-var global_decodeIdentifier decodeIdentifier
-
-func (_this decodeIdentifier) Run(ctx *DecoderContext) {
-	bytes := ctx.Stream.ReadIdentifier()
-	ctx.EventReceiver.OnIdentifier(bytes)
-}
-
 func decodeArrayType(ctx *DecoderContext) string {
 	ctx.Stream.TokenBegin()
 	ctx.Stream.TokenReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
@@ -180,9 +171,12 @@ func decodeCustomText(ctx *DecoderContext) {
 func decodeRID(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadStringArray()
 	if ctx.Stream.PeekByteAllowEOD() == ':' {
-		ctx.Stream.AdvanceByte()
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
-		global_decodeByFirstChar.Run(ctx)
+		ctx.Stream.AdvanceByte()
+		if ctx.Stream.PeekByteNoEOD() != '"' {
+			ctx.Stream.Errorf("Only strings may be appended to a resource ID")
+		}
+		global_advanceAndDecodeQuotedString.Run(ctx)
 		return
 	}
 	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)

@@ -156,11 +156,11 @@ func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id interface{}) {
+func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id []byte) {
 	panic("TODO: interfaceBuilder.BuildBeginMarker")
 }
 
-func (_this *interfaceBuilder) BuildFromReference(ctx *Context, id interface{}) {
+func (_this *interfaceBuilder) BuildFromReference(ctx *Context, id []byte) {
 	panic("TODO: interfaceBuilder.BuildFromReference")
 }
 
