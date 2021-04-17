@@ -69,7 +69,7 @@ func MarshalCBE(object interface{}, writer io.Writer, opts *options.CBEMarshaler
 
 // Marshal a go object into a CBE document, returned as a byte slice.
 // If opts is nil, default options will be used.
-func MarshalCBEToDocument(object interface{}, opts *options.CBEMarshalerOptions) (document []byte, err error) {
+func MarshalToCBEDocument(object interface{}, opts *options.CBEMarshalerOptions) (document []byte, err error) {
 	return NewCBEMarshaler(opts).MarshalToDocument(object)
 }
 
@@ -83,7 +83,7 @@ func UnmarshalCBE(reader io.Reader, template interface{}, opts *options.CBEUnmar
 // Unmarshal a CBE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 // If opts is nil, default options will be used.
-func UnmarshalCBEFromDocument(document []byte, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
+func UnmarshalFromCBEDocument(document []byte, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).UnmarshalFromDocument(document, template)
 }
 
@@ -98,7 +98,7 @@ func MarshalCTE(object interface{}, writer io.Writer, opts *options.CTEMarshaler
 
 // Marshal a go object into a CTE document, returned as a byte slice.
 // If opts is nil, default options will be used.
-func MarshalCTEToDocument(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
+func MarshalToCTEDocument(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
 	return NewCTEMarshaler(opts).MarshalToDocument(object)
 
 }
@@ -113,7 +113,7 @@ func UnmarshalCTE(reader io.Reader, template interface{}, opts *options.CTEUnmar
 // Unmarshal a CTE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 // If opts is nil, default options will be used.
-func UnmarshalCTEFromDocument(document []byte, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
+func UnmarshalFromCTEDocument(document []byte, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).UnmarshalFromDocument(document, template)
 }
 

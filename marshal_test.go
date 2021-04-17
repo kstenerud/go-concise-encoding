@@ -48,7 +48,7 @@ type SomeStruct struct {
 func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	document := `c0 {"my-value" = &1:{"a"=100 "b"="test" "c"=$1}}`
 	template := map[string]*SomeStruct{}
-	result, err := ce.UnmarshalCTEFromDocument([]byte(document), template, nil)
+	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -58,14 +58,14 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
 	// Prints: A: 100, B: test, Ptr to C: 0xc0001f4600, ptr to s: 0xc0001f4600
 
-	encodedDocument, err := ce.MarshalCTEToDocument(v, nil)
+	encodedDocument, err := ce.MarshalToCTEDocument(v, nil)
 	if err != nil {
 		t.Error(err)
 	}
 	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
 	// Prints: Re-encoded CTE: c0 {my-value=&0:{A=100 B=test C=$0}}
 
-	encodedDocument, err = ce.MarshalCBEToDocument(v, nil)
+	encodedDocument, err = ce.MarshalToCBEDocument(v, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -77,7 +77,7 @@ func TestEmptyListWithIndents(t *testing.T) {
 	v := []interface{}{}
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Encoder.Indent = "    "
-	encodedDocument, err := ce.MarshalCTEToDocument(v, opts)
+	encodedDocument, err := ce.MarshalToCTEDocument(v, opts)
 	if err != nil {
 		t.Error(err)
 	}
