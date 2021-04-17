@@ -29,8 +29,7 @@ import (
 
 func getEscapeCount(str []byte) (escapeCount int) {
 	for _, ch := range string(str) {
-		props := chars.GetRuneProperty(ch)
-		if props.HasProperty(chars.CharNeedsEscapeQuoted) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyString) {
 			escapeCount++
 		}
 	}
@@ -39,7 +38,7 @@ func getEscapeCount(str []byte) (escapeCount int) {
 
 func needsEscapesStringlikeArray(str []byte) bool {
 	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
 			return true
 		}
 	}
@@ -48,7 +47,7 @@ func needsEscapesStringlikeArray(str []byte) bool {
 
 func needsEscapesMarkup(str []byte) bool {
 	for _, ch := range string(str) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
 			return true
 		}
 	}

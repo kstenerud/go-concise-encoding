@@ -156,7 +156,7 @@ func (_this *Reader) AdvanceByte() {
 	_this.ReadByteNoEOD()
 }
 
-func (_this *Reader) SkipWhileProperty(property chars.CharProperty) {
+func (_this *Reader) SkipWhileProperty(property chars.Properties) {
 	for _this.ReadByteAllowEOD().HasProperty(property) {
 	}
 	_this.UnreadByte()
@@ -239,7 +239,7 @@ func (_this *Reader) TokenReadUntilAndIncludingByte(untilByte byte) {
 	}
 }
 
-func (_this *Reader) TokenReadUntilPropertyNoEOD(property chars.CharProperty) {
+func (_this *Reader) TokenReadUntilPropertyNoEOD(property chars.Properties) {
 	for {
 		b := _this.ReadByteNoEOD()
 		if chars.ByteHasProperty(b, property) {
@@ -250,7 +250,7 @@ func (_this *Reader) TokenReadUntilPropertyNoEOD(property chars.CharProperty) {
 	}
 }
 
-func (_this *Reader) TokenReadUntilPropertyAllowEOD(property chars.CharProperty) {
+func (_this *Reader) TokenReadUntilPropertyAllowEOD(property chars.Properties) {
 	for {
 		b := _this.ReadByteAllowEOD()
 		if b.HasProperty(property) {
@@ -261,7 +261,7 @@ func (_this *Reader) TokenReadUntilPropertyAllowEOD(property chars.CharProperty)
 	}
 }
 
-func (_this *Reader) TokenReadWhilePropertyNoEOD(property chars.CharProperty) {
+func (_this *Reader) TokenReadWhilePropertyNoEOD(property chars.Properties) {
 	for {
 		b := _this.ReadByteNoEOD()
 		if !chars.ByteHasProperty(b, property) {
@@ -272,7 +272,7 @@ func (_this *Reader) TokenReadWhilePropertyNoEOD(property chars.CharProperty) {
 	}
 }
 
-func (_this *Reader) TokenReadWhilePropertyAllowEOD(property chars.CharProperty) {
+func (_this *Reader) TokenReadWhilePropertyAllowEOD(property chars.Properties) {
 	for {
 		b := _this.ReadByteAllowEOD()
 		if !b.HasProperty(property) {
@@ -310,7 +310,7 @@ func (_this *Reader) TokenReadUntilOneOfBytesNoEOD(untilBytes ...byte) {
 // Errors
 
 func (_this *Reader) AssertAtObjectEnd(decoding string) {
-	if !_this.PeekByteAllowEOD().HasProperty(chars.CharIsObjectEnd) {
+	if !_this.PeekByteAllowEOD().HasProperty(chars.ObjectEnd) {
 		_this.UnexpectedChar(decoding)
 	}
 }
@@ -349,12 +349,12 @@ func (_this *Reader) DescribeCurrentChar() string {
 // Decoders
 
 func (_this *Reader) SkipWhitespace() {
-	_this.SkipWhileProperty(chars.CharIsWhitespace)
+	_this.SkipWhileProperty(chars.StructWS)
 }
 
 func (_this *Reader) ReadToken() []byte {
 	_this.TokenBegin()
-	_this.TokenReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
+	_this.TokenReadUntilPropertyAllowEOD(chars.ObjectEnd)
 	return _this.TokenGet()
 }
 
@@ -389,7 +389,7 @@ func (_this *Reader) ReadBinaryUint() (value uint64, bigValue *big.Int, digitCou
 		switch {
 		case b == charNumericWhitespace:
 			continue
-		case b.HasProperty(chars.CharIsDigitBase2):
+		case b.HasProperty(chars.DigitBase2):
 			// Nothing to do
 		default:
 			_this.UnreadByte()
@@ -415,7 +415,7 @@ func (_this *Reader) ReadBinaryUint() (value uint64, bigValue *big.Int, digitCou
 		switch {
 		case b == charNumericWhitespace:
 			continue
-		case b.HasProperty(chars.CharIsDigitBase2):
+		case b.HasProperty(chars.DigitBase2):
 			// Nothing to do
 		default:
 			_this.UnreadByte()
@@ -462,7 +462,7 @@ func (_this *Reader) ReadOctalUint() (value uint64, bigValue *big.Int, digitCoun
 		switch {
 		case b == charNumericWhitespace:
 			continue
-		case b.HasProperty(chars.CharIsDigitBase8):
+		case b.HasProperty(chars.DigitBase8):
 			// Nothing to do
 		default:
 			_this.UnreadByte()
@@ -488,7 +488,7 @@ func (_this *Reader) ReadOctalUint() (value uint64, bigValue *big.Int, digitCoun
 		switch {
 		case b == charNumericWhitespace:
 			continue
-		case b.HasProperty(chars.CharIsDigitBase8):
+		case b.HasProperty(chars.DigitBase8):
 			// Nothing to do
 		default:
 			_this.UnreadByte()
@@ -517,7 +517,7 @@ func (_this *Reader) ReadDecimalUint(startValue uint64, bigStartValue *big.Int) 
 			switch {
 			case b == charNumericWhitespace:
 				continue
-			case b.HasProperty(chars.CharIsDigitBase10):
+			case b.HasProperty(chars.DigitBase10):
 				// Nothing to do
 			default:
 				_this.UnreadByte()
@@ -545,7 +545,7 @@ func (_this *Reader) ReadDecimalUint(startValue uint64, bigStartValue *big.Int) 
 		switch {
 		case b == charNumericWhitespace:
 			continue
-		case b.HasProperty(chars.CharIsDigitBase10):
+		case b.HasProperty(chars.DigitBase10):
 			// Nothing to do
 		default:
 			_this.UnreadByte()
@@ -595,11 +595,11 @@ func (_this *Reader) ReadHexUint(startValue uint64, bigStartValue *big.Int) (val
 			switch {
 			case b == charNumericWhitespace:
 				continue
-			case b.HasProperty(chars.CharIsDigitBase10):
+			case b.HasProperty(chars.DigitBase10):
 				nextNybble = b - '0'
-			case b.HasProperty(chars.CharIsLowerAF):
+			case b.HasProperty(chars.LowerAF):
 				nextNybble = b - 'a' + 10
-			case b.HasProperty(chars.CharIsUpperAF):
+			case b.HasProperty(chars.UpperAF):
 				nextNybble = b - 'A' + 10
 			default:
 				_this.UnreadByte()
@@ -627,11 +627,11 @@ func (_this *Reader) ReadHexUint(startValue uint64, bigStartValue *big.Int) (val
 		switch {
 		case b == charNumericWhitespace:
 			continue
-		case b.HasProperty(chars.CharIsDigitBase10):
+		case b.HasProperty(chars.DigitBase10):
 			nextNybble = b - '0'
-		case b.HasProperty(chars.CharIsLowerAF):
+		case b.HasProperty(chars.LowerAF):
 			nextNybble = b - 'a' + 10
-		case b.HasProperty(chars.CharIsUpperAF):
+		case b.HasProperty(chars.UpperAF):
 			nextNybble = b - 'A' + 10
 		default:
 			_this.UnreadByte()
@@ -824,7 +824,7 @@ func (_this *Reader) ReadSmallHexFloat() (value float64, digitCount int) {
 	if b == '-' {
 		sign = -sign
 		_this.AdvanceByte()
-	} else if !b.HasProperty(chars.CharIsDigitBase10 | chars.CharIsLowerAF | chars.CharIsUpperAF) {
+	} else if !b.HasProperty(chars.DigitBase10 | chars.LowerAF | chars.UpperAF) {
 		return
 	}
 
@@ -850,7 +850,7 @@ func (_this *Reader) ReadSmallHexFloat() (value float64, digitCount int) {
 			_this.Errorf("Value too big for element")
 		}
 		return f, digitCount
-	case b.HasProperty(chars.CharIsObjectEnd):
+	case b.HasProperty(chars.ObjectEnd):
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
 		_this.UnexpectedChar("hex float")
@@ -863,7 +863,7 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 	b := _this.ReadByteAllowEOD()
 	if b == '-' {
 		sign = -sign
-	} else if !b.HasProperty(chars.CharIsDigitBase10) {
+	} else if !b.HasProperty(chars.DigitBase10) {
 		_this.UnreadByte()
 		return
 	} else {
@@ -891,7 +891,7 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 					_this.Errorf("Value too big for element")
 				}
 				return f, digitCount
-			case b.HasProperty(chars.CharIsWhitespace):
+			case b.HasProperty(chars.StructWS):
 				_this.UnreadByte()
 				return float64(u) * float64(sign), coefficientDigitCount
 			default:
@@ -929,7 +929,7 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 		}
 
 		return f.Float(), digitCount
-	case b.HasProperty(chars.CharIsWhitespace):
+	case b.HasProperty(chars.StructWS):
 		_this.UnreadByte()
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
@@ -941,7 +941,7 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 
 func (_this *Reader) ReadNamedValue() []byte {
 	_this.TokenBegin()
-	_this.TokenReadUntilPropertyAllowEOD(chars.CharIsObjectEnd)
+	_this.TokenReadUntilPropertyAllowEOD(chars.ObjectEnd)
 	namedValue := _this.TokenGet()
 	if len(namedValue) == 0 {
 		_this.UnexpectedChar("name")
@@ -954,7 +954,7 @@ func (_this *Reader) TokenReadVerbatimSequence() {
 	_this.verbatimSentinel = _this.verbatimSentinel[:0]
 	for {
 		b := _this.ReadByteNoEOD()
-		if chars.ByteHasProperty(b, chars.CharIsWhitespace) {
+		if chars.ByteHasProperty(b, chars.StructWS) {
 			if b == '\r' {
 				if _this.ReadByteNoEOD() != '\n' {
 					_this.UnexpectedChar("verbatim sentinel")
@@ -1009,11 +1009,11 @@ func (_this *Reader) TokenReadEscape() {
 		for i := 0; i < length; i++ {
 			b := _this.ReadByteNoEOD()
 			switch {
-			case chars.ByteHasProperty(b, chars.CharIsDigitBase10):
+			case chars.ByteHasProperty(b, chars.DigitBase10):
 				codepoint = (codepoint << 4) | (rune(b) - '0')
-			case chars.ByteHasProperty(b, chars.CharIsLowerAF):
+			case chars.ByteHasProperty(b, chars.LowerAF):
 				codepoint = (codepoint << 4) | (rune(b) - 'a' + 10)
-			case chars.ByteHasProperty(b, chars.CharIsUpperAF):
+			case chars.ByteHasProperty(b, chars.UpperAF):
 				codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
 			default:
 				_this.UnexpectedChar("unicode escape")
@@ -1045,7 +1045,7 @@ func (_this *Reader) ReadQuotedString() []byte {
 
 func (_this *Reader) ReadIdentifier() []byte {
 	_this.TokenBegin()
-	_this.TokenReadUntilPropertyAllowEOD(chars.CharNeedsQuote)
+	_this.TokenReadUntilPropertyAllowEOD(chars.ObjectEnd)
 	return _this.TokenGet()
 }
 
@@ -1172,7 +1172,7 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 
 	if b == '/' {
 		next := _this.PeekByteNoEOD()
-		if chars.ByteHasProperty(next, chars.CharIsDigitBase10) || next == '-' {
+		if chars.ByteHasProperty(next, chars.DigitBase10) || next == '-' {
 			lat, long := _this.ReadLatLong()
 			t, err := compact_time.NewTimeLatLong(hour, int(minute), int(second), nanosecond, lat, long)
 			if err != nil {
@@ -1182,7 +1182,7 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 		}
 
 		_this.TokenBegin()
-		_this.TokenReadWhilePropertyAllowEOD(chars.CharIsAreaLocation)
+		_this.TokenReadWhilePropertyAllowEOD(chars.AreaLocation)
 		areaLocation := string(_this.TokenGet())
 		t, err := compact_time.NewTime(hour, int(minute), int(second), nanosecond, areaLocation)
 		if err != nil {
@@ -1191,7 +1191,7 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 		return t
 	}
 
-	if b.HasProperty(chars.CharIsObjectEnd) {
+	if b.HasProperty(chars.ObjectEnd) {
 		_this.UnreadByte()
 		t, err := compact_time.NewTime(hour, int(minute), int(second), nanosecond, "")
 		if err != nil {
@@ -1254,21 +1254,21 @@ func (_this *Reader) ReadLatLong() (latitudeHundredths, longitudeHundredths int)
 }
 
 func trimWhitespace(str []byte) []byte {
-	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.CharIsWhitespace) {
+	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.StructWS) {
 		str = str[1:]
 	}
-	for len(str) > 0 && chars.ByteHasProperty(str[len(str)-1], chars.CharIsWhitespace) {
+	for len(str) > 0 && chars.ByteHasProperty(str[len(str)-1], chars.StructWS) {
 		str = str[:len(str)-1]
 	}
 	return str
 }
 
 func trimWhitespaceMarkupContent(str []byte) []byte {
-	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.CharIsWhitespace) {
+	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.StructWS) {
 		str = str[1:]
 	}
 	hasTrailingWS := false
-	for len(str) > 0 && chars.ByteHasProperty(str[len(str)-1], chars.CharIsWhitespace) {
+	for len(str) > 0 && chars.ByteHasProperty(str[len(str)-1], chars.StructWS) {
 		str = str[:len(str)-1]
 		hasTrailingWS = true
 	}
@@ -1351,11 +1351,11 @@ func (_this *Reader) ExtractUUID(data []byte) []byte {
 
 	decodeHex := func(b byte) byte {
 		switch {
-		case chars.ByteHasProperty(b, chars.CharIsDigitBase10):
+		case chars.ByteHasProperty(b, chars.DigitBase10):
 			return byte(b - '0')
-		case chars.ByteHasProperty(b, chars.CharIsLowerAF):
+		case chars.ByteHasProperty(b, chars.LowerAF):
 			return byte(b - 'a' + 10)
-		case chars.ByteHasProperty(b, chars.CharIsUpperAF):
+		case chars.ByteHasProperty(b, chars.UpperAF):
 			return byte(b - 'A' + 10)
 		default:
 			_this.Errorf("Unexpected char [%c] in UUID [%s]", b, string(data))

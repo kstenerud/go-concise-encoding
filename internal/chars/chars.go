@@ -48,48 +48,70 @@ func IndexOfLastRuneStart(data []byte) (index int, isCompleteRune bool) {
 	return
 }
 
-func (_this CharProperty) HasProperty(property CharProperty) bool {
+func (_this Properties) HasProperty(property Properties) bool {
 	return _this&property != 0
 }
 
-func StringRunesHaveProperty(str string, property CharProperty) bool {
-	for _, ch := range str {
-		if charProperties[ch].HasProperty(property) {
-			return true
-		}
+// func StringRunesHaveProperty(str string, property Properties) bool {
+// 	for _, ch := range str {
+// 		if charProperties[ch].HasProperty(property) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
+
+// func StringBytesHaveProperty(str []byte, property Properties) bool {
+// 	for _, ch := range str {
+// 		if asciiProperties[ch].HasProperty(property) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
+
+// func GetRuneProperty(r rune) Properties {
+// 	return charProperties[r]
+// }
+
+// func RuneHasProperty(r rune, property CharProperty) bool {
+// 	return charProperties[r].HasProperty(property)
+// }
+
+func IsRuneSafeFor(r rune, flags SafetyFlags) bool {
+	if getBitArrayValue(stringlikeSafe[:], int(r)) {
+		return true
 	}
-	return false
-}
-
-func StringBytesHaveProperty(str []byte, property CharProperty) bool {
-	for _, ch := range str {
-		if asciiProperties[ch].HasProperty(property) {
-			return true
-		}
+	unsafety := stringlikeUnsafe[r]
+	if unsafety == 0 {
+		// unsafety 0 actually means "all". when the corresponding stringlikeSafe
+		// entry indicates "unsafe". This keeps the stringlikeUnsafe map small.
+		unsafety = SafetyAll
 	}
-	return false
+	return unsafety&flags == 0
 }
 
-func GetRuneProperty(r rune) CharProperty {
-	return charProperties[r]
-}
-
-func RuneHasProperty(r rune, property CharProperty) bool {
-	return charProperties[r].HasProperty(property)
-}
-
-func ByteHasProperty(b byte, property CharProperty) bool {
-	return asciiProperties[b].HasProperty(property)
+func ByteHasProperty(b byte, property Properties) bool {
+	return properties[b].HasProperty(property)
 }
 
 type Byte uint8
 
-func (_this Byte) HasProperty(property CharProperty) bool {
-	return asciiProperties[_this].HasProperty(property)
+func (_this Byte) HasProperty(property Properties) bool {
+	return properties[_this].HasProperty(property)
 }
 
 type ByteWithEOF uint16
 
-func (_this ByteWithEOF) HasProperty(property CharProperty) bool {
-	return asciiProperties[_this].HasProperty(property)
+func (_this ByteWithEOF) HasProperty(property Properties) bool {
+	return properties[_this].HasProperty(property)
+}
+
+func IsRuneValidIdentifier(r rune) bool {
+	return getBitArrayValue(identifierSafe[:], int(r))
+}
+
+func getBitArrayValue(array []byte, index int) bool {
+	bits := array[index>>3]
+	return bits&(1<<(index&7)) != 0
 }

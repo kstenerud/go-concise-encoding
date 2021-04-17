@@ -24,11 +24,23 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
+
+const path = "builder"
+
+var imports = []string{
+	"fmt",
+	"math/big",
+	"reflect",
+	"time",
+	"github.com/kstenerud/go-concise-encoding/events",
+	"github.com/cockroachdb/apd/v2",
+	"github.com/kstenerud/go-compact-float",
+	"github.com/kstenerud/go-compact-time",
+}
 
 var (
 	Nil            = "BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value"
@@ -259,36 +271,19 @@ var builders = []Builder{
 }
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := filepath.Join(projectDir, "builder/generated-do-not-edit.go")
+	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
 	writer, err := os.Create(generatedFilePath)
-	if err != nil {
-		panic(fmt.Errorf("could not open %s: %v", generatedFilePath, err))
-	}
+	standard.PanicIfError(err, "could not open %s", generatedFilePath)
 	defer writer.Close()
+	defer func() {
+		if e := recover(); e != nil {
+			panic(fmt.Errorf("Error while generating %v: %v", generatedFilePath, e))
+		}
+	}()
 
-	_, err = writer.WriteString(codeHeader)
-	if err != nil {
-		panic(fmt.Errorf("could not write to %s: %v", generatedFilePath, err))
-	}
-
+	standard.WriteHeader(writer, path, imports)
 	generateBadEventMethods(writer)
 }
-
-var codeHeader = standard.Header + `package builder
-
-import (
-	"fmt"
-	"math/big"
-	"reflect"
-	"time"
-
-	"github.com/kstenerud/go-concise-encoding/events"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
-)
-`
 
 func contains(lookingFor string, inSlice []string) bool {
 	for _, v := range inSlice {

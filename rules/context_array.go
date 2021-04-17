@@ -433,7 +433,7 @@ func (_this *Context) ValidateContentsMarkerIDString(contents string) {
 	runeCount := 0
 	for _, ch := range contents {
 		runeCount++
-		if chars.RuneHasProperty(ch, chars.CharNeedsQuote) {
+		if chars.IsRuneValidIdentifier(ch) {
 			panic(fmt.Errorf("ID [%s] contains an invalid character", contents))
 		}
 	}

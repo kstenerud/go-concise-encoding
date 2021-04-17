@@ -88,7 +88,7 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 	}
 
 	b := ctx.Stream.PeekByteNoEOD()
-	if !chars.ByteHasProperty(b, chars.CharIsWhitespace) {
+	if !chars.ByteHasProperty(b, chars.StructWS) {
 		ctx.Stream.UnexpectedChar("whitespace after version")
 	}
 	global_decodeWhitespace.Run(ctx)
@@ -144,7 +144,7 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 		}
 		return
 	default:
-		if b.HasProperty(chars.CharIsObjectEnd) {
+		if b.HasProperty(chars.ObjectEnd) {
 			ctx.Stream.UnreadByte()
 			if bigCoefficient != nil {
 				ctx.EventReceiver.OnBigInt(bigCoefficient)
@@ -196,7 +196,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 		}
 		return
 	default:
-		if b.HasProperty(chars.CharIsObjectEnd) {
+		if b.HasProperty(chars.ObjectEnd) {
 			ctx.Stream.UnreadByte()
 			if bigCoefficient != nil {
 				// TODO: More efficient way to negate?
@@ -219,7 +219,7 @@ func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '0'
 
 	b := ctx.Stream.ReadByteAllowEOD()
-	if b.HasProperty(chars.CharIsObjectEnd) {
+	if b.HasProperty(chars.ObjectEnd) {
 		ctx.Stream.UnreadByte()
 		ctx.EventReceiver.OnPositiveInt(0)
 		return
@@ -270,7 +270,7 @@ func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
 			ctx.EventReceiver.OnDecimalFloat(value)
 		}
 	default:
-		if b.HasProperty(chars.CharIsDigitBase10) && ctx.Stream.PeekByteNoEOD() == ':' {
+		if b.HasProperty(chars.DigitBase10) && ctx.Stream.PeekByteNoEOD() == ':' {
 			ctx.Stream.AdvanceByte()
 			v := ctx.Stream.ReadTime(int(b - '0'))
 			ctx.Stream.AssertAtObjectEnd("time")
@@ -298,7 +298,7 @@ var global_decodeOtherBaseNegative decodeOtherBaseNegative
 func (_this decodeOtherBaseNegative) Run(ctx *DecoderContext) {
 
 	b := ctx.Stream.PeekByteAllowEOD()
-	if b.HasProperty(chars.CharIsObjectEnd) {
+	if b.HasProperty(chars.ObjectEnd) {
 		// -0 has no decimal point (thus type int), so report it as positive 0.
 		ctx.EventReceiver.OnPositiveInt(0)
 		return

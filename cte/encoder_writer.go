@@ -316,7 +316,7 @@ func (_this *Writer) WriteEscapedQuotedStringBytes(value []byte, escapeCount int
 
 	_this.WriteByte('"')
 	for _, ch := range string(value) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeQuoted) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyString) {
 			// TODO: render escapes into buffer to avoid allocs
 			_this.WriteBytes(escapeCharQuoted(ch))
 		} else {
@@ -340,7 +340,7 @@ func (_this *Writer) WritePotentiallyEscapedStringArrayContents(value []byte) {
 	var bb bytes.Buffer
 	bb.Grow(len(value))
 	for _, ch := range string(value) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeArray) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
 			// Note: StringBuilder's WriteXYZ() always return nil errors
 			bb.Write(escapeCharStringArray(ch))
 		} else {
@@ -366,7 +366,7 @@ func (_this *Writer) WritePotentiallyEscapedMarkupContents(value []byte) {
 	bb.Grow(len(value))
 	// Note: StringBuilder's WriteXYZ() always return nil errors
 	for _, ch := range string(value) {
-		if chars.RuneHasProperty(ch, chars.CharNeedsEscapeMarkup) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
 			bb.Write(escapeCharMarkup(ch))
 		} else {
 			bb.WriteRune(ch)

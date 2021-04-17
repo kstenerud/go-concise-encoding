@@ -493,7 +493,7 @@ func TestCTEQuotedString(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 "test\11string"`, BD(), EvV, S("test\u0001string"), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-"test\4206dstring"`, BD(), EvV, S("test\u206dstring"), ED())
+"test\29fstring"`, BD(), EvV, S("test\u009fstring"), ED())
 	assertDecode(t, nil, `c0 "test\4206Dstring"`, BD(), EvV, S("test\u206dstring"), ED())
 	assertDecode(t, nil, `c0 "test\
 string"`, BD(), EvV, S("teststring"), ED())

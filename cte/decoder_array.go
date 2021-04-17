@@ -42,7 +42,7 @@ func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 
 func decodeArrayType(ctx *DecoderContext) string {
 	ctx.Stream.TokenBegin()
-	ctx.Stream.TokenReadUntilPropertyNoEOD(chars.CharIsObjectEnd)
+	ctx.Stream.TokenReadUntilPropertyNoEOD(chars.ObjectEnd)
 	arrayType := ctx.Stream.TokenGet()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
 		arrayType = arrayType[:len(arrayType)-1]

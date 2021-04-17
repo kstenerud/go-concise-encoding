@@ -24,11 +24,17 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
+
+const path = "rules"
+
+var imports = []string{
+	"fmt",
+	"github.com/kstenerud/go-concise-encoding/events",
+}
 
 var (
 	BDoc    = "OnBeginDocument(ctx *Context)"
@@ -168,29 +174,19 @@ var ruleClasses = []RuleClass{
 }
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := filepath.Join(projectDir, "rules/generated-do-not-edit.go")
+	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
 	writer, err := os.Create(generatedFilePath)
-	if err != nil {
-		panic(fmt.Errorf("could not open %s: %v", generatedFilePath, err))
-	}
+	standard.PanicIfError(err, "could not open %s", generatedFilePath)
 	defer writer.Close()
+	defer func() {
+		if e := recover(); e != nil {
+			panic(fmt.Errorf("Error while generating %v: %v", generatedFilePath, e))
+		}
+	}()
 
-	if _, err := writer.WriteString(codeHeader); err != nil {
-		panic(fmt.Errorf("could not write to %s: %v", generatedFilePath, err))
-	}
-
+	standard.WriteHeader(writer, path, imports)
 	generateBadEventMethods(writer)
 }
-
-var codeHeader = standard.Header + `package rules
-
-import (
-	"fmt"
-
-	"github.com/kstenerud/go-concise-encoding/events"
-)
-
-`
 
 func contains(lookingFor string, inSlice []string) bool {
 	for _, v := range inSlice {

@@ -40,12 +40,12 @@ func main() {
 	unicodePath := flag.String("unicode", "", "/path/to/ucd.all.flat.xml. Get it from https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.flat.zip")
 	flag.Parse()
 
+	builder.GenerateCode(projectPath)
+	rules.GenerateCode(projectPath)
+
 	if *unicodePath != "" {
 		chars.GenerateCode(projectPath, *unicodePath)
 	}
-
-	builder.GenerateCode(projectPath)
-	rules.GenerateCode(projectPath)
 }
 
 func printHelp() {

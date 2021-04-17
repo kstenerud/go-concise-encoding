@@ -18,8 +18,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// This package is used to populate `charProperties` and `asciiProperties` in
-// github.com/kstenerud/go-concise-encoding/internal/chars/generated-do-not-edit.go
 package chars
 
 import (
@@ -28,80 +26,319 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
 
-const generatedCodePath = "internal/chars/generated-do-not-edit.go"
-const packageName = "chars"
+const path = "internal/chars"
 
-type CharProperty uint64
-
-const (
-	CharIsWhitespace CharProperty = 1 << iota
-	CharIsDigitBase2
-	CharIsDigitBase8
-	CharIsDigitBase10
-	CharIsLowerAF
-	CharIsUpperAF
-	CharIsAZ
-	CharIsAreaLocation
-	CharIsObjectEnd
-	CharNeedsEscapeQuoted
-	CharNeedsEscapeArray
-	CharNeedsEscapeMarkup
-	CharIsCommentUnsafe
-	CharPropertyEnd
-	CharIsTextUnsafe
-	NoProperties CharProperty = 0
-
-// TODO: Valid timezone strings can contain alpha . - _ /
-)
-
-var charPropertyNames = map[CharProperty]string{
-	NoProperties:          "NoProperties",
-	CharIsWhitespace:      "CharIsWhitespace",
-	CharIsDigitBase2:      "CharIsDigitBase2",
-	CharIsDigitBase8:      "CharIsDigitBase8",
-	CharIsDigitBase10:     "CharIsDigitBase10",
-	CharIsLowerAF:         "CharIsLowerAF",
-	CharIsUpperAF:         "CharIsUpperAF",
-	CharIsAZ:              "CharIsAZ",
-	CharIsAreaLocation:    "CharIsAreaLocation",
-	CharIsObjectEnd:       "CharIsObjectEnd",
-	CharNeedsEscapeQuoted: "CharNeedsEscapeQuoted",
-	CharNeedsEscapeArray:  "CharNeedsEscapeArray",
-	CharNeedsEscapeMarkup: "CharNeedsEscapeMarkup",
-	CharIsCommentUnsafe:   "CharIsCommentUnsafe",
-	CharIsTextUnsafe:      "CharIsTextUnsafe",
+var imports = []string{
+	"unicode/utf8",
 }
 
 func GenerateCode(projectDir string, xmlPath string) {
-	chars, reserveds, err := loadUnicodeDB(xmlPath)
-	fatalIfError(err, "Error reading [%v]: %v\n", xmlPath, err)
+	chars, err := loadUnicodeDB(xmlPath)
+	standard.PanicIfError(err, "Error reading [%v]", xmlPath)
+	classifyRunes(chars)
 
-	properties := extractCharProperties(chars, reserveds)
-
-	outPath := filepath.Join(projectDir, generatedCodePath)
-	writer, err := os.Create(outPath)
-	fatalIfError(err, "Error opening [%v] for writing: %v", outPath, err)
+	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
+	writer, err := os.Create(generatedFilePath)
+	standard.PanicIfError(err, "Error opening [%v] for writing", generatedFilePath)
 	defer writer.Close()
+	defer func() {
+		if e := recover(); e != nil {
+			panic(fmt.Errorf("Error while generating %v: %v", generatedFilePath, e))
+		}
+	}()
 
-	err = exportHeader(writer)
-	fatalIfError(err, "Error writing to %v: %v", outPath, err)
+	standard.WriteHeader(writer, path, imports)
 
-	err = exportCharProperties(properties, writer)
-	fatalIfError(err, "Error writing to %v: %v", outPath, err)
-	_, err = fmt.Fprintf(writer, "\n")
-	fatalIfError(err, "Error writing to %v: %v", outPath, err)
-	err = exportAsciiProperties(properties, writer)
-	fatalIfError(err, "Error writing to %v: %v", outPath, err)
+	generatePropertiesType(writer)
+	generateSpacer(writer)
+
+	generateSafetyFlagsType(writer)
+	generateSpacer(writer)
 
 	generateRuneByteCounts(writer)
+	generateSpacer(writer)
+
+	generateStringlikeUnsafeTable(writer)
+	generateSpacer(writer)
+
+	generatePropertiesTable(writer)
+	generateSpacer(writer)
+
+	generateIdentifierSafeTable(writer)
+	generateSpacer(writer)
+
+	generateStringlikeSafeTable(writer)
+}
+
+// -----
+// Runes
+// -----
+
+func classifyRunes(chars CharSet) {
+	const (
+		safeForID           = true
+		unsafeForID         = false
+		safeForStringlike   = SafetyAll
+		unsafeForStringlike = SafetyNone
+	)
+
+	// Character classes (https://unicodebook.readthedocs.io/unicode.html):
+
+	// Private chars
+	setSafety(unsafeForID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.Category == "Co"
+	}))
+
+	// Control chars
+	setSafety(unsafeForID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.Category == "Cc"
+	}))
+
+	// Whitespace
+	setSafety(unsafeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'Z'
+	}))
+
+	// Letters, numbers, mark
+	setSafety(safeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		// TODO: Modifiers OK in identifiers?
+		return char.MajorCategory == 'L' || char.MajorCategory == 'N' || char.MajorCategory == 'M'
+	}))
+
+	// Symbols, Punctuation
+	setSafety(unsafeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'P' || char.MajorCategory == 'S'
+	}))
+
+	// Format chars
+	setSafety(unsafeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		// https://262.ecma-international.org/11.0/#sec-unicode-format-control-characters
+		return char.Category == "Cf"
+	}))
+
+	// Structural whitespace
+	setSafety(unsafeForID, safeForStringlike, charSet('\r', '\n', '\t', ' '))
+
+	// Stringlike safety
+	markUnsafeFor(SafetyString, charsAndLookalikes(charSet('\\', '"')...))
+	markUnsafeFor(SafetyArray, charsAndLookalikes(charSet('\\', '|', '\t', '\r', '\n')...))
+	markUnsafeFor(SafetyMarkup, charsAndLookalikes(charSet('\\', '<', '>')...))
+
+	// Structural char properties
+	addProperties(StructWS, charSet('\r', '\n', '\t', ' '))
+	addProperties(ObjectEnd, charSet('\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':', '|', '/'))
+	addProperties(DigitBase2, charRange('0', '1'))
+	addProperties(DigitBase8, charRange('0', '7'))
+	addProperties(DigitBase10, charRange('0', '9'))
+	addProperties(LowerAF, charRange('a', 'f'))
+	addProperties(UpperAF, charRange('A', 'F'))
+	addProperties(AreaLocation, charRange('a', 'z'), charRange('A', 'Z'), charSet('_', '-', '+', '/'))
+	addProperties(UUID, charRange('0', '9'), charRange('a', 'f'), charRange('A', 'F'), charSet('-'))
+	// Force an object end on non-ASCII chars so that the next scan will flag them
+	addProperties(ObjectEnd, charRange(0x80, 0xff))
+
+	// Invalid chars:
+
+	// Surrogates, Reserved
+	markInvalid(chars.RunesWithCriteria(func(char *Char) bool {
+		return char.Category == "Cs" || char.Category == "Cn"
+	}))
+
+	// Mark chars that can be printed in the generated comments
+	markGoSafe(chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'L' || char.MajorCategory == 'N' || char.MajorCategory == 'P' || char.MajorCategory == 'S'
+	}))
+}
+
+// Code Generators
+
+func generateSpacer(writer io.Writer) {
+	if _, err := fmt.Fprintf(writer, "\n"); err != nil {
+		panic(err)
+	}
+}
+
+func generatePropertiesType(writer io.Writer) {
+	var propType string
+	switch {
+	case EndProperties <= 0x100:
+		propType = "uint8"
+	case EndProperties <= 0x10000:
+		propType = "uint16"
+	case EndProperties <= 0x100000000:
+		propType = "uint32"
+	default:
+		propType = "uint64"
+	}
+
+	if _, err := fmt.Fprintf(writer, "type Properties %v\n\nconst (", propType); err != nil {
+		panic(err)
+	}
+
+	for i := Properties(1); i < EndProperties; i <<= 1 {
+		if _, err := fmt.Fprintf(writer, "\n\t%v", i); err != nil {
+			panic(err)
+		}
+		if i == 1 {
+			if _, err := fmt.Fprintf(writer, " Properties = 1 << iota"); err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	if _, err := fmt.Fprintf(writer, "\n\t%v = 0\n)\n", NoProperties); err != nil {
+		panic(err)
+	}
+}
+
+func generateSafetyFlagsType(writer io.Writer) {
+	if _, err := fmt.Fprintf(writer, "type SafetyFlags uint8\n\nconst ("); err != nil {
+		panic(err)
+	}
+
+	for i := SafetyFlags(1); i < EndSafetyFlags; i <<= 1 {
+		if _, err := fmt.Fprintf(writer, "\n\t%v", i); err != nil {
+			panic(err)
+		}
+		if i == 1 {
+			if _, err := fmt.Fprintf(writer, " SafetyFlags = 1 << iota"); err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	if _, err := fmt.Fprintf(writer, "\n\tSafetyAll = %v", SafetyAll); err != nil {
+		panic(err)
+	}
+
+	if _, err := fmt.Fprintf(writer, "\n\t%v = 0\n)\n", SafetyNone); err != nil {
+		panic(err)
+	}
+}
+
+func generatePropertiesTable(writer io.Writer) error {
+	if _, err := fmt.Fprintf(writer, "var properties = [0x101]Properties{\n"); err != nil {
+		return err
+	}
+	for r, props := range properties {
+		rs := runeString(rune(r))
+		if r >= 0x80 {
+			rs = ""
+		}
+		if _, err := fmt.Fprintf(writer, "\t/* %-3s */ 0x%02x: %v,\n", rs, r, props); err != nil {
+			return err
+		}
+	}
+
+	_, err := fmt.Fprintf(writer, "\t/* EOF */ 0x100: %v,\n}\n", ObjectEnd)
+	return err
+}
+
+func generateStringlikeUnsafeTable(writer io.Writer) error {
+	runes := make([]int, 0, len(stringlikeUnsafe))
+	for r, flags := range stringlikeUnsafe {
+		if flags != 0 {
+			runes = append(runes, int(r))
+		}
+	}
+	sort.Ints(runes)
+
+	if _, err := fmt.Fprintf(writer, "var stringlikeUnsafe = map[rune]SafetyFlags{\n"); err != nil {
+		return err
+	}
+	for _, k := range runes {
+		r := rune(k)
+		flags := stringlikeUnsafe[r]
+		if flags != 0 && flags != SafetyAll {
+			rs := runeString(rune(r))
+			if _, err := fmt.Fprintf(writer, "\t/* %-3s */ 0x%02x: %v,\n", rs, r, flags); err != nil {
+				return err
+			}
+		}
+	}
+
+	_, err := fmt.Fprintf(writer, "}\n")
+	return err
+}
+
+func generateRuneByteCounts(writer io.Writer) {
+	if _, err := writer.Write([]byte("var runeByteCounts = [32]byte{\n")); err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < 32; i++ {
+		byteCount := getUTF8ByteCount(byte(i << 3))
+		if _, err := writer.Write([]byte(fmt.Sprintf("\t0x%02x: %d,\n", i, byteCount))); err != nil {
+			panic(err)
+		}
+	}
+
+	if _, err := writer.Write([]byte("}\n")); err != nil {
+		panic(err)
+	}
+}
+
+func generateIdentifierSafeTable(writer io.Writer) {
+	generateByteTable(writer, "identifierSafe", identifierSafe[:])
+}
+
+func generateStringlikeSafeTable(writer io.Writer) {
+	generateByteTable(writer, "stringlikeSafe", stringlikeSafe[:])
+}
+
+func generateByteTable(writer io.Writer, name string, table []byte) {
+	if _, err := writer.Write([]byte(fmt.Sprintf("var %s = [(utf8.MaxRune + 1) / 8]byte{", name))); err != nil {
+		panic(err)
+	}
+
+	newlineAfter := 12
+	var str string
+
+	for i, v := range table {
+		if i%newlineAfter == 0 {
+			str = "\n\t"
+		} else {
+			str = " "
+		}
+
+		str := fmt.Sprintf("%s0x%02x,", str, v)
+
+		if _, err := writer.Write([]byte(str)); err != nil {
+			panic(err)
+		}
+	}
+
+	if _, err := writer.Write([]byte("\n}\n")); err != nil {
+		panic(err)
+	}
+}
+
+// -------
+// Utility
+// -------
+
+func runeString(r rune) string {
+	switch r {
+	case '\r':
+		return "\\r"
+	case '\n':
+		return "\\n"
+	case '\t':
+		return "\\t"
+	default:
+		if isRuneGoSafe(r) {
+			return fmt.Sprintf("[%c]", r)
+		}
+		return ""
+	}
 }
 
 func getUTF8ByteCount(firstByte byte) int {
@@ -120,20 +357,104 @@ func getUTF8ByteCount(firstByte byte) int {
 	return 0
 }
 
-func generateRuneByteCounts(writer io.Writer) {
-	if _, err := writer.Write([]byte("var runeByteCounts = [32]byte{\n")); err != nil {
-		panic(err)
-	}
+func setSafety(
+	isIdentifierSafe bool,
+	safeFor SafetyFlags,
+	runes ...[]rune) {
 
-	for i := 0; i < 32; i++ {
-		byteCount := getUTF8ByteCount(byte(i << 3))
-		if _, err := writer.Write([]byte(fmt.Sprintf("\t0x%02x: %d,\n", i, byteCount))); err != nil {
-			panic(err)
+	for _, r := range runes {
+		for _, rr := range r {
+			setRuneSafety(rr, isIdentifierSafe, safeFor)
 		}
 	}
+}
 
-	if _, err := writer.Write([]byte("}\n\n")); err != nil {
-		panic(err)
+func markUnsafeFor(unsafeFor SafetyFlags, runes ...[]rune) {
+
+	for _, r := range runes {
+		for _, rr := range r {
+			markRuneUnsafeFor(rr, unsafeFor)
+		}
+	}
+}
+
+func addProperties(props Properties, runes ...[]rune) {
+
+	for _, r := range runes {
+		for _, rr := range r {
+			addRuneProperties(rr, props)
+		}
+	}
+}
+
+func markInvalid(runes ...[]rune) {
+
+	for _, r := range runes {
+		for _, rr := range r {
+			markRuneInvalid(rr)
+		}
+	}
+}
+
+func markGoSafe(runes ...[]rune) {
+
+	for _, r := range runes {
+		for _, rr := range r {
+			markRuneGoSafe(rr)
+		}
+	}
+}
+
+func setBitArrayValue(array []byte, index int, value bool) {
+	bit := byte(1 << (index & 7))
+	bits := array[index>>3]
+	if value {
+		bits |= bit
+	} else {
+		bits &= ^bit
+	}
+	array[index>>3] = bits
+}
+
+func getBitArrayValue(array []byte, index int) bool {
+	bits := array[index>>3]
+	return bits&(1<<(index&7)) != 0
+}
+
+func setRuneSafety(r rune, isIdentifierSafe bool, safeFor SafetyFlags) {
+	unsafeFor := ^safeFor & SafetyAll
+	isStringlikeSafe := unsafeFor == 0
+
+	setBitArrayValue(identifierSafe[:], int(r), isIdentifierSafe)
+	setBitArrayValue(stringlikeSafe[:], int(r), isStringlikeSafe)
+	stringlikeUnsafe[r] = unsafeFor
+}
+
+func markRuneUnsafeFor(r rune, unsafeFor SafetyFlags) {
+	unsafeFor |= stringlikeUnsafe[r]
+	isStringlikeSafe := unsafeFor == 0
+
+	setBitArrayValue(stringlikeSafe[:], int(r), isStringlikeSafe)
+	stringlikeUnsafe[r] = unsafeFor
+}
+
+func markRuneInvalid(r rune) {
+	// TODO: really mark invalid in a findable way?
+	setRuneSafety(r, false, SafetyAll)
+}
+
+func markRuneGoSafe(r rune) {
+	setBitArrayValue(goSafe[:], int(r), true)
+}
+
+func isRuneGoSafe(r rune) bool {
+	return getBitArrayValue(goSafe[:], int(r))
+}
+
+func addRuneProperties(r rune, props Properties) {
+
+	if r < 0x100 {
+		properties[r] |= props
 	}
 }
 
@@ -144,252 +465,220 @@ func charRange(low, high rune) (result []rune) {
 	return
 }
 
-func extractCharProperties(chars CharSet, reserveds ReservedSet) CharProperties {
-	properties := CharProperties{}
-
-	properties.Add(CharIsTextUnsafe|
-		CharNeedsEscapeArray|
-		CharNeedsEscapeMarkup|
-		CharNeedsEscapeQuoted,
-		chars.GetRunesWithCriteria(func(char *Char) bool {
-			switch char.Codepoint {
-			case '\r', '\n', '\t', ' ': // Allowed whitespace
-				return false
-			case 0x2028: // Line separator
-				return true
-			case 0x2029: // Paragraph separator
-				return true
-			case 0x1680: // Ogham space mark
-				return true
-			case 0xfeff: // BOM
-				return true
-			}
-			if char.Codepoint < 0x20 {
-				return true
-			}
-
-			// Whitespace
-			if char.Category == "Zs" || char.Category == "Zl" || char.Category == "Zp" {
-				return true
-			}
-
-			// Control
-			return char.Category == "Cc" || char.Category == "Cf"
-		})...)
-
-	properties.Add(CharIsCommentUnsafe,
-		chars.GetRunesWithCriteria(func(char *Char) bool {
-			switch char.Codepoint {
-			case '\r', '\n', '\t', ' ': // Allowed whitespace
-				return false
-			case 0x2028: // Line separator
-				return true
-			case 0x2029: // Paragraph separator
-				return true
-			case 0x1680: // Ogham space mark
-				return true
-			case 0xfeff: // BOM
-				return true
-			}
-			if char.Codepoint < 0x20 {
-				return true
-			}
-
-			// Control
-			return char.Category == "Cc" || char.Category == "Cf"
-		})...)
-
-	properties.Add(CharIsWhitespace, '\t', '\r', '\n', ' ')
-
-	properties.Add(CharIsDigitBase2, charRange('0', '1')...)
-	properties.Add(CharIsDigitBase8, charRange('0', '7')...)
-	properties.Add(CharIsDigitBase10, charRange('0', '9')...)
-	properties.Add(CharIsLowerAF, charRange('a', 'f')...)
-	properties.Add(CharIsUpperAF, charRange('A', 'F')...)
-	properties.Add(CharIsAZ|CharIsAreaLocation, charRange('a', 'z')...)
-	properties.Add(CharIsAZ|CharIsAreaLocation, charRange('A', 'Z')...)
-	properties.Add(CharIsAreaLocation, '_', '-', '+', '/')
-
-	properties.Add(CharIsObjectEnd, '\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':', '|', '/')
-
-	properties.AddLL(CharNeedsEscapeQuoted, '\\', '"')
-	properties.AddLL(CharNeedsEscapeArray, '\\', '|', '\t', '\r', '\n')
-	properties.AddLL(CharNeedsEscapeMarkup, '\\', '<', '>')
-
-	// Don't include reserved chars
-	for _, r := range reserveds {
-		if r.CPStr != "" {
-			properties.Unmark(rune(r.CP))
-		} else {
-			properties.UnmarkRange(rune(r.FirstCP), rune(r.LastCP))
-		}
-	}
-
-	// Don't include private chars
-	properties.UnmarkRange(0xe000, 0xf8ff)
-	properties.UnmarkRange(0xf0000, 0xffffd)
-	properties.UnmarkRange(0x100000, 0x10fffd)
-
-	return properties
+func charSet(r ...rune) []rune {
+	return r
 }
 
-func exportHeader(writer io.Writer) (err error) {
-	var propType string
-	switch {
-	case CharPropertyEnd&0x1ff != 0:
-		propType = "uint8"
-	case CharPropertyEnd&0x1fe00 != 0:
-		propType = "uint16"
-	case CharPropertyEnd&0x1fffe0000 != 0:
-		propType = "uint32"
-	default:
-		propType = "uint64"
+func charsAndLookalikes(r ...rune) []rune {
+	result := make([]rune, 0, len(r))
+	for _, rr := range r {
+		result = append(result, rr)
+		for _, lookalike := range lookalikes[rr] {
+			result = append(result, lookalike)
+		}
 	}
+	return result
+}
 
-	if _, err = fmt.Fprintf(writer, standard.Header+
-		"package %v\n\ntype CharProperty %v\n\nconst (", packageName, propType); err != nil {
+// ----------
+// Unicode DB
+// ----------
+
+func loadUnicodeDB(path string) (chars CharSet, err error) {
+	document, err := ioutil.ReadFile(path)
+	if err != nil {
 		return
 	}
 
-	for i := CharProperty(1); i < CharPropertyEnd; i <<= 1 {
-		if _, err = fmt.Fprintf(writer, "\n\t%v", i); err != nil {
-			return
-		}
-		if i == 1 {
-			if _, err = fmt.Fprintf(writer, " CharProperty = 1 << iota"); err != nil {
-				return
-			}
-		}
+	var dbWrapper DBWrapper
+	if err = xml.Unmarshal(document, &dbWrapper); err != nil {
+		return
 	}
 
-	_, err = fmt.Fprintf(writer, "\n\t%v = 0\n)\n\n", NoProperties)
+	chars = make(CharSet, 0, len(dbWrapper.DB.Chars))
+	for _, char := range dbWrapper.DB.Chars {
+		chars = append(chars, char.All()...)
+	}
+	for _, char := range dbWrapper.DB.Reserveds {
+		chars = append(chars, char.All()...)
+	}
+
 	return
 }
 
-func exportCharProperties(properties CharProperties, writer io.Writer) error {
-	runes := make([]int, 0, len(properties))
-	for k := range properties {
-		runes = append(runes, int(k))
-	}
-	sort.Ints(runes)
+type CharSet []*Char
 
-	if _, err := fmt.Fprintf(writer, "var charProperties = map[rune]CharProperty{\n"); err != nil {
-		return err
-	}
-	for _, k := range runes {
-		ch := rune(k)
-		props := properties[ch]
-		if _, err := fmt.Fprintf(writer, "\t/* %-3s */ 0x%02x: %v,\n", charValue(ch, props), ch, props); err != nil {
-			return err
+func (_this CharSet) RunesWithCriteria(criteria func(*Char) bool) (runes []rune) {
+	for _, char := range _this {
+		if criteria(char) {
+			runes = append(runes, rune(char.Codepoint))
 		}
 	}
-	_, err := fmt.Fprintf(writer, "}\n")
-	return err
+	return
 }
 
-func exportAsciiProperties(properties CharProperties, writer io.Writer) error {
-	runes := make([]int, 0, len(properties))
-	for k := range properties {
-		runes = append(runes, int(k))
-	}
-	sort.Ints(runes)
+type DBWrapper struct {
+	XMLName xml.Name   `xml:"ucd"`
+	DB      *UnicodeDB `xml:"repertoire"`
+}
 
-	if _, err := fmt.Fprintf(writer, "var asciiProperties = [0x101]CharProperty{\n"); err != nil {
-		return err
-	}
-	for _, k := range runes {
-		if k < 128 {
-			ch := rune(k)
-			props := properties[ch]
-			if _, err := fmt.Fprintf(writer, "\t/* %-3s */ 0x%02x: %v,\n", charValue(ch, props), ch, props); err != nil {
-				return err
-			}
+type UnicodeDB struct {
+	XMLName   xml.Name `xml:"repertoire"`
+	Chars     []*Char  `xml:"char"`
+	Reserveds []*Char  `xml:"reserved"`
+}
+
+func (_this *UnicodeDB) PerformAction(criteria func(*Char) bool, action func(*Char)) {
+	for _, char := range _this.Chars {
+		if criteria(char) {
+			action(char)
 		}
 	}
-
-	_, err := fmt.Fprintf(writer, "\t/* EOF */ 0x100: CharIsObjectEnd|CharNeedsQuote,\n}\n")
-	return err
 }
 
-func charValue(char rune, properties CharProperty) string {
-	switch char {
-	case '\r':
-		return "\\r"
-	case '\n':
-		return "\\n"
-	case '\t':
-		return "\\t"
-	}
-	if char < 0x20 || char == 0x7f {
-		return ""
-	}
-	if char >= 0x20 && char < 0x7f {
-		return fmt.Sprintf("[%c]", char)
-	}
-	if properties&CharIsTextUnsafe == 0 {
-		return fmt.Sprintf("[%c]", char)
-	}
-	return ""
+type Char struct {
+	CodepointStr  string `xml:"cp,attr"`
+	FirstCPStr    string `xml:"first-cp,attr"`
+	LastCPStr     string `xml:"last-cp,attr"`
+	Category      string `xml:"gc,attr"`
+	MajorCategory byte
+	Codepoint     rune
 }
 
-func fatalIfError(err error, format string, args ...interface{}) {
+func (_this *Char) All() (result []*Char) {
+	_this.MajorCategory = _this.Category[0]
+
+	if _this.CodepointStr != "" {
+		codepoint, err := strconv.ParseInt(_this.CodepointStr, 16, 32)
+		if err != nil {
+			return
+		}
+		_this.Codepoint = rune(codepoint)
+		return []*Char{_this}
+	}
+
+	firstCP, err := strconv.ParseInt(_this.FirstCPStr, 16, 32)
 	if err != nil {
-		panic(fmt.Errorf(format, args))
+		return
 	}
+	lastCP, err := strconv.ParseInt(_this.LastCPStr, 16, 32)
+	if err != nil {
+		return
+	}
+
+	for i := rune(firstCP); i <= rune(lastCP); i++ {
+		result = append(result, &Char{
+			Category:      _this.Category,
+			MajorCategory: _this.MajorCategory,
+			Codepoint:     i,
+		})
+	}
+	return
 }
 
-// ----------------------------------------------------------------------------
+// ----
+// Data
+// ----
 
-func (_this CharProperty) String() string {
+type SafetyFlags byte
+
+const (
+	SafetyString SafetyFlags = 1 << iota
+	SafetyArray
+	SafetyMarkup
+	SafetyComment
+
+	EndSafetyFlags
+	SafetyAll              = EndSafetyFlags - 1
+	SafetyNone SafetyFlags = 0
+)
+
+func (_this SafetyFlags) String() string {
 	if _this == 0 {
-		return charPropertyNames[_this]
+		return safetyNames[_this]
 	}
 
 	isFirst := true
 	builder := strings.Builder{}
-	for i := CharProperty(1); i < CharPropertyEnd; i <<= 1 {
+	for i := SafetyFlags(1); i < EndSafetyFlags; i <<= 1 {
 		if _this&i != 0 {
 			if isFirst {
 				isFirst = false
 			} else {
 				builder.WriteString(" | ")
 			}
-			builder.WriteString(charPropertyNames[i])
+			builder.WriteString(safetyNames[i])
 		}
 	}
 	return builder.String()
 }
 
-type CharProperties map[rune]CharProperty
-
-func (_this CharProperties) Add(properties CharProperty, chars ...rune) {
-	for _, char := range chars {
-		_this[char] |= properties
-	}
+var safetyNames = map[SafetyFlags]string{
+	SafetyNone:     "SafetyNone",
+	SafetyString:   "SafetyString",
+	SafetyArray:    "SafetyArray",
+	SafetyMarkup:   "SafetyMarkup",
+	SafetyComment:  "SafetyComment",
+	EndSafetyFlags: "EndSafetyFlags",
+	SafetyAll:      "SafetyAll",
 }
 
-func (_this CharProperties) AddLL(properties CharProperty, chars ...rune) {
-	for _, char := range chars {
-		_this[char] |= properties
-		for _, ll := range lookalikes[char] {
-			_this[ll] |= properties
+var goSafe [(utf8.MaxRune + 1) / 8]byte
+var identifierSafe [(utf8.MaxRune + 1) / 8]byte
+var stringlikeSafe [(utf8.MaxRune + 1) / 8]byte
+var stringlikeUnsafe = make(map[rune]SafetyFlags)
+var properties [0x100]Properties
+
+type Properties uint64
+
+const (
+	StructWS Properties = 1 << iota
+	DigitBase2
+	DigitBase8
+	DigitBase10
+	LowerAF
+	UpperAF
+	AreaLocation
+	ObjectEnd
+	UUID
+
+	EndProperties
+	NoProperties Properties = 0
+)
+
+func (_this Properties) String() string {
+	if _this == 0 {
+		return propertyNames[_this]
+	}
+
+	isFirst := true
+	builder := strings.Builder{}
+	for i := Properties(1); i < EndProperties; i <<= 1 {
+		if _this&i != 0 {
+			if isFirst {
+				isFirst = false
+			} else {
+				builder.WriteString(" | ")
+			}
+			builder.WriteString(propertyNames[i])
 		}
 	}
+	return builder.String()
 }
 
-func (_this CharProperties) Unmark(chars ...rune) {
-	for _, char := range chars {
-		delete(_this, char)
-	}
+var propertyNames = map[Properties]string{
+	NoProperties:  "NoProperties",
+	StructWS:      "StructWS",
+	DigitBase2:    "DigitBase2",
+	DigitBase8:    "DigitBase8",
+	DigitBase10:   "DigitBase10",
+	LowerAF:       "LowerAF",
+	UpperAF:       "UpperAF",
+	AreaLocation:  "AreaLocation",
+	ObjectEnd:     "ObjectEnd",
+	UUID:          "UUID",
+	EndProperties: "EndProperties",
 }
-
-func (_this CharProperties) UnmarkRange(start, end rune) {
-	for i := start; i <= end; i++ {
-		_this.Unmark(i)
-	}
-}
-
-// ----------------------------------------------------------------------------
 
 var lookalikes = map[rune][]rune{
 	'!': []rune{0x01c3, 0x203c, 0x2048, 0x2049, 0x2d51, 0xfe15, 0xfe57, 0xff01},
@@ -446,113 +735,4 @@ var lookalikes = map[rune][]rune{
 	'7': []rune{0x248f, 0xff17, 0x1d7d5, 0x1d7df, 0x1d7e9, 0x1d7f3, 0x1d7fd, 0x1f108},
 	'8': []rune{0x248f, 0xff18, 0x10931, 0x1d7d6, 0x1d7e0, 0x1d7ea, 0x1d7f4, 0x1d7fe, 0x1f109},
 	'9': []rune{0x2490, 0xff19, 0x1d7d7, 0x1d7e1, 0x1d7eb, 0x1d7f5, 0x1d7ff, 0x1f10a},
-}
-
-// ----------------------------------------------------------------------------
-
-func loadUnicodeDB(path string) (chars CharSet, reserved ReservedSet, err error) {
-	document, err := ioutil.ReadFile(path)
-	if err != nil {
-		return
-	}
-
-	var dbWrapper DBWrapper
-	if err = xml.Unmarshal(document, &dbWrapper); err != nil {
-		return
-	}
-
-	chars = make(CharSet, 0, len(dbWrapper.DB.Chars))
-	for _, char := range dbWrapper.DB.Chars {
-		if char.Validate() {
-			chars = append(chars, char)
-		}
-	}
-
-	reserved = make(ReservedSet, 0, len(dbWrapper.DB.Chars))
-	for _, res := range dbWrapper.DB.Reserveds {
-		if res.Validate() {
-			reserved = append(reserved, res)
-		}
-	}
-	return
-}
-
-type CharSet []*Char
-type ReservedSet []*Reserved
-
-func (_this CharSet) GetRunesWithCriteria(criteria func(*Char) bool) (runes []rune) {
-	for _, char := range _this {
-		if criteria(char) {
-			runes = append(runes, rune(char.Codepoint))
-		}
-	}
-	return
-}
-
-type DBWrapper struct {
-	XMLName xml.Name   `xml:"ucd"`
-	DB      *UnicodeDB `xml:"repertoire"`
-}
-
-type UnicodeDB struct {
-	XMLName   xml.Name    `xml:"repertoire"`
-	Chars     []*Char     `xml:"char"`
-	Reserveds []*Reserved `xml:"reserved"`
-}
-
-func (_this *UnicodeDB) PerformAction(criteria func(*Char) bool, action func(*Char)) {
-	for _, char := range _this.Chars {
-		if criteria(char) {
-			action(char)
-		}
-	}
-}
-
-type Char struct {
-	XMLName      xml.Name `xml:"char"`
-	CodepointStr string   `xml:"cp,attr"`
-	Category     string   `xml:"gc,attr"`
-	BidiCategory string   `xml:"bc,attr"`
-	Codepoint    rune
-}
-
-func (_this *Char) Validate() bool {
-	codepoint, err := strconv.ParseInt(_this.CodepointStr, 16, 32)
-	if err != nil {
-		return false
-	}
-	_this.Codepoint = rune(codepoint)
-	return true
-}
-
-type Reserved struct {
-	CPStr      string `xml:"cp,attr"`
-	FirstCPStr string `xml:"first-cp,attr"`
-	LastCPStr  string `xml:"last-cp,attr"`
-	CP         rune
-	FirstCP    rune
-	LastCP     rune
-}
-
-func (_this *Reserved) Validate() bool {
-	if _this.CPStr != "" {
-		cp, err := strconv.ParseInt(_this.CPStr, 16, 32)
-		if err != nil {
-			return false
-		}
-		_this.CP = rune(cp)
-		return true
-	}
-
-	firstCP, err := strconv.ParseInt(_this.FirstCPStr, 16, 32)
-	if err != nil {
-		return false
-	}
-	lastCP, err := strconv.ParseInt(_this.LastCPStr, 16, 32)
-	if err != nil {
-		return false
-	}
-	_this.FirstCP = rune(firstCP)
-	_this.LastCP = rune(lastCP)
-	return true
 }
