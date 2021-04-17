@@ -20,7 +20,7 @@
 
 package chars
 
-const EndOfDocumentMarker = 0x100
+const EOFMarker = 0x100
 
 func CalculateRuneByteCount(startByte byte) int {
 	return int(runeByteCounts[startByte>>3])
@@ -51,32 +51,6 @@ func IndexOfLastRuneStart(data []byte) (index int, isCompleteRune bool) {
 func (_this Properties) HasProperty(property Properties) bool {
 	return _this&property != 0
 }
-
-// func StringRunesHaveProperty(str string, property Properties) bool {
-// 	for _, ch := range str {
-// 		if charProperties[ch].HasProperty(property) {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func StringBytesHaveProperty(str []byte, property Properties) bool {
-// 	for _, ch := range str {
-// 		if asciiProperties[ch].HasProperty(property) {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func GetRuneProperty(r rune) Properties {
-// 	return charProperties[r]
-// }
-
-// func RuneHasProperty(r rune, property CharProperty) bool {
-// 	return charProperties[r].HasProperty(property)
-// }
 
 func IsRuneSafeFor(r rune, flags SafetyFlags) bool {
 	if getBitArrayValue(stringlikeSafe[:], int(r)) {

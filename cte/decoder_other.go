@@ -49,7 +49,7 @@ var global_decodeByFirstChar decodeByFirstChar
 
 func (_this decodeByFirstChar) Run(ctx *DecoderContext) {
 	global_decodeWhitespace.Run(ctx)
-	b := ctx.Stream.PeekByteAllowEOD()
+	b := ctx.Stream.PeekByteAllowEOF()
 	decoderOp := decoderOpsByFirstChar[b]
 	decoderOp.Run(ctx)
 }
@@ -71,7 +71,7 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 	// Technically disallowed, but we'll support it anyway.
 	global_decodeWhitespace.Run(ctx)
 
-	if b := ctx.Stream.ReadByteNoEOD(); b != 'c' && b != 'C' {
+	if b := ctx.Stream.ReadByteNoEOF(); b != 'c' && b != 'C' {
 		ctx.Stream.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.Stream.DescribeCurrentChar())
 	}
 
@@ -87,7 +87,7 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 		version = 0
 	}
 
-	b := ctx.Stream.PeekByteNoEOD()
+	b := ctx.Stream.PeekByteNoEOF()
 	if !chars.ByteHasProperty(b, chars.StructWS) {
 		ctx.Stream.UnexpectedChar("whitespace after version")
 	}
@@ -122,7 +122,7 @@ var global_decodeNumericPositive decodeNumericPositive
 
 func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
-	b := ctx.Stream.ReadByteAllowEOD()
+	b := ctx.Stream.ReadByteAllowEOF()
 	switch b {
 	case '-':
 		v := ctx.Stream.ReadDate(int64(coefficient))
@@ -164,7 +164,7 @@ var global_advanceAndDecodeNumericNegative advanceAndDecodeNumericNegative
 func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '-'
 
-	switch ctx.Stream.PeekByteNoEOD() {
+	switch ctx.Stream.PeekByteNoEOF() {
 	case '0':
 		ctx.Stream.AdvanceByte() // Advance past '0'
 		global_decodeOtherBaseNegative.Run(ctx)
@@ -179,7 +179,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	}
 
 	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
-	b := ctx.Stream.ReadByteAllowEOD()
+	b := ctx.Stream.ReadByteAllowEOF()
 	switch b {
 	case '-':
 		v := ctx.Stream.ReadDate(-int64(coefficient))
@@ -218,7 +218,7 @@ var global_advanceAndDecodeOtherBasePositive advanceAndDecodeOtherBasePositive
 func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '0'
 
-	b := ctx.Stream.ReadByteAllowEOD()
+	b := ctx.Stream.ReadByteAllowEOF()
 	if b.HasProperty(chars.ObjectEnd) {
 		ctx.Stream.UnreadByte()
 		ctx.EventReceiver.OnPositiveInt(0)
@@ -244,7 +244,7 @@ func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
 		}
 	case 'x':
 		v, bigV, digitCount := ctx.Stream.ReadHexUint(0, nil)
-		if ctx.Stream.PeekByteAllowEOD() == '.' {
+		if ctx.Stream.PeekByteAllowEOF() == '.' {
 			ctx.Stream.AdvanceByte()
 			fv, bigFV, _ := ctx.Stream.ReadHexFloat(1, v, bigV, digitCount)
 			ctx.Stream.AssertAtObjectEnd("hex float")
@@ -270,7 +270,7 @@ func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
 			ctx.EventReceiver.OnDecimalFloat(value)
 		}
 	default:
-		if b.HasProperty(chars.DigitBase10) && ctx.Stream.PeekByteNoEOD() == ':' {
+		if b.HasProperty(chars.DigitBase10) && ctx.Stream.PeekByteNoEOF() == ':' {
 			ctx.Stream.AdvanceByte()
 			v := ctx.Stream.ReadTime(int(b - '0'))
 			ctx.Stream.AssertAtObjectEnd("time")
@@ -297,7 +297,7 @@ var global_decodeOtherBaseNegative decodeOtherBaseNegative
 
 func (_this decodeOtherBaseNegative) Run(ctx *DecoderContext) {
 
-	b := ctx.Stream.PeekByteAllowEOD()
+	b := ctx.Stream.PeekByteAllowEOF()
 	if b.HasProperty(chars.ObjectEnd) {
 		// -0 has no decimal point (thus type int), so report it as positive 0.
 		ctx.EventReceiver.OnPositiveInt(0)
@@ -327,7 +327,7 @@ func (_this decodeOtherBaseNegative) Run(ctx *DecoderContext) {
 		}
 	case 'x':
 		v, bigV, digitCount := ctx.Stream.ReadHexUint(0, nil)
-		if ctx.Stream.PeekByteAllowEOD() == '.' {
+		if ctx.Stream.PeekByteAllowEOF() == '.' {
 			ctx.Stream.AdvanceByte()
 			fv, bigFV, _ := ctx.Stream.ReadHexFloat(-1, v, bigV, digitCount)
 			ctx.Stream.AssertAtObjectEnd("hex float")
@@ -395,7 +395,7 @@ func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "na":
-		if ctx.Stream.ReadByteNoEOD() != ':' {
+		if ctx.Stream.ReadByteNoEOF() != ':' {
 			ctx.Stream.UnreadByte()
 			ctx.Stream.UnexpectedChar("NA")
 		}
@@ -455,7 +455,7 @@ func (_this advanceAndDecodeConstant) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
 	name := ctx.Stream.ReadIdentifier()
-	if ctx.Stream.PeekByteAllowEOD() == ':' {
+	if ctx.Stream.PeekByteAllowEOF() == ':' {
 		ctx.EventReceiver.OnConstant(name, true)
 		ctx.Stream.AdvanceByte()
 		global_decodeByFirstChar.Run(ctx)
@@ -472,7 +472,7 @@ func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
 	ctx.EventReceiver.OnMarker(ctx.Stream.ReadIdentifier())
-	if ctx.Stream.PeekByteNoEOD() != ':' {
+	if ctx.Stream.PeekByteNoEOF() != ':' {
 		ctx.Stream.Errorf("Missing colon between marker ID and marked value")
 	}
 	ctx.Stream.AdvanceByte()
@@ -486,7 +486,7 @@ var global_advanceAndDecodeReference advanceAndDecodeReference
 func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
-	if ctx.Stream.PeekByteNoEOD() == '|' {
+	if ctx.Stream.PeekByteNoEOF() == '|' {
 		ctx.EventReceiver.OnRIDReference()
 		ctx.Stream.AdvanceByte()
 		arrayType := decodeArrayType(ctx)

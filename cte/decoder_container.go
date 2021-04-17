@@ -50,7 +50,7 @@ var global_decodeMapValue decodeMapValue
 
 func (_this decodeMapValue) Run(ctx *DecoderContext) {
 	global_decodeWhitespace.Run(ctx)
-	if ctx.Stream.ReadByteNoEOD() != '=' {
+	if ctx.Stream.ReadByteNoEOF() != '=' {
 		ctx.Stream.Errorf("Expected map separator (=) but got [%v]", ctx.Stream.DescribeCurrentChar())
 	}
 	global_decodeWhitespace.Run(ctx)
@@ -168,7 +168,7 @@ var global_advanceAndDecodeComment advanceAndDecodeComment
 func (_this advanceAndDecodeComment) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '/'
 
-	b := ctx.Stream.ReadByteNoEOD()
+	b := ctx.Stream.ReadByteNoEOF()
 	switch b {
 	case '/':
 		ctx.EventReceiver.OnComment()
@@ -209,7 +209,7 @@ var global_advanceAndDecodeCommentEnd advanceAndDecodeCommentEnd
 func (_this advanceAndDecodeCommentEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '*'
 
-	b := ctx.Stream.ReadByteNoEOD()
+	b := ctx.Stream.ReadByteNoEOF()
 	switch b {
 	case '/':
 		ctx.UnstackDecoder()

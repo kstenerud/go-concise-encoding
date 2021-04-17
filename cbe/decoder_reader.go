@@ -239,7 +239,7 @@ func (_this *Reader) expandBuffer(size int) {
 	}
 }
 
-func (_this *Reader) unexpectedEOD() {
+func (_this *Reader) unexpectedEOF() {
 	_this.errorf("Unexpected end of document")
 }
 

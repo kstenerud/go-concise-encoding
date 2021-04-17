@@ -42,7 +42,7 @@ func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 
 func decodeArrayType(ctx *DecoderContext) string {
 	ctx.Stream.TokenBegin()
-	ctx.Stream.TokenReadUntilPropertyNoEOD(chars.ObjectEnd)
+	ctx.Stream.TokenReadUntilPropertyNoEOF(chars.ObjectEnd)
 	arrayType := ctx.Stream.TokenGet()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
 		arrayType = arrayType[:len(arrayType)-1]
@@ -53,7 +53,7 @@ func decodeArrayType(ctx *DecoderContext) string {
 }
 
 func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
-	switch ctx.Stream.ReadByteNoEOD() {
+	switch ctx.Stream.ReadByteNoEOF() {
 	case '|':
 		ctx.EventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
 		return
@@ -170,10 +170,10 @@ func decodeCustomText(ctx *DecoderContext) {
 
 func decodeRID(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadStringArray()
-	if ctx.Stream.PeekByteAllowEOD() == ':' {
+	if ctx.Stream.PeekByteAllowEOF() == ':' {
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
 		ctx.Stream.AdvanceByte()
-		if ctx.Stream.PeekByteNoEOD() != '"' {
+		if ctx.Stream.PeekByteNoEOF() != '"' {
 			ctx.Stream.Errorf("Only strings may be appended to a resource ID")
 		}
 		global_advanceAndDecodeQuotedString.Run(ctx)
@@ -207,7 +207,7 @@ func decodeArrayBoolean(ctx *DecoderContext) {
 		nextByte := byte(0)
 		for i := 0; i < 8; i++ {
 			ctx.Stream.SkipWhitespace()
-			b := ctx.Stream.ReadByteNoEOD()
+			b := ctx.Stream.ReadByteNoEOF()
 			switch b {
 			case '|':
 				if i > 0 {
@@ -408,7 +408,7 @@ func decodeArrayF64(ctx *DecoderContext, digitType string, decodeElement func() 
 func decodeArrayUUID(ctx *DecoderContext) {
 	var data []uint8
 	ctx.Stream.SkipWhitespace()
-	for ctx.Stream.PeekByteAllowEOD() != '|' {
+	for ctx.Stream.PeekByteAllowEOF() != '|' {
 		token := ctx.Stream.ReadToken()
 		if len(token) == 0 {
 			panic("Error")
