@@ -20,6 +20,10 @@
 
 package chars
 
+import (
+	"fmt"
+)
+
 const EOFMarker = 0x100
 
 func CalculateRuneByteCount(startByte byte) int {
@@ -63,6 +67,53 @@ func IsRuneSafeFor(r rune, flags SafetyFlags) bool {
 		unsafety = SafetyAll
 	}
 	return unsafety&flags == 0
+}
+
+func IsIdentifierSafe(str []byte) bool {
+	if str[0] == '-' {
+		panic(fmt.Errorf("Identifier may not start with '-'"))
+	}
+
+	for i := 0; i < len(str); {
+		byteCount := CalculateRuneByteCount(str[i])
+		switch byteCount {
+		case 0:
+			panic(fmt.Errorf("Identifier contains invalid UTF-8 sequence"))
+		case 1:
+			if !IsRuneValidIdentifier(rune(str[i])) {
+				return false
+			}
+			i++
+		case 2:
+			if i+1 >= len(str) {
+				panic(fmt.Errorf("Identifier contains incomplete UTF-8 sequence"))
+			}
+			r := (rune(str[i]&0x1f) << 6) | rune(str[i+1]&0x3f)
+			if !IsRuneValidIdentifier(r) {
+				return false
+			}
+			i += 2
+		case 3:
+			if i+2 >= len(str) {
+				panic(fmt.Errorf("Identifier contains incomplete UTF-8 sequence"))
+			}
+			r := (rune(str[i]&0x0f) << 12) | (rune(str[i+1]&0x3f) << 6) | rune(str[i+1]&0x3f)
+			if !IsRuneValidIdentifier(r) {
+				return false
+			}
+			i += 3
+		case 4:
+			if i+3 >= len(str) {
+				panic(fmt.Errorf("Identifier contains incomplete UTF-8 sequence"))
+			}
+			r := (rune(str[i]&0x07) << 18) | (rune(str[i+1]&0x3f) << 12) | (rune(str[i+2]&0x3f) << 6) | rune(str[i+3]&0x3f)
+			if !IsRuneValidIdentifier(r) {
+				return false
+			}
+			i += 4
+		}
+	}
+	return true
 }
 
 func ByteHasProperty(b byte, property Properties) bool {

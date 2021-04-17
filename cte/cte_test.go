@@ -1797,3 +1797,14 @@ func TestMarkupComment(t *testing.T) {
     /* comment */
 >`, BD(), EvV, MUP("a"), E(), CMT(), S("comment"), E(), E(), ED())
 }
+
+func TestIdentifier(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, `c0
+&1a:1`, BD(), EvV, MARK("1a"), I(1), ED())
+	assertDecodeEncode(t, nil, nil, `c0
+&人気:1`, BD(), EvV, MARK("人気"), I(1), ED())
+
+	assertDecodeFails(t, "c0 &~:1")
+	assertDecodeFails(t, "c0 &12345|78:1")
+	assertDecodeFails(t, "c0 &12345\u000178:1")
+}

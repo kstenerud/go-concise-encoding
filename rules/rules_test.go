@@ -942,3 +942,35 @@ func TestRulesForwardReference(t *testing.T) {
 		E(),
 		E())
 }
+
+func TestRulesIdentifier(t *testing.T) {
+	rules := newRulesAfterVersion(nil)
+	assertEventsFail(t, rules, MARK("12\u0001abc"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsFail(t, rules, MARK("a+b"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsFail(t, rules, MARK("a+b"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsFail(t, rules, MARK("-a"), I(1))
+
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("1"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("a"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("a-a"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("_a"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("a_"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("a-"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("0_"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("0-"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("a-_a12-_3_gy"), I(1))
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, MARK("人気"), I(1))
+}

@@ -127,6 +127,9 @@ func classifyRunes(chars CharSet) {
 	// Structural whitespace
 	setSafety(unsafeForID, safeForStringlike, charSet('\r', '\n', '\t', ' '))
 
+	// Symbols allowed in identifiers
+	setSafety(safeForID, safeForStringlike, charSet('-', '_'))
+
 	// Stringlike safety
 	markUnsafeFor(SafetyString, charsAndLookalikes(charSet('\\', '"')...))
 	markUnsafeFor(SafetyArray, charsAndLookalikes(charSet('\\', '|', '\t', '\r', '\n')...))
@@ -142,8 +145,6 @@ func classifyRunes(chars CharSet) {
 	addProperties(UpperAF, charRange('A', 'F'))
 	addProperties(AreaLocation, charRange('a', 'z'), charRange('A', 'Z'), charSet('_', '-', '+', '/'))
 	addProperties(UUID, charRange('0', '9'), charRange('a', 'f'), charRange('A', 'F'), charSet('-'))
-	// Force an object end on non-ASCII chars so that the next scan will flag them
-	addProperties(ObjectEnd, charRange(0x80, 0xff))
 
 	// Invalid chars:
 
