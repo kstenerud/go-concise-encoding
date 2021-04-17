@@ -32,15 +32,12 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/kstenerud/go-concise-encoding/version"
-
-	"github.com/kstenerud/go-concise-encoding/internal/arrays"
-
-	"github.com/kstenerud/go-concise-encoding/debug"
-
 	"github.com/kstenerud/go-concise-encoding/conversions"
+	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/version"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"

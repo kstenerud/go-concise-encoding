@@ -25,9 +25,8 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
 type stringBuilder struct{}

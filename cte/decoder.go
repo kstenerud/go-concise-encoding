@@ -26,12 +26,9 @@ import (
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
-
-	"github.com/kstenerud/go-concise-encoding/internal/chars"
-
-	"github.com/kstenerud/go-concise-encoding/options"
-
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type DecoderOp interface {

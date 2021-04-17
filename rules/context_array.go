@@ -26,9 +26,8 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"github.com/kstenerud/go-concise-encoding/internal/chars"
-
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 

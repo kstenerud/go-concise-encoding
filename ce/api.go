@@ -49,13 +49,11 @@ package ce
 import (
 	"io"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
-	"github.com/kstenerud/go-concise-encoding/rules"
-
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/rules"
 )
 
 // ============================================================================

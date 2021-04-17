@@ -23,10 +23,9 @@ package cte
 import (
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
 type advanceAndDecodeQuotedString struct{}

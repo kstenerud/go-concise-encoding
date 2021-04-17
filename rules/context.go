@@ -26,9 +26,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/options"
-
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type contextStackEntry struct {

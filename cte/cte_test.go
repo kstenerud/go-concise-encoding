@@ -26,7 +26,6 @@ import (
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 )
