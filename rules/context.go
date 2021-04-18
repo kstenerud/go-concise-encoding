@@ -190,20 +190,12 @@ func (_this *Context) BeginTopLevelReference() {
 	_this.stackRule(&tlReferenceRIDRule, DataTypeKeyable)
 }
 
-func (_this *Context) BeginConstantKeyable(name []byte, explicitValue bool) {
-	if explicitValue {
-		_this.stackRule(&constantKeyableRule, DataTypeKeyable)
-	} else if !_this.opts.AllowUndefinedConstants {
-		panic(fmt.Errorf("Undefined constants are not allowed"))
-	}
+func (_this *Context) BeginConstantKeyable(name []byte) {
+	panic(fmt.Errorf("TODO: Constants not supported until schema is developed"))
 }
 
-func (_this *Context) BeginConstantAnyType(name []byte, explicitValue bool) {
-	if explicitValue {
-		_this.stackRule(&constantAnyTypeRule, DataTypeNonKeyable)
-	} else if !_this.opts.AllowUndefinedConstants {
-		panic(fmt.Errorf("Undefined constants are not allowed"))
-	}
+func (_this *Context) BeginConstantAnyType(name []byte) {
+	panic(fmt.Errorf("TODO: Constants not supported until schema is developed"))
 }
 
 func (_this *Context) SwitchVersion() {

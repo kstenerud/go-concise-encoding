@@ -96,8 +96,8 @@ func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *TopLevelRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
 }
-func (_this *TopLevelRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantAnyType(name, explicitValue)
+func (_this *TopLevelRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
 }
 func (_this *TopLevelRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)

@@ -273,15 +273,10 @@ func (_this *EncoderEventReceiver) OnRIDReference() {
 	_this.context.Stack(concatDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnConstant(name []byte, explicitValue bool) {
+func (_this *EncoderEventReceiver) OnConstant(name []byte) {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteConstant(name)
-	if explicitValue {
-		_this.context.Stream.WriteConcat()
-		_this.context.Stack(concatDecorator)
-	} else {
-		_this.context.AfterValue()
-	}
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnEndDocument() {

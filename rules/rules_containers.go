@@ -46,8 +46,8 @@ func (_this *ListRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *ListRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
 }
-func (_this *ListRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantAnyType(name, explicitValue)
+func (_this *ListRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
 }
 func (_this *ListRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -79,8 +79,8 @@ func (_this *MapKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
 	ctx.SwitchMapValue()
 }
-func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantKeyable(name, explicitValue)
+func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantKeyable(name)
 }
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
@@ -124,8 +124,8 @@ func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *MapValueRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
 }
-func (_this *MapValueRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantAnyType(name, explicitValue)
+func (_this *MapValueRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
 }
 func (_this *MapValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -159,8 +159,8 @@ func (_this *MarkupKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
 	ctx.SwitchMarkupValue()
 }
-func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantKeyable(name, explicitValue)
+func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantKeyable(name)
 }
 func (_this *MarkupKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
@@ -204,8 +204,8 @@ func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *MarkupValueRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
 }
-func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte, explicitValue bool) {
-	ctx.BeginConstantAnyType(name, explicitValue)
+func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
 }
 func (_this *MarkupValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)

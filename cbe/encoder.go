@@ -361,10 +361,8 @@ func (_this *Encoder) OnRIDReference() {
 	_this.writer.WriteType(cbeTypeReference)
 }
 
-func (_this *Encoder) OnConstant(name []byte, explicitValue bool) {
-	if !explicitValue {
-		_this.errorf("Cannot encode constant %s without explicit value", string(name))
-	}
+func (_this *Encoder) OnConstant(name []byte) {
+	_this.errorf("CBE Cannot encode constant (%s)", string(name))
 }
 
 func (_this *Encoder) OnEndDocument() {

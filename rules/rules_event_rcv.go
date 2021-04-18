@@ -303,10 +303,10 @@ func (_this *RulesEventReceiver) OnRIDReference() {
 	_this.receiver.OnRIDReference()
 }
 
-func (_this *RulesEventReceiver) OnConstant(identifier []byte, explicitValue bool) {
+func (_this *RulesEventReceiver) OnConstant(identifier []byte) {
 	_this.context.ValidateIdentifier(identifier)
-	_this.context.CurrentEntry.Rule.OnConstant(&_this.context, identifier, explicitValue)
-	_this.receiver.OnConstant(identifier, explicitValue)
+	_this.context.CurrentEntry.Rule.OnConstant(&_this.context, identifier)
+	_this.receiver.OnConstant(identifier)
 }
 
 func (_this *RulesEventReceiver) OnEndDocument() {

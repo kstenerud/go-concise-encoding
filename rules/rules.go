@@ -46,7 +46,7 @@ type EventRule interface {
 	OnMarker(ctx *Context, identifier []byte)
 	OnReference(ctx *Context, identifier []byte)
 	OnRIDReference(ctx *Context)
-	OnConstant(ctx *Context, identifier []byte, explicitValue bool)
+	OnConstant(ctx *Context, identifier []byte)
 	OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)
 	OnArrayBegin(ctx *Context, arrayType events.ArrayType)

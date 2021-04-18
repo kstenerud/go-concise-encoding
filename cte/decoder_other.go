@@ -454,14 +454,7 @@ var global_advanceAndDecodeConstant advanceAndDecodeConstant
 func (_this advanceAndDecodeConstant) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
-	name := ctx.Stream.ReadIdentifier()
-	if ctx.Stream.PeekByteAllowEOF() == ':' {
-		ctx.EventReceiver.OnConstant(name, true)
-		ctx.Stream.AdvanceByte()
-		global_decodeByFirstChar.Run(ctx)
-	} else {
-		ctx.EventReceiver.OnConstant(name, false)
-	}
+	ctx.EventReceiver.OnConstant(ctx.Stream.ReadIdentifier())
 }
 
 type advanceAndDecodeMarker struct{}

@@ -674,12 +674,6 @@ func TestBuilderCompactTimeFail(t *testing.T) {
 	assertBuildPanics(t, ctime, E())
 }
 
-func TestBuilderConstant(t *testing.T) {
-	assertBuild(t, "a", CONST("a", true), S("a"))
-	assertBuildPanics(t, "a", CONST("a", false), S("a"))
-	assertBuildPanics(t, "a", CONST("a", false))
-}
-
 func TestBuilderSlice(t *testing.T) {
 	loc, err := time.LoadLocation("Europe/Berlin")
 	if err != nil {

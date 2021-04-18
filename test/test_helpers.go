@@ -995,7 +995,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventRIDReference:
 		receiver.OnRIDReference()
 	case TEventConstant:
-		receiver.OnConstant([]byte(_this.V1.(string)), _this.V2.(bool))
+		receiver.OnConstant([]byte(_this.V1.(string)))
 	case TEventEndDocument:
 		receiver.OnEndDocument()
 	default:
@@ -1080,7 +1080,7 @@ func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) 
 func MARK(id string) *TEvent            { return newTEvent(TEventMarker, id, nil) }
 func REF(id string) *TEvent             { return newTEvent(TEventReference, id, nil) }
 func RIDREF() *TEvent                   { return newTEvent(TEventRIDReference, nil, nil) }
-func CONST(n string, e bool) *TEvent    { return newTEvent(TEventConstant, n, e) }
+func CONST(n string) *TEvent            { return newTEvent(TEventConstant, n, nil) }
 func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
 
@@ -1408,9 +1408,9 @@ func (h *TEventPrinter) OnRIDReference() {
 	h.Print(RIDREF())
 	h.Next.OnRIDReference()
 }
-func (h *TEventPrinter) OnConstant(name []byte, explicitValue bool) {
-	h.Print(CONST(string(name), explicitValue))
-	h.Next.OnConstant(name, explicitValue)
+func (h *TEventPrinter) OnConstant(name []byte) {
+	h.Print(CONST(string(name)))
+	h.Next.OnConstant(name)
 }
 func (h *TEventPrinter) OnEndDocument() {
 	h.Print(ED())
@@ -1569,7 +1569,7 @@ func (h *TEventStore) OnEnd()                                 { h.add(E()) }
 func (h *TEventStore) OnMarker(id []byte)                     { h.add(MARK(string(id))) }
 func (h *TEventStore) OnReference(id []byte)                  { h.add(REF(string(id))) }
 func (h *TEventStore) OnRIDReference()                        { h.add(RIDREF()) }
-func (h *TEventStore) OnConstant(n []byte, e bool)            { h.add(CONST(string(n), e)) }
+func (h *TEventStore) OnConstant(n []byte)                    { h.add(CONST(string(n))) }
 func (h *TEventStore) OnBeginDocument() {
 	h.Events = h.Events[:0]
 	h.add(BD())

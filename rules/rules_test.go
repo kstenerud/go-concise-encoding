@@ -172,17 +172,6 @@ func TestRulesReference(t *testing.T) {
 		E())
 }
 
-func TestRulesConstant(t *testing.T) {
-	rules := newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, M(), S("a"), CONST("something", true), PI(100), E())
-
-	rules = newRulesWithMaxDepth(10)
-	assertEventsFail(t, rules, M(), S("a"), CONST("something", true), E())
-
-	rules = newRulesWithMaxDepth(10)
-	assertEventsFail(t, rules, M(), S("a"), CONST("something", false), E())
-}
-
 // ===========
 // Array Types
 // ===========

@@ -204,12 +204,6 @@ func TestCBETime(t *testing.T) {
 	assertEncode(t, nil, []byte{header, ceVer, typeTimestamp, 0x01, 0x00, 0x10, 0x02, 00, 0x10, 'E', '/', 'B', 'e', 'r', 'l', 'i', 'n'}, BD(), EvV, GT(time.Date(2000, 1, 1, 0, 0, 0, 0, tz)), ED())
 }
 
-func TestCBEConstant(t *testing.T) {
-	assertEncode(t, nil, []byte{header, ceVer, typeString1, 'a'}, BD(), EvV, CONST("x", true), S("a"), ED())
-	assertEncodeFails(t, nil, BD(), EvV, CONST("x", false), S("a"), ED())
-	assertEncodeFails(t, nil, BD(), EvV, CONST("x", false), ED())
-}
-
 func TestCBEShortStringEOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typeString1})
 	assertDecodeFails(t, []byte{header, ceVer, typeString2, 'a'})

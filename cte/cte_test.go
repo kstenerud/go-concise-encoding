@@ -448,33 +448,8 @@ func TestCTETimestamp(t *testing.T) {
 }
 
 func TestCTEConstant(t *testing.T) {
-	// TODO: Update test support to allow passing rules opts
-	// assertDecodeEncode(t, nil, nil, "c0\n#someconst", BD(), EvV, CONST("someconst", false), ED())
-	// assertDecodeEncode(t, nil, nil, `c0
-	// [
-	//    #c
-	//    1
-	// ]`, BD(), EvV, L(), CONST("c", false), PI(1), E(), ED())
-	// assertDecodeEncode(t, nil, nil, `c0
-	// {
-	//    #c = 1
-	// }`, BD(), EvV, M(), CONST("c", false), PI(1), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-#someconst:"xyz"`, BD(), EvV, CONST("someconst", true), S("xyz"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    #c:"xyz"
-    1
-]`, BD(), EvV, L(), CONST("c", true), S("xyz"), PI(1), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    #c:"xyz" = 1
-}`, BD(), EvV, M(), CONST("c", true), S("xyz"), PI(1), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    #c:123 = 1
-}`, BD(), EvV, M(), CONST("c", true), PI(123), PI(1), E(), ED())
+	// TODO: Test this with rules turned off
+	// assertDecodeEncode(t, nil, nil, "c0\n#someconst", BD(), EvV, CONST("someconst"), ED())
 }
 
 func TestCTEQuotedString(t *testing.T) {

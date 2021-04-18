@@ -215,9 +215,7 @@ func (_this *BuilderEventReceiver) OnReference(id []byte) {
 func (_this *BuilderEventReceiver) OnRIDReference() {
 	panic("TODO: BuilderEventReceiver.OnRIDReference")
 }
-func (_this *BuilderEventReceiver) OnConstant(name []byte, explicitValue bool) {
-	if !explicitValue {
-		panic(fmt.Errorf("Cannot build from constant %s without explicit value", string(name)))
-	}
+func (_this *BuilderEventReceiver) OnConstant(name []byte) {
+	panic(fmt.Errorf("Cannot build from constant (%s)", string(name)))
 }
 func (_this *BuilderEventReceiver) OnEndDocument() {}

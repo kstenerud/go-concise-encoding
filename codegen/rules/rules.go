@@ -53,7 +53,7 @@ var (
 	Marker  = "OnMarker(ctx *Context, identifier []byte)"
 	Ref     = "OnReference(ctx *Context, identifier []byte)"
 	RIDRef  = "OnRIDReference(ctx *Context)"
-	Const   = "OnConstant(ctx *Context, identifier []byte, explicitValue bool)"
+	Const   = "OnConstant(ctx *Context, identifier []byte)"
 	Array   = "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)"
 	SArray  = "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)"
 	ABegin  = "OnArrayBegin(ctx *Context, arrayType events.ArrayType)"

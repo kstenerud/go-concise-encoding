@@ -77,5 +77,5 @@ type Encoder interface {
 	OnMarker(id []byte)
 	OnReference(id []byte)
 	OnRIDReference()
-	OnConstant(name []byte, explicitValue bool)
+	OnConstant(name []byte)
 }

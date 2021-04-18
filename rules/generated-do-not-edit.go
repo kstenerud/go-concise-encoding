@@ -73,7 +73,7 @@ func (_this *BeginDocumentRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *BeginDocumentRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *BeginDocumentRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *BeginDocumentRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *BeginDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -136,7 +136,7 @@ func (_this *EndDocumentRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *EndDocumentRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *EndDocumentRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *EndDocumentRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *EndDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -202,7 +202,7 @@ func (_this *TerminalRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *TerminalRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *TerminalRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *TerminalRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *TerminalRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -265,7 +265,7 @@ func (_this *VersionRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *VersionRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *VersionRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *VersionRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *VersionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -331,7 +331,7 @@ func (_this *NARule) OnReference(ctx *Context, identifier []byte) {
 func (_this *NARule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *NARule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *NARule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *NARule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -490,7 +490,7 @@ func (_this *MarkupContentsRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *MarkupContentsRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *MarkupContentsRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *MarkupContentsRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *MarkupContentsRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -535,7 +535,7 @@ func (_this *CommentRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *CommentRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *CommentRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *CommentRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *CommentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -592,7 +592,7 @@ func (_this *ArrayRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *ArrayRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *ArrayRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *ArrayRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *ArrayRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -655,7 +655,7 @@ func (_this *ArrayChunkRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *ArrayChunkRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *ArrayChunkRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *ArrayChunkRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *ArrayChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -718,7 +718,7 @@ func (_this *StringRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *StringRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *StringRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *StringRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *StringRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -781,7 +781,7 @@ func (_this *StringChunkRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *StringChunkRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *StringChunkRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *StringChunkRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *StringChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -844,7 +844,7 @@ func (_this *StringBuilderRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *StringBuilderRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *StringBuilderRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *StringBuilderRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *StringBuilderRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -907,7 +907,7 @@ func (_this *StringBuilderChunkRule) OnReference(ctx *Context, identifier []byte
 func (_this *StringBuilderChunkRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *StringBuilderChunkRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *StringBuilderChunkRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *StringBuilderChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -961,7 +961,7 @@ func (_this *MarkedObjectKeyableRule) OnReference(ctx *Context, identifier []byt
 func (_this *MarkedObjectKeyableRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *MarkedObjectKeyableRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *MarkedObjectKeyableRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *MarkedObjectKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -997,7 +997,7 @@ func (_this *MarkedObjectAnyTypeRule) OnReference(ctx *Context, identifier []byt
 func (_this *MarkedObjectAnyTypeRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *MarkedObjectAnyTypeRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *MarkedObjectAnyTypeRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -1045,7 +1045,7 @@ func (_this *ConstantKeyableRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *ConstantKeyableRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *ConstantKeyableRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *ConstantKeyableRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *ConstantKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -1078,7 +1078,7 @@ func (_this *ConstantAnyTypeRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *ConstantAnyTypeRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *ConstantAnyTypeRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *ConstantAnyTypeRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *ConstantAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -1129,7 +1129,7 @@ func (_this *RIDReferenceRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *RIDReferenceRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *RIDReferenceRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *RIDReferenceRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *RIDReferenceRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
@@ -1180,7 +1180,7 @@ func (_this *RIDCatRule) OnReference(ctx *Context, identifier []byte) {
 func (_this *RIDCatRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
-func (_this *RIDCatRule) OnConstant(ctx *Context, identifier []byte, explicitValue bool) {
+func (_this *RIDCatRule) OnConstant(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Constant", _this))
 }
 func (_this *RIDCatRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
