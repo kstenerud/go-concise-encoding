@@ -24,7 +24,6 @@ import (
 	"math"
 
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
@@ -40,9 +39,7 @@ func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 }
 
 func decodeArrayType(ctx *DecoderContext) string {
-	ctx.Stream.TokenBegin()
-	ctx.Stream.TokenReadUntilPropertyNoEOF(chars.ObjectEnd)
-	arrayType := ctx.Stream.TokenGet()
+	arrayType := ctx.Stream.ReadToken()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
 		arrayType = arrayType[:len(arrayType)-1]
 		ctx.Stream.UnreadByte()

@@ -222,22 +222,6 @@ func (_this *Reader) TokenReadByteAllowEOF() chars.ByteWithEOF {
 	return b
 }
 
-func (_this *Reader) TokenUnreadByte() {
-	_this.UnreadByte()
-	_this.token = _this.token[:len(_this.token)-1]
-}
-
-func (_this *Reader) TokenReadUntilByte(untilByte byte) {
-	for {
-		b := _this.ReadByteNoEOF()
-		if b == untilByte {
-			_this.UnreadByte()
-			break
-		}
-		_this.TokenAppendByte(b)
-	}
-}
-
 func (_this *Reader) TokenReadUntilAndIncludingByte(untilByte byte) {
 	for {
 		b := _this.ReadByteNoEOF()
@@ -270,17 +254,6 @@ func (_this *Reader) TokenReadUntilPropertyAllowEOF(property chars.Properties) {
 	}
 }
 
-func (_this *Reader) TokenReadWhilePropertyNoEOF(property chars.Properties) {
-	for {
-		b := _this.ReadByteNoEOF()
-		if !chars.ByteHasProperty(b, property) {
-			_this.UnreadByte()
-			break
-		}
-		_this.TokenAppendByte(b)
-	}
-}
-
 func (_this *Reader) TokenReadWhilePropertyAllowEOF(property chars.Properties) {
 	for {
 		b := _this.ReadByteAllowEOF()
@@ -289,30 +262,6 @@ func (_this *Reader) TokenReadWhilePropertyAllowEOF(property chars.Properties) {
 			break
 		}
 		_this.TokenAppendByte(byte(b))
-	}
-}
-
-func (_this *Reader) TokenReadUntilByteNoEOF(untilByte byte) {
-	for {
-		b := _this.ReadByteNoEOF()
-		if b == untilByte {
-			_this.UnreadByte()
-			break
-		}
-		_this.TokenAppendByte(b)
-	}
-}
-
-func (_this *Reader) TokenReadUntilOneOfBytesNoEOF(untilBytes ...byte) {
-	for {
-		b := _this.ReadByteNoEOF()
-		for _, check := range untilBytes {
-			if b == check {
-				_this.UnreadByte()
-				return
-			}
-		}
-		_this.TokenAppendByte(b)
 	}
 }
 
@@ -949,9 +898,7 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 }
 
 func (_this *Reader) ReadNamedValue() []byte {
-	_this.TokenBegin()
-	_this.TokenReadUntilPropertyAllowEOF(chars.ObjectEnd)
-	namedValue := _this.TokenGet()
+	namedValue := _this.ReadToken()
 	if len(namedValue) == 0 {
 		_this.UnexpectedChar("name")
 	}
@@ -1053,9 +1000,7 @@ func (_this *Reader) ReadQuotedString() []byte {
 }
 
 func (_this *Reader) ReadIdentifier() []byte {
-	_this.TokenBegin()
-	_this.TokenReadUntilPropertyAllowEOF(chars.ObjectEnd)
-	return _this.TokenGet()
+	return _this.ReadToken()
 }
 
 func (_this *Reader) ReadStringArray() []byte {
