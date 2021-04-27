@@ -215,3 +215,5 @@ func ElementCountToByteCount(elementBitWidth int, elementCount uint64) uint64 {
 	}
 	return byteCount
 }
+
+var MaxDayByMonth = []int{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}

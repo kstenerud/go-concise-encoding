@@ -22,6 +22,7 @@ package cte
 
 import (
 	"math"
+	"math/big"
 
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -32,7 +33,7 @@ type decodeInvalidChar struct{}
 var global_decodeInvalidChar decodeInvalidChar
 
 func (_this decodeInvalidChar) Run(ctx *DecoderContext) {
-	ctx.Stream.Errorf("Unexpected [%v]", ctx.Stream.DescribeCurrentChar())
+	ctx.Errorf("Unexpected [%v]", ctx.DescribeCurrentChar())
 }
 
 type decodeWhitespace struct{}
@@ -72,15 +73,15 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 	global_decodeWhitespace.Run(ctx)
 
 	if b := ctx.Stream.ReadByteNoEOF(); b != 'c' && b != 'C' {
-		ctx.Stream.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.Stream.DescribeCurrentChar())
+		ctx.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.DescribeCurrentChar())
 	}
 
 	version, bigVersion, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
 	if digitCount == 0 {
-		ctx.Stream.UnexpectedChar("version number")
+		ctx.UnexpectedChar("version number")
 	}
 	if bigVersion != nil {
-		ctx.Stream.Errorf("Version too big")
+		ctx.Errorf("Version too big")
 	}
 	// TODO: Remove this when releasing V1
 	if version == 1 {
@@ -89,7 +90,7 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 
 	b := ctx.Stream.PeekByteNoEOF()
 	if !chars.ByteHasProperty(b, chars.StructWS) {
-		ctx.Stream.UnexpectedChar("whitespace after version")
+		ctx.UnexpectedChar("whitespace after version")
 	}
 	global_decodeWhitespace.Run(ctx)
 
@@ -123,18 +124,19 @@ var global_decodeNumericPositive decodeNumericPositive
 func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 	coefficient, bigCoefficient, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
 	b := ctx.Stream.ReadByteAllowEOF()
-	switch b {
-	case '-':
+	switch {
+	case b == '-':
+		// TODO: Could be UUID  (followed by 0-9a-fA-F *4)
 		v := ctx.Stream.ReadDate(int64(coefficient))
 		ctx.Stream.AssertAtObjectEnd("date")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
-	case ':':
+	case b == ':':
 		v := ctx.Stream.ReadTime(int(coefficient))
 		ctx.Stream.AssertAtObjectEnd("time")
 		ctx.EventReceiver.OnCompactTime(v)
 		return
-	case '.':
+	case b == '.':
 		value, bigValue, _ := ctx.Stream.ReadDecimalFloat(1, coefficient, bigCoefficient, digitCount)
 		ctx.Stream.AssertAtObjectEnd("float")
 		if bigValue != nil {
@@ -142,6 +144,10 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 		} else {
 			ctx.EventReceiver.OnDecimalFloat(value)
 		}
+		return
+	case b.HasProperty(chars.LowerAF | chars.UpperAF):
+		ctx.Stream.UnreadByte()
+		ctx.EventReceiver.OnUUID(ctx.Stream.ReadUUIDWithDecimalDecoded(coefficient, digitCount))
 		return
 	default:
 		if b.HasProperty(chars.ObjectEnd) {
@@ -154,7 +160,24 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 			return
 		}
 	}
-	ctx.Stream.UnexpectedChar("numeric")
+	ctx.UnexpectedChar("numeric")
+}
+
+func reinterpretDecAsHex(v uint64) uint64 {
+	var result uint64
+	for position := 0; v != 0; position += 4 {
+		result |= (v % 10) << position
+		v /= 10
+	}
+	return result
+}
+
+type decodeUUID struct{}
+
+var global_decodeUUID decodeUUID
+
+func (_this decodeUUID) Run(ctx *DecoderContext) {
+	ctx.EventReceiver.OnUUID(ctx.Stream.ReadUUIDWithDecimalDecoded(0, 0))
 }
 
 type advanceAndDecodeNumericNegative struct{}
@@ -172,7 +195,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	case 'i':
 		namedValue := string(ctx.Stream.ReadNamedValue())
 		if namedValue != "inf" {
-			ctx.Stream.Errorf("Unknown named value: %v", namedValue)
+			ctx.Errorf("Unknown named value: %v", namedValue)
 		}
 		ctx.EventReceiver.OnFloat(math.Inf(-1))
 		return
@@ -208,77 +231,66 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 			return
 		}
 	}
-	ctx.Stream.UnexpectedChar("numeric")
+	ctx.UnexpectedChar("numeric")
 }
 
-type advanceAndDecodeOtherBasePositive struct{}
+type decode0Based struct{}
 
-var global_advanceAndDecodeOtherBasePositive advanceAndDecodeOtherBasePositive
+var global_decode0Based decode0Based
 
-func (_this advanceAndDecodeOtherBasePositive) Run(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '0'
+func (_this decode0Based) Run(ctx *DecoderContext) {
+	// Assumption: First character is 0
 
-	b := ctx.Stream.ReadByteAllowEOF()
-	if b.HasProperty(chars.ObjectEnd) {
-		ctx.Stream.UnreadByte()
+	token := ctx.Stream.ReadToken()
+	token.assertNotEnd(ctx.TextPos, 0, "0-based numeric")
+
+	// 0
+	if len(token) == 1 {
 		ctx.EventReceiver.OnPositiveInt(0)
 		return
 	}
 
-	switch b {
+	// 00000000-0000-0000-0000-000000000000
+	if len(token) == 36 && token[8] == '-' {
+		decodeTokenAsUUID(ctx, token)
+		return
+	}
+
+	switch token[1] {
 	case 'b':
-		v, bigV, _ := ctx.Stream.ReadBinaryUint()
-		ctx.Stream.AssertAtObjectEnd("binary integer")
-		if bigV != nil {
-			ctx.EventReceiver.OnBigInt(bigV)
-		} else {
-			ctx.EventReceiver.OnPositiveInt(v)
-		}
+		// 0b1010
+		decodeTokenAsBinaryInt(ctx, token)
+		return
 	case 'o':
-		v, bigV, _ := ctx.Stream.ReadOctalUint()
-		ctx.Stream.AssertAtObjectEnd("octal integer")
-		if bigV != nil {
-			ctx.EventReceiver.OnBigInt(bigV)
-		} else {
-			ctx.EventReceiver.OnPositiveInt(v)
-		}
+		// 0o1234
+		decodeTokenAsOctalInt(ctx, token)
+		return
 	case 'x':
-		v, bigV, digitCount := ctx.Stream.ReadHexUint(0, nil)
-		if ctx.Stream.PeekByteAllowEOF() == '.' {
-			ctx.Stream.AdvanceByte()
-			fv, bigFV, _ := ctx.Stream.ReadHexFloat(1, v, bigV, digitCount)
-			ctx.Stream.AssertAtObjectEnd("hex float")
-			if bigFV != nil {
-				ctx.EventReceiver.OnBigFloat(bigFV)
-			} else {
-				ctx.EventReceiver.OnFloat(fv)
-			}
-		} else {
-			ctx.Stream.AssertAtObjectEnd("hex integer")
-			if bigV != nil {
-				ctx.EventReceiver.OnBigInt(bigV)
-			} else {
-				ctx.EventReceiver.OnPositiveInt(v)
-			}
-		}
+		// 0x1234
+		decodeTokenAsHexNumber(ctx, token)
+		return
+	}
+
+	value, bigValue, digitCount, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
+
+	// 0123
+	if token.isAtEnd(decodedCount) {
+		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue)
+		return
+	}
+
+	switch token[decodedCount] {
 	case '.':
-		value, bigValue, _ := ctx.Stream.ReadDecimalFloat(1, 0, nil, 0)
-		ctx.Stream.AssertAtObjectEnd("float")
-		if bigValue != nil {
-			ctx.EventReceiver.OnBigDecimalFloat(bigValue)
-		} else {
-			ctx.EventReceiver.OnDecimalFloat(value)
-		}
+		// 0.123
+		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue)
+		return
+	case ':':
+		// 01:23:45
+		decodeTokenAsTime(ctx, token, decodedCount, int(value))
+		return
 	default:
-		if b.HasProperty(chars.DigitBase10) && ctx.Stream.PeekByteNoEOF() == ':' {
-			ctx.Stream.AdvanceByte()
-			v := ctx.Stream.ReadTime(int(b - '0'))
-			ctx.Stream.AssertAtObjectEnd("time")
-			ctx.EventReceiver.OnCompactTime(v)
-			return
-		}
-		ctx.Stream.UnreadByte()
-		ctx.Stream.UnexpectedChar("numeric base")
+		token.UnexpectedChar(ctx.TextPos, decodedCount, "0-based numeric")
+		return
 	}
 }
 
@@ -355,21 +367,29 @@ func (_this decodeOtherBaseNegative) Run(ctx *DecoderContext) {
 		}
 	default:
 		ctx.Stream.UnreadByte()
-		ctx.Stream.UnexpectedChar("numeric base")
+		ctx.UnexpectedChar("numeric base")
 	}
 }
 
-type decodeNamedValueF struct{}
+type decodeFalseOrUUID struct{}
 
-var global_decodeNamedValueF decodeNamedValueF
+var global_decodeFalseOrUUID decodeFalseOrUUID
 
-func (_this decodeNamedValueF) Run(ctx *DecoderContext) {
-	namedValue := ctx.Stream.ReadNamedValue()
-	switch string(namedValue) {
+func (_this decodeFalseOrUUID) Run(ctx *DecoderContext) {
+	token := ctx.Stream.ReadToken()
+
+	// 00000000-0000-0000-0000-000000000000
+	if len(token) == 36 && token[8] == '-' {
+		decodeTokenAsUUID(ctx, token)
+		return
+	}
+
+	named := string(token)
+	switch named {
 	case "false":
 		ctx.EventReceiver.OnFalse()
 	default:
-		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+		ctx.Errorf("%v: Unknown named value", named)
 	}
 }
 
@@ -383,7 +403,7 @@ func (_this decodeNamedValueI) Run(ctx *DecoderContext) {
 	case "inf":
 		ctx.EventReceiver.OnFloat(math.Inf(1))
 	default:
-		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
 }
 
@@ -397,7 +417,7 @@ func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 	case "na":
 		if ctx.Stream.ReadByteNoEOF() != ':' {
 			ctx.Stream.UnreadByte()
-			ctx.Stream.UnexpectedChar("NA")
+			ctx.UnexpectedChar("NA")
 		}
 		ctx.EventReceiver.OnNA()
 		global_decodeByFirstChar.Run(ctx)
@@ -406,7 +426,7 @@ func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 	case "nil":
 		ctx.EventReceiver.OnNil()
 	default:
-		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
 }
 
@@ -420,7 +440,7 @@ func (_this decodeNamedValueS) Run(ctx *DecoderContext) {
 	case "snan":
 		ctx.EventReceiver.OnNan(true)
 	default:
-		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
 }
 
@@ -434,17 +454,8 @@ func (_this decodeNamedValueT) Run(ctx *DecoderContext) {
 	case "true":
 		ctx.EventReceiver.OnTrue()
 	default:
-		ctx.Stream.Errorf("%v: Unknown named value", string(namedValue))
+		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
-}
-
-type advanceAndDecodeUUID struct{}
-
-var global_advanceAndDecodeUUID advanceAndDecodeUUID
-
-func (_this advanceAndDecodeUUID) Run(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '@'
-	ctx.EventReceiver.OnUUID(ctx.Stream.ExtractUUID(ctx.Stream.ReadNamedValue()))
 }
 
 type advanceAndDecodeConstant struct{}
@@ -466,7 +477,7 @@ func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnMarker(ctx.Stream.ReadIdentifier())
 	if ctx.Stream.PeekByteNoEOF() != ':' {
-		ctx.Stream.Errorf("Missing colon between marker ID and marked value")
+		ctx.Errorf("Missing colon between marker ID and marked value")
 	}
 	ctx.Stream.AdvanceByte()
 	global_decodeByFirstChar.Run(ctx)
@@ -485,7 +496,7 @@ func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 		arrayType := decodeArrayType(ctx)
 		ctx.Stream.SkipWhitespace()
 		if arrayType != "r" {
-			ctx.Stream.Errorf("%s: Invalid array type for reference ID", arrayType)
+			ctx.Errorf("%s: Invalid array type for reference ID", arrayType)
 		}
 		decodeRID(ctx)
 		return
@@ -502,4 +513,100 @@ func (_this advanceAndDecodeSuffix) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ':'
 
 	panic("TODO: decodeSuffix")
+}
+
+// ===========================================================================
+
+func decodeTokenAsBinaryInt(ctx *DecoderContext, token Token) {
+	token = token[2:]
+	value, bigValue, _, decodedCount := token.DecodeBinaryUint(ctx.TextPos)
+	token = token[decodedCount:]
+	if bigValue != nil {
+		ctx.EventReceiver.OnBigInt(bigValue)
+	} else {
+		ctx.EventReceiver.OnPositiveInt(value)
+	}
+	token.AssertAtEnd(ctx.TextPos, 0, "binary integer")
+}
+
+func decodeTokenAsOctalInt(ctx *DecoderContext, token Token) {
+	token = token[2:]
+	value, bigValue, _, decodedCount := token.DecodeOctalUint(ctx.TextPos)
+	token = token[decodedCount:]
+	if bigValue != nil {
+		ctx.EventReceiver.OnBigInt(bigValue)
+	} else {
+		ctx.EventReceiver.OnPositiveInt(value)
+	}
+	token.AssertAtEnd(ctx.TextPos, 0, "octal integer")
+}
+
+func decodeTokenAsHexNumber(ctx *DecoderContext, token Token) {
+	token = token[2:]
+	value, bigValue, digitCount, decodedCount := token.DecodeHexUint(ctx.TextPos)
+	token = token[decodedCount:]
+
+	if token.isAtEnd(0) {
+		if bigValue != nil {
+			ctx.EventReceiver.OnBigInt(bigValue)
+		} else {
+			ctx.EventReceiver.OnPositiveInt(value)
+		}
+		return
+	}
+
+	if token[0] != '.' {
+		token.UnexpectedChar(ctx.TextPos, 0, "hexadecimal int")
+	}
+
+	sign := int64(1)
+	var fvalue float64
+	var bigFValue *big.Float
+	fvalue, bigFValue, decodedCount = token.CompleteHexFloat(ctx.TextPos, sign, value, bigValue, digitCount)
+	token = token[decodedCount:]
+	if bigFValue != nil {
+		ctx.EventReceiver.OnBigFloat(bigFValue)
+	} else {
+		ctx.EventReceiver.OnFloat(fvalue)
+	}
+
+	token.AssertAtEnd(ctx.TextPos, 0, "hexadecimal number")
+}
+
+func decodeTokenAsUUID(ctx *DecoderContext, token Token) {
+	ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
+}
+
+func decodeTokenAsDecimalInt(ctx *DecoderContext, token Token, decodedCount int, value uint64, bigValue *big.Int) {
+	token = token[decodedCount:]
+	if bigValue != nil {
+		ctx.EventReceiver.OnBigInt(bigValue)
+	} else {
+		ctx.EventReceiver.OnPositiveInt(value)
+	}
+	token.AssertAtEnd(ctx.TextPos, 0, "decimal integer")
+}
+
+func decodeTokenAsDecimalFloat(ctx *DecoderContext, token Token, decodedCount int, digitCount int, value uint64, bigValue *big.Int) {
+	sign := int64(1)
+	token = token[decodedCount:]
+	fvalue, bigFValue, decodedCount := token.CompleteDecimalFloat(ctx.TextPos, sign, value, bigValue, digitCount)
+	token = token[decodedCount:]
+	if bigFValue != nil {
+		ctx.EventReceiver.OnBigDecimalFloat(bigFValue)
+	} else {
+		ctx.EventReceiver.OnDecimalFloat(fvalue)
+	}
+	token.AssertAtEnd(ctx.TextPos, 0, "decimal float")
+}
+
+func decodeTokenAsTime(ctx *DecoderContext, token Token, decodedCount int, hour int) {
+	if decodedCount != 2 {
+		token.UnexpectedChar(ctx.TextPos, decodedCount, "time")
+	}
+	token = token[decodedCount:]
+	tvalue, decodedCount := token.CompleteTime(ctx.TextPos, 0, 0, 0, hour)
+	token = token[decodedCount:]
+	ctx.EventReceiver.OnCompactTime(tvalue)
+	token.AssertAtEnd(ctx.TextPos, 0, "time")
 }

@@ -119,7 +119,7 @@ func TestWebsiteExampleOtherTypes(t *testing.T) {
 
 	assertDecodeEncode(t, cteEOpts, nil, nil, nil, `c0
 {
-    "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
+    "uuid" = f1ce4567-e89b-12d3-a456-426655440000
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/Europe/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344

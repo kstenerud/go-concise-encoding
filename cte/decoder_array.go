@@ -54,7 +54,7 @@ func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType
 		ctx.EventReceiver.OnArray(arrayType, uint64(len(data)/bytesPerElement), data)
 		return
 	default:
-		ctx.Stream.Errorf("Expected %v digits", digitType)
+		ctx.Errorf("Expected %v digits", digitType)
 	}
 }
 
@@ -155,7 +155,7 @@ func (_this decodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	case "f64x":
 		decodeArrayF64(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
 	default:
-		ctx.Stream.Errorf("%s: Unhandled array type", arrayType)
+		ctx.Errorf("%s: Unhandled array type", arrayType)
 	}
 }
 
@@ -170,7 +170,7 @@ func decodeRID(ctx *DecoderContext) {
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
 		ctx.Stream.AdvanceByte()
 		if ctx.Stream.PeekByteNoEOF() != '"' {
-			ctx.Stream.Errorf("Only strings may be appended to a resource ID")
+			ctx.Errorf("Only strings may be appended to a resource ID")
 		}
 		global_advanceAndDecodeQuotedString.Run(ctx)
 		return
@@ -188,7 +188,7 @@ func decodeCustomBinary(ctx *DecoderContext) {
 			break
 		}
 		if v > maxUint8Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v))
 	}
@@ -216,7 +216,7 @@ func decodeArrayBoolean(ctx *DecoderContext) {
 			case '1':
 				nextByte |= byte(1 << i)
 			default:
-				ctx.Stream.UnexpectedChar("boolean array")
+				ctx.UnexpectedChar("boolean array")
 			}
 			elemCount++
 		}
@@ -233,7 +233,7 @@ func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement func() (
 			break
 		}
 		if v > maxUint8Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v))
 	}
@@ -249,7 +249,7 @@ func decodeArrayU16(ctx *DecoderContext, digitType string, decodeElement func() 
 			break
 		}
 		if v > maxUint16Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8))
 	}
@@ -265,7 +265,7 @@ func decodeArrayU32(ctx *DecoderContext, digitType string, decodeElement func() 
 			break
 		}
 		if v > maxUint32Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
 	}
@@ -295,7 +295,7 @@ func decodeArrayI8(ctx *DecoderContext, digitType string, decodeElement func() (
 			break
 		}
 		if v < minInt8Value || v > maxInt8Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v))
 	}
@@ -311,7 +311,7 @@ func decodeArrayI16(ctx *DecoderContext, digitType string, decodeElement func() 
 			break
 		}
 		if v < minInt16Value || v > maxInt16Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8))
 	}
@@ -327,7 +327,7 @@ func decodeArrayI32(ctx *DecoderContext, digitType string, decodeElement func() 
 			break
 		}
 		if v < minInt32Value || v > maxInt32Value {
-			ctx.Stream.Errorf("%v value too big for array type", digitType)
+			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
 	}
@@ -359,7 +359,7 @@ func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement func() 
 
 		exp := extractFloat64Exponent(v)
 		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
-			ctx.Stream.Errorf("Exponent too big for bfloat16 type")
+			ctx.Errorf("Exponent too big for bfloat16 type")
 		}
 		bits := math.Float32bits(float32(v))
 		data = append(data, uint8(bits>>16), uint8(bits>>24))
@@ -378,7 +378,7 @@ func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement func() 
 
 		exp := extractFloat64Exponent(v)
 		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
-			ctx.Stream.Errorf("Exponent too big for float32 type")
+			ctx.Errorf("Exponent too big for float32 type")
 		}
 		bits := math.Float32bits(float32(v))
 		data = append(data, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24))
@@ -405,14 +405,7 @@ func decodeArrayUUID(ctx *DecoderContext) {
 	var data []uint8
 	ctx.Stream.SkipWhitespace()
 	for ctx.Stream.PeekByteAllowEOF() != '|' {
-		token := ctx.Stream.ReadToken()
-		if len(token) == 0 {
-			panic("Error")
-		}
-		if token[0] == '@' {
-			token = token[1:]
-		}
-		data = append(data, ctx.Stream.ExtractUUID(token)...)
+		data = append(data, ctx.Stream.ReadUUIDWithDecimalDecoded(0, 0)...)
 		ctx.Stream.SkipWhitespace()
 	}
 	finishTypedArray(ctx, events.ArrayTypeUUID, "uuid", 16, data)

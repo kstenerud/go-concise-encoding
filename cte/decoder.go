@@ -94,17 +94,22 @@ func init() {
 	decoderOpsByFirstChar['\t'] = global_decodeWhitespace
 	decoderOpsByFirstChar[' '] = global_decodeWhitespace
 	decoderOpsByFirstChar['"'] = global_advanceAndDecodeQuotedString
-	decoderOpsByFirstChar['0'] = global_advanceAndDecodeOtherBasePositive
+	decoderOpsByFirstChar['0'] = global_decode0Based
 	for i := '1'; i <= '9'; i++ {
 		decoderOpsByFirstChar[i] = global_decodeNumericPositive
 	}
-	decoderOpsByFirstChar['f'] = global_decodeNamedValueF
+	for i := 'a'; i <= 'f'; i++ {
+		decoderOpsByFirstChar[i] = global_decodeUUID
+	}
+	for i := 'A'; i <= 'F'; i++ {
+		decoderOpsByFirstChar[i] = global_decodeUUID
+	}
+	decoderOpsByFirstChar['f'] = global_decodeFalseOrUUID
 	decoderOpsByFirstChar['i'] = global_decodeNamedValueI
 	decoderOpsByFirstChar['n'] = global_decodeNamedValueN
 	decoderOpsByFirstChar['s'] = global_decodeNamedValueS
 	decoderOpsByFirstChar['t'] = global_decodeNamedValueT
 	decoderOpsByFirstChar['-'] = global_advanceAndDecodeNumericNegative
-	decoderOpsByFirstChar['@'] = global_advanceAndDecodeUUID
 	decoderOpsByFirstChar['#'] = global_advanceAndDecodeConstant
 	decoderOpsByFirstChar['$'] = global_advanceAndDecodeReference
 	decoderOpsByFirstChar['&'] = global_advanceAndDecodeMarker

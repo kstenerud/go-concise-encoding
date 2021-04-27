@@ -27,6 +27,33 @@ import (
 	"unicode/utf8"
 )
 
+func isNamedStartChar (ch byte) bool {
+switch ch {
+		case 'a':
+			return true
+		case 'e':
+			return true
+		case 'f':
+			return true
+		case 'i':
+			return true
+		case 'l':
+			return true
+		case 'n':
+			return true
+		case 'r':
+			return true
+		case 's':
+			return true
+		case 't':
+			return true
+		case 'u':
+			return true
+		default:
+			return false
+	}
+}
+
 type Properties uint16
 
 const (
@@ -36,9 +63,9 @@ const (
 	DigitBase10
 	LowerAF
 	UpperAF
+	AZ
 	AreaLocation
 	ObjectEnd
-	UUID
 	NoProperties = 0
 )
 
@@ -213,84 +240,84 @@ var properties = [0x101]Properties{
 	/* [*] */ 0x2a: NoProperties,
 	/* [+] */ 0x2b: AreaLocation,
 	/* [,] */ 0x2c: ObjectEnd,
-	/* [-] */ 0x2d: AreaLocation | UUID,
+	/* [-] */ 0x2d: AreaLocation,
 	/* [.] */ 0x2e: NoProperties,
-	/* [/] */ 0x2f: AreaLocation | ObjectEnd,
-	/* [0] */ 0x30: DigitBase2 | DigitBase8 | DigitBase10 | UUID,
-	/* [1] */ 0x31: DigitBase2 | DigitBase8 | DigitBase10 | UUID,
-	/* [2] */ 0x32: DigitBase8 | DigitBase10 | UUID,
-	/* [3] */ 0x33: DigitBase8 | DigitBase10 | UUID,
-	/* [4] */ 0x34: DigitBase8 | DigitBase10 | UUID,
-	/* [5] */ 0x35: DigitBase8 | DigitBase10 | UUID,
-	/* [6] */ 0x36: DigitBase8 | DigitBase10 | UUID,
-	/* [7] */ 0x37: DigitBase8 | DigitBase10 | UUID,
-	/* [8] */ 0x38: DigitBase10 | UUID,
-	/* [9] */ 0x39: DigitBase10 | UUID,
-	/* [:] */ 0x3a: ObjectEnd,
+	/* [/] */ 0x2f: AreaLocation,
+	/* [0] */ 0x30: DigitBase2 | DigitBase8 | DigitBase10,
+	/* [1] */ 0x31: DigitBase2 | DigitBase8 | DigitBase10,
+	/* [2] */ 0x32: DigitBase8 | DigitBase10,
+	/* [3] */ 0x33: DigitBase8 | DigitBase10,
+	/* [4] */ 0x34: DigitBase8 | DigitBase10,
+	/* [5] */ 0x35: DigitBase8 | DigitBase10,
+	/* [6] */ 0x36: DigitBase8 | DigitBase10,
+	/* [7] */ 0x37: DigitBase8 | DigitBase10,
+	/* [8] */ 0x38: DigitBase10,
+	/* [9] */ 0x39: DigitBase10,
+	/* [:] */ 0x3a: NoProperties,
 	/* [;] */ 0x3b: NoProperties,
 	/* [<] */ 0x3c: NoProperties,
 	/* [=] */ 0x3d: ObjectEnd,
 	/* [>] */ 0x3e: ObjectEnd,
 	/* [?] */ 0x3f: NoProperties,
 	/* [@] */ 0x40: NoProperties,
-	/* [A] */ 0x41: UpperAF | AreaLocation | UUID,
-	/* [B] */ 0x42: UpperAF | AreaLocation | UUID,
-	/* [C] */ 0x43: UpperAF | AreaLocation | UUID,
-	/* [D] */ 0x44: UpperAF | AreaLocation | UUID,
-	/* [E] */ 0x45: UpperAF | AreaLocation | UUID,
-	/* [F] */ 0x46: UpperAF | AreaLocation | UUID,
-	/* [G] */ 0x47: AreaLocation,
-	/* [H] */ 0x48: AreaLocation,
-	/* [I] */ 0x49: AreaLocation,
-	/* [J] */ 0x4a: AreaLocation,
-	/* [K] */ 0x4b: AreaLocation,
-	/* [L] */ 0x4c: AreaLocation,
-	/* [M] */ 0x4d: AreaLocation,
-	/* [N] */ 0x4e: AreaLocation,
-	/* [O] */ 0x4f: AreaLocation,
-	/* [P] */ 0x50: AreaLocation,
-	/* [Q] */ 0x51: AreaLocation,
-	/* [R] */ 0x52: AreaLocation,
-	/* [S] */ 0x53: AreaLocation,
-	/* [T] */ 0x54: AreaLocation,
-	/* [U] */ 0x55: AreaLocation,
-	/* [V] */ 0x56: AreaLocation,
-	/* [W] */ 0x57: AreaLocation,
-	/* [X] */ 0x58: AreaLocation,
-	/* [Y] */ 0x59: AreaLocation,
-	/* [Z] */ 0x5a: AreaLocation,
+	/* [A] */ 0x41: UpperAF | AZ | AreaLocation,
+	/* [B] */ 0x42: UpperAF | AZ | AreaLocation,
+	/* [C] */ 0x43: UpperAF | AZ | AreaLocation,
+	/* [D] */ 0x44: UpperAF | AZ | AreaLocation,
+	/* [E] */ 0x45: UpperAF | AZ | AreaLocation,
+	/* [F] */ 0x46: UpperAF | AZ | AreaLocation,
+	/* [G] */ 0x47: AZ | AreaLocation,
+	/* [H] */ 0x48: AZ | AreaLocation,
+	/* [I] */ 0x49: AZ | AreaLocation,
+	/* [J] */ 0x4a: AZ | AreaLocation,
+	/* [K] */ 0x4b: AZ | AreaLocation,
+	/* [L] */ 0x4c: AZ | AreaLocation,
+	/* [M] */ 0x4d: AZ | AreaLocation,
+	/* [N] */ 0x4e: AZ | AreaLocation,
+	/* [O] */ 0x4f: AZ | AreaLocation,
+	/* [P] */ 0x50: AZ | AreaLocation,
+	/* [Q] */ 0x51: AZ | AreaLocation,
+	/* [R] */ 0x52: AZ | AreaLocation,
+	/* [S] */ 0x53: AZ | AreaLocation,
+	/* [T] */ 0x54: AZ | AreaLocation,
+	/* [U] */ 0x55: AZ | AreaLocation,
+	/* [V] */ 0x56: AZ | AreaLocation,
+	/* [W] */ 0x57: AZ | AreaLocation,
+	/* [X] */ 0x58: AZ | AreaLocation,
+	/* [Y] */ 0x59: AZ | AreaLocation,
+	/* [Z] */ 0x5a: AZ | AreaLocation,
 	/* [[] */ 0x5b: NoProperties,
 	/* [\] */ 0x5c: NoProperties,
 	/* []] */ 0x5d: ObjectEnd,
 	/* [^] */ 0x5e: NoProperties,
 	/* [_] */ 0x5f: AreaLocation,
 	/* [`] */ 0x60: NoProperties,
-	/* [a] */ 0x61: LowerAF | AreaLocation | UUID,
-	/* [b] */ 0x62: LowerAF | AreaLocation | UUID,
-	/* [c] */ 0x63: LowerAF | AreaLocation | UUID,
-	/* [d] */ 0x64: LowerAF | AreaLocation | UUID,
-	/* [e] */ 0x65: LowerAF | AreaLocation | UUID,
-	/* [f] */ 0x66: LowerAF | AreaLocation | UUID,
-	/* [g] */ 0x67: AreaLocation,
-	/* [h] */ 0x68: AreaLocation,
-	/* [i] */ 0x69: AreaLocation,
-	/* [j] */ 0x6a: AreaLocation,
-	/* [k] */ 0x6b: AreaLocation,
-	/* [l] */ 0x6c: AreaLocation,
-	/* [m] */ 0x6d: AreaLocation,
-	/* [n] */ 0x6e: AreaLocation,
-	/* [o] */ 0x6f: AreaLocation,
-	/* [p] */ 0x70: AreaLocation,
-	/* [q] */ 0x71: AreaLocation,
-	/* [r] */ 0x72: AreaLocation,
-	/* [s] */ 0x73: AreaLocation,
-	/* [t] */ 0x74: AreaLocation,
-	/* [u] */ 0x75: AreaLocation,
-	/* [v] */ 0x76: AreaLocation,
-	/* [w] */ 0x77: AreaLocation,
-	/* [x] */ 0x78: AreaLocation,
-	/* [y] */ 0x79: AreaLocation,
-	/* [z] */ 0x7a: AreaLocation,
+	/* [a] */ 0x61: LowerAF | AZ | AreaLocation,
+	/* [b] */ 0x62: LowerAF | AZ | AreaLocation,
+	/* [c] */ 0x63: LowerAF | AZ | AreaLocation,
+	/* [d] */ 0x64: LowerAF | AZ | AreaLocation,
+	/* [e] */ 0x65: LowerAF | AZ | AreaLocation,
+	/* [f] */ 0x66: LowerAF | AZ | AreaLocation,
+	/* [g] */ 0x67: AZ | AreaLocation,
+	/* [h] */ 0x68: AZ | AreaLocation,
+	/* [i] */ 0x69: AZ | AreaLocation,
+	/* [j] */ 0x6a: AZ | AreaLocation,
+	/* [k] */ 0x6b: AZ | AreaLocation,
+	/* [l] */ 0x6c: AZ | AreaLocation,
+	/* [m] */ 0x6d: AZ | AreaLocation,
+	/* [n] */ 0x6e: AZ | AreaLocation,
+	/* [o] */ 0x6f: AZ | AreaLocation,
+	/* [p] */ 0x70: AZ | AreaLocation,
+	/* [q] */ 0x71: AZ | AreaLocation,
+	/* [r] */ 0x72: AZ | AreaLocation,
+	/* [s] */ 0x73: AZ | AreaLocation,
+	/* [t] */ 0x74: AZ | AreaLocation,
+	/* [u] */ 0x75: AZ | AreaLocation,
+	/* [v] */ 0x76: AZ | AreaLocation,
+	/* [w] */ 0x77: AZ | AreaLocation,
+	/* [x] */ 0x78: AZ | AreaLocation,
+	/* [y] */ 0x79: AZ | AreaLocation,
+	/* [z] */ 0x7a: AZ | AreaLocation,
 	/* [{] */ 0x7b: NoProperties,
 	/* [|] */ 0x7c: ObjectEnd,
 	/* [}] */ 0x7d: ObjectEnd,

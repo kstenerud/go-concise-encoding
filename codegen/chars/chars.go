@@ -57,6 +57,9 @@ func GenerateCode(projectDir string, xmlPath string) {
 
 	standard.WriteHeader(writer, path, imports)
 
+	generateNamedCharSwitch(writer, charsUsedInStrings(namedValues...))
+	generateSpacer(writer)
+
 	generatePropertiesType(writer)
 	generateSpacer(writer)
 
@@ -137,14 +140,14 @@ func classifyRunes(chars CharSet) {
 
 	// Structural char properties
 	addProperties(StructWS, charSet('\r', '\n', '\t', ' '))
-	addProperties(ObjectEnd, charSet('\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', ':', '|', '/'))
+	addProperties(ObjectEnd, charSet('\r', '\n', '\t', ' ', ']', '}', ')', '>', ',', '=', '|'))
 	addProperties(DigitBase2, charRange('0', '1'))
 	addProperties(DigitBase8, charRange('0', '7'))
 	addProperties(DigitBase10, charRange('0', '9'))
 	addProperties(LowerAF, charRange('a', 'f'))
 	addProperties(UpperAF, charRange('A', 'F'))
+	addProperties(AZ, charRange('a', 'z'), charRange('A', 'Z'))
 	addProperties(AreaLocation, charRange('a', 'z'), charRange('A', 'Z'), charSet('_', '-', '+', '/'))
-	addProperties(UUID, charRange('0', '9'), charRange('a', 'f'), charRange('A', 'F'), charSet('-'))
 
 	// Invalid chars:
 
@@ -160,6 +163,26 @@ func classifyRunes(chars CharSet) {
 }
 
 // Code Generators
+
+func generateNamedCharSwitch(writer io.Writer, charset []rune) {
+	sort.SliceStable(charset, func(i, j int) bool {
+		return charset[i] < charset[j]
+	})
+
+	if _, err := fmt.Fprintf(writer, "func isNamedStartChar (ch byte) bool {\nswitch ch {\n"); err != nil {
+		panic(err)
+	}
+
+	for _, ch := range charset {
+		if _, err := fmt.Fprintf(writer, "\t\tcase '%c':\n\t\t\treturn true\n", ch); err != nil {
+			panic(err)
+		}
+	}
+
+	if _, err := fmt.Fprintf(writer, "\t\tdefault:\n\t\t\treturn false\n\t}\n}\n"); err != nil {
+		panic(err)
+	}
+}
 
 func generateSpacer(writer io.Writer) {
 	if _, err := fmt.Fprintf(writer, "\n"); err != nil {
@@ -459,6 +482,19 @@ func addRuneProperties(r rune, props Properties) {
 	}
 }
 
+func charsUsedInStrings(strings ...string) (result []rune) {
+	used := make(map[rune]bool)
+	for _, str := range strings {
+		for _, ch := range str {
+			used[ch] = true
+		}
+	}
+	for ch := range used {
+		result = append(result, ch)
+	}
+	return
+}
+
 func charRange(low, high rune) (result []rune) {
 	for i := low; i <= high; i++ {
 		result = append(result, i)
@@ -639,9 +675,9 @@ const (
 	DigitBase10
 	LowerAF
 	UpperAF
+	AZ
 	AreaLocation
 	ObjectEnd
-	UUID
 
 	EndProperties
 	NoProperties Properties = 0
@@ -675,10 +711,20 @@ var propertyNames = map[Properties]string{
 	DigitBase10:   "DigitBase10",
 	LowerAF:       "LowerAF",
 	UpperAF:       "UpperAF",
+	AZ:            "AZ",
 	AreaLocation:  "AreaLocation",
 	ObjectEnd:     "ObjectEnd",
-	UUID:          "UUID",
 	EndProperties: "EndProperties",
+}
+
+var namedValues = []string{
+	"true",
+	"false",
+	"inf",
+	"nan",
+	"snan",
+	"nil",
+	"na",
 }
 
 var lookalikes = map[rune][]rune{

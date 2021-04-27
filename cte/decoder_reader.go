@@ -21,7 +21,6 @@
 package cte
 
 import (
-	"fmt"
 	"io"
 	"math"
 	"math/big"
@@ -42,11 +41,7 @@ type Reader struct {
 	isEOF     bool
 	byteBuff  [1]byte
 
-	readPos       int
-	lineCount     int
-	colCount      int
-	lastLineCount int
-	lastColCount  int
+	TextPos TextPositionCounter
 
 	token            []byte
 	verbatimSentinel []byte
@@ -66,44 +61,9 @@ func (_this *Reader) Init(reader io.Reader) {
 	}
 	_this.hasUnread = false
 	_this.isEOF = false
-	_this.readPos = 0
-	_this.lineCount = 0
-	_this.colCount = 0
 }
 
 // Bytes
-
-func (_this *Reader) advanceLineColCount(b chars.ByteWithEOF) {
-	// TODO: Handle more line terminators:
-	// LF:    Line Feed, U+000A
-	// VT:    Vertical Tab, U+000B
-	// FF:    Form Feed, U+000C
-	// CR:    Carriage Return, U+000D
-	// NEL:   Next Line, U+0085                      : C2 85
-	// LS:    Line Separator, U+2028                 : E2 80 A8
-	// PS:    Paragraph Separator, U+2029            : E2 80 A9
-
-	_this.lastLineCount = _this.lineCount
-	_this.lastColCount = _this.colCount
-
-	switch b {
-	case '\n':
-		_this.lineCount++
-		_this.colCount = 1
-	case chars.EOFMarker:
-		// Do nothing
-	default:
-		_this.colCount++
-	}
-
-	_this.readPos++
-}
-
-func (_this *Reader) retreatLineColCount() {
-	_this.readPos--
-	_this.lineCount = _this.lastLineCount
-	_this.colCount = _this.lastColCount
-}
 
 func (_this *Reader) readNext() {
 	// Can't create local [1]byte here because it mallocs? WTF???
@@ -124,7 +84,7 @@ func (_this *Reader) UnreadByte() {
 		panic("Cannot unread twice")
 	}
 	_this.hasUnread = true
-	_this.retreatLineColCount()
+	_this.TextPos.RetreatOneChar()
 }
 
 func (_this *Reader) PeekByteAllowEOF() chars.ByteWithEOF {
@@ -141,14 +101,15 @@ func (_this *Reader) ReadByteAllowEOF() chars.ByteWithEOF {
 	}
 
 	_this.hasUnread = false
-	_this.advanceLineColCount(_this.lastByte)
-	return _this.lastByte
+	b := _this.lastByte
+	_this.TextPos.Advance(b)
+	return b
 }
 
 func (_this *Reader) PeekByteNoEOF() byte {
 	b := _this.PeekByteAllowEOF()
 	if b == chars.EOFMarker {
-		_this.UnexpectedEOF()
+		_this.unexpectedEOF()
 	}
 	return byte(b)
 }
@@ -156,7 +117,7 @@ func (_this *Reader) PeekByteNoEOF() byte {
 func (_this *Reader) ReadByteNoEOF() byte {
 	b := _this.ReadByteAllowEOF()
 	if b == chars.EOFMarker {
-		_this.UnexpectedEOF()
+		_this.unexpectedEOF()
 	}
 	return byte(b)
 }
@@ -269,39 +230,24 @@ func (_this *Reader) TokenReadWhilePropertyAllowEOF(property chars.Properties) {
 
 func (_this *Reader) AssertAtObjectEnd(decoding string) {
 	if !_this.PeekByteAllowEOF().HasProperty(chars.ObjectEnd) {
-		_this.UnexpectedChar(decoding)
+		_this.unexpectedChar(decoding)
 	}
 }
 
-func (_this *Reader) Errorf(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	panic(fmt.Errorf("offset %v (line %v, col %v): %v", _this.readPos, _this.lineCount+1, _this.colCount+1, msg))
+func (_this *Reader) errorf(format string, args ...interface{}) {
+	_this.TextPos.Errorf(format, args...)
 }
 
-func (_this *Reader) UnexpectedEOF() {
-	_this.Errorf("unexpected end of document")
+func (_this *Reader) unexpectedEOF() {
+	_this.errorf("unexpected end of document")
 }
 
-func (_this *Reader) UnexpectedError(err error, decoding string) {
-	_this.Errorf("unexpected error [%v] while decoding %v", err, decoding)
+func (_this *Reader) unexpectedError(err error, decoding string) {
+	_this.errorf("unexpected error [%v] while decoding %v", err, decoding)
 }
 
-func (_this *Reader) UnexpectedChar(decoding string) {
-	_this.Errorf("unexpected [%v] while decoding %v", _this.DescribeCurrentChar(), decoding)
-}
-
-func (_this *Reader) DescribeCurrentChar() string {
-	b := _this.PeekByteAllowEOF()
-	switch {
-	case b == chars.EOFMarker:
-		return "EOF"
-	case b == ' ':
-		return "SP"
-	case b > ' ' && b <= '~':
-		return fmt.Sprintf("%c", b)
-	default:
-		return fmt.Sprintf("0x%02x", b)
-	}
+func (_this *Reader) unexpectedChar(decoding string) {
+	_this.TextPos.UnexpectedChar(decoding)
 }
 
 // Decoders
@@ -310,18 +256,16 @@ func (_this *Reader) SkipWhitespace() {
 	_this.SkipWhileProperty(chars.StructWS)
 }
 
-func (_this *Reader) ReadToken() []byte {
+func (_this *Reader) ReadToken() Token {
 	_this.TokenBegin()
 	_this.TokenReadUntilPropertyAllowEOF(chars.ObjectEnd)
 	return _this.TokenGet()
 }
 
-const maxPreShiftBinary = uint64(0x7fffffffffffffff)
-
 func (_this *Reader) ReadSmallBinaryUint() (value uint64, digitCount int) {
 	v, vBig, count := _this.ReadBinaryUint()
 	if vBig != nil {
-		_this.Errorf("Value cannot be > 64 bits")
+		_this.errorf("Value cannot be > 64 bits")
 	}
 	return v, count
 }
@@ -336,12 +280,14 @@ func (_this *Reader) ReadSmallBinaryInt() (value int64, digitCount int) {
 	v, count := _this.ReadSmallBinaryUint()
 
 	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
-		_this.Errorf("Integer value too big for element")
+		_this.errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
 
 func (_this *Reader) ReadBinaryUint() (value uint64, bigValue *big.Int, digitCount int) {
+	const maxPreShiftBinary = uint64(0x7fffffffffffffff)
+
 	for {
 		b := _this.ReadByteAllowEOF()
 		switch {
@@ -394,7 +340,7 @@ const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 func (_this *Reader) ReadSmallOctalUint() (value uint64, digitCount int) {
 	v, vBig, count := _this.ReadOctalUint()
 	if vBig != nil {
-		_this.Errorf("Value cannot be > 64 bits")
+		_this.errorf("Value cannot be > 64 bits")
 	}
 	return v, count
 }
@@ -409,7 +355,7 @@ func (_this *Reader) ReadSmallOctalInt() (value int64, digitCount int) {
 	v, count := _this.ReadSmallOctalUint()
 
 	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
-		_this.Errorf("Integer value too big for element")
+		_this.errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
@@ -462,12 +408,12 @@ func (_this *Reader) ReadOctalUint() (value uint64, bigValue *big.Int, digitCoun
 	return
 }
 
-const maxPreShiftDecimal = uint64(1844674407370955161)
-const maxLastDigitDecimal = 5
-
 // startValue is only used if bigStartValue is nil
 // bigValue will be nil unless the value was too big for a uint64
 func (_this *Reader) ReadDecimalUint(startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int) {
+	const maxPreShiftDecimal = uint64(1844674407370955161)
+	const maxLastDigitDecimal = 5
+
 	if bigStartValue == nil {
 		value = startValue
 		for {
@@ -524,7 +470,7 @@ const maxPreShiftHex = uint64(0x0fffffffffffffff)
 func (_this *Reader) ReadSmallHexUint() (value uint64, digitCount int) {
 	v, vBig, count := _this.ReadHexUint(0, nil)
 	if vBig != nil {
-		_this.Errorf("Value cannot be > 64 bits")
+		_this.errorf("Value cannot be > 64 bits")
 	}
 	return v, count
 }
@@ -539,7 +485,7 @@ func (_this *Reader) ReadSmallHexInt() (value int64, digitCount int) {
 	v, count := _this.ReadSmallHexUint()
 
 	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
-		_this.Errorf("Integer value too big for element")
+		_this.errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
@@ -626,7 +572,7 @@ func (_this *Reader) ReadSmallUint() (value uint64, digitCount int) {
 	}
 
 	if bigV != nil {
-		_this.Errorf("Integer value too big for element")
+		_this.errorf("Integer value too big for element")
 	}
 	return
 }
@@ -642,7 +588,7 @@ func (_this *Reader) ReadSmallInt() (value int64, digitCount int) {
 	v, count := _this.ReadSmallUint()
 
 	if v > 0x7fffffffffffffff && !(sign < 0 && v == 0x8000000000000000) {
-		_this.Errorf("Integer value too big for element")
+		_this.errorf("Integer value too big for element")
 	}
 	return int64(v) * sign, count
 }
@@ -652,7 +598,7 @@ func (_this *Reader) ReadDecimalFloat(sign int64, coefficient uint64, bigCoeffic
 	fractionalDigitCount := 0
 	coefficient, bigCoefficient, fractionalDigitCount = _this.ReadDecimalUint(coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
-		_this.UnexpectedChar("float fractional")
+		_this.unexpectedChar("float fractional")
 	}
 	digitCount = coefficientDigitCount + fractionalDigitCount
 
@@ -669,10 +615,10 @@ func (_this *Reader) ReadDecimalFloat(sign int64, coefficient uint64, bigCoeffic
 		}
 		exp, bigExp, expDigitCount := _this.ReadDecimalUint(0, nil)
 		if expDigitCount == 0 {
-			_this.UnexpectedChar("float exponent")
+			_this.unexpectedChar("float exponent")
 		}
 		if bigExp != nil || exp > 0x7fffffff {
-			_this.Errorf("Exponent too big")
+			_this.errorf("Exponent too big")
 		}
 		exponent = int32(exp) * exponentSign
 	}
@@ -713,7 +659,7 @@ func (_this *Reader) ReadHexFloat(sign int64, coefficient uint64, bigCoefficient
 	coefficient, bigCoefficient, fractionalDigitCount = _this.ReadHexUint(coefficient, bigCoefficient)
 	b := _this.PeekByteAllowEOF()
 	if fractionalDigitCount == 0 && b != 'p' && b != 'P' {
-		_this.UnexpectedChar("hex float fractional")
+		_this.unexpectedChar("hex float fractional")
 	}
 	digitCount = coefficientDigitCount + fractionalDigitCount
 
@@ -729,10 +675,10 @@ func (_this *Reader) ReadHexFloat(sign int64, coefficient uint64, bigCoefficient
 		}
 		exp, bigExp, expDigitCount := _this.ReadDecimalUint(0, nil)
 		if expDigitCount == 0 {
-			_this.UnexpectedChar("hex float exponent")
+			_this.unexpectedChar("hex float exponent")
 		}
 		if bigExp != nil {
-			_this.Errorf("Exponent too big")
+			_this.errorf("Exponent too big")
 		}
 		exponent = int(exp) * exponentSign
 	}
@@ -788,10 +734,10 @@ func (_this *Reader) ReadSmallHexFloat() (value float64, digitCount int) {
 
 	u, bigU, coefficientDigitCount := _this.ReadHexUint(0, nil)
 	if coefficientDigitCount == 0 {
-		_this.UnexpectedChar("hex float coefficient")
+		_this.unexpectedChar("hex float coefficient")
 	}
 	if bigU != nil || u > maxFloat64Coefficient {
-		_this.Errorf("Value too big for element")
+		_this.errorf("Value too big for element")
 	}
 	b = _this.PeekByteAllowEOF()
 	switch {
@@ -799,19 +745,19 @@ func (_this *Reader) ReadSmallHexFloat() (value float64, digitCount int) {
 		_this.AdvanceByte()
 		f, bigF, digitCount := _this.ReadHexFloat(sign, u, nil, coefficientDigitCount)
 		if bigF != nil {
-			_this.Errorf("Value too big for element")
+			_this.errorf("Value too big for element")
 		}
 		return f, digitCount
 	case b == 'p' || b == 'P':
 		f, bigF, digitCount := _this.ReadHexFloat(sign, u, nil, coefficientDigitCount)
 		if bigF != nil {
-			_this.Errorf("Value too big for element")
+			_this.errorf("Value too big for element")
 		}
 		return f, digitCount
 	case b.HasProperty(chars.ObjectEnd):
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
-		_this.UnexpectedChar("hex float")
+		_this.unexpectedChar("hex float")
 		return 0, 0
 	}
 }
@@ -835,10 +781,10 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 		if b == 'x' || b == 'X' {
 			u, bigU, coefficientDigitCount := _this.ReadHexUint(0, nil)
 			if coefficientDigitCount == 0 {
-				_this.UnexpectedChar("float")
+				_this.unexpectedChar("float")
 			}
 			if bigU != nil || u > maxFloat64Coefficient {
-				_this.Errorf("Value too big for element")
+				_this.errorf("Value too big for element")
 			}
 
 			b = _this.ReadByteAllowEOF()
@@ -846,14 +792,14 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 			case b == '.':
 				f, bigF, digitCount := _this.ReadHexFloat(sign, u, nil, coefficientDigitCount)
 				if bigF != nil {
-					_this.Errorf("Value too big for element")
+					_this.errorf("Value too big for element")
 				}
 				return f, digitCount
 			case b.HasProperty(chars.StructWS):
 				_this.UnreadByte()
 				return float64(u) * float64(sign), coefficientDigitCount
 			default:
-				_this.UnexpectedChar("float")
+				_this.unexpectedChar("float")
 				return 0, 0
 			}
 		} else {
@@ -868,10 +814,10 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 		coefficientDigitCount++
 	}
 	if coefficientDigitCount == 0 {
-		_this.UnexpectedChar("float")
+		_this.unexpectedChar("float")
 	}
 	if bigU != nil || u > maxFloat64Coefficient {
-		_this.Errorf("Value too big for element")
+		_this.errorf("Value too big for element")
 	}
 
 	b = _this.ReadByteAllowEOF()
@@ -879,11 +825,11 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 	case b == '.':
 		f, bigF, digitCount := _this.ReadDecimalFloat(sign, u, nil, coefficientDigitCount)
 		if bigF != nil {
-			_this.Errorf("Value too big for element")
+			_this.errorf("Value too big for element")
 		}
 		normalizedExponent := int(f.Exponent) + digitCount - 1
 		if normalizedExponent < minFloat64DecimalExponent || normalizedExponent > maxFloat64DecimalExponent {
-			_this.Errorf("Value too big for element")
+			_this.errorf("Value too big for element")
 		}
 
 		return f.Float(), digitCount
@@ -891,16 +837,18 @@ func (_this *Reader) ReadSmallFloat() (value float64, digitCount int) {
 		_this.UnreadByte()
 		return float64(u) * float64(sign), coefficientDigitCount
 	default:
-		_this.UnexpectedChar("float")
+		_this.unexpectedChar("float")
 		return 0, 0
 	}
 
 }
 
 func (_this *Reader) ReadNamedValue() []byte {
-	namedValue := _this.ReadToken()
+	_this.TokenBegin()
+	_this.TokenReadWhilePropertyAllowEOF(chars.AZ)
+	namedValue := _this.TokenGet()
 	if len(namedValue) == 0 {
-		_this.UnexpectedChar("name")
+		_this.unexpectedChar("name")
 	}
 	common.ASCIIBytesToLower(namedValue)
 	return namedValue
@@ -913,7 +861,7 @@ func (_this *Reader) TokenReadVerbatimSequence() {
 		if chars.ByteHasProperty(b, chars.StructWS) {
 			if b == '\r' {
 				if _this.ReadByteNoEOF() != '\n' {
-					_this.UnexpectedChar("verbatim sentinel")
+					_this.unexpectedChar("verbatim sentinel")
 				}
 			}
 			break
@@ -972,7 +920,7 @@ func (_this *Reader) TokenReadEscape() {
 			case chars.ByteHasProperty(b, chars.UpperAF):
 				codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
 			default:
-				_this.UnexpectedChar("unicode escape")
+				_this.unexpectedChar("unicode escape")
 			}
 		}
 
@@ -980,7 +928,7 @@ func (_this *Reader) TokenReadEscape() {
 	case '.':
 		_this.TokenReadVerbatimSequence()
 	default:
-		_this.UnexpectedChar("escape sequence")
+		_this.unexpectedChar("escape sequence")
 	}
 }
 
@@ -1000,7 +948,17 @@ func (_this *Reader) ReadQuotedString() []byte {
 }
 
 func (_this *Reader) ReadIdentifier() []byte {
-	return _this.ReadToken()
+	_this.TokenBegin()
+	for {
+		b := _this.ReadByteAllowEOF()
+		// Only do a per-byte check here. The rules will do a per-rune check.
+		if b == chars.EOFMarker || (b < 0x80 && !chars.IsRuneValidIdentifier(rune(b))) {
+			_this.UnreadByte()
+			break
+		}
+		_this.TokenAppendByte(byte(b))
+	}
+	return _this.TokenGet()
 }
 
 func (_this *Reader) ReadStringArray() []byte {
@@ -1023,31 +981,31 @@ var maxDayByMonth = []int{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 func (_this *Reader) ReadDate(year int64) compact_time.Time {
 	month, _, digitCount := _this.ReadDecimalUint(0, nil)
 	if digitCount > 2 {
-		_this.Errorf("Month field is too long")
+		_this.errorf("Month field is too long")
 	}
 	if month < 1 || month > 12 {
-		_this.Errorf("Month %v is invalid", month)
+		_this.errorf("Month %v is invalid", month)
 	}
 	if _this.ReadByteNoEOF() != '-' {
-		_this.UnexpectedChar("month")
+		_this.unexpectedChar("month")
 	}
 
 	var day uint64
 	day, _, digitCount = _this.ReadDecimalUint(0, nil)
 	if digitCount == 0 {
-		_this.UnexpectedChar("day")
+		_this.unexpectedChar("day")
 	}
 	if digitCount > 2 {
-		_this.Errorf("Day field is too long")
+		_this.errorf("Day field is too long")
 	}
 	if day < 1 || int(day) > maxDayByMonth[month] {
-		_this.Errorf("Day %v is invalid", day)
+		_this.errorf("Day %v is invalid", day)
 	}
 	if _this.ReadByteAllowEOF() != '/' {
 		_this.UnreadByte()
 		t, err := compact_time.NewDate(int(year), int(month), int(day))
 		if err != nil {
-			_this.UnexpectedError(err, "date")
+			_this.unexpectedError(err, "date")
 		}
 		return t
 	}
@@ -1055,14 +1013,14 @@ func (_this *Reader) ReadDate(year int64) compact_time.Time {
 	var hour uint64
 	hour, _, digitCount = _this.ReadDecimalUint(0, nil)
 	if digitCount == 0 {
-		_this.UnexpectedChar("hour")
+		_this.unexpectedChar("hour")
 	}
 	if digitCount > 2 {
-		_this.Errorf("Hour field is too long")
+		_this.errorf("Hour field is too long")
 	}
 	if _this.ReadByteNoEOF() != ':' {
 		_this.UnreadByte()
-		_this.UnexpectedChar("hour")
+		_this.unexpectedChar("hour")
 	}
 	t := _this.ReadTime(int(hour))
 	if t.TimezoneType == compact_time.TypeLatitudeLongitude {
@@ -1070,7 +1028,7 @@ func (_this *Reader) ReadDate(year int64) compact_time.Time {
 			int(t.Hour), int(t.Minute), int(t.Second), int(t.Nanosecond),
 			int(t.LatitudeHundredths), int(t.LongitudeHundredths))
 		if err != nil {
-			_this.UnexpectedError(err, "timestamp lat/long")
+			_this.unexpectedError(err, "timestamp lat/long")
 		}
 		return ts
 	}
@@ -1078,34 +1036,34 @@ func (_this *Reader) ReadDate(year int64) compact_time.Time {
 		int(t.Hour), int(t.Minute), int(t.Second), int(t.Nanosecond),
 		t.ShortAreaLocation)
 	if err != nil {
-		_this.UnexpectedError(err, "timestamp area/loc")
+		_this.unexpectedError(err, "timestamp area/loc")
 	}
 	return ts
 }
 
 func (_this *Reader) ReadTime(hour int) compact_time.Time {
 	if hour < 0 || hour > 23 {
-		_this.Errorf("Hour %v is invalid", hour)
+		_this.errorf("Hour %v is invalid", hour)
 	}
 	minute, _, digitCount := _this.ReadDecimalUint(0, nil)
 	if digitCount > 2 {
-		_this.Errorf("Minute field is too long")
+		_this.errorf("Minute field is too long")
 	}
 	if minute < 0 || minute > 59 {
-		_this.Errorf("Minute %v is invalid", minute)
+		_this.errorf("Minute %v is invalid", minute)
 	}
 	if _this.ReadByteNoEOF() != ':' {
 		_this.UnreadByte()
-		_this.UnexpectedChar("minute")
+		_this.unexpectedChar("minute")
 	}
 
 	var second uint64
 	second, _, digitCount = _this.ReadDecimalUint(0, nil)
 	if digitCount > 2 {
-		_this.Errorf("Second field is too long")
+		_this.errorf("Second field is too long")
 	}
 	if second < 0 || second > 60 {
-		_this.Errorf("Second %v is invalid", second)
+		_this.errorf("Second %v is invalid", second)
 	}
 	var nanosecond int
 
@@ -1114,10 +1072,10 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 	if b == '.' {
 		v, _, digitCount := _this.ReadDecimalUint(0, nil)
 		if digitCount == 0 {
-			_this.UnexpectedChar("nanosecond")
+			_this.unexpectedChar("nanosecond")
 		}
 		if digitCount > 9 {
-			_this.Errorf("Nanosecond field is too long")
+			_this.errorf("Nanosecond field is too long")
 		}
 		nanosecond = int(v)
 		nanosecond *= subsecondMagnitudes[digitCount]
@@ -1130,7 +1088,7 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 			lat, long := _this.ReadLatLong()
 			t, err := compact_time.NewTimeLatLong(hour, int(minute), int(second), nanosecond, lat, long)
 			if err != nil {
-				_this.UnexpectedError(err, "time lat/long")
+				_this.unexpectedError(err, "time lat/long")
 			}
 			return t
 		}
@@ -1140,7 +1098,7 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 		areaLocation := string(_this.TokenGet())
 		t, err := compact_time.NewTime(hour, int(minute), int(second), nanosecond, areaLocation)
 		if err != nil {
-			_this.UnexpectedError(err, "time area/loc")
+			_this.unexpectedError(err, "time area/loc")
 		}
 		return t
 	}
@@ -1149,12 +1107,12 @@ func (_this *Reader) ReadTime(hour int) compact_time.Time {
 		_this.UnreadByte()
 		t, err := compact_time.NewTime(hour, int(minute), int(second), nanosecond, "")
 		if err != nil {
-			_this.UnexpectedError(err, "time zero")
+			_this.unexpectedError(err, "time zero")
 		}
 		return t
 	}
 
-	_this.UnexpectedChar("time")
+	_this.unexpectedChar("time")
 	return compact_time.Time{}
 }
 
@@ -1169,9 +1127,9 @@ func (_this *Reader) ReadLatLongPortion(name string) (value int) {
 	case 1, 2, 3:
 		// 1-3 digits are allowed
 	case 0:
-		_this.UnexpectedChar(name)
+		_this.unexpectedChar(name)
 	default:
-		_this.Errorf("Too many digits decoding %v", name)
+		_this.errorf("Too many digits decoding %v", name)
 	}
 
 	var fractional uint64
@@ -1184,9 +1142,9 @@ func (_this *Reader) ReadLatLongPortion(name string) (value int) {
 		case 2:
 			// 2 digits are allowed
 		case 0:
-			_this.UnexpectedChar(name)
+			_this.unexpectedChar(name)
 		default:
-			_this.Errorf("Too many digits decoding %v", name)
+			_this.errorf("Too many digits decoding %v", name)
 		}
 	} else {
 		_this.UnreadByte()
@@ -1199,7 +1157,7 @@ func (_this *Reader) ReadLatLong() (latitudeHundredths, longitudeHundredths int)
 	latitudeHundredths = _this.ReadLatLongPortion("latitude")
 
 	if _this.ReadByteNoEOF() != '/' {
-		_this.UnexpectedChar("latitude/longitude")
+		_this.unexpectedChar("latitude/longitude")
 	}
 
 	longitudeHundredths = _this.ReadLatLongPortion("longitude")
@@ -1294,46 +1252,79 @@ func (_this *Reader) ReadMarkupContent() ([]byte, nextType) {
 	}
 }
 
-func (_this *Reader) ExtractUUID(data []byte) []byte {
-	if len(data) != 36 ||
-		data[8] != '-' ||
-		data[13] != '-' ||
-		data[18] != '-' ||
-		data[23] != '-' {
-		_this.Errorf("Malformed UUID or unknown named value: [%s]", string(data))
+func (_this *Reader) DecodeHexDigit(b byte) byte {
+	switch {
+	case chars.ByteHasProperty(b, chars.DigitBase10):
+		return byte(b - '0')
+	case chars.ByteHasProperty(b, chars.LowerAF):
+		return byte(b - 'a' + 10)
+	case chars.ByteHasProperty(b, chars.UpperAF):
+		return byte(b - 'A' + 10)
+	default:
+		_this.errorf("Unexpected char [%c] in UUID", b)
+		return 0
 	}
+}
 
-	decodeHex := func(b byte) byte {
-		switch {
-		case chars.ByteHasProperty(b, chars.DigitBase10):
-			return byte(b - '0')
-		case chars.ByteHasProperty(b, chars.LowerAF):
-			return byte(b - 'a' + 10)
-		case chars.ByteHasProperty(b, chars.UpperAF):
-			return byte(b - 'A' + 10)
-		default:
-			_this.Errorf("Unexpected char [%c] in UUID [%s]", b, string(data))
-			return 0
+func (_this *Reader) decodeNextHexDigit() byte {
+	return _this.DecodeHexDigit(_this.ReadByteNoEOF())
+}
+
+func (_this *Reader) decodeUUIDSection(byteOffset int, byteCount int) {
+	for i := 0; i < byteCount; i++ {
+		_this.token[byteOffset+i] = (_this.decodeNextHexDigit() << 4) | _this.decodeNextHexDigit()
+	}
+}
+
+func (_this *Reader) decodeDash() {
+	b := _this.ReadByteNoEOF()
+	if b != '-' {
+		_this.errorf("Unexpected char [%c] where [-] expected in UUID", b)
+	}
+}
+
+func (_this *Reader) ReadUUIDWithTokenOffset(byteOffset int) []byte {
+	_this.token = _this.token[:16]
+	_this.decodeUUIDSection(byteOffset, 4-byteOffset)
+	_this.decodeDash()
+	_this.decodeUUIDSection(4, 2)
+	_this.decodeDash()
+	_this.decodeUUIDSection(6, 2)
+	_this.decodeDash()
+	_this.decodeUUIDSection(8, 2)
+	_this.decodeDash()
+	_this.decodeUUIDSection(10, 6)
+	return _this.token
+}
+
+func (_this *Reader) ReadUUIDWithPreDecoded(decodedBytes ...byte) []byte {
+	_this.token = _this.token[:16]
+	copy(_this.token, decodedBytes)
+	return _this.ReadUUIDWithTokenOffset(len(decodedBytes))
+}
+
+func (_this *Reader) ReadUUIDWithDecimalDecoded(alreadyDecodedAsDecimal uint64, decodedDigitCount int) []byte {
+	_this.token = _this.token[:16]
+
+	if decodedDigitCount > 0 {
+		iLastDigit := decodedDigitCount / 2
+
+		if decodedDigitCount&1 == 1 {
+			_this.token[iLastDigit] = (byte(alreadyDecodedAsDecimal%10) << 4) | _this.decodeNextHexDigit()
+			alreadyDecodedAsDecimal /= 10
+			decodedDigitCount++
+		}
+
+		for i := iLastDigit - 1; i >= 0; i-- {
+			v := byte(alreadyDecodedAsDecimal % 10)
+			alreadyDecodedAsDecimal /= 10
+			v |= byte(alreadyDecodedAsDecimal%10) << 4
+			alreadyDecodedAsDecimal /= 10
+			_this.token[i] = v
 		}
 	}
 
-	decodeSection := func(src []byte, dst []byte) {
-		iSrc := 0
-		iDst := 0
-		for iSrc < len(src) {
-			dst[iDst] = (decodeHex(src[iSrc]) << 4) | decodeHex(src[iSrc+1])
-			iDst++
-			iSrc += 2
-		}
-	}
-
-	decodeSection(data[:8], data)
-	decodeSection(data[9:13], data[4:])
-	decodeSection(data[14:18], data[6:])
-	decodeSection(data[19:23], data[8:])
-	decodeSection(data[24:36], data[10:])
-
-	return data[:16]
+	return _this.ReadUUIDWithTokenOffset(decodedDigitCount / 2)
 }
 
 // ============================================================================

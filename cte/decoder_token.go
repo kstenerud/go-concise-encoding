@@ -1,0 +1,834 @@
+// Copyright 2019 Karl Stenerud
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
+package cte
+
+import (
+	"math"
+	"math/big"
+
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-compact-time"
+)
+
+type Token []byte
+
+func (_this Token) adjustTextPosition(textPos *TextPositionCounter, tokenOffset int) {
+	textPos.Retreat(len(_this)-tokenOffset, chars.ByteWithEOF(_this[tokenOffset]))
+}
+
+func (_this Token) errorf(textPos *TextPositionCounter, tokenOffset int, format string, args ...interface{}) {
+	_this.adjustTextPosition(textPos, tokenOffset)
+	textPos.Errorf(format, args...)
+}
+
+func (_this Token) unexpectedError(textPos *TextPositionCounter, err error, decoding string) {
+	_this.errorf(textPos, 0, "unexpected error [%v] while decoding %v from [%s]", err, decoding, string(_this))
+}
+
+func (_this Token) UnexpectedChar(textPos *TextPositionCounter, tokenOffset int, decoding string) {
+	_this.adjustTextPosition(textPos, tokenOffset)
+	textPos.UnexpectedChar(decoding)
+}
+
+func (_this Token) expectCharAtOffset(textPos *TextPositionCounter, tokenOffset int, ch byte, decoding string) {
+	if _this[tokenOffset] != ch {
+		_this.UnexpectedChar(textPos, tokenOffset, decoding)
+	}
+}
+
+func (_this Token) assertNotEnd(textPos *TextPositionCounter, tokenOffset int, decoding string) {
+	if tokenOffset > len(_this) {
+		textPos.UnexpectedEOF(decoding)
+	}
+}
+
+func (_this Token) AssertAtEnd(textPos *TextPositionCounter, tokenOffset int, decoding string) {
+	if tokenOffset < len(_this) {
+		_this.errorf(textPos, tokenOffset, "unexpected character at end of %v", decoding)
+	}
+}
+
+func (_this Token) isAtEnd(tokenOffset int) bool {
+	return tokenOffset == len(_this)
+}
+
+func (_this Token) isEmpty() bool {
+	return len(_this) == 0
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	if _this.isEmpty() {
+		_this.errorf(textPos, 0, "BUG: No data")
+	}
+
+	const maxPreShiftBinary = uint64(0x7fffffffffffffff)
+	pos := 0
+
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		if chars.ByteHasProperty(b, chars.DigitBase2) {
+			if value > maxPreShiftBinary {
+				bigValue = new(big.Int).SetUint64(value)
+				break
+			}
+			nextDigitValue := b - '0'
+			value = value<<1 + uint64(nextDigitValue)
+			digitCount++
+		} else {
+			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary int")
+		}
+	}
+
+	if bigValue == nil {
+		decodedCount = pos
+		return
+	}
+
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		if chars.ByteHasProperty(b, chars.DigitBase2) {
+			nextDigitValue := b - '0'
+			bigValue = bigValue.Mul(bigValue, common.BigInt2)
+			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
+			digitCount++
+		} else {
+			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary int")
+		}
+	}
+
+	decodedCount = pos
+	return
+}
+
+func (_this Token) DecodeSmallBinaryUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallUint(textPos, _this.DecodeBinaryUint)
+}
+
+func (_this Token) DecodeSmallBinaryInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallInt(textPos, _this.DecodeBinaryUint)
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	if _this.isEmpty() {
+		_this.errorf(textPos, 0, "BUG: No data")
+	}
+
+	const maxPreShiftOctal = uint64(0x1fffffffffffffff)
+	pos := 0
+
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		if chars.ByteHasProperty(b, chars.DigitBase8) {
+			if value > maxPreShiftOctal {
+				bigValue = new(big.Int).SetUint64(value)
+				break
+			}
+			nextDigitValue := b - '0'
+			value = value<<3 + uint64(nextDigitValue)
+			digitCount++
+		} else {
+			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
+		}
+	}
+
+	if bigValue == nil {
+		decodedCount = pos
+		return
+	}
+
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		if chars.ByteHasProperty(b, chars.DigitBase8) {
+			nextDigitValue := b - '0'
+			bigValue = bigValue.Mul(bigValue, common.BigInt8)
+			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
+			digitCount++
+		} else {
+			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
+		}
+	}
+
+	decodedCount = pos
+	return
+}
+
+func (_this Token) DecodeSmallOctalUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallUint(textPos, _this.DecodeOctalUint)
+}
+
+func (_this Token) DecodeSmallOctalInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallInt(textPos, _this.DecodeOctalUint)
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) CompleteDecimalUint(textPos *TextPositionCounter, startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	const maxPreShiftDecimal = uint64(1844674407370955161)
+	const maxLastDigitDecimal = 5
+
+	// Note: Don't "assert at end" in this function because caller may be reading a potential float
+
+	pos := 0
+
+	if bigStartValue == nil {
+		value = startValue
+		for ; pos < len(_this); pos++ {
+			b := _this[pos]
+			if b == charNumericWhitespace {
+				continue
+			}
+			if !chars.ByteHasProperty(b, chars.DigitBase10) {
+				decodedCount = pos
+				return
+			}
+
+			nextDigitValue := b - '0'
+			if value > maxPreShiftDecimal || (value == maxPreShiftDecimal && nextDigitValue > maxLastDigitDecimal) {
+				bigStartValue = new(big.Int).SetUint64(value)
+				break
+			}
+			value = value*10 + uint64(nextDigitValue)
+			digitCount++
+		}
+
+		if bigStartValue == nil {
+			decodedCount = pos
+			return
+		}
+	}
+
+	bigValue = bigStartValue
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		if b == charNumericWhitespace {
+			continue
+		}
+		if !chars.ByteHasProperty(b, chars.DigitBase10) {
+			break
+		}
+
+		nextDigitValue := b - '0'
+		bigValue = bigValue.Mul(bigValue, common.BigInt10)
+		bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
+		digitCount++
+	}
+
+	decodedCount = pos
+	return
+}
+
+func (_this Token) DecodeDecimalUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	if _this.isEmpty() {
+		_this.errorf(textPos, 0, "BUG: No data")
+	}
+	return _this.CompleteDecimalUint(textPos, 0, nil)
+}
+
+func (_this Token) DecodeSmallDecimalUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallUint(textPos, _this.DecodeDecimalUint)
+}
+
+func (_this Token) DecodeSmallDecimalInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallInt(textPos, _this.DecodeDecimalUint)
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	const maxPreShiftHex = uint64(0x0fffffffffffffff)
+	pos := 0
+
+	if bigStartValue == nil {
+		value = startValue
+		for ; pos < len(_this); pos++ {
+			b := _this[pos]
+			var nextNybble byte
+			switch {
+			case b == charNumericWhitespace:
+				continue
+			case chars.ByteHasProperty(b, chars.DigitBase10):
+				nextNybble = b - '0'
+			case chars.ByteHasProperty(b, chars.LowerAF):
+				nextNybble = b - 'a' + 10
+			case chars.ByteHasProperty(b, chars.UpperAF):
+				nextNybble = b - 'A' + 10
+			default:
+				decodedCount = pos
+				return
+			}
+
+			if value > maxPreShiftHex {
+				bigStartValue = new(big.Int).SetUint64(value)
+				break
+			}
+			value = value<<4 + uint64(nextNybble)
+			digitCount++
+		}
+
+		if bigStartValue == nil {
+			_this.AssertAtEnd(textPos, pos, "hexadecimal int")
+			decodedCount = pos
+			return
+		}
+	}
+
+	bigValue = bigStartValue
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		var nextNybble byte
+		switch {
+		case b == charNumericWhitespace:
+			continue
+		case chars.ByteHasProperty(b, chars.DigitBase10):
+			nextNybble = b - '0'
+		case chars.ByteHasProperty(b, chars.LowerAF):
+			nextNybble = b - 'a' + 10
+		case chars.ByteHasProperty(b, chars.UpperAF):
+			nextNybble = b - 'A' + 10
+		default:
+			decodedCount = pos
+			return
+		}
+
+		bigValue = bigValue.Mul(bigValue, common.BigInt16)
+		bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextNybble)))
+		digitCount++
+	}
+
+	decodedCount = pos
+	return
+}
+
+func (_this Token) DecodeHexUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	if _this.isEmpty() {
+		_this.errorf(textPos, 0, "BUG: No data")
+	}
+	return _this.CompleteHexUint(textPos, 0, nil)
+}
+
+func (_this Token) DecodeSmallHexUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallUint(textPos, _this.DecodeHexUint)
+}
+
+func (_this Token) DecodeSmallHexInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
+	return _this.DecodeSmallInt(textPos, _this.DecodeHexUint)
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter, sign int64, coefficient uint64, bigCoefficient *big.Int, wholePortionDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal, decodedCount int) {
+	// Assumption: First byte is '.'
+
+	pos := 1
+	var exponent int32
+	var fractionalDigitCount int
+	coefficient, bigCoefficient, fractionalDigitCount, decodedCount = _this[pos:].CompleteDecimalUint(textPos, coefficient, bigCoefficient)
+	if fractionalDigitCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "decimal float fractional")
+	}
+	pos += decodedCount
+
+	if !_this.isAtEnd(pos) && (_this[pos] == 'e' || _this[pos] == 'E') {
+		pos++
+		_this.assertNotEnd(textPos, pos, "decimal float")
+		exponentSign := int32(1)
+		switch _this[pos] {
+		case '+':
+			pos++
+			_this.assertNotEnd(textPos, pos, "decimal float")
+		case '-':
+			exponentSign = -1
+			pos++
+			_this.assertNotEnd(textPos, pos, "decimal float")
+		}
+		exp, bigExp, expDigitCount, expDecodedCount := _this[pos:].DecodeDecimalUint(textPos)
+		if expDigitCount == 0 {
+			_this.UnexpectedChar(textPos, pos, "decimal float exponent")
+		}
+		if bigExp != nil {
+			_this.errorf(textPos, pos, "Exponent %v is too big", bigExp)
+		}
+		if exp > 0x7fffffff {
+			_this.errorf(textPos, pos, "Exponent %v is too big", exp)
+		}
+		exponent = int32(exp) * exponentSign
+		pos += expDecodedCount
+	}
+
+	decodedCount = pos
+	exponent -= int32(fractionalDigitCount)
+
+	if coefficient == 0 && bigCoefficient == nil {
+		if sign < 0 {
+			value = compact_float.NegativeZero()
+		}
+		return
+	}
+
+	if bigCoefficient != nil {
+		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		if sign < 0 {
+			bigValue.Negative = true
+		}
+		return
+	}
+	if coefficient > 0x7fffffffffffffff {
+		bigCoefficient = new(big.Int).SetUint64(coefficient)
+		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		if sign < 0 {
+			bigValue.Negative = true
+		}
+		return
+	}
+
+	value = compact_float.DFloatValue(exponent, int64(coefficient)*sign)
+	return
+}
+
+func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value float64, bigValue *big.Float, decodedCount int) {
+	// Assumption: First byte is '.'
+
+	pos := 1
+	var exponent int
+	var fractionalDigitCount int
+	coefficient, bigCoefficient, fractionalDigitCount, decodedCount = _this[pos:].CompleteHexUint(textPos, coefficient, bigCoefficient)
+	if fractionalDigitCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "float fractional")
+	}
+	pos += decodedCount
+
+	if !_this.isAtEnd(pos) && (_this[pos] == 'p' || _this[pos] == 'P') {
+		pos++
+		_this.assertNotEnd(textPos, pos, "hex float")
+		exponentSign := 1
+		switch _this[pos] {
+		case '+':
+			pos++
+			_this.assertNotEnd(textPos, pos, "decimal float")
+		case '-':
+			exponentSign = -1
+			pos++
+			_this.assertNotEnd(textPos, pos, "decimal float")
+		}
+		exp, bigExp, expDigitCount, expDecodedCount := _this[pos:].DecodeDecimalUint(textPos)
+		if expDigitCount == 0 {
+			_this.UnexpectedChar(textPos, pos, "hex float exponent")
+		}
+		if bigExp != nil {
+			_this.errorf(textPos, pos, "Exponent %v is too big", bigExp)
+		}
+		// TODO: What is max exponent size?
+		exponent = int(exp) * exponentSign
+		pos += expDecodedCount
+	}
+
+	decodedCount = pos
+
+	adjustedExponent := exponent - fractionalDigitCount*4
+
+	if bigCoefficient != nil {
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt(bigCoefficient)
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, adjustedExponent)
+		return
+	}
+
+	if coefficient > maxFloat64Coefficient {
+		bigCoefficient = &big.Int{}
+		bigCoefficient = bigCoefficient.SetUint64(coefficient)
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt(bigCoefficient)
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, adjustedExponent)
+		return
+	}
+
+	normalizedExponent := exponent - (coefficientDigitCount-1)*4
+	if normalizedExponent > maxFloat64Exponent || normalizedExponent < minFloat64Exponent {
+		bigValue = &big.Float{}
+		bigValue = bigValue.SetInt64(int64(coefficient))
+		if sign < 0 {
+			bigValue = bigValue.Neg(bigValue)
+		}
+		bigValue = bigValue.SetMantExp(bigValue, adjustedExponent)
+		return
+	}
+
+	value = float64(sign) * float64(coefficient) * math.Pow(float64(2), float64(adjustedExponent))
+	return
+}
+
+func (_this Token) DecodeHexFloat(textPos *TextPositionCounter) (value float64, bigValue *big.Float, digitCount int) {
+	if len(_this) < 5 {
+		// Smallest hex float has form 0x1.1
+		_this.errorf(textPos, 0, "expected a hex float")
+	}
+	pos := 0
+
+	sign := int64(1)
+	if _this[pos] == '-' {
+		sign = -1
+		pos++
+	}
+
+	_this.expectCharAtOffset(textPos, pos, '0', "decimal float exponent")
+	pos++
+	if _this[pos] != 'x' && _this[pos] != 'X' {
+		_this.UnexpectedChar(textPos, pos, "decimal float exponent")
+	}
+
+	_this = _this[pos:]
+	coefficient, bigCoefficient, coefficientDigitCount, decodedCount := _this.DecodeHexUint(textPos)
+	pos = decodedCount
+	if pos == 0 || _this[pos] != '.' {
+		_this.UnexpectedChar(textPos, pos, "decimal float exponent")
+	}
+	pos++
+	return _this.CompleteHexFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) DecodeSmallUint(textPos *TextPositionCounter, readUint func(*TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int)) (value uint64, digitCount int, decodedCount int) {
+	var bigValue *big.Int
+	value, bigValue, digitCount, decodedCount = readUint(textPos)
+	if bigValue != nil {
+		_this.errorf(textPos, 0, "Value cannot be > 64 bits")
+	}
+	return
+}
+
+func (_this Token) DecodeSmallInt(textPos *TextPositionCounter, readUint func(*TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int)) (value int64, digitCount int, decodedCount int) {
+	if _this.isEmpty() {
+		_this.errorf(textPos, 0, "BUG: No data")
+	}
+	sign := int64(1)
+	if _this[0] == '-' {
+		sign = -sign
+		_this = _this[1:]
+	}
+	var bigValue *big.Int
+	var uvalue uint64
+	uvalue, bigValue, digitCount, decodedCount = readUint(textPos)
+	decodedCount++
+	if bigValue != nil {
+		_this.errorf(textPos, 0, "Value cannot be > 64 bits")
+	}
+
+	if uvalue > 0x7fffffffffffffff && !(sign < 0 && uvalue == 0x8000000000000000) {
+		_this.errorf(textPos, 0, "Integer value too big for element")
+	}
+	value = int64(uvalue) * sign
+	return
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) DecodeUUID(textPos *TextPositionCounter) (uuid []byte) {
+	if len(_this) < 36 {
+		_this.errorf(textPos, 0, "Expected a UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)")
+	}
+
+	decodeByte := func(src Token) byte {
+		nybble1 := chars.HexCharValues[src[0]]
+		if nybble1 == chars.InvalidHexChar {
+			src.UnexpectedChar(textPos, 0, "UUID")
+		}
+		nybble2 := chars.HexCharValues[src[1]]
+		if nybble2 == chars.InvalidHexChar {
+			src.UnexpectedChar(textPos, 1, "UUID")
+		}
+		return (nybble1 << 4) | nybble2
+	}
+
+	decodeSection := func(src, dst Token, byteCount int) {
+		for i := 0; i < byteCount; i++ {
+			dst[i] = decodeByte(src)
+			src = src[2:]
+		}
+	}
+
+	expectDash := func(src Token, offset int) {
+		_this.expectCharAtOffset(textPos, offset, '-', "UUID")
+	}
+
+	decodeSection(_this, _this, 4)
+	expectDash(_this, 8)
+	decodeSection(_this[9:], _this[4:], 2)
+	expectDash(_this, 13)
+	decodeSection(_this[14:], _this[6:], 2)
+	expectDash(_this, 18)
+	decodeSection(_this[19:], _this[8:], 2)
+	expectDash(_this, 23)
+	decodeSection(_this[24:], _this[10:], 6)
+	return []byte(_this[:16])
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) DecodeUintNoWhitespace(textPos *TextPositionCounter) (value uint64, decodedCount int) {
+	// More conservative max to make the calculation easier
+	const maxPreShiftDecimal = uint64(1844674407370955161)
+
+	pos := 0
+	for ; pos < len(_this); pos++ {
+		b := _this[pos]
+		if !chars.ByteHasProperty(b, chars.DigitBase10) {
+			break
+		}
+
+		if value > maxPreShiftDecimal {
+			_this.errorf(textPos, pos, "integer value is too big")
+		}
+
+		value = value*10 + uint64(b-'0')
+	}
+
+	if pos == 0 {
+		_this.errorf(textPos, 0, "expected an integer")
+	}
+
+	decodedCount = pos
+	return
+}
+
+// Returns a latitude or longitude value in hundredths of degrees
+func (_this Token) DecodeLatOrLong(textPos *TextPositionCounter) (value int, decodedCount int) {
+	pos := 0
+	_this.assertNotEnd(textPos, pos, "latitude/longitude")
+
+	sign := 1
+	if _this[0] == '-' {
+		sign = -1
+		pos++
+	}
+
+	maxCount := len(_this)
+	if maxCount > 3 {
+		maxCount = 3
+	}
+	for i := 0; i < maxCount; i++ {
+		b := _this[pos]
+		if !chars.ByteHasProperty(b, chars.DigitBase10) {
+			break
+		}
+		value = value*10 + int(b-'0')
+		pos++
+	}
+
+	if !_this.isAtEnd(pos) && _this[pos] == '.' {
+		pos++
+		_this.assertNotEnd(textPos, pos, "latitude/longitude")
+		maxCount := len(_this) - pos
+		if maxCount > 2 {
+			maxCount = 2
+		}
+		for i := 0; i < maxCount; i++ {
+			b := _this[pos]
+			if !chars.ByteHasProperty(b, chars.DigitBase10) {
+				break
+			}
+			value = value*10 + int(b-'0')
+			pos++
+		}
+	}
+
+	value *= sign
+	decodedCount = pos
+	return
+}
+
+func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compact_time.Time, decodedCount int) {
+	// Assumption: first byte is '-'
+	pos := 1
+	_this.assertNotEnd(textPos, pos, "date")
+
+	// Month
+	month, digitCount := _this[pos:].DecodeUintNoWhitespace(textPos)
+	if digitCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "month")
+	}
+	if digitCount > 2 {
+		_this.errorf(textPos, pos, "Month field is too long")
+	}
+	if month < 1 || month > 12 {
+		_this.errorf(textPos, pos, "Month %v is invalid", month)
+	}
+	pos += digitCount
+	_this.assertNotEnd(textPos, pos, "date")
+	_this.expectCharAtOffset(textPos, pos, '-', "date")
+	pos++
+
+	// Day
+	var day uint64
+	day, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
+	if digitCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "day")
+	}
+	if digitCount > 2 {
+		_this.errorf(textPos, pos, "Day field is too long")
+	}
+	if day < 1 || int(day) > common.MaxDayByMonth[month] {
+		_this.errorf(textPos, pos, "Day %v is invalid", day)
+	}
+	pos += digitCount
+
+	if _this.isAtEnd(pos) {
+		var err error
+		t, err = compact_time.NewDate(int(year), int(month), int(day))
+		if err != nil {
+			_this.unexpectedError(textPos, err, "date")
+		}
+		decodedCount = pos
+		return
+	}
+
+	// Timestamp
+	_this.expectCharAtOffset(textPos, pos, '/', "date")
+	pos++
+	_this.assertNotEnd(textPos, pos, "date")
+
+	var hour uint64
+	hour, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
+	if digitCount != 2 {
+		_this.errorf(textPos, pos, "invalid hour value")
+	}
+	pos += digitCount
+	return _this.CompleteTime(textPos, year, int(month), int(day), int(hour))
+}
+
+// Complete a time value. Pass 0 as year, month, day to indicate no date portion.
+func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, hour int) (t compact_time.Time, decodedCount int) {
+	// Assumption: first byte is ':'
+	pos := 1
+	_this.assertNotEnd(textPos, pos, "time")
+
+	timeType := compact_time.TypeTime
+	tzType := compact_time.TypeAreaLocation
+	areaLocation := ""
+	latitude := 0
+	longitude := 0
+
+	if day != 0 {
+		timeType = compact_time.TypeTimestamp
+	}
+
+	// Minute
+	minute, digitCount := _this[pos:].DecodeUintNoWhitespace(textPos)
+	if digitCount != 2 {
+		_this.errorf(textPos, pos, "Minute field must be 2 characters long")
+	}
+	if minute > 59 {
+		_this.errorf(textPos, pos, "Minute %v is invalid", minute)
+	}
+	pos += digitCount
+	_this.assertNotEnd(textPos, pos, "time")
+	_this.expectCharAtOffset(textPos, pos, ':', "time")
+	pos++
+
+	// Second
+	var second uint64
+	second, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
+	if digitCount != 2 {
+		_this.errorf(textPos, pos, "Second field must be 2 characters long")
+	}
+	if second > 60 {
+		_this.errorf(textPos, pos, "Second %v is invalid", second)
+	}
+	pos += digitCount
+
+	// Nanosecond
+	var nsec uint64
+	if !_this.isAtEnd(pos) && _this[pos] == '.' {
+		pos++
+		nsec, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
+		if digitCount == 0 {
+			_this.UnexpectedChar(textPos, pos, "nanosecond")
+		}
+		if nsec > 999999999 {
+			_this.errorf(textPos, pos, "nanosecond %v is invalid", nsec)
+		}
+		pos += digitCount
+	}
+
+	// Timezone
+	if !_this.isAtEnd(pos) {
+		_this.expectCharAtOffset(textPos, pos, '/', "date")
+		pos++
+
+		_this.assertNotEnd(textPos, pos, "time")
+
+		if chars.ByteHasProperty(_this[pos], chars.DigitBase10) {
+			var decodedCount int
+			latitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
+			if latitude < -9000 || latitude > 9000 {
+				_this.errorf(textPos, pos, "Latitude %v is invalid", float64(latitude)/100)
+			}
+			pos += decodedCount
+			longitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
+			if longitude < -18000 || longitude > 18000 {
+				_this.errorf(textPos, pos, "Longitude %v is invalid", float64(longitude)/100)
+			}
+			pos += decodedCount
+			tzType = compact_time.TypeLatitudeLongitude
+			_this.AssertAtEnd(textPos, pos, "time")
+		} else {
+			areaLocation = string(_this[pos:])
+			tzType = compact_time.TypeAreaLocation
+			pos = len(_this)
+		}
+	}
+
+	var err error
+	switch timeType {
+	case compact_time.TypeTime:
+		if tzType == compact_time.TypeAreaLocation {
+			t, err = compact_time.NewTime(hour, int(minute), int(second), int(nsec), areaLocation)
+		} else {
+			t, err = compact_time.NewTimeLatLong(hour, int(minute), int(second), int(nsec), latitude, longitude)
+		}
+	case compact_time.TypeTimestamp:
+		if tzType == compact_time.TypeAreaLocation {
+			t, err = compact_time.NewTimestamp(year, month, day, hour, int(minute), int(second), int(nsec), areaLocation)
+		} else {
+			t, err = compact_time.NewTimestampLatLong(year, month, day, hour, int(minute), int(second), int(nsec), latitude, longitude)
+		}
+	}
+
+	if err != nil {
+		_this.unexpectedError(textPos, err, "time")
+	}
+	decodedCount = pos
+	return
+}

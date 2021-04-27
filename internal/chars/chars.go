@@ -140,3 +140,22 @@ func getBitArrayValue(array []byte, index int) bool {
 	bits := array[index>>3]
 	return bits&(1<<(index&7)) != 0
 }
+
+var HexCharValues = [256]byte{}
+
+const InvalidHexChar = byte(0x80)
+
+func init() {
+	for i := 0; i < len(HexCharValues); i++ {
+		HexCharValues[i] = InvalidHexChar
+	}
+	for i := '0'; i <= '9'; i++ {
+		HexCharValues[i] = byte(i - '0')
+	}
+	for i := 'A'; i <= 'F'; i++ {
+		HexCharValues[i] = byte(i - 'A' + 10)
+	}
+	for i := 'a'; i <= 'f'; i++ {
+		HexCharValues[i] = byte(i - 'a' + 10)
+	}
+}

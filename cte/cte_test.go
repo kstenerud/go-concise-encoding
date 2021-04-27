@@ -22,7 +22,9 @@ package cte
 
 import (
 	"bytes"
+	"fmt"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -296,15 +298,35 @@ func TestCTEHexFloat(t *testing.T) {
 }
 
 func TestCTEUUID(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n@fedcba98-7654-3210-aaaa-bbbbbbbbbbbb", BD(), EvV,
-		UUID([]byte{0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
-	assertDecode(t, nil, "c0 @FEDCBA98-7654-3210-AAAA-BBBBBBBBBBBB", BD(), EvV,
-		UUID([]byte{0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n@00000000-0000-0000-0000-000000000000", BD(), EvV,
+	for i := 0; i < 16; i++ {
+		stringForm := fmt.Sprintf("c0\n%xedcba98-7654-3210-aaaa-bbbbbbbbbbbb", i)
+		binForm := []byte{0x0e | byte(i)<<4, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}
+		events := []*test.TEvent{BD(), EvV, UUID(binForm), ED()}
+		assertDecodeEncode(t, nil, nil, stringForm, events...)
+		assertDecode(t, nil, strings.ToUpper(stringForm), events...)
+	}
+
+	for i := 0; i < 16; i++ {
+		stringForm := fmt.Sprintf("c0\n%x0dcba98-7654-3210-aaaa-bbbbbbbbbbbb", i)
+		binForm := []byte{0x00 | byte(i)<<4, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}
+		events := []*test.TEvent{BD(), EvV, UUID(binForm), ED()}
+		assertDecodeEncode(t, nil, nil, stringForm, events...)
+		assertDecode(t, nil, strings.ToUpper(stringForm), events...)
+	}
+
+	for i := 0; i < 16; i++ {
+		stringForm := fmt.Sprintf("c0\n%xbdcba98-7654-3210-aaaa-bbbbbbbbbbbb", i)
+		binForm := []byte{0x0b | byte(i)<<4, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}
+		events := []*test.TEvent{BD(), EvV, UUID(binForm), ED()}
+		assertDecodeEncode(t, nil, nil, stringForm, events...)
+		assertDecode(t, nil, strings.ToUpper(stringForm), events...)
+	}
+
+	assertDecodeEncode(t, nil, nil, "c0\n00000000-0000-0000-0000-000000000000", BD(), EvV,
 		UUID([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}), ED())
 
-	assertDecodeFails(t, "c0 @fedcba98-7654-3210-aaaa-bbbbbbbbbbb")
-	assertDecodeFails(t, "c0 @fedcba98-7654-3210-aaaa-bbbbbbbbbbbbb")
+	assertDecodeFails(t, "c0 fedcba98-7654-3210-aaaa-bbbbbbbbbbb")
+	assertDecodeFails(t, "c0 fedcba98-7654-3210-aaaa-bbbbbbbbbbbbb")
 	assertEncodeFails(t, nil, BD(), EvV, UUID([]byte{0xfe, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
 	assertEncodeFails(t, nil, BD(), EvV, UUID([]byte{0xfe, 0xdc, 0xff, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0xaa, 0xaa, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb}), ED())
 }
@@ -1336,11 +1358,11 @@ func TestCTEComplexComment(t *testing.T) {
 }
 
 func TestCTECommentFollowing(t *testing.T) {
-	assertDecode(t, nil, `c0 {"a"="b"/**/}`, BD(), EvV, M(), S("a"), S("b"), CMT(), E(), E(), ED())
-	assertDecode(t, nil, `c0 {"a"=2/**/}`, BD(), EvV, M(), S("a"), PI(2), CMT(), E(), E(), ED())
-	assertDecode(t, nil, `c0 {"a"=-2/**/}`, BD(), EvV, M(), S("a"), NI(2), CMT(), E(), E(), ED())
+	assertDecode(t, nil, `c0 {"a"="b" /**/}`, BD(), EvV, M(), S("a"), S("b"), CMT(), E(), E(), ED())
+	assertDecode(t, nil, `c0 {"a"=2 /**/}`, BD(), EvV, M(), S("a"), PI(2), CMT(), E(), E(), ED())
+	assertDecode(t, nil, `c0 {"a"=-2 /**/}`, BD(), EvV, M(), S("a"), NI(2), CMT(), E(), E(), ED())
 	// TODO: All other bare values: float, date/time, etc
-	assertDecode(t, nil, `c0 {"a"=1.5/**/}`, BD(), EvV, M(), S("a"), DF(NewDFloat("1.5")), CMT(), E(), E(), ED())
+	assertDecode(t, nil, `c0 {"a"=1.5 /**/}`, BD(), EvV, M(), S("a"), DF(NewDFloat("1.5")), CMT(), E(), E(), ED())
 	// TODO: Also test for //
 }
 
@@ -1565,7 +1587,7 @@ func TestCTEComplexExample(t *testing.T) {
     "hex int"        = 0xfffe0001
     "decimal float"  = -14.125
     "hex float"      = 0x5.1ec4p20
-    "uuid"           = @f1ce4567-e89b-12d3-a456-426655440000
+    "uuid"           = f1ce4567-e89b-12d3-a456-426655440000
     "date"           = 2019-7-1
     "time"           = 18:04:00.940231541/E/Prague
     "timestamp"      = 2010-7-15/13:28:15.415942344/Z
@@ -1629,7 +1651,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "boolean" = true
     "regular int" = -10000000
     "decimal float" = -14.125
-    "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
+    "uuid" = f1ce4567-e89b-12d3-a456-426655440000
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/E/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344/Z
@@ -1677,7 +1699,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "boolean" = true
     "regular int" = -10000000
     "decimal float" = -14.125
-    "uuid" = @f1ce4567-e89b-12d3-a456-426655440000
+    "uuid" = f1ce4567-e89b-12d3-a456-426655440000
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/Europe/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344

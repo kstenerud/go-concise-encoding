@@ -35,6 +35,7 @@ type DecoderStackEntry struct {
 type DecoderContext struct {
 	opts               options.CTEDecoderOptions
 	Stream             Reader
+	TextPos            *TextPositionCounter
 	EventReceiver      events.DataEventReceiver
 	stack              []DecoderStackEntry
 	IsDocumentComplete bool
@@ -43,6 +44,7 @@ type DecoderContext struct {
 func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
 	_this.opts = *opts
 	_this.Stream.Init(reader)
+	_this.TextPos = &_this.Stream.TextPos
 	_this.EventReceiver = eventReceiver
 	if cap(_this.stack) > 0 {
 		_this.stack = _this.stack[:0]
@@ -99,4 +101,16 @@ func (_this *DecoderContext) EndMarkup() {
 		_this.EventReceiver.OnEnd()
 	}
 	_this.UnstackDecoder()
+}
+
+func (_this *DecoderContext) Errorf(format string, args ...interface{}) {
+	_this.Stream.TextPos.Errorf(format, args...)
+}
+
+func (_this *DecoderContext) UnexpectedChar(decoding string) {
+	_this.Stream.TextPos.Errorf("unexpected [%v] while decoding %v", _this.DescribeCurrentChar(), decoding)
+}
+
+func (_this *DecoderContext) DescribeCurrentChar() string {
+	return _this.Stream.TextPos.DescribeCurrentChar()
 }
