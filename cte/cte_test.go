@@ -533,11 +533,11 @@ func TestCTEVerbatimString(t *testing.T) {
 
 func TestCTERID(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-|r http://example.com|`, BD(), EvV, RID("http://example.com"), ED())
+@"http://example.com"`, BD(), EvV, RID("http://example.com"), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-|r http://x.com/\||`, BD(), EvV, RID(`http://x.com/|`), ED())
+@"http://x.com/\""`, BD(), EvV, RID(`http://x.com/"`), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-|r http://example.com|:"1"`, BD(), EvV, RIDCat("http://example.com"), S("1"), ED())
+@"http://example.com":"1"`, BD(), EvV, RIDCat("http://example.com"), S("1"), ED())
 }
 
 func TestCTEArrayBoolean(t *testing.T) {
@@ -951,7 +951,7 @@ func TestCTEChunked(t *testing.T) {
 	assertChunkedStringlike(`c0
 "abcdefgh"`, SB())
 	//TODO: assertChunkedStringlike("c0 `# abcdefgh#", VB())
-	assertChunkedStringlike("c0\n|r abcdefgh|", RB())
+	assertChunkedStringlike("c0\n@\"abcdefgh\"", RB())
 	assertChunkedStringlike("c0\n|ct abcdefgh|", CTB())
 	assertChunkedByteslike("c0\n|cb 12 34 56 78 9a|", CBB())
 	assertChunkedByteslike("c0\n|u8x 12 34 56 78 9a|", AU8B())
@@ -1003,7 +1003,7 @@ func TestCTEMap(t *testing.T) {
     1.5 = 1000
 }`)
 
-	assertDecode(t, nil, `c0 {"email" = |r mailto:me@somewhere.com| 1.5 = "a string"}`, BD(), EvV, M(),
+	assertDecode(t, nil, `c0 {"email" = @"mailto:me@somewhere.com" 1.5 = "a string"}`, BD(), EvV, M(),
 		S("email"), RID("mailto:me@somewhere.com"),
 		DF(NewDFloat("1.5")), S("a string"),
 		E(), ED())
@@ -1247,7 +1247,7 @@ func TestCTEReference(t *testing.T) {
     "a"
 ]`, BD(), EvV, L(), MARK("a"), S("aaaaa"), S("a"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-$|r http://x.y|`, BD(), EvV, RIDREF(), RID("http://x.y"), ED())
+$@"http://x.y"`, BD(), EvV, RIDREF(), RID("http://x.y"), ED())
 	assertDecodeFails(t, `c0 $ 1`)
 }
 
@@ -1594,8 +1594,8 @@ func TestCTEComplexExample(t *testing.T) {
     "nil"            = nil
     "na"             = na:123
     "bytes"          = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    "url"            = |r https://example.com/|
-    "email"          = |r mailto:me@somewhere.com|
+    "url"            = @"https://example.com/"
+    "email"          = @"mailto:me@somewhere.com"
     1.5              = "Keys don't have to be strings"
     "long-string"    = "\.ZZZ
 A backtick induces verbatim processing, which in this case will continue
@@ -1612,9 +1612,9 @@ case is three Z characters, specified earlier as a sentinel.ZZZ"
                             }
     "ref1"            = $tag1
     "ref2"            = $tag1
-    "outside_ref"     = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
+    "outside_ref"     = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=|r http://www.w3.org/1999/xhtml| "xml:lang"="en" ,
+    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en" ,
                          <body,
                            Please choose from the following widgets:
                            <div "id"="parent" "style"="normal" "ref-id"=1 ,
@@ -1657,8 +1657,8 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "timestamp" = 2010-07-15/13:28:15.415942344/Z
     "nil" = nil
     "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    "url" = |r https://example.com/|
-    "email" = |r mailto:me@somewhere.com|
+    "url" = @"https://example.com/"
+    "email" = @"mailto:me@somewhere.com"
     1.5 = "Keys don't have to be strings"
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
@@ -1668,9 +1668,9 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     }
     "ref1" = $tag1
     "ref2" = $tag1
-    "outside_ref" = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
+    "outside_ref" = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=|r http://www.w3.org/1999/xhtml| "xml:lang"="en",
+    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
         <body,
             Please choose from the following widgets:
             <div "id"="parent" "style"="normal" "ref-id"=1,
@@ -1705,8 +1705,8 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "timestamp" = 2010-07-15/13:28:15.415942344
     "nil" = nil
     "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    "url" = |r https://example.com/|
-    "email" = |r mailto:me@somewhere.com|
+    "url" = @"https://example.com/"
+    "email" = @"mailto:me@somewhere.com"
     1.5 = "Keys don't have to be strings"
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
@@ -1716,9 +1716,9 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     }
     "ref1" = $tag1
     "ref2" = $tag1
-    "outside_ref" = $|r https://somewhere.else.com/path/to/document.cte#some_tag|
+    "outside_ref" = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
     /* The markup type is good for presentation data */
-    "html_compatible" = <html "xmlns"=|r http://www.w3.org/1999/xhtml| "xml:lang"="en",
+    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
         <body,
             Please choose from the following widgets: <div "id"="parent" "style"="normal" "ref-id"=1,
                 /* Here we use a backtick to induce verbatim processing.
@@ -1762,7 +1762,7 @@ nil`, BD(), EvV, N(), ED())
 func TestRIDCat(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 [
-    |r http://z.com|:"1"
+    @"http://z.com":"1"
 ]`, BD(), EvV, L(), RIDCat("http://z.com"), S("1"), E(), ED())
 }
 
@@ -1777,7 +1777,7 @@ func TestNestedComment(t *testing.T) {
 func TestRIDConcat(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 [
-    |r http://z.com|:"a"
+    @"http://z.com":"a"
 ]`, BD(), EvV, L(), RIDCat("http://z.com"), S("a"), E(), ED())
 }
 

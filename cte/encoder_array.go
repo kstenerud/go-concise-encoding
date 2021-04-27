@@ -91,13 +91,11 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 			_this.stream.WritePotentiallyEscapedMarkupContents(data)
 		}
 	case events.ArrayTypeResourceID:
-		_this.stream.WriteString("|r ")
-		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
-		_this.stream.WriteArrayEnd()
+		_this.stream.WriteString("@")
+		_this.stream.WriteQuotedStringBytes(data)
 	case events.ArrayTypeResourceIDConcat:
-		_this.stream.WriteString("|r ")
-		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
-		_this.stream.WriteArrayEnd()
+		_this.stream.WriteString("@")
+		_this.stream.WriteQuotedStringBytes(data)
 		_this.stream.WriteConcat()
 	case events.ArrayTypeCustomText:
 		_this.stream.WriteString("|ct ")
@@ -230,25 +228,21 @@ func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
 	}
 }
 
+func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
+	_this.setElementByteWidth(1)
+	_this.stream.WriteString("@")
+	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
+	_this.onComplete = func() {
+		_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
+		onComplete()
+	}
+}
+
 func (_this *arrayEncoderEngine) beginArrayIdentifier(onComplete func()) {
 	_this.setElementByteWidth(1)
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
 	_this.onComplete = func() {
 		_this.stream.WriteBytes(_this.stringBuffer)
-		onComplete()
-	}
-}
-
-func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
-	_this.setElementByteWidth(1)
-	_this.stream.WriteString("|r")
-	_this.addElementsFunc = func(data []byte) {
-		_this.handleFirstElement(data)
-		_this.appendStringbuffer(data)
-	}
-	_this.onComplete = func() {
-		_this.stream.WritePotentiallyEscapedStringArrayContents(_this.stringBuffer)
-		_this.stream.WriteArrayEnd()
 		onComplete()
 	}
 }

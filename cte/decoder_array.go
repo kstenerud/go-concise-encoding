@@ -38,6 +38,30 @@ func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
 }
 
+type advanceAndDecodeResourceID struct{}
+
+var global_advanceAndDecodeResourceID advanceAndDecodeResourceID
+
+func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '@'
+	if ctx.Stream.ReadByteNoEOF() != '"' {
+		ctx.Stream.UnreadByte()
+		ctx.Stream.unexpectedChar("resource ID")
+	}
+
+	bytes := ctx.Stream.ReadQuotedString()
+	if ctx.Stream.PeekByteAllowEOF() == ':' {
+		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
+		ctx.Stream.AdvanceByte()
+		if ctx.Stream.PeekByteNoEOF() != '"' {
+			ctx.Errorf("Only strings may be appended to a resource ID")
+		}
+		global_advanceAndDecodeQuotedString.Run(ctx)
+		return
+	}
+	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+}
+
 func decodeArrayType(ctx *DecoderContext) string {
 	arrayType := ctx.Stream.ReadToken()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
@@ -72,8 +96,6 @@ func (_this decodeTypedArrayBegin) Run(ctx *DecoderContext) {
 		decodeCustomBinary(ctx)
 	case "ct":
 		decodeCustomText(ctx)
-	case "r":
-		decodeRID(ctx)
 	case "u":
 		decodeArrayUUID(ctx)
 	case "b":
@@ -162,20 +184,6 @@ func (_this decodeTypedArrayBegin) Run(ctx *DecoderContext) {
 func decodeCustomText(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadStringArray()
 	ctx.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
-}
-
-func decodeRID(ctx *DecoderContext) {
-	bytes := ctx.Stream.ReadStringArray()
-	if ctx.Stream.PeekByteAllowEOF() == ':' {
-		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
-		ctx.Stream.AdvanceByte()
-		if ctx.Stream.PeekByteNoEOF() != '"' {
-			ctx.Errorf("Only strings may be appended to a resource ID")
-		}
-		global_advanceAndDecodeQuotedString.Run(ctx)
-		return
-	}
-	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
 }
 
 func decodeCustomBinary(ctx *DecoderContext) {

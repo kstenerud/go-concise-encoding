@@ -110,6 +110,7 @@ func init() {
 	decoderOpsByFirstChar['s'] = global_decodeNamedValueS
 	decoderOpsByFirstChar['t'] = global_decodeNamedValueT
 	decoderOpsByFirstChar['-'] = global_advanceAndDecodeNumericNegative
+	decoderOpsByFirstChar['@'] = global_advanceAndDecodeResourceID
 	decoderOpsByFirstChar['#'] = global_advanceAndDecodeConstant
 	decoderOpsByFirstChar['$'] = global_advanceAndDecodeReference
 	decoderOpsByFirstChar['&'] = global_advanceAndDecodeMarker

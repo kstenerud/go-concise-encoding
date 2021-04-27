@@ -490,15 +490,9 @@ var global_advanceAndDecodeReference advanceAndDecodeReference
 func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
-	if ctx.Stream.PeekByteNoEOF() == '|' {
+	if ctx.Stream.PeekByteNoEOF() == '@' {
 		ctx.EventReceiver.OnRIDReference()
-		ctx.Stream.AdvanceByte()
-		arrayType := decodeArrayType(ctx)
-		ctx.Stream.SkipWhitespace()
-		if arrayType != "r" {
-			ctx.Errorf("%s: Invalid array type for reference ID", arrayType)
-		}
-		decodeRID(ctx)
+		global_advanceAndDecodeResourceID.Run(ctx)
 		return
 	}
 
