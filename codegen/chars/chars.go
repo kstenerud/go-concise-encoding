@@ -147,7 +147,6 @@ func classifyRunes(chars CharSet) {
 	addProperties(LowerAF, charRange('a', 'f'))
 	addProperties(UpperAF, charRange('A', 'F'))
 	addProperties(AZ, charRange('a', 'z'), charRange('A', 'Z'))
-	addProperties(AreaLocation, charRange('a', 'z'), charRange('A', 'Z'), charSet('_', '-', '+', '/'))
 
 	// Invalid chars:
 
@@ -676,7 +675,6 @@ const (
 	LowerAF
 	UpperAF
 	AZ
-	AreaLocation
 	ObjectEnd
 
 	EndProperties
@@ -712,7 +710,6 @@ var propertyNames = map[Properties]string{
 	LowerAF:       "LowerAF",
 	UpperAF:       "UpperAF",
 	AZ:            "AZ",
-	AreaLocation:  "AreaLocation",
 	ObjectEnd:     "ObjectEnd",
 	EndProperties: "EndProperties",
 }

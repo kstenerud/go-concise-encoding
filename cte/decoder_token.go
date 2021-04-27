@@ -646,13 +646,18 @@ func (_this Token) DecodeLatOrLong(textPos *TextPositionCounter) (value int, dec
 	if maxCount > 3 {
 		maxCount = 3
 	}
-	for i := 0; i < maxCount; i++ {
+	var digitCount int
+
+	for digitCount = 0; digitCount < maxCount; digitCount++ {
 		b := _this[pos]
 		if !chars.ByteHasProperty(b, chars.DigitBase10) {
 			break
 		}
 		value = value*10 + int(b-'0')
 		pos++
+	}
+	if digitCount == 0 {
+		_this.errorf(textPos, 0, "Empty lat/long field")
 	}
 
 	if !_this.IsAtEnd(pos) && _this[pos] == '.' {
@@ -662,7 +667,7 @@ func (_this Token) DecodeLatOrLong(textPos *TextPositionCounter) (value int, dec
 		if maxCount > 2 {
 			maxCount = 2
 		}
-		for i := 0; i < maxCount; i++ {
+		for digitCount = 0; digitCount < maxCount; digitCount++ {
 			b := _this[pos]
 			if !chars.ByteHasProperty(b, chars.DigitBase10) {
 				break
@@ -670,6 +675,16 @@ func (_this Token) DecodeLatOrLong(textPos *TextPositionCounter) (value int, dec
 			value = value*10 + int(b-'0')
 			pos++
 		}
+		switch digitCount {
+		case 0:
+			_this.errorf(textPos, pos, "Missing hundredths portion")
+		case 1:
+			// Compensate for missing digit
+			value *= 10
+		}
+	} else {
+		// Compensate for missing hundredths
+		value *= 100
 	}
 
 	value *= sign
@@ -733,7 +748,9 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 		_this.errorf(textPos, pos, "invalid hour value")
 	}
 	pos += digitCount
-	return _this.CompleteTime(textPos, year, int(month), int(day), int(hour))
+	t, decodedCount = _this[pos:].CompleteTime(textPos, year, int(month), int(day), int(hour))
+	decodedCount += pos
+	return
 }
 
 // Complete a time value. Pass 0 as year, month, and day to indicate no date portion.
@@ -781,6 +798,8 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 	if !_this.IsAtEnd(pos) && _this[pos] == '.' {
 		pos++
 		nsec, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
+		// TODO: Check for overflow
+		nsec *= uint64(subsecondMagnitudes[digitCount])
 		if digitCount == 0 {
 			_this.UnexpectedChar(textPos, pos, "nanosecond")
 		}
@@ -797,24 +816,28 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 
 		_this.assertNotEnd(textPos, pos, "time")
 
-		if chars.ByteHasProperty(_this[pos], chars.DigitBase10) {
+		if chars.ByteHasProperty(_this[pos], chars.DigitBase10) || _this[pos] == '-' {
 			var decodedCount int
 			latitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
 			if latitude < -9000 || latitude > 9000 {
 				_this.errorf(textPos, pos, "Latitude %v is invalid", float64(latitude)/100)
 			}
 			pos += decodedCount
+			_this.expectCharAtOffset(textPos, pos, '/', "time zone")
+			pos++
 			longitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
 			if longitude < -18000 || longitude > 18000 {
 				_this.errorf(textPos, pos, "Longitude %v is invalid", float64(longitude)/100)
 			}
 			pos += decodedCount
 			tzType = compact_time.TypeLatitudeLongitude
-			_this.assertPosIsEnd(textPos, pos, "time")
-		} else {
+			_this.assertPosIsEnd(textPos, pos, "time zone")
+		} else if chars.ByteHasProperty(_this[pos], chars.AZ) {
 			areaLocation = string(_this[pos:])
 			tzType = compact_time.TypeAreaLocation
 			pos = len(_this)
+		} else {
+			_this.UnexpectedChar(textPos, pos, "time zone")
 		}
 	}
 

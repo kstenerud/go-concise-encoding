@@ -82,11 +82,11 @@ func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType
 	}
 }
 
-type decodeTypedArrayBegin struct{}
+type advanceAndDecodeTypedArrayBegin struct{}
 
-var global_decodeTypedArrayBegin decodeTypedArrayBegin
+var global_advanceAndDecodeTypedArrayBegin advanceAndDecodeTypedArrayBegin
 
-func (_this decodeTypedArrayBegin) Run(ctx *DecoderContext) {
+func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
 	arrayType := decodeArrayType(ctx)

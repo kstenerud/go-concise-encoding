@@ -355,7 +355,6 @@ func TestCTEDate(t *testing.T) {
 }
 
 func TestCTETime(t *testing.T) {
-	assertDecode(t, nil, "c0 1:45:00", BD(), EvV, CT(test.NewTime(1, 45, 0, 0, "")), ED())
 	assertDecode(t, nil, "c0 01:45:00", BD(), EvV, CT(test.NewTime(1, 45, 0, 0, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n23:59:59.101", BD(), EvV, CT(test.NewTime(23, 59, 59, 101000000, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n10:00:01.93/America/Los_Angeles", BD(), EvV, CT(test.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
@@ -391,7 +390,6 @@ func TestCTETime(t *testing.T) {
 	assertDecodeFails(t, "c0 10:00:01.93/89.92/1.10a")
 	assertDecodeFails(t, "c0 10:00:01.93/89.92a/1.10")
 	assertDecodeFails(t, "c0 10:00:01.93/89.92/a.10")
-	assertDecodeFails(t, "c0 10:00:01.93/w89.92/1.10")
 	assertDecodeFails(t, "c0 10:00:01.93/89.92/1.10a")
 	assertDecodeFails(t, "c0 10:00:01.93/89.92/")
 	assertDecodeFails(t, "c0 10:00:01.93/89.92/1.101")
@@ -451,9 +449,7 @@ func TestCTETimestamp(t *testing.T) {
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92/1.10a")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92a/1.10")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92/a1.10")
-	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/a89.92/1.10")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92/a")
-	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/a/1.10")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92/")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93//1.10")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92/1999.10")
