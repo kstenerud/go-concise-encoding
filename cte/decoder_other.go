@@ -242,7 +242,7 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	// Assumption: First character is 0
 
 	token := ctx.Stream.ReadToken()
-	token.assertNotEnd(ctx.TextPos, 0, "0-based numeric")
+	token.AssertNotEmpty(ctx.TextPos, "0-based numeric")
 
 	// 0
 	if len(token) == 1 {
@@ -274,7 +274,7 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	value, bigValue, digitCount, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
 
 	// 0123
-	if token.isAtEnd(decodedCount) {
+	if token.IsAtEnd(decodedCount) {
 		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue)
 		return
 	}
@@ -520,7 +520,7 @@ func decodeTokenAsBinaryInt(ctx *DecoderContext, token Token) {
 	} else {
 		ctx.EventReceiver.OnPositiveInt(value)
 	}
-	token.AssertAtEnd(ctx.TextPos, 0, "binary integer")
+	token.AssertAtEnd(ctx.TextPos, "binary integer")
 }
 
 func decodeTokenAsOctalInt(ctx *DecoderContext, token Token) {
@@ -532,7 +532,7 @@ func decodeTokenAsOctalInt(ctx *DecoderContext, token Token) {
 	} else {
 		ctx.EventReceiver.OnPositiveInt(value)
 	}
-	token.AssertAtEnd(ctx.TextPos, 0, "octal integer")
+	token.AssertAtEnd(ctx.TextPos, "octal integer")
 }
 
 func decodeTokenAsHexNumber(ctx *DecoderContext, token Token) {
@@ -540,7 +540,7 @@ func decodeTokenAsHexNumber(ctx *DecoderContext, token Token) {
 	value, bigValue, digitCount, decodedCount := token.DecodeHexUint(ctx.TextPos)
 	token = token[decodedCount:]
 
-	if token.isAtEnd(0) {
+	if token.IsAtEnd(0) {
 		if bigValue != nil {
 			ctx.EventReceiver.OnBigInt(bigValue)
 		} else {
@@ -564,7 +564,7 @@ func decodeTokenAsHexNumber(ctx *DecoderContext, token Token) {
 		ctx.EventReceiver.OnFloat(fvalue)
 	}
 
-	token.AssertAtEnd(ctx.TextPos, 0, "hexadecimal number")
+	token.AssertAtEnd(ctx.TextPos, "hexadecimal number")
 }
 
 func decodeTokenAsUUID(ctx *DecoderContext, token Token) {
@@ -578,7 +578,7 @@ func decodeTokenAsDecimalInt(ctx *DecoderContext, token Token, decodedCount int,
 	} else {
 		ctx.EventReceiver.OnPositiveInt(value)
 	}
-	token.AssertAtEnd(ctx.TextPos, 0, "decimal integer")
+	token.AssertAtEnd(ctx.TextPos, "decimal integer")
 }
 
 func decodeTokenAsDecimalFloat(ctx *DecoderContext, token Token, decodedCount int, digitCount int, value uint64, bigValue *big.Int) {
@@ -591,7 +591,7 @@ func decodeTokenAsDecimalFloat(ctx *DecoderContext, token Token, decodedCount in
 	} else {
 		ctx.EventReceiver.OnDecimalFloat(fvalue)
 	}
-	token.AssertAtEnd(ctx.TextPos, 0, "decimal float")
+	token.AssertAtEnd(ctx.TextPos, "decimal float")
 }
 
 func decodeTokenAsTime(ctx *DecoderContext, token Token, decodedCount int, hour int) {
@@ -602,5 +602,5 @@ func decodeTokenAsTime(ctx *DecoderContext, token Token, decodedCount int, hour 
 	tvalue, decodedCount := token.CompleteTime(ctx.TextPos, 0, 0, 0, hour)
 	token = token[decodedCount:]
 	ctx.EventReceiver.OnCompactTime(tvalue)
-	token.AssertAtEnd(ctx.TextPos, 0, "time")
+	token.AssertAtEnd(ctx.TextPos, "time")
 }

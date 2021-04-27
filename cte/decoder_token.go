@@ -34,6 +34,23 @@ import (
 
 type Token []byte
 
+func (_this Token) IsAtEnd(tokenOffset int) bool {
+	return tokenOffset == len(_this)
+}
+
+func (_this Token) UnexpectedChar(textPos *TextPositionCounter, tokenOffset int, decoding string) {
+	_this.adjustTextPosition(textPos, tokenOffset)
+	textPos.UnexpectedChar(decoding)
+}
+
+func (_this Token) AssertNotEmpty(textPos *TextPositionCounter, decoding string) {
+	_this.assertNotEnd(textPos, 0, decoding)
+}
+
+func (_this Token) AssertAtEnd(textPos *TextPositionCounter, decoding string) {
+	_this.assertPosIsEnd(textPos, 0, decoding)
+}
+
 func (_this Token) adjustTextPosition(textPos *TextPositionCounter, tokenOffset int) {
 	textPos.Retreat(len(_this)-tokenOffset, chars.ByteWithEOF(_this[tokenOffset]))
 }
@@ -45,11 +62,6 @@ func (_this Token) errorf(textPos *TextPositionCounter, tokenOffset int, format 
 
 func (_this Token) unexpectedError(textPos *TextPositionCounter, err error, decoding string) {
 	_this.errorf(textPos, 0, "unexpected error [%v] while decoding %v from [%s]", err, decoding, string(_this))
-}
-
-func (_this Token) UnexpectedChar(textPos *TextPositionCounter, tokenOffset int, decoding string) {
-	_this.adjustTextPosition(textPos, tokenOffset)
-	textPos.UnexpectedChar(decoding)
 }
 
 func (_this Token) expectCharAtOffset(textPos *TextPositionCounter, tokenOffset int, ch byte, decoding string) {
@@ -64,14 +76,10 @@ func (_this Token) assertNotEnd(textPos *TextPositionCounter, tokenOffset int, d
 	}
 }
 
-func (_this Token) AssertAtEnd(textPos *TextPositionCounter, tokenOffset int, decoding string) {
+func (_this Token) assertPosIsEnd(textPos *TextPositionCounter, tokenOffset int, decoding string) {
 	if tokenOffset < len(_this) {
 		_this.errorf(textPos, tokenOffset, "unexpected character at end of %v", decoding)
 	}
-}
-
-func (_this Token) isAtEnd(tokenOffset int) bool {
-	return tokenOffset == len(_this)
 }
 
 func (_this Token) isEmpty() bool {
@@ -292,7 +300,7 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 		}
 
 		if bigStartValue == nil {
-			_this.AssertAtEnd(textPos, pos, "hexadecimal int")
+			_this.assertPosIsEnd(textPos, pos, "hexadecimal int")
 			decodedCount = pos
 			return
 		}
@@ -354,7 +362,7 @@ func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter, sign int64
 	}
 	pos += decodedCount
 
-	if !_this.isAtEnd(pos) && (_this[pos] == 'e' || _this[pos] == 'E') {
+	if !_this.IsAtEnd(pos) && (_this[pos] == 'e' || _this[pos] == 'E') {
 		pos++
 		_this.assertNotEnd(textPos, pos, "decimal float")
 		exponentSign := int32(1)
@@ -423,7 +431,7 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, co
 	}
 	pos += decodedCount
 
-	if !_this.isAtEnd(pos) && (_this[pos] == 'p' || _this[pos] == 'P') {
+	if !_this.IsAtEnd(pos) && (_this[pos] == 'p' || _this[pos] == 'P') {
 		pos++
 		_this.assertNotEnd(textPos, pos, "hex float")
 		exponentSign := 1
@@ -647,7 +655,7 @@ func (_this Token) DecodeLatOrLong(textPos *TextPositionCounter) (value int, dec
 		pos++
 	}
 
-	if !_this.isAtEnd(pos) && _this[pos] == '.' {
+	if !_this.IsAtEnd(pos) && _this[pos] == '.' {
 		pos++
 		_this.assertNotEnd(textPos, pos, "latitude/longitude")
 		maxCount := len(_this) - pos
@@ -704,7 +712,7 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 	}
 	pos += digitCount
 
-	if _this.isAtEnd(pos) {
+	if _this.IsAtEnd(pos) {
 		var err error
 		t, err = compact_time.NewDate(int(year), int(month), int(day))
 		if err != nil {
@@ -728,7 +736,7 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 	return _this.CompleteTime(textPos, year, int(month), int(day), int(hour))
 }
 
-// Complete a time value. Pass 0 as year, month, day to indicate no date portion.
+// Complete a time value. Pass 0 as year, month, and day to indicate no date portion.
 func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, hour int) (t compact_time.Time, decodedCount int) {
 	// Assumption: first byte is ':'
 	pos := 1
@@ -770,7 +778,7 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 
 	// Nanosecond
 	var nsec uint64
-	if !_this.isAtEnd(pos) && _this[pos] == '.' {
+	if !_this.IsAtEnd(pos) && _this[pos] == '.' {
 		pos++
 		nsec, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
 		if digitCount == 0 {
@@ -783,7 +791,7 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 	}
 
 	// Timezone
-	if !_this.isAtEnd(pos) {
+	if !_this.IsAtEnd(pos) {
 		_this.expectCharAtOffset(textPos, pos, '/', "date")
 		pos++
 
@@ -802,7 +810,7 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 			}
 			pos += decodedCount
 			tzType = compact_time.TypeLatitudeLongitude
-			_this.AssertAtEnd(textPos, pos, "time")
+			_this.assertPosIsEnd(textPos, pos, "time")
 		} else {
 			areaLocation = string(_this[pos:])
 			tzType = compact_time.TypeAreaLocation
