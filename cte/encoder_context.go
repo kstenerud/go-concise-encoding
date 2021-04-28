@@ -128,8 +128,7 @@ func (_this *EncoderContext) WriteIdentifier(data []byte) {
 }
 
 func (_this *EncoderContext) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
-	// TODO: avoid string-to-bytes conversion?
-	_this.ArrayEngine.EncodeArray(_this.Decorator.GetStringContext(), arrayType, uint64(len(data)), []byte(data))
+	_this.ArrayEngine.EncodeStringlikeArray(_this.Decorator.GetStringContext(), arrayType, data)
 }
 
 func (_this *EncoderContext) EncodeArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -164,7 +163,7 @@ func (_this *EncoderContext) WriteMarkupContentString(data string) {
 }
 
 func (_this *EncoderContext) WriteMarkupContentStringData(data []uint8) {
-	_this.Stream.WritePotentiallyEscapedMarkupContents(data)
+	_this.Stream.WritePotentiallyEscapedMarkupContentsBytes(data)
 }
 
 // ============================================================================

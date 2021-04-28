@@ -148,12 +148,14 @@ func (_this *Reader) TokenAppendBytes(b []byte) {
 	_this.token = append(_this.token, b...)
 }
 
+var emptyRuneBytes = []byte{0, 0, 0, 0, 0}
+
 func (_this *Reader) TokenAppendRune(r rune) {
 	if r < utf8.RuneSelf {
 		_this.TokenAppendByte(byte(r))
 	} else {
 		pos := len(_this.token)
-		_this.TokenAppendBytes([]byte{0, 0, 0, 0, 0})
+		_this.TokenAppendBytes(emptyRuneBytes)
 		length := utf8.EncodeRune(_this.token[pos:], r)
 		_this.token = _this.token[:pos+length]
 	}
@@ -298,6 +300,9 @@ Outer:
 	}
 }
 
+var nbspBytes = []byte{0xc0, 0xa0}
+var shyBytes = []byte{0xc0, 0xad}
+
 func (_this *Reader) TokenReadEscape() {
 	escape := _this.ReadByteNoEOF()
 	switch escape {
@@ -311,10 +316,10 @@ func (_this *Reader) TokenReadEscape() {
 		_this.TokenAppendByte(escape)
 	case '_':
 		// Non-breaking space
-		_this.TokenAppendBytes([]byte{0xc0, 0xa0})
+		_this.TokenAppendBytes(nbspBytes)
 	case '-':
 		// Soft hyphen
-		_this.TokenAppendBytes([]byte{0xc0, 0xad})
+		_this.TokenAppendBytes(shyBytes)
 	case '\r', '\n':
 		// Continuation
 		_this.SkipWhitespace()

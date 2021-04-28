@@ -312,13 +312,31 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 	}
 }
 
-func (_this *Writer) WriteQuotedStringBytes(value []byte) {
+func (_this *Writer) WriteQuotedString(value string) {
 	if len(value) == 0 {
-		_this.WriteBytes([]byte{'"', '"'})
+		_this.WriteString(`""`)
 		return
 	}
 
 	escapeCount := getEscapeCount(value)
+
+	if escapeCount == 0 {
+		_this.WriteByte('"')
+		_this.WriteString(value)
+		_this.WriteByte('"')
+		return
+	}
+
+	_this.WriteEscapedQuotedString(value, escapeCount)
+}
+
+func (_this *Writer) WriteQuotedStringBytes(value []byte) {
+	if len(value) == 0 {
+		_this.WriteString(`""`)
+		return
+	}
+
+	escapeCount := getEscapeCountBytes(value)
 
 	if escapeCount == 0 {
 		_this.WriteByte('"')
@@ -328,6 +346,23 @@ func (_this *Writer) WriteQuotedStringBytes(value []byte) {
 	}
 
 	_this.WriteEscapedQuotedStringBytes(value, escapeCount)
+}
+
+func (_this *Writer) WriteEscapedQuotedString(value string, escapeCount int) {
+	// Worst case scenario: All characters that require escaping need a unicode
+	// sequence. In this case, we'd need at least 7 bytes per escaped character.
+	// data := _this.RequireBytes(len(value) + escapeCount*6 + 2)
+
+	_this.WriteByte('"')
+	for _, ch := range value {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyString) {
+			// TODO: render escapes into buffer to avoid allocs
+			_this.WriteBytes(escapeCharQuoted(ch))
+		} else {
+			_this.WriteRune(ch)
+		}
+	}
+	_this.WriteByte('"')
 }
 
 func (_this *Writer) WriteEscapedQuotedStringBytes(value []byte, escapeCount int) {
@@ -347,53 +382,80 @@ func (_this *Writer) WriteEscapedQuotedStringBytes(value []byte, escapeCount int
 	_this.WriteByte('"')
 }
 
-func (_this *Writer) WritePotentiallyEscapedStringArrayContents(value []byte) {
+func (_this *Writer) WritePotentiallyEscapedStringArrayContentsBytes(value []byte) {
+	if len(value) == 0 {
+		return
+	}
+
+	if !needsEscapesStringlikeArrayBytes(value) {
+		_this.WriteBytes(value)
+		return
+	}
+
+	for _, ch := range string(value) {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
+			_this.WriteBytes(escapeCharQuoted(ch))
+		} else {
+			_this.WriteRune(ch)
+		}
+	}
+}
+
+func (_this *Writer) WritePotentiallyEscapedStringArrayContents(value string) {
 	if len(value) == 0 {
 		return
 	}
 
 	if !needsEscapesStringlikeArray(value) {
-		_this.WriteBytes(value)
+		_this.WriteString(value)
 		return
 	}
 
-	// TODO: Encode directly rather than using bytes.Buffer
-	var bb bytes.Buffer
-	bb.Grow(len(value))
-	for _, ch := range string(value) {
+	for _, ch := range value {
 		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
-			// Note: StringBuilder's WriteXYZ() always return nil errors
-			bb.Write(escapeCharStringArray(ch))
+			_this.WriteBytes(escapeCharQuoted(ch))
 		} else {
-			bb.WriteRune(ch)
+			_this.WriteRune(ch)
 		}
 	}
-	_this.WriteBytes(bb.Bytes())
-
 }
 
-func (_this *Writer) WritePotentiallyEscapedMarkupContents(value []byte) {
+func (_this *Writer) WritePotentiallyEscapedMarkupContents(value string) {
 	if len(value) == 0 {
 		return
 	}
 
 	if !needsEscapesMarkup(value) {
+		_this.WriteString(value)
+		return
+	}
+
+	for _, ch := range value {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
+			_this.WriteBytes(escapeCharMarkup(ch))
+		} else {
+			_this.WriteRune(ch)
+		}
+	}
+}
+
+func (_this *Writer) WritePotentiallyEscapedMarkupContentsBytes(value []byte) {
+	if len(value) == 0 {
+		return
+	}
+
+	if !needsEscapesMarkupBytes(value) {
 		_this.WriteBytes(value)
 		return
 	}
 
-	// TODO: Encode directly rather than using bytes.Buffer
-	var bb bytes.Buffer
-	bb.Grow(len(value))
-	// Note: StringBuilder's WriteXYZ() always return nil errors
 	for _, ch := range string(value) {
 		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
-			bb.Write(escapeCharMarkup(ch))
+			_this.WriteBytes(escapeCharMarkup(ch))
 		} else {
-			bb.WriteRune(ch)
+			_this.WriteRune(ch)
 		}
 	}
-	_this.WriteBytes(bb.Bytes())
 }
 
 func (_this *Writer) WriteHexBytes(value []byte) {
@@ -445,8 +507,10 @@ func (_this *Writer) WriteMapBegin() {
 	_this.WriteByte('{')
 }
 
+var mapValueSeparator = []byte{' ', '=', ' '}
+
 func (_this *Writer) WriteMapValueSeparator() {
-	_this.WriteBytes([]byte{' ', '=', ' '})
+	_this.WriteBytes(mapValueSeparator)
 }
 
 func (_this *Writer) WriteMapEnd() {
@@ -482,12 +546,15 @@ func (_this *Writer) WriteArrayEnd() {
 	_this.WriteByte('|')
 }
 
+var commentBegin = []byte{'/', '*'}
+var commentEnd = []byte{'*', '/'}
+
 func (_this *Writer) WriteCommentBegin() {
-	_this.WriteBytes([]byte{'/', '*'})
+	_this.WriteBytes(commentBegin)
 }
 
 func (_this *Writer) WriteCommentEnd() {
-	_this.WriteBytes([]byte{'*', '/'})
+	_this.WriteBytes(commentEnd)
 }
 
 func (_this *Writer) unexpectedError(err error, encoding interface{}) {

@@ -27,7 +27,16 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
-func getEscapeCount(str []byte) (escapeCount int) {
+func getEscapeCount(str string) (escapeCount int) {
+	for _, ch := range str {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyString) {
+			escapeCount++
+		}
+	}
+	return
+}
+
+func getEscapeCountBytes(str []byte) (escapeCount int) {
 	for _, ch := range string(str) {
 		if !chars.IsRuneSafeFor(ch, chars.SafetyString) {
 			escapeCount++
@@ -36,7 +45,16 @@ func getEscapeCount(str []byte) (escapeCount int) {
 	return
 }
 
-func needsEscapesStringlikeArray(str []byte) bool {
+func needsEscapesStringlikeArray(str string) bool {
+	for _, ch := range str {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
+			return true
+		}
+	}
+	return false
+}
+
+func needsEscapesStringlikeArrayBytes(str []byte) bool {
 	for _, ch := range string(str) {
 		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
 			return true
@@ -45,7 +63,16 @@ func needsEscapesStringlikeArray(str []byte) bool {
 	return false
 }
 
-func needsEscapesMarkup(str []byte) bool {
+func needsEscapesMarkup(str string) bool {
+	for _, ch := range str {
+		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
+			return true
+		}
+	}
+	return false
+}
+
+func needsEscapesMarkupBytes(str []byte) bool {
 	for _, ch := range string(str) {
 		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
 			return true
@@ -54,7 +81,16 @@ func needsEscapesMarkup(str []byte) bool {
 	return false
 }
 
-func containsEscapes(str []byte) bool {
+func containsEscapes(str string) bool {
+	for _, b := range str {
+		if b == '\\' {
+			return true
+		}
+	}
+	return false
+}
+
+func containsEscapesBytes(str []byte) bool {
 	for _, b := range str {
 		if b == '\\' {
 			return true
@@ -132,7 +168,7 @@ func escapeCharMarkup(ch rune) []byte {
 // a human with other CTE document structural characters.
 var verbatimSentinelAlphabet = []byte("~%*+;=^_23456789ZQXJVKBPYGCFMWULDHSNOIRATE10zqxjvkbpygcfmwuldhsnoirate")
 
-func generateVerbatimSentinel(str []byte) []byte {
+func generateVerbatimSentinelBytes(str []byte) []byte {
 	// Try all 1, 2, and 3-character sequences picked from a safe alphabet.
 
 	usedChars := [256]bool{}

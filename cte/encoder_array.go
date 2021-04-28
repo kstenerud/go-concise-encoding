@@ -21,6 +21,7 @@
 package cte
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -75,8 +76,30 @@ func (_this *arrayEncoderEngine) setElementByteWidth(width int) {
 }
 
 func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringContext, arrayType events.ArrayType, data string) {
-	// TODO: avoid string-to-bytes conversion?
-	_this.EncodeArray(stringContext, arrayType, uint64(len(data)), []byte(data))
+	switch arrayType {
+	case events.ArrayTypeString:
+		switch stringContext {
+		case stringContextDefault:
+			_this.stream.WriteQuotedString(data)
+		case stringContextComment:
+			_this.stream.WriteString(data)
+		case stringContextMarkup:
+			_this.stream.WritePotentiallyEscapedMarkupContents(data)
+		}
+	case events.ArrayTypeResourceID:
+		_this.stream.WriteByte('@')
+		_this.stream.WriteQuotedString(data)
+	case events.ArrayTypeResourceIDConcat:
+		_this.stream.WriteByte('@')
+		_this.stream.WriteQuotedString(data)
+		_this.stream.WriteConcat()
+	case events.ArrayTypeCustomText:
+		_this.stream.WriteString("|ct ")
+		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
+		_this.stream.WriteArrayEnd()
+	default:
+		panic(fmt.Errorf("BUG: EncodeStringlikeArray passed unhandled array type %v", arrayType))
+	}
 }
 
 func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -88,18 +111,18 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 		case stringContextComment:
 			_this.stream.WriteBytes(data)
 		case stringContextMarkup:
-			_this.stream.WritePotentiallyEscapedMarkupContents(data)
+			_this.stream.WritePotentiallyEscapedMarkupContentsBytes(data)
 		}
 	case events.ArrayTypeResourceID:
-		_this.stream.WriteString("@")
+		_this.stream.WriteByte('@')
 		_this.stream.WriteQuotedStringBytes(data)
 	case events.ArrayTypeResourceIDConcat:
-		_this.stream.WriteString("@")
+		_this.stream.WriteByte('@')
 		_this.stream.WriteQuotedStringBytes(data)
 		_this.stream.WriteConcat()
 	case events.ArrayTypeCustomText:
 		_this.stream.WriteString("|ct ")
-		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
+		_this.stream.WritePotentiallyEscapedStringArrayContentsBytes(data)
 		_this.stream.WriteArrayEnd()
 	default:
 		_this.BeginArray(stringContext, arrayType, func() {})
@@ -255,7 +278,7 @@ func (_this *arrayEncoderEngine) beginArrayCustomText(onComplete func()) {
 		_this.appendStringbuffer(data)
 	}
 	_this.onComplete = func() {
-		_this.stream.WritePotentiallyEscapedStringArrayContents(_this.stringBuffer)
+		_this.stream.WritePotentiallyEscapedStringArrayContentsBytes(_this.stringBuffer)
 		_this.stream.WriteArrayEnd()
 		onComplete()
 	}
