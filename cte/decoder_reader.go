@@ -51,7 +51,7 @@ func NewReader(reader io.Reader) *Reader {
 func (_this *Reader) Init(reader io.Reader) {
 	_this.reader = reader
 	if cap(_this.token) == 0 {
-		_this.token = make([]byte, 0, 16)
+		_this.token = make([]byte, 0, 64)
 	}
 	_this.hasUnread = false
 	_this.isEOF = false
