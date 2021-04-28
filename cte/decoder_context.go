@@ -39,6 +39,7 @@ type DecoderContext struct {
 	EventReceiver      events.DataEventReceiver
 	stack              []DecoderStackEntry
 	IsDocumentComplete bool
+	Scratch            []byte
 }
 
 func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {

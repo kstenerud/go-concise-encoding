@@ -71,7 +71,7 @@ func (_this Token) expectCharAtOffset(textPos *TextPositionCounter, tokenOffset 
 }
 
 func (_this Token) assertNotEnd(textPos *TextPositionCounter, tokenOffset int, decoding string) {
-	if tokenOffset > len(_this) {
+	if tokenOffset >= len(_this) {
 		textPos.UnexpectedEOF(decoding)
 	}
 }
@@ -88,10 +88,17 @@ func (_this Token) isEmpty() bool {
 
 // ----------------------------------------------------------------------------
 
+func (_this Token) DecodeNamedValue(textPos *TextPositionCounter) string {
+	_this.assertNotEnd(textPos, 0, "named value")
+
+	common.ASCIIBytesToLower(_this)
+	return string(_this)
+}
+
+// ----------------------------------------------------------------------------
+
 func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
-	if _this.isEmpty() {
-		_this.errorf(textPos, 0, "BUG: No data")
-	}
+	_this.assertNotEnd(textPos, 0, "binary uint")
 
 	const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 	pos := 0
@@ -133,19 +140,17 @@ func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64,
 }
 
 func (_this Token) DecodeSmallBinaryUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallUint(textPos, _this.DecodeBinaryUint)
+	return _this.decodeSmallUintWrapper(textPos, Token.DecodeBinaryUint)
 }
 
 func (_this Token) DecodeSmallBinaryInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallInt(textPos, _this.DecodeBinaryUint)
+	return _this.decodeSmallIntWrapper(textPos, Token.DecodeBinaryUint)
 }
 
 // ----------------------------------------------------------------------------
 
 func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
-	if _this.isEmpty() {
-		_this.errorf(textPos, 0, "BUG: No data")
-	}
+	_this.assertNotEnd(textPos, 0, "octal uint")
 
 	const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 	pos := 0
@@ -187,11 +192,11 @@ func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, 
 }
 
 func (_this Token) DecodeSmallOctalUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallUint(textPos, _this.DecodeOctalUint)
+	return _this.decodeSmallUintWrapper(textPos, Token.DecodeOctalUint)
 }
 
 func (_this Token) DecodeSmallOctalInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallInt(textPos, _this.DecodeOctalUint)
+	return _this.decodeSmallIntWrapper(textPos, Token.DecodeOctalUint)
 }
 
 // ----------------------------------------------------------------------------
@@ -252,18 +257,16 @@ func (_this Token) CompleteDecimalUint(textPos *TextPositionCounter, startValue 
 }
 
 func (_this Token) DecodeDecimalUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
-	if _this.isEmpty() {
-		_this.errorf(textPos, 0, "BUG: No data")
-	}
+	_this.assertNotEnd(textPos, 0, "decimal uint")
 	return _this.CompleteDecimalUint(textPos, 0, nil)
 }
 
 func (_this Token) DecodeSmallDecimalUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallUint(textPos, _this.DecodeDecimalUint)
+	return _this.decodeSmallUintWrapper(textPos, Token.DecodeDecimalUint)
 }
 
 func (_this Token) DecodeSmallDecimalInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallInt(textPos, _this.DecodeDecimalUint)
+	return _this.decodeSmallIntWrapper(textPos, Token.DecodeDecimalUint)
 }
 
 // ----------------------------------------------------------------------------
@@ -334,18 +337,51 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 }
 
 func (_this Token) DecodeHexUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
-	if _this.isEmpty() {
-		_this.errorf(textPos, 0, "BUG: No data")
-	}
+	_this.assertNotEnd(textPos, 0, "hex uint")
 	return _this.CompleteHexUint(textPos, 0, nil)
 }
 
 func (_this Token) DecodeSmallHexUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallUint(textPos, _this.DecodeHexUint)
+	return _this.decodeSmallUintWrapper(textPos, Token.DecodeHexUint)
 }
 
 func (_this Token) DecodeSmallHexInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
-	return _this.DecodeSmallInt(textPos, _this.DecodeHexUint)
+	return _this.decodeSmallIntWrapper(textPos, Token.DecodeHexUint)
+}
+
+// ----------------------------------------------------------------------------
+
+func (_this Token) DecodeUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
+	_this.assertNotEnd(textPos, 0, "uint")
+	if _this[0] == '0' {
+		if len(_this) == 1 {
+			return 0, nil, 1, 1
+		}
+		switch _this[1] {
+		case 'b', 'B':
+			value, bigValue, digitCount, decodedCount = _this[2:].DecodeBinaryUint(textPos)
+			decodedCount += 2
+			return
+		case 'o', 'O':
+			value, bigValue, digitCount, decodedCount = _this[2:].DecodeOctalUint(textPos)
+			decodedCount += 2
+			return
+		case 'x', 'X':
+			value, bigValue, digitCount, decodedCount = _this[2:].DecodeHexUint(textPos)
+			decodedCount += 2
+			return
+		}
+	}
+
+	return _this.DecodeDecimalUint(textPos)
+}
+
+func (_this Token) DecodeSmallUint(textPos *TextPositionCounter) (value uint64, digitCount int, decodedCount int) {
+	return _this.decodeSmallUintWrapper(textPos, Token.DecodeUint)
+}
+
+func (_this Token) DecodeSmallInt(textPos *TextPositionCounter) (value int64, digitCount int, decodedCount int) {
+	return _this.decodeSmallIntWrapper(textPos, Token.DecodeUint)
 }
 
 // ----------------------------------------------------------------------------
@@ -497,11 +533,70 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, co
 	return
 }
 
-func (_this Token) DecodeHexFloat(textPos *TextPositionCounter) (value float64, bigValue *big.Float, digitCount int) {
-	if len(_this) < 5 {
-		// Smallest hex float has form 0x1.1
-		_this.errorf(textPos, 0, "expected a hex float")
+func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64, decodedCount int) {
+	_this.AssertNotEmpty(textPos, "float")
+
+	var addToDecodedCount int
+
+	sign := int64(1)
+	if _this[0] == '-' {
+		sign = -1
+		_this = _this[1:]
+		addToDecodedCount++
 	}
+
+	pos := 0
+
+	if len(_this) >= 3 && _this[0] == '0' && (_this[1] == 'x' || _this[1] == 'X') {
+		_this = _this[2:]
+		addToDecodedCount += 2
+		value, decodedCount = _this.DecodeSmallHexFloat(textPos)
+		value *= float64(sign)
+		decodedCount += addToDecodedCount
+		return
+	}
+
+	coefficient, bigCoefficient, coefficientDigitCount, decodedCount := _this[pos:].DecodeUint(textPos)
+	pos += decodedCount
+	if decodedCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "float")
+	}
+
+	if _this.IsAtEnd(pos) {
+		if bigCoefficient != nil {
+			// Just disallow this edge case.
+			_this.errorf(textPos, pos, "coefficient is too big; use 0x1.1p1 form instead.")
+		}
+		// Just directly convert. This may cause rounding but it's the best way.
+		value = float64(coefficient)
+		decodedCount = pos + addToDecodedCount
+		return
+	}
+
+	if _this[pos] != '.' {
+		_this.UnexpectedChar(textPos, pos, "float")
+	}
+	// Note: Do not advance past '.' because CompleteDecimalFloat expects it
+	var dfloatValue compact_float.DFloat
+	var bigValue *apd.Decimal
+	dfloatValue, bigValue, decodedCount = _this[pos:].CompleteDecimalFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+	pos += decodedCount
+	if decodedCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "float")
+	}
+	if bigValue != nil {
+		_this.errorf(textPos, 0, "float value is too big")
+	}
+	_this.assertPosIsEnd(textPos, pos, "float")
+
+	// TODO: Check exponent sizes
+	value = dfloatValue.Float()
+	decodedCount = pos + addToDecodedCount
+	return
+}
+
+func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value float64, decodedCount int) {
+	_this.AssertNotEmpty(textPos, "hex float")
 	pos := 0
 
 	sign := int64(1)
@@ -510,46 +605,68 @@ func (_this Token) DecodeHexFloat(textPos *TextPositionCounter) (value float64, 
 		pos++
 	}
 
-	_this.expectCharAtOffset(textPos, pos, '0', "decimal float exponent")
-	pos++
-	if _this[pos] != 'x' && _this[pos] != 'X' {
-		_this.UnexpectedChar(textPos, pos, "decimal float exponent")
+	// Note: The "0x" is implied, and not actually present in the text.
+
+	coefficient, bigCoefficient, coefficientDigitCount, decodedCount := _this[pos:].DecodeHexUint(textPos)
+	pos += decodedCount
+	if decodedCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "hex float")
 	}
 
-	_this = _this[pos:]
-	coefficient, bigCoefficient, coefficientDigitCount, decodedCount := _this.DecodeHexUint(textPos)
-	pos = decodedCount
-	if pos == 0 || _this[pos] != '.' {
-		_this.UnexpectedChar(textPos, pos, "decimal float exponent")
+	if _this.IsAtEnd(pos) {
+		if bigCoefficient != nil {
+			// Just disallow this edge case.
+			_this.errorf(textPos, pos, "coefficient is too big; use 0x1.1p1 form instead.")
+		}
+		// Just directly convert. This may cause rounding but it's the best way.
+		return float64(coefficient), decodedCount
 	}
-	pos++
-	return _this.CompleteHexFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+
+	if _this[pos] != '.' {
+		_this.UnexpectedChar(textPos, pos, "hex float")
+	}
+	// Note: Do not advance past '.' because CompleteHexFloat expects it
+	var bigValue *big.Float
+	value, bigValue, decodedCount = _this[pos:].CompleteHexFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+	pos += decodedCount
+	if decodedCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "hex float")
+	}
+	if bigValue != nil {
+		_this.errorf(textPos, 0, "float value is too big")
+	}
+	_this.assertPosIsEnd(textPos, pos, "hex float")
+
+	decodedCount = pos
+	return
 }
 
 // ----------------------------------------------------------------------------
 
-func (_this Token) DecodeSmallUint(textPos *TextPositionCounter, readUint func(*TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int)) (value uint64, digitCount int, decodedCount int) {
+type readUintFunc func(Token, *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int)
+
+func (_this Token) decodeSmallUintWrapper(textPos *TextPositionCounter, readUint readUintFunc) (value uint64, digitCount int, decodedCount int) {
 	var bigValue *big.Int
-	value, bigValue, digitCount, decodedCount = readUint(textPos)
+	value, bigValue, digitCount, decodedCount = readUint(_this, textPos)
 	if bigValue != nil {
 		_this.errorf(textPos, 0, "Value cannot be > 64 bits")
 	}
 	return
 }
 
-func (_this Token) DecodeSmallInt(textPos *TextPositionCounter, readUint func(*TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int)) (value int64, digitCount int, decodedCount int) {
-	if _this.isEmpty() {
-		_this.errorf(textPos, 0, "BUG: No data")
-	}
+func (_this Token) decodeSmallIntWrapper(textPos *TextPositionCounter, readUint readUintFunc) (value int64, digitCount int, decodedCount int) {
+	_this.assertNotEnd(textPos, 0, "integer")
+	additionalCount := 0
 	sign := int64(1)
 	if _this[0] == '-' {
 		sign = -sign
 		_this = _this[1:]
+		additionalCount++
 	}
 	var bigValue *big.Int
 	var uvalue uint64
-	uvalue, bigValue, digitCount, decodedCount = readUint(textPos)
-	decodedCount++
+	uvalue, bigValue, digitCount, decodedCount = readUint(_this, textPos)
+	decodedCount += additionalCount
 	if bigValue != nil {
 		_this.errorf(textPos, 0, "Value cannot be > 64 bits")
 	}
@@ -564,7 +681,7 @@ func (_this Token) DecodeSmallInt(textPos *TextPositionCounter, readUint func(*T
 // ----------------------------------------------------------------------------
 
 func (_this Token) DecodeUUID(textPos *TextPositionCounter) (uuid []byte) {
-	if len(_this) < 36 {
+	if len(_this) != 36 {
 		_this.errorf(textPos, 0, "Expected a UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)")
 	}
 

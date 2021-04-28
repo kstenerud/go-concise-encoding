@@ -75,13 +75,12 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 		ctx.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.DescribeCurrentChar())
 	}
 
-	version, bigVersion, digitCount := ctx.Stream.ReadDecimalUint(0, nil)
+	token := ctx.Stream.ReadToken()
+	version, digitCount, _ := token.DecodeSmallDecimalUint(ctx.TextPos)
 	if digitCount == 0 {
 		ctx.UnexpectedChar("version number")
 	}
-	if bigVersion != nil {
-		ctx.Errorf("Version too big")
-	}
+
 	// TODO: Remove this when releasing V1
 	if version == 1 {
 		version = 0
@@ -126,7 +125,7 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
-		decodeTokenAsUUID(ctx, token)
+		ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
 		return
 	}
 
@@ -174,7 +173,8 @@ type decodeUUID struct{}
 var global_decodeUUID decodeUUID
 
 func (_this decodeUUID) Run(ctx *DecoderContext) {
-	ctx.EventReceiver.OnUUID(ctx.Stream.ReadUUIDWithDecimalDecoded(0, 0))
+	token := ctx.Stream.ReadToken()
+	ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
 }
 
 type advanceAndDecodeNumericNegative struct{}
@@ -191,15 +191,15 @@ func (_this advanceAndDecodeNumericNegative) decode0Based(ctx *DecoderContext, t
 	}
 
 	switch token[1] {
-	case 'b':
+	case 'b', 'B':
 		// 0b1010
 		decodeTokenAsBinaryInt(ctx, token, sign)
 		return
-	case 'o':
+	case 'o', 'O':
 		// 0o1234
 		decodeTokenAsOctalInt(ctx, token, sign)
 		return
-	case 'x':
+	case 'x', 'X':
 		// 0x1234
 		decodeTokenAsHexNumber(ctx, token, sign)
 		return
@@ -286,22 +286,22 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
-		decodeTokenAsUUID(ctx, token)
+		ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
 		return
 	}
 
 	sign := 1
 
 	switch token[1] {
-	case 'b':
+	case 'b', 'B':
 		// 0b1010
 		decodeTokenAsBinaryInt(ctx, token, sign)
 		return
-	case 'o':
+	case 'o', 'O':
 		// 0o1234
 		decodeTokenAsOctalInt(ctx, token, sign)
 		return
-	case 'x':
+	case 'x', 'X':
 		// 0x1234
 		decodeTokenAsHexNumber(ctx, token, sign)
 		return
@@ -339,7 +339,7 @@ func (_this decodeFalseOrUUID) Run(ctx *DecoderContext) {
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
-		decodeTokenAsUUID(ctx, token)
+		ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
 		return
 	}
 
@@ -544,10 +544,6 @@ func decodeTokenAsHexNumber(ctx *DecoderContext, token Token, sign int) {
 	}
 
 	token.AssertAtEnd(ctx.TextPos, "hexadecimal number")
-}
-
-func decodeTokenAsUUID(ctx *DecoderContext, token Token) {
-	ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
 }
 
 func decodeTokenAsDecimalInt(ctx *DecoderContext, token Token, decodedCount int, value uint64, bigValue *big.Int, sign int) {

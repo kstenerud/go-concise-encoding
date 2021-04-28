@@ -86,6 +86,25 @@ type advanceAndDecodeTypedArrayBegin struct{}
 
 var global_advanceAndDecodeTypedArrayBegin advanceAndDecodeTypedArrayBegin
 
+type uintTokenDecoder func(Token, *TextPositionCounter) (v uint64, digitCount int, decodedCount int)
+type intTokenDecoder func(Token, *TextPositionCounter) (v int64, digitCount int, decodedCount int)
+type floatTokenDecoder func(Token, *TextPositionCounter) (v float64, decodedCount int)
+
+func (_this advanceAndDecodeTypedArrayBegin) decodeElementIntAnyType(ctx *DecoderContext) (v int64, success bool) {
+	token := ctx.Stream.ReadToken()
+	// TODO: This needs to check for other bases
+	value, digitCount, decodedCount := token.DecodeSmallDecimalInt(ctx.TextPos)
+	token[decodedCount:].AssertAtEnd(ctx.TextPos, "integer")
+	return value, digitCount > 0
+}
+
+func (_this advanceAndDecodeTypedArrayBegin) decodeElementIntOctal(ctx *DecoderContext) (v int64, success bool) {
+	token := ctx.Stream.ReadToken()
+	value, digitCount, decodedCount := token.DecodeSmallOctalInt(ctx.TextPos)
+	token[decodedCount:].AssertAtEnd(ctx.TextPos, "integer")
+	return value, digitCount > 0
+}
+
 func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
@@ -101,81 +120,81 @@ func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	case "b":
 		decodeArrayBoolean(ctx)
 	case "u8":
-		decodeArrayU8(ctx, "integer", ctx.Stream.ReadSmallUint)
+		decodeArrayU8(ctx, "uint", Token.DecodeSmallUint)
 	case "u8b":
-		decodeArrayU8(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
+		decodeArrayU8(ctx, "binary", Token.DecodeSmallBinaryUint)
 	case "u8o":
-		decodeArrayU8(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
+		decodeArrayU8(ctx, "octal", Token.DecodeSmallOctalUint)
 	case "u8x":
-		decodeArrayU8(ctx, "hex", ctx.Stream.ReadSmallHexUint)
+		decodeArrayU8(ctx, "hex", Token.DecodeSmallHexUint)
 	case "u16":
-		decodeArrayU16(ctx, "integer", ctx.Stream.ReadSmallUint)
+		decodeArrayU16(ctx, "uint", Token.DecodeSmallUint)
 	case "u16b":
-		decodeArrayU16(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
+		decodeArrayU16(ctx, "binary", Token.DecodeSmallBinaryUint)
 	case "u16o":
-		decodeArrayU16(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
+		decodeArrayU16(ctx, "octal", Token.DecodeSmallOctalUint)
 	case "u16x":
-		decodeArrayU16(ctx, "hex", ctx.Stream.ReadSmallHexUint)
+		decodeArrayU16(ctx, "hex", Token.DecodeSmallHexUint)
 	case "u32":
-		decodeArrayU32(ctx, "integer", ctx.Stream.ReadSmallUint)
+		decodeArrayU32(ctx, "uint", Token.DecodeSmallUint)
 	case "u32b":
-		decodeArrayU32(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
+		decodeArrayU32(ctx, "binary", Token.DecodeSmallBinaryUint)
 	case "u32o":
-		decodeArrayU32(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
+		decodeArrayU32(ctx, "octal", Token.DecodeSmallOctalUint)
 	case "u32x":
-		decodeArrayU32(ctx, "hex", ctx.Stream.ReadSmallHexUint)
+		decodeArrayU32(ctx, "hex", Token.DecodeSmallHexUint)
 	case "u64":
-		decodeArrayU64(ctx, "integer", ctx.Stream.ReadSmallUint)
+		decodeArrayU64(ctx, "uint", Token.DecodeSmallUint)
 	case "u64b":
-		decodeArrayU64(ctx, "binary", ctx.Stream.ReadSmallBinaryUint)
+		decodeArrayU64(ctx, "binary", Token.DecodeSmallBinaryUint)
 	case "u64o":
-		decodeArrayU64(ctx, "octal", ctx.Stream.ReadSmallOctalUint)
+		decodeArrayU64(ctx, "octal", Token.DecodeSmallOctalUint)
 	case "u64x":
-		decodeArrayU64(ctx, "hex", ctx.Stream.ReadSmallHexUint)
+		decodeArrayU64(ctx, "hex", Token.DecodeSmallHexUint)
 	case "i8":
-		decodeArrayI8(ctx, "integer", ctx.Stream.ReadSmallInt)
+		decodeArrayI8(ctx, "int", Token.DecodeSmallInt)
 	case "i8b":
-		decodeArrayI8(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
+		decodeArrayI8(ctx, "binary", Token.DecodeSmallBinaryInt)
 	case "i8o":
-		decodeArrayI8(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
+		decodeArrayI8(ctx, "octal", Token.DecodeSmallOctalInt)
 	case "i8x":
-		decodeArrayI8(ctx, "hex", ctx.Stream.ReadSmallHexInt)
+		decodeArrayI8(ctx, "hex", Token.DecodeSmallHexInt)
 	case "i16":
-		decodeArrayI16(ctx, "integer", ctx.Stream.ReadSmallInt)
+		decodeArrayI16(ctx, "integer", Token.DecodeSmallInt)
 	case "i16b":
-		decodeArrayI16(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
+		decodeArrayI16(ctx, "binary", Token.DecodeSmallBinaryInt)
 	case "i16o":
-		decodeArrayI16(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
+		decodeArrayI16(ctx, "octal", Token.DecodeSmallOctalInt)
 	case "i16x":
-		decodeArrayI16(ctx, "hex", ctx.Stream.ReadSmallHexInt)
+		decodeArrayI16(ctx, "hex", Token.DecodeSmallHexInt)
 	case "i32":
-		decodeArrayI32(ctx, "integer", ctx.Stream.ReadSmallInt)
+		decodeArrayI32(ctx, "integer", Token.DecodeSmallInt)
 	case "i32b":
-		decodeArrayI32(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
+		decodeArrayI32(ctx, "binary", Token.DecodeSmallBinaryInt)
 	case "i32o":
-		decodeArrayI32(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
+		decodeArrayI32(ctx, "octal", Token.DecodeSmallOctalInt)
 	case "i32x":
-		decodeArrayI32(ctx, "hex", ctx.Stream.ReadSmallHexInt)
+		decodeArrayI32(ctx, "hex", Token.DecodeSmallHexInt)
 	case "i64":
-		decodeArrayI64(ctx, "integer", ctx.Stream.ReadSmallInt)
+		decodeArrayI64(ctx, "integer", Token.DecodeSmallInt)
 	case "i64b":
-		decodeArrayI64(ctx, "binary", ctx.Stream.ReadSmallBinaryInt)
+		decodeArrayI64(ctx, "binary", Token.DecodeSmallBinaryInt)
 	case "i64o":
-		decodeArrayI64(ctx, "octal", ctx.Stream.ReadSmallOctalInt)
+		decodeArrayI64(ctx, "octal", Token.DecodeSmallOctalInt)
 	case "i64x":
-		decodeArrayI64(ctx, "hex", ctx.Stream.ReadSmallHexInt)
+		decodeArrayI64(ctx, "hex", Token.DecodeSmallHexInt)
 	case "f16":
-		decodeArrayF16(ctx, "float", ctx.Stream.ReadSmallFloat)
+		decodeArrayF16(ctx, "float", Token.DecodeSmallFloat)
 	case "f16x":
-		decodeArrayF16(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
+		decodeArrayF16(ctx, "hex", Token.DecodeSmallHexFloat)
 	case "f32":
-		decodeArrayF32(ctx, "float", ctx.Stream.ReadSmallFloat)
+		decodeArrayF32(ctx, "float", Token.DecodeSmallFloat)
 	case "f32x":
-		decodeArrayF32(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
+		decodeArrayF32(ctx, "hex", Token.DecodeSmallHexFloat)
 	case "f64":
-		decodeArrayF64(ctx, "float", ctx.Stream.ReadSmallFloat)
+		decodeArrayF64(ctx, "float", Token.DecodeSmallFloat)
 	case "f64x":
-		decodeArrayF64(ctx, "hex float", ctx.Stream.ReadSmallHexFloat)
+		decodeArrayF64(ctx, "hex", Token.DecodeSmallHexFloat)
 	default:
 		ctx.Errorf("%s: Unhandled array type", arrayType)
 	}
@@ -188,23 +207,25 @@ func decodeCustomText(ctx *DecoderContext) {
 
 func decodeCustomBinary(ctx *DecoderContext) {
 	digitType := "hex"
-	var data []uint8
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := ctx.Stream.ReadSmallHexUint()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := token.DecodeSmallHexUint(ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v > maxUint8Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v))
+		ctx.Scratch = append(ctx.Scratch, uint8(v))
 	}
-	finishTypedArray(ctx, events.ArrayTypeCustomBinary, digitType, 1, data)
+	finishTypedArray(ctx, events.ArrayTypeCustomBinary, digitType, 1, ctx.Scratch)
 }
 
 func decodeArrayBoolean(ctx *DecoderContext) {
-	var data []uint8
+	ctx.Scratch = ctx.Scratch[:0]
 	var elemCount uint64
 
 	for {
@@ -215,9 +236,9 @@ func decodeArrayBoolean(ctx *DecoderContext) {
 			switch b {
 			case '|':
 				if i > 0 {
-					data = append(data, nextByte)
+					ctx.Scratch = append(ctx.Scratch, nextByte)
 				}
-				ctx.EventReceiver.OnArray(events.ArrayTypeBoolean, elemCount, data)
+				ctx.EventReceiver.OnArray(events.ArrayTypeBoolean, elemCount, ctx.Scratch)
 				return
 			case '0':
 				// Nothing to do
@@ -228,193 +249,214 @@ func decodeArrayBoolean(ctx *DecoderContext) {
 			}
 			elemCount++
 		}
-		data = append(data, nextByte)
+		ctx.Scratch = append(ctx.Scratch, nextByte)
 	}
 }
 
-func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
-	var data []uint8
+func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement uintTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v > maxUint8Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v))
+		ctx.Scratch = append(ctx.Scratch, uint8(v))
 	}
-	finishTypedArray(ctx, events.ArrayTypeUint8, digitType, 1, data)
+	finishTypedArray(ctx, events.ArrayTypeUint8, digitType, 1, ctx.Scratch)
 }
 
-func decodeArrayU16(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
-	var data []uint8
+func decodeArrayU16(ctx *DecoderContext, digitType string, decodeElement uintTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v > maxUint16Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v), uint8(v>>8))
+		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8))
 	}
-	finishTypedArray(ctx, events.ArrayTypeUint16, digitType, 2, data)
+	finishTypedArray(ctx, events.ArrayTypeUint16, digitType, 2, ctx.Scratch)
 }
 
-func decodeArrayU32(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
-	var data []uint8
+func decodeArrayU32(ctx *DecoderContext, digitType string, decodeElement uintTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v > maxUint32Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
+		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
 	}
-	finishTypedArray(ctx, events.ArrayTypeUint32, digitType, 4, data)
+	finishTypedArray(ctx, events.ArrayTypeUint32, digitType, 4, ctx.Scratch)
 }
 
-func decodeArrayU64(ctx *DecoderContext, digitType string, decodeElement func() (v uint64, digitCount int)) {
-	var data []uint8
+func decodeArrayU64(ctx *DecoderContext, digitType string, decodeElement uintTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
-		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
+		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
 			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
 	}
-	finishTypedArray(ctx, events.ArrayTypeUint64, digitType, 8, data)
+	finishTypedArray(ctx, events.ArrayTypeUint64, digitType, 8, ctx.Scratch)
 }
 
-func decodeArrayI8(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
-	var data []uint8
+func decodeArrayI8(ctx *DecoderContext, digitType string, decodeElement intTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v < minInt8Value || v > maxInt8Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v))
+		ctx.Scratch = append(ctx.Scratch, uint8(v))
 	}
-	finishTypedArray(ctx, events.ArrayTypeInt8, digitType, 1, data)
+	finishTypedArray(ctx, events.ArrayTypeInt8, digitType, 1, ctx.Scratch)
 }
 
-func decodeArrayI16(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
-	var data []uint8
+func decodeArrayI16(ctx *DecoderContext, digitType string, decodeElement intTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v < minInt16Value || v > maxInt16Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v), uint8(v>>8))
+		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8))
 	}
-	finishTypedArray(ctx, events.ArrayTypeInt16, digitType, 2, data)
+	finishTypedArray(ctx, events.ArrayTypeInt16, digitType, 2, ctx.Scratch)
 }
 
-func decodeArrayI32(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
-	var data []uint8
+func decodeArrayI32(ctx *DecoderContext, digitType string, decodeElement intTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		if v < minInt32Value || v > maxInt32Value {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
-		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
+		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
 	}
-	finishTypedArray(ctx, events.ArrayTypeInt32, digitType, 4, data)
+	finishTypedArray(ctx, events.ArrayTypeInt32, digitType, 4, ctx.Scratch)
 }
 
-func decodeArrayI64(ctx *DecoderContext, digitType string, decodeElement func() (v int64, digitCount int)) {
-	var data []uint8
+func decodeArrayI64(ctx *DecoderContext, digitType string, decodeElement intTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
-		data = append(data, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
+		v, _, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
+		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24),
 			uint8(v>>32), uint8(v>>40), uint8(v>>48), uint8(v>>56))
 	}
-	finishTypedArray(ctx, events.ArrayTypeInt64, digitType, 8, data)
+	finishTypedArray(ctx, events.ArrayTypeInt64, digitType, 8, ctx.Scratch)
 }
 
-func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement func() (v float64, digitCount int)) {
-	var data []uint8
+func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement floatTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
-
-		exp := extractFloat64Exponent(v)
-		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
-			ctx.Errorf("Exponent too big for bfloat16 type")
-		}
-		bits := math.Float32bits(float32(v))
-		data = append(data, uint8(bits>>16), uint8(bits>>24))
-	}
-	finishTypedArray(ctx, events.ArrayTypeFloat16, digitType, 2, data)
-}
-
-func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement func() (v float64, digitCount int)) {
-	var data []uint8
-	for {
-		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
-			break
-		}
-
+		v, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		exp := extractFloat64Exponent(v)
 		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
 			ctx.Errorf("Exponent too big for float32 type")
 		}
 		bits := math.Float32bits(float32(v))
-		data = append(data, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24))
+		ctx.Scratch = append(ctx.Scratch, uint8(bits>>16), uint8(bits>>24))
 	}
-	finishTypedArray(ctx, events.ArrayTypeFloat32, digitType, 4, data)
+	finishTypedArray(ctx, events.ArrayTypeFloat16, digitType, 2, ctx.Scratch)
 }
 
-func decodeArrayF64(ctx *DecoderContext, digitType string, decodeElement func() (v float64, digitCount int)) {
-	var data []uint8
+func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement floatTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
 	for {
 		ctx.Stream.SkipWhitespace()
-		v, count := decodeElement()
-		if count == 0 {
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
 			break
 		}
+		v, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
+		exp := extractFloat64Exponent(v)
+		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
+			ctx.Errorf("Exponent too big for float32 type")
+		}
+		bits := math.Float32bits(float32(v))
+		ctx.Scratch = append(ctx.Scratch, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24))
+	}
+	finishTypedArray(ctx, events.ArrayTypeFloat32, digitType, 4, ctx.Scratch)
+}
+
+func decodeArrayF64(ctx *DecoderContext, digitType string, decodeElement floatTokenDecoder) {
+	ctx.Scratch = ctx.Scratch[:0]
+	for {
+		ctx.Stream.SkipWhitespace()
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
+			break
+		}
+		v, decodedCount := decodeElement(token, ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		bits := math.Float64bits(v)
-		data = append(data, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24),
+		ctx.Scratch = append(ctx.Scratch, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24),
 			uint8(bits>>32), uint8(bits>>40), uint8(bits>>48), uint8(bits>>56))
 	}
-	finishTypedArray(ctx, events.ArrayTypeFloat64, digitType, 8, data)
+	finishTypedArray(ctx, events.ArrayTypeFloat64, digitType, 8, ctx.Scratch)
 }
 
 func decodeArrayUUID(ctx *DecoderContext) {
-	var data []uint8
+	ctx.Scratch = ctx.Scratch[:0]
 	ctx.Stream.SkipWhitespace()
 	for ctx.Stream.PeekByteAllowEOF() != '|' {
-		data = append(data, ctx.Stream.ReadUUIDWithDecimalDecoded(0, 0)...)
+		token := ctx.Stream.ReadToken()
+		ctx.Scratch = append(ctx.Scratch, token.DecodeUUID(ctx.TextPos)...)
 		ctx.Stream.SkipWhitespace()
 	}
-	finishTypedArray(ctx, events.ArrayTypeUUID, "uuid", 16, data)
+	finishTypedArray(ctx, events.ArrayTypeUUID, "uuid", 16, ctx.Scratch)
 }
