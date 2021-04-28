@@ -159,3 +159,5 @@ func init() {
 		HexCharValues[i] = byte(i - 'a' + 10)
 	}
 }
+
+var HexChars = "0123456789abcdef"

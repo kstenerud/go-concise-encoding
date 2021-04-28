@@ -236,8 +236,27 @@ func (_this *Writer) WriteUUID(v []byte) {
 	if len(v) != 16 {
 		panic(fmt.Errorf("expected UUID length 16 but got %v", len(v)))
 	}
-	_this.WriteFmt("%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-		v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15])
+
+	_this.WriteHexByte(v[0])
+	_this.WriteHexByte(v[1])
+	_this.WriteHexByte(v[2])
+	_this.WriteHexByte(v[3])
+	_this.WriteByte('-')
+	_this.WriteHexByte(v[4])
+	_this.WriteHexByte(v[5])
+	_this.WriteByte('-')
+	_this.WriteHexByte(v[6])
+	_this.WriteHexByte(v[7])
+	_this.WriteByte('-')
+	_this.WriteHexByte(v[8])
+	_this.WriteHexByte(v[9])
+	_this.WriteByte('-')
+	_this.WriteHexByte(v[10])
+	_this.WriteHexByte(v[11])
+	_this.WriteHexByte(v[12])
+	_this.WriteHexByte(v[13])
+	_this.WriteHexByte(v[14])
+	_this.WriteHexByte(v[15])
 }
 
 func (_this *Writer) WriteTime(value time.Time) {
@@ -254,40 +273,42 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 		return
 	}
 
-	tz := func(v compact_time.Time) string {
-		switch v.TimezoneType {
-		case compact_time.TypeZero:
-			return ""
-		case compact_time.TypeAreaLocation, compact_time.TypeLocal:
-			return fmt.Sprintf("/%s", v.LongAreaLocation)
-		case compact_time.TypeLatitudeLongitude:
-			return fmt.Sprintf("/%.2f/%.2f", float64(v.LatitudeHundredths)/100, float64(v.LongitudeHundredths)/100)
-		default:
-			panic(fmt.Errorf("unknown compact time timezone type %v", value.TimezoneType))
-			return ""
-		}
+	if value.TimeType == compact_time.TypeDate || value.TimeType == compact_time.TypeTimestamp {
+		_this.WriteDecimalInt(int64(value.Year))
+		_this.WriteByte('-')
+		_this.WriteDecimalUintDigits(uint64(value.Month), 2)
+		_this.WriteByte('-')
+		_this.WriteDecimalUintDigits(uint64(value.Day), 2)
 	}
-	subsec := func(v compact_time.Time) string {
-		if v.Nanosecond == 0 {
-			return ""
-		}
 
-		str := strconv.FormatFloat(float64(v.Nanosecond)/float64(1000000000), 'f', 9, 64)
-		for str[len(str)-1] == '0' {
-			str = str[:len(str)-1]
-		}
-		return str[1:]
+	if value.TimeType == compact_time.TypeDate {
+		return
 	}
-	switch value.TimeType {
-	case compact_time.TypeDate:
-		_this.WriteFmt("%d-%02d-%02d", value.Year, value.Month, value.Day)
-	case compact_time.TypeTime:
-		_this.WriteFmt("%02d:%02d:%02d%s%s", value.Hour, value.Minute, value.Second, subsec(value), tz(value))
-	case compact_time.TypeTimestamp:
-		_this.WriteFmt("%d-%02d-%02d/%02d:%02d:%02d%s%s",
-			value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, subsec(value), tz(value))
+
+	if value.TimeType == compact_time.TypeTimestamp {
+		_this.WriteByte('/')
+	}
+
+	_this.WriteDecimalUintDigits(uint64(value.Hour), 2)
+	_this.WriteByte(':')
+	_this.WriteDecimalUintDigits(uint64(value.Minute), 2)
+	_this.WriteByte(':')
+	_this.WriteDecimalUintDigits(uint64(value.Second), 2)
+
+	if value.Nanosecond != 0 {
+		_this.WriteByte('.')
+		_this.WriteDecimalUintLeftLoaded(uint64(value.Nanosecond), 9)
+	}
+
+	switch value.TimezoneType {
+	case compact_time.TypeZero:
+	case compact_time.TypeAreaLocation, compact_time.TypeLocal:
+		_this.WriteByte('/')
+		_this.WriteString(value.LongAreaLocation)
+	case compact_time.TypeLatitudeLongitude:
+		_this.WriteFmt("/%.2f/%.2f", float64(value.LatitudeHundredths)/100, float64(value.LongitudeHundredths)/100)
 	default:
-		panic(fmt.Errorf("unknown compact time type %v", value.TimeType))
+		panic(fmt.Errorf("unknown compact time timezone type %v", value.TimezoneType))
 	}
 }
 
@@ -375,10 +396,6 @@ func (_this *Writer) WritePotentiallyEscapedMarkupContents(value []byte) {
 	_this.WriteBytes(bb.Bytes())
 }
 
-var hexToChar = [16]byte{
-	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
-}
-
 func (_this *Writer) WriteHexBytes(value []byte) {
 	length := len(value) * 3
 	_this.ExpandBuffer(length)
@@ -386,8 +403,8 @@ func (_this *Writer) WriteHexBytes(value []byte) {
 	for i := 0; i < len(value); i++ {
 		b := value[i]
 		dst[i*3] = ' '
-		dst[i*3+1] = hexToChar[b>>4]
-		dst[i*3+2] = hexToChar[b&15]
+		dst[i*3+1] = chars.HexChars[b>>4]
+		dst[i*3+2] = chars.HexChars[b&15]
 	}
 	_this.FlushBuffer(length)
 }

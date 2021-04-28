@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"io"
 	"unicode/utf8"
+
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
 type Writer struct {
@@ -84,6 +86,59 @@ func (_this *Writer) WriteBytes(b []byte) {
 func (_this *Writer) WriteIdentifier(b []byte) {
 	_this.WriteByte(byte(len(b)))
 	_this.WriteBytes(b)
+}
+
+func (_this *Writer) WriteDecimalInt(value int64) {
+	uintValue := uint64(value)
+	if value < 0 {
+		_this.WriteByte('-')
+		uintValue = uint64(-value)
+	}
+	_this.WriteDecimalUint(uintValue)
+}
+
+func (_this *Writer) WriteDecimalUint(value uint64) {
+	const maxUint64Digits = 21 // 18446744073709551615
+	_this.ExpandBuffer(maxUint64Digits)
+	var start int
+	for start = maxUint64Digits - 1; start >= 0; start-- {
+		_this.Buffer[start] = byte('0' + value%10)
+		value /= 10
+		if value == 0 {
+			break
+		}
+	}
+	_this.FlushBufferPortion(start, maxUint64Digits)
+}
+
+func (_this *Writer) WriteDecimalUintLeftLoaded(value uint64, digitCount int) {
+	_this.ExpandBuffer(digitCount)
+	lastNonZero := 0
+	for i := digitCount - 1; i >= 0; i-- {
+		digit := value % 10
+		if lastNonZero == 0 && digit != 0 {
+			lastNonZero = i
+		}
+		_this.Buffer[i] = byte('0' + digit)
+		value /= 10
+	}
+	_this.FlushBuffer(lastNonZero + 1)
+}
+
+func (_this *Writer) WriteDecimalUintDigits(value uint64, digits int) {
+	_this.ExpandBuffer(digits)
+	for i := digits - 1; i >= 0; i-- {
+		_this.Buffer[i] = byte('0' + value%10)
+		value /= 10
+	}
+	_this.FlushBuffer(digits)
+}
+
+func (_this *Writer) WriteHexByte(value byte) {
+	_this.ExpandBuffer(2)
+	_this.Buffer[0] = chars.HexChars[value>>4]
+	_this.Buffer[1] = chars.HexChars[value&15]
+	_this.FlushBuffer(2)
 }
 
 func (_this *Writer) WriteFmt(format string, args ...interface{}) {
