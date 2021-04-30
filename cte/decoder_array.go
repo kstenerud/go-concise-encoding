@@ -238,7 +238,7 @@ func decodeArrayBoolean(ctx *DecoderContext) {
 				if i > 0 {
 					ctx.Scratch = append(ctx.Scratch, nextByte)
 				}
-				ctx.EventReceiver.OnArray(events.ArrayTypeBoolean, elemCount, ctx.Scratch)
+				ctx.EventReceiver.OnArray(events.ArrayTypeBit, elemCount, ctx.Scratch)
 				return
 			case '0':
 				// Nothing to do

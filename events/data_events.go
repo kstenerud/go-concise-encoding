@@ -47,7 +47,7 @@ const (
 	// meaning that the low bit is in the least significant position of the
 	// first byte in the byte array, and the trailing upper bits of the last
 	// byte are cleared.
-	ArrayTypeBoolean
+	ArrayTypeBit
 	ArrayTypeUint8
 	ArrayTypeUint16
 	ArrayTypeUint32
@@ -77,7 +77,7 @@ var arrayTypeNames = [...]string{
 	ArrayTypeResourceIDConcat: "ResourceIDConcat",
 	ArrayTypeCustomText:       "Custom Text",
 	ArrayTypeCustomBinary:     "Custom Binary",
-	ArrayTypeBoolean:          "Boolean",
+	ArrayTypeBit:              "Boolean",
 	ArrayTypeUint8:            "Uint8",
 	ArrayTypeUint16:           "Uint16",
 	ArrayTypeUint32:           "Uint32",
@@ -99,7 +99,7 @@ var arrayTypeElementSizes = [...]int{
 	ArrayTypeResourceIDConcat: 8,
 	ArrayTypeCustomText:       8,
 	ArrayTypeCustomBinary:     8,
-	ArrayTypeBoolean:          1,
+	ArrayTypeBit:              1,
 	ArrayTypeUint8:            8,
 	ArrayTypeUint16:           16,
 	ArrayTypeUint32:           32,

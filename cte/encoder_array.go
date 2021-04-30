@@ -502,7 +502,7 @@ func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
 // Data
 
 var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
-	events.ArrayTypeBoolean:          (*arrayEncoderEngine).beginArrayBoolean,
+	events.ArrayTypeBit:              (*arrayEncoderEngine).beginArrayBoolean,
 	events.ArrayTypeString:           (*arrayEncoderEngine).beginArrayString,
 	events.ArrayTypeResourceID:       (*arrayEncoderEngine).beginArrayResourceID,
 	events.ArrayTypeResourceIDConcat: (*arrayEncoderEngine).beginArrayResourceID,

@@ -72,7 +72,6 @@ const (
 	typeFalse        = 0x7c
 	typeTrue         = 0x7d
 	typeNil          = 0x7e
-	typeNA           = 0x7e
 	typePadding      = 0x7f
 	typeString0      = 0x80
 	typeString1      = 0x81
@@ -91,18 +90,32 @@ const (
 	typeString14     = 0x8e
 	typeString15     = 0x8f
 	typeString       = 0x90
-	TypeRID          = 0x91
-	TypeRIDCat       = 0x91
+	typeRID          = 0x91
 	typeCustomBinary = 0x92
 	typeCustomText   = 0x93
 	typePlane2       = 0x94
-	typeReserved95   = 0x95
-	typeReserved96   = 0x96
+	typeArrayUint8   = 0x95
+	typeArrayBit     = 0x96
 	typeMarker       = 0x97
 	typeReference    = 0x98
 	typeDate         = 0x99
 	typeTime         = 0x9a
 	typeTimestamp    = 0x9b
+
+	typeNA           = 0xe0
+	typeRIDCat       = 0xe1
+	typeRIDRef       = 0xe2
+	typeArrayInt8    = 0xff
+	typeArrayUint16  = 0xfe
+	typeArrayInt16   = 0xfd
+	typeArrayUint32  = 0xfc
+	typeArrayInt32   = 0xfb
+	typeArrayUint64  = 0xfa
+	typeArrayInt64   = 0xf9
+	typeArrayFloat16 = 0xf8
+	typeArrayFloat32 = 0xf7
+	typeArrayFloat64 = 0xf6
+	typeArrayUUID    = 0xf5
 )
 
 func NewBigInt(str string, base int) *big.Int {

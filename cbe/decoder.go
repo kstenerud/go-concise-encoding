@@ -185,6 +185,10 @@ EOF:
 				}
 				_this.decodeArray(arrayType, eventReceiver)
 			}
+		case cbeTypeArrayBit:
+			_this.decodeArray(events.ArrayTypeBit, eventReceiver)
+		case cbeTypeArrayUint8:
+			_this.decodeArray(events.ArrayTypeUint8, eventReceiver)
 		case cbeTypeMarker:
 			eventReceiver.OnMarker(_this.reader.ReadIdentifier())
 		case cbeTypeReference:

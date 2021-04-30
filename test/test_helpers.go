@@ -900,7 +900,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventArrayBoolean:
 		bitCount := _this.V1.(uint64)
 		bytes := _this.V2.([]byte)
-		receiver.OnArray(events.ArrayTypeBoolean, bitCount, bytes)
+		receiver.OnArray(events.ArrayTypeBit, bitCount, bytes)
 	case TEventArrayInt8:
 		bytes := arrays.Int8SliceAsBytes(_this.V1.([]int8))
 		receiver.OnArray(events.ArrayTypeInt8, uint64(len(bytes)), bytes)
@@ -949,7 +949,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventCustomTextBegin:
 		receiver.OnArrayBegin(events.ArrayTypeCustomText)
 	case TEventArrayBooleanBegin:
-		receiver.OnArrayBegin(events.ArrayTypeBoolean)
+		receiver.OnArrayBegin(events.ArrayTypeBit)
 	case TEventArrayInt8Begin:
 		receiver.OnArrayBegin(events.ArrayTypeInt8)
 	case TEventArrayInt16Begin:
@@ -1279,7 +1279,7 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 		h.Print(CUB(value))
 	case events.ArrayTypeCustomText:
 		h.Print(CUT(string(value)))
-	case events.ArrayTypeBoolean:
+	case events.ArrayTypeBit:
 		h.Print(AB(elementCount, value))
 	case events.ArrayTypeInt8:
 		h.Print(AI8(arrays.BytesToInt8Slice(value)))
@@ -1337,7 +1337,7 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 		h.Print(CBB())
 	case events.ArrayTypeCustomText:
 		h.Print(CTB())
-	case events.ArrayTypeBoolean:
+	case events.ArrayTypeBit:
 		h.Print(ABB())
 	case events.ArrayTypeInt8:
 		h.Print(AI8B())
@@ -1473,7 +1473,7 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		h.add(CUB(CloneBytes(value)))
 	case events.ArrayTypeCustomText:
 		h.add(CUT(string(value)))
-	case events.ArrayTypeBoolean:
+	case events.ArrayTypeBit:
 		h.add(AB(elementCount, CloneBytes(value)))
 	case events.ArrayTypeInt8:
 		h.add(AI8(arrays.BytesToInt8Slice(value)))
@@ -1529,7 +1529,7 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 		h.add(CBB())
 	case events.ArrayTypeCustomText:
 		h.add(CTB())
-	case events.ArrayTypeBoolean:
+	case events.ArrayTypeBit:
 		h.add(ABB())
 	case events.ArrayTypeInt8:
 		h.add(AI8B())

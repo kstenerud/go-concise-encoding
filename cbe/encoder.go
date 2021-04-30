@@ -358,7 +358,7 @@ func (_this *Encoder) OnReference(id []byte) {
 
 func (_this *Encoder) OnRIDReference() {
 	_this.writer.WriteType(cbeTypePlane2)
-	_this.writer.WriteType(cbeTypeReference)
+	_this.writer.WriteType(cbeTypeRIDReference)
 }
 
 func (_this *Encoder) OnConstant(name []byte) {

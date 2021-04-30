@@ -475,7 +475,7 @@ func iterateSliceOrArrayBool(context *Context, v reflect.Value) {
 	byteCount := common.ElementCountToByteCount(1, uint64(elementCount))
 	data := make([]uint8, byteCount, byteCount)
 	if elementCount == 0 {
-		context.EventReceiver.OnArray(events.ArrayTypeBoolean, uint64(elementCount), data)
+		context.EventReceiver.OnArray(events.ArrayTypeBit, uint64(elementCount), data)
 		return
 	}
 
@@ -498,5 +498,5 @@ func iterateSliceOrArrayBool(context *Context, v reflect.Value) {
 	if elementCount&7 != 0 {
 		nextData[0] = nextByte
 	}
-	context.EventReceiver.OnArray(events.ArrayTypeBoolean, uint64(elementCount), data)
+	context.EventReceiver.OnArray(events.ArrayTypeBit, uint64(elementCount), data)
 }
