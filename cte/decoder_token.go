@@ -845,9 +845,8 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 	pos += digitCount
 
 	if _this.IsAtEnd(pos) {
-		var err error
-		t, err = compact_time.NewDate(int(year), int(month), int(day))
-		if err != nil {
+		t = compact_time.NewDate(int(year), int(month), int(day))
+		if err := t.Validate(); err != nil {
 			_this.unexpectedError(textPos, err, "date")
 		}
 		decodedCount = pos
@@ -870,20 +869,36 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 	return
 }
 
+func (_this Token) decodeUTCOffset(textPos *TextPositionCounter, sign int) (minutesOffset int, decodedCount int) {
+	if len(_this) != 4 {
+		_this.errorf(textPos, 0, "%v: invalid UTC offset (must be in the format -1234 or +1234)", string(_this))
+	}
+	hhmm, decodedCount := _this.DecodeUintNoWhitespace(textPos)
+	if decodedCount != 4 {
+		_this.errorf(textPos, 0, "%v: invalid UTC offset (must be in the format -1234 or +1234)", string(_this))
+	}
+	hour := int(hhmm / 100)
+	minute := int(hhmm % 100)
+	if hour > 23 {
+		_this.errorf(textPos, 0, "%v: invalid UTC offset hour (max is 23)", hour)
+	}
+	if minute > 59 {
+		_this.errorf(textPos, 0, "%v: invalid UTC offset minute (max is 59)", minute)
+	}
+	minutesOffset = (hour*60 + minute) * sign
+	return
+}
+
 // Complete a time value. Pass 0 as year, month, and day to indicate no date portion.
 func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, hour int) (t compact_time.Time, decodedCount int) {
 	// Assumption: first byte is ':'
 	pos := 1
 	_this.assertNotEnd(textPos, pos, "time")
 
-	timeType := compact_time.TypeTime
-	tzType := compact_time.TypeAreaLocation
-	areaLocation := ""
-	latitude := 0
-	longitude := 0
+	timeType := compact_time.TimeTypeTime
 
 	if day != 0 {
-		timeType = compact_time.TypeTimestamp
+		timeType = compact_time.TimeTypeTimestamp
 	}
 
 	// Minute
@@ -927,54 +942,63 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 	}
 
 	// Timezone
-	if !_this.IsAtEnd(pos) {
-		_this.expectCharAtOffset(textPos, pos, '/', "date")
-		pos++
-
-		_this.assertNotEnd(textPos, pos, "time")
-
-		if chars.ByteHasProperty(_this[pos], chars.DigitBase10) || _this[pos] == '-' {
-			var decodedCount int
-			latitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
-			if latitude < -9000 || latitude > 9000 {
-				_this.errorf(textPos, pos, "Latitude %v is invalid", float64(latitude)/100)
-			}
-			pos += decodedCount
-			_this.expectCharAtOffset(textPos, pos, '/', "time zone")
+	var tz compact_time.Timezone
+	if _this.IsAtEnd(pos) {
+		tz = compact_time.TZAtUTC()
+	} else {
+		switch _this[pos] {
+		case '+':
 			pos++
-			longitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
-			if longitude < -18000 || longitude > 18000 {
-				_this.errorf(textPos, pos, "Longitude %v is invalid", float64(longitude)/100)
-			}
+			sign := 1
+			minutes, decodedCount := _this[pos:].decodeUTCOffset(textPos, sign)
+			tz.InitWithMinutesOffsetFromUTC(minutes)
 			pos += decodedCount
-			tzType = compact_time.TypeLatitudeLongitude
-			_this.assertPosIsEnd(textPos, pos, "time zone")
-		} else if chars.ByteHasProperty(_this[pos], chars.AZ) {
-			areaLocation = string(_this[pos:])
-			tzType = compact_time.TypeAreaLocation
-			pos = len(_this)
-		} else {
+		case '-':
+			pos++
+			sign := -1
+			minutes, decodedCount := _this[pos:].decodeUTCOffset(textPos, sign)
+			tz.InitWithMinutesOffsetFromUTC(minutes)
+			pos += decodedCount
+		case '/':
+			pos++
+			_this.assertNotEnd(textPos, pos, "time zone")
+
+			if chars.ByteHasProperty(_this[pos], chars.DigitBase10) || _this[pos] == '-' {
+				latitude, decodedCount := _this[pos:].DecodeLatOrLong(textPos)
+				if latitude < -9000 || latitude > 9000 {
+					_this.errorf(textPos, pos, "Latitude %v is invalid", float64(latitude)/100)
+				}
+				pos += decodedCount
+				_this.expectCharAtOffset(textPos, pos, '/', "time zone")
+				pos++
+				var longitude int
+				longitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)
+				if longitude < -18000 || longitude > 18000 {
+					_this.errorf(textPos, pos, "Longitude %v is invalid", float64(longitude)/100)
+				}
+				pos += decodedCount
+				tz.InitWithLatLong(latitude, longitude)
+				_this.assertPosIsEnd(textPos, pos, "time zone")
+			} else if chars.ByteHasProperty(_this[pos], chars.AZ) {
+				tz.InitWithAreaLocation(string(_this[pos:]))
+				pos = len(_this)
+				_this.assertPosIsEnd(textPos, pos, "time zone")
+			} else {
+				_this.UnexpectedChar(textPos, pos, "time zone")
+			}
+		default:
 			_this.UnexpectedChar(textPos, pos, "time zone")
 		}
 	}
 
-	var err error
 	switch timeType {
-	case compact_time.TypeTime:
-		if tzType == compact_time.TypeAreaLocation {
-			t, err = compact_time.NewTime(hour, int(minute), int(second), int(nsec), areaLocation)
-		} else {
-			t, err = compact_time.NewTimeLatLong(hour, int(minute), int(second), int(nsec), latitude, longitude)
-		}
-	case compact_time.TypeTimestamp:
-		if tzType == compact_time.TypeAreaLocation {
-			t, err = compact_time.NewTimestamp(year, month, day, hour, int(minute), int(second), int(nsec), areaLocation)
-		} else {
-			t, err = compact_time.NewTimestampLatLong(year, month, day, hour, int(minute), int(second), int(nsec), latitude, longitude)
-		}
+	case compact_time.TimeTypeTime:
+		t.InitTime(hour, int(minute), int(second), int(nsec), tz)
+	case compact_time.TimeTypeTimestamp:
+		t.InitTimestamp(year, month, day, hour, int(minute), int(second), int(nsec), tz)
 	}
 
-	if err != nil {
+	if err := t.Validate(); err != nil {
 		_this.unexpectedError(textPos, err, "time")
 	}
 	decodedCount = pos

@@ -65,10 +65,7 @@ func (_this *compactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) r
 }
 
 func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	t, err := compact_time.AsCompactTime(value)
-	if err != nil {
-		panic(err)
-	}
+	t := compact_time.AsCompactTime(value)
 	dst.Set(reflect.ValueOf(t))
 	return dst
 }
@@ -88,15 +85,12 @@ func generatePCompactTimeBuilder(ctx *Context) Builder { return &pCompactTimeBui
 func (_this *pCompactTimeBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *pCompactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	dst.Set(reflect.ValueOf(compact_time.Time{}))
+	dst.Set(reflect.ValueOf(compact_time.ZeroDate()))
 	return dst
 }
 
 func (_this *pCompactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	t, err := compact_time.AsCompactTime(value)
-	if err != nil {
-		panic(err)
-	}
+	t := compact_time.AsCompactTime(value)
 	dst.Set(reflect.ValueOf(t))
 	return dst
 }

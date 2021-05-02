@@ -79,12 +79,20 @@ func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHu
 	return test.NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
 }
 
+func NewTimeOff(hour, minute, second, nanosecond, minutesOffset int) compact_time.Time {
+	return test.NewTimeOff(hour, minute, second, nanosecond, minutesOffset)
+}
+
 func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
 	return test.NewTS(year, month, day, hour, minute, second, nanosecond, areaLocation)
 }
 
 func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
 	return test.NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+}
+
+func NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset int) compact_time.Time {
+	return test.NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset)
 }
 
 func TT() *test.TEvent                       { return test.TT() }

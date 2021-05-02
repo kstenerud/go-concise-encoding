@@ -260,11 +260,7 @@ func (_this *Writer) WriteUUID(v []byte) {
 }
 
 func (_this *Writer) WriteTime(value time.Time) {
-	t, err := compact_time.AsCompactTime(value)
-	if err != nil {
-		_this.unexpectedError(err, value)
-	}
-	_this.WriteCompactTime(t)
+	_this.WriteCompactTime(compact_time.AsCompactTime(value))
 }
 
 func (_this *Writer) WriteCompactTime(value compact_time.Time) {
@@ -273,7 +269,7 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 		return
 	}
 
-	if value.TimeType == compact_time.TypeDate || value.TimeType == compact_time.TypeTimestamp {
+	if value.Type == compact_time.TimeTypeDate || value.Type == compact_time.TimeTypeTimestamp {
 		_this.WriteDecimalInt(int64(value.Year))
 		_this.WriteByte('-')
 		_this.WriteDecimalUintDigits(uint64(value.Month), 2)
@@ -281,11 +277,11 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 		_this.WriteDecimalUintDigits(uint64(value.Day), 2)
 	}
 
-	if value.TimeType == compact_time.TypeDate {
+	if value.Type == compact_time.TimeTypeDate {
 		return
 	}
 
-	if value.TimeType == compact_time.TypeTimestamp {
+	if value.Type == compact_time.TimeTypeTimestamp {
 		_this.WriteByte('/')
 	}
 
@@ -300,15 +296,23 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 		_this.WriteDecimalUintLeftLoaded(uint64(value.Nanosecond), 9)
 	}
 
-	switch value.TimezoneType {
-	case compact_time.TypeZero:
-	case compact_time.TypeAreaLocation, compact_time.TypeLocal:
+	switch value.Timezone.Type {
+	case compact_time.TimezoneTypeUTC:
+	case compact_time.TimezoneTypeAreaLocation, compact_time.TimezoneTypeLocal:
 		_this.WriteByte('/')
-		_this.WriteString(value.LongAreaLocation)
-	case compact_time.TypeLatitudeLongitude:
-		_this.WriteFmt("/%.2f/%.2f", float64(value.LatitudeHundredths)/100, float64(value.LongitudeHundredths)/100)
+		_this.WriteString(value.Timezone.LongAreaLocation)
+	case compact_time.TimezoneTypeLatitudeLongitude:
+		_this.WriteFmt("/%.2f/%.2f", float64(value.Timezone.LatitudeHundredths)/100, float64(value.Timezone.LongitudeHundredths)/100)
+	case compact_time.TimezoneTypeUTCOffset:
+		minutes := int(value.Timezone.MinutesOffsetFromUTC)
+		sign := '+'
+		if value.Timezone.MinutesOffsetFromUTC < 0 {
+			sign = '-'
+			minutes = -minutes
+		}
+		_this.WriteFmt("%c%02d%02d", sign, minutes/60, minutes%60)
 	default:
-		panic(fmt.Errorf("unknown compact time timezone type %v", value.TimezoneType))
+		panic(fmt.Errorf("unknown compact time timezone type %v", value.Timezone.Type))
 	}
 }
 

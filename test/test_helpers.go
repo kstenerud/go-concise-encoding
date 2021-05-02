@@ -117,7 +117,8 @@ func NewRID(RIDString string) *url.URL {
 }
 
 func NewDate(year, month, day int) compact_time.Time {
-	t, err := compact_time.NewDate(year, month, day)
+	t := compact_time.NewDate(year, month, day)
+	err := t.Validate()
 	if err != nil {
 		panic(err)
 	}
@@ -125,7 +126,8 @@ func NewDate(year, month, day int) compact_time.Time {
 }
 
 func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
-	t, err := compact_time.NewTime(hour, minute, second, nanosecond, areaLocation)
+	t := compact_time.NewTime(hour, minute, second, nanosecond, compact_time.TZAtAreaLocation(areaLocation))
+	err := t.Validate()
 	if err != nil {
 		panic(err)
 	}
@@ -133,7 +135,17 @@ func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_
 }
 
 func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
-	t, err := compact_time.NewTimeLatLong(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+	t := compact_time.NewTime(hour, minute, second, nanosecond, compact_time.TZAtLatLong(latitudeHundredths, longitudeHundredths))
+	err := t.Validate()
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+func NewTimeOff(hour, minute, second, nanosecond, minutesOffset int) compact_time.Time {
+	t := compact_time.NewTime(hour, minute, second, nanosecond, compact_time.TZWithMiutesOffsetFromUTC(minutesOffset))
+	err := t.Validate()
 	if err != nil {
 		panic(err)
 	}
@@ -141,7 +153,8 @@ func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHu
 }
 
 func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
-	t, err := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, areaLocation)
+	t := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, compact_time.TZAtAreaLocation(areaLocation))
+	err := t.Validate()
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +162,17 @@ func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation 
 }
 
 func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
-	t, err := compact_time.NewTimestampLatLong(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
+	t := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, compact_time.TZAtLatLong(latitudeHundredths, longitudeHundredths))
+	err := t.Validate()
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+func NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset int) compact_time.Time {
+	t := compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, compact_time.TZWithMiutesOffsetFromUTC(minutesOffset))
+	err := t.Validate()
 	if err != nil {
 		panic(err)
 	}
@@ -165,7 +188,8 @@ func AsGoTime(t compact_time.Time) time.Time {
 }
 
 func AsCompactTime(t time.Time) compact_time.Time {
-	ct, err := compact_time.AsCompactTime(t)
+	ct := compact_time.AsCompactTime(t)
+	err := ct.Validate()
 	if err != nil {
 		panic(err)
 	}
@@ -799,8 +823,8 @@ func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
 		case TEventCompactTime:
 			a = _this.V1.(compact_time.Time)
 		default:
-			a, err = compact_time.AsCompactTime(_this.V1.(time.Time))
-			if err != nil {
+			a = compact_time.AsCompactTime(_this.V1.(time.Time))
+			if err = a.Validate(); err != nil {
 				panic(err)
 			}
 		}
@@ -809,15 +833,15 @@ func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
 		case TEventCompactTime:
 			b = that.V1.(compact_time.Time)
 		case TEventTime:
-			b, err = compact_time.AsCompactTime(that.V1.(time.Time))
-			if err != nil {
+			b = compact_time.AsCompactTime(that.V1.(time.Time))
+			if err = b.Validate(); err != nil {
 				panic(err)
 			}
 		default:
 			return false
 		}
 
-		return a.IsEquivalentTo(&b)
+		return a.IsEquivalentTo(b)
 	}
 
 	if isEffectivelyNil(_this) && isEffectivelyNil(that) {

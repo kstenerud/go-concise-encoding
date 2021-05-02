@@ -363,6 +363,9 @@ func TestCTETime(t *testing.T) {
 	assertDecode(t, nil, "c0 10:00:01.93/89.9/1.10", BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 8990, 110)), ED())
 	assertDecode(t, nil, "c0 10:00:01.93/0/0", BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 0, 0)), ED())
 	assertDecode(t, nil, "c0 10:00:01.93/1/1", BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 100, 100)), ED())
+	assertDecode(t, nil, "c0 10:00:01.93+0001", BD(), EvV, CT(test.NewTimeOff(10, 0, 1, 930000000, 1)), ED())
+	assertDecode(t, nil, "c0 10:00:01.93-0030", BD(), EvV, CT(test.NewTimeOff(10, 0, 1, 930000000, -30)), ED())
+	assertDecode(t, nil, "c0 10:00:01.93-1259", BD(), EvV, CT(test.NewTimeOff(10, 0, 1, 930000000, -779)), ED())
 
 	assertDecodeFails(t, "c0 001:45:00")
 	assertDecodeFails(t, "c0 30:45:10")
@@ -395,6 +398,19 @@ func TestCTETime(t *testing.T) {
 	assertDecodeFails(t, "c0 10:00:01.93/89.92/1.101")
 	assertDecodeFails(t, "c0 10:00:01.93//1.10")
 	assertDecodeFails(t, "c0 10:00:01.93/89.925/1.10")
+
+	assertDecodeFails(t, "c0 10:00:01.93+1")
+	assertDecodeFails(t, "c0 10:00:01.93-1")
+	assertDecodeFails(t, "c0 10:00:01.93+12")
+	assertDecodeFails(t, "c0 10:00:01.93-12")
+	assertDecodeFails(t, "c0 10:00:01.93+123")
+	assertDecodeFails(t, "c0 10:00:01.93-123")
+	assertDecodeFails(t, "c0 10:00:01.93+12345")
+	assertDecodeFails(t, "c0 10:00:01.93-12345")
+	assertDecodeFails(t, "c0 10:00:01.93+1260")
+	assertDecodeFails(t, "c0 10:00:01.93-1260")
+	assertDecodeFails(t, "c0 10:00:01.93+2401")
+	assertDecodeFails(t, "c0 10:00:01.93-2401")
 }
 
 func TestCTETimestamp(t *testing.T) {
@@ -456,6 +472,19 @@ func TestCTETimestamp(t *testing.T) {
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/8965.92/1.10")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.92/1.a")
 	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/89.a/1.10")
+
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554+")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554-")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554+1")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554+12")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554+123")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554-1")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554-12")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554-123")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554+0060")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554-0060")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554+2400")
+	assertDecodeFails(t, "c0 2000-01-0/19:31:44.901554-2400")
 
 	ts := NewTS(2020, 1, 15, 10, 0, 1, 930000000, "")
 	gotime, err := ts.AsGoTime()

@@ -269,9 +269,9 @@ func (_this *Encoder) OnTime(value time.Time) {
 }
 
 var ctimeToCBEType = [...]cbeTypeField{
-	compact_time.TypeDate:      cbeTypeDate,
-	compact_time.TypeTime:      cbeTypeTime,
-	compact_time.TypeTimestamp: cbeTypeTimestamp,
+	compact_time.TimeTypeDate:      cbeTypeDate,
+	compact_time.TimeTypeTime:      cbeTypeTime,
+	compact_time.TimeTypeTimestamp: cbeTypeTimestamp,
 }
 
 func (_this *Encoder) OnCompactTime(value compact_time.Time) {
@@ -281,7 +281,7 @@ func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	}
 
 	_this.writer.ExpandBuffer(value.EncodedSize() + 1)
-	_this.writer.Buffer[0] = byte(ctimeToCBEType[value.TimeType])
+	_this.writer.Buffer[0] = byte(ctimeToCBEType[value.Type])
 	count := value.EncodeToBytes(_this.writer.Buffer[1:])
 	_this.writer.FlushBuffer(count + 1)
 }

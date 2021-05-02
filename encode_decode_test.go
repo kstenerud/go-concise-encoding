@@ -84,10 +84,15 @@ func TestEncodeDecodeTime(t *testing.T) {
 	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 8992, 110)), ED())
 	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 0, 0)), ED())
 	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 100, 100)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeOff(10, 0, 1, 930000000, 0)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeOff(10, 0, 1, 930000000, 120)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTimeOff(10, 0, 1, 930000000, -500)), ED())
 
 	assertEncodeDecode(t, BD(), EvV, CT(test.NewTS(2000, 1, 1, 19, 31, 44, 901554000, "")), ED())
 	assertEncodeDecode(t, BD(), EvV, CT(test.NewTS(-50000, 12, 29, 1, 1, 1, 305, "Etc/UTC")), ED())
 	assertEncodeDecode(t, BD(), EvV, CT(test.NewTSLL(2954, 8, 31, 12, 31, 15, 335523, 3154, 16004)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTSOff(2954, 8, 31, 12, 31, 15, 335523, 1000)), ED())
+	assertEncodeDecode(t, BD(), EvV, CT(test.NewTSOff(2954, 8, 31, 12, 31, 15, 335523, -1000)), ED())
 }
 
 func TestEncodeDecodeBytes(t *testing.T) {
