@@ -102,6 +102,18 @@ const (
 	typeTime         = 0x9a
 	typeTimestamp    = 0x9b
 
+	typeShortArrayInt8    = 0x00
+	typeShortArrayUint16  = 0x10
+	typeShortArrayInt16   = 0x20
+	typeShortArrayUint32  = 0x30
+	typeShortArrayInt32   = 0x40
+	typeShortArrayUint64  = 0x50
+	typeShortArrayInt64   = 0x60
+	typeShortArrayFloat16 = 0x70
+	typeShortArrayFloat32 = 0x80
+	typeShortArrayFloat64 = 0x90
+	typeShortArrayUUID    = 0xa0
+
 	typeNA           = 0xe0
 	typeRIDCat       = 0xe1
 	typeRIDRef       = 0xe2

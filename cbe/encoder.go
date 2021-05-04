@@ -286,15 +286,93 @@ func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	_this.writer.FlushBuffer(count + 1)
 }
 
+const maxSmallArrayLength = 15
+
+type arrayTypeInfo struct {
+	shortArrayType       cbeTypeField
+	hasSmallArraySupport bool
+	isPlane2             bool
+}
+
+var arrayInfo = [events.NumArrayTypes]arrayTypeInfo{
+	events.ArrayTypeString: arrayTypeInfo{
+		shortArrayType:       cbeTypeString0,
+		hasSmallArraySupport: true,
+		isPlane2:             false,
+	},
+	events.ArrayTypeUint16: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayUint16,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeUint32: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayUint32,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeUint64: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayUint64,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeInt8: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayInt8,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeInt16: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayInt16,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeInt32: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayInt32,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeInt64: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayInt64,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeFloat16: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayFloat16,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeFloat32: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayFloat32,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeFloat64: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayFloat64,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+	events.ArrayTypeUUID: arrayTypeInfo{
+		shortArrayType:       cbeTypeShortArrayUID,
+		hasSmallArraySupport: true,
+		isPlane2:             true,
+	},
+}
+
 func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	if arrayType == events.ArrayTypeString && elementCount <= maxSmallStringLength {
-		_this.writer.WriteType(cbeTypeString0 + cbeTypeField(elementCount))
-		_this.writer.WriteBytes(value)
-	} else {
-		_this.writer.WriteArrayHeader(arrayType)
-		_this.writer.WriteArrayChunkHeader(elementCount, 0)
-		_this.writer.WriteBytes(value)
+	if elementCount <= maxSmallArrayLength {
+		info := arrayInfo[arrayType]
+		if info.hasSmallArraySupport {
+			if info.isPlane2 {
+				_this.writer.WriteByte(cbeTypePlane2)
+			}
+			_this.writer.WriteByte(byte(info.shortArrayType) | byte(elementCount))
+			_this.writer.WriteBytes(value)
+			return
+		}
 	}
+
+	_this.writer.WriteArrayHeader(arrayType)
+	_this.writer.WriteArrayChunkHeader(elementCount, 0)
+	_this.writer.WriteBytes(value)
 }
 
 func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string) {

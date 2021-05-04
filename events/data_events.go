@@ -60,6 +60,7 @@ const (
 	ArrayTypeFloat32
 	ArrayTypeFloat64
 	ArrayTypeUUID
+	NumArrayTypes
 )
 
 func (_this ArrayType) String() string {

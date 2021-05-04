@@ -172,19 +172,7 @@ EOF:
 		case cbeTypeEOF:
 			break EOF
 		case cbeTypePlane2:
-			cbeType := _this.reader.ReadType()
-			switch cbeType {
-			case cbeTypeNA:
-				eventReceiver.OnNA()
-			case cbeTypeRIDReference:
-				eventReceiver.OnRIDReference()
-			default:
-				arrayType := cbePlane2TypeToArrayType[cbeType]
-				if arrayType == events.ArrayTypeInvalid {
-					panic(fmt.Errorf("0x%02x: Unsupported plane 2 type", cbeType))
-				}
-				_this.decodeArray(arrayType, eventReceiver)
-			}
+			_this.decodePlane2(reader, eventReceiver)
 		case cbeTypeArrayBit:
 			_this.decodeArray(events.ArrayTypeBit, eventReceiver)
 		case cbeTypeArrayUint8:
@@ -210,6 +198,73 @@ EOF:
 
 	eventReceiver.OnEndDocument()
 	return
+}
+
+func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEventReceiver) {
+	cbeType := _this.reader.ReadType()
+	const lengthMask = 0x0f
+	const shortTypeMask = 0xf0
+
+	elementCount := int(cbeType) & lengthMask
+	switch cbeType & shortTypeMask {
+	case cbeTypeShortArrayInt8:
+		bytes := _this.reader.ReadBytes(elementCount)
+		eventReceiver.OnArray(events.ArrayTypeInt8, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayUint16:
+		bytes := _this.reader.ReadBytes(elementCount * 2)
+		eventReceiver.OnArray(events.ArrayTypeUint16, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayInt16:
+		bytes := _this.reader.ReadBytes(elementCount * 2)
+		eventReceiver.OnArray(events.ArrayTypeInt16, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayUint32:
+		bytes := _this.reader.ReadBytes(elementCount * 4)
+		eventReceiver.OnArray(events.ArrayTypeUint32, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayInt32:
+		bytes := _this.reader.ReadBytes(elementCount * 4)
+		eventReceiver.OnArray(events.ArrayTypeInt32, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayUint64:
+		bytes := _this.reader.ReadBytes(elementCount * 8)
+		eventReceiver.OnArray(events.ArrayTypeUint64, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayInt64:
+		bytes := _this.reader.ReadBytes(elementCount * 8)
+		eventReceiver.OnArray(events.ArrayTypeInt64, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayFloat16:
+		bytes := _this.reader.ReadBytes(elementCount * 2)
+		eventReceiver.OnArray(events.ArrayTypeFloat16, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayFloat32:
+		bytes := _this.reader.ReadBytes(elementCount * 4)
+		eventReceiver.OnArray(events.ArrayTypeFloat32, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayFloat64:
+		bytes := _this.reader.ReadBytes(elementCount * 8)
+		eventReceiver.OnArray(events.ArrayTypeFloat64, uint64(elementCount), bytes)
+		return
+	case cbeTypeShortArrayUID:
+		bytes := _this.reader.ReadBytes(elementCount * 16)
+		eventReceiver.OnArray(events.ArrayTypeUUID, uint64(elementCount), bytes)
+		return
+	}
+
+	switch cbeType {
+	case cbeTypeNA:
+		eventReceiver.OnNA()
+	case cbeTypeRIDReference:
+		eventReceiver.OnRIDReference()
+	default:
+		arrayType := cbePlane2TypeToArrayType[cbeType]
+		if arrayType == events.ArrayTypeInvalid {
+			panic(fmt.Errorf("0x%02x: Unsupported plane 2 type", cbeType))
+		}
+		_this.decodeArray(arrayType, eventReceiver)
+	}
 }
 
 func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {

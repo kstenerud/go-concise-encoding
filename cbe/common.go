@@ -111,6 +111,18 @@ const (
 	cbeTypeArrayFloat64 = 0xf6
 	cbeTypeArrayUUID    = 0xf5
 
+	cbeTypeShortArrayInt8    = 0x00
+	cbeTypeShortArrayUint16  = 0x10
+	cbeTypeShortArrayInt16   = 0x20
+	cbeTypeShortArrayUint32  = 0x30
+	cbeTypeShortArrayInt32   = 0x40
+	cbeTypeShortArrayUint64  = 0x50
+	cbeTypeShortArrayInt64   = 0x60
+	cbeTypeShortArrayFloat16 = 0x70
+	cbeTypeShortArrayFloat32 = 0x80
+	cbeTypeShortArrayFloat64 = 0x90
+	cbeTypeShortArrayUID     = 0xa0
+
 	// Special code to mark EOF
 	cbeTypeEOF = 0x100
 )
