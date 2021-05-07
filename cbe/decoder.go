@@ -282,14 +282,13 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver even
 
 	if !moreChunksFollow {
 		if elementCount == 0 {
-			eventReceiver.OnArrayBegin(arrayType)
-			eventReceiver.OnArrayChunk(0, false)
-			return
+			eventReceiver.OnArray(arrayType, 0, []byte{})
+			goto end
 		}
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
 		bytes := _this.reader.ReadBytes(int(byteCount))
 		eventReceiver.OnArray(arrayType, elementCount, bytes)
-		return
+		goto end
 	}
 
 	eventReceiver.OnArrayBegin(arrayType)
@@ -297,13 +296,20 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver even
 	for {
 		eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
-		nextBytes := _this.reader.ReadBytes(int(byteCount))
-		eventReceiver.OnArrayData(nextBytes)
+		if byteCount > 0 {
+			nextBytes := _this.reader.ReadBytes(int(byteCount))
+			eventReceiver.OnArrayData(nextBytes)
+		}
 		if !moreChunksFollow {
-			return
+			goto end
 		}
 		elementCount, moreChunksFollow = _this.reader.ReadArrayChunkHeader()
 		validateLength(elementCount)
+	}
+
+end:
+	if arrayType == events.ArrayTypeResourceIDConcat {
+		_this.decodeArray(events.ArrayTypeString, eventReceiver)
 	}
 }
 

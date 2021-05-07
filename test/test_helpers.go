@@ -355,6 +355,24 @@ var allEvents = []*TEvent{
 	EvAF64B, EvAUU, EvAUUB,
 }
 
+func charBytes(length int) []byte {
+	var result []byte
+	for i := 0; i < length; i++ {
+		result = append(result, 'a')
+	}
+	return result
+}
+
+func binBytes(elemSize, length int) []byte {
+	var result []byte
+	for i := 0; i < length; i++ {
+		for e := 0; e < elemSize; e++ {
+			result = append(result, 1)
+		}
+	}
+	return result
+}
+
 var completions = map[*TEvent][]*TEvent{
 	EvNA:     []*TEvent{EvNA, EvPI},
 	EvL:      []*TEvent{EvL, EvE},
@@ -364,26 +382,26 @@ var completions = map[*TEvent][]*TEvent{
 	EvMARK:   []*TEvent{EvMARK, S("m")},
 	EvREF:    []*TEvent{EvMARK, S("m"), EvREF, EvPI},
 	EvPAD:    []*TEvent{EvPAD, S("a")},
-	EvSB:     []*TEvent{EvSB, AC(0, false)},
-	EvRB:     []*TEvent{EvRB, AC(0, false)},
-	EvRBCat:  []*TEvent{EvRBCat, AC(0, false), S("a")},
+	EvSB:     []*TEvent{EvSB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
+	EvRB:     []*TEvent{EvRB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
+	EvRBCat:  []*TEvent{EvRBCat, AC(1, true), AD([]byte{'a'}), AC(0, false), S("a")},
 	EvRIDCat: []*TEvent{EvRIDCat, S("a")},
 	EvRIDREF: []*TEvent{EvRIDREF, RID("a")},
-	EvCBB:    []*TEvent{EvCBB, AC(0, false)},
-	EvCTB:    []*TEvent{EvCTB, AC(0, false)},
-	EvABB:    []*TEvent{EvABB, AC(0, false)},
-	EvAU8B:   []*TEvent{EvAU8B, AC(0, false)},
-	EvAU16B:  []*TEvent{EvAU16B, AC(0, false)},
-	EvAU32B:  []*TEvent{EvAU32B, AC(0, false)},
-	EvAU64B:  []*TEvent{EvAU64B, AC(0, false)},
-	EvAI8B:   []*TEvent{EvAI8B, AC(0, false)},
-	EvAI16B:  []*TEvent{EvAI16B, AC(0, false)},
-	EvAI32B:  []*TEvent{EvAI32B, AC(0, false)},
-	EvAI64B:  []*TEvent{EvAI64B, AC(0, false)},
-	EvAF16B:  []*TEvent{EvAF16B, AC(0, false)},
-	EvAF32B:  []*TEvent{EvAF32B, AC(0, false)},
-	EvAF64B:  []*TEvent{EvAF64B, AC(0, false)},
-	EvAUUB:   []*TEvent{EvAUUB, AC(0, false)},
+	EvCBB:    []*TEvent{EvCBB, AC(1, true), AD([]byte{1}), AC(0, false)},
+	EvCTB:    []*TEvent{EvCTB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
+	EvABB:    []*TEvent{EvABB, AC(1, true), AD([]byte{1}), AC(0, false)},
+	EvAU8B:   []*TEvent{EvAU8B, AC(1, true), AD(binBytes(1, 1)), AC(0, false)},
+	EvAU16B:  []*TEvent{EvAU16B, AC(1, true), AD(binBytes(2, 1)), AC(0, false)},
+	EvAU32B:  []*TEvent{EvAU32B, AC(1, true), AD(binBytes(4, 1)), AC(0, false)},
+	EvAU64B:  []*TEvent{EvAU64B, AC(1, true), AD(binBytes(8, 1)), AC(0, false)},
+	EvAI8B:   []*TEvent{EvAI8B, AC(1, true), AD(binBytes(1, 1)), AC(0, false)},
+	EvAI16B:  []*TEvent{EvAI16B, AC(1, true), AD(binBytes(2, 1)), AC(0, false)},
+	EvAI32B:  []*TEvent{EvAI32B, AC(1, true), AD(binBytes(4, 1)), AC(0, false)},
+	EvAI64B:  []*TEvent{EvAI64B, AC(1, true), AD(binBytes(8, 1)), AC(0, false)},
+	EvAF16B:  []*TEvent{EvAF16B, AC(1, true), AD(binBytes(2, 1)), AC(0, false)},
+	EvAF32B:  []*TEvent{EvAF32B, AC(1, true), AD(binBytes(4, 1)), AC(0, false)},
+	EvAF64B:  []*TEvent{EvAF64B, AC(1, true), AD(binBytes(8, 1)), AC(0, false)},
+	EvAUUB:   []*TEvent{EvAUUB, AC(1, true), AD(binBytes(16, 1)), AC(0, false)},
 }
 
 func FilterAddCompletion(event *TEvent) []*TEvent {
