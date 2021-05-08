@@ -137,7 +137,7 @@ func (_this *Context) BeginChunkAnyType(elemCount uint64, moreChunksFollow bool)
 	_this.chunkActualByteCount = 0
 	_this.moreChunksFollow = moreChunksFollow
 	if elemCount > 0 {
-		_this.changeRule(&arrayChunkRule)
+		_this.ChangeRule(&arrayChunkRule)
 	} else {
 		_this.EndChunkAnyType()
 	}
@@ -145,7 +145,7 @@ func (_this *Context) BeginChunkAnyType(elemCount uint64, moreChunksFollow bool)
 
 func (_this *Context) EndChunkAnyType() {
 	if _this.moreChunksFollow {
-		_this.changeRule(&arrayRule)
+		_this.ChangeRule(&arrayRule)
 	} else {
 		_this.endArray()
 	}
@@ -173,7 +173,7 @@ func (_this *Context) BeginChunkString(elemCount uint64, moreChunksFollow bool) 
 	_this.chunkActualByteCount = 0
 	_this.moreChunksFollow = moreChunksFollow
 	if elemCount > 0 {
-		_this.changeRule(&stringChunkRule)
+		_this.ChangeRule(&stringChunkRule)
 	} else {
 		_this.EndChunkString()
 	}
@@ -181,7 +181,7 @@ func (_this *Context) BeginChunkString(elemCount uint64, moreChunksFollow bool) 
 
 func (_this *Context) EndChunkString() {
 	if _this.moreChunksFollow {
-		_this.changeRule(&stringRule)
+		_this.ChangeRule(&stringRule)
 	} else {
 		if len(_this.utf8RemainderBuffer) > 0 {
 			panic(fmt.Errorf("Incomplete UTF-8 string"))
@@ -201,7 +201,7 @@ func (_this *Context) BeginChunkStringBuilder(elemCount uint64, moreChunksFollow
 	_this.chunkActualByteCount = 0
 	_this.moreChunksFollow = moreChunksFollow
 	if elemCount > 0 {
-		_this.changeRule(&stringBuilderChunkRule)
+		_this.ChangeRule(&stringBuilderChunkRule)
 	} else {
 		_this.EndChunkStringBuilder()
 	}
@@ -209,7 +209,7 @@ func (_this *Context) BeginChunkStringBuilder(elemCount uint64, moreChunksFollow
 
 func (_this *Context) EndChunkStringBuilder() {
 	if _this.moreChunksFollow {
-		_this.changeRule(&stringBuilderRule)
+		_this.ChangeRule(&stringBuilderRule)
 	} else {
 		_this.ValidateArrayDataFunc(_this.builtArrayBuffer)
 		_this.endArray()

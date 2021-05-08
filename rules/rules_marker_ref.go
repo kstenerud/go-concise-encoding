@@ -119,7 +119,7 @@ func (_this *RIDReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType,
 	switch arrayType {
 	case events.ArrayTypeResourceIDConcat:
 		ctx.ValidateResourceID(data)
-		ctx.changeRule(&ridCatRule)
+		ctx.ChangeRule(&ridCatRule)
 	case events.ArrayTypeResourceID:
 		ctx.ValidateResourceID(data)
 		ctx.UnstackRule()

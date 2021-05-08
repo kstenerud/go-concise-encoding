@@ -88,7 +88,7 @@ func (_this *Context) Reset() {
 	_this.stackRule(&beginDocumentRule, DataTypeInvalid)
 }
 
-func (_this *Context) changeRule(rule EventRule) {
+func (_this *Context) ChangeRule(rule EventRule) {
 	_this.CurrentEntry.Rule = rule
 	_this.stack[len(_this.stack)-1] = _this.CurrentEntry
 }
@@ -198,18 +198,6 @@ func (_this *Context) BeginConstantAnyType(name []byte) {
 	panic(fmt.Errorf("TODO: Constants not supported until schema is developed"))
 }
 
-func (_this *Context) SwitchVersion() {
-	_this.changeRule(&versionRule)
-}
-
-func (_this *Context) SwitchTopLevel() {
-	_this.changeRule(&topLevelRule)
-}
-
-func (_this *Context) SwitchEndDocument() {
-	_this.changeRule(&endDocumentRule)
-}
-
 func (_this *Context) EndDocument() {
 	if len(_this.forwardReferences) > 0 {
 		var sb strings.Builder
@@ -222,27 +210,7 @@ func (_this *Context) EndDocument() {
 		str = str[:len(str)-2]
 		panic(fmt.Errorf("%v]", str))
 	}
-	_this.changeRule(&terminalRule)
-}
-
-func (_this *Context) SwitchMapKey() {
-	_this.changeRule(&mapKeyRule)
-}
-
-func (_this *Context) SwitchMapValue() {
-	_this.changeRule(&mapValueRule)
-}
-
-func (_this *Context) SwitchMarkupKey() {
-	_this.changeRule(&markupKeyRule)
-}
-
-func (_this *Context) SwitchMarkupValue() {
-	_this.changeRule(&markupValueRule)
-}
-
-func (_this *Context) SwitchMarkupContents() {
-	_this.changeRule(&markupContentsRule)
+	_this.ChangeRule(&terminalRule)
 }
 
 func (_this *Context) MarkObject(dataType DataType) {

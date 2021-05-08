@@ -67,9 +67,10 @@ func (_this *ListRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 type MapKeyRule struct{}
 
 func (_this *MapKeyRule) String() string                                 { return "Map Key Rule" }
-func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMapValue() }
+func (_this *MapKeyRule) switchMapValue(ctx *Context)                    { ctx.ChangeRule(&mapValueRule) }
+func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapValue(ctx) }
 func (_this *MapKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ string)         { ctx.SwitchMapValue() }
+func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ string)         { _this.switchMapValue(ctx) }
 func (_this *MapKeyRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *MapKeyRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
 func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
@@ -77,19 +78,19 @@ func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
 }
 func (_this *MapKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
-	ctx.SwitchMapValue()
+	_this.switchMapValue(ctx)
 }
 func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantKeyable(name)
 }
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
-	ctx.SwitchMapValue()
+	_this.switchMapValue(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
-	ctx.SwitchMapValue()
+	_this.switchMapValue(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -102,14 +103,15 @@ func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) 
 type MapValueRule struct{}
 
 func (_this *MapValueRule) String() string                                 { return "Map Value Rule" }
-func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMapKey() }
+func (_this *MapValueRule) switchMapKey(ctx *Context)                      { ctx.ChangeRule(&mapKeyRule) }
+func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnNA(ctx *Context) {
-	ctx.SwitchMapKey()
+	_this.switchMapKey(ctx)
 	ctx.BeginNA()
 }
 func (_this *MapValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ string)    { ctx.SwitchMapKey() }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ string) { ctx.SwitchMapKey() }
+func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ string)    { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ string) { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnList(ctx *Context)                       { ctx.BeginList() }
 func (_this *MapValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
 func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
@@ -119,7 +121,7 @@ func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 }
 func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
-	ctx.SwitchMapKey()
+	_this.switchMapKey(ctx)
 }
 func (_this *MapValueRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
@@ -129,12 +131,12 @@ func (_this *MapValueRule) OnConstant(ctx *Context, name []byte) {
 }
 func (_this *MapValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	ctx.SwitchMapKey()
+	_this.switchMapKey(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
-	ctx.SwitchMapKey()
+	_this.switchMapKey(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -146,30 +148,33 @@ func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType
 
 type MarkupKeyRule struct{}
 
-func (_this *MarkupKeyRule) String() string                                 { return "Markup Attribute Key Rule" }
-func (_this *MarkupKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ string)         { ctx.SwitchMarkupValue() }
-func (_this *MarkupKeyRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *MarkupKeyRule) OnEnd(ctx *Context)                             { ctx.SwitchMarkupContents() }
+func (_this *MarkupKeyRule) String() string                 { return "Markup Attribute Key Rule" }
+func (_this *MarkupKeyRule) switchMarkupValue(ctx *Context) { ctx.ChangeRule(&markupValueRule) }
+func (_this *MarkupKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+	_this.switchMarkupValue(ctx)
+}
+func (_this *MarkupKeyRule) OnPadding(ctx *Context)                 { /* Nothing to do */ }
+func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ string) { _this.switchMarkupValue(ctx) }
+func (_this *MarkupKeyRule) OnComment(ctx *Context)                 { ctx.BeginComment() }
+func (_this *MarkupKeyRule) OnEnd(ctx *Context)                     { ctx.ChangeRule(&markupContentsRule) }
 func (_this *MarkupKeyRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerKeyable(identifier)
 }
 func (_this *MarkupKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
-	ctx.SwitchMarkupValue()
+	_this.switchMarkupValue(ctx)
 }
 func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantKeyable(name)
 }
 func (_this *MarkupKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
-	ctx.SwitchMarkupValue()
+	_this.switchMarkupValue(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
-	ctx.SwitchMarkupValue()
+	_this.switchMarkupValue(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -181,15 +186,18 @@ func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayTyp
 
 type MarkupValueRule struct{}
 
-func (_this *MarkupValueRule) String() string                                 { return "Markup Attribute Value Rule" }
-func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) String() string               { return "Markup Attribute Value Rule" }
+func (_this *MarkupValueRule) switchMarkupKey(ctx *Context) { ctx.ChangeRule(&markupKeyRule) }
+func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+	_this.switchMarkupKey(ctx)
+}
 func (_this *MarkupValueRule) OnNA(ctx *Context) {
-	ctx.SwitchMarkupKey()
+	_this.switchMarkupKey(ctx)
 	ctx.BeginNA()
 }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ string)    { ctx.SwitchMarkupKey() }
-func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ string) { ctx.SwitchMarkupKey() }
+func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ string)    { _this.switchMarkupKey(ctx) }
+func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ string) { _this.switchMarkupKey(ctx) }
 func (_this *MarkupValueRule) OnList(ctx *Context)                       { ctx.BeginList() }
 func (_this *MarkupValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
 func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
@@ -199,7 +207,7 @@ func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
 }
 func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
-	ctx.SwitchMarkupKey()
+	_this.switchMarkupKey(ctx)
 }
 func (_this *MarkupValueRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
@@ -209,12 +217,12 @@ func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte) {
 }
 func (_this *MarkupValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	ctx.SwitchMarkupKey()
+	_this.switchMarkupKey(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
-	ctx.SwitchMarkupKey()
+	_this.switchMarkupKey(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
