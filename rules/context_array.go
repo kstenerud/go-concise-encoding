@@ -180,12 +180,12 @@ func (_this *Context) BeginChunkString(elemCount uint64, moreChunksFollow bool) 
 }
 
 func (_this *Context) EndChunkString() {
+	if len(_this.utf8RemainderBuffer) > 0 {
+		panic(fmt.Errorf("Incomplete UTF-8 data in chunk"))
+	}
 	if _this.moreChunksFollow {
 		_this.ChangeRule(&stringRule)
 	} else {
-		if len(_this.utf8RemainderBuffer) > 0 {
-			panic(fmt.Errorf("Incomplete UTF-8 string"))
-		}
 		_this.endArray()
 	}
 }
