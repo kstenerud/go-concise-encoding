@@ -584,7 +584,7 @@ func decodeTokenAsDate(ctx *DecoderContext, token Token, decodedCount int, year 
 }
 
 func decodeTokenAsTime(ctx *DecoderContext, token Token, decodedCount int, hour int) {
-	if decodedCount != 2 {
+	if decodedCount < 1 || decodedCount > 2 {
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "time")
 	}
 	token = token[decodedCount:]

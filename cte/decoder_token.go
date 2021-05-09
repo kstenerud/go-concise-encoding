@@ -860,7 +860,7 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 
 	var hour uint64
 	hour, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
-	if digitCount != 2 {
+	if digitCount < 1 || digitCount > 2 {
 		_this.errorf(textPos, pos, "invalid hour value")
 	}
 	pos += digitCount

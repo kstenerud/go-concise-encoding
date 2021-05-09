@@ -355,7 +355,7 @@ func TestCTEDate(t *testing.T) {
 }
 
 func TestCTETime(t *testing.T) {
-	assertDecode(t, nil, "c0 01:45:00", BD(), EvV, CT(test.NewTime(1, 45, 0, 0, "")), ED())
+	assertDecode(t, nil, "c0 1:45:00", BD(), EvV, CT(test.NewTime(1, 45, 0, 0, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n23:59:59.101", BD(), EvV, CT(test.NewTime(23, 59, 59, 101000000, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n10:00:01.93/America/Los_Angeles", BD(), EvV, CT(test.NewTime(10, 0, 1, 930000000, "America/Los_Angeles")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n10:00:01.93/89.92/1.10", BD(), EvV, CT(test.NewTimeLL(10, 0, 1, 930000000, 8992, 110)), ED())
@@ -414,7 +414,7 @@ func TestCTETime(t *testing.T) {
 }
 
 func TestCTETimestamp(t *testing.T) {
-	assertDecode(t, nil, "c0 2000-01-01/19:31:44.901554/Z", BD(), EvV, CT(test.NewTS(2000, 1, 1, 19, 31, 44, 901554000, "Z")), ED())
+	assertDecode(t, nil, "c0 2000-01-01/9:31:44.901554/Z", BD(), EvV, CT(test.NewTS(2000, 1, 1, 9, 31, 44, 901554000, "Z")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/13:41:00.000599", BD(), EvV, CT(test.NewTS(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 	assertDecode(t, nil, "c0 2020-01-15/13:41:00.000599", BD(), EvV, CT(test.NewTS(2020, 1, 15, 13, 41, 0, 599000, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n2020-01-15/10:00:01.93/89.92/1.10", BD(), EvV, CT(test.NewTSLL(2020, 1, 15, 10, 0, 1, 930000000, 8992, 110)), ED())
