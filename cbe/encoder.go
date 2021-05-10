@@ -445,6 +445,10 @@ func (_this *Encoder) OnEnd() {
 	_this.writer.WriteType(cbeTypeEndContainer)
 }
 
+func (_this *Encoder) OnRelationship() {
+	panic("TODO: CBE Encoder OnRelationship")
+}
+
 func (_this *Encoder) OnMarker(id []byte) {
 	_this.writer.WriteType(cbeTypeMarker)
 	_this.writer.WriteIdentifier(id)

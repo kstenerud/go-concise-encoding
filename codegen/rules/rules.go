@@ -50,6 +50,7 @@ var (
 	Markup  = "OnMarkup(ctx *Context, identifier []byte)"
 	Comment = "OnComment(ctx *Context)"
 	End     = "OnEnd(ctx *Context)"
+	Rel     = "OnRelationship(ctx *Context)"
 	Marker  = "OnMarker(ctx *Context, identifier []byte)"
 	Ref     = "OnReference(ctx *Context, identifier []byte)"
 	RIDRef  = "OnRIDReference(ctx *Context)"
@@ -61,8 +62,8 @@ var (
 	AData   = "OnArrayData(ctx *Context, data []byte)"
 
 	allMethods = []string{BDoc, EDoc, ECtr, Ver, NA, Pad, Key, NonKey, List, Map,
-		Markup, Comment, End, Marker, Ref, RIDRef, Const, Array, SArray, ABegin,
-		AChunk, AData}
+		Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray,
+		ABegin, AChunk, AData}
 )
 
 type RuleClass struct {
@@ -89,15 +90,15 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "TopLevelRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Marker, RIDRef, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "NARule",
-		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ListRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, End, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MapKeyRule",
@@ -105,7 +106,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MapValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupKeyRule",
@@ -113,7 +114,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkupValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:    "MarkupContentsRule",
@@ -153,7 +154,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "MarkedObjectAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
 	},
 	{
 		Name:    "ConstantKeyableRule",
@@ -161,7 +162,7 @@ var ruleClasses = []RuleClass{
 	},
 	{
 		Name:    "ConstantAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, List, Map, Markup, Array, SArray, ABegin},
+		Methods: []string{ECtr, Pad, Key, NonKey, NA, List, Map, Markup, Rel, Array, SArray, ABegin},
 	},
 	{
 		Name:    "RIDReferenceRule",
@@ -170,6 +171,10 @@ var ruleClasses = []RuleClass{
 	{
 		Name:    "RIDCatRule",
 		Methods: []string{Pad, Array, SArray, ABegin, ECtr},
+	},
+	{
+		Name:    "SubjectRule",
+		Methods: []string{ECtr, Pad, List, Map, Comment, Rel, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 }
 

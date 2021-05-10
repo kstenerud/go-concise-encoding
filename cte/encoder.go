@@ -255,6 +255,10 @@ func (_this *EncoderEventReceiver) OnEnd() {
 	_this.context.EndContainer()
 }
 
+func (_this *EncoderEventReceiver) OnRelationship() {
+	panic("TODO: CTE EncoderEventReceiver.OnRelationship")
+}
+
 func (_this *EncoderEventReceiver) OnMarker(id []byte) {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteMarkerBegin(id)

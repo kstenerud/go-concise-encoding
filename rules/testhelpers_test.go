@@ -228,6 +228,7 @@ func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
 func E() *test.TEvent                        { return test.E() }
+func REL() *test.TEvent                      { return test.REL() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
 func RIDREF() *test.TEvent                   { return test.RIDREF() }

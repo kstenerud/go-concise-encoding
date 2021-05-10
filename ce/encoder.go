@@ -74,6 +74,7 @@ type Encoder interface {
 	OnMarkup(id []byte)
 	OnComment()
 	OnEnd()
+	OnRelationship()
 	OnMarker(id []byte)
 	OnReference(id []byte)
 	OnRIDReference()

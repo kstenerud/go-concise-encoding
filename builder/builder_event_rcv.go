@@ -206,6 +206,9 @@ func (_this *BuilderEventReceiver) OnComment() {
 func (_this *BuilderEventReceiver) OnEnd() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
 }
+func (_this *BuilderEventReceiver) OnRelationship() {
+	panic("TODO: BuilderEventReceiver.OnRelationship")
+}
 func (_this *BuilderEventReceiver) OnMarker(id []byte) {
 	_this.context.BeginMarkerObject(id)
 }

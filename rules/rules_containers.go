@@ -39,6 +39,7 @@ func (_this *ListRule) OnMap(ctx *Context)                             { ctx.Beg
 func (_this *ListRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
 func (_this *ListRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *ListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
+func (_this *ListRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
 func (_this *ListRule) OnMarker(ctx *Context, identifier []byte)       { ctx.BeginMarkerAnyType(identifier) }
 func (_this *ListRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
@@ -116,6 +117,7 @@ func (_this *MapValueRule) OnList(ctx *Context)                       { ctx.Begi
 func (_this *MapValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
 func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
 func (_this *MapValueRule) OnComment(ctx *Context)                    { ctx.BeginComment() }
+func (_this *MapValueRule) OnRelationship(ctx *Context)               { ctx.BeginRelationship() }
 func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier)
 }
@@ -202,6 +204,7 @@ func (_this *MarkupValueRule) OnList(ctx *Context)                       { ctx.B
 func (_this *MarkupValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
 func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
 func (_this *MarkupValueRule) OnComment(ctx *Context)                    { ctx.BeginComment() }
+func (_this *MarkupValueRule) OnRelationship(ctx *Context)               { ctx.BeginRelationship() }
 func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier)
 }
@@ -269,4 +272,37 @@ func (_this *CommentRule) OnStringlikeArray(ctx *Context, arrayType events.Array
 }
 func (_this *CommentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayComment(arrayType)
+}
+
+// =============================================================================
+
+type SubjectRule struct{}
+
+func (_this *SubjectRule) String() string                                 { return "Subject Rule" }
+func (_this *SubjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
+func (_this *SubjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *SubjectRule) OnList(ctx *Context)                            { ctx.BeginList() }
+func (_this *SubjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
+func (_this *SubjectRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *SubjectRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
+func (_this *SubjectRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier)
+}
+func (_this *SubjectRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+}
+func (_this *SubjectRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *SubjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	ctx.BeginPotentialRIDCat(arrayType)
+}
+func (_this *SubjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	ctx.BeginPotentialRIDCat(arrayType)
+}
+func (_this *SubjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.BeginArrayAnyType(arrayType)
 }

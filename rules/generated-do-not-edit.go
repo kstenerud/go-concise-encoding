@@ -64,6 +64,9 @@ func (_this *BeginDocumentRule) OnComment(ctx *Context) {
 func (_this *BeginDocumentRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *BeginDocumentRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *BeginDocumentRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -126,6 +129,9 @@ func (_this *EndDocumentRule) OnComment(ctx *Context) {
 }
 func (_this *EndDocumentRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *EndDocumentRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *EndDocumentRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -193,6 +199,9 @@ func (_this *TerminalRule) OnComment(ctx *Context) {
 func (_this *TerminalRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *TerminalRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *TerminalRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -255,6 +264,9 @@ func (_this *VersionRule) OnComment(ctx *Context) {
 }
 func (_this *VersionRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *VersionRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *VersionRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -379,6 +391,9 @@ func (_this *MapKeyRule) OnMap(ctx *Context) {
 func (_this *MapKeyRule) OnMarkup(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
 }
+func (_this *MapKeyRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *MapKeyRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
 }
@@ -429,6 +444,9 @@ func (_this *MarkupKeyRule) OnMap(ctx *Context) {
 }
 func (_this *MarkupKeyRule) OnMarkup(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
+}
+func (_this *MarkupKeyRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *MarkupKeyRule) OnRIDReference(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow RIDReference", _this))
@@ -481,6 +499,9 @@ func (_this *MarkupContentsRule) OnList(ctx *Context) {
 func (_this *MarkupContentsRule) OnMap(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow Map", _this))
 }
+func (_this *MarkupContentsRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *MarkupContentsRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -525,6 +546,9 @@ func (_this *CommentRule) OnMap(ctx *Context) {
 }
 func (_this *CommentRule) OnMarkup(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Markup", _this))
+}
+func (_this *CommentRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *CommentRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -582,6 +606,9 @@ func (_this *ArrayRule) OnComment(ctx *Context) {
 }
 func (_this *ArrayRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *ArrayRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *ArrayRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -646,6 +673,9 @@ func (_this *ArrayChunkRule) OnComment(ctx *Context) {
 func (_this *ArrayChunkRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *ArrayChunkRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *ArrayChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -708,6 +738,9 @@ func (_this *StringRule) OnComment(ctx *Context) {
 }
 func (_this *StringRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *StringRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *StringRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -772,6 +805,9 @@ func (_this *StringChunkRule) OnComment(ctx *Context) {
 func (_this *StringChunkRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *StringChunkRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *StringChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -834,6 +870,9 @@ func (_this *StringBuilderRule) OnComment(ctx *Context) {
 }
 func (_this *StringBuilderRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *StringBuilderRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *StringBuilderRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -898,6 +937,9 @@ func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *StringBuilderChunkRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *StringBuilderChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -951,6 +993,9 @@ func (_this *MarkedObjectKeyableRule) OnComment(ctx *Context) {
 }
 func (_this *MarkedObjectKeyableRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *MarkedObjectKeyableRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
 }
 func (_this *MarkedObjectKeyableRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
@@ -1036,6 +1081,9 @@ func (_this *ConstantKeyableRule) OnComment(ctx *Context) {
 func (_this *ConstantKeyableRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *ConstantKeyableRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *ConstantKeyableRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -1120,6 +1168,9 @@ func (_this *RIDReferenceRule) OnComment(ctx *Context) {
 func (_this *RIDReferenceRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *RIDReferenceRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *RIDReferenceRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -1171,6 +1222,9 @@ func (_this *RIDCatRule) OnComment(ctx *Context) {
 func (_this *RIDCatRule) OnEnd(ctx *Context) {
 	panic(fmt.Errorf("%v does not allow End", _this))
 }
+func (_this *RIDCatRule) OnRelationship(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow Relationship", _this))
+}
 func (_this *RIDCatRule) OnMarker(ctx *Context, identifier []byte) {
 	panic(fmt.Errorf("%v does not allow Marker", _this))
 }
@@ -1187,5 +1241,38 @@ func (_this *RIDCatRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFol
 	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
 }
 func (_this *RIDCatRule) OnArrayData(ctx *Context, data []byte) {
+	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+}
+func (_this *SubjectRule) OnBeginDocument(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+}
+func (_this *SubjectRule) OnEndDocument(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+}
+func (_this *SubjectRule) OnVersion(ctx *Context, version uint64) {
+	panic(fmt.Errorf("%v does not allow Version", _this))
+}
+func (_this *SubjectRule) OnNA(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow NA", _this))
+}
+func (_this *SubjectRule) OnKeyableObject(ctx *Context, objType string) {
+	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+}
+func (_this *SubjectRule) OnNonKeyableObject(ctx *Context, objType string) {
+	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+}
+func (_this *SubjectRule) OnMarkup(ctx *Context, identifier []byte) {
+	panic(fmt.Errorf("%v does not allow Markup", _this))
+}
+func (_this *SubjectRule) OnEnd(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow End", _this))
+}
+func (_this *SubjectRule) OnRIDReference(ctx *Context) {
+	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+}
+func (_this *SubjectRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+}
+func (_this *SubjectRule) OnArrayData(ctx *Context, data []byte) {
 	panic(fmt.Errorf("%v does not allow ArrayData", _this))
 }

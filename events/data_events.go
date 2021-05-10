@@ -159,6 +159,7 @@ type DataEventReceiver interface {
 	OnMarkup(identifier []byte)
 	OnComment()
 	OnEnd()
+	OnRelationship()
 	OnMarker(identifier []byte)
 	OnReference(identifier []byte)
 	OnRIDReference()
@@ -209,6 +210,7 @@ func (_this *NullEventReceiver) OnMap()                              {}
 func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
 func (_this *NullEventReceiver) OnComment()                          {}
 func (_this *NullEventReceiver) OnEnd()                              {}
+func (_this *NullEventReceiver) OnRelationship()                     {}
 func (_this *NullEventReceiver) OnMarker([]byte)                     {}
 func (_this *NullEventReceiver) OnReference([]byte)                  {}
 func (_this *NullEventReceiver) OnRIDReference()                     {}

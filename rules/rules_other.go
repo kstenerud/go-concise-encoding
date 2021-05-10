@@ -93,6 +93,7 @@ func (_this *TopLevelRule) OnList(ctx *Context)                      { ctx.Begin
 func (_this *TopLevelRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
 func (_this *TopLevelRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
 func (_this *TopLevelRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
+func (_this *TopLevelRule) OnRelationship(ctx *Context)              { ctx.BeginRelationship() }
 func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier)
 }
@@ -136,6 +137,7 @@ func (_this *NARule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { 
 func (_this *NARule) OnList(ctx *Context)                                     { ctx.BeginList() }
 func (_this *NARule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
 func (_this *NARule) OnMarkup(ctx *Context, identifier []byte)                { ctx.BeginMarkup(identifier) }
+func (_this *NARule) OnRelationship(ctx *Context)                             { ctx.BeginRelationship() }
 func (_this *NARule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.UnstackRule()

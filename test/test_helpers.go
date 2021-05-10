@@ -617,6 +617,7 @@ const (
 	TEventMarkup
 	TEventComment
 	TEventEnd
+	TEventRelationship
 	TEventMarker
 	TEventReference
 	TEventRIDReference
@@ -689,6 +690,7 @@ var TEventNames = []string{
 	TEventMarkup:             "MUP",
 	TEventComment:            "CMT",
 	TEventEnd:                "E",
+	TEventRelationship:       "REL",
 	TEventMarker:             "MARK",
 	TEventReference:          "REF",
 	TEventRIDReference:       "RIDREF",
@@ -1030,6 +1032,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnComment()
 	case TEventEnd:
 		receiver.OnEnd()
+	case TEventRelationship:
+		receiver.OnRelationship()
 	case TEventMarker:
 		receiver.OnMarker([]byte(_this.V1.(string)))
 	case TEventReference:
@@ -1119,6 +1123,7 @@ func M() *TEvent                        { return newTEvent(TEventMap, nil, nil) 
 func MUP(id string) *TEvent             { return newTEvent(TEventMarkup, id, nil) }
 func CMT() *TEvent                      { return newTEvent(TEventComment, nil, nil) }
 func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
+func REL() *TEvent                      { return newTEvent(TEventRelationship, nil, nil) }
 func MARK(id string) *TEvent            { return newTEvent(TEventMarker, id, nil) }
 func REF(id string) *TEvent             { return newTEvent(TEventReference, id, nil) }
 func RIDREF() *TEvent                   { return newTEvent(TEventRIDReference, nil, nil) }
@@ -1438,6 +1443,10 @@ func (h *TEventPrinter) OnEnd() {
 	h.Print(E())
 	h.Next.OnEnd()
 }
+func (h *TEventPrinter) OnRelationship() {
+	h.Print(REL())
+	h.Next.OnRelationship()
+}
 func (h *TEventPrinter) OnMarker(id []byte) {
 	h.Print(MARK(string(id)))
 	h.Next.OnMarker(id)
@@ -1608,6 +1617,7 @@ func (h *TEventStore) OnMap()                                 { h.add(M()) }
 func (h *TEventStore) OnMarkup(id []byte)                     { h.add(MUP(string(id))) }
 func (h *TEventStore) OnComment()                             { h.add(CMT()) }
 func (h *TEventStore) OnEnd()                                 { h.add(E()) }
+func (h *TEventStore) OnRelationship()                        { h.add(REL()) }
 func (h *TEventStore) OnMarker(id []byte)                     { h.add(MARK(string(id))) }
 func (h *TEventStore) OnReference(id []byte)                  { h.add(REF(string(id))) }
 func (h *TEventStore) OnRIDReference()                        { h.add(RIDREF()) }

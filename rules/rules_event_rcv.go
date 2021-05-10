@@ -284,6 +284,11 @@ func (_this *RulesEventReceiver) OnEnd() {
 	_this.receiver.OnEnd()
 }
 
+func (_this *RulesEventReceiver) OnRelationship() {
+	_this.context.CurrentEntry.Rule.OnRelationship(&_this.context)
+	_this.receiver.OnRelationship()
+}
+
 func (_this *RulesEventReceiver) OnMarker(identifier []byte) {
 	_this.context.ValidateIdentifier(identifier)
 	_this.context.CurrentEntry.Rule.OnMarker(&_this.context, identifier)

@@ -43,6 +43,7 @@ type EventRule interface {
 	OnMarkup(ctx *Context, identifier []byte)
 	OnComment(ctx *Context)
 	OnEnd(ctx *Context)
+	OnRelationship(ctx *Context)
 	OnMarker(ctx *Context, identifier []byte)
 	OnReference(ctx *Context, identifier []byte)
 	OnRIDReference(ctx *Context)
@@ -110,4 +111,5 @@ var (
 	tlReferenceRIDRule      RIDReferenceRule
 	stringBuilderRule       StringBuilderRule
 	stringBuilderChunkRule  StringBuilderChunkRule
+	subjectRule             SubjectRule
 )

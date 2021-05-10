@@ -138,6 +138,10 @@ func (_this *Context) EndContainer() {
 	_this.endContainerLike()
 }
 
+func (_this *Context) BeginRelationship() {
+	_this.stackRule(&subjectRule, DataTypeNonKeyable)
+}
+
 func (_this *Context) BeginNA() {
 	_this.stackRule(&naRule, DataTypeNonKeyable)
 }
