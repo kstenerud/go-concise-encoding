@@ -24,6 +24,8 @@
 package chars
 
 import (
+	"fmt"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -65,8 +67,45 @@ const (
 	UpperAF
 	AZ
 	ObjectEnd
-	NoProperties = 0
+	NoProperties = 0x0
 )
+
+func (_this Properties) String() string {
+	asString := ""
+	if _this == 0 {
+		asString = propertiesNames[_this]
+	} else {
+		isFirst := true
+		builder := strings.Builder{}
+		for i := Properties(1); i <= ObjectEnd; i <<= 1 {
+			if _this&i != 0 {
+				if isFirst {
+					isFirst = false
+				} else {
+					builder.WriteString(" | ")
+				}
+				builder.WriteString(propertiesNames[i])
+			}
+		}
+		asString = builder.String()
+	}
+	if asString == "" {
+		asString = fmt.Sprintf("%d", _this)
+	}
+	return asString
+}
+
+var propertiesNames = map[Properties]string{
+
+	StructWS: "StructWS",
+	DigitBase2: "DigitBase2",
+	DigitBase8: "DigitBase8",
+	DigitBase10: "DigitBase10",
+	LowerAF: "LowerAF",
+	UpperAF: "UpperAF",
+	AZ: "AZ",
+	ObjectEnd: "ObjectEnd",
+}
 
 type SafetyFlags uint8
 
@@ -76,8 +115,41 @@ const (
 	SafetyMarkup
 	SafetyComment
 	SafetyAll = SafetyString | SafetyArray | SafetyMarkup | SafetyComment
-	SafetyNone = 0
+	SafetyNone = 0x0
 )
+
+func (_this SafetyFlags) String() string {
+	asString := ""
+	if _this == 0 {
+		asString = safetyflagsNames[_this]
+	} else {
+		isFirst := true
+		builder := strings.Builder{}
+		for i := SafetyFlags(1); i <= SafetyComment; i <<= 1 {
+			if _this&i != 0 {
+				if isFirst {
+					isFirst = false
+				} else {
+					builder.WriteString(" | ")
+				}
+				builder.WriteString(safetyflagsNames[i])
+			}
+		}
+		asString = builder.String()
+	}
+	if asString == "" {
+		asString = fmt.Sprintf("%d", _this)
+	}
+	return asString
+}
+
+var safetyflagsNames = map[SafetyFlags]string{
+
+	SafetyString: "SafetyString",
+	SafetyArray: "SafetyArray",
+	SafetyMarkup: "SafetyMarkup",
+	SafetyComment: "SafetyComment",
+}
 
 var runeByteCounts = [32]byte{
 	0x00: 1,

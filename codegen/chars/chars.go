@@ -28,8 +28,9 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"strings"
 	"unicode/utf8"
+
+	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
@@ -37,6 +38,8 @@ import (
 const path = "internal/chars"
 
 var imports = []string{
+	"fmt",
+	"strings",
 	"unicode/utf8",
 }
 
@@ -161,7 +164,9 @@ func classifyRunes(chars CharSet) {
 	}))
 }
 
+// ---------------
 // Code Generators
+// ---------------
 
 func generateNamedCharSwitch(writer io.Writer, charset []rune) {
 	sort.SliceStable(charset, func(i, j int) bool {
@@ -190,61 +195,39 @@ func generateSpacer(writer io.Writer) {
 }
 
 func generatePropertiesType(writer io.Writer) {
-	var propType string
-	switch {
-	case EndProperties <= 0x100:
-		propType = "uint8"
-	case EndProperties <= 0x10000:
-		propType = "uint16"
-	case EndProperties <= 0x100000000:
-		propType = "uint32"
-	default:
-		propType = "uint64"
-	}
+	gen := datatypes.NewFlagDataTypeWriter(writer, "Properties", EndProperties)
 
-	if _, err := fmt.Fprintf(writer, "type Properties %v\n\nconst (", propType); err != nil {
-		panic(err)
-	}
-
+	gen.BeginType()
 	for i := Properties(1); i < EndProperties; i <<= 1 {
-		if _, err := fmt.Fprintf(writer, "\n\t%v", i); err != nil {
-			panic(err)
-		}
-		if i == 1 {
-			if _, err := fmt.Fprintf(writer, " Properties = 1 << iota"); err != nil {
-				panic(err)
-			}
-		}
+		gen.AddNamed(i)
 	}
+	gen.AddCustom(NoProperties, uint64(NoProperties))
+	gen.EndType()
 
-	if _, err := fmt.Fprintf(writer, "\n\t%v = 0\n)\n", NoProperties); err != nil {
-		panic(err)
+	gen.BeginStringer()
+	for i := Properties(1); i < EndProperties; i <<= 1 {
+		gen.AddStringer(i)
 	}
+	gen.EndStringer()
 }
 
 func generateSafetyFlagsType(writer io.Writer) {
-	if _, err := fmt.Fprintf(writer, "type SafetyFlags uint8\n\nconst ("); err != nil {
-		panic(err)
-	}
+	gen := datatypes.NewFlagDataTypeWriter(writer, "SafetyFlags", EndSafetyFlags)
 
+	gen.BeginType()
 	for i := SafetyFlags(1); i < EndSafetyFlags; i <<= 1 {
-		if _, err := fmt.Fprintf(writer, "\n\t%v", i); err != nil {
-			panic(err)
-		}
-		if i == 1 {
-			if _, err := fmt.Fprintf(writer, " SafetyFlags = 1 << iota"); err != nil {
-				panic(err)
-			}
-		}
+		gen.AddNamed(i)
 	}
+	gen.AddCustom("SafetyAll", SafetyAll)
+	gen.AddCustom(SafetyNone, uint64(SafetyNone))
+	gen.EndType()
 
-	if _, err := fmt.Fprintf(writer, "\n\tSafetyAll = %v", SafetyAll); err != nil {
-		panic(err)
+	gen.BeginStringer()
+	for i := SafetyFlags(1); i < EndSafetyFlags; i <<= 1 {
+		gen.AddStringer(i)
 	}
+	gen.EndStringer()
 
-	if _, err := fmt.Fprintf(writer, "\n\t%v = 0\n)\n", SafetyNone); err != nil {
-		panic(err)
-	}
 }
 
 func generatePropertiesTable(writer io.Writer) error {
@@ -616,7 +599,7 @@ func (_this *Char) All() (result []*Char) {
 // Data
 // ----
 
-type SafetyFlags byte
+type SafetyFlags uint64
 
 const (
 	SafetyString SafetyFlags = 1 << iota
@@ -630,26 +613,10 @@ const (
 )
 
 func (_this SafetyFlags) String() string {
-	if _this == 0 {
-		return safetyNames[_this]
-	}
-
-	isFirst := true
-	builder := strings.Builder{}
-	for i := SafetyFlags(1); i < EndSafetyFlags; i <<= 1 {
-		if _this&i != 0 {
-			if isFirst {
-				isFirst = false
-			} else {
-				builder.WriteString(" | ")
-			}
-			builder.WriteString(safetyNames[i])
-		}
-	}
-	return builder.String()
+	return datatypes.FlagToString(safetyNames, _this)
 }
 
-var safetyNames = map[SafetyFlags]string{
+var safetyNames = map[interface{}]string{
 	SafetyNone:     "SafetyNone",
 	SafetyString:   "SafetyString",
 	SafetyArray:    "SafetyArray",
@@ -682,26 +649,10 @@ const (
 )
 
 func (_this Properties) String() string {
-	if _this == 0 {
-		return propertyNames[_this]
-	}
-
-	isFirst := true
-	builder := strings.Builder{}
-	for i := Properties(1); i < EndProperties; i <<= 1 {
-		if _this&i != 0 {
-			if isFirst {
-				isFirst = false
-			} else {
-				builder.WriteString(" | ")
-			}
-			builder.WriteString(propertyNames[i])
-		}
-	}
-	return builder.String()
+	return datatypes.FlagToString(propertyNames, _this)
 }
 
-var propertyNames = map[Properties]string{
+var propertyNames = map[interface{}]string{
 	NoProperties:  "NoProperties",
 	StructWS:      "StructWS",
 	DigitBase2:    "DigitBase2",
