@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
 
@@ -83,31 +82,28 @@ func generateDataTypeType(writer io.Writer) {
 }
 
 func generateBadEventMethods(writer io.Writer) {
-	for _, rule := range ruleClasses {
-		for _, methodSignature := range allMethods {
-			if !contains(methodSignature, rule.Methods) {
-				generateBadEventMethod(rule, methodSignature, writer)
+	for _, rule := range allRules {
+		for _, method := range allMethods {
+			if !methodIsContainerIn(method, rule.Methods) {
+				generateBadEventMethod(rule, method, writer)
 			}
 		}
 	}
 }
 
-func generateBadEventMethod(rule RuleClass, methodSignature string, writer io.Writer) {
-	methodName := methodSignature[:strings.Index(methodSignature, "(")]
-	openMethod(rule, methodSignature, writer)
-	id := methodName[2:]
-	if id == "KeyableObject" || id == "NonKeyableObject" {
-		format := "\tpanic(fmt.Errorf(\"%%v does not allow %%s\", _this, objType))\n"
-		if _, err := writer.Write([]byte(fmt.Sprintf(format))); err != nil {
-			panic(err)
-		}
-	} else {
-		format := "\tpanic(fmt.Errorf(\"%%v does not allow %s\", _this))\n"
-		if _, err := writer.Write([]byte(fmt.Sprintf(format, id))); err != nil {
-			panic(err)
-		}
+func generateBadEventMethod(rule Rule, method *Method, writer io.Writer) {
+	openMethod(rule, method, writer)
+	str := ""
+	switch method.MethodType {
+	case MethodTypeScalar:
+		str = fmt.Sprintf("\twrongType(\"%v\", objType)\n", rule.FriendlyName)
+	default:
+		str = fmt.Sprintf("\twrongType(\"%v\", \"%v\")\n", rule.FriendlyName, method.Name)
 	}
 
+	if _, err := writer.Write([]byte(str)); err != nil {
+		panic(err)
+	}
 	closeMethod(writer)
 }
 
@@ -115,7 +111,7 @@ func generateBadEventMethod(rule RuleClass, methodSignature string, writer io.Wr
 // Utility
 // -------
 
-func contains(lookingFor string, inSlice []string) bool {
+func methodIsContainerIn(lookingFor *Method, inSlice []*Method) bool {
 	for _, v := range inSlice {
 		if v == lookingFor {
 			return true
@@ -124,8 +120,8 @@ func contains(lookingFor string, inSlice []string) bool {
 	return false
 }
 
-func openMethod(rule RuleClass, methodSignature string, writer io.Writer) {
-	if _, err := writer.Write([]byte(fmt.Sprintf("func (_this *%s) %s {\n", rule.Name, methodSignature))); err != nil {
+func openMethod(rule Rule, method *Method, writer io.Writer) {
+	if _, err := writer.Write([]byte(fmt.Sprintf("func (_this *%s) %s {\n", rule.Name, method.Signature))); err != nil {
 		panic(err)
 	}
 }
@@ -145,6 +141,7 @@ type DataType uint64
 const (
 	DataTypeNil DataType = 1 << iota
 	DataTypeNA
+	DataTypeNan
 	DataTypeBool
 	DataTypeInt
 	DataTypeFloat
@@ -194,6 +191,7 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeInvalid:      "DataTypeInvalid",
 	DataTypeNil:          "DataTypeNil",
 	DataTypeNA:           "DataTypeNA",
+	DataTypeNan:          "DataTypeNan",
 	DataTypeBool:         "DataTypeBool",
 	DataTypeInt:          "DataTypeInt",
 	DataTypeFloat:        "DataTypeFloat",
@@ -233,144 +231,292 @@ const (
 	ContainerTypeMap
 )
 
-var (
-	BDoc    = "OnBeginDocument(ctx *Context)"
-	EDoc    = "OnEndDocument(ctx *Context)"
-	ECtr    = "OnChildContainerEnded(ctx *Context, cType DataType)"
-	Ver     = "OnVersion(ctx *Context, version uint64)"
-	NA      = "OnNA(ctx *Context)"
-	Pad     = "OnPadding(ctx *Context)"
-	Key     = "OnKeyableObject(ctx *Context, objType string)"
-	NonKey  = "OnNonKeyableObject(ctx *Context, objType string)"
-	List    = "OnList(ctx *Context)"
-	Map     = "OnMap(ctx *Context)"
-	Markup  = "OnMarkup(ctx *Context, identifier []byte)"
-	Comment = "OnComment(ctx *Context)"
-	End     = "OnEnd(ctx *Context)"
-	Rel     = "OnRelationship(ctx *Context)"
-	Marker  = "OnMarker(ctx *Context, identifier []byte)"
-	Ref     = "OnReference(ctx *Context, identifier []byte)"
-	RIDRef  = "OnRIDReference(ctx *Context)"
-	Const   = "OnConstant(ctx *Context, identifier []byte)"
-	Array   = "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)"
-	SArray  = "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)"
-	ABegin  = "OnArrayBegin(ctx *Context, arrayType events.ArrayType)"
-	AChunk  = "OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)"
-	AData   = "OnArrayData(ctx *Context, data []byte)"
+type MethodType int
 
-	allMethods = []string{BDoc, EDoc, ECtr, Ver, NA, Pad, Key, NonKey, List, Map,
-		Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray,
+const (
+	MethodTypeOther = iota
+	MethodTypeScalar
+	MethodTypeArray
+)
+
+type Method struct {
+	Name       string
+	Signature  string
+	MethodType MethodType
+}
+
+var (
+	BDoc = &Method{
+		Name:       "begin document",
+		MethodType: MethodTypeOther,
+		Signature:  "OnBeginDocument(ctx *Context)",
+	}
+	EDoc = &Method{
+		Name:       "end document",
+		MethodType: MethodTypeOther,
+		Signature:  "OnEndDocument(ctx *Context)",
+	}
+	ECtr = &Method{
+		Name:       "child end",
+		MethodType: MethodTypeOther,
+		Signature:  "OnChildContainerEnded(ctx *Context, containerType DataType)",
+	}
+	Ver = &Method{
+		Name:       "version",
+		MethodType: MethodTypeOther,
+		Signature:  "OnVersion(ctx *Context, version uint64)",
+	}
+	NA = &Method{
+		Name:       "NA",
+		MethodType: MethodTypeOther,
+		Signature:  "OnNA(ctx *Context)",
+	}
+	Pad = &Method{
+		Name:       "padding",
+		MethodType: MethodTypeOther,
+		Signature:  "OnPadding(ctx *Context)",
+	}
+	Nil = &Method{
+		Name:       "Nil",
+		MethodType: MethodTypeOther,
+		Signature:  "OnNil(ctx *Context)",
+	}
+	Key = &Method{
+		Name:       "KEYABLE",
+		MethodType: MethodTypeScalar,
+		Signature:  "OnKeyableObject(ctx *Context, objType DataType)",
+	}
+	NonKey = &Method{
+		Name:       "NONKEYABLE",
+		MethodType: MethodTypeScalar,
+		Signature:  "OnNonKeyableObject(ctx *Context, objType DataType)",
+	}
+	List = &Method{
+		Name:       "list",
+		MethodType: MethodTypeOther,
+		Signature:  "OnList(ctx *Context)",
+	}
+	Map = &Method{
+		Name:       "map",
+		MethodType: MethodTypeOther,
+		Signature:  "OnMap(ctx *Context)",
+	}
+	Markup = &Method{
+		Name:       "markup",
+		MethodType: MethodTypeOther,
+		Signature:  "OnMarkup(ctx *Context, identifier []byte)",
+	}
+	Comment = &Method{
+		Name:       "comment",
+		MethodType: MethodTypeOther,
+		Signature:  "OnComment(ctx *Context)",
+	}
+	End = &Method{
+		Name:       "end container",
+		MethodType: MethodTypeOther,
+		Signature:  "OnEnd(ctx *Context)",
+	}
+	Rel = &Method{
+		Name:       "relationship",
+		MethodType: MethodTypeOther,
+		Signature:  "OnRelationship(ctx *Context)",
+	}
+	Marker = &Method{
+		Name:       "marker",
+		MethodType: MethodTypeOther,
+		Signature:  "OnMarker(ctx *Context, identifier []byte)",
+	}
+	Ref = &Method{
+		Name:       "reference",
+		MethodType: MethodTypeOther,
+		Signature:  "OnReference(ctx *Context, identifier []byte)",
+	}
+	RIDRef = &Method{
+		Name:       "RID reference",
+		MethodType: MethodTypeOther,
+		Signature:  "OnRIDReference(ctx *Context)",
+	}
+	Const = &Method{
+		Name:       "constant",
+		MethodType: MethodTypeOther,
+		Signature:  "OnConstant(ctx *Context, identifier []byte)",
+	}
+	Array = &Method{
+		Name:       "array",
+		MethodType: MethodTypeArray,
+		Signature:  "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)",
+	}
+	SArray = &Method{
+		Name:       "array",
+		MethodType: MethodTypeArray,
+		Signature:  "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)",
+	}
+	ABegin = &Method{
+		Name:       "array begin",
+		MethodType: MethodTypeArray,
+		Signature:  "OnArrayBegin(ctx *Context, arrayType events.ArrayType)",
+	}
+	AChunk = &Method{
+		Name:       "array chunk",
+		MethodType: MethodTypeOther,
+		Signature:  "OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)",
+	}
+	AData = &Method{
+		Name:       "array data",
+		MethodType: MethodTypeOther,
+		Signature:  "OnArrayData(ctx *Context, data []byte)",
+	}
+
+	allMethods = []*Method{BDoc, EDoc, ECtr, Ver, NA, Pad, Nil, Key, NonKey, List,
+		Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray,
 		ABegin, AChunk, AData}
 )
 
-type RuleClass struct {
-	Name    string
-	Methods []string
+type Rule struct {
+	Name         string
+	FriendlyName string
+	Methods      []*Method
 }
 
-var ruleClasses = []RuleClass{
+var allRules = []Rule{
 	{
-		Name:    "BeginDocumentRule",
-		Methods: []string{BDoc},
+		Name:         "BeginDocumentRule",
+		FriendlyName: "begin document",
+		Methods:      []*Method{BDoc},
 	},
 	{
-		Name:    "EndDocumentRule",
-		Methods: []string{EDoc},
+		Name:         "EndDocumentRule",
+		FriendlyName: "end document",
+		Methods:      []*Method{EDoc},
 	},
 	{
-		Name:    "TerminalRule",
-		Methods: []string{},
+		Name:         "TerminalRule",
+		FriendlyName: "terminal",
+		Methods:      []*Method{},
 	},
 	{
-		Name:    "VersionRule",
-		Methods: []string{Ver},
+		Name:         "VersionRule",
+		FriendlyName: "version",
+		Methods:      []*Method{Ver},
 	},
 	{
-		Name:    "TopLevelRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, RIDRef, Const, Array, SArray, ABegin},
+		Name:         "TopLevelRule",
+		FriendlyName: "top level",
+		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "NARule",
-		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
+		Name:         "NARule",
+		FriendlyName: "NA",
+		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
 	},
 	{
-		Name:    "ListRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Name:         "ListRule",
+		FriendlyName: "list",
+		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "MapKeyRule",
-		Methods: []string{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:         "MapKeyRule",
+		FriendlyName: "map key",
+		Methods:      []*Method{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "MapValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Name:         "MapValueRule",
+		FriendlyName: "map value",
+		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "MarkupKeyRule",
-		Methods: []string{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:         "MarkupKeyRule",
+		FriendlyName: "markup key",
+		Methods:      []*Method{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "MarkupValueRule",
-		Methods: []string{ECtr, NA, Pad, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Name:         "MarkupValueRule",
+		FriendlyName: "markup value",
+		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:    "MarkupContentsRule",
-		Methods: []string{ECtr, Pad, Markup, Comment, End, Array, SArray, ABegin},
+		Name:         "MarkupContentsRule",
+		FriendlyName: "markup contents",
+		Methods:      []*Method{ECtr, Pad, Markup, Comment, End, Array, SArray, ABegin},
 	},
 	{
-		Name:    "CommentRule",
-		Methods: []string{ECtr, Pad, Comment, End, Array, SArray, ABegin},
+		Name:         "CommentRule",
+		FriendlyName: "comment",
+		Methods:      []*Method{ECtr, Pad, Comment, End, Array, SArray, ABegin},
 	},
 	{
-		Name:    "ArrayRule",
-		Methods: []string{AChunk},
+		Name:         "ArrayRule",
+		FriendlyName: "array",
+		Methods:      []*Method{AChunk},
 	},
 	{
-		Name:    "ArrayChunkRule",
-		Methods: []string{AData},
+		Name:         "ArrayChunkRule",
+		FriendlyName: "array chunk",
+		Methods:      []*Method{AData},
 	},
 	{
-		Name:    "StringRule",
-		Methods: []string{AChunk},
+		Name:         "StringRule",
+		FriendlyName: "string",
+		Methods:      []*Method{AChunk},
 	},
 	{
-		Name:    "StringChunkRule",
-		Methods: []string{AData},
+		Name:         "StringChunkRule",
+		FriendlyName: "string chunk",
+		Methods:      []*Method{AData},
 	},
 	{
-		Name:    "StringBuilderRule",
-		Methods: []string{AChunk},
+		Name:         "StringBuilderRule",
+		FriendlyName: "string",
+		Methods:      []*Method{AChunk},
 	},
 	{
-		Name:    "StringBuilderChunkRule",
-		Methods: []string{AData},
+		Name:         "StringBuilderChunkRule",
+		FriendlyName: "string chunk",
+		Methods:      []*Method{AData},
 	},
 	{
-		Name:    "MarkedObjectKeyableRule",
-		Methods: []string{ECtr, Pad, Key, Array, SArray, ABegin},
+		Name:         "MarkedObjectKeyableRule",
+		FriendlyName: "marked object",
+		Methods:      []*Method{ECtr, Pad, Key, Array, SArray, ABegin},
 	},
 	{
-		Name:    "MarkedObjectAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
+		Name:         "MarkedObjectAnyTypeRule",
+		FriendlyName: "marked object",
+		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
 	},
 	{
-		Name:    "ConstantKeyableRule",
-		Methods: []string{ECtr, Pad, Key, Array, SArray, ABegin},
+		Name:         "ConstantKeyableRule",
+		FriendlyName: "constant",
+		Methods:      []*Method{ECtr, Pad, Key, Array, SArray, ABegin},
 	},
 	{
-		Name:    "ConstantAnyTypeRule",
-		Methods: []string{ECtr, Pad, Key, NonKey, NA, List, Map, Markup, Rel, Array, SArray, ABegin},
+		Name:         "ConstantAnyTypeRule",
+		FriendlyName: "constant",
+		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, NA, List, Map, Markup, Rel, Array, SArray, ABegin},
 	},
 	{
-		Name:    "RIDReferenceRule",
-		Methods: []string{Pad, Array, SArray, ABegin, ECtr},
+		Name:         "RIDReferenceRule",
+		FriendlyName: "RID reference",
+		Methods:      []*Method{Pad, Array, SArray, ABegin, ECtr},
 	},
 	{
-		Name:    "RIDCatRule",
-		Methods: []string{Pad, Array, SArray, ABegin, ECtr},
+		Name:         "RIDCatRule",
+		FriendlyName: "RID concatenation",
+		Methods:      []*Method{Pad, Array, SArray, ABegin, ECtr},
 	},
 	{
-		Name:    "SubjectRule",
-		Methods: []string{ECtr, Pad, List, Map, Comment, Rel, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:         "SubjectRule",
+		FriendlyName: "relationship subject",
+		Methods:      []*Method{ECtr, Pad, List, Map, Comment, Rel, Marker, Ref, Const, Array, SArray, ABegin},
+	},
+	{
+		Name:         "PredicateRule",
+		FriendlyName: "relationship predicate",
+		Methods:      []*Method{ECtr, Pad, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+	},
+	{
+		Name:         "ObjectRule",
+		FriendlyName: "relationship object",
+		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 }

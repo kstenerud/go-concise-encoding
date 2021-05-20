@@ -32,27 +32,29 @@ type MarkedObjectKeyableRule struct{}
 
 func (_this *MarkedObjectKeyableRule) String() string         { return "Marked Keyable Object Rule" }
 func (_this *MarkedObjectKeyableRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *MarkedObjectKeyableRule) OnKeyableObject(ctx *Context, objType string) {
+func (_this *MarkedObjectKeyableRule) OnKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(objType)
 }
 func (_this *MarkedObjectKeyableRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(dataType)
 }
 func (_this *MarkedObjectKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(dataType)
 }
 func (_this *MarkedObjectKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayKeyable(arrayType)
 }
-func (_this *MarkedObjectKeyableRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+func (_this *MarkedObjectKeyableRule) OnChildContainerEnded(ctx *Context, dataType DataType) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
+	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, dataType)
 }
 
 // =============================================================================
@@ -61,15 +63,20 @@ type MarkedObjectAnyTypeRule struct{}
 
 func (_this *MarkedObjectAnyTypeRule) String() string         { return "Marked Object Rule" }
 func (_this *MarkedObjectAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context, objType string) {
+func (_this *MarkedObjectAnyTypeRule) OnNil(ctx *Context) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-	ctx.MarkObject(DataTypeNonKeyable)
+	ctx.CurrentEntry.Rule.OnNil(ctx)
+	ctx.MarkObject(DataTypeNil)
 }
-func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context, objType string) {
+func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(objType)
+}
+func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
+	ctx.MarkObject(objType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnList(ctx *Context) {
 	ctx.ParentRule().OnList(ctx)
@@ -82,23 +89,25 @@ func (_this *MarkedObjectAnyTypeRule) OnMarkup(ctx *Context, identifier []byte) 
 }
 func (_this *MarkedObjectAnyTypeRule) OnRelationship(ctx *Context) { ctx.BeginRelationship() }
 func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
 	switch arrayType {
 	case events.ArrayTypeString, events.ArrayTypeResourceID:
-		ctx.MarkObject(DataTypeKeyable)
+		ctx.MarkObject(dataType)
 	default:
-		ctx.MarkObject(DataTypeNonKeyable)
+		ctx.MarkObject(dataType)
 	}
 }
 func (_this *MarkedObjectAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
 	switch arrayType {
 	case events.ArrayTypeString, events.ArrayTypeResourceID:
-		ctx.MarkObject(DataTypeKeyable)
+		ctx.MarkObject(dataType)
 	default:
-		ctx.MarkObject(DataTypeNonKeyable)
+		ctx.MarkObject(dataType)
 	}
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -117,6 +126,7 @@ type RIDReferenceRule struct{}
 func (_this *RIDReferenceRule) String() string         { return "Resource ID Reference Rule" }
 func (_this *RIDReferenceRule) OnPadding(ctx *Context) { /* Nothing to do */ }
 func (_this *RIDReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	dataType := arrayTypeToDataType[arrayType]
 	switch arrayType {
 	case events.ArrayTypeResourceIDConcat:
 		ctx.ValidateResourceID(data)
@@ -124,7 +134,7 @@ func (_this *RIDReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType,
 	case events.ArrayTypeResourceID:
 		ctx.ValidateResourceID(data)
 		ctx.UnstackRule()
-		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
+		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, dataType)
 	default:
 		panic(fmt.Errorf("Reference Resource ID cannot be type %v", arrayType))
 	}

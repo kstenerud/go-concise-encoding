@@ -139,41 +139,41 @@ func (_this *Context) EndContainer() {
 }
 
 func (_this *Context) BeginRelationship() {
-	_this.stackRule(&subjectRule, DataTypeNonKeyable)
+	_this.stackRule(&subjectRule, DataTypeRelationship)
 }
 
 func (_this *Context) BeginNA() {
-	_this.stackRule(&naRule, DataTypeNonKeyable)
+	_this.stackRule(&naRule, DataTypeNA)
 }
 
 func (_this *Context) BeginList() {
-	_this.beginContainer(&listRule, DataTypeNonKeyable)
+	_this.beginContainer(&listRule, DataTypeList) // TODO: RelationshipList by default
 }
 
 func (_this *Context) BeginMap() {
-	_this.beginContainer(&mapKeyRule, DataTypeNonKeyable)
+	_this.beginContainer(&mapKeyRule, DataTypeMap)
 }
 
 func (_this *Context) BeginMarkup(identifier []byte) {
-	_this.beginContainer(&markupKeyRule, DataTypeNonKeyable)
+	_this.beginContainer(&markupKeyRule, DataTypeMarkup)
 }
 
 func (_this *Context) BeginComment() {
-	_this.beginContainer(&commentRule, DataTypeInvalid)
+	_this.beginContainer(&commentRule, DataTypeComment)
 }
 
-func (_this *Context) BeginMarkerKeyable(id []byte) {
+func (_this *Context) BeginMarkerKeyable(id []byte, dataType DataType) {
 	_this.markerID = string(id)
-	_this.stackRule(&markedObjectKeyableRule, DataTypeKeyable)
+	_this.stackRule(&markedObjectKeyableRule, dataType)
 }
 
-func (_this *Context) BeginMarkerAnyType(id []byte) {
+func (_this *Context) BeginMarkerAnyType(id []byte, dataType DataType) {
 	_this.markerID = string(id)
-	_this.stackRule(&markedObjectAnyTypeRule, DataTypeNonKeyable)
+	_this.stackRule(&markedObjectAnyTypeRule, dataType)
 }
 
 func (_this *Context) BeginRIDReference() {
-	_this.stackRule(&ridReferenceRule, DataTypeNonKeyable)
+	_this.stackRule(&ridReferenceRule, DataTypeRIDReference)
 }
 
 func (_this *Context) ReferenceKeyable(identifier []byte) {
@@ -181,17 +181,17 @@ func (_this *Context) ReferenceKeyable(identifier []byte) {
 }
 
 func (_this *Context) ReferenceAnyType(identifier []byte) {
-	_this.ReferenceObject(identifier, AllowAnyType)
+	_this.ReferenceObject(identifier, AllowAny)
 }
 
 func (_this *Context) BeginPotentialRIDCat(arrayType events.ArrayType) {
 	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.stackRule(&ridCatRule, DataTypeKeyable)
+		_this.stackRule(&ridCatRule, DataTypeResourceID)
 	}
 }
 
 func (_this *Context) BeginTopLevelReference() {
-	_this.stackRule(&tlReferenceRIDRule, DataTypeKeyable)
+	_this.stackRule(&tlReferenceRIDRule, DataTypeRIDReference)
 }
 
 func (_this *Context) BeginConstantKeyable(name []byte) {

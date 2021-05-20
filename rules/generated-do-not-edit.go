@@ -25,1254 +25,1481 @@ package rules
 
 import (
 	"fmt"
+	"strings"
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
-func (_this *BeginDocumentRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+type DataType uint64
+
+const (
+	DataTypeNil DataType = 1 << iota
+	DataTypeNA
+	DataTypeNan
+	DataTypeBool
+	DataTypeInt
+	DataTypeFloat
+	DataTypeUID
+	DataTypeTime
+	DataTypeList
+	DataTypeMap
+	DataTypeMarkup
+	DataTypeComment
+	DataTypeRelationship
+	DataTypeString
+	DataTypeResourceID
+	DataTypeArrayBit
+	DataTypeArrayUint8
+	DataTypeArrayUint16
+	DataTypeArrayUint32
+	DataTypeArrayUint64
+	DataTypeArrayInt8
+	DataTypeArrayInt16
+	DataTypeArrayInt32
+	DataTypeArrayInt64
+	DataTypeArrayFloat16
+	DataTypeArrayFloat32
+	DataTypeArrayFloat64
+	DataTypeArrayUUID
+	DataTypeMedia
+	DataTypeRIDReference
+	DataTypeCustomText
+	DataTypeCustomBinary
+	DataTypeResourceList
+	DataTypeInvalid = 0x0
+	AllowAny = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
+	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeResourceID
+	AllowResource = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
+	AllowSubject = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
+	AllowPredicate = DataTypeResourceID
+	AllowObject = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
+)
+
+func (_this DataType) String() string {
+	asString := ""
+	if _this == 0 {
+		asString = datatypeNames[_this]
+	} else {
+		isFirst := true
+		builder := strings.Builder{}
+		for i := DataType(1); i <= DataTypeResourceList; i <<= 1 {
+			if _this&i != 0 {
+				if isFirst {
+					isFirst = false
+				} else {
+					builder.WriteString(" | ")
+				}
+				builder.WriteString(datatypeNames[i])
+			}
+		}
+		asString = builder.String()
+	}
+	if asString == "" {
+		asString = fmt.Sprintf("%d", _this)
+	}
+	return asString
 }
-func (_this *BeginDocumentRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+
+var datatypeNames = map[DataType]string{
+
+	DataTypeNil: "DataTypeNil",
+	DataTypeNA: "DataTypeNA",
+	DataTypeNan: "DataTypeNan",
+	DataTypeBool: "DataTypeBool",
+	DataTypeInt: "DataTypeInt",
+	DataTypeFloat: "DataTypeFloat",
+	DataTypeUID: "DataTypeUID",
+	DataTypeTime: "DataTypeTime",
+	DataTypeList: "DataTypeList",
+	DataTypeMap: "DataTypeMap",
+	DataTypeMarkup: "DataTypeMarkup",
+	DataTypeComment: "DataTypeComment",
+	DataTypeRelationship: "DataTypeRelationship",
+	DataTypeString: "DataTypeString",
+	DataTypeResourceID: "DataTypeResourceID",
+	DataTypeArrayBit: "DataTypeArrayBit",
+	DataTypeArrayUint8: "DataTypeArrayUint8",
+	DataTypeArrayUint16: "DataTypeArrayUint16",
+	DataTypeArrayUint32: "DataTypeArrayUint32",
+	DataTypeArrayUint64: "DataTypeArrayUint64",
+	DataTypeArrayInt8: "DataTypeArrayInt8",
+	DataTypeArrayInt16: "DataTypeArrayInt16",
+	DataTypeArrayInt32: "DataTypeArrayInt32",
+	DataTypeArrayInt64: "DataTypeArrayInt64",
+	DataTypeArrayFloat16: "DataTypeArrayFloat16",
+	DataTypeArrayFloat32: "DataTypeArrayFloat32",
+	DataTypeArrayFloat64: "DataTypeArrayFloat64",
+	DataTypeArrayUUID: "DataTypeArrayUUID",
+	DataTypeMedia: "DataTypeMedia",
+	DataTypeRIDReference: "DataTypeRIDReference",
+	DataTypeCustomText: "DataTypeCustomText",
+	DataTypeCustomBinary: "DataTypeCustomBinary",
+	DataTypeResourceList: "DataTypeResourceList",
+}
+func (_this *BeginDocumentRule) OnEndDocument(ctx *Context) {
+	wrongType("begin document", "end document")
+}
+func (_this *BeginDocumentRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("begin document", "child end")
 }
 func (_this *BeginDocumentRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("begin document", "version")
 }
 func (_this *BeginDocumentRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("begin document", "NA")
 }
 func (_this *BeginDocumentRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("begin document", "padding")
 }
-func (_this *BeginDocumentRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *BeginDocumentRule) OnNil(ctx *Context) {
+	wrongType("begin document", "Nil")
 }
-func (_this *BeginDocumentRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *BeginDocumentRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("begin document", objType)
+}
+func (_this *BeginDocumentRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("begin document", objType)
 }
 func (_this *BeginDocumentRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("begin document", "list")
 }
 func (_this *BeginDocumentRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("begin document", "map")
 }
 func (_this *BeginDocumentRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("begin document", "markup")
 }
 func (_this *BeginDocumentRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("begin document", "comment")
 }
 func (_this *BeginDocumentRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("begin document", "end container")
 }
 func (_this *BeginDocumentRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("begin document", "relationship")
 }
 func (_this *BeginDocumentRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("begin document", "marker")
 }
 func (_this *BeginDocumentRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("begin document", "reference")
 }
 func (_this *BeginDocumentRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("begin document", "RID reference")
 }
 func (_this *BeginDocumentRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("begin document", "constant")
 }
 func (_this *BeginDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("begin document", "array")
 }
 func (_this *BeginDocumentRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("begin document", "array")
 }
 func (_this *BeginDocumentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("begin document", "array begin")
 }
 func (_this *BeginDocumentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("begin document", "array chunk")
 }
 func (_this *BeginDocumentRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("begin document", "array data")
 }
 func (_this *EndDocumentRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("end document", "begin document")
 }
-func (_this *EndDocumentRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *EndDocumentRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("end document", "child end")
 }
 func (_this *EndDocumentRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("end document", "version")
 }
 func (_this *EndDocumentRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("end document", "NA")
 }
 func (_this *EndDocumentRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("end document", "padding")
 }
-func (_this *EndDocumentRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *EndDocumentRule) OnNil(ctx *Context) {
+	wrongType("end document", "Nil")
 }
-func (_this *EndDocumentRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *EndDocumentRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("end document", objType)
+}
+func (_this *EndDocumentRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("end document", objType)
 }
 func (_this *EndDocumentRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("end document", "list")
 }
 func (_this *EndDocumentRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("end document", "map")
 }
 func (_this *EndDocumentRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("end document", "markup")
 }
 func (_this *EndDocumentRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("end document", "comment")
 }
 func (_this *EndDocumentRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("end document", "end container")
 }
 func (_this *EndDocumentRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("end document", "relationship")
 }
 func (_this *EndDocumentRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("end document", "marker")
 }
 func (_this *EndDocumentRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("end document", "reference")
 }
 func (_this *EndDocumentRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("end document", "RID reference")
 }
 func (_this *EndDocumentRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("end document", "constant")
 }
 func (_this *EndDocumentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("end document", "array")
 }
 func (_this *EndDocumentRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("end document", "array")
 }
 func (_this *EndDocumentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("end document", "array begin")
 }
 func (_this *EndDocumentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("end document", "array chunk")
 }
 func (_this *EndDocumentRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("end document", "array data")
 }
 func (_this *TerminalRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("terminal", "begin document")
 }
 func (_this *TerminalRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("terminal", "end document")
 }
-func (_this *TerminalRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *TerminalRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("terminal", "child end")
 }
 func (_this *TerminalRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("terminal", "version")
 }
 func (_this *TerminalRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("terminal", "NA")
 }
 func (_this *TerminalRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("terminal", "padding")
 }
-func (_this *TerminalRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *TerminalRule) OnNil(ctx *Context) {
+	wrongType("terminal", "Nil")
 }
-func (_this *TerminalRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *TerminalRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("terminal", objType)
+}
+func (_this *TerminalRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("terminal", objType)
 }
 func (_this *TerminalRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("terminal", "list")
 }
 func (_this *TerminalRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("terminal", "map")
 }
 func (_this *TerminalRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("terminal", "markup")
 }
 func (_this *TerminalRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("terminal", "comment")
 }
 func (_this *TerminalRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("terminal", "end container")
 }
 func (_this *TerminalRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("terminal", "relationship")
 }
 func (_this *TerminalRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("terminal", "marker")
 }
 func (_this *TerminalRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("terminal", "reference")
 }
 func (_this *TerminalRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("terminal", "RID reference")
 }
 func (_this *TerminalRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("terminal", "constant")
 }
 func (_this *TerminalRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("terminal", "array")
 }
 func (_this *TerminalRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("terminal", "array")
 }
 func (_this *TerminalRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("terminal", "array begin")
 }
 func (_this *TerminalRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("terminal", "array chunk")
 }
 func (_this *TerminalRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("terminal", "array data")
 }
 func (_this *VersionRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("version", "begin document")
 }
 func (_this *VersionRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("version", "end document")
 }
-func (_this *VersionRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *VersionRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("version", "child end")
 }
 func (_this *VersionRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("version", "NA")
 }
 func (_this *VersionRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("version", "padding")
 }
-func (_this *VersionRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *VersionRule) OnNil(ctx *Context) {
+	wrongType("version", "Nil")
 }
-func (_this *VersionRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *VersionRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("version", objType)
+}
+func (_this *VersionRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("version", objType)
 }
 func (_this *VersionRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("version", "list")
 }
 func (_this *VersionRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("version", "map")
 }
 func (_this *VersionRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("version", "markup")
 }
 func (_this *VersionRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("version", "comment")
 }
 func (_this *VersionRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("version", "end container")
 }
 func (_this *VersionRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("version", "relationship")
 }
 func (_this *VersionRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("version", "marker")
 }
 func (_this *VersionRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("version", "reference")
 }
 func (_this *VersionRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("version", "RID reference")
 }
 func (_this *VersionRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("version", "constant")
 }
 func (_this *VersionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("version", "array")
 }
 func (_this *VersionRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("version", "array")
 }
 func (_this *VersionRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("version", "array begin")
 }
 func (_this *VersionRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("version", "array chunk")
 }
 func (_this *VersionRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("version", "array data")
 }
 func (_this *TopLevelRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("top level", "begin document")
 }
 func (_this *TopLevelRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("top level", "end document")
 }
 func (_this *TopLevelRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("top level", "version")
 }
 func (_this *TopLevelRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("top level", "end container")
 }
 func (_this *TopLevelRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("top level", "reference")
 }
 func (_this *TopLevelRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("top level", "array chunk")
 }
 func (_this *TopLevelRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("top level", "array data")
 }
 func (_this *NARule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("NA", "begin document")
 }
 func (_this *NARule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("NA", "end document")
 }
 func (_this *NARule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("NA", "version")
 }
 func (_this *NARule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("NA", "NA")
 }
 func (_this *NARule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("NA", "comment")
 }
 func (_this *NARule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("NA", "end container")
 }
 func (_this *NARule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("NA", "marker")
 }
 func (_this *NARule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("NA", "reference")
 }
 func (_this *NARule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("NA", "RID reference")
 }
 func (_this *NARule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("NA", "constant")
 }
 func (_this *NARule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("NA", "array chunk")
 }
 func (_this *NARule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("NA", "array data")
 }
 func (_this *ListRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("list", "begin document")
 }
 func (_this *ListRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("list", "end document")
 }
 func (_this *ListRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("list", "version")
 }
 func (_this *ListRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("list", "array chunk")
 }
 func (_this *ListRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("list", "array data")
 }
 func (_this *MapKeyRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("map key", "begin document")
 }
 func (_this *MapKeyRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("map key", "end document")
 }
 func (_this *MapKeyRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("map key", "version")
 }
 func (_this *MapKeyRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("map key", "NA")
 }
-func (_this *MapKeyRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *MapKeyRule) OnNil(ctx *Context) {
+	wrongType("map key", "Nil")
+}
+func (_this *MapKeyRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("map key", objType)
 }
 func (_this *MapKeyRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("map key", "list")
 }
 func (_this *MapKeyRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("map key", "map")
 }
 func (_this *MapKeyRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("map key", "markup")
 }
 func (_this *MapKeyRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("map key", "relationship")
 }
 func (_this *MapKeyRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("map key", "RID reference")
 }
 func (_this *MapKeyRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("map key", "array chunk")
 }
 func (_this *MapKeyRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("map key", "array data")
 }
 func (_this *MapValueRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("map value", "begin document")
 }
 func (_this *MapValueRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("map value", "end document")
 }
 func (_this *MapValueRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("map value", "version")
 }
 func (_this *MapValueRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("map value", "end container")
 }
 func (_this *MapValueRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("map value", "array chunk")
 }
 func (_this *MapValueRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("map value", "array data")
 }
 func (_this *MarkupKeyRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("markup key", "begin document")
 }
 func (_this *MarkupKeyRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("markup key", "end document")
 }
 func (_this *MarkupKeyRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("markup key", "version")
 }
 func (_this *MarkupKeyRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("markup key", "NA")
 }
-func (_this *MarkupKeyRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *MarkupKeyRule) OnNil(ctx *Context) {
+	wrongType("markup key", "Nil")
+}
+func (_this *MarkupKeyRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("markup key", objType)
 }
 func (_this *MarkupKeyRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("markup key", "list")
 }
 func (_this *MarkupKeyRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("markup key", "map")
 }
 func (_this *MarkupKeyRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("markup key", "markup")
 }
 func (_this *MarkupKeyRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("markup key", "relationship")
 }
 func (_this *MarkupKeyRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("markup key", "RID reference")
 }
 func (_this *MarkupKeyRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("markup key", "array chunk")
 }
 func (_this *MarkupKeyRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("markup key", "array data")
 }
 func (_this *MarkupValueRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("markup value", "begin document")
 }
 func (_this *MarkupValueRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("markup value", "end document")
 }
 func (_this *MarkupValueRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("markup value", "version")
 }
 func (_this *MarkupValueRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("markup value", "end container")
 }
 func (_this *MarkupValueRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("markup value", "array chunk")
 }
 func (_this *MarkupValueRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("markup value", "array data")
 }
 func (_this *MarkupContentsRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("markup contents", "begin document")
 }
 func (_this *MarkupContentsRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("markup contents", "end document")
 }
 func (_this *MarkupContentsRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("markup contents", "version")
 }
 func (_this *MarkupContentsRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("markup contents", "NA")
 }
-func (_this *MarkupContentsRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *MarkupContentsRule) OnNil(ctx *Context) {
+	wrongType("markup contents", "Nil")
 }
-func (_this *MarkupContentsRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *MarkupContentsRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("markup contents", objType)
+}
+func (_this *MarkupContentsRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("markup contents", objType)
 }
 func (_this *MarkupContentsRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("markup contents", "list")
 }
 func (_this *MarkupContentsRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("markup contents", "map")
 }
 func (_this *MarkupContentsRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("markup contents", "relationship")
 }
 func (_this *MarkupContentsRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("markup contents", "marker")
 }
 func (_this *MarkupContentsRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("markup contents", "reference")
 }
 func (_this *MarkupContentsRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("markup contents", "RID reference")
 }
 func (_this *MarkupContentsRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("markup contents", "constant")
 }
 func (_this *MarkupContentsRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("markup contents", "array chunk")
 }
 func (_this *MarkupContentsRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("markup contents", "array data")
 }
 func (_this *CommentRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("comment", "begin document")
 }
 func (_this *CommentRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("comment", "end document")
 }
 func (_this *CommentRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("comment", "version")
 }
 func (_this *CommentRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("comment", "NA")
 }
-func (_this *CommentRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *CommentRule) OnNil(ctx *Context) {
+	wrongType("comment", "Nil")
 }
-func (_this *CommentRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *CommentRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("comment", objType)
+}
+func (_this *CommentRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("comment", objType)
 }
 func (_this *CommentRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("comment", "list")
 }
 func (_this *CommentRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("comment", "map")
 }
 func (_this *CommentRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("comment", "markup")
 }
 func (_this *CommentRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("comment", "relationship")
 }
 func (_this *CommentRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("comment", "marker")
 }
 func (_this *CommentRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("comment", "reference")
 }
 func (_this *CommentRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("comment", "RID reference")
 }
 func (_this *CommentRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("comment", "constant")
 }
 func (_this *CommentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("comment", "array chunk")
 }
 func (_this *CommentRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("comment", "array data")
 }
 func (_this *ArrayRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("array", "begin document")
 }
 func (_this *ArrayRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("array", "end document")
 }
-func (_this *ArrayRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *ArrayRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("array", "child end")
 }
 func (_this *ArrayRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("array", "version")
 }
 func (_this *ArrayRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("array", "NA")
 }
 func (_this *ArrayRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("array", "padding")
 }
-func (_this *ArrayRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *ArrayRule) OnNil(ctx *Context) {
+	wrongType("array", "Nil")
 }
-func (_this *ArrayRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *ArrayRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("array", objType)
+}
+func (_this *ArrayRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("array", objType)
 }
 func (_this *ArrayRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("array", "list")
 }
 func (_this *ArrayRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("array", "map")
 }
 func (_this *ArrayRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("array", "markup")
 }
 func (_this *ArrayRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("array", "comment")
 }
 func (_this *ArrayRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("array", "end container")
 }
 func (_this *ArrayRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("array", "relationship")
 }
 func (_this *ArrayRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("array", "marker")
 }
 func (_this *ArrayRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("array", "reference")
 }
 func (_this *ArrayRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("array", "RID reference")
 }
 func (_this *ArrayRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("array", "constant")
 }
 func (_this *ArrayRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("array", "array")
 }
 func (_this *ArrayRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("array", "array")
 }
 func (_this *ArrayRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("array", "array begin")
 }
 func (_this *ArrayRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("array", "array data")
 }
 func (_this *ArrayChunkRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("array chunk", "begin document")
 }
 func (_this *ArrayChunkRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("array chunk", "end document")
 }
-func (_this *ArrayChunkRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *ArrayChunkRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("array chunk", "child end")
 }
 func (_this *ArrayChunkRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("array chunk", "version")
 }
 func (_this *ArrayChunkRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("array chunk", "NA")
 }
 func (_this *ArrayChunkRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("array chunk", "padding")
 }
-func (_this *ArrayChunkRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *ArrayChunkRule) OnNil(ctx *Context) {
+	wrongType("array chunk", "Nil")
 }
-func (_this *ArrayChunkRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *ArrayChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("array chunk", objType)
+}
+func (_this *ArrayChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("array chunk", objType)
 }
 func (_this *ArrayChunkRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("array chunk", "list")
 }
 func (_this *ArrayChunkRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("array chunk", "map")
 }
 func (_this *ArrayChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("array chunk", "markup")
 }
 func (_this *ArrayChunkRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("array chunk", "comment")
 }
 func (_this *ArrayChunkRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("array chunk", "end container")
 }
 func (_this *ArrayChunkRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("array chunk", "relationship")
 }
 func (_this *ArrayChunkRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("array chunk", "marker")
 }
 func (_this *ArrayChunkRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("array chunk", "reference")
 }
 func (_this *ArrayChunkRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("array chunk", "RID reference")
 }
 func (_this *ArrayChunkRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("array chunk", "constant")
 }
 func (_this *ArrayChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("array chunk", "array")
 }
 func (_this *ArrayChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("array chunk", "array")
 }
 func (_this *ArrayChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("array chunk", "array begin")
 }
 func (_this *ArrayChunkRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("array chunk", "array chunk")
 }
 func (_this *StringRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("string", "begin document")
 }
 func (_this *StringRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("string", "end document")
 }
-func (_this *StringRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *StringRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("string", "child end")
 }
 func (_this *StringRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("string", "version")
 }
 func (_this *StringRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("string", "NA")
 }
 func (_this *StringRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("string", "padding")
 }
-func (_this *StringRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringRule) OnNil(ctx *Context) {
+	wrongType("string", "Nil")
 }
-func (_this *StringRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string", objType)
+}
+func (_this *StringRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string", objType)
 }
 func (_this *StringRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("string", "list")
 }
 func (_this *StringRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("string", "map")
 }
 func (_this *StringRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("string", "markup")
 }
 func (_this *StringRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("string", "comment")
 }
 func (_this *StringRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("string", "end container")
 }
 func (_this *StringRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("string", "relationship")
 }
 func (_this *StringRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("string", "marker")
 }
 func (_this *StringRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("string", "reference")
 }
 func (_this *StringRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("string", "RID reference")
 }
 func (_this *StringRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("string", "constant")
 }
 func (_this *StringRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("string", "array")
 }
 func (_this *StringRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("string", "array")
 }
 func (_this *StringRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("string", "array begin")
 }
 func (_this *StringRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("string", "array data")
 }
 func (_this *StringChunkRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("string chunk", "begin document")
 }
 func (_this *StringChunkRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("string chunk", "end document")
 }
-func (_this *StringChunkRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *StringChunkRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("string chunk", "child end")
 }
 func (_this *StringChunkRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("string chunk", "version")
 }
 func (_this *StringChunkRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("string chunk", "NA")
 }
 func (_this *StringChunkRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("string chunk", "padding")
 }
-func (_this *StringChunkRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringChunkRule) OnNil(ctx *Context) {
+	wrongType("string chunk", "Nil")
 }
-func (_this *StringChunkRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string chunk", objType)
+}
+func (_this *StringChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string chunk", objType)
 }
 func (_this *StringChunkRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("string chunk", "list")
 }
 func (_this *StringChunkRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("string chunk", "map")
 }
 func (_this *StringChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("string chunk", "markup")
 }
 func (_this *StringChunkRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("string chunk", "comment")
 }
 func (_this *StringChunkRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("string chunk", "end container")
 }
 func (_this *StringChunkRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("string chunk", "relationship")
 }
 func (_this *StringChunkRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("string chunk", "marker")
 }
 func (_this *StringChunkRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("string chunk", "reference")
 }
 func (_this *StringChunkRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("string chunk", "RID reference")
 }
 func (_this *StringChunkRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("string chunk", "constant")
 }
 func (_this *StringChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("string chunk", "array")
 }
 func (_this *StringChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("string chunk", "array")
 }
 func (_this *StringChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("string chunk", "array begin")
 }
 func (_this *StringChunkRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("string chunk", "array chunk")
 }
 func (_this *StringBuilderRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("string", "begin document")
 }
 func (_this *StringBuilderRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("string", "end document")
 }
-func (_this *StringBuilderRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *StringBuilderRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("string", "child end")
 }
 func (_this *StringBuilderRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("string", "version")
 }
 func (_this *StringBuilderRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("string", "NA")
 }
 func (_this *StringBuilderRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("string", "padding")
 }
-func (_this *StringBuilderRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringBuilderRule) OnNil(ctx *Context) {
+	wrongType("string", "Nil")
 }
-func (_this *StringBuilderRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringBuilderRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string", objType)
+}
+func (_this *StringBuilderRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string", objType)
 }
 func (_this *StringBuilderRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("string", "list")
 }
 func (_this *StringBuilderRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("string", "map")
 }
 func (_this *StringBuilderRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("string", "markup")
 }
 func (_this *StringBuilderRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("string", "comment")
 }
 func (_this *StringBuilderRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("string", "end container")
 }
 func (_this *StringBuilderRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("string", "relationship")
 }
 func (_this *StringBuilderRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("string", "marker")
 }
 func (_this *StringBuilderRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("string", "reference")
 }
 func (_this *StringBuilderRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("string", "RID reference")
 }
 func (_this *StringBuilderRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("string", "constant")
 }
 func (_this *StringBuilderRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("string", "array")
 }
 func (_this *StringBuilderRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("string", "array")
 }
 func (_this *StringBuilderRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("string", "array begin")
 }
 func (_this *StringBuilderRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("string", "array data")
 }
 func (_this *StringBuilderChunkRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("string chunk", "begin document")
 }
 func (_this *StringBuilderChunkRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("string chunk", "end document")
 }
-func (_this *StringBuilderChunkRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	panic(fmt.Errorf("%v does not allow ChildContainerEnded", _this))
+func (_this *StringBuilderChunkRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("string chunk", "child end")
 }
 func (_this *StringBuilderChunkRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("string chunk", "version")
 }
 func (_this *StringBuilderChunkRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("string chunk", "NA")
 }
 func (_this *StringBuilderChunkRule) OnPadding(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Padding", _this))
+	wrongType("string chunk", "padding")
 }
-func (_this *StringBuilderChunkRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringBuilderChunkRule) OnNil(ctx *Context) {
+	wrongType("string chunk", "Nil")
 }
-func (_this *StringBuilderChunkRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *StringBuilderChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string chunk", objType)
+}
+func (_this *StringBuilderChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("string chunk", objType)
 }
 func (_this *StringBuilderChunkRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("string chunk", "list")
 }
 func (_this *StringBuilderChunkRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("string chunk", "map")
 }
 func (_this *StringBuilderChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("string chunk", "markup")
 }
 func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("string chunk", "comment")
 }
 func (_this *StringBuilderChunkRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("string chunk", "end container")
 }
 func (_this *StringBuilderChunkRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("string chunk", "relationship")
 }
 func (_this *StringBuilderChunkRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("string chunk", "marker")
 }
 func (_this *StringBuilderChunkRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("string chunk", "reference")
 }
 func (_this *StringBuilderChunkRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("string chunk", "RID reference")
 }
 func (_this *StringBuilderChunkRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("string chunk", "constant")
 }
 func (_this *StringBuilderChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	panic(fmt.Errorf("%v does not allow Array", _this))
+	wrongType("string chunk", "array")
 }
 func (_this *StringBuilderChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	panic(fmt.Errorf("%v does not allow StringlikeArray", _this))
+	wrongType("string chunk", "array")
 }
 func (_this *StringBuilderChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	panic(fmt.Errorf("%v does not allow ArrayBegin", _this))
+	wrongType("string chunk", "array begin")
 }
 func (_this *StringBuilderChunkRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("string chunk", "array chunk")
 }
 func (_this *MarkedObjectKeyableRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("marked object", "begin document")
 }
 func (_this *MarkedObjectKeyableRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("marked object", "end document")
 }
 func (_this *MarkedObjectKeyableRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("marked object", "version")
 }
 func (_this *MarkedObjectKeyableRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("marked object", "NA")
 }
-func (_this *MarkedObjectKeyableRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *MarkedObjectKeyableRule) OnNil(ctx *Context) {
+	wrongType("marked object", "Nil")
+}
+func (_this *MarkedObjectKeyableRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("marked object", objType)
 }
 func (_this *MarkedObjectKeyableRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("marked object", "list")
 }
 func (_this *MarkedObjectKeyableRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("marked object", "map")
 }
 func (_this *MarkedObjectKeyableRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("marked object", "markup")
 }
 func (_this *MarkedObjectKeyableRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("marked object", "comment")
 }
 func (_this *MarkedObjectKeyableRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("marked object", "end container")
 }
 func (_this *MarkedObjectKeyableRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("marked object", "relationship")
 }
 func (_this *MarkedObjectKeyableRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("marked object", "marker")
 }
 func (_this *MarkedObjectKeyableRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("marked object", "reference")
 }
 func (_this *MarkedObjectKeyableRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("marked object", "RID reference")
 }
 func (_this *MarkedObjectKeyableRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("marked object", "constant")
 }
 func (_this *MarkedObjectKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("marked object", "array chunk")
 }
 func (_this *MarkedObjectKeyableRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("marked object", "array data")
 }
 func (_this *MarkedObjectAnyTypeRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("marked object", "begin document")
 }
 func (_this *MarkedObjectAnyTypeRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("marked object", "end document")
 }
 func (_this *MarkedObjectAnyTypeRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("marked object", "version")
 }
 func (_this *MarkedObjectAnyTypeRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("marked object", "NA")
 }
 func (_this *MarkedObjectAnyTypeRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("marked object", "comment")
 }
 func (_this *MarkedObjectAnyTypeRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("marked object", "end container")
 }
 func (_this *MarkedObjectAnyTypeRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("marked object", "marker")
 }
 func (_this *MarkedObjectAnyTypeRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("marked object", "reference")
 }
 func (_this *MarkedObjectAnyTypeRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("marked object", "RID reference")
 }
 func (_this *MarkedObjectAnyTypeRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("marked object", "constant")
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("marked object", "array chunk")
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("marked object", "array data")
 }
 func (_this *ConstantKeyableRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("constant", "begin document")
 }
 func (_this *ConstantKeyableRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("constant", "end document")
 }
 func (_this *ConstantKeyableRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("constant", "version")
 }
 func (_this *ConstantKeyableRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("constant", "NA")
 }
-func (_this *ConstantKeyableRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *ConstantKeyableRule) OnNil(ctx *Context) {
+	wrongType("constant", "Nil")
+}
+func (_this *ConstantKeyableRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("constant", objType)
 }
 func (_this *ConstantKeyableRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("constant", "list")
 }
 func (_this *ConstantKeyableRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("constant", "map")
 }
 func (_this *ConstantKeyableRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("constant", "markup")
 }
 func (_this *ConstantKeyableRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("constant", "comment")
 }
 func (_this *ConstantKeyableRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("constant", "end container")
 }
 func (_this *ConstantKeyableRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("constant", "relationship")
 }
 func (_this *ConstantKeyableRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("constant", "marker")
 }
 func (_this *ConstantKeyableRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("constant", "reference")
 }
 func (_this *ConstantKeyableRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("constant", "RID reference")
 }
 func (_this *ConstantKeyableRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("constant", "constant")
 }
 func (_this *ConstantKeyableRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("constant", "array chunk")
 }
 func (_this *ConstantKeyableRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("constant", "array data")
 }
 func (_this *ConstantAnyTypeRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("constant", "begin document")
 }
 func (_this *ConstantAnyTypeRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("constant", "end document")
 }
 func (_this *ConstantAnyTypeRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("constant", "version")
 }
 func (_this *ConstantAnyTypeRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("constant", "comment")
 }
 func (_this *ConstantAnyTypeRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("constant", "end container")
 }
 func (_this *ConstantAnyTypeRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("constant", "marker")
 }
 func (_this *ConstantAnyTypeRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("constant", "reference")
 }
 func (_this *ConstantAnyTypeRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("constant", "RID reference")
 }
 func (_this *ConstantAnyTypeRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("constant", "constant")
 }
 func (_this *ConstantAnyTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("constant", "array chunk")
 }
 func (_this *ConstantAnyTypeRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("constant", "array data")
 }
 func (_this *RIDReferenceRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("RID reference", "begin document")
 }
 func (_this *RIDReferenceRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("RID reference", "end document")
 }
 func (_this *RIDReferenceRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("RID reference", "version")
 }
 func (_this *RIDReferenceRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("RID reference", "NA")
 }
-func (_this *RIDReferenceRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *RIDReferenceRule) OnNil(ctx *Context) {
+	wrongType("RID reference", "Nil")
 }
-func (_this *RIDReferenceRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *RIDReferenceRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("RID reference", objType)
+}
+func (_this *RIDReferenceRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("RID reference", objType)
 }
 func (_this *RIDReferenceRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("RID reference", "list")
 }
 func (_this *RIDReferenceRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("RID reference", "map")
 }
 func (_this *RIDReferenceRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("RID reference", "markup")
 }
 func (_this *RIDReferenceRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("RID reference", "comment")
 }
 func (_this *RIDReferenceRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("RID reference", "end container")
 }
 func (_this *RIDReferenceRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("RID reference", "relationship")
 }
 func (_this *RIDReferenceRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("RID reference", "marker")
 }
 func (_this *RIDReferenceRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("RID reference", "reference")
 }
 func (_this *RIDReferenceRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("RID reference", "RID reference")
 }
 func (_this *RIDReferenceRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("RID reference", "constant")
 }
 func (_this *RIDReferenceRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("RID reference", "array chunk")
 }
 func (_this *RIDReferenceRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("RID reference", "array data")
 }
 func (_this *RIDCatRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("RID concatenation", "begin document")
 }
 func (_this *RIDCatRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("RID concatenation", "end document")
 }
 func (_this *RIDCatRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("RID concatenation", "version")
 }
 func (_this *RIDCatRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("RID concatenation", "NA")
 }
-func (_this *RIDCatRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *RIDCatRule) OnNil(ctx *Context) {
+	wrongType("RID concatenation", "Nil")
 }
-func (_this *RIDCatRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *RIDCatRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("RID concatenation", objType)
+}
+func (_this *RIDCatRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("RID concatenation", objType)
 }
 func (_this *RIDCatRule) OnList(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow List", _this))
+	wrongType("RID concatenation", "list")
 }
 func (_this *RIDCatRule) OnMap(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Map", _this))
+	wrongType("RID concatenation", "map")
 }
 func (_this *RIDCatRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("RID concatenation", "markup")
 }
 func (_this *RIDCatRule) OnComment(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Comment", _this))
+	wrongType("RID concatenation", "comment")
 }
 func (_this *RIDCatRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("RID concatenation", "end container")
 }
 func (_this *RIDCatRule) OnRelationship(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow Relationship", _this))
+	wrongType("RID concatenation", "relationship")
 }
 func (_this *RIDCatRule) OnMarker(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Marker", _this))
+	wrongType("RID concatenation", "marker")
 }
 func (_this *RIDCatRule) OnReference(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Reference", _this))
+	wrongType("RID concatenation", "reference")
 }
 func (_this *RIDCatRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("RID concatenation", "RID reference")
 }
 func (_this *RIDCatRule) OnConstant(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Constant", _this))
+	wrongType("RID concatenation", "constant")
 }
 func (_this *RIDCatRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("RID concatenation", "array chunk")
 }
 func (_this *RIDCatRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("RID concatenation", "array data")
 }
 func (_this *SubjectRule) OnBeginDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow BeginDocument", _this))
+	wrongType("relationship subject", "begin document")
 }
 func (_this *SubjectRule) OnEndDocument(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow EndDocument", _this))
+	wrongType("relationship subject", "end document")
 }
 func (_this *SubjectRule) OnVersion(ctx *Context, version uint64) {
-	panic(fmt.Errorf("%v does not allow Version", _this))
+	wrongType("relationship subject", "version")
 }
 func (_this *SubjectRule) OnNA(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow NA", _this))
+	wrongType("relationship subject", "NA")
 }
-func (_this *SubjectRule) OnKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *SubjectRule) OnNil(ctx *Context) {
+	wrongType("relationship subject", "Nil")
 }
-func (_this *SubjectRule) OnNonKeyableObject(ctx *Context, objType string) {
-	panic(fmt.Errorf("%v does not allow %s", _this, objType))
+func (_this *SubjectRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("relationship subject", objType)
+}
+func (_this *SubjectRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("relationship subject", objType)
 }
 func (_this *SubjectRule) OnMarkup(ctx *Context, identifier []byte) {
-	panic(fmt.Errorf("%v does not allow Markup", _this))
+	wrongType("relationship subject", "markup")
 }
 func (_this *SubjectRule) OnEnd(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow End", _this))
+	wrongType("relationship subject", "end container")
 }
 func (_this *SubjectRule) OnRIDReference(ctx *Context) {
-	panic(fmt.Errorf("%v does not allow RIDReference", _this))
+	wrongType("relationship subject", "RID reference")
 }
 func (_this *SubjectRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	panic(fmt.Errorf("%v does not allow ArrayChunk", _this))
+	wrongType("relationship subject", "array chunk")
 }
 func (_this *SubjectRule) OnArrayData(ctx *Context, data []byte) {
-	panic(fmt.Errorf("%v does not allow ArrayData", _this))
+	wrongType("relationship subject", "array data")
+}
+func (_this *PredicateRule) OnBeginDocument(ctx *Context) {
+	wrongType("relationship predicate", "begin document")
+}
+func (_this *PredicateRule) OnEndDocument(ctx *Context) {
+	wrongType("relationship predicate", "end document")
+}
+func (_this *PredicateRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("relationship predicate", "version")
+}
+func (_this *PredicateRule) OnNA(ctx *Context) {
+	wrongType("relationship predicate", "NA")
+}
+func (_this *PredicateRule) OnNil(ctx *Context) {
+	wrongType("relationship predicate", "Nil")
+}
+func (_this *PredicateRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("relationship predicate", objType)
+}
+func (_this *PredicateRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("relationship predicate", objType)
+}
+func (_this *PredicateRule) OnList(ctx *Context) {
+	wrongType("relationship predicate", "list")
+}
+func (_this *PredicateRule) OnMap(ctx *Context) {
+	wrongType("relationship predicate", "map")
+}
+func (_this *PredicateRule) OnMarkup(ctx *Context, identifier []byte) {
+	wrongType("relationship predicate", "markup")
+}
+func (_this *PredicateRule) OnEnd(ctx *Context) {
+	wrongType("relationship predicate", "end container")
+}
+func (_this *PredicateRule) OnRelationship(ctx *Context) {
+	wrongType("relationship predicate", "relationship")
+}
+func (_this *PredicateRule) OnRIDReference(ctx *Context) {
+	wrongType("relationship predicate", "RID reference")
+}
+func (_this *PredicateRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("relationship predicate", "array chunk")
+}
+func (_this *PredicateRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("relationship predicate", "array data")
+}
+func (_this *ObjectRule) OnBeginDocument(ctx *Context) {
+	wrongType("relationship object", "begin document")
+}
+func (_this *ObjectRule) OnEndDocument(ctx *Context) {
+	wrongType("relationship object", "end document")
+}
+func (_this *ObjectRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("relationship object", "version")
+}
+func (_this *ObjectRule) OnEnd(ctx *Context) {
+	wrongType("relationship object", "end container")
+}
+func (_this *ObjectRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("relationship object", "array chunk")
+}
+func (_this *ObjectRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("relationship object", "array data")
 }

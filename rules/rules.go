@@ -23,6 +23,8 @@
 package rules
 
 import (
+	"fmt"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
@@ -32,12 +34,13 @@ const maxMarkerIDByteCount = 4 * maxMarkerIDRuneCount // max 4 bytes per rune
 type EventRule interface {
 	OnBeginDocument(ctx *Context)
 	OnEndDocument(ctx *Context)
-	OnChildContainerEnded(ctx *Context, cType DataType)
+	OnChildContainerEnded(ctx *Context, containerType DataType)
 	OnVersion(ctx *Context, version uint64)
 	OnPadding(ctx *Context)
-	OnKeyableObject(ctx *Context, objType string)
-	OnNonKeyableObject(ctx *Context, objType string)
+	OnKeyableObject(ctx *Context, objType DataType)
+	OnNonKeyableObject(ctx *Context, objType DataType)
 	OnNA(ctx *Context)
+	OnNil(ctx *Context)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
 	OnMarkup(ctx *Context, identifier []byte)
@@ -53,29 +56,6 @@ type EventRule interface {
 	OnArrayBegin(ctx *Context, arrayType events.ArrayType)
 	OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)
 	OnArrayData(ctx *Context, data []byte)
-}
-
-type DataType uint
-
-const (
-	DataTypeInvalid = 1 << iota
-	// TODO: Need to include more information about the specific type in error messages
-	// eg Resource ID (Cat) Rule does not allow KeyableObject
-	DataTypeKeyable
-	DataTypeNonKeyable
-
-	AllowKeyable = DataTypeKeyable
-	AllowAnyType = AllowKeyable | DataTypeNonKeyable
-)
-
-var dataTypeNames = [...]string{
-	DataTypeInvalid:    "invalid",
-	DataTypeNonKeyable: "non-keyable",
-	DataTypeKeyable:    "keyable",
-}
-
-func (_this DataType) String() string {
-	return dataTypeNames[_this]
 }
 
 const keyableTypes = (1 << events.ArrayTypeString) | (1 << events.ArrayTypeResourceID)
@@ -112,4 +92,32 @@ var (
 	stringBuilderRule       StringBuilderRule
 	stringBuilderChunkRule  StringBuilderChunkRule
 	subjectRule             SubjectRule
+	predicateRule           PredicateRule
+	objectRule              ObjectRule
 )
+
+var arrayTypeToDataType = []DataType{
+	events.ArrayTypeInvalid:          DataTypeInvalid,
+	events.ArrayTypeString:           DataTypeString,
+	events.ArrayTypeResourceID:       DataTypeResourceID,
+	events.ArrayTypeResourceIDConcat: DataTypeResourceID,
+	events.ArrayTypeCustomText:       DataTypeCustomText,
+	events.ArrayTypeCustomBinary:     DataTypeCustomBinary,
+	events.ArrayTypeBit:              DataTypeArrayBit,
+	events.ArrayTypeUint8:            DataTypeArrayUint8,
+	events.ArrayTypeUint16:           DataTypeArrayUint16,
+	events.ArrayTypeUint32:           DataTypeArrayUint32,
+	events.ArrayTypeUint64:           DataTypeArrayUint64,
+	events.ArrayTypeInt8:             DataTypeArrayInt8,
+	events.ArrayTypeInt16:            DataTypeArrayInt16,
+	events.ArrayTypeInt32:            DataTypeArrayInt32,
+	events.ArrayTypeInt64:            DataTypeArrayInt64,
+	events.ArrayTypeFloat16:          DataTypeArrayFloat16,
+	events.ArrayTypeFloat32:          DataTypeArrayFloat32,
+	events.ArrayTypeFloat64:          DataTypeArrayFloat64,
+	events.ArrayTypeUUID:             DataTypeArrayUUID,
+}
+
+func wrongType(context interface{}, dataType interface{}) {
+	panic(fmt.Errorf("%v is not allowed while processing %v", dataType, context))
+}

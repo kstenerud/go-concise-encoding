@@ -114,15 +114,16 @@ func (_this Context) StreamStringData(data []byte) (firstRuneBytes []byte, nextR
 // Chunking
 
 func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
+	dataType := arrayTypeToDataType[arrayType]
 	switch arrayType {
 	case events.ArrayTypeString:
-		_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
+		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
-		_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
+		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
-		_this.beginArray(arrayType, &stringRule, DataTypeNonKeyable, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
+		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
 	default:
-		_this.beginArray(arrayType, &arrayRule, DataTypeNonKeyable, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
+		_this.beginArray(arrayType, &arrayRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
 	}
 }
 
@@ -152,19 +153,22 @@ func (_this *Context) EndChunkAnyType() {
 }
 
 func (_this *Context) BeginArrayString(arrayType events.ArrayType) {
+	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayTypeString(arrayType)
-	_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
+	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 }
 
 func (_this *Context) BeginArrayRIDReference(arrayType events.ArrayType) {
+	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayTypeRID(arrayType)
 	_this.BeginPotentialRIDCat(arrayType)
-	_this.beginArray(arrayType, &stringRule, DataTypeNonKeyable, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
+	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 }
 
 func (_this *Context) BeginArrayComment(arrayType events.ArrayType) {
+	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayTypeString(arrayType)
-	_this.beginArray(arrayType, &stringRule, DataTypeKeyable, _this.opts.MaxArrayByteLength, _this.ValidateContentsComment)
+	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsComment)
 }
 
 func (_this *Context) BeginChunkString(elemCount uint64, moreChunksFollow bool) {
@@ -191,8 +195,9 @@ func (_this *Context) EndChunkString() {
 }
 
 func (_this *Context) BeginStringBuilder(arrayType events.ArrayType, completedValidatorFunc func([]byte)) {
+	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayTypeString(arrayType)
-	_this.beginArray(arrayType, &stringBuilderRule, DataTypeKeyable, _this.opts.MaxStringByteLength, completedValidatorFunc)
+	_this.beginArray(arrayType, &stringBuilderRule, dataType, _this.opts.MaxStringByteLength, completedValidatorFunc)
 }
 
 func (_this *Context) BeginChunkStringBuilder(elemCount uint64, moreChunksFollow bool) {

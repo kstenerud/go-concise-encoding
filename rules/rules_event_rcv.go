@@ -99,43 +99,43 @@ func (_this *RulesEventReceiver) OnNA() {
 
 func (_this *RulesEventReceiver) OnNil() {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context, "nil")
+	_this.context.CurrentEntry.Rule.OnNil(&_this.context)
 	_this.receiver.OnNil()
 }
 
 func (_this *RulesEventReceiver) OnBool(value bool) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "bool")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
 	_this.receiver.OnBool(value)
 }
 
 func (_this *RulesEventReceiver) OnTrue() {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "bool")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
 	_this.receiver.OnTrue()
 }
 
 func (_this *RulesEventReceiver) OnFalse() {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "bool")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
 	_this.receiver.OnFalse()
 }
 
 func (_this *RulesEventReceiver) OnPositiveInt(value uint64) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "positive int")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnPositiveInt(value)
 }
 
 func (_this *RulesEventReceiver) OnNegativeInt(value uint64) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "negative int")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnNegativeInt(value)
 }
 
 func (_this *RulesEventReceiver) OnInt(value int64) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "int")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnInt(value)
 }
 
@@ -146,7 +146,7 @@ func (_this *RulesEventReceiver) OnBigInt(value *big.Int) {
 	}
 
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "big int")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnBigInt(value)
 }
 
@@ -157,7 +157,7 @@ func (_this *RulesEventReceiver) OnFloat(value float64) {
 	}
 
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "float")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnFloat(value)
 }
 
@@ -168,7 +168,7 @@ func (_this *RulesEventReceiver) OnBigFloat(value *big.Float) {
 	}
 
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "big float")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnBigFloat(value)
 }
 
@@ -179,7 +179,7 @@ func (_this *RulesEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
 	}
 
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "decimal float")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnDecimalFloat(value)
 }
 
@@ -198,31 +198,31 @@ func (_this *RulesEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 	}
 
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "big decimal float")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnBigDecimalFloat(value)
 }
 
 func (_this *RulesEventReceiver) OnNan(signaling bool) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context, "NaN")
+	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context, DataTypeNan)
 	_this.receiver.OnNan(signaling)
 }
 
 func (_this *RulesEventReceiver) OnUUID(value []byte) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "UUID")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeUID)
 	_this.receiver.OnUUID(value)
 }
 
 func (_this *RulesEventReceiver) OnTime(value time.Time) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "time")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeTime)
 	_this.receiver.OnTime(value)
 }
 
 func (_this *RulesEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, "compact time")
+	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeTime)
 	_this.receiver.OnCompactTime(value)
 }
 

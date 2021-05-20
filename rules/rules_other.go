@@ -66,10 +66,10 @@ func (_this *VersionRule) OnVersion(ctx *Context, version uint64) {
 
 type TopLevelRule struct{}
 
-func (_this *TopLevelRule) String() string                            { return "Top Level Rule" }
-func (_this *TopLevelRule) switchEndDocument(ctx *Context)            { ctx.ChangeRule(&endDocumentRule) }
-func (_this *TopLevelRule) OnKeyableObject(ctx *Context, _ string)    { _this.switchEndDocument(ctx) }
-func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context, _ string) { _this.switchEndDocument(ctx) }
+func (_this *TopLevelRule) String() string                              { return "Top Level Rule" }
+func (_this *TopLevelRule) switchEndDocument(ctx *Context)              { ctx.ChangeRule(&endDocumentRule) }
+func (_this *TopLevelRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.switchEndDocument(ctx) }
+func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnNA(ctx *Context) {
 	_this.switchEndDocument(ctx)
 	ctx.BeginNA()
@@ -78,6 +78,7 @@ func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchEndDocument(ctx)
 }
 func (_this *TopLevelRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
+func (_this *TopLevelRule) OnNil(ctx *Context)                        { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnInt(ctx *Context, value int64)           { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnPositiveInt(ctx *Context, value uint64)  { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnBigInt(ctx *Context, value *big.Int)     { _this.switchEndDocument(ctx) }
@@ -95,7 +96,7 @@ func (_this *TopLevelRule) OnMarkup(ctx *Context, identifier []byte) { ctx.Begin
 func (_this *TopLevelRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
 func (_this *TopLevelRule) OnRelationship(ctx *Context)              { ctx.BeginRelationship() }
 func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier)
+	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
 func (_this *TopLevelRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
@@ -123,10 +124,11 @@ func (_this *TopLevelRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType
 type NARule struct{}
 
 func (_this *NARule) String() string                                          { return "NA Rule" }
-func (_this *NARule) OnKeyableObject(ctx *Context, _ string)                  { ctx.UnstackRule() }
-func (_this *NARule) OnNonKeyableObject(ctx *Context, _ string)               { ctx.UnstackRule() }
+func (_this *NARule) OnKeyableObject(ctx *Context, _ DataType)                { ctx.UnstackRule() }
+func (_this *NARule) OnNonKeyableObject(ctx *Context, _ DataType)             { ctx.UnstackRule() }
 func (_this *NARule) OnChildContainerEnded(ctx *Context, _ DataType)          { ctx.UnstackRule() }
 func (_this *NARule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
+func (_this *NARule) OnNil(ctx *Context)                                      { ctx.UnstackRule() }
 func (_this *NARule) OnInt(ctx *Context, value int64)                         { ctx.UnstackRule() }
 func (_this *NARule) OnPositiveInt(ctx *Context, value uint64)                { ctx.UnstackRule() }
 func (_this *NARule) OnBigInt(ctx *Context, value *big.Int)                   { ctx.UnstackRule() }
@@ -197,27 +199,29 @@ type ConstantKeyableRule struct{}
 
 func (_this *ConstantKeyableRule) String() string         { return "Keyable Constant Rule" }
 func (_this *ConstantKeyableRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *ConstantKeyableRule) OnKeyableObject(ctx *Context, objType string) {
+func (_this *ConstantKeyableRule) OnKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(objType)
 }
 func (_this *ConstantKeyableRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(dataType)
 }
 func (_this *ConstantKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-	ctx.MarkObject(DataTypeKeyable)
+	ctx.MarkObject(dataType)
 }
 func (_this *ConstantKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayKeyable(arrayType)
 }
-func (_this *ConstantKeyableRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+func (_this *ConstantKeyableRule) OnChildContainerEnded(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, DataTypeKeyable)
+	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, objType)
 }
 
 // =============================================================================
@@ -226,7 +230,7 @@ type ConstantAnyTypeRule struct{}
 
 func (_this *ConstantAnyTypeRule) String() string         { return "Constant Rule" }
 func (_this *ConstantAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context, objType string) {
+func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
 }
@@ -234,7 +238,11 @@ func (_this *ConstantAnyTypeRule) OnNA(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnNA(ctx)
 }
-func (_this *ConstantAnyTypeRule) OnKeyableObject(ctx *Context, objType string) {
+func (_this *ConstantAnyTypeRule) OnNil(ctx *Context) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnNil(ctx)
+}
+func (_this *ConstantAnyTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
 }

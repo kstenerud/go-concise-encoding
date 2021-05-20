@@ -32,15 +32,18 @@ func (_this *ListRule) String() string                                 { return 
 func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
 func (_this *ListRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *ListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *ListRule) OnKeyableObject(ctx *Context, _ string)         { /* Nothing to do */ }
-func (_this *ListRule) OnNonKeyableObject(ctx *Context, _ string)      { /* Nothing to do */ }
+func (_this *ListRule) OnNil(ctx *Context)                             { /* Nothing to do */ }
+func (_this *ListRule) OnKeyableObject(ctx *Context, _ DataType)       { /* Nothing to do */ }
+func (_this *ListRule) OnNonKeyableObject(ctx *Context, _ DataType)    { /* Nothing to do */ }
 func (_this *ListRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *ListRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
 func (_this *ListRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
 func (_this *ListRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *ListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
 func (_this *ListRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
-func (_this *ListRule) OnMarker(ctx *Context, identifier []byte)       { ctx.BeginMarkerAnyType(identifier) }
+func (_this *ListRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowAny)
+}
 func (_this *ListRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 }
@@ -71,11 +74,11 @@ func (_this *MapKeyRule) String() string                                 { retur
 func (_this *MapKeyRule) switchMapValue(ctx *Context)                    { ctx.ChangeRule(&mapValueRule) }
 func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapValue(ctx) }
 func (_this *MapKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ string)         { _this.switchMapValue(ctx) }
+func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapValue(ctx) }
 func (_this *MapKeyRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *MapKeyRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
 func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerKeyable(identifier)
+	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
 }
 func (_this *MapKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
@@ -110,16 +113,17 @@ func (_this *MapValueRule) OnNA(ctx *Context) {
 	_this.switchMapKey(ctx)
 	ctx.BeginNA()
 }
-func (_this *MapValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ string)    { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ string) { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnList(ctx *Context)                       { ctx.BeginList() }
-func (_this *MapValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
-func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
-func (_this *MapValueRule) OnComment(ctx *Context)                    { ctx.BeginComment() }
-func (_this *MapValueRule) OnRelationship(ctx *Context)               { ctx.BeginRelationship() }
+func (_this *MapValueRule) OnPadding(ctx *Context)                      { /* Nothing to do */ }
+func (_this *MapValueRule) OnNil(ctx *Context)                          { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnList(ctx *Context)                         { ctx.BeginList() }
+func (_this *MapValueRule) OnMap(ctx *Context)                          { ctx.BeginMap() }
+func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)    { ctx.BeginMarkup(identifier) }
+func (_this *MapValueRule) OnComment(ctx *Context)                      { ctx.BeginComment() }
+func (_this *MapValueRule) OnRelationship(ctx *Context)                 { ctx.BeginRelationship() }
 func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier)
+	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
 func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
@@ -155,12 +159,12 @@ func (_this *MarkupKeyRule) switchMarkupValue(ctx *Context) { ctx.ChangeRule(&ma
 func (_this *MarkupKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchMarkupValue(ctx)
 }
-func (_this *MarkupKeyRule) OnPadding(ctx *Context)                 { /* Nothing to do */ }
-func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ string) { _this.switchMarkupValue(ctx) }
-func (_this *MarkupKeyRule) OnComment(ctx *Context)                 { ctx.BeginComment() }
-func (_this *MarkupKeyRule) OnEnd(ctx *Context)                     { ctx.ChangeRule(&markupContentsRule) }
+func (_this *MarkupKeyRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
+func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupValue(ctx) }
+func (_this *MarkupKeyRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
+func (_this *MarkupKeyRule) OnEnd(ctx *Context)                       { ctx.ChangeRule(&markupContentsRule) }
 func (_this *MarkupKeyRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerKeyable(identifier)
+	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
 }
 func (_this *MarkupKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
@@ -197,16 +201,19 @@ func (_this *MarkupValueRule) OnNA(ctx *Context) {
 	_this.switchMarkupKey(ctx)
 	ctx.BeginNA()
 }
-func (_this *MarkupValueRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ string)    { _this.switchMarkupKey(ctx) }
-func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ string) { _this.switchMarkupKey(ctx) }
-func (_this *MarkupValueRule) OnList(ctx *Context)                       { ctx.BeginList() }
-func (_this *MarkupValueRule) OnMap(ctx *Context)                        { ctx.BeginMap() }
-func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte)  { ctx.BeginMarkup(identifier) }
-func (_this *MarkupValueRule) OnComment(ctx *Context)                    { ctx.BeginComment() }
-func (_this *MarkupValueRule) OnRelationship(ctx *Context)               { ctx.BeginRelationship() }
+func (_this *MarkupValueRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
+func (_this *MarkupValueRule) OnNil(ctx *Context)                       { _this.switchMarkupKey(ctx) }
+func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupKey(ctx) }
+func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ DataType) {
+	_this.switchMarkupKey(ctx)
+}
+func (_this *MarkupValueRule) OnList(ctx *Context)                      { ctx.BeginList() }
+func (_this *MarkupValueRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
+func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
+func (_this *MarkupValueRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
+func (_this *MarkupValueRule) OnRelationship(ctx *Context)              { ctx.BeginRelationship() }
 func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier)
+	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
 func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
@@ -278,31 +285,122 @@ func (_this *CommentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType)
 
 type SubjectRule struct{}
 
-func (_this *SubjectRule) String() string                                 { return "Subject Rule" }
-func (_this *SubjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
+func (_this *SubjectRule) String() string { return "Subject Rule" }
+func (_this *SubjectRule) moveToNextRule(ctx *Context) {
+	ctx.ChangeRule(&predicateRule)
+}
+func (_this *SubjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.moveToNextRule(ctx) }
 func (_this *SubjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *SubjectRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *SubjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
 func (_this *SubjectRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *SubjectRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
 func (_this *SubjectRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier)
+	ctx.BeginMarkerAnyType(identifier, AllowSubject)
 }
 func (_this *SubjectRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
+	_this.moveToNextRule(ctx)
 }
 func (_this *SubjectRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
 func (_this *SubjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	_this.moveToNextRule(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *SubjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
+	_this.moveToNextRule(ctx)
 	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *SubjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type PredicateRule struct{}
+
+func (_this *PredicateRule) String() string { return "Predicate Rule" }
+func (_this *PredicateRule) moveToNextRule(ctx *Context) {
+	ctx.ChangeRule(&objectRule)
+}
+func (_this *PredicateRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *PredicateRule) OnPadding(ctx *Context) { /* Nothing to do */ }
+func (_this *PredicateRule) OnComment(ctx *Context) { ctx.BeginComment() }
+func (_this *PredicateRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowPredicate)
+}
+func (_this *PredicateRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+	_this.moveToNextRule(ctx)
+}
+func (_this *PredicateRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *PredicateRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	_this.moveToNextRule(ctx)
+	ctx.BeginPotentialRIDCat(arrayType)
+}
+func (_this *PredicateRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	_this.moveToNextRule(ctx)
+	ctx.BeginPotentialRIDCat(arrayType)
+}
+func (_this *PredicateRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type ObjectRule struct{}
+
+func (_this *ObjectRule) String() string { return "List Rule" }
+func (_this *ObjectRule) end(ctx *Context) {
+	ctx.EndContainer()
+}
+func (_this *ObjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.end(ctx) }
+func (_this *ObjectRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
+func (_this *ObjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *ObjectRule) OnNil(ctx *Context)                             { /* Nothing to do */ }
+func (_this *ObjectRule) OnKeyableObject(ctx *Context, _ DataType)       { /* Nothing to do */ }
+func (_this *ObjectRule) OnNonKeyableObject(ctx *Context, _ DataType)    { /* Nothing to do */ }
+func (_this *ObjectRule) OnList(ctx *Context)                            { ctx.BeginList() }
+func (_this *ObjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
+func (_this *ObjectRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
+func (_this *ObjectRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *ObjectRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
+func (_this *ObjectRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowAny)
+}
+func (_this *ObjectRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+	_this.end(ctx)
+}
+func (_this *ObjectRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
+}
+func (_this *ObjectRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *ObjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	_this.end(ctx)
+	ctx.BeginPotentialRIDCat(arrayType)
+}
+func (_this *ObjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	_this.end(ctx)
+	ctx.BeginPotentialRIDCat(arrayType)
+}
+func (_this *ObjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }

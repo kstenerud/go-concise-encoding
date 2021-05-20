@@ -969,7 +969,7 @@ func TestRulesMultichunk(t *testing.T) {
 	assertEventsSucceed(t, rules, SB(), AC(1, true), AD([]byte{'a'}), AC(0, false))
 }
 
-// func TestRulesRelationship(t *testing.T) {
-// 	rules := newRulesAfterVersion(nil)
-// 	assertEventsSucceed(t, rules, REL(), RID("x"), RID("y"), I(1))
-// }
+func TestRulesRelationship(t *testing.T) {
+	rules := newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, REL(), RID("x"), RID("y"), I(1))
+}
