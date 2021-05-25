@@ -72,6 +72,7 @@ var (
 	topLevelRule            TopLevelRule
 	naRule                  NARule
 	listRule                ListRule
+	resourceListRule        ResourceListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
 	markupKeyRule           MarkupKeyRule
@@ -82,7 +83,6 @@ var (
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule
 	stringChunkRule         StringChunkRule
-	ridCatRule              RIDCatRule
 	markedObjectKeyableRule MarkedObjectKeyableRule
 	markedObjectAnyTypeRule MarkedObjectAnyTypeRule
 	ridReferenceRule        RIDReferenceRule

@@ -72,6 +72,8 @@ const (
 	AllowSubject = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
 	AllowPredicate = DataTypeResourceID
 	AllowObject = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
+	AllowString = DataTypeString
+	AllowResourceID = DataTypeResourceID
 )
 
 func (_this DataType) String() string {
@@ -485,6 +487,42 @@ func (_this *ListRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollo
 }
 func (_this *ListRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("list", "array data")
+}
+func (_this *ResourceListRule) OnBeginDocument(ctx *Context) {
+	wrongType("resource list", "begin document")
+}
+func (_this *ResourceListRule) OnEndDocument(ctx *Context) {
+	wrongType("resource list", "end document")
+}
+func (_this *ResourceListRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("resource list", "version")
+}
+func (_this *ResourceListRule) OnNA(ctx *Context) {
+	wrongType("resource list", "NA")
+}
+func (_this *ResourceListRule) OnNil(ctx *Context) {
+	wrongType("resource list", "Nil")
+}
+func (_this *ResourceListRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("resource list", objType)
+}
+func (_this *ResourceListRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("resource list", objType)
+}
+func (_this *ResourceListRule) OnList(ctx *Context) {
+	wrongType("resource list", "list")
+}
+func (_this *ResourceListRule) OnMarkup(ctx *Context, identifier []byte) {
+	wrongType("resource list", "markup")
+}
+func (_this *ResourceListRule) OnRIDReference(ctx *Context) {
+	wrongType("resource list", "RID reference")
+}
+func (_this *ResourceListRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("resource list", "array chunk")
+}
+func (_this *ResourceListRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("resource list", "array data")
 }
 func (_this *MapKeyRule) OnBeginDocument(ctx *Context) {
 	wrongType("map key", "begin document")
@@ -1346,63 +1384,6 @@ func (_this *RIDReferenceRule) OnArrayChunk(ctx *Context, length uint64, moreChu
 }
 func (_this *RIDReferenceRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("RID reference", "array data")
-}
-func (_this *RIDCatRule) OnBeginDocument(ctx *Context) {
-	wrongType("RID concatenation", "begin document")
-}
-func (_this *RIDCatRule) OnEndDocument(ctx *Context) {
-	wrongType("RID concatenation", "end document")
-}
-func (_this *RIDCatRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("RID concatenation", "version")
-}
-func (_this *RIDCatRule) OnNA(ctx *Context) {
-	wrongType("RID concatenation", "NA")
-}
-func (_this *RIDCatRule) OnNil(ctx *Context) {
-	wrongType("RID concatenation", "Nil")
-}
-func (_this *RIDCatRule) OnKeyableObject(ctx *Context, objType DataType) {
-	wrongType("RID concatenation", objType)
-}
-func (_this *RIDCatRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("RID concatenation", objType)
-}
-func (_this *RIDCatRule) OnList(ctx *Context) {
-	wrongType("RID concatenation", "list")
-}
-func (_this *RIDCatRule) OnMap(ctx *Context) {
-	wrongType("RID concatenation", "map")
-}
-func (_this *RIDCatRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("RID concatenation", "markup")
-}
-func (_this *RIDCatRule) OnComment(ctx *Context) {
-	wrongType("RID concatenation", "comment")
-}
-func (_this *RIDCatRule) OnEnd(ctx *Context) {
-	wrongType("RID concatenation", "end container")
-}
-func (_this *RIDCatRule) OnRelationship(ctx *Context) {
-	wrongType("RID concatenation", "relationship")
-}
-func (_this *RIDCatRule) OnMarker(ctx *Context, identifier []byte) {
-	wrongType("RID concatenation", "marker")
-}
-func (_this *RIDCatRule) OnReference(ctx *Context, identifier []byte) {
-	wrongType("RID concatenation", "reference")
-}
-func (_this *RIDCatRule) OnRIDReference(ctx *Context) {
-	wrongType("RID concatenation", "RID reference")
-}
-func (_this *RIDCatRule) OnConstant(ctx *Context, identifier []byte) {
-	wrongType("RID concatenation", "constant")
-}
-func (_this *RIDCatRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("RID concatenation", "array chunk")
-}
-func (_this *RIDCatRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("RID concatenation", "array data")
 }
 func (_this *SubjectRule) OnBeginDocument(ctx *Context) {
 	wrongType("relationship subject", "begin document")

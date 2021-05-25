@@ -123,6 +123,10 @@ func (_this *EncoderContext) WriteIndent() {
 	_this.Stream.WriteBytes(_this.indenter.Get())
 }
 
+func (_this *EncoderContext) WriteSpace() {
+	_this.Stream.WriteByte(' ')
+}
+
 func (_this *EncoderContext) WriteIdentifier(data []byte) {
 	_this.Stream.WriteBytes(data)
 }

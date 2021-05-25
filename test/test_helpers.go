@@ -300,6 +300,7 @@ var (
 	EvM      = M()
 	EvMUP    = MUP("a")
 	EvCMT    = CMT()
+	EvREL    = REL()
 	EvE      = E()
 	EvMARK   = MARK("a")
 	EvREF    = REF("a")
@@ -309,7 +310,6 @@ var (
 	EvS      = S("a")
 	EvSB     = SB()
 	EvRID    = RID("http://z.com")
-	EvRIDCat = RIDCat("http://z.com")
 	EvRB     = RB()
 	EvRBCat  = RBCat()
 	EvCUB    = CUB([]byte{1})
@@ -347,8 +347,8 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvNA, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
-	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvCMT, EvE,
-	EvMARK, EvREF, EvRIDREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRIDCat, EvRB,
+	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvCMT, EvREL, EvE,
+	EvMARK, EvREF, EvRIDREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvRBCat, EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
 	EvAI32, EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
@@ -384,8 +384,7 @@ var completions = map[*TEvent][]*TEvent{
 	EvPAD:    []*TEvent{EvPAD, S("a")},
 	EvSB:     []*TEvent{EvSB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
 	EvRB:     []*TEvent{EvRB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
-	EvRBCat:  []*TEvent{EvRBCat, AC(1, true), AD([]byte{'a'}), AC(0, false), S("a")},
-	EvRIDCat: []*TEvent{EvRIDCat, S("a")},
+	EvRBCat:  []*TEvent{EvRBCat, AC(1, true), AD([]byte{'a'}), AC(0, false)},
 	EvRIDREF: []*TEvent{EvRIDREF, RID("a")},
 	EvCBB:    []*TEvent{EvCBB, AC(1, true), AD([]byte{1}), AC(0, false)},
 	EvCTB:    []*TEvent{EvCTB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
@@ -439,7 +438,7 @@ func FilterCTE(event *TEvent) []*TEvent {
 		TEventStringBegin:
 		return []*TEvent{S("x")}
 	case TEventResourceIDCatBegin:
-		return []*TEvent{RIDCat("x")}
+		return []*TEvent{RBCat(), AC(1, true), AD([]byte{'a'}), AC(0, false)}
 	case TEventArrayChunk, TEventArrayData:
 		return []*TEvent{}
 	default:
@@ -465,6 +464,15 @@ func FilterKey(event *TEvent) []*TEvent {
 	}
 }
 
+func FilterMarker(event *TEvent) []*TEvent {
+	switch event.Type {
+	case TEventComment, TEventMarker, TEventReference:
+		return []*TEvent{}
+	default:
+		return []*TEvent{event}
+	}
+}
+
 func FilterEventsSwitchToRIDRefs(events []*TEvent) []*TEvent {
 	filtered := []*TEvent{}
 	var lastEvent *TEvent = EvBD
@@ -482,6 +490,10 @@ func FilterEventsSwitchToRIDRefs(events []*TEvent) []*TEvent {
 
 func FilterEventsForCTE(events []*TEvent) []*TEvent {
 	return FilterAllEvents(events, FilterCTE)
+}
+
+func FilterEventsForMarker(events []*TEvent) []*TEvent {
+	return FilterAllEvents(events, FilterMarker)
 }
 
 func FilterEventsForContainer(events []*TEvent) []*TEvent {
@@ -507,7 +519,7 @@ func ComplementaryEvents(events []*TEvent) []*TEvent {
 }
 
 var (
-	ValidRIDReferences   = []*TEvent{EvPAD, EvRID, EvRB, EvRIDCat, EvRBCat}
+	ValidRIDReferences   = []*TEvent{EvPAD, EvRID, EvRB, EvRBCat}
 	InvalidRIDReferences = ComplementaryEvents(ValidRIDReferences)
 
 	ArrayBeginTypes = []*TEvent{
@@ -520,7 +532,7 @@ var (
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvREF, EvCMT, EvE,
+		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvRBCat, EvREF, EvCMT, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
@@ -544,6 +556,215 @@ var (
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
 	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvNA, EvE, EvAC, EvAD, EvCMT, EvMARK, EvREF, EvRIDREF}
+
+	Padding                     = []*TEvent{EvPAD}
+	CommentsPaddingRefEnd       = []*TEvent{EvCMT, EvPAD, EvREF, EvE}
+	CommentsPaddingMarkerRefEnd = []*TEvent{EvCMT, EvPAD, EvMARK, EvREF, EvE}
+
+	ValidSubjects = []*TEvent{
+		EvPAD, EvL, EvM, EvREL, EvRID, EvRB, EvRBCat, EvCMT, EvMARK, EvREF,
+	}
+	InvalidSubjects = ComplementaryEvents(ValidSubjects)
+
+	ValidResourceListElements = []*TEvent{
+		EvPAD, EvM, EvREL, EvRID, EvRB, EvRBCat, EvCMT, EvE, EvMARK, EvREF,
+	}
+	InvalidResourceListElements = ComplementaryEvents(ValidResourceListElements)
+
+	ValidPredicates = []*TEvent{
+		EvPAD, EvRID, EvRB, EvRBCat, EvCMT, EvMARK, EvREF,
+	}
+	InvalidPredicates = ComplementaryEvents(ValidPredicates)
+
+	ValidObjects   = ComplementaryEvents(InvalidObjects)
+	InvalidObjects = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+)
+
+func containsEvent(events []*TEvent, event *TEvent) bool {
+	for _, e := range events {
+		if e.Type == event.Type {
+			return true
+		}
+	}
+	return false
+}
+
+func RemoveEvents(srcEvents []*TEvent, disallowedEvents []*TEvent) (events []*TEvent) {
+	for _, event := range srcEvents {
+		if !containsEvent(disallowedEvents, event) {
+			events = append(events, event)
+		}
+	}
+	return
+}
+
+func filterAllowableFollowups(baseEvent *TEvent, possibleFollowups []*TEvent) []*TEvent {
+	switch baseEvent.Type {
+	case TEventMarker:
+		return RemoveEvents(possibleFollowups, InvalidMarkerValues)
+	default:
+		return possibleFollowups
+	}
+}
+
+func requiresFollowup(event *TEvent) bool {
+	switch event.Type {
+	case TEventMarker, TEventComment:
+		return true
+	default:
+		return false
+	}
+}
+
+func copyEvents(events []*TEvent) []*TEvent {
+	newEvents := make([]*TEvent, len(events))
+	copy(newEvents, events)
+	return newEvents
+}
+
+var basicCompletions = map[TEventType][]*TEvent{
+	TEventNA:                 []*TEvent{N()},
+	TEventList:               []*TEvent{E()},
+	TEventMap:                []*TEvent{E()},
+	TEventMarkup:             []*TEvent{E(), E()},
+	TEventComment:            []*TEvent{E()},
+	TEventRelationship:       []*TEvent{RID("a"), RID("b"), I(1)},
+	TEventStringBegin:        []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventResourceIDBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventResourceIDCatBegin: []*TEvent{AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{'a'})},
+	TEventRIDReference:       []*TEvent{RID("a")},
+	TEventCustomBinaryBegin:  []*TEvent{AC(1, false), AD([]byte{1})},
+	TEventCustomTextBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventArrayBooleanBegin:  []*TEvent{AC(1, false), AD([]byte{1})},
+	TEventArrayUint8Begin:    []*TEvent{AC(1, false), AD(binBytes(1, 1))},
+	TEventArrayUint16Begin:   []*TEvent{AC(1, false), AD(binBytes(2, 1))},
+	TEventArrayUint32Begin:   []*TEvent{AC(1, false), AD(binBytes(4, 1))},
+	TEventArrayUint64Begin:   []*TEvent{AC(1, false), AD(binBytes(8, 1))},
+	TEventArrayInt8Begin:     []*TEvent{AC(1, false), AD(binBytes(1, 1))},
+	TEventArrayInt16Begin:    []*TEvent{AC(1, false), AD(binBytes(2, 1))},
+	TEventArrayInt32Begin:    []*TEvent{AC(1, false), AD(binBytes(4, 1))},
+	TEventArrayInt64Begin:    []*TEvent{AC(1, false), AD(binBytes(8, 1))},
+	TEventArrayFloat16Begin:  []*TEvent{AC(1, false), AD(binBytes(2, 1))},
+	TEventArrayFloat32Begin:  []*TEvent{AC(1, false), AD(binBytes(4, 1))},
+	TEventArrayFloat64Begin:  []*TEvent{AC(1, false), AD(binBytes(8, 1))},
+	TEventArrayUUIDBegin:     []*TEvent{AC(1, false), AD(binBytes(16, 1))},
+}
+
+func getBasicCompletion(stream []*TEvent) []*TEvent {
+	if len(stream) == 0 {
+		return []*TEvent{}
+	}
+	lastEvent := stream[len(stream)-1]
+	return basicCompletions[lastEvent.Type]
+}
+
+func allPossibleEventStreams(
+	docBegin []*TEvent,
+	prefix []*TEvent,
+	suffix []*TEvent,
+	docEnd []*TEvent,
+	event *TEvent,
+	possibleFollowups []*TEvent) (allEvents [][]*TEvent) {
+
+	switch event.Type {
+	case TEventMarker:
+		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues), CommentsPaddingMarkerRefEnd) {
+			newStream := copyEvents(docBegin)
+			newStream = append(newStream, prefix...)
+			newStream = append(newStream, event)
+			newStream = append(newStream, following)
+			newStream = append(newStream, getBasicCompletion(newStream)...)
+			newStream = append(newStream, suffix...)
+			newStream = append(newStream, docEnd...)
+			allEvents = append(allEvents, newStream)
+		}
+	case TEventReference:
+		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues), CommentsPaddingMarkerRefEnd) {
+			newStream := copyEvents(docBegin)
+			newStream = append(newStream, L(), MARK("a"))
+			newStream = append(newStream, following)
+			newStream = append(newStream, getBasicCompletion(newStream)...)
+			newStream = append(newStream, prefix...)
+			newStream = append(newStream, REF("a"))
+			newStream = append(newStream, suffix...)
+			newStream = append(newStream, E())
+			newStream = append(newStream, docEnd...)
+			allEvents = append(allEvents, newStream)
+		}
+
+	case TEventPadding:
+		for _, following := range RemoveEvents(possibleFollowups, CommentsPaddingMarkerRefEnd) {
+			newStream := copyEvents(docBegin)
+			newStream = append(newStream, prefix...)
+			newStream = append(newStream, event)
+			newStream = append(newStream, following)
+			newStream = append(newStream, getBasicCompletion(newStream)...)
+			newStream = append(newStream, suffix...)
+			newStream = append(newStream, docEnd...)
+			allEvents = append(allEvents, newStream)
+		}
+	case TEventArrayBooleanBegin, TEventArrayFloat16Begin,
+		TEventArrayFloat32Begin, TEventArrayFloat64Begin,
+		TEventArrayInt8Begin, TEventArrayInt16Begin, TEventArrayInt32Begin,
+		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
+		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUUIDBegin,
+		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
+		TEventStringBegin:
+		newStream := copyEvents(docBegin)
+		newStream = append(newStream, prefix...)
+		newStream = append(newStream, event)
+		newStream = append(newStream, AC(0, false))
+		newStream = append(newStream, suffix...)
+		newStream = append(newStream, docEnd...)
+		allEvents = append(allEvents, newStream)
+	case TEventResourceIDCatBegin:
+		newStream := copyEvents(docBegin)
+		newStream = append(newStream, prefix...)
+		newStream = append(newStream, event)
+		newStream = append(newStream, AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{'a'}))
+		newStream = append(newStream, suffix...)
+		newStream = append(newStream, docEnd...)
+		allEvents = append(allEvents, newStream)
+	case TEventArrayChunk, TEventArrayData:
+		// TODO: Implement this better somehow?
+		newStream := copyEvents(docBegin)
+		newStream = append(newStream, prefix...)
+		newStream = append(newStream, event)
+		newStream = append(newStream, suffix...)
+		newStream = append(newStream, docEnd...)
+		allEvents = append(allEvents, newStream)
+	case TEventEnd, TEventComment:
+		// Skip
+	default:
+		newStream := copyEvents(docBegin)
+		newStream = append(newStream, prefix...)
+		newStream = append(newStream, event)
+		newStream = append(newStream, getBasicCompletion(newStream)...)
+		newStream = append(newStream, suffix...)
+		newStream = append(newStream, docEnd...)
+		allEvents = append(allEvents, newStream)
+	}
+	return
+}
+
+func GenerateAllVariants(
+	docBegin []*TEvent,
+	prefix []*TEvent,
+	suffix []*TEvent,
+	docEnd []*TEvent,
+	possibleFollowups []*TEvent) (events [][]*TEvent) {
+
+	for _, event := range possibleFollowups {
+		events = append(events, allPossibleEventStreams(docBegin, prefix, suffix, docEnd, event, possibleFollowups)...)
+	}
+
+	return
+}
+
+var (
+	ListDocBegin = []*TEvent{BD(), V(version.ConciseEncodingVersion), L()}
+	ListDocEnd   = []*TEvent{E(), ED()}
+	NoEvents     = []*TEvent{}
 )
 
 // ----------------------------------------------------------------------------
@@ -576,7 +797,6 @@ const (
 	TEventCompactTime
 	TEventString
 	TEventResourceID
-	TEventResourceIDCat
 	TEventCustomBinary
 	TEventCustomText
 	TEventArrayBoolean
@@ -649,7 +869,6 @@ var TEventNames = []string{
 	TEventCompactTime:        "CT",
 	TEventString:             "S",
 	TEventResourceID:         "RID",
-	TEventResourceIDCat:      "RIDCat",
 	TEventCustomBinary:       "CUB",
 	TEventCustomText:         "CUT",
 	TEventArrayBoolean:       "AB",
@@ -689,8 +908,8 @@ var TEventNames = []string{
 	TEventMap:                "M",
 	TEventMarkup:             "MUP",
 	TEventComment:            "CMT",
-	TEventEnd:                "E",
 	TEventRelationship:       "REL",
+	TEventEnd:                "E",
 	TEventMarker:             "MARK",
 	TEventReference:          "REF",
 	TEventRIDReference:       "RIDREF",
@@ -934,8 +1153,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnStringlikeArray(events.ArrayTypeString, _this.V1.(string))
 	case TEventResourceID:
 		receiver.OnStringlikeArray(events.ArrayTypeResourceID, _this.V1.(string))
-	case TEventResourceIDCat:
-		receiver.OnStringlikeArray(events.ArrayTypeResourceIDConcat, _this.V1.(string))
 	case TEventCustomBinary:
 		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
@@ -1082,7 +1299,6 @@ func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
 func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
 func RID(v string) *TEvent              { return newTEvent(TEventResourceID, v, nil) }
-func RIDCat(v string) *TEvent           { return newTEvent(TEventResourceIDCat, v, nil) }
 func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
 func AB(l uint64, v []byte) *TEvent     { return newTEvent(TEventArrayBoolean, l, v) }
@@ -1122,8 +1338,8 @@ func L() *TEvent                        { return newTEvent(TEventList, nil, nil)
 func M() *TEvent                        { return newTEvent(TEventMap, nil, nil) }
 func MUP(id string) *TEvent             { return newTEvent(TEventMarkup, id, nil) }
 func CMT() *TEvent                      { return newTEvent(TEventComment, nil, nil) }
-func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func REL() *TEvent                      { return newTEvent(TEventRelationship, nil, nil) }
+func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func MARK(id string) *TEvent            { return newTEvent(TEventMarker, id, nil) }
 func REF(id string) *TEvent             { return newTEvent(TEventReference, id, nil) }
 func RIDREF() *TEvent                   { return newTEvent(TEventRIDReference, nil, nil) }
@@ -1320,8 +1536,6 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 		h.Print(S(string(value)))
 	case events.ArrayTypeResourceID:
 		h.Print(RID(string(value)))
-	case events.ArrayTypeResourceIDConcat:
-		h.Print(RIDCat(string(value)))
 	case events.ArrayTypeCustomBinary:
 		h.Print(CUB(value))
 	case events.ArrayTypeCustomText:
@@ -1353,7 +1567,7 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	case events.ArrayTypeUUID:
 		h.Print(AUU(value))
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+		panic(fmt.Errorf("TODO: TEventPrinter.OnArray: Typed array support for %v", arrayType))
 	}
 	h.Next.OnArray(arrayType, elementCount, value)
 }
@@ -1363,8 +1577,6 @@ func (h *TEventPrinter) OnStringlikeArray(arrayType events.ArrayType, value stri
 		h.Print(S(value))
 	case events.ArrayTypeResourceID:
 		h.Print(RID(value))
-	case events.ArrayTypeResourceIDConcat:
-		h.Print(RIDCat(value))
 	case events.ArrayTypeCustomText:
 		h.Print(CUT(value))
 	default:
@@ -1411,7 +1623,7 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	case events.ArrayTypeUUID:
 		h.Print(AUUB())
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+		panic(fmt.Errorf("TODO: TEventPrinter.OnArrayBegin: Typed array support for %v", arrayType))
 	}
 	h.Next.OnArrayBegin(arrayType)
 }
@@ -1488,7 +1700,7 @@ type TEventStore struct {
 
 func NewTEventStore() *TEventStore {
 	return &TEventStore{
-		Events: make([]*TEvent, 1024),
+		Events: make([]*TEvent, 0, 1024),
 	}
 }
 func (h *TEventStore) add(event *TEvent) {
@@ -1518,8 +1730,6 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		h.add(S(string(value)))
 	case events.ArrayTypeResourceID:
 		h.add(RID(string(value)))
-	case events.ArrayTypeResourceIDConcat:
-		h.add(RIDCat(string(value)))
 	case events.ArrayTypeCustomBinary:
 		h.add(CUB(CloneBytes(value)))
 	case events.ArrayTypeCustomText:
@@ -1551,7 +1761,7 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeUUID:
 		h.add(AUU(CloneBytes(value)))
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+		panic(fmt.Errorf("TODO: TEventStore.OnArray: Typed array support for %v", arrayType))
 	}
 }
 func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string) {
@@ -1560,8 +1770,6 @@ func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string
 		h.add(S(value))
 	case events.ArrayTypeResourceID:
 		h.add(RID(value))
-	case events.ArrayTypeResourceIDConcat:
-		h.add(RIDCat(value))
 	case events.ArrayTypeCustomText:
 		h.add(CUT(value))
 	default:
@@ -1607,7 +1815,7 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 	case events.ArrayTypeUUID:
 		h.add(AUUB())
 	default:
-		panic(fmt.Errorf("TODO: Typed array support for %v", arrayType))
+		panic(fmt.Errorf("TODO: TEventStore.OnArrayBegin: Typed array support for %v", arrayType))
 	}
 }
 func (h *TEventStore) OnArrayChunk(l uint64, moreChunks bool) { h.add(AC(l, moreChunks)) }

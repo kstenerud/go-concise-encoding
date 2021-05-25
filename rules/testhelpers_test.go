@@ -120,6 +120,7 @@ var (
 	EvM      = test.EvM
 	EvMUP    = test.EvMUP
 	EvCMT    = test.EvCMT
+	EvREL    = test.EvREL
 	EvE      = test.EvE
 	EvMARK   = test.EvMARK
 	EvREF    = test.EvREF
@@ -187,7 +188,6 @@ func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
-func RIDCat(v string) *test.TEvent           { return test.RIDCat(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -227,8 +227,8 @@ func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
-func E() *test.TEvent                        { return test.E() }
 func REL() *test.TEvent                      { return test.REL() }
+func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
 func RIDREF() *test.TEvent                   { return test.RIDREF() }
@@ -255,6 +255,24 @@ func assertEventsSucceed(t *testing.T, receiver events.DataEventReceiver, events
 	test.AssertNoPanic(t, events, func() {
 		InvokeEvents(receiver, events...)
 	})
+}
+
+func assertEventStreamsSucceed(t *testing.T, eventStreams [][]*test.TEvent) {
+	for _, stream := range eventStreams {
+		rules := NewRules(events.NewNullEventReceiver(), nil)
+		test.AssertNoPanic(t, stream, func() {
+			InvokeEvents(rules, stream...)
+		})
+	}
+}
+
+func assertEventStreamsFail(t *testing.T, eventStreams [][]*test.TEvent) {
+	for _, stream := range eventStreams {
+		rules := NewRules(events.NewNullEventReceiver(), nil)
+		test.AssertPanics(t, stream, func() {
+			InvokeEvents(rules, stream...)
+		})
+	}
 }
 
 func assertEachEventSucceeds(t *testing.T, prefix func() events.DataEventReceiver, events ...*test.TEvent) {

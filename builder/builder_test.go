@@ -1322,5 +1322,5 @@ func TestBuilderRIDCat(t *testing.T) {
 	// TODO: These are still broken
 	// assertBuild(t, pURL, RID("http://x.com/"), S("1"))
 	// assertBuild(t, *pURL, RIDCat("http://x.com/1"))
-	assertBuild(t, *pURL, RIDCat("http://x.com/"), S("1"))
+	assertBuild(t, *pURL, RBCat(), AC(13, false), AD([]byte("http://x.com/")), AC(1, false), AD([]byte("1")))
 }

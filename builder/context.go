@@ -25,8 +25,6 @@
 package builder
 
 import (
-	"fmt"
-	"net/url"
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -44,12 +42,10 @@ type Context struct {
 	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
 	builderStack               []Builder
 
-	concatLeft string
-
 	chunkedData             []byte
 	chunkRemainingLength    uint64
 	moreChunksFollow        bool
-	arrayCompletionCallback func([]byte)
+	arrayCompletionCallback func(*Context)
 }
 
 func (_this *Context) Init(opts *options.BuilderOptions,
@@ -124,37 +120,24 @@ func (_this *Context) TryBuildFromCustom(builder Builder, arrayType events.Array
 	}
 }
 
-func (_this *Context) BeginArray(arrayCompletionCallback func([]byte)) {
+func (_this *Context) BeginArray(arrayCompletionCallback func(*Context)) {
 	_this.arrayCompletionCallback = arrayCompletionCallback
 	_this.chunkedData = _this.chunkedData[:0]
+}
+func (_this *Context) BeginArrayConcat(arrayCompletionCallback func(*Context)) {
+	_this.arrayCompletionCallback = arrayCompletionCallback
 }
 func (_this *Context) BeginArrayChunk(length uint64, moreChunksFollow bool) {
 	_this.chunkRemainingLength = length
 	_this.moreChunksFollow = moreChunksFollow
 	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
-		_this.arrayCompletionCallback(_this.chunkedData)
-		_this.chunkedData = _this.chunkedData[:0]
+		_this.arrayCompletionCallback(_this)
 	}
 }
 func (_this *Context) AddArrayData(data []byte) {
 	_this.chunkedData = append(_this.chunkedData, data...)
 	_this.chunkRemainingLength -= uint64(len(data))
 	if !_this.moreChunksFollow && _this.chunkRemainingLength == 0 {
-		_this.arrayCompletionCallback(_this.chunkedData)
-		_this.chunkedData = _this.chunkedData[:0]
+		_this.arrayCompletionCallback(_this)
 	}
-}
-
-func (_this *Context) BeginRIDCat(concatLeft string) {
-	_this.concatLeft = concatLeft
-	_this.StackBuilder(globalRidCatBuilder)
-}
-
-func (_this *Context) CompleteRIDCat(concatRight string) {
-	value, err := url.Parse(fmt.Sprintf("%v%v", _this.concatLeft, concatRight))
-	if err != nil {
-		panic(err)
-	}
-	_this.UnstackBuilder()
-	_this.CurrentBuilder.NotifyChildContainerFinished(_this, reflect.ValueOf(value))
 }

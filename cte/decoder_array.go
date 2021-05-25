@@ -50,16 +50,23 @@ func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
 	}
 
 	bytes := ctx.Stream.ReadQuotedString()
-	if ctx.Stream.PeekByteAllowEOF() == ':' {
-		ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDConcat, uint64(len(bytes)), bytes)
-		ctx.Stream.AdvanceByte()
-		if ctx.Stream.PeekByteNoEOF() != '"' {
-			ctx.Errorf("Only strings may be appended to a resource ID")
-		}
-		global_advanceAndDecodeQuotedString.Run(ctx)
+	if ctx.Stream.PeekByteAllowEOF() != ':' {
+		ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
 		return
 	}
-	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+	ctx.Stream.AdvanceByte()
+
+	ctx.EventReceiver.OnArrayBegin(events.ArrayTypeResourceIDConcat)
+	ctx.EventReceiver.OnArrayChunk(uint64(len(bytes)), false)
+	ctx.EventReceiver.OnArrayData(bytes)
+
+	if ctx.Stream.ReadByteNoEOF() != '"' {
+		ctx.Stream.UnreadByte()
+		ctx.Errorf("Only strings may be appended to a resource ID")
+	}
+	bytes = ctx.Stream.ReadQuotedString()
+	ctx.EventReceiver.OnArrayChunk(uint64(len(bytes)), false)
+	ctx.EventReceiver.OnArrayData(bytes)
 }
 
 func decodeArrayType(ctx *DecoderContext) string {

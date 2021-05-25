@@ -143,6 +143,8 @@ EOF:
 			eventReceiver.OnMap()
 		case cbeTypeList:
 			eventReceiver.OnList()
+		case cbeTypeRelationship:
+			eventReceiver.OnRelationship()
 		case cbeTypeEndContainer:
 			eventReceiver.OnEnd()
 		case cbeTypeFalse:
@@ -258,6 +260,8 @@ func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEv
 		eventReceiver.OnNA()
 	case cbeTypeRIDReference:
 		eventReceiver.OnRIDReference()
+	case cbeTypeRIDCat:
+		_this.decodeRIDCat(eventReceiver)
 	default:
 		arrayType := cbePlane2TypeToArrayType[cbeType]
 		if arrayType == events.ArrayTypeInvalid {
@@ -275,6 +279,26 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 
 // Internal
 
+func (_this *Decoder) decodeRIDCat(eventReceiver events.DataEventReceiver) {
+	eventReceiver.OnArrayBegin(events.ArrayTypeResourceIDConcat)
+
+	for i := 0; i < 2; i++ {
+		for {
+			elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
+			validateLength(elementCount)
+			eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)
+
+			if elementCount > 0 {
+				nextBytes := _this.reader.ReadBytes(int(elementCount))
+				eventReceiver.OnArrayData(nextBytes)
+			}
+			if !moreChunksFollow {
+				break
+			}
+		}
+	}
+}
+
 func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver events.DataEventReceiver) {
 	elementBitWidth := arrayType.ElementSize()
 	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
@@ -283,12 +307,12 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver even
 	if !moreChunksFollow {
 		if elementCount == 0 {
 			eventReceiver.OnArray(arrayType, 0, []byte{})
-			goto end
+			return
 		}
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
 		bytes := _this.reader.ReadBytes(int(byteCount))
 		eventReceiver.OnArray(arrayType, elementCount, bytes)
-		goto end
+		return
 	}
 
 	eventReceiver.OnArrayBegin(arrayType)
@@ -301,15 +325,10 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver even
 			eventReceiver.OnArrayData(nextBytes)
 		}
 		if !moreChunksFollow {
-			goto end
+			return
 		}
 		elementCount, moreChunksFollow = _this.reader.ReadArrayChunkHeader()
 		validateLength(elementCount)
-	}
-
-end:
-	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.decodeArray(events.ArrayTypeString, eventReceiver)
 	}
 }
 

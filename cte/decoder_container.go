@@ -219,3 +219,38 @@ func (_this advanceAndDecodeCommentEnd) Run(ctx *DecoderContext) {
 		ctx.Errorf("Unexpected comment end char: [%c]", b)
 	}
 }
+
+type advanceAndDecodeRelationshipBegin struct{}
+
+var global_advanceAndDecodeRelationshipBegin advanceAndDecodeRelationshipBegin
+
+func (_this advanceAndDecodeRelationshipBegin) Run(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '('
+
+	ctx.EventReceiver.OnRelationship()
+	ctx.StackDecoder(global_decodeRelationshipEnd)
+	ctx.StackDecoder(global_decodeRelationshipComponent)
+	ctx.StackDecoder(global_decodeRelationshipComponent)
+	ctx.StackDecoder(global_decodeRelationshipComponent)
+}
+
+type decodeRelationshipComponent struct{}
+
+var global_decodeRelationshipComponent decodeRelationshipComponent
+
+func (_this decodeRelationshipComponent) Run(ctx *DecoderContext) {
+	ctx.UnstackDecoder()
+	global_decodeByFirstChar.Run(ctx)
+}
+
+type decodeRelationshipEnd struct{}
+
+var global_decodeRelationshipEnd decodeRelationshipEnd
+
+func (_this decodeRelationshipEnd) Run(ctx *DecoderContext) {
+	if ctx.Stream.ReadByteNoEOF() != ')' {
+		ctx.Stream.UnreadByte()
+		ctx.Errorf("Expected ')' at end of relationship structure")
+	}
+	ctx.UnstackDecoder()
+}

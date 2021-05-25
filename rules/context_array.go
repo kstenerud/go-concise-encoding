@@ -42,8 +42,20 @@ func (_this *Context) beginArray(arrayType events.ArrayType, rule EventRule, dat
 	_this.ValidateArrayDataFunc = validatorFunc
 }
 
-func (_this *Context) endArray() {
+func (_this *Context) tryEndArray(moreChunksFollow bool, validator func(data []byte)) bool {
+	if moreChunksFollow {
+		return false
+	}
+	switch _this.arrayType {
+	case events.ArrayTypeResourceIDConcat:
+		_this.arrayType = events.ArrayTypeResourceIDConcat2
+		return false
+	}
+	if validator != nil {
+		validator(_this.builtArrayBuffer)
+	}
 	_this.endContainerLike()
+	return true
 }
 
 func (_this *Context) validateArrayTotalByteCount(byteCount uint64, maxByteCount uint64) {
@@ -127,8 +139,8 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 	}
 }
 
-func (_this *Context) BeginArrayKeyable(arrayType events.ArrayType) {
-	_this.AssertArrayTypeKeyable(arrayType)
+func (_this *Context) BeginArrayKeyable(contextDesc string, arrayType events.ArrayType) {
+	_this.AssertArrayType(contextDesc, arrayType, AllowKeyable)
 	_this.BeginArrayAnyType(arrayType)
 }
 
@@ -145,29 +157,26 @@ func (_this *Context) BeginChunkAnyType(elemCount uint64, moreChunksFollow bool)
 }
 
 func (_this *Context) EndChunkAnyType() {
-	if _this.moreChunksFollow {
+	if !_this.tryEndArray(_this.moreChunksFollow, nil) {
 		_this.ChangeRule(&arrayRule)
-	} else {
-		_this.endArray()
 	}
 }
 
-func (_this *Context) BeginArrayString(arrayType events.ArrayType) {
+func (_this *Context) BeginArrayString(contextDesc string, arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType(contextDesc, arrayType, AllowString)
 	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 }
 
 func (_this *Context) BeginArrayRIDReference(arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
-	_this.AssertArrayTypeRID(arrayType)
-	_this.BeginPotentialRIDCat(arrayType)
+	_this.AssertArrayType("resource ID reference", arrayType, AllowResourceID)
 	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 }
 
 func (_this *Context) BeginArrayComment(arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("comment", arrayType, AllowString)
 	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsComment)
 }
 
@@ -187,16 +196,14 @@ func (_this *Context) EndChunkString() {
 	if len(_this.utf8RemainderBuffer) > 0 {
 		panic(fmt.Errorf("Incomplete UTF-8 data in chunk"))
 	}
-	if _this.moreChunksFollow {
+	if !_this.tryEndArray(_this.moreChunksFollow, nil) {
 		_this.ChangeRule(&stringRule)
-	} else {
-		_this.endArray()
 	}
 }
 
-func (_this *Context) BeginStringBuilder(arrayType events.ArrayType, completedValidatorFunc func([]byte)) {
+func (_this *Context) BeginStringBuilder(contextDesc string, arrayType events.ArrayType, completedValidatorFunc func([]byte)) {
 	dataType := arrayTypeToDataType[arrayType]
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType(contextDesc, arrayType, AllowString)
 	_this.beginArray(arrayType, &stringBuilderRule, dataType, _this.opts.MaxStringByteLength, completedValidatorFunc)
 }
 
@@ -213,11 +220,8 @@ func (_this *Context) BeginChunkStringBuilder(elemCount uint64, moreChunksFollow
 }
 
 func (_this *Context) EndChunkStringBuilder() {
-	if _this.moreChunksFollow {
+	if !_this.tryEndArray(_this.moreChunksFollow, _this.ValidateArrayDataFunc) {
 		_this.ChangeRule(&stringBuilderRule)
-	} else {
-		_this.ValidateArrayDataFunc(_this.builtArrayBuffer)
-		_this.endArray()
 	}
 }
 
@@ -271,65 +275,58 @@ func (_this *Context) ValidateFullArrayStringlike(arrayType events.ArrayType, da
 	}
 }
 
-func (_this *Context) ValidateFullArrayStringlikeKeyable(arrayType events.ArrayType, data string) {
-	_this.AssertArrayTypeKeyable(arrayType)
+func (_this *Context) ValidateFullArrayStringlikeKeyable(contextDesc string, arrayType events.ArrayType, data string) {
+	_this.AssertArrayType(contextDesc, arrayType, AllowKeyable)
 	_this.ValidateFullArrayStringlike(arrayType, data)
 }
 
-func (_this *Context) ValidateFullArrayKeyable(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayTypeKeyable(arrayType)
+func (_this *Context) ValidateFullArrayKeyable(contextDesc string, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	_this.AssertArrayType(contextDesc, arrayType, AllowKeyable)
 	_this.ValidateFullArrayAnyType(arrayType, elementCount, data)
 }
 
-func (_this *Context) ValidateFullArrayString(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayTypeString(arrayType)
-	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
-	_this.ValidateLengthString(uint64(len(data)))
-	_this.ValidateContentsString(data)
-}
-
 func (_this *Context) ValidateFullArrayComment(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("comment", arrayType, AllowString)
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthAnyType(uint64(len(data)))
 	_this.ValidateContentsComment(data)
 }
 
 func (_this *Context) ValidateFullArrayCommentString(arrayType events.ArrayType, data string) {
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("comment", arrayType, AllowString)
 	_this.ValidateLengthAnyType(uint64(len(data)))
 	_this.ValidateContentsCommentString(data)
 }
 
 func (_this *Context) ValidateFullArrayMarkupContents(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("markup contents", arrayType, AllowString)
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthAnyType(uint64(len(data)))
 	_this.ValidateContentsComment(data)
 }
 
 func (_this *Context) ValidateFullArrayMarkupContentsString(arrayType events.ArrayType, data string) {
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("markup contents", arrayType, AllowString)
 	_this.ValidateLengthAnyType(uint64(len(data)))
 	_this.ValidateContentsCommentString(data)
 }
 
 func (_this *Context) ValidateFullArrayRID(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayTypeRID(arrayType)
+	_this.AssertArrayType("resource ID", arrayType, AllowResourceID)
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthRID(uint64(len(data)))
 	_this.ValidateContentsRID(data)
 }
 
 func (_this *Context) ValidateFullArrayMarkerID(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("marker ID", arrayType, AllowString)
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthMarkerID(uint64(len(data)))
 	_this.ValidateContentsMarkerID(data)
 }
 
 func (_this *Context) ValidateFullArrayMarkerIDString(arrayType events.ArrayType, data string) {
-	_this.AssertArrayTypeString(arrayType)
+	_this.AssertArrayType("marker ID", arrayType, AllowString)
 	_this.ValidateLengthMarkerID(uint64(len(data)))
 	_this.ValidateContentsMarkerIDString(data)
 }
@@ -349,21 +346,10 @@ func (_this *Context) ValidateByteCountForType(arrayType events.ArrayType, eleme
 	}
 }
 
-func (_this *Context) AssertArrayTypeKeyable(arrayType events.ArrayType) {
-	if !isKeyableType(arrayType) {
-		panic(fmt.Errorf("Expected a keyable array type but got %v", arrayType))
-	}
-}
+func (_this *Context) AssertArrayType(contextDesc string, arrayType events.ArrayType, allowedTypes DataType) {
+	if arrayTypeToDataType[arrayType]&allowedTypes == 0 {
+		panic(fmt.Errorf("Array type %v is not allowed while processing %v", arrayType, contextDesc))
 
-func (_this *Context) AssertArrayTypeString(arrayType events.ArrayType) {
-	if arrayType != events.ArrayTypeString {
-		panic(fmt.Errorf("Expected a string array type but got %v", arrayType))
-	}
-}
-
-func (_this *Context) AssertArrayTypeRID(arrayType events.ArrayType) {
-	if arrayType != events.ArrayTypeResourceID && arrayType != events.ArrayTypeResourceIDConcat {
-		panic(fmt.Errorf("Expected a resource ID array type but got %v", arrayType))
 	}
 }
 

@@ -562,7 +562,7 @@ func TestCTERID(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 @"http://x.com/\""`, BD(), EvV, RID(`http://x.com/"`), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-@"http://example.com":"1"`, BD(), EvV, RIDCat("http://example.com"), S("1"), ED())
+@"http://example.com":"1"`, BD(), EvV, RBCat(), AC(18, false), AD([]byte("http://example.com")), AC(1, false), AD([]byte("1")), ED())
 }
 
 func TestCTEArrayBoolean(t *testing.T) {
@@ -1788,7 +1788,7 @@ func TestRIDCat(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 [
     @"http://z.com":"1"
-]`, BD(), EvV, L(), RIDCat("http://z.com"), S("1"), E(), ED())
+]`, BD(), EvV, L(), RBCat(), AC(12, false), AD([]byte("http://z.com")), AC(1, false), AD([]byte("1")), E(), ED())
 }
 
 func TestNestedComment(t *testing.T) {
@@ -1803,7 +1803,7 @@ func TestRIDConcat(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 [
     @"http://z.com":"a"
-]`, BD(), EvV, L(), RIDCat("http://z.com"), S("a"), E(), ED())
+]`, BD(), EvV, L(), RBCat(), AC(12, false), AD([]byte("http://z.com")), AC(1, false), AD([]byte("a")), E(), ED())
 }
 
 func TestMarkupComment(t *testing.T) {
@@ -1828,4 +1828,14 @@ func TestIdentifier(t *testing.T) {
 	assertDecodeFails(t, "c0 &~:1")
 	assertDecodeFails(t, "c0 &12345|78:1")
 	assertDecodeFails(t, "c0 &12345\u000178:1")
+}
+
+func TestCTERelationship(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, `c0
+(@"a" @"b" 1)`, BD(), EvV, REL(), RID("a"), RID("b"), I(1), ED())
+
+	assertDecodeEncode(t, nil, nil, `c0
+{
+    true = (@"a" @"b" 1)
+}`, BD(), EvV, M(), TT(), REL(), RID("a"), RID("b"), I(1), E(), ED())
 }

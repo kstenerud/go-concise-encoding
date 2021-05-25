@@ -550,6 +550,14 @@ func (_this *Writer) WriteArrayEnd() {
 	_this.WriteByte('|')
 }
 
+func (_this *Writer) WriteRelationshipBegin() {
+	_this.WriteByte('(')
+}
+
+func (_this *Writer) WriteRelationshipEnd() {
+	_this.WriteByte(')')
+}
+
 var commentBegin = []byte{'/', '*'}
 var commentEnd = []byte{'*', '/'}
 

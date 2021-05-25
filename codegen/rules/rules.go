@@ -72,6 +72,8 @@ func generateDataTypeType(writer io.Writer) {
 	gen.AddCustom("AllowSubject", AllowSubject)
 	gen.AddCustom("AllowPredicate", AllowPredicate)
 	gen.AddCustom("AllowObject", AllowObject)
+	gen.AddCustom("AllowString", DataTypeString)
+	gen.AddCustom("AllowResourceID", DataTypeResourceID)
 	gen.EndType()
 
 	gen.BeginStringer()
@@ -84,7 +86,7 @@ func generateDataTypeType(writer io.Writer) {
 func generateBadEventMethods(writer io.Writer) {
 	for _, rule := range allRules {
 		for _, method := range allMethods {
-			if !methodIsContainerIn(method, rule.Methods) {
+			if !containsMethod(method, rule.Methods) {
 				generateBadEventMethod(rule, method, writer)
 			}
 		}
@@ -111,7 +113,7 @@ func generateBadEventMethod(rule Rule, method *Method, writer io.Writer) {
 // Utility
 // -------
 
-func methodIsContainerIn(lookingFor *Method, inSlice []*Method) bool {
+func containsMethod(lookingFor *Method, inSlice []*Method) bool {
 	for _, v := range inSlice {
 		if v == lookingFor {
 			return true
@@ -415,6 +417,11 @@ var allRules = []Rule{
 		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
+		Name:         "ResourceListRule",
+		FriendlyName: "resource list",
+		Methods:      []*Method{ECtr, Pad, Comment, Map, End, Rel, Marker, Ref, Const, Array, SArray, ABegin},
+	},
+	{
 		Name:         "MapKeyRule",
 		FriendlyName: "map key",
 		Methods:      []*Method{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
@@ -497,11 +504,6 @@ var allRules = []Rule{
 	{
 		Name:         "RIDReferenceRule",
 		FriendlyName: "RID reference",
-		Methods:      []*Method{Pad, Array, SArray, ABegin, ECtr},
-	},
-	{
-		Name:         "RIDCatRule",
-		FriendlyName: "RID concatenation",
 		Methods:      []*Method{Pad, Array, SArray, ABegin, ECtr},
 	},
 	{

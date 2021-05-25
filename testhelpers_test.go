@@ -102,6 +102,7 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
+func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func N() *test.TEvent                        { return test.N() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
@@ -153,6 +154,7 @@ func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
+func REL() *test.TEvent                      { return test.REL() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
@@ -281,7 +283,7 @@ func assertEncodeDecodeOpts(t *testing.T,
 	expected ...*test.TEvent) {
 
 	assertEncodeDecodeCBEOpts(t, cbeEncodeOpts, cbeDecodeOpts, expected...)
-	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, test.FilterEventsForCTE(expected)...)
+	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, test.RemoveEvents(expected, test.Padding)...)
 }
 
 func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
@@ -510,4 +512,10 @@ func assertCTEMarshalUnmarshalWithOptions(t *testing.T,
 func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 	assertCBEMarshalUnmarshal(t, expected)
 	// assertCTEMarshalUnmarshal(t, expected)
+}
+
+func assertEncodeDecodeEventStreams(t *testing.T, eventStreams [][]*test.TEvent) {
+	for _, stream := range eventStreams {
+		assertEncodeDecode(t, stream...)
+	}
 }

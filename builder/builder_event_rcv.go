@@ -166,23 +166,24 @@ func (_this *BuilderEventReceiver) OnCompactTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.context.BeginRIDCat(string(value))
-	} else {
-		_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
-	}
+	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
-	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.context.BeginRIDCat(value)
-	} else {
-		_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
-	}
+	_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
-	_this.context.BeginArray(func(bytes []byte) {
-		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
-		_this.OnArray(arrayType, elementCount, bytes)
+	_this.context.BeginArray(func(ctx *Context) {
+		if arrayType == events.ArrayTypeResourceIDConcat {
+			ctx.BeginArrayConcat(func(ctx *Context) {
+				bytes := ctx.chunkedData
+				elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
+				_this.OnArray(arrayType, elementCount, bytes)
+			})
+		} else {
+			bytes := ctx.chunkedData
+			elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
+			_this.OnArray(arrayType, elementCount, bytes)
+		}
 	})
 }
 func (_this *BuilderEventReceiver) OnArrayChunk(length uint64, moreChunksFollow bool) {

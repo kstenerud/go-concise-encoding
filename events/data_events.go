@@ -41,6 +41,7 @@ const (
 	ArrayTypeString
 	ArrayTypeResourceID
 	ArrayTypeResourceIDConcat
+	ArrayTypeResourceIDConcat2
 	ArrayTypeCustomText
 	ArrayTypeCustomBinary
 	// Note: Boolean arrays are passed in the CBE boolean array representation,
@@ -72,25 +73,26 @@ func (_this ArrayType) ElementSize() int {
 }
 
 var arrayTypeNames = [...]string{
-	ArrayTypeInvalid:          "Invalid",
-	ArrayTypeString:           "String",
-	ArrayTypeResourceID:       "ResourceID",
-	ArrayTypeResourceIDConcat: "ResourceIDConcat",
-	ArrayTypeCustomText:       "Custom Text",
-	ArrayTypeCustomBinary:     "Custom Binary",
-	ArrayTypeBit:              "Boolean",
-	ArrayTypeUint8:            "Uint8",
-	ArrayTypeUint16:           "Uint16",
-	ArrayTypeUint32:           "Uint32",
-	ArrayTypeUint64:           "Uint64",
-	ArrayTypeInt8:             "Int8",
-	ArrayTypeInt16:            "Int16",
-	ArrayTypeInt32:            "Int32",
-	ArrayTypeInt64:            "Int64",
-	ArrayTypeFloat16:          "Float16",
-	ArrayTypeFloat32:          "Float32",
-	ArrayTypeFloat64:          "Float64",
-	ArrayTypeUUID:             "UUID",
+	ArrayTypeInvalid:           "Invalid",
+	ArrayTypeString:            "String",
+	ArrayTypeResourceID:        "ResourceID",
+	ArrayTypeResourceIDConcat:  "ResourceIDConcat",
+	ArrayTypeResourceIDConcat2: "ResourceIDConcat 2",
+	ArrayTypeCustomText:        "Custom Text",
+	ArrayTypeCustomBinary:      "Custom Binary",
+	ArrayTypeBit:               "Boolean",
+	ArrayTypeUint8:             "Uint8",
+	ArrayTypeUint16:            "Uint16",
+	ArrayTypeUint32:            "Uint32",
+	ArrayTypeUint64:            "Uint64",
+	ArrayTypeInt8:              "Int8",
+	ArrayTypeInt16:             "Int16",
+	ArrayTypeInt32:             "Int32",
+	ArrayTypeInt64:             "Int64",
+	ArrayTypeFloat16:           "Float16",
+	ArrayTypeFloat32:           "Float32",
+	ArrayTypeFloat64:           "Float64",
+	ArrayTypeUUID:              "UUID",
 }
 
 var arrayTypeElementSizes = [...]int{
@@ -122,6 +124,9 @@ var arrayTypeElementSizes = [...]int{
 // WARNING: Do not directly store slice data! The underlying contents should be
 // considered volatile and likely to change after the method returns (the
 // decoders re-use memory).
+//
+// WARNING: Do not use OnArray or OnStringlikeArray to pass concatenated array
+// types! Use OnArrayBegin and then two sets of OnArrayChunk sequences.
 //
 // IMPORTANT: DataEventReceiver's methods signal errors via panics, not
 // returned errors.

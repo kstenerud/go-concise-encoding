@@ -27,9 +27,7 @@ type ArrayRule struct{}
 func (_this *ArrayRule) String() string { return "Array Rule" }
 func (_this *ArrayRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	if length == 0 {
-		if !moreChunksFollow {
-			ctx.endArray()
-		}
+		ctx.tryEndArray(moreChunksFollow, nil)
 		return
 	}
 
@@ -55,9 +53,7 @@ type StringRule struct{}
 func (_this *StringRule) String() string { return "String Rule" }
 func (_this *StringRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	if length == 0 {
-		if !moreChunksFollow {
-			ctx.endArray()
-		}
+		ctx.tryEndArray(moreChunksFollow, nil)
 		return
 	}
 
@@ -88,9 +84,7 @@ type StringBuilderRule struct{}
 func (_this *StringBuilderRule) String() string { return "String Builder Rule" }
 func (_this *StringBuilderRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	if length == 0 {
-		if !moreChunksFollow {
-			ctx.endArray()
-		}
+		ctx.tryEndArray(moreChunksFollow, nil)
 		return
 	}
 

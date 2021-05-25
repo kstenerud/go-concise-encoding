@@ -218,10 +218,6 @@ func (_this MarkupContentsDecorator) EndContainer(ctx *EncoderContext) {
 
 // ===========================================================================
 
-// TODO: Relationship
-
-// ===========================================================================
-
 type CommentDecorator struct{}
 
 var commentDecorator CommentDecorator
@@ -263,3 +259,59 @@ func (_this ConcatDecorator) AfterComment(ctx *EncoderContext)  {}
 func (_this ConcatDecorator) EndContainer(ctx *EncoderContext)  { errorBadEvent(_this, "End") }
 
 // ===========================================================================
+
+type SubjectDecorator struct{}
+
+var subjectDecorator SubjectDecorator
+
+func (_this SubjectDecorator) String() string                  { return "SubjectDecorator" }
+func (_this SubjectDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this SubjectDecorator) BeforeValue(ctx *EncoderContext) {}
+func (_this SubjectDecorator) AfterValue(ctx *EncoderContext) {
+	ctx.Switch(predicateDecorator)
+}
+func (_this SubjectDecorator) BeforeComment(ctx *EncoderContext) {}
+func (_this SubjectDecorator) AfterComment(ctx *EncoderContext)  {}
+func (_this SubjectDecorator) EndContainer(ctx *EncoderContext)  { errorBadEvent(_this, "End") }
+
+// ===========================================================================
+
+type PredicateDecorator struct{}
+
+var predicateDecorator PredicateDecorator
+
+func (_this PredicateDecorator) String() string                  { return "PredicateDecorator" }
+func (_this PredicateDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this PredicateDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteSpace()
+}
+func (_this PredicateDecorator) AfterValue(ctx *EncoderContext) {
+	ctx.Switch(objectDecorator)
+}
+func (_this PredicateDecorator) BeforeComment(ctx *EncoderContext) {
+	ctx.WriteSpace()
+}
+func (_this PredicateDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this PredicateDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
+
+// ===========================================================================
+
+type ObjectDecorator struct{}
+
+var objectDecorator ObjectDecorator
+
+func (_this ObjectDecorator) String() string                  { return "ObjectDecorator" }
+func (_this ObjectDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this ObjectDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteSpace()
+}
+func (_this ObjectDecorator) AfterValue(ctx *EncoderContext) {
+	ctx.Stream.WriteRelationshipEnd()
+	ctx.Unstack()
+	ctx.AfterValue()
+}
+func (_this ObjectDecorator) BeforeComment(ctx *EncoderContext) {
+	ctx.WriteSpace()
+}
+func (_this ObjectDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this ObjectDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }

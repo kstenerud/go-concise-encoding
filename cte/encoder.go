@@ -180,36 +180,18 @@ func (_this *EncoderEventReceiver) OnCompactTime(value compact_time.Time) {
 func (_this *EncoderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.context.BeforeValue()
 	_this.context.EncodeArray(arrayType, elementCount, value)
-	switch arrayType {
-	case events.ArrayTypeResourceIDConcat:
-		_this.context.Stack(concatDecorator)
-	default:
-		_this.context.AfterValue()
-	}
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
 	_this.context.BeforeValue()
 	_this.context.EncodeStringlikeArray(arrayType, value)
-	switch arrayType {
-	case events.ArrayTypeResourceIDConcat:
-		_this.context.Stack(concatDecorator)
-	default:
-		_this.context.AfterValue()
-	}
+	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.BeforeValue()
-	var completion func()
-	switch arrayType {
-	case events.ArrayTypeResourceIDConcat:
-		completion = func() { _this.context.Stack(concatDecorator) }
-	default:
-		completion = func() { _this.context.AfterValue() }
-	}
-
-	_this.context.BeginArray(arrayType, completion)
+	_this.context.BeginArray(arrayType, func() { _this.context.AfterValue() })
 }
 
 func (_this *EncoderEventReceiver) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
@@ -256,7 +238,9 @@ func (_this *EncoderEventReceiver) OnEnd() {
 }
 
 func (_this *EncoderEventReceiver) OnRelationship() {
-	panic("TODO: CTE EncoderEventReceiver.OnRelationship")
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteRelationshipBegin()
+	_this.context.Stack(subjectDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnMarker(id []byte) {

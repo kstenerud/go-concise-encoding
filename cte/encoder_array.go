@@ -89,10 +89,6 @@ func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringConte
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByte('@')
 		_this.stream.WriteQuotedString(data)
-	case events.ArrayTypeResourceIDConcat:
-		_this.stream.WriteByte('@')
-		_this.stream.WriteQuotedString(data)
-		_this.stream.WriteConcat()
 	case events.ArrayTypeCustomText:
 		_this.stream.WriteString("|ct ")
 		_this.stream.WritePotentiallyEscapedStringArrayContents(data)
@@ -116,10 +112,6 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByte('@')
 		_this.stream.WriteQuotedStringBytes(data)
-	case events.ArrayTypeResourceIDConcat:
-		_this.stream.WriteByte('@')
-		_this.stream.WriteQuotedStringBytes(data)
-		_this.stream.WriteConcat()
 	case events.ArrayTypeCustomText:
 		_this.stream.WriteString("|ct ")
 		_this.stream.WritePotentiallyEscapedStringArrayContentsBytes(data)
@@ -253,11 +245,26 @@ func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteString("@")
+	_this.stream.WriteByte('@')
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
 	_this.onComplete = func() {
 		_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
 		onComplete()
+	}
+}
+
+func (_this *arrayEncoderEngine) beginArrayResourceIDConcat(onComplete func()) {
+	_this.setElementByteWidth(1)
+	_this.stream.WriteByte('@')
+	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
+	_this.onComplete = func() {
+		_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
+		_this.stringBuffer = _this.stringBuffer[:0]
+		_this.stream.WriteByte(':')
+		_this.onComplete = func() {
+			_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
+			onComplete()
+		}
 	}
 }
 
@@ -505,7 +512,7 @@ var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
 	events.ArrayTypeBit:              (*arrayEncoderEngine).beginArrayBoolean,
 	events.ArrayTypeString:           (*arrayEncoderEngine).beginArrayString,
 	events.ArrayTypeResourceID:       (*arrayEncoderEngine).beginArrayResourceID,
-	events.ArrayTypeResourceIDConcat: (*arrayEncoderEngine).beginArrayResourceID,
+	events.ArrayTypeResourceIDConcat: (*arrayEncoderEngine).beginArrayResourceIDConcat,
 	events.ArrayTypeCustomText:       (*arrayEncoderEngine).beginArrayCustomText,
 	events.ArrayTypeCustomBinary:     (*arrayEncoderEngine).beginArrayCustomBinary,
 	events.ArrayTypeUint8:            (*arrayEncoderEngine).beginArrayUint8,

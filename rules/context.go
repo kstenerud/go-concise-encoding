@@ -147,7 +147,11 @@ func (_this *Context) BeginNA() {
 }
 
 func (_this *Context) BeginList() {
-	_this.beginContainer(&listRule, DataTypeList) // TODO: RelationshipList by default
+	_this.beginContainer(&listRule, DataTypeList)
+}
+
+func (_this *Context) BeginResourceList() {
+	_this.beginContainer(&resourceListRule, DataTypeList)
 }
 
 func (_this *Context) BeginMap() {
@@ -182,12 +186,6 @@ func (_this *Context) ReferenceKeyable(identifier []byte) {
 
 func (_this *Context) ReferenceAnyType(identifier []byte) {
 	_this.ReferenceObject(identifier, AllowAny)
-}
-
-func (_this *Context) BeginPotentialRIDCat(arrayType events.ArrayType) {
-	if arrayType == events.ArrayTypeResourceIDConcat {
-		_this.stackRule(&ridCatRule, DataTypeResourceID)
-	}
 }
 
 func (_this *Context) BeginTopLevelReference() {

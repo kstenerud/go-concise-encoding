@@ -55,14 +55,44 @@ func (_this *ListRule) OnConstant(ctx *Context, name []byte) {
 }
 func (_this *ListRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *ListRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *ListRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type ResourceListRule struct{}
+
+func (_this *ResourceListRule) String() string                                 { return "Resource List Rule" }
+func (_this *ResourceListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
+func (_this *ResourceListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *ResourceListRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
+func (_this *ResourceListRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *ResourceListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
+func (_this *ResourceListRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
+func (_this *ResourceListRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowResource)
+}
+func (_this *ResourceListRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceObject(identifier, AllowResource)
+}
+func (_this *ResourceListRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *ResourceListRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("resource list", arrayType, AllowResource)
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+}
+func (_this *ResourceListRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("resource list", arrayType, AllowResource)
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+}
+func (_this *ResourceListRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.AssertArrayType("resource list", arrayType, AllowResource)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -88,18 +118,15 @@ func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantKeyable(name)
 }
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
+	ctx.ValidateFullArrayKeyable("map key", arrayType, elementCount, data)
 	_this.switchMapValue(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
+	ctx.ValidateFullArrayStringlikeKeyable("map key", arrayType, data)
 	_this.switchMapValue(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
-	ctx.BeginArrayKeyable(arrayType)
+	ctx.BeginArrayKeyable("map key", arrayType)
 }
 
 // =============================================================================
@@ -109,19 +136,16 @@ type MapValueRule struct{}
 func (_this *MapValueRule) String() string                                 { return "Map Value Rule" }
 func (_this *MapValueRule) switchMapKey(ctx *Context)                      { ctx.ChangeRule(&mapKeyRule) }
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnNA(ctx *Context) {
-	_this.switchMapKey(ctx)
-	ctx.BeginNA()
-}
-func (_this *MapValueRule) OnPadding(ctx *Context)                      { /* Nothing to do */ }
-func (_this *MapValueRule) OnNil(ctx *Context)                          { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnList(ctx *Context)                         { ctx.BeginList() }
-func (_this *MapValueRule) OnMap(ctx *Context)                          { ctx.BeginMap() }
-func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)    { ctx.BeginMarkup(identifier) }
-func (_this *MapValueRule) OnComment(ctx *Context)                      { ctx.BeginComment() }
-func (_this *MapValueRule) OnRelationship(ctx *Context)                 { ctx.BeginRelationship() }
+func (_this *MapValueRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
+func (_this *MapValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *MapValueRule) OnNil(ctx *Context)                             { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnList(ctx *Context)                            { ctx.BeginList() }
+func (_this *MapValueRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
+func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
+func (_this *MapValueRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
+func (_this *MapValueRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
 func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -138,15 +162,12 @@ func (_this *MapValueRule) OnConstant(ctx *Context, name []byte) {
 func (_this *MapValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.switchMapKey(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.switchMapKey(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -174,18 +195,15 @@ func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantKeyable(name)
 }
 func (_this *MarkupKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayKeyable(arrayType, elementCount, data)
+	ctx.ValidateFullArrayKeyable("markup attribute key", arrayType, elementCount, data)
 	_this.switchMarkupValue(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlikeKeyable(arrayType, data)
+	ctx.ValidateFullArrayStringlikeKeyable("markup attribute key", arrayType, data)
 	_this.switchMarkupValue(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
-	ctx.BeginArrayKeyable(arrayType)
+	ctx.BeginArrayKeyable("markup attribute key", arrayType)
 }
 
 // =============================================================================
@@ -197,10 +215,7 @@ func (_this *MarkupValueRule) switchMarkupKey(ctx *Context) { ctx.ChangeRule(&ma
 func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchMarkupKey(ctx)
 }
-func (_this *MarkupValueRule) OnNA(ctx *Context) {
-	_this.switchMarkupKey(ctx)
-	ctx.BeginNA()
-}
+func (_this *MarkupValueRule) OnNA(ctx *Context)                        { ctx.BeginNA() }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnNil(ctx *Context)                       { _this.switchMarkupKey(ctx) }
 func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupKey(ctx) }
@@ -228,15 +243,12 @@ func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte) {
 func (_this *MarkupValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.switchMarkupKey(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.switchMarkupKey(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *MarkupValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -259,7 +271,7 @@ func (_this *MarkupContentsRule) OnStringlikeArray(ctx *Context, arrayType event
 	ctx.ValidateFullArrayMarkupContentsString(arrayType, data)
 }
 func (_this *MarkupContentsRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayString(arrayType)
+	ctx.BeginArrayString("markup contents", arrayType)
 }
 
 // =============================================================================
@@ -291,7 +303,7 @@ func (_this *SubjectRule) moveToNextRule(ctx *Context) {
 }
 func (_this *SubjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.moveToNextRule(ctx) }
 func (_this *SubjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *SubjectRule) OnList(ctx *Context)                            { ctx.BeginList() }
+func (_this *SubjectRule) OnList(ctx *Context)                            { ctx.BeginResourceList() }
 func (_this *SubjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
 func (_this *SubjectRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *SubjectRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
@@ -306,17 +318,17 @@ func (_this *SubjectRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
 func (_this *SubjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("relationship subject", arrayType, AllowSubject)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.moveToNextRule(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *SubjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("relationship subject", arrayType, AllowSubject)
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.moveToNextRule(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *SubjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.AssertArrayType("relationship subject", arrayType, AllowSubject)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -344,17 +356,17 @@ func (_this *PredicateRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
 func (_this *PredicateRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("relationship predicate", arrayType, AllowPredicate)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.moveToNextRule(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *PredicateRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("relationship predicate", arrayType, AllowPredicate)
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.moveToNextRule(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *PredicateRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.AssertArrayType("relationship predicate", arrayType, AllowPredicate)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -362,16 +374,14 @@ func (_this *PredicateRule) OnArrayBegin(ctx *Context, arrayType events.ArrayTyp
 
 type ObjectRule struct{}
 
-func (_this *ObjectRule) String() string { return "List Rule" }
-func (_this *ObjectRule) end(ctx *Context) {
-	ctx.EndContainer()
-}
+func (_this *ObjectRule) String() string                                 { return "List Rule" }
+func (_this *ObjectRule) end(ctx *Context)                               { ctx.EndContainer() }
 func (_this *ObjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.end(ctx) }
 func (_this *ObjectRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *ObjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *ObjectRule) OnNil(ctx *Context)                             { /* Nothing to do */ }
-func (_this *ObjectRule) OnKeyableObject(ctx *Context, _ DataType)       { /* Nothing to do */ }
-func (_this *ObjectRule) OnNonKeyableObject(ctx *Context, _ DataType)    { /* Nothing to do */ }
+func (_this *ObjectRule) OnNil(ctx *Context)                             { _this.end(ctx) }
+func (_this *ObjectRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.end(ctx) }
+func (_this *ObjectRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.end(ctx) }
 func (_this *ObjectRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *ObjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
 func (_this *ObjectRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
@@ -391,16 +401,16 @@ func (_this *ObjectRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
 func (_this *ObjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("relationship object", arrayType, AllowObject)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.end(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *ObjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("relationship object", arrayType, AllowObject)
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.end(ctx)
-	ctx.BeginPotentialRIDCat(arrayType)
 }
 func (_this *ObjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginPotentialRIDCat(arrayType)
+	ctx.AssertArrayType("relationship object", arrayType, AllowObject)
 	ctx.BeginArrayAnyType(arrayType)
 }

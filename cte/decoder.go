@@ -125,6 +125,7 @@ func init() {
 	decoderOpsByFirstChar['>'] = global_advanceAndDecodeMarkupEnd
 	decoderOpsByFirstChar['*'] = global_advanceAndDecodeCommentEnd
 	decoderOpsByFirstChar['|'] = global_advanceAndDecodeTypedArrayBegin
+	decoderOpsByFirstChar['('] = global_advanceAndDecodeRelationshipBegin
 
 	decoderOpsByFirstChar[chars.EOFMarker] = global_decodeInvalidChar
 }

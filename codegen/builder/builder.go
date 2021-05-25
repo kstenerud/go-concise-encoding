@@ -264,10 +264,6 @@ var builders = []Builder{
 		Name:    "rid",
 		Methods: []string{Array, SArray},
 	},
-	{
-		Name:    "ridCat",
-		Methods: []string{Array, SArray},
-	},
 }
 
 func GenerateCode(projectDir string) {

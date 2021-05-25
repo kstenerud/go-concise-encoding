@@ -131,7 +131,7 @@ func TestRulesArrayOneshot(t *testing.T) {
 
 func TestRulesResourceIDOneshot(t *testing.T) {
 	assertEventsMaxDepth(t, 1, RID("http://example.com"), ED())
-	assertEventsMaxDepth(t, 1, RIDCat("http://example.com"), S("1"), ED())
+	assertEventsMaxDepth(t, 1, RBCat(), AC(18, false), AD([]byte("http://example.com")), AC(1, false), AD([]byte("1")), ED())
 }
 
 func TestRulesCustomOneshot(t *testing.T) {
@@ -166,7 +166,7 @@ func TestRulesReference(t *testing.T) {
 	assertEventsSucceed(t, rules, L(),
 		MARK("a"), F(0.1),
 		MARK("blah"), GT(time.Now()),
-		REF("a"), RIDREF(), RIDCat("http://example.com"), S("1"),
+		REF("a"), RIDREF(), RBCat(), AC(18, false), AD([]byte("http://example.com")), AC(1, false), AD([]byte("1")),
 		REF("blah"),
 		S("test"),
 		E())
@@ -461,245 +461,6 @@ func TestRulesMarkup(t *testing.T) {
 	assertEventsMaxDepth(t, 2, MUP("a"), I(1), I(-1), E(), S("a"), E(), ED())
 }
 
-// =============
-// Allowed Types
-// =============
-
-func TestRulesAllowedTypesTLO(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			assertEventsMaxDepth(t, 1, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(1)
-			assertEventsFail(t, rules, event)
-		}
-	}
-	assertSuccess(test.ValidTLOValues...)
-	assertFail(test.InvalidTLOValues...)
-}
-
-func TestRulesAllowedTypesList(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, L())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, L())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidListValues...)
-	assertFail(test.InvalidListValues...)
-}
-
-func TestRulesAllowedTypesMapKey(t *testing.T) {
-	prefix := func() events.DataEventReceiver {
-		rules := newRulesWithMaxDepth(10)
-		assertEventsSucceed(t, rules, M())
-		return rules
-	}
-	assertEachEventSucceeds(t, prefix, test.ValidMapKeys...)
-	assertEachEventFails(t, prefix, test.InvalidMapKeys...)
-}
-
-func TestRulesAllowedTypesMapValue(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, M(), TT())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, M(), TT())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidMapValues...)
-	assertFail(test.InvalidMapValues...)
-}
-
-func TestRulesAllowedTypesComment(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, CMT())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, CMT())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidCommentValues...)
-	assertFail(test.InvalidCommentValues...)
-}
-
-func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP("a"))
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP("a"))
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidMapKeys...)
-	assertFail(test.InvalidMapKeys...)
-}
-
-func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP("a"), TT())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP("a"), TT())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidMapValues...)
-	assertFail(test.InvalidMapValues...)
-}
-
-func TestRulesAllowedTypesMarkupContents(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP("a"), E())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MUP("a"), E())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidMarkupContents...)
-	assertFail(test.InvalidMarkupContents...)
-}
-
-func TestRulesAllowedTypesArrayBegin(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, arrayType := range test.ArrayBeginTypes {
-			for _, event := range events {
-				rules := newRulesWithMaxDepth(10)
-				assertEventsSucceed(t, rules, arrayType)
-				assertEventsSucceed(t, rules, event)
-			}
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, arrayType := range test.ArrayBeginTypes {
-			for _, event := range events {
-				rules := newRulesWithMaxDepth(10)
-				assertEventsSucceed(t, rules, arrayType)
-				assertEventsFail(t, rules, event)
-			}
-		}
-	}
-
-	assertSuccess(test.ValidAfterArrayBegin...)
-	assertFail(test.InvalidAfterArrayBegin...)
-}
-
-func TestRulesAllowedTypesArrayChunk(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, arrayType := range test.ArrayBeginTypes {
-			for _, event := range events {
-				rules := newRulesWithMaxDepth(10)
-				assertEventsSucceed(t, rules, arrayType, AC(1, false))
-				assertEventsSucceed(t, rules, event)
-			}
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, arrayType := range test.ArrayBeginTypes {
-			for _, event := range events {
-				rules := newRulesWithMaxDepth(10)
-				assertEventsSucceed(t, rules, arrayType, AC(1, false))
-				assertEventsFail(t, rules, event)
-			}
-		}
-	}
-
-	// TODO: Make sure end of array is properly aligned to size width
-	assertSuccess(test.ValidAfterArrayChunk...)
-	assertFail(test.InvalidAfterArrayChunk...)
-}
-
-func TestRulesAllowedTypesMarkerValue(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MARK("1"))
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, MARK("1"))
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidMarkerValues...)
-	assertFail(test.InvalidMarkerValues...)
-}
-
-func TestRulesAllowedTypesRIDReference(t *testing.T) {
-	assertSuccess := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, L(), RIDREF())
-			assertEventsSucceed(t, rules, event)
-		}
-	}
-	assertFail := func(events ...*test.TEvent) {
-		for _, event := range events {
-			rules := newRulesWithMaxDepth(10)
-			assertEventsSucceed(t, rules, L(), RIDREF())
-			assertEventsFail(t, rules, event)
-		}
-	}
-
-	assertSuccess(test.ValidRIDReferences...)
-	assertFail(test.InvalidRIDReferences...)
-}
-
 func TestRulesMarkerReference(t *testing.T) {
 	assertEventsMaxDepth(t, 9, M(),
 		S("keys"),
@@ -972,4 +733,317 @@ func TestRulesMultichunk(t *testing.T) {
 func TestRulesRelationship(t *testing.T) {
 	rules := newRulesAfterVersion(nil)
 	assertEventsSucceed(t, rules, REL(), RID("x"), RID("y"), I(1))
+
+	rules = newRulesAfterVersion(nil)
+	assertEventsSucceed(t, rules, REL(), RID("a"), RID("b"), I(1), ED())
+}
+
+// =============
+// Allowed Types
+// =============
+
+func TestRulesAllowedTypesTLO(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.ValidTLOValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.InvalidTLOValues))
+}
+
+func TestRulesAllowedTypesList(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{L()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.ValidListValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{L()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.InvalidListValues))
+}
+
+func TestRulesAllowedTypesMapKey(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{M()},
+			[]*test.TEvent{I(1), E()},
+			[]*test.TEvent{ED()},
+			test.ValidMapKeys))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{M()},
+			[]*test.TEvent{I(1), E()},
+			[]*test.TEvent{ED()},
+			test.InvalidMapKeys))
+}
+
+func TestRulesAllowedTypesMapValue(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{M(), TT()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.ValidMapValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{M(), TT()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.InvalidMapValues))
+}
+
+func TestRulesAllowedTypesComment(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{CMT()},
+			[]*test.TEvent{E(), N()},
+			[]*test.TEvent{ED()},
+			test.ValidCommentValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{CMT()},
+			[]*test.TEvent{E(), N()},
+			[]*test.TEvent{ED()},
+			test.InvalidCommentValues))
+}
+
+func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("a")},
+			[]*test.TEvent{I(1), E(), E()},
+			[]*test.TEvent{ED()},
+			test.ValidMapKeys))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("a")},
+			[]*test.TEvent{I(1), E(), E()},
+			[]*test.TEvent{ED()},
+			test.InvalidMapKeys))
+}
+
+func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("a"), TT()},
+			[]*test.TEvent{E(), E()},
+			[]*test.TEvent{ED()},
+			test.ValidMapValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("a"), TT()},
+			[]*test.TEvent{E(), E()},
+			[]*test.TEvent{ED()},
+			test.InvalidMapValues))
+}
+
+func TestRulesAllowedTypesMarkupContents(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("a"), E()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.ValidMarkupContents))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("a"), E()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.InvalidMarkupContents))
+}
+
+func TestRulesAllowedTypesArrayBegin(t *testing.T) {
+	assertSuccess := func(events ...*test.TEvent) {
+		for _, arrayType := range test.ArrayBeginTypes {
+			for _, event := range events {
+				rules := newRulesWithMaxDepth(10)
+				assertEventsSucceed(t, rules, arrayType)
+				assertEventsSucceed(t, rules, event)
+			}
+		}
+	}
+	assertFail := func(events ...*test.TEvent) {
+		for _, arrayType := range test.ArrayBeginTypes {
+			for _, event := range events {
+				rules := newRulesWithMaxDepth(10)
+				assertEventsSucceed(t, rules, arrayType)
+				assertEventsFail(t, rules, event)
+			}
+		}
+	}
+
+	assertSuccess(test.ValidAfterArrayBegin...)
+	assertFail(test.InvalidAfterArrayBegin...)
+}
+
+func TestRulesAllowedTypesArrayChunk(t *testing.T) {
+	assertSuccess := func(events ...*test.TEvent) {
+		for _, arrayType := range test.ArrayBeginTypes {
+			for _, event := range events {
+				rules := newRulesWithMaxDepth(10)
+				assertEventsSucceed(t, rules, arrayType, AC(1, false))
+				assertEventsSucceed(t, rules, event)
+			}
+		}
+	}
+	assertFail := func(events ...*test.TEvent) {
+		for _, arrayType := range test.ArrayBeginTypes {
+			for _, event := range events {
+				rules := newRulesWithMaxDepth(10)
+				assertEventsSucceed(t, rules, arrayType, AC(1, false))
+				assertEventsFail(t, rules, event)
+			}
+		}
+	}
+
+	// TODO: Make sure end of array is properly aligned to size width
+	assertSuccess(test.ValidAfterArrayChunk...)
+	assertFail(test.InvalidAfterArrayChunk...)
+}
+
+func TestRulesAllowedTypesMarkerValue(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MARK("1")},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.ValidMarkerValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MARK("1")},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.InvalidMarkerValues))
+}
+
+func TestRulesAllowedTypesRIDReference(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{RIDREF()},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.ValidRIDReferences))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{RIDREF()},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.InvalidRIDReferences))
+}
+
+func TestRulesAllowedTypesSubject(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL()},
+			[]*test.TEvent{RID("a"), I(1)},
+			[]*test.TEvent{ED()},
+			test.ValidSubjects))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL()},
+			[]*test.TEvent{RID("a"), I(1)},
+			[]*test.TEvent{ED()},
+			test.InvalidSubjects))
+}
+
+func TestRulesAllowedTypesSubjectResourceList(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), L()},
+			[]*test.TEvent{E(), RID("a"), I(1)},
+			[]*test.TEvent{ED()},
+			test.ValidResourceListElements))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), L()},
+			[]*test.TEvent{E(), RID("a"), I(1)},
+			[]*test.TEvent{ED()},
+			test.InvalidResourceListElements))
+}
+
+func TestRulesAllowedTypesPredicate(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), RID("a")},
+			[]*test.TEvent{I(1)},
+			[]*test.TEvent{ED()},
+			test.ValidPredicates))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), RID("a")},
+			[]*test.TEvent{I(1)},
+			[]*test.TEvent{ED()},
+			test.InvalidPredicates))
+}
+
+func TestRulesAllowedTypesObject(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), RID("a"), RID("b")},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.ValidObjects))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), RID("a"), RID("b")},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.InvalidObjects))
+}
+
+func TestRelationshipObjectNA(t *testing.T) {
+	rules := NewRules(events.NewNullEventReceiver(), nil)
+	assertEventsSucceed(t, rules, BD(), V(0), REL(), RID("a"), RID("b"), NA(), N(), ED())
 }

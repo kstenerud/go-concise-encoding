@@ -50,7 +50,7 @@ func (_this *MarkedObjectKeyableRule) OnStringlikeArray(ctx *Context, arrayType 
 	ctx.MarkObject(dataType)
 }
 func (_this *MarkedObjectKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayKeyable(arrayType)
+	ctx.BeginArrayKeyable("marked object (keyable)", arrayType)
 }
 func (_this *MarkedObjectKeyableRule) OnChildContainerEnded(ctx *Context, dataType DataType) {
 	ctx.UnstackRule()
@@ -128,9 +128,6 @@ func (_this *RIDReferenceRule) OnPadding(ctx *Context) { /* Nothing to do */ }
 func (_this *RIDReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	dataType := arrayTypeToDataType[arrayType]
 	switch arrayType {
-	case events.ArrayTypeResourceIDConcat:
-		ctx.ValidateResourceID(data)
-		ctx.ChangeRule(&ridCatRule)
 	case events.ArrayTypeResourceID:
 		ctx.ValidateResourceID(data)
 		ctx.UnstackRule()
@@ -146,6 +143,7 @@ func (_this *RIDReferenceRule) OnStringlikeArray(ctx *Context, arrayType events.
 	// TODO: Make this properly
 	_this.OnArray(ctx, arrayType, uint64(len(data)), []byte(data))
 }
-func (_this *RIDReferenceRule) OnChildContainerEnded(ctx *Context, _ DataType) {
-	// Toss out the result because it's a resource ID
+func (_this *RIDReferenceRule) OnChildContainerEnded(ctx *Context, cType DataType) {
+	ctx.UnstackRule()
+	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, cType)
 }

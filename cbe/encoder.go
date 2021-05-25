@@ -44,9 +44,8 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	writer          Writer
-	opts            options.CBEEncoderOptions
-	isConcatenating bool
+	writer Writer
+	opts   options.CBEEncoderOptions
 }
 
 // Create a new CBE encoder.
@@ -69,7 +68,6 @@ func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
 // PrepareToEncode MUST be called before using the encoder.
 func (_this *Encoder) PrepareToEncode(writer io.Writer) {
 	_this.writer.SetWriter(writer)
-	_this.isConcatenating = false
 }
 
 // ============================================================================
@@ -360,13 +358,6 @@ var arrayInfo = [events.NumArrayTypes]arrayTypeInfo{
 }
 
 func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	if _this.isConcatenating {
-		_this.writer.WriteArrayChunkHeader(elementCount, 0)
-		_this.writer.WriteBytes(value)
-		_this.isConcatenating = false
-		return
-	}
-
 	if elementCount <= maxSmallArrayLength {
 		info := arrayInfo[arrayType]
 		if info.hasSmallArraySupport {
@@ -387,13 +378,6 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string) {
 	elementCount := uint64(len(value))
 
-	if _this.isConcatenating {
-		_this.writer.WriteArrayChunkHeader(elementCount, 0)
-		_this.writer.WriteString(value)
-		_this.isConcatenating = false
-		return
-	}
-
 	if arrayType == events.ArrayTypeString && elementCount <= maxSmallStringLength {
 		_this.writer.WriteType(cbeTypeString0 + cbeTypeField(elementCount))
 		_this.writer.WriteString(value)
@@ -401,15 +385,11 @@ func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string
 		_this.writer.WriteArrayHeader(arrayType)
 		_this.writer.WriteArrayChunkHeader(elementCount, 0)
 		_this.writer.WriteString(value)
-		_this.isConcatenating = arrayType == events.ArrayTypeResourceIDConcat
 	}
 }
 
 func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
-	if !_this.isConcatenating {
-		_this.writer.WriteArrayHeader(arrayType)
-	}
-	_this.isConcatenating = arrayType == events.ArrayTypeResourceIDConcat
+	_this.writer.WriteArrayHeader(arrayType)
 }
 
 func (_this *Encoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
@@ -446,7 +426,7 @@ func (_this *Encoder) OnEnd() {
 }
 
 func (_this *Encoder) OnRelationship() {
-	panic("TODO: CBE Encoder OnRelationship")
+	_this.writer.WriteType(cbeTypeRelationship)
 }
 
 func (_this *Encoder) OnMarker(id []byte) {

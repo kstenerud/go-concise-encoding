@@ -125,51 +125,113 @@ func TestEncodeDecodeMap(t *testing.T) {
 }
 
 func TestEncodeDecodeAllValidTLO(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV}
-	suffix := []*test.TEvent{test.EvED}
-	assertEncodeDecodeSetTLO(t, prefix, suffix, test.ValidTLOValues)
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidTLOValues, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidList(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvL}
-	suffix := []*test.TEvent{test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidListValues))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{L()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidListValues, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidMapKey(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvM}
-	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{M()},
+			[]*test.TEvent{TT(), E()},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidMapKeys, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidMapValue(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvM, test.EvPI}
-	suffix := []*test.TEvent{test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{M(), TT()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidMapValues, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidMarkupKey(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP}
-	suffix := []*test.TEvent{test.EvPI, test.EvE, test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMapKeys))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("x")},
+			[]*test.TEvent{TT(), E(), E()},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidMapKeys, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidMarkupValue(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvPI}
-	suffix := []*test.TEvent{test.EvE, test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidMapValues))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("x"), TT()},
+			[]*test.TEvent{E(), E()},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidMapValues, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvMUP, test.EvE}
-	suffix := []*test.TEvent{test.EvE, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForKey(test.ValidMarkupContents))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{MUP("x"), E()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidMarkupContents, test.ArrayBeginTypes)))
 }
 
 func TestEncodeDecodeAllValidCommentContents(t *testing.T) {
-	prefix := []*test.TEvent{test.EvBD, test.EvV, test.EvCMT}
-	suffix := []*test.TEvent{test.EvE, test.EvPI, test.EvED}
-	assertEncodeDecodeSetContainer(t, prefix, suffix, test.FilterEventsForContainer(test.ValidCommentValues))
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer), L()},
+			[]*test.TEvent{CMT()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{E(), ED()},
+			test.RemoveEvents(test.ValidCommentValues, test.ArrayBeginTypes)))
+}
+
+func TestEncodeDecodeAllValidRelationshipSubject(t *testing.T) {
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL()},
+			[]*test.TEvent{RID("x"), I(1)},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidSubjects, test.ArrayBeginTypes)))
+}
+
+func TestEncodeDecodeAllValidRelationshipPredicate(t *testing.T) {
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), RID("x")},
+			[]*test.TEvent{I(1)},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidPredicates, test.ArrayBeginTypes)))
+}
+
+func TestEncodeDecodeAllValidRelationshipObject(t *testing.T) {
+	assertEncodeDecodeEventStreams(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{REL(), RID("x"), RID("y")},
+			[]*test.TEvent{},
+			[]*test.TEvent{ED()},
+			test.RemoveEvents(test.ValidObjects, test.ArrayBeginTypes)))
 }
 
 func TestDecodeEncodeMapReferences(t *testing.T) {
