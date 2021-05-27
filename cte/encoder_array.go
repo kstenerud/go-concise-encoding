@@ -500,6 +500,21 @@ func (_this *arrayEncoderEngine) beginArrayUUID(onComplete func()) {
 	}
 }
 
+func (_this *arrayEncoderEngine) beginArrayMedia(onComplete func()) {
+	_this.setElementByteWidth(1)
+	_this.stream.WriteByte('|')
+	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
+	_this.onComplete = func() {
+		_this.stream.WriteBytes(_this.stringBuffer)
+		_this.stringBuffer = _this.stringBuffer[:0]
+		_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
+		_this.onComplete = func() {
+			_this.stream.WriteByte('|')
+			onComplete()
+		}
+	}
+}
+
 func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
 	_this.stringBuffer = append(_this.stringBuffer, data...)
 }
@@ -527,6 +542,7 @@ var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
 	events.ArrayTypeFloat32:          (*arrayEncoderEngine).beginArrayFloat32,
 	events.ArrayTypeFloat64:          (*arrayEncoderEngine).beginArrayFloat64,
 	events.ArrayTypeUUID:             (*arrayEncoderEngine).beginArrayUUID,
+	events.ArrayTypeMedia:            (*arrayEncoderEngine).beginArrayMedia,
 }
 
 var arrayFormatsGeneral = []string{

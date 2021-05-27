@@ -1839,3 +1839,15 @@ func TestCTERelationship(t *testing.T) {
     true = (@"a" @"b" 1)
 }`, BD(), EvV, M(), TT(), REL(), RID("a"), RID("b"), I(1), E(), ED())
 }
+
+func TestCTEMedia(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, `c0
+|application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|`,
+		BD(), EvV, MB(), AC(16, false), AD([]byte("application/x-sh")), AC(28, false), AD([]byte(`#!/bin/sh
+
+echo hello world
+`)), ED())
+
+	assertDecodeEncode(t, nil, nil, `c0
+|a|`, BD(), EvV, MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
+}

@@ -98,7 +98,7 @@ const (
 	cbeTypeNA           = 0xe0
 	cbeTypeRIDCat       = 0xe1
 	cbeTypeRIDReference = 0xe2
-	// cbeTypeMedia        = 0xe3 TODO
+	cbeTypeMedia        = 0xe3
 	cbeTypeArrayInt8    = 0xff
 	cbeTypeArrayUint16  = 0xfe
 	cbeTypeArrayInt16   = 0xfd
@@ -149,6 +149,7 @@ var isPlane2Array = []bool{
 	events.ArrayTypeString:           false,
 	events.ArrayTypeResourceID:       false,
 	events.ArrayTypeResourceIDConcat: true,
+	events.ArrayTypeMedia:            true,
 	events.ArrayTypeCustomBinary:     false,
 	events.ArrayTypeCustomText:       false,
 }
@@ -172,7 +173,7 @@ var arrayTypeToCBEType = []cbeTypeField{
 	events.ArrayTypeCustomBinary:     cbeTypeCustomBinary,
 	events.ArrayTypeCustomText:       cbeTypeCustomText,
 	events.ArrayTypeResourceIDConcat: cbeTypeRIDCat,
-	// events.ArrayTypeMedia: cbeTypeMedia,
+	events.ArrayTypeMedia:            cbeTypeMedia,
 }
 
 var cbePlane2TypeToArrayType = [256]events.ArrayType{
@@ -190,5 +191,5 @@ var cbePlane2TypeToArrayType = [256]events.ArrayType{
 	cbeTypeArrayFloat64: events.ArrayTypeFloat64,
 	cbeTypeArrayUUID:    events.ArrayTypeUUID,
 	cbeTypeRIDCat:       events.ArrayTypeResourceIDConcat,
-	// cbeTypeMedia:       events.ArrayTypeMedia,
+	cbeTypeMedia:        events.ArrayTypeMedia,
 }

@@ -262,6 +262,8 @@ func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEv
 		eventReceiver.OnRIDReference()
 	case cbeTypeRIDCat:
 		_this.decodeRIDCat(eventReceiver)
+	case cbeTypeMedia:
+		_this.decodeMedia(eventReceiver)
 	default:
 		arrayType := cbePlane2TypeToArrayType[cbeType]
 		if arrayType == events.ArrayTypeInvalid {
@@ -281,6 +283,26 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 
 func (_this *Decoder) decodeRIDCat(eventReceiver events.DataEventReceiver) {
 	eventReceiver.OnArrayBegin(events.ArrayTypeResourceIDConcat)
+
+	for i := 0; i < 2; i++ {
+		for {
+			elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
+			validateLength(elementCount)
+			eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)
+
+			if elementCount > 0 {
+				nextBytes := _this.reader.ReadBytes(int(elementCount))
+				eventReceiver.OnArrayData(nextBytes)
+			}
+			if !moreChunksFollow {
+				break
+			}
+		}
+	}
+}
+
+func (_this *Decoder) decodeMedia(eventReceiver events.DataEventReceiver) {
+	eventReceiver.OnArrayBegin(events.ArrayTypeMedia)
 
 	for i := 0; i < 2; i++ {
 		for {

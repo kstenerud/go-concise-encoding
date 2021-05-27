@@ -83,6 +83,8 @@ var (
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule
 	stringChunkRule         StringChunkRule
+	mediaTypeRule           MediaTypeRule
+	mediaTypeChunkRule      MediaTypeChunkRule
 	markedObjectKeyableRule MarkedObjectKeyableRule
 	markedObjectAnyTypeRule MarkedObjectAnyTypeRule
 	ridReferenceRule        RIDReferenceRule
@@ -116,6 +118,7 @@ var arrayTypeToDataType = []DataType{
 	events.ArrayTypeFloat32:          DataTypeArrayFloat32,
 	events.ArrayTypeFloat64:          DataTypeArrayFloat64,
 	events.ArrayTypeUUID:             DataTypeArrayUUID,
+	events.ArrayTypeMedia:            DataTypeMedia,
 }
 
 func wrongType(context interface{}, dataType interface{}) {

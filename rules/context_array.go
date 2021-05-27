@@ -134,6 +134,8 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
+	case events.ArrayTypeMedia:
+		_this.beginArray(arrayType, &mediaTypeRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 	default:
 		_this.beginArray(arrayType, &arrayRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
 	}
@@ -142,6 +144,12 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 func (_this *Context) BeginArrayKeyable(contextDesc string, arrayType events.ArrayType) {
 	_this.AssertArrayType(contextDesc, arrayType, AllowKeyable)
 	_this.BeginArrayAnyType(arrayType)
+}
+
+func (_this *Context) BeginArrayMediaData() {
+	_this.ValidateContentsString(_this.builtArrayBuffer)
+	_this.UnstackRule()
+	_this.beginArray(events.ArrayTypeMediaData, &arrayRule, DataTypeMedia, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
 }
 
 func (_this *Context) BeginChunkAnyType(elemCount uint64, moreChunksFollow bool) {
@@ -198,6 +206,28 @@ func (_this *Context) EndChunkString() {
 	}
 	if !_this.tryEndArray(_this.moreChunksFollow, nil) {
 		_this.ChangeRule(&stringRule)
+	}
+}
+
+func (_this *Context) BeginChunkMediaType(elemCount uint64, moreChunksFollow bool) {
+	_this.chunkExpectedByteCount = elemCount
+	_this.markUpcomingChunkByteCount(_this.chunkExpectedByteCount)
+	_this.chunkActualByteCount = 0
+	_this.moreChunksFollow = moreChunksFollow
+	if elemCount > 0 {
+		_this.ChangeRule(&mediaTypeChunkRule)
+	} else {
+		_this.EndChunkMediaType()
+	}
+}
+
+func (_this *Context) EndChunkMediaType() {
+	if len(_this.utf8RemainderBuffer) > 0 {
+		panic(fmt.Errorf("Incomplete UTF-8 data in chunk"))
+	}
+
+	if !_this.moreChunksFollow {
+		_this.BeginArrayMediaData()
 	}
 }
 

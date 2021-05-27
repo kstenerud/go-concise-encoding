@@ -575,3 +575,9 @@ func TestRelationship(t *testing.T) {
 		[]byte{header, ceVer, typeRelationship, typeRID, 0x02, 'a', typeRID, 0x02, 'b', 1},
 		BD(), EvV, REL(), RID("a"), RID("b"), I(1), ED())
 }
+
+func TestMedia(t *testing.T) {
+	assertDecodeEncode(t,
+		[]byte{header, ceVer, typePlane2, typeMedia, 0x02, 'a', 0x00},
+		BD(), EvV, MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
+}

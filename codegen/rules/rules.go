@@ -482,6 +482,16 @@ var allRules = []Rule{
 		Methods:      []*Method{AData},
 	},
 	{
+		Name:         "MediaTypeRule",
+		FriendlyName: "media type",
+		Methods:      []*Method{AChunk},
+	},
+	{
+		Name:         "MediaTypeChunkRule",
+		FriendlyName: "media type chunk",
+		Methods:      []*Method{AData},
+	},
+	{
 		Name:         "MarkedObjectKeyableRule",
 		FriendlyName: "marked object",
 		Methods:      []*Method{ECtr, Pad, Key, Array, SArray, ABegin},

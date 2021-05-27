@@ -1047,3 +1047,8 @@ func TestRelationshipObjectNA(t *testing.T) {
 	rules := NewRules(events.NewNullEventReceiver(), nil)
 	assertEventsSucceed(t, rules, BD(), V(0), REL(), RID("a"), RID("b"), NA(), N(), ED())
 }
+
+func TestMedia(t *testing.T) {
+	rules := NewRules(events.NewNullEventReceiver(), nil)
+	assertEventsSucceed(t, rules, BD(), V(0), MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
+}

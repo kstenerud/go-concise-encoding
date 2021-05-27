@@ -342,6 +342,7 @@ var (
 	EvAF64B  = AF64B()
 	EvAUU    = AUU([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvAUUB   = AUUB()
+	EvMB     = MB()
 )
 
 var allEvents = []*TEvent{
@@ -352,7 +353,7 @@ var allEvents = []*TEvent{
 	EvRBCat, EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
 	EvAI32, EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
-	EvAF64B, EvAUU, EvAUUB,
+	EvAF64B, EvAUU, EvAUUB, EvMB,
 }
 
 func charBytes(length int) []byte {
@@ -371,43 +372,6 @@ func binBytes(elemSize, length int) []byte {
 		}
 	}
 	return result
-}
-
-var completions = map[*TEvent][]*TEvent{
-	EvNA:     []*TEvent{EvNA, EvPI},
-	EvL:      []*TEvent{EvL, EvE},
-	EvM:      []*TEvent{EvM, EvE},
-	EvCMT:    []*TEvent{EvCMT, EvE, S("a")},
-	EvMUP:    []*TEvent{EvMUP, EvE, EvE},
-	EvMARK:   []*TEvent{EvMARK, S("m")},
-	EvREF:    []*TEvent{EvMARK, S("m"), EvREF, EvPI},
-	EvPAD:    []*TEvent{EvPAD, S("a")},
-	EvSB:     []*TEvent{EvSB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
-	EvRB:     []*TEvent{EvRB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
-	EvRBCat:  []*TEvent{EvRBCat, AC(1, true), AD([]byte{'a'}), AC(0, false)},
-	EvRIDREF: []*TEvent{EvRIDREF, RID("a")},
-	EvCBB:    []*TEvent{EvCBB, AC(1, true), AD([]byte{1}), AC(0, false)},
-	EvCTB:    []*TEvent{EvCTB, AC(1, true), AD([]byte{'a'}), AC(0, false)},
-	EvABB:    []*TEvent{EvABB, AC(1, true), AD([]byte{1}), AC(0, false)},
-	EvAU8B:   []*TEvent{EvAU8B, AC(1, true), AD(binBytes(1, 1)), AC(0, false)},
-	EvAU16B:  []*TEvent{EvAU16B, AC(1, true), AD(binBytes(2, 1)), AC(0, false)},
-	EvAU32B:  []*TEvent{EvAU32B, AC(1, true), AD(binBytes(4, 1)), AC(0, false)},
-	EvAU64B:  []*TEvent{EvAU64B, AC(1, true), AD(binBytes(8, 1)), AC(0, false)},
-	EvAI8B:   []*TEvent{EvAI8B, AC(1, true), AD(binBytes(1, 1)), AC(0, false)},
-	EvAI16B:  []*TEvent{EvAI16B, AC(1, true), AD(binBytes(2, 1)), AC(0, false)},
-	EvAI32B:  []*TEvent{EvAI32B, AC(1, true), AD(binBytes(4, 1)), AC(0, false)},
-	EvAI64B:  []*TEvent{EvAI64B, AC(1, true), AD(binBytes(8, 1)), AC(0, false)},
-	EvAF16B:  []*TEvent{EvAF16B, AC(1, true), AD(binBytes(2, 1)), AC(0, false)},
-	EvAF32B:  []*TEvent{EvAF32B, AC(1, true), AD(binBytes(4, 1)), AC(0, false)},
-	EvAF64B:  []*TEvent{EvAF64B, AC(1, true), AD(binBytes(8, 1)), AC(0, false)},
-	EvAUUB:   []*TEvent{EvAUUB, AC(1, true), AD(binBytes(16, 1)), AC(0, false)},
-}
-
-func FilterAddCompletion(event *TEvent) []*TEvent {
-	if filtered, ok := completions[event]; ok {
-		return filtered
-	}
-	return []*TEvent{event}
 }
 
 func isEffectivelyNil(event *TEvent) bool {
@@ -524,7 +488,7 @@ var (
 
 	ArrayBeginTypes = []*TEvent{
 		EvSB, EvRB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
-		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB,
+		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB, EvMB,
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
@@ -648,6 +612,7 @@ var basicCompletions = map[TEventType][]*TEvent{
 	TEventArrayFloat32Begin:  []*TEvent{AC(1, false), AD(binBytes(4, 1))},
 	TEventArrayFloat64Begin:  []*TEvent{AC(1, false), AD(binBytes(8, 1))},
 	TEventArrayUUIDBegin:     []*TEvent{AC(1, false), AD(binBytes(16, 1))},
+	TEventMediaBegin:         []*TEvent{AC(1, false), AD([]byte{'a'}), AC(0, false)},
 }
 
 func getBasicCompletion(stream []*TEvent) []*TEvent {
@@ -830,6 +795,7 @@ const (
 	TEventArrayFloat32Begin
 	TEventArrayFloat64Begin
 	TEventArrayUUIDBegin
+	TEventMediaBegin
 	TEventArrayChunk
 	TEventArrayData
 	TEventList
@@ -902,6 +868,7 @@ var TEventNames = []string{
 	TEventArrayFloat32Begin:  "AF32B",
 	TEventArrayFloat64Begin:  "AF64B",
 	TEventArrayUUIDBegin:     "AUUB",
+	TEventMediaBegin:         "MB",
 	TEventArrayChunk:         "AC",
 	TEventArrayData:          "AD",
 	TEventList:               "L",
@@ -1235,6 +1202,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArrayBegin(events.ArrayTypeFloat64)
 	case TEventArrayUUIDBegin:
 		receiver.OnArrayBegin(events.ArrayTypeUUID)
+	case TEventMediaBegin:
+		receiver.OnArrayBegin(events.ArrayTypeMedia)
 	case TEventArrayChunk:
 		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
 	case TEventArrayData:
@@ -1332,6 +1301,7 @@ func AF16B() *TEvent                    { return newTEvent(TEventArrayFloat16Beg
 func AF32B() *TEvent                    { return newTEvent(TEventArrayFloat32Begin, nil, nil) }
 func AF64B() *TEvent                    { return newTEvent(TEventArrayFloat64Begin, nil, nil) }
 func AUUB() *TEvent                     { return newTEvent(TEventArrayUUIDBegin, nil, nil) }
+func MB() *TEvent                       { return newTEvent(TEventMediaBegin, nil, nil) }
 func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
@@ -1622,6 +1592,8 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 		h.Print(AF64B())
 	case events.ArrayTypeUUID:
 		h.Print(AUUB())
+	case events.ArrayTypeMedia:
+		h.Print(MB())
 	default:
 		panic(fmt.Errorf("TODO: TEventPrinter.OnArrayBegin: Typed array support for %v", arrayType))
 	}
@@ -1814,6 +1786,8 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 		h.add(AF64B())
 	case events.ArrayTypeUUID:
 		h.add(AUUB())
+	case events.ArrayTypeMedia:
+		h.add(MB())
 	default:
 		panic(fmt.Errorf("TODO: TEventStore.OnArrayBegin: Typed array support for %v", arrayType))
 	}

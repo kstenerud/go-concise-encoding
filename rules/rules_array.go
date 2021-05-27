@@ -103,3 +103,30 @@ func (_this *StringBuilderChunkRule) OnArrayData(ctx *Context, data []byte) {
 		ctx.EndChunkString()
 	}
 }
+
+// =============================================================================
+
+type MediaTypeRule struct{}
+
+func (_this *MediaTypeRule) String() string { return "Media Type Rule" }
+func (_this *MediaTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	if length == 0 {
+		ctx.BeginArrayMediaData()
+		return
+	}
+
+	ctx.BeginChunkMediaType(length, moreChunksFollow)
+}
+
+// =============================================================================
+
+type MediaTypeChunkRule struct{}
+
+func (_this *MediaTypeChunkRule) String() string { return "Media Type Chunk Rule" }
+func (_this *MediaTypeChunkRule) OnArrayData(ctx *Context, data []byte) {
+	ctx.MarkCompletedChunkByteCount(uint64(len(data)))
+	ctx.AddBuiltArrayBytes(data)
+	if ctx.chunkActualByteCount == ctx.chunkExpectedByteCount {
+		ctx.EndChunkMediaType()
+	}
+}

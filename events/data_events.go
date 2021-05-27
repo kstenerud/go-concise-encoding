@@ -61,6 +61,8 @@ const (
 	ArrayTypeFloat32
 	ArrayTypeFloat64
 	ArrayTypeUUID
+	ArrayTypeMedia
+	ArrayTypeMediaData
 	NumArrayTypes
 )
 
@@ -93,6 +95,8 @@ var arrayTypeNames = [...]string{
 	ArrayTypeFloat32:           "Float32",
 	ArrayTypeFloat64:           "Float64",
 	ArrayTypeUUID:              "UUID",
+	ArrayTypeMedia:             "Media",
+	ArrayTypeMediaData:         "MediaData",
 }
 
 var arrayTypeElementSizes = [...]int{
@@ -115,6 +119,8 @@ var arrayTypeElementSizes = [...]int{
 	ArrayTypeFloat32:          32,
 	ArrayTypeFloat64:          64,
 	ArrayTypeUUID:             128,
+	ArrayTypeMedia:            8,
+	ArrayTypeMediaData:        8,
 }
 
 // DataEventReceiver receives data events (int, string, etc) and performs

@@ -160,6 +160,7 @@ var (
 	EvAF64B  = test.EvAF64B
 	EvAUU    = test.EvAUU
 	EvAUUB   = test.EvAUUB
+	EvMB     = test.EvMB
 )
 
 func ComplementaryEvents(events []*test.TEvent) []*test.TEvent {
@@ -221,6 +222,7 @@ func AF16B() *test.TEvent                    { return test.AF16B() }
 func AF32B() *test.TEvent                    { return test.AF32B() }
 func AF64B() *test.TEvent                    { return test.AF64B() }
 func AUUB() *test.TEvent                     { return test.AUUB() }
+func MB() *test.TEvent                       { return test.MB() }
 func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }

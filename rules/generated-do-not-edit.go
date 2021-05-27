@@ -1151,6 +1151,144 @@ func (_this *StringBuilderChunkRule) OnArrayBegin(ctx *Context, arrayType events
 func (_this *StringBuilderChunkRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	wrongType("string chunk", "array chunk")
 }
+func (_this *MediaTypeRule) OnBeginDocument(ctx *Context) {
+	wrongType("media type", "begin document")
+}
+func (_this *MediaTypeRule) OnEndDocument(ctx *Context) {
+	wrongType("media type", "end document")
+}
+func (_this *MediaTypeRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("media type", "child end")
+}
+func (_this *MediaTypeRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("media type", "version")
+}
+func (_this *MediaTypeRule) OnNA(ctx *Context) {
+	wrongType("media type", "NA")
+}
+func (_this *MediaTypeRule) OnPadding(ctx *Context) {
+	wrongType("media type", "padding")
+}
+func (_this *MediaTypeRule) OnNil(ctx *Context) {
+	wrongType("media type", "Nil")
+}
+func (_this *MediaTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("media type", objType)
+}
+func (_this *MediaTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("media type", objType)
+}
+func (_this *MediaTypeRule) OnList(ctx *Context) {
+	wrongType("media type", "list")
+}
+func (_this *MediaTypeRule) OnMap(ctx *Context) {
+	wrongType("media type", "map")
+}
+func (_this *MediaTypeRule) OnMarkup(ctx *Context, identifier []byte) {
+	wrongType("media type", "markup")
+}
+func (_this *MediaTypeRule) OnComment(ctx *Context) {
+	wrongType("media type", "comment")
+}
+func (_this *MediaTypeRule) OnEnd(ctx *Context) {
+	wrongType("media type", "end container")
+}
+func (_this *MediaTypeRule) OnRelationship(ctx *Context) {
+	wrongType("media type", "relationship")
+}
+func (_this *MediaTypeRule) OnMarker(ctx *Context, identifier []byte) {
+	wrongType("media type", "marker")
+}
+func (_this *MediaTypeRule) OnReference(ctx *Context, identifier []byte) {
+	wrongType("media type", "reference")
+}
+func (_this *MediaTypeRule) OnRIDReference(ctx *Context) {
+	wrongType("media type", "RID reference")
+}
+func (_this *MediaTypeRule) OnConstant(ctx *Context, identifier []byte) {
+	wrongType("media type", "constant")
+}
+func (_this *MediaTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	wrongType("media type", "array")
+}
+func (_this *MediaTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	wrongType("media type", "array")
+}
+func (_this *MediaTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	wrongType("media type", "array begin")
+}
+func (_this *MediaTypeRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("media type", "array data")
+}
+func (_this *MediaTypeChunkRule) OnBeginDocument(ctx *Context) {
+	wrongType("media type chunk", "begin document")
+}
+func (_this *MediaTypeChunkRule) OnEndDocument(ctx *Context) {
+	wrongType("media type chunk", "end document")
+}
+func (_this *MediaTypeChunkRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+	wrongType("media type chunk", "child end")
+}
+func (_this *MediaTypeChunkRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("media type chunk", "version")
+}
+func (_this *MediaTypeChunkRule) OnNA(ctx *Context) {
+	wrongType("media type chunk", "NA")
+}
+func (_this *MediaTypeChunkRule) OnPadding(ctx *Context) {
+	wrongType("media type chunk", "padding")
+}
+func (_this *MediaTypeChunkRule) OnNil(ctx *Context) {
+	wrongType("media type chunk", "Nil")
+}
+func (_this *MediaTypeChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+	wrongType("media type chunk", objType)
+}
+func (_this *MediaTypeChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("media type chunk", objType)
+}
+func (_this *MediaTypeChunkRule) OnList(ctx *Context) {
+	wrongType("media type chunk", "list")
+}
+func (_this *MediaTypeChunkRule) OnMap(ctx *Context) {
+	wrongType("media type chunk", "map")
+}
+func (_this *MediaTypeChunkRule) OnMarkup(ctx *Context, identifier []byte) {
+	wrongType("media type chunk", "markup")
+}
+func (_this *MediaTypeChunkRule) OnComment(ctx *Context) {
+	wrongType("media type chunk", "comment")
+}
+func (_this *MediaTypeChunkRule) OnEnd(ctx *Context) {
+	wrongType("media type chunk", "end container")
+}
+func (_this *MediaTypeChunkRule) OnRelationship(ctx *Context) {
+	wrongType("media type chunk", "relationship")
+}
+func (_this *MediaTypeChunkRule) OnMarker(ctx *Context, identifier []byte) {
+	wrongType("media type chunk", "marker")
+}
+func (_this *MediaTypeChunkRule) OnReference(ctx *Context, identifier []byte) {
+	wrongType("media type chunk", "reference")
+}
+func (_this *MediaTypeChunkRule) OnRIDReference(ctx *Context) {
+	wrongType("media type chunk", "RID reference")
+}
+func (_this *MediaTypeChunkRule) OnConstant(ctx *Context, identifier []byte) {
+	wrongType("media type chunk", "constant")
+}
+func (_this *MediaTypeChunkRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	wrongType("media type chunk", "array")
+}
+func (_this *MediaTypeChunkRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	wrongType("media type chunk", "array")
+}
+func (_this *MediaTypeChunkRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	wrongType("media type chunk", "array begin")
+}
+func (_this *MediaTypeChunkRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("media type chunk", "array chunk")
+}
 func (_this *MarkedObjectKeyableRule) OnBeginDocument(ctx *Context) {
 	wrongType("marked object", "begin document")
 }

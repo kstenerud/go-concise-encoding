@@ -290,38 +290,6 @@ func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
 }
 
-func assertEncodeDecodeSet(t *testing.T, prefix []*test.TEvent, suffix []*test.TEvent, events []*test.TEvent) {
-	for _, event := range events {
-		allEvents := []*test.TEvent{}
-		allEvents = append(allEvents, prefix...)
-		allEvents = append(allEvents, test.FilterAddCompletion(event)...)
-		allEvents = append(allEvents, suffix...)
-		assertEncodeDecode(t, allEvents...)
-	}
-}
-
-func assertEncodeDecodeSetTLO(t *testing.T, prefix []*test.TEvent, suffix []*test.TEvent, events []*test.TEvent) {
-	for _, event := range events {
-		allEvents := []*test.TEvent{}
-		allEvents = append(allEvents, prefix...)
-		allEvents = append(allEvents, test.FilterAddCompletion(event)...)
-		allEvents = append(allEvents, suffix...)
-		allEvents = test.FilterEventsSwitchToRIDRefs(allEvents)
-		assertEncodeDecode(t, allEvents...)
-	}
-}
-
-func assertEncodeDecodeSetContainer(t *testing.T, prefix []*test.TEvent, suffix []*test.TEvent, events []*test.TEvent) {
-	for _, event := range events {
-		allEvents := []*test.TEvent{}
-		allEvents = append(allEvents, prefix...)
-		allEvents = append(allEvents, test.FilterAddCompletion(event)...)
-		allEvents = append(allEvents, suffix...)
-		allEvents = test.FilterEventsSwitchToRIDRefs(allEvents)
-		assertEncodeDecode(t, allEvents...)
-	}
-}
-
 func assertDecodeCBECTE(t *testing.T,
 	cteEncodeOpts *options.CTEEncoderOptions,
 	cteDecodeOpts *options.CTEDecoderOptions,

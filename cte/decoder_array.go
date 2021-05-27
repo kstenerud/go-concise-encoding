@@ -69,14 +69,14 @@ func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
 	ctx.EventReceiver.OnArrayData(bytes)
 }
 
-func decodeArrayType(ctx *DecoderContext) string {
+func decodeArrayType(ctx *DecoderContext) []byte {
 	arrayType := ctx.Stream.ReadToken()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
 		arrayType = arrayType[:len(arrayType)-1]
 		ctx.Stream.UnreadByte()
 	}
 	common.ASCIIBytesToLower(arrayType)
-	return string(arrayType)
+	return arrayType
 }
 
 func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType string, bytesPerElement int, data []byte) {
@@ -116,8 +116,9 @@ func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
 	arrayType := decodeArrayType(ctx)
+	arrayTypeAsString := string(arrayType)
 	ctx.Stream.SkipWhitespace()
-	switch arrayType {
+	switch arrayTypeAsString {
 	case "cb":
 		decodeCustomBinary(ctx)
 	case "ct":
@@ -203,7 +204,40 @@ func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	case "f64x":
 		decodeArrayF64(ctx, "hex", Token.DecodeSmallHexFloat)
 	default:
-		ctx.Errorf("%s: Unhandled array type", arrayType)
+		decodeMedia(ctx, arrayType)
+	}
+}
+
+func decodeMedia(ctx *DecoderContext, arrayType []byte) {
+	ctx.EventReceiver.OnArrayBegin(events.ArrayTypeMedia)
+	ctx.EventReceiver.OnArrayChunk(uint64(len(arrayType)), false)
+	ctx.EventReceiver.OnArrayData(arrayType)
+
+	digitType := "hex"
+	// TODO: Buffered read of media data
+	ctx.Scratch = ctx.Scratch[:0]
+	for {
+		ctx.Stream.SkipWhitespace()
+		token := ctx.Stream.ReadToken()
+		if len(token) == 0 {
+			break
+		}
+		v, _, decodedCount := token.DecodeSmallHexUint(ctx.TextPos)
+		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
+		if v > maxUint8Value {
+			ctx.Errorf("%v value too big for array type", digitType)
+		}
+		ctx.Scratch = append(ctx.Scratch, uint8(v))
+	}
+
+	switch ctx.Stream.ReadByteNoEOF() {
+	case '|':
+		ctx.EventReceiver.OnArrayChunk(uint64(len(ctx.Scratch)), false)
+		if len(ctx.Scratch) > 0 {
+			ctx.EventReceiver.OnArrayData(ctx.Scratch)
+		}
+	default:
+		ctx.Errorf("Expected %v digits", digitType)
 	}
 }
 
