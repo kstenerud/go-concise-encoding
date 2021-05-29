@@ -142,6 +142,11 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 	case reflect.Interface:
 		return generateInterfaceBuilder
 	case reflect.Array:
+		switch dstType {
+		case common.TypeUID:
+			return generateUIDBuilder
+		}
+
 		switch dstType.Elem().Kind() {
 		case reflect.Uint8:
 			return newUint8ArrayBuilderGenerator(dstType)

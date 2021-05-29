@@ -87,8 +87,7 @@ func (_this *interfaceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd
 }
 
 func (_this *interfaceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	value = common.CloneBytes(value)
-	dst.Set(reflect.ValueOf(value))
+	setFromUID(value, dst)
 	return dst
 }
 

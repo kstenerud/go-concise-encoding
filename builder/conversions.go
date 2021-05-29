@@ -21,9 +21,12 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"net/url"
 	"reflect"
+
+	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -667,4 +670,39 @@ func setAnythingFromAnything(src reflect.Value, dst reflect.Value) {
 		panic("TODO: setAnythingFromAnything: Ptr")
 	}
 	PanicCannotConvert(src, dst.Type())
+}
+
+func setFromUID(value []byte, dst reflect.Value) {
+	if dst.Type() == common.TypeUID {
+		v := types.NewUID(value)
+		dst.Set(reflect.ValueOf(v))
+		return
+	}
+
+	const uidLength = 16
+	if len(value) != uidLength {
+		panic(fmt.Errorf("UID value is of incorrect length %v", len(value)))
+	}
+
+	switch dst.Kind() {
+	case reflect.Array:
+		if dst.Len() != uidLength {
+			panic(fmt.Errorf("Cannot store UID in array of length %v", dst.Len()))
+		}
+
+		for i, v := range value {
+			elem := dst.Index(i)
+			elem.SetUint(uint64(v))
+		}
+		return
+	case reflect.Slice:
+		dst.SetBytes(common.CloneBytes(value))
+		return
+	case reflect.Interface:
+		v := types.NewUID(value)
+		dst.Set(reflect.ValueOf(v))
+		return
+	}
+
+	PanicCannotConvert(value, dst.Type())
 }

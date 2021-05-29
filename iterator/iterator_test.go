@@ -26,6 +26,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/types"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -43,6 +45,7 @@ func TestIterateBasic(t *testing.T) {
 	gTimeNow := time.Now()
 	cTimeNow := test.AsCompactTime(gTimeNow)
 	pURL := NewRID("http://x.com")
+	uid := types.UID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 
 	assertIterate(t, nil, N())
 	assertIterate(t, true, B(true))
@@ -82,6 +85,8 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, pURL, RID("http://x.com"))
 	assertIterate(t, *pURL, RID("http://x.com"))
 	assertIterate(t, (*url.URL)(nil), N())
+	assertIterate(t, uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
+	assertIterate(t, &uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 }
 
 func TestIterateArrayUint8(t *testing.T) {

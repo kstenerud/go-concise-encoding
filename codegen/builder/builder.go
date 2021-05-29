@@ -264,6 +264,10 @@ var builders = []Builder{
 		Name:    "rid",
 		Methods: []string{Array, SArray},
 	},
+	{
+		Name:    "uid",
+		Methods: []string{UID},
+	},
 }
 
 func GenerateCode(projectDir string) {

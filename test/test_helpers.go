@@ -32,6 +32,8 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/kstenerud/go-concise-encoding/types"
+
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -1378,6 +1380,11 @@ func EventForValue(value interface{}) *TEvent {
 			v := rv.Interface().(url.URL)
 			return RID(v.String())
 		}
+	case reflect.Array:
+		if rv.Type() == common.TypeUID {
+			v := value.(types.UID)
+			return UID(v[:])
+		}
 	}
 	panic(fmt.Errorf("TEST CODE BUG: Unhandled kind: %v", rv.Kind()))
 }
@@ -1876,6 +1883,7 @@ type TestingOuterStruct struct {
 	PCTime compact_time.Time
 	PURL   *url.URL
 	URL    url.URL
+	UID    types.UID
 }
 
 func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (events []*TEvent) {
@@ -1963,6 +1971,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 	anv("CTime", _this.CTime)
 	anv("PCTime", _this.PCTime)
 	anv("PURL", _this.PURL)
+	anv("UID", _this.UID)
 
 	if includeFakes {
 		ane("F1", B(true))
@@ -2081,4 +2090,5 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PTime = &testTime
 	_this.CTime = NewTS(-1000, 1, 1, 1, 1, 1, 1, "Europe/Berlin")
 	_this.PURL, _ = url.Parse(fmt.Sprintf("http://example.com/%v", baseValue))
+	_this.UID = types.UID{0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0, 0xe0, 0xf0, 0xff}
 }

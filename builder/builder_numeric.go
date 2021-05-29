@@ -422,3 +422,20 @@ func (_this *uintBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Deci
 	setUintFromBigDecimalFloat(value, dst)
 	return dst
 }
+
+// ============================================================================
+
+type uidBuilder struct {
+	// Template Data
+	dstType reflect.Type
+}
+
+var globalUIDBuilder = &uidBuilder{}
+
+func generateUIDBuilder(ctx *Context) Builder { return globalUIDBuilder }
+func (_this *uidBuilder) String() string      { return reflect.TypeOf(_this).String() }
+
+func (_this *uidBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	setFromUID(value, dst)
+	return dst
+}

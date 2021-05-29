@@ -29,6 +29,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/kstenerud/go-concise-encoding/types"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
@@ -59,6 +61,8 @@ var (
 
 	TypeURL  = reflect.TypeOf(url.URL{})
 	TypePURL = reflect.TypeOf((*url.URL)(nil))
+
+	TypeUID = reflect.TypeOf(types.UID{})
 )
 
 var KeyableTypes = []reflect.Type{

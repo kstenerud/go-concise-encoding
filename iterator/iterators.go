@@ -30,6 +30,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/types"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -141,6 +143,11 @@ func iterateFloat(context *Context, v reflect.Value) {
 
 func iterateString(context *Context, v reflect.Value) {
 	context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, v.String())
+}
+
+func iterateUID(context *Context, v reflect.Value) {
+	vCopy := v.Interface().(types.UID)
+	context.EventReceiver.OnUID(vCopy[:])
 }
 
 func iterateInterface(context *Context, v reflect.Value) {

@@ -159,6 +159,11 @@ func (_this *Session) getDefaultIteratorForType(t reflect.Type) IteratorFunction
 	case reflect.Interface:
 		return iterateInterface
 	case reflect.Array:
+		switch t {
+		case common.TypeUID:
+			return iterateUID
+		}
+
 		switch t.Elem().Kind() {
 		case reflect.Uint8:
 			return iterateArrayUint8
