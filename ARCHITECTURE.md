@@ -40,6 +40,7 @@ Code Organization
 | [options](options)         | Configuration for all high level APIs                           |
 | [rules](rules)             | [Rules](#rules)                                                 |
 | [test](test)               | Test helper code                                                |
+| [types](types)             | Types not present in the standard library                       |
 | [version](version)         | The currently supported Concise Encoding version                |
 
 
@@ -91,6 +92,15 @@ Secondary Sections
 ### Code Generation
 
 The [codegen](codegen) directory contains all of the code to generate the more tedious parts of the library. To use it, simply run `go build` inside the [codegen](codegen) directory and then run `./codegen`. It will create/replace files in various places called `generated-do-not-edit.go`. To generate the Unicode character handling code, you'll also need the file `ucd.all.flat.xml` from https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.flat.zip
+
+### Types
+
+The [types](types) directory contains the Concise Encoding types that are not present in the standard Go library:
+
+- UID
+- Media
+- Markup
+- Relationship
 
 ### Debug Helpers
 
