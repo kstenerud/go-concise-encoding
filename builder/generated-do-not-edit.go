@@ -43,8 +43,8 @@ func (_this *bigDecimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Valu
 func (_this *bigDecimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *bigDecimalFloatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *bigDecimalFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -85,8 +85,8 @@ func (_this *bigFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) refl
 func (_this *bigFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *bigFloatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *bigFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -127,8 +127,8 @@ func (_this *bigIntBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflec
 func (_this *bigIntBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *bigIntBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *bigIntBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigIntBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -187,8 +187,8 @@ func (_this *boolBuilder) BuildFromDecimalFloat(ctx *Context, value compact_floa
 func (_this *boolBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *boolBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *boolBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *boolBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -247,8 +247,8 @@ func (_this *compactTimeBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *compactTimeBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *compactTimeBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *compactTimeBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *compactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -304,8 +304,8 @@ func (_this *customBuilder) BuildFromDecimalFloat(ctx *Context, value compact_fl
 func (_this *customBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *customBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *customBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *customBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -343,8 +343,8 @@ func (_this *decimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) 
 func (_this *decimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *decimalFloatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *decimalFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *decimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -385,8 +385,8 @@ func (_this *floatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect
 func (_this *floatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *floatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *floatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *floatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -448,8 +448,8 @@ func (_this *float32ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value comp
 func (_this *float32ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float32ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *float32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -502,8 +502,8 @@ func (_this *float32SliceBuilder) BuildFromDecimalFloat(ctx *Context, value comp
 func (_this *float32SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float32SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *float32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -559,8 +559,8 @@ func (_this *float64ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value comp
 func (_this *float64ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float64ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *float64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -613,8 +613,8 @@ func (_this *float64SliceBuilder) BuildFromDecimalFloat(ctx *Context, value comp
 func (_this *float64SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *float64SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *float64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -649,8 +649,8 @@ func (_this *intBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.V
 func (_this *intBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *intBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *intBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *intBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -712,8 +712,8 @@ func (_this *int8ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact
 func (_this *int8ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int8ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int8ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -766,8 +766,8 @@ func (_this *int8SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact
 func (_this *int8SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int8SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int8SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -823,8 +823,8 @@ func (_this *int16ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *int16ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int16ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int16ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -877,8 +877,8 @@ func (_this *int16SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *int16SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int16SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int16SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -934,8 +934,8 @@ func (_this *int32ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *int32ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int32ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -988,8 +988,8 @@ func (_this *int32SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *int32SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int32SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1045,8 +1045,8 @@ func (_this *int64ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *int64ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int64ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1099,8 +1099,8 @@ func (_this *int64SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *int64SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *int64SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *int64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1147,8 +1147,8 @@ func (_this *markerObjectBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *pBigDecimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *pBigDecimalFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -1186,8 +1186,8 @@ func (_this *pBigDecimalFloatBuilder) NotifyChildContainerFinished(ctx *Context,
 func (_this *pBigFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pBigFloatBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *pBigFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pBigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -1225,8 +1225,8 @@ func (_this *pBigFloatBuilder) NotifyChildContainerFinished(ctx *Context, contai
 func (_this *pBigIntBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pBigIntBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *pBigIntBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pBigIntBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -1285,8 +1285,8 @@ func (_this *pCompactTimeBuilder) BuildFromDecimalFloat(ctx *Context, value comp
 func (_this *pCompactTimeBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pCompactTimeBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *pCompactTimeBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pCompactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -1351,8 +1351,8 @@ func (_this *pRidBuilder) BuildFromDecimalFloat(ctx *Context, value compact_floa
 func (_this *pRidBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *pRidBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *pRidBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *pRidBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
@@ -1408,8 +1408,8 @@ func (_this *stringBuilder) BuildFromDecimalFloat(ctx *Context, value compact_fl
 func (_this *stringBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *stringBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *stringBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *stringBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
@@ -1468,8 +1468,8 @@ func (_this *timeBuilder) BuildFromDecimalFloat(ctx *Context, value compact_floa
 func (_this *timeBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *timeBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *timeBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *timeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -1516,8 +1516,8 @@ func (_this *uintBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.
 func (_this *uintBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uintBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uintBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uintBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
@@ -1579,8 +1579,8 @@ func (_this *uint8ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *uint8ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint8ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint8ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1633,8 +1633,8 @@ func (_this *uint8SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compac
 func (_this *uint8SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint8SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint8SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1690,8 +1690,8 @@ func (_this *uint16ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *uint16ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint16ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint16ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1744,8 +1744,8 @@ func (_this *uint16SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *uint16SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint16SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint16SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1801,8 +1801,8 @@ func (_this *uint32ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *uint32ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint32ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1855,8 +1855,8 @@ func (_this *uint32SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *uint32SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint32SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1912,8 +1912,8 @@ func (_this *uint64ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *uint64ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint64ArrayBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -1966,8 +1966,8 @@ func (_this *uint64SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compa
 func (_this *uint64SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *uint64SliceBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
@@ -2023,8 +2023,8 @@ func (_this *ridBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float
 func (_this *ridBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
 }
-func (_this *ridBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUUID", reflect.TypeOf(_this), dst.Type()))
+func (_this *ridBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *ridBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))

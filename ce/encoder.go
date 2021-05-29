@@ -59,7 +59,7 @@ type Encoder interface {
 	OnDecimalFloat(value compact_float.DFloat)
 	OnBigDecimalFloat(value *apd.Decimal)
 	OnNan(signaling bool)
-	OnUUID(value []byte)
+	OnUID(value []byte)
 	OnTime(value time.Time)
 	OnCompactTime(value compact_time.Time)
 	// Warning: Do not store a pointer to value! The underlying contents should

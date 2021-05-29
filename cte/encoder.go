@@ -159,9 +159,9 @@ func (_this *EncoderEventReceiver) OnNan(signaling bool) {
 	_this.context.AfterValue()
 }
 
-func (_this *EncoderEventReceiver) OnUUID(value []byte) {
+func (_this *EncoderEventReceiver) OnUID(value []byte) {
 	_this.context.BeforeValue()
-	_this.context.Stream.WriteUUID(value)
+	_this.context.Stream.WriteUID(value)
 	_this.context.AfterValue()
 }
 

@@ -208,10 +208,10 @@ func (_this *RulesEventReceiver) OnNan(signaling bool) {
 	_this.receiver.OnNan(signaling)
 }
 
-func (_this *RulesEventReceiver) OnUUID(value []byte) {
+func (_this *RulesEventReceiver) OnUID(value []byte) {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeUID)
-	_this.receiver.OnUUID(value)
+	_this.receiver.OnUID(value)
 }
 
 func (_this *RulesEventReceiver) OnTime(value time.Time) {

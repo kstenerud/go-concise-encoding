@@ -60,7 +60,7 @@ const (
 	typeFloat16      = 0x70
 	typeFloat32      = 0x71
 	typeFloat64      = 0x72
-	typeUUID         = 0x73
+	typeUID          = 0x73
 	typeReserved74   = 0x74
 	typeReserved75   = 0x75
 	typeRelationship = 0x76
@@ -112,7 +112,7 @@ const (
 	typeShortArrayFloat16 = 0x70
 	typeShortArrayFloat32 = 0x80
 	typeShortArrayFloat64 = 0x90
-	typeShortArrayUUID    = 0xa0
+	typeShortArrayUID     = 0xa0
 
 	typeNA           = 0xe0
 	typeRIDCat       = 0xe1
@@ -128,7 +128,7 @@ const (
 	typeArrayFloat16 = 0xf8
 	typeArrayFloat32 = 0xf7
 	typeArrayFloat64 = 0xf6
-	typeArrayUUID    = 0xf5
+	typeArrayUID     = 0xf5
 )
 
 func NewBigInt(str string, base int) *big.Int {
@@ -187,7 +187,7 @@ func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
 func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
-func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
+func UID(v []byte) *test.TEvent              { return test.UID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }

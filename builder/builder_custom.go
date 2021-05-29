@@ -31,7 +31,7 @@ type customBuilder struct{}
 var globalCustomBuilder = &customBuilder{}
 
 func generateCustomBuilder(ctx *Context) Builder { return globalCustomBuilder }
-func (_this *customBuilder) String() string            { return reflect.TypeOf(_this).String() }
+func (_this *customBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
 func (_this *customBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {

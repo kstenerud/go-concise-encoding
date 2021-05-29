@@ -96,7 +96,7 @@ func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
 func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
-func UUID(v []byte) *test.TEvent             { return test.UUID(v) }
+func UID(v []byte) *test.TEvent              { return test.UID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }

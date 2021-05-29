@@ -125,7 +125,7 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
-		ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
+		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
 		return
 	}
 
@@ -168,13 +168,13 @@ func reinterpretDecAsHex(v uint64) uint64 {
 	return result
 }
 
-type decodeUUID struct{}
+type decodeUID struct{}
 
-var global_decodeUUID decodeUUID
+var global_decodeUID decodeUID
 
-func (_this decodeUUID) Run(ctx *DecoderContext) {
+func (_this decodeUID) Run(ctx *DecoderContext) {
 	token := ctx.Stream.ReadToken()
-	ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
+	ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
 }
 
 type advanceAndDecodeNumericNegative struct{}
@@ -286,7 +286,7 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
-		ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
+		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
 		return
 	}
 
@@ -330,16 +330,16 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	}
 }
 
-type decodeFalseOrUUID struct{}
+type decodeFalseOrUID struct{}
 
-var global_decodeFalseOrUUID decodeFalseOrUUID
+var global_decodeFalseOrUID decodeFalseOrUID
 
-func (_this decodeFalseOrUUID) Run(ctx *DecoderContext) {
+func (_this decodeFalseOrUID) Run(ctx *DecoderContext) {
 	token := ctx.Stream.ReadToken()
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
-		ctx.EventReceiver.OnUUID(token.DecodeUUID(ctx.TextPos))
+		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
 		return
 	}
 

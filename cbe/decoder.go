@@ -133,8 +133,8 @@ EOF:
 			eventReceiver.OnFloat(float64(_this.reader.ReadFloat32()))
 		case cbeTypeFloat64:
 			eventReceiver.OnFloat(_this.reader.ReadFloat64())
-		case cbeTypeUUID:
-			eventReceiver.OnUUID(_this.reader.ReadBytes(16))
+		case cbeTypeUID:
+			eventReceiver.OnUID(_this.reader.ReadBytes(16))
 		case cbeTypeComment:
 			eventReceiver.OnComment()
 		case cbeTypeMarkup:
@@ -251,7 +251,7 @@ func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEv
 		return
 	case cbeTypeShortArrayUID:
 		bytes := _this.reader.ReadBytes(elementCount * 16)
-		eventReceiver.OnArray(events.ArrayTypeUUID, uint64(elementCount), bytes)
+		eventReceiver.OnArray(events.ArrayTypeUID, uint64(elementCount), bytes)
 		return
 	}
 

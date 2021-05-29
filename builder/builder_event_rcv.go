@@ -156,8 +156,8 @@ func (_this *BuilderEventReceiver) OnNan(signaling bool) {
 		_this.OnFloat(common.QuietNan)
 	}
 }
-func (_this *BuilderEventReceiver) OnUUID(value []byte) {
-	_this.context.CurrentBuilder.BuildFromUUID(&_this.context, value, _this.object)
+func (_this *BuilderEventReceiver) OnUID(value []byte) {
+	_this.context.CurrentBuilder.BuildFromUID(&_this.context, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnTime(value time.Time) {
 	_this.context.CurrentBuilder.BuildFromTime(&_this.context, value, _this.object)

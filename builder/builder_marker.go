@@ -111,8 +111,8 @@ func (_this *markerObjectBuilder) BuildFromBigDecimalFloat(ctx *Context, value *
 	return object
 }
 
-func (_this *markerObjectBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	object := _this.child.BuildFromUUID(ctx, value, dst)
+func (_this *markerObjectBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromUID(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)
 	return object
 }

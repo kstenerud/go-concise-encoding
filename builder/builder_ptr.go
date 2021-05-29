@@ -118,9 +118,9 @@ func (_this *ptrBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decim
 	return dst
 }
 
-func (_this *ptrBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+func (_this *ptrBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
-	_this.elemGenerator(ctx).BuildFromUUID(ctx, value, ptr.Elem())
+	_this.elemGenerator(ctx).BuildFromUID(ctx, value, ptr.Elem())
 	dst.Set(ptr)
 	return dst
 }

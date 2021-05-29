@@ -60,7 +60,7 @@ const (
 	ArrayTypeFloat16
 	ArrayTypeFloat32
 	ArrayTypeFloat64
-	ArrayTypeUUID
+	ArrayTypeUID
 	ArrayTypeMedia
 	ArrayTypeMediaData
 	NumArrayTypes
@@ -94,7 +94,7 @@ var arrayTypeNames = [...]string{
 	ArrayTypeFloat16:           "Float16",
 	ArrayTypeFloat32:           "Float32",
 	ArrayTypeFloat64:           "Float64",
-	ArrayTypeUUID:              "UUID",
+	ArrayTypeUID:               "UID",
 	ArrayTypeMedia:             "Media",
 	ArrayTypeMediaData:         "MediaData",
 }
@@ -118,7 +118,7 @@ var arrayTypeElementSizes = [...]int{
 	ArrayTypeFloat16:          16,
 	ArrayTypeFloat32:          32,
 	ArrayTypeFloat64:          64,
-	ArrayTypeUUID:             128,
+	ArrayTypeUID:              128,
 	ArrayTypeMedia:            8,
 	ArrayTypeMediaData:        8,
 }
@@ -161,7 +161,7 @@ type DataEventReceiver interface {
 	OnBigFloat(value *big.Float)
 	OnDecimalFloat(value compact_float.DFloat)
 	OnBigDecimalFloat(value *apd.Decimal)
-	OnUUID(value []byte)
+	OnUID(value []byte)
 	OnNan(signaling bool)
 	OnTime(value time.Time)
 	OnCompactTime(value compact_time.Time)
@@ -207,7 +207,7 @@ func (_this *NullEventReceiver) OnBigFloat(*big.Float)               {}
 func (_this *NullEventReceiver) OnDecimalFloat(compact_float.DFloat) {}
 func (_this *NullEventReceiver) OnBigDecimalFloat(*apd.Decimal)      {}
 func (_this *NullEventReceiver) OnNan(bool)                          {}
-func (_this *NullEventReceiver) OnUUID([]byte)                       {}
+func (_this *NullEventReceiver) OnUID([]byte)                        {}
 func (_this *NullEventReceiver) OnIdentifier([]byte)                 {}
 func (_this *NullEventReceiver) OnTime(time.Time)                    {}
 func (_this *NullEventReceiver) OnCompactTime(compact_time.Time)     {}

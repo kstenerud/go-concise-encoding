@@ -111,8 +111,8 @@ func TestRulesBigDecimalFloat(t *testing.T) {
 		BDF(NewBDF("-infinity")), E(), ED())
 }
 
-func TestRulesUUID(t *testing.T) {
-	assertEventsMaxDepth(t, 1, UUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), ED())
+func TestRulesUID(t *testing.T) {
+	assertEventsMaxDepth(t, 1, UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), ED())
 }
 
 func TestRulesTime(t *testing.T) {

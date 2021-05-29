@@ -487,14 +487,14 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 	}
 }
 
-func (_this *arrayEncoderEngine) beginArrayUUID(onComplete func()) {
+func (_this *arrayEncoderEngine) beginArrayUID(onComplete func()) {
 	const elemWidth = 16
 	_this.setElementByteWidth(elemWidth)
 	_this.stream.WriteString("|u")
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByte(' ')
-			_this.stream.WriteUUID(data)
+			_this.stream.WriteUID(data)
 			data = data[elemWidth:]
 		}
 	}
@@ -541,7 +541,7 @@ var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
 	events.ArrayTypeFloat16:          (*arrayEncoderEngine).beginArrayFloat16,
 	events.ArrayTypeFloat32:          (*arrayEncoderEngine).beginArrayFloat32,
 	events.ArrayTypeFloat64:          (*arrayEncoderEngine).beginArrayFloat64,
-	events.ArrayTypeUUID:             (*arrayEncoderEngine).beginArrayUUID,
+	events.ArrayTypeUID:              (*arrayEncoderEngine).beginArrayUID,
 	events.ArrayTypeMedia:            (*arrayEncoderEngine).beginArrayMedia,
 }
 

@@ -168,9 +168,9 @@ func (_this *mapBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decim
 	return object
 }
 
-func (_this *mapBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
+func (_this *mapBuilder) BuildFromUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.nextGenerator(ctx).BuildFromUUID(ctx, value, object)
+	_this.nextGenerator(ctx).BuildFromUID(ctx, value, object)
 	_this.store(object)
 	return object
 }

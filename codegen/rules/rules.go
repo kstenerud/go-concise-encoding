@@ -168,7 +168,7 @@ const (
 	DataTypeArrayFloat16
 	DataTypeArrayFloat32
 	DataTypeArrayFloat64
-	DataTypeArrayUUID
+	DataTypeArrayUID
 	DataTypeMedia
 	DataTypeRIDReference
 	DataTypeCustomText
@@ -218,7 +218,7 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeArrayFloat16: "DataTypeArrayFloat16",
 	DataTypeArrayFloat32: "DataTypeArrayFloat32",
 	DataTypeArrayFloat64: "DataTypeArrayFloat64",
-	DataTypeArrayUUID:    "DataTypeArrayUUID",
+	DataTypeArrayUID:     "DataTypeArrayUID",
 	DataTypeMedia:        "DataTypeMedia",
 	DataTypeRIDReference: "DataTypeRIDReference",
 	DataTypeCustomText:   "DataTypeCustomText",

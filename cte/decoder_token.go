@@ -680,19 +680,19 @@ func (_this Token) decodeSmallIntWrapper(textPos *TextPositionCounter, readUint 
 
 // ----------------------------------------------------------------------------
 
-func (_this Token) DecodeUUID(textPos *TextPositionCounter) (uuid []byte) {
+func (_this Token) DecodeUID(textPos *TextPositionCounter) (uid []byte) {
 	if len(_this) != 36 {
-		_this.errorf(textPos, 0, "Expected a UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)")
+		_this.errorf(textPos, 0, "Expected a UID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)")
 	}
 
 	decodeByte := func(src Token) byte {
 		nybble1 := chars.HexCharValues[src[0]]
 		if nybble1 == chars.InvalidHexChar {
-			src.UnexpectedChar(textPos, 0, "UUID")
+			src.UnexpectedChar(textPos, 0, "UID")
 		}
 		nybble2 := chars.HexCharValues[src[1]]
 		if nybble2 == chars.InvalidHexChar {
-			src.UnexpectedChar(textPos, 1, "UUID")
+			src.UnexpectedChar(textPos, 1, "UID")
 		}
 		return (nybble1 << 4) | nybble2
 	}
@@ -705,7 +705,7 @@ func (_this Token) DecodeUUID(textPos *TextPositionCounter) (uuid []byte) {
 	}
 
 	expectDash := func(src Token, offset int) {
-		_this.expectCharAtOffset(textPos, offset, '-', "UUID")
+		_this.expectCharAtOffset(textPos, offset, '-', "UID")
 	}
 
 	decodeSection(_this, _this, 4)

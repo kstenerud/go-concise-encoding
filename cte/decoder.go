@@ -99,12 +99,12 @@ func init() {
 		decoderOpsByFirstChar[i] = global_decodeNumericPositive
 	}
 	for i := 'a'; i <= 'f'; i++ {
-		decoderOpsByFirstChar[i] = global_decodeUUID
+		decoderOpsByFirstChar[i] = global_decodeUID
 	}
 	for i := 'A'; i <= 'F'; i++ {
-		decoderOpsByFirstChar[i] = global_decodeUUID
+		decoderOpsByFirstChar[i] = global_decodeUID
 	}
-	decoderOpsByFirstChar['f'] = global_decodeFalseOrUUID
+	decoderOpsByFirstChar['f'] = global_decodeFalseOrUID
 	decoderOpsByFirstChar['i'] = global_decodeNamedValueI
 	decoderOpsByFirstChar['n'] = global_decodeNamedValueN
 	decoderOpsByFirstChar['s'] = global_decodeNamedValueS

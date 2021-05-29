@@ -59,19 +59,19 @@ const (
 	DataTypeArrayFloat16
 	DataTypeArrayFloat32
 	DataTypeArrayFloat64
-	DataTypeArrayUUID
+	DataTypeArrayUID
 	DataTypeMedia
 	DataTypeRIDReference
 	DataTypeCustomText
 	DataTypeCustomBinary
 	DataTypeResourceList
 	DataTypeInvalid = 0x0
-	AllowAny = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
+	AllowAny = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
 	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeResourceID
 	AllowResource = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
 	AllowSubject = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
 	AllowPredicate = DataTypeResourceID
-	AllowObject = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
+	AllowObject = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
 	AllowString = DataTypeString
 	AllowResourceID = DataTypeResourceID
 )
@@ -130,7 +130,7 @@ var datatypeNames = map[DataType]string{
 	DataTypeArrayFloat16: "DataTypeArrayFloat16",
 	DataTypeArrayFloat32: "DataTypeArrayFloat32",
 	DataTypeArrayFloat64: "DataTypeArrayFloat64",
-	DataTypeArrayUUID: "DataTypeArrayUUID",
+	DataTypeArrayUID: "DataTypeArrayUID",
 	DataTypeMedia: "DataTypeMedia",
 	DataTypeRIDReference: "DataTypeRIDReference",
 	DataTypeCustomText: "DataTypeCustomText",

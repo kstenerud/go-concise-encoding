@@ -232,9 +232,9 @@ func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
 	}
 }
 
-func (_this *Writer) WriteUUID(v []byte) {
+func (_this *Writer) WriteUID(v []byte) {
 	if len(v) != 16 {
-		panic(fmt.Errorf("expected UUID length 16 but got %v", len(v)))
+		panic(fmt.Errorf("expected UID length 16 but got %v", len(v)))
 	}
 
 	_this.WriteHexByte(v[0])

@@ -93,8 +93,8 @@ func (_this *topLevelBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.
 	return dst
 }
 
-func (_this *topLevelBuilder) BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	_this.builderGenerator(ctx).BuildFromUUID(ctx, value, dst)
+func (_this *topLevelBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromUID(ctx, value, dst)
 	return dst
 }
 

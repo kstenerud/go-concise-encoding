@@ -124,7 +124,7 @@ func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	case "ct":
 		decodeCustomText(ctx)
 	case "u":
-		decodeArrayUUID(ctx)
+		decodeArrayUID(ctx)
 	case "b":
 		decodeArrayBoolean(ctx)
 	case "u8":
@@ -491,13 +491,13 @@ func decodeArrayF64(ctx *DecoderContext, digitType string, decodeElement floatTo
 	finishTypedArray(ctx, events.ArrayTypeFloat64, digitType, 8, ctx.Scratch)
 }
 
-func decodeArrayUUID(ctx *DecoderContext) {
+func decodeArrayUID(ctx *DecoderContext) {
 	ctx.Scratch = ctx.Scratch[:0]
 	ctx.Stream.SkipWhitespace()
 	for ctx.Stream.PeekByteAllowEOF() != '|' {
 		token := ctx.Stream.ReadToken()
-		ctx.Scratch = append(ctx.Scratch, token.DecodeUUID(ctx.TextPos)...)
+		ctx.Scratch = append(ctx.Scratch, token.DecodeUID(ctx.TextPos)...)
 		ctx.Stream.SkipWhitespace()
 	}
-	finishTypedArray(ctx, events.ArrayTypeUUID, "uuid", 16, ctx.Scratch)
+	finishTypedArray(ctx, events.ArrayTypeUID, "uid", 16, ctx.Scratch)
 }

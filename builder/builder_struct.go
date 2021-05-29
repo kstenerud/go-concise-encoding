@@ -215,8 +215,8 @@ func (_this *structBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.De
 	return object
 }
 
-func (_this *structBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
-	_this.nextBuilderGenerator(ctx).BuildFromUUID(ctx, value, _this.nextValue)
+func (_this *structBuilder) BuildFromUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
+	_this.nextBuilderGenerator(ctx).BuildFromUID(ctx, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object

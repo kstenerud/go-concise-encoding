@@ -256,8 +256,8 @@ func (_this *Encoder) OnNan(signaling bool) {
 	_this.writer.WriteNaN(signaling)
 }
 
-func (_this *Encoder) OnUUID(value []byte) {
-	_this.writer.WriteType(cbeTypeUUID)
+func (_this *Encoder) OnUID(value []byte) {
+	_this.writer.WriteType(cbeTypeUID)
 	_this.writer.WriteBytes(value)
 }
 
@@ -350,7 +350,7 @@ var arrayInfo = [events.NumArrayTypes]arrayTypeInfo{
 		hasSmallArraySupport: true,
 		isPlane2:             true,
 	},
-	events.ArrayTypeUUID: arrayTypeInfo{
+	events.ArrayTypeUID: arrayTypeInfo{
 		shortArrayType:       cbeTypeShortArrayUID,
 		hasSmallArraySupport: true,
 		isPlane2:             true,

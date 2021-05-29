@@ -197,7 +197,7 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, RID("x://x"))
-	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
@@ -210,7 +210,7 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, RID("x://x"))
-	assertBuildPanics(t, *v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, *v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, *v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, *v, GT(time.Now()))
 	assertBuildPanics(t, *v, L())
@@ -244,7 +244,7 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, RID("x://x"))
-	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
@@ -257,7 +257,7 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, RID("x://x"))
-	assertBuildPanics(t, *v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, *v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, *v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, *v, GT(time.Now()))
 	assertBuildPanics(t, *v, L())
@@ -303,7 +303,7 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, RID("x://x"))
-	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
@@ -327,7 +327,7 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
 	assertBuildPanics(t, *v, RID("x://x"))
-	assertBuildPanics(t, *v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, *v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, *v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, *v, GT(time.Now()))
 	assertBuildPanics(t, *v, L())
@@ -355,7 +355,7 @@ func TestBuilderDecimalFloatFail(t *testing.T) {
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, RID("x://x"))
-	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
@@ -390,7 +390,7 @@ func TestBuilderConvertToFloatFail(t *testing.T) {
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
 	assertBuildPanics(t, v, RID("x://x"))
-	assertBuildPanics(t, v, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, v, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, v, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, v, GT(time.Now()))
 	assertBuildPanics(t, v, L())
@@ -428,7 +428,7 @@ func TestBuilderConvertToIntFail(t *testing.T) {
 	assertBuildPanics(t, int(1), S("1"))
 	assertBuildPanics(t, int(1), AU8([]byte{1}))
 	assertBuildPanics(t, int(1), RID("x://x"))
-	assertBuildPanics(t, int(1), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, int(1), UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, int(1), CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, int(1), GT(time.Now()))
 	assertBuildPanics(t, int(1), L())
@@ -489,7 +489,7 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 	assertBuildPanics(t, uint(1), S("1"))
 	assertBuildPanics(t, uint(1), AU8([]byte{1}))
 	assertBuildPanics(t, uint(1), RID("x://x"))
-	assertBuildPanics(t, uint(1), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, uint(1), UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, uint(1), CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, uint(1), GT(time.Now()))
 	assertBuildPanics(t, uint(1), L())
@@ -540,7 +540,7 @@ func TestBuilderStringFail(t *testing.T) {
 	assertBuildPanics(t, "", BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, "", AU8([]byte{1}))
 	assertBuildPanics(t, "", RID("x://x"))
-	assertBuildPanics(t, "", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, "", UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, "", CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, "", GT(time.Now()))
 	assertBuildPanics(t, "", L())
@@ -633,7 +633,7 @@ func TestBuilderGoTimeFail(t *testing.T) {
 	assertBuildPanics(t, gtime, S("1"))
 	assertBuildPanics(t, gtime, AU8([]byte{1}))
 	assertBuildPanics(t, gtime, RID("x://x"))
-	assertBuildPanics(t, gtime, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, gtime, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, gtime, CT(ctime))
 	assertBuildPanics(t, gtime, L())
 	assertBuildPanics(t, gtime, M())
@@ -668,7 +668,7 @@ func TestBuilderCompactTimeFail(t *testing.T) {
 	assertBuildPanics(t, ctime, S("1"))
 	assertBuildPanics(t, ctime, AU8([]byte{1}))
 	assertBuildPanics(t, ctime, RID("x://x"))
-	assertBuildPanics(t, ctime, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, ctime, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, ctime, L())
 	assertBuildPanics(t, ctime, M())
 	assertBuildPanics(t, ctime, E())
@@ -752,7 +752,7 @@ func TestBuilderByteArrayFail(t *testing.T) {
 	assertBuildPanics(t, [1]byte{}, BI(NewBigInt("100000000000000000000", 10)))
 	assertBuildPanics(t, [1]byte{}, S(""))
 	assertBuildPanics(t, [1]byte{}, RID("x://x"))
-	assertBuildPanics(t, [1]byte{}, UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+	assertBuildPanics(t, [1]byte{}, UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 	assertBuildPanics(t, [1]byte{}, CT(test.AsCompactTime(time.Now())))
 	assertBuildPanics(t, [1]byte{}, GT(time.Now()))
 	assertBuildPanics(t, [1]byte{}, M())
@@ -798,7 +798,7 @@ func TestBuilderMap(t *testing.T) {
 		I(9), BI(NewBigInt("100000000000000000000", 10)),
 		I(10), S("test"),
 		I(11), RID("http://example.com"),
-		I(12), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		I(12), UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 		I(13), GT(gtime),
 		I(14), CT(ctime),
 		I(15), L(), F(1), E(),
@@ -851,7 +851,7 @@ func TestBuilderInterfaceSlice(t *testing.T) {
 		BI(NewBigInt("100000000000000000000", 10)),
 		S("test"),
 		RID("http://example.com"),
-		UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 		GT(gtime),
 		CT(ctime),
 		L(), F(1), E(),
@@ -899,7 +899,7 @@ func TestBuilderInterfaceMap(t *testing.T) {
 		I(9), BI(NewBigInt("100000000000000000000", 10)),
 		I(10), S("test"),
 		I(11), RID("http://example.com"),
-		I(12), UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		I(12), UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 		I(13), GT(gtime),
 		I(14), CT(ctime),
 		I(15), L(), F(1), E(),

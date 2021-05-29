@@ -51,7 +51,7 @@ type Builder interface {
 	BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value
 	BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value
 	BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value
-	BuildFromUUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value
+	BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value
 	BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value
 	BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value
 	BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value

@@ -120,9 +120,9 @@ func (_this *arrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Dec
 	return object
 }
 
-func (_this *arrayBuilder) BuildFromUUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
+func (_this *arrayBuilder) BuildFromUID(ctx *Context, value []byte, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
-	_this.elemGenerator(ctx).BuildFromUUID(ctx, value, object)
+	_this.elemGenerator(ctx).BuildFromUID(ctx, value, object)
 	return object
 }
 

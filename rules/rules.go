@@ -117,7 +117,7 @@ var arrayTypeToDataType = []DataType{
 	events.ArrayTypeFloat16:          DataTypeArrayFloat16,
 	events.ArrayTypeFloat32:          DataTypeArrayFloat32,
 	events.ArrayTypeFloat64:          DataTypeArrayFloat64,
-	events.ArrayTypeUUID:             DataTypeArrayUUID,
+	events.ArrayTypeUID:              DataTypeArrayUID,
 	events.ArrayTypeMedia:            DataTypeMedia,
 }
 

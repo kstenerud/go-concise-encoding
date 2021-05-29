@@ -293,7 +293,7 @@ var (
 	EvBDFNil = BDF(nil)
 	EvBDFNAN = BDF(NewBDF("nan"))
 	EvNAN    = NAN()
-	EvUUID   = UUID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	EvUID    = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvGT     = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
 	EvCT     = CT(NewDate(2020, 1, 1))
 	EvL      = L()
@@ -348,7 +348,7 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvNA, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
-	EvBDFNAN, EvNAN, EvUUID, EvGT, EvCT, EvL, EvM, EvMUP, EvCMT, EvREL, EvE,
+	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvCMT, EvREL, EvE,
 	EvMARK, EvREF, EvRIDREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvRBCat, EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
@@ -397,7 +397,7 @@ func FilterCTE(event *TEvent) []*TEvent {
 		TEventArrayFloat32Begin, TEventArrayFloat64Begin,
 		TEventArrayInt8Begin, TEventArrayInt16Begin, TEventArrayInt32Begin,
 		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
-		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUUIDBegin,
+		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUIDBegin,
 		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
 		TEventStringBegin:
 		return []*TEvent{S("x")}
@@ -496,7 +496,7 @@ var (
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvRBCat, EvREF, EvCMT, EvE,
+		EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvRBCat, EvREF, EvCMT, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
@@ -611,7 +611,7 @@ var basicCompletions = map[TEventType][]*TEvent{
 	TEventArrayFloat16Begin:  []*TEvent{AC(1, false), AD(binBytes(2, 1))},
 	TEventArrayFloat32Begin:  []*TEvent{AC(1, false), AD(binBytes(4, 1))},
 	TEventArrayFloat64Begin:  []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayUUIDBegin:     []*TEvent{AC(1, false), AD(binBytes(16, 1))},
+	TEventArrayUIDBegin:      []*TEvent{AC(1, false), AD(binBytes(16, 1))},
 	TEventMediaBegin:         []*TEvent{AC(1, false), AD([]byte{'a'}), AC(0, false)},
 }
 
@@ -672,7 +672,7 @@ func allPossibleEventStreams(
 		TEventArrayFloat32Begin, TEventArrayFloat64Begin,
 		TEventArrayInt8Begin, TEventArrayInt16Begin, TEventArrayInt32Begin,
 		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
-		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUUIDBegin,
+		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUIDBegin,
 		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
 		TEventStringBegin:
 		newStream := copyEvents(docBegin)
@@ -757,7 +757,7 @@ const (
 	TEventBigDecimalFloat
 	TEventNan
 	TEventSNan
-	TEventUUID
+	TEventUID
 	TEventTime
 	TEventCompactTime
 	TEventString
@@ -776,7 +776,7 @@ const (
 	TEventArrayFloat16
 	TEventArrayFloat32
 	TEventArrayFloat64
-	TEventArrayUUID
+	TEventArrayUID
 	TEventStringBegin
 	TEventResourceIDBegin
 	TEventResourceIDCatBegin
@@ -794,7 +794,7 @@ const (
 	TEventArrayFloat16Begin
 	TEventArrayFloat32Begin
 	TEventArrayFloat64Begin
-	TEventArrayUUIDBegin
+	TEventArrayUIDBegin
 	TEventMediaBegin
 	TEventArrayChunk
 	TEventArrayData
@@ -830,7 +830,7 @@ var TEventNames = []string{
 	TEventBigDecimalFloat:    "BDF",
 	TEventNan:                "NAN",
 	TEventSNan:               "SNAN",
-	TEventUUID:               "UUID",
+	TEventUID:                "UID",
 	TEventTime:               "GT",
 	TEventCompactTime:        "CT",
 	TEventString:             "S",
@@ -849,7 +849,7 @@ var TEventNames = []string{
 	TEventArrayFloat16:       "AF16",
 	TEventArrayFloat32:       "AF32",
 	TEventArrayFloat64:       "AF64",
-	TEventArrayUUID:          "AUU",
+	TEventArrayUID:           "AUU",
 	TEventStringBegin:        "SB",
 	TEventResourceIDBegin:    "RB",
 	TEventResourceIDCatBegin: "RBCat",
@@ -867,7 +867,7 @@ var TEventNames = []string{
 	TEventArrayFloat16Begin:  "AF16B",
 	TEventArrayFloat32Begin:  "AF32B",
 	TEventArrayFloat64Begin:  "AF64B",
-	TEventArrayUUIDBegin:     "AUUB",
+	TEventArrayUIDBegin:      "AUUB",
 	TEventMediaBegin:         "MB",
 	TEventArrayChunk:         "AC",
 	TEventArrayData:          "AD",
@@ -1110,8 +1110,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnNan(false)
 	case TEventSNan:
 		receiver.OnNan(true)
-	case TEventUUID:
-		receiver.OnUUID(_this.V1.([]byte))
+	case TEventUID:
+		receiver.OnUID(_this.V1.([]byte))
 	case TEventTime:
 		receiver.OnTime(_this.V1.(time.Time))
 	case TEventCompactTime:
@@ -1163,9 +1163,9 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventArrayFloat64:
 		bytes := arrays.Float64SliceAsBytes(_this.V1.([]float64))
 		receiver.OnArray(events.ArrayTypeFloat64, uint64(len(bytes)/8), bytes)
-	case TEventArrayUUID:
+	case TEventArrayUID:
 		bytes := _this.V1.([]byte)
-		receiver.OnArray(events.ArrayTypeUUID, uint64(len(bytes)/16), bytes)
+		receiver.OnArray(events.ArrayTypeUID, uint64(len(bytes)/16), bytes)
 	case TEventStringBegin:
 		receiver.OnArrayBegin(events.ArrayTypeString)
 	case TEventResourceIDBegin:
@@ -1200,8 +1200,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArrayBegin(events.ArrayTypeFloat32)
 	case TEventArrayFloat64Begin:
 		receiver.OnArrayBegin(events.ArrayTypeFloat64)
-	case TEventArrayUUIDBegin:
-		receiver.OnArrayBegin(events.ArrayTypeUUID)
+	case TEventArrayUIDBegin:
+		receiver.OnArrayBegin(events.ArrayTypeUID)
 	case TEventMediaBegin:
 		receiver.OnArrayBegin(events.ArrayTypeMedia)
 	case TEventArrayChunk:
@@ -1263,7 +1263,7 @@ func NI(v uint64) *TEvent               { return newTEvent(TEventNInt, v, nil) }
 func BI(v *big.Int) *TEvent             { return EventOrNil(TEventBigInt, v) }
 func NAN() *TEvent                      { return newTEvent(TEventNan, nil, nil) }
 func SNAN() *TEvent                     { return newTEvent(TEventSNan, nil, nil) }
-func UUID(v []byte) *TEvent             { return newTEvent(TEventUUID, v, nil) }
+func UID(v []byte) *TEvent              { return newTEvent(TEventUID, v, nil) }
 func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
 func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
@@ -1282,7 +1282,7 @@ func AU64(v []uint64) *TEvent           { return newTEvent(TEventArrayUint64, v,
 func AF16(v []byte) *TEvent             { return newTEvent(TEventArrayFloat16, v, nil) }
 func AF32(v []float32) *TEvent          { return newTEvent(TEventArrayFloat32, v, nil) }
 func AF64(v []float64) *TEvent          { return newTEvent(TEventArrayFloat64, v, nil) }
-func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUUID, v, nil) }
+func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUID, v, nil) }
 func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
 func RB() *TEvent                       { return newTEvent(TEventResourceIDBegin, nil, nil) }
 func RBCat() *TEvent                    { return newTEvent(TEventResourceIDCatBegin, nil, nil) }
@@ -1300,7 +1300,7 @@ func AU64B() *TEvent                    { return newTEvent(TEventArrayUint64Begi
 func AF16B() *TEvent                    { return newTEvent(TEventArrayFloat16Begin, nil, nil) }
 func AF32B() *TEvent                    { return newTEvent(TEventArrayFloat32Begin, nil, nil) }
 func AF64B() *TEvent                    { return newTEvent(TEventArrayFloat64Begin, nil, nil) }
-func AUUB() *TEvent                     { return newTEvent(TEventArrayUUIDBegin, nil, nil) }
+func AUUB() *TEvent                     { return newTEvent(TEventArrayUIDBegin, nil, nil) }
 func MB() *TEvent                       { return newTEvent(TEventMediaBegin, nil, nil) }
 func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
@@ -1488,9 +1488,9 @@ func (h *TEventPrinter) OnBigDecimalFloat(value *apd.Decimal) {
 	}
 	h.Next.OnBigDecimalFloat(value)
 }
-func (h *TEventPrinter) OnUUID(value []byte) {
-	h.Print(UUID(value))
-	h.Next.OnUUID(value)
+func (h *TEventPrinter) OnUID(value []byte) {
+	h.Print(UID(value))
+	h.Next.OnUID(value)
 }
 func (h *TEventPrinter) OnTime(value time.Time) {
 	h.Print(GT(value))
@@ -1534,7 +1534,7 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 		h.Print(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:
 		h.Print(AF64(arrays.BytesToFloat64Slice(value)))
-	case events.ArrayTypeUUID:
+	case events.ArrayTypeUID:
 		h.Print(AUU(value))
 	default:
 		panic(fmt.Errorf("TODO: TEventPrinter.OnArray: Typed array support for %v", arrayType))
@@ -1590,7 +1590,7 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 		h.Print(AF32B())
 	case events.ArrayTypeFloat64:
 		h.Print(AF64B())
-	case events.ArrayTypeUUID:
+	case events.ArrayTypeUID:
 		h.Print(AUUB())
 	case events.ArrayTypeMedia:
 		h.Print(MB())
@@ -1693,7 +1693,7 @@ func (h *TEventStore) OnFloat(value float64)                     { h.add(F(value
 func (h *TEventStore) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
 func (h *TEventStore) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
 func (h *TEventStore) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
-func (h *TEventStore) OnUUID(value []byte)                       { h.add(UUID(CloneBytes(value))) }
+func (h *TEventStore) OnUID(value []byte)                        { h.add(UID(CloneBytes(value))) }
 func (h *TEventStore) OnTime(value time.Time)                    { h.add(GT(value)) }
 func (h *TEventStore) OnCompactTime(value compact_time.Time)     { h.add(CT(value)) }
 func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
@@ -1730,7 +1730,7 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		h.add(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:
 		h.add(AF64(arrays.BytesToFloat64Slice(value)))
-	case events.ArrayTypeUUID:
+	case events.ArrayTypeUID:
 		h.add(AUU(CloneBytes(value)))
 	default:
 		panic(fmt.Errorf("TODO: TEventStore.OnArray: Typed array support for %v", arrayType))
@@ -1784,7 +1784,7 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 		h.add(AF32B())
 	case events.ArrayTypeFloat64:
 		h.add(AF64B())
-	case events.ArrayTypeUUID:
+	case events.ArrayTypeUID:
 		h.add(AUUB())
 	case events.ArrayTypeMedia:
 		h.add(MB())
@@ -1977,7 +1977,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F10", BI(NewBigInt("1000", 10)))
 		ane("F12", NAN())
 		ane("F13", SNAN())
-		ane("F14", UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
+		ane("F14", UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 		ane("F15", GT(_this.Time))
 		ane("F16", CT(_this.CTime))
 		ane("F17", AU8([]byte{1}))
@@ -1999,7 +1999,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			BI(NewBigInt("1000", 10)),
 			NAN(),
 			SNAN(),
-			UUID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+			UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 			GT(_this.Time),
 			CT(_this.CTime),
 			AU8([]byte{1}),

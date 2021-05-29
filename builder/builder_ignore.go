@@ -76,7 +76,7 @@ func (_this *ignoreBuilder) BuildFromBigDecimalFloat(ctx *Context, _ *apd.Decima
 	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromUUID(ctx *Context, _ []byte, dst reflect.Value) reflect.Value {
+func (_this *ignoreBuilder) BuildFromUID(ctx *Context, _ []byte, dst reflect.Value) reflect.Value {
 	return dst
 }
 
