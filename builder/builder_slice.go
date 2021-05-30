@@ -157,6 +157,13 @@ func (_this *sliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType even
 	return object
 }
 
+func (_this *sliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromMedia(ctx, mediaType, data, object)
+	_this.storeValue(object)
+	return object
+}
+
 func (_this *sliceBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)

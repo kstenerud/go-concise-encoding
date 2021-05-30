@@ -243,6 +243,8 @@ func (_this *Session) getDefaultIteratorForType(t reflect.Type) IteratorFunction
 			return iterateBigFloat
 		case common.TypeBigDecimalFloat:
 			return iterateBigDecimal
+		case common.TypeMedia:
+			return iterateMedia
 		default:
 			return newStructIterator(&_this.context, t)
 		}

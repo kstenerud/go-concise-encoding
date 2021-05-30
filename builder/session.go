@@ -214,6 +214,8 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generateBigFloatBuilder
 		case common.TypeBigDecimalFloat:
 			return generateBigDecimalFloatBuilder
+		case common.TypeMedia:
+			return generateMediaBuilder
 		default:
 			return newStructBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}

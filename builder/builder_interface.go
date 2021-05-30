@@ -26,6 +26,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/types"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 
@@ -126,6 +128,15 @@ func (_this *interfaceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType 
 	default:
 		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
 	}
+	return dst
+}
+
+func (_this *interfaceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	v := types.Media{
+		MediaType: mediaType,
+		Data:      common.CloneBytes(data),
+	}
+	dst.Set(reflect.ValueOf(v))
 	return dst
 }
 

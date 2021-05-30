@@ -88,6 +88,10 @@ func (_this *ignoreBuilder) BuildFromStringlikeArray(ctx *Context, _ events.Arra
 	return dst
 }
 
+func (_this *ignoreBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	return dst
+}
+
 func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
 	return dst
 }

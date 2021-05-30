@@ -129,6 +129,12 @@ func (_this *markerObjectBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 	return object
 }
 
+func (_this *markerObjectBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromMedia(ctx, mediaType, data, dst)
+	_this.onObjectFinished(ctx, object)
+	return dst
+}
+
 func (_this *markerObjectBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromTime(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)

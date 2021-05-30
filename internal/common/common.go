@@ -62,7 +62,10 @@ var (
 	TypeURL  = reflect.TypeOf(url.URL{})
 	TypePURL = reflect.TypeOf((*url.URL)(nil))
 
-	TypeUID = reflect.TypeOf(types.UID{})
+	TypeUID          = reflect.TypeOf(types.UID{})
+	TypeMedia        = reflect.TypeOf(types.Media{})
+	TypeMarkup       = reflect.TypeOf(types.Markup{})
+	TypeRelationship = reflect.TypeOf(types.Relationship{})
 )
 
 var KeyableTypes = []reflect.Type{

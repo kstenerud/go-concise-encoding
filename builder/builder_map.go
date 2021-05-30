@@ -189,6 +189,13 @@ func (_this *mapBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events
 	return object
 }
 
+func (_this *mapBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.nextGenerator(ctx).BuildFromMedia(ctx, mediaType, data, object)
+	_this.store(object)
+	return object
+}
+
 func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	// TODO: Why was it this way?
 	// _this.store(reflect.ValueOf(value))

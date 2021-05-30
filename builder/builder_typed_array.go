@@ -25,6 +25,8 @@ import (
 	"math"
 	"reflect"
 
+	"github.com/kstenerud/go-concise-encoding/types"
+
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
@@ -808,4 +810,20 @@ func (_this *float64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.
 
 func (_this *float64SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToFloat64SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+type mediaBuilder struct{}
+
+var globalMediaBuilder = &mediaBuilder{}
+
+func generateMediaBuilder(ctx *Context) Builder { return globalMediaBuilder }
+func (_this *mediaBuilder) String() string      { return nameOf(_this) }
+
+func (_this *mediaBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	v := types.Media{
+		MediaType: mediaType,
+		Data:      common.CloneBytes(data),
+	}
+	dst.Set(reflect.ValueOf(v))
+	return dst
 }

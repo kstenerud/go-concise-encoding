@@ -124,7 +124,7 @@ func (_this *Context) BeginArray(arrayCompletionCallback func(*Context)) {
 	_this.arrayCompletionCallback = arrayCompletionCallback
 	_this.chunkedData = _this.chunkedData[:0]
 }
-func (_this *Context) BeginArrayConcat(arrayCompletionCallback func(*Context)) {
+func (_this *Context) ContinueMultiComponentArray(arrayCompletionCallback func(*Context)) {
 	_this.arrayCompletionCallback = arrayCompletionCallback
 }
 func (_this *Context) BeginArrayChunk(length uint64, moreChunksFollow bool) {

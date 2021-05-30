@@ -139,6 +139,13 @@ func (_this *ptrBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events
 	return dst
 }
 
+func (_this *ptrBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	ptr := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromMedia(ctx, mediaType, data, dst)
+	dst.Set(ptr)
+	return dst
+}
+
 func (_this *ptrBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, ptr.Elem())

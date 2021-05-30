@@ -1331,4 +1331,21 @@ func TestBuilderUID(t *testing.T) {
 	uid := types.UID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 
 	assertBuild(t, uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
+	list := []types.UID{uid}
+	assertBuild(t, list, L(), UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}), E())
+	m := map[int]types.UID{1: uid}
+	assertBuild(t, m, M(), I(1), UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}), E())
+}
+
+func TestBuilderMedia(t *testing.T) {
+	media := types.Media{
+		MediaType: "a",
+		Data:      []byte{1},
+	}
+
+	assertBuild(t, media, MB(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte{1}))
+	list := []types.Media{media}
+	assertBuild(t, list, L(), MB(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte{1}), E())
+	m := map[int]types.Media{1: media}
+	assertBuild(t, m, M(), I(1), MB(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte{1}), E())
 }

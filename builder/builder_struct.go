@@ -279,6 +279,13 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	return object
 }
 
+func (_this *structBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, _ reflect.Value) reflect.Value {
+	_this.nextBuilderGenerator(ctx).BuildFromMedia(ctx, mediaType, data, _this.nextValue)
+	object := _this.nextValue
+	_this.swapKeyValue()
+	return object
+}
+
 func (_this *structBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	_this.nextBuilderGenerator(ctx).BuildFromTime(ctx, value, _this.nextValue)
 	object := _this.nextValue

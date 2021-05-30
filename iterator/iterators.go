@@ -150,6 +150,21 @@ func iterateUID(context *Context, v reflect.Value) {
 	context.EventReceiver.OnUID(vCopy[:])
 }
 
+func iterateMedia(context *Context, v reflect.Value) {
+	vCopy := v.Interface().(types.Media)
+	if len(vCopy.MediaType) == 0 {
+		panic(fmt.Errorf("Media cannot have an empty media type"))
+	}
+
+	context.EventReceiver.OnArrayBegin(events.ArrayTypeMedia)
+	context.EventReceiver.OnArrayChunk(uint64(len(vCopy.MediaType)), false)
+	context.EventReceiver.OnArrayData([]byte(vCopy.MediaType))
+	context.EventReceiver.OnArrayChunk(uint64(len(vCopy.Data)), false)
+	if len(vCopy.Data) > 0 {
+		context.EventReceiver.OnArrayData(vCopy.Data)
+	}
+}
+
 func iterateInterface(context *Context, v reflect.Value) {
 	if v.IsNil() {
 		context.NotifyNil()

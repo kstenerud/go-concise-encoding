@@ -46,6 +46,10 @@ func TestIterateBasic(t *testing.T) {
 	cTimeNow := test.AsCompactTime(gTimeNow)
 	pURL := NewRID("http://x.com")
 	uid := types.UID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+	media := types.Media{
+		MediaType: "a",
+		Data:      []byte{0x00},
+	}
 
 	assertIterate(t, nil, N())
 	assertIterate(t, true, B(true))
@@ -87,6 +91,7 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, (*url.URL)(nil), N())
 	assertIterate(t, uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 	assertIterate(t, &uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
+	assertIterate(t, media, MB(), AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{0}))
 }
 
 func TestIterateArrayUint8(t *testing.T) {

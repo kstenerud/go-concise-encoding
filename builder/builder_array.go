@@ -138,6 +138,12 @@ func (_this *arrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType even
 	return object
 }
 
+func (_this *arrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, _ reflect.Value) reflect.Value {
+	object := _this.advanceElem()
+	_this.elemGenerator(ctx).BuildFromMedia(ctx, mediaType, data, object)
+	return object
+}
+
 func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)

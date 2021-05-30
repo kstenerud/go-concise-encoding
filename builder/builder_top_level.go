@@ -108,6 +108,11 @@ func (_this *topLevelBuilder) BuildFromStringlikeArray(ctx *Context, arrayType e
 	return dst
 }
 
+func (_this *topLevelBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromMedia(ctx, mediaType, data, dst)
+	return dst
+}
+
 func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromTime(ctx, value, dst)
 	return dst
