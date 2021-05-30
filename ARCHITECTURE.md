@@ -26,7 +26,6 @@ Code Organization
 
 | Directory                  | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
-| [buffer](buffer)           | Basic data buffer code used by the codecs                       |
 | [builder](builder)         | [Builders](#builders)                                           |
 | [cbe](cbe)                 | [CBE codec](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) |
 | [ce](ce)                   | Top-level API                                                   |
