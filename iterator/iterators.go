@@ -46,7 +46,7 @@ func iterateTime(context *Context, v reflect.Value) {
 }
 
 func iteratePTime(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		t := v.Interface().(*time.Time)
@@ -60,7 +60,7 @@ func iterateCompactTime(context *Context, v reflect.Value) {
 }
 
 func iteratePCompactTime(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		t := v.Interface().(*compact_time.Time)
@@ -74,7 +74,7 @@ func iterateURL(context *Context, v reflect.Value) {
 }
 
 func iteratePURL(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		str := v.Interface().(*url.URL).String()
@@ -88,7 +88,7 @@ func iterateBigInt(context *Context, v reflect.Value) {
 }
 
 func iteratePBigInt(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		context.EventReceiver.OnBigInt(v.Interface().(*big.Int))
@@ -101,7 +101,7 @@ func iterateBigFloat(context *Context, v reflect.Value) {
 }
 
 func iteratePBigFloat(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		context.EventReceiver.OnBigFloat(v.Interface().(*big.Float))
@@ -114,7 +114,7 @@ func iterateBigDecimal(context *Context, v reflect.Value) {
 }
 
 func iteratePBigDecimal(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		context.EventReceiver.OnBigDecimalFloat(v.Interface().(*apd.Decimal))
@@ -165,8 +165,25 @@ func iterateMedia(context *Context, v reflect.Value) {
 	}
 }
 
+func iterateMarkup(context *Context, v reflect.Value) {
+	vCopy := v.Interface().(types.Markup)
+	context.EventReceiver.OnMarkup([]byte(vCopy.Name))
+	for k, v := range vCopy.Attributes {
+		rk := reflect.ValueOf(k)
+		context.GetIteratorForType(rk.Type())(context, rk)
+		rv := reflect.ValueOf(v)
+		context.GetIteratorForType(rv.Type())(context, rv)
+	}
+	context.EventReceiver.OnEnd()
+	for _, v := range vCopy.Content {
+		rv := reflect.ValueOf(v)
+		context.GetIteratorForType(rv.Type())(context, rv)
+	}
+	context.EventReceiver.OnEnd()
+}
+
 func iterateInterface(context *Context, v reflect.Value) {
-	if v.IsNil() {
+	if common.IsNil(v) {
 		context.NotifyNil()
 	} else {
 		elem := v.Elem()
@@ -179,7 +196,7 @@ func newPointerIterator(ctx *Context, pointerType reflect.Type) IteratorFunction
 	iterate := ctx.GetIteratorForType(pointerType.Elem())
 
 	return func(context *Context, v reflect.Value) {
-		if v.IsNil() {
+		if common.IsNil(v) {
 			context.NotifyNil()
 			return
 		}
@@ -194,7 +211,7 @@ func newSliceOrArrayAsListIterator(ctx *Context, sliceType reflect.Type) Iterato
 	iterate := ctx.GetIteratorForType(sliceType.Elem())
 
 	return func(context *Context, v reflect.Value) {
-		if v.IsNil() {
+		if common.IsNil(v) {
 			context.NotifyNil()
 			return
 		}
@@ -216,7 +233,7 @@ func newMapIterator(ctx *Context, mapType reflect.Type) IteratorFunction {
 	iterateValue := ctx.GetIteratorForType(mapType.Elem())
 
 	return func(context *Context, v reflect.Value) {
-		if v.IsNil() {
+		if common.IsNil(v) {
 			context.NotifyNil()
 			return
 		}
