@@ -1349,3 +1349,16 @@ func TestBuilderMedia(t *testing.T) {
 	m := map[int]types.Media{1: media}
 	assertBuild(t, m, M(), I(1), MB(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte{1}), E())
 }
+
+func TestBuilderComment(t *testing.T) {
+	assertBuild(t, 1, CMT(), E(), I(1))
+	assertBuild(t, 1, CMT(), E(), CMT(), E(), I(1))
+	assertBuild(t, 1, CMT(), S("sdgsdfgsdg srg srg srg sr"), E(), I(1))
+	assertBuild(t, 1, CMT(), S("sdgsdfgsdg srg srg srg sr"), CMT(), E(), E(), I(1))
+	assertBuild(t, 1, CMT(), S("sdgsdfgsdg srg srg srg sr"), CMT(), S("abc"), E(), E(), I(1))
+
+	assertBuild(t, []interface{}{}, L(), CMT(), S("xyz"), E(), E())
+	assertBuild(t, map[interface{}]interface{}{}, M(), CMT(), S("xyz"), E(), E())
+	assertBuild(t, map[interface{}]interface{}{1: "a"}, M(), CMT(), S("xyz"), E(), I(1), S("a"), E())
+	assertBuild(t, map[interface{}]interface{}{1: "a"}, M(), I(1), CMT(), S("xyz"), E(), S("a"), E())
+}

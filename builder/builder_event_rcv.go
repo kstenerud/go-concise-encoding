@@ -210,7 +210,7 @@ func (_this *BuilderEventReceiver) OnMarkup(id []byte) {
 	panic("TODO: BuilderEventReceiver.OnMarkup")
 }
 func (_this *BuilderEventReceiver) OnComment() {
-	panic("TODO: BuilderEventReceiver.OnComment")
+	_this.context.IgnoreNext()
 }
 func (_this *BuilderEventReceiver) OnEnd() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
