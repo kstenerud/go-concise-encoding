@@ -61,14 +61,16 @@ var (
 	Ref            = "BuildFromReference(ctx *Context, id []byte)"
 	ListInit       = "BuildInitiateList(ctx *Context)"
 	MapInit        = "BuildInitiateMap(ctx *Context)"
+	MarkupInit     = "BuildInitiateMarkup(ctx *Context, name []byte)"
 	End            = "BuildEndContainer(ctx *Context)"
 	List           = "BuildBeginListContents(ctx *Context)"
 	Map            = "BuildBeginMapContents(ctx *Context)"
+	Markup         = "BuildBeginMarkupContents(ctx *Context, name []byte)"
 	NotifyFinished = "NotifyChildContainerFinished(ctx *Context, container reflect.Value)"
 
 	allMethods = []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 		BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit,
-		List, Map, End, Ref, NotifyFinished}
+		MarkupInit, List, Map, Markup, End, Ref, NotifyFinished}
 )
 
 type Builder struct {
@@ -79,7 +81,7 @@ type Builder struct {
 var builders = []Builder{
 	{
 		Name:    "array",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, List, End, Ref, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, List, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "bigDecimalFloat",
@@ -131,7 +133,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "ignore",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, List, End, Map, Ref, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, List, End, Map, Markup, Ref, NotifyFinished},
 	},
 	{
 		Name:    "int",
@@ -171,15 +173,23 @@ var builders = []Builder{
 	},
 	{
 		Name:    "interface",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, Map, List, Ref, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Map, Markup, List, Ref, NotifyFinished},
 	},
 	{
 		Name:    "map",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, Map, End, Ref, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Map, End, Ref, NotifyFinished},
+	},
+	{
+		Name:    "markup",
+		Methods: []string{Markup, NotifyFinished},
+	},
+	{
+		Name:    "markupContents",
+		Methods: []string{MarkupInit, Array, SArray, End, NotifyFinished},
 	},
 	{
 		Name:    "markerObject",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, MapInit, ListInit, End, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, MapInit, MarkupInit, ListInit, End, NotifyFinished},
 	},
 	{
 		Name:    "pBigDecimalFloat",
@@ -199,7 +209,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "ptr",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map, Markup, NotifyFinished},
 	},
 	{
 		Name:    "pRid",
@@ -207,7 +217,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "slice",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, List, End, Ref, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, List, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "string",
@@ -215,7 +225,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "struct",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, Map, End, Ref, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Map, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "time",
@@ -223,7 +233,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "topLevel",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, NotifyFinished},
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, NotifyFinished},
 	},
 	{
 		Name:    "uint",

@@ -81,6 +81,14 @@ func (_this *Context) UnstackBuilder() Builder {
 	return oldTop
 }
 
+func (_this *Context) SwapBuilder(builder Builder) Builder {
+	oldTop := _this.CurrentBuilder
+	_this.builderStack = _this.builderStack[:len(_this.builderStack)-1]
+	_this.builderStack = append(_this.builderStack, builder)
+	_this.updateCurrentBuilder()
+	return oldTop
+}
+
 func (_this *Context) UnstackBuilderAndNotifyChildFinished(container reflect.Value) Builder {
 	oldTop := _this.UnstackBuilder()
 	_this.CurrentBuilder.NotifyChildContainerFinished(_this, container)

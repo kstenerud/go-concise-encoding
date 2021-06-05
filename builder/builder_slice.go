@@ -186,6 +186,10 @@ func (_this *sliceBuilder) BuildInitiateMap(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
+func (_this *sliceBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
 func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {
 	object := **_this.ppContainer
 	ctx.UnstackBuilderAndNotifyChildFinished(object)

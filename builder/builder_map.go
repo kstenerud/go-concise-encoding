@@ -197,8 +197,6 @@ func (_this *mapBuilder) BuildFromMedia(ctx *Context, mediaType string, data []b
 }
 
 func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
-	// TODO: Why was it this way?
-	// _this.store(reflect.ValueOf(value))
 	object := _this.newElem()
 	_this.nextGenerator(ctx).BuildFromTime(ctx, value, object)
 	_this.store(object)
@@ -206,8 +204,6 @@ func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.
 }
 
 func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
-	// TODO: Why was it this way?
-	// _this.store(reflect.ValueOf(value))
 	object := _this.newElem()
 	_this.nextGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	_this.store(object)
@@ -220,6 +216,10 @@ func (_this *mapBuilder) BuildInitiateList(ctx *Context) {
 
 func (_this *mapBuilder) BuildInitiateMap(ctx *Context) {
 	_this.nextGenerator(ctx).BuildBeginMapContents(ctx)
+}
+
+func (_this *mapBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	_this.nextGenerator(ctx).BuildBeginMarkupContents(ctx, name)
 }
 
 func (_this *mapBuilder) BuildEndContainer(ctx *Context) {

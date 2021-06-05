@@ -1362,3 +1362,62 @@ func TestBuilderComment(t *testing.T) {
 	assertBuild(t, map[interface{}]interface{}{1: "a"}, M(), CMT(), S("xyz"), E(), I(1), S("a"), E())
 	assertBuild(t, map[interface{}]interface{}{1: "a"}, M(), I(1), CMT(), S("xyz"), E(), S("a"), E())
 }
+
+func TestBuilderMarkup(t *testing.T) {
+	m := types.Markup{
+		Name: "a",
+	}
+	pm := &m
+	assertBuild(t, m, MUP("a"), E(), E())
+	assertBuild(t, pm, MUP("a"), E(), E())
+
+	m.Attributes = map[interface{}]interface{}{
+		"a": 1,
+	}
+	m.Content = []interface{}{}
+	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), E())
+	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), E())
+
+	m.Attributes = map[interface{}]interface{}{}
+	m.Content = []interface{}{
+		"a",
+	}
+	assertBuild(t, m, MUP("a"), E(), S("a"), E())
+	assertBuild(t, pm, MUP("a"), E(), S("a"), E())
+
+	m.Attributes = map[interface{}]interface{}{
+		"a": 1,
+	}
+	m.Content = []interface{}{
+		"a",
+	}
+	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), S("a"), E())
+	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), S("a"), E())
+
+	m.Attributes = map[interface{}]interface{}{}
+	m.Content = []interface{}{}
+	m.AddMarkup(&types.Markup{
+		Name:       "b",
+		Attributes: map[interface{}]interface{}{},
+	})
+	assertBuild(t, m, MUP("a"), E(), MUP("b"), E(), E(), E())
+	assertBuild(t, pm, MUP("a"), E(), MUP("b"), E(), E(), E())
+
+	m.Attributes = map[interface{}]interface{}{
+		"a": 1,
+	}
+	m.Content = []interface{}{
+		"a",
+	}
+	m.AddMarkup(&types.Markup{
+		Name: "b",
+		Attributes: map[interface{}]interface{}{
+			100: "x",
+		},
+		Content: []interface{}{
+			"z",
+		},
+	})
+	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
+	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
+}

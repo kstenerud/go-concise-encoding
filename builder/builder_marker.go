@@ -157,6 +157,11 @@ func (_this *markerObjectBuilder) BuildInitiateMap(ctx *Context) {
 	_this.child.BuildInitiateMap(ctx)
 }
 
+func (_this *markerObjectBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	_this.isContainer = true
+	_this.child.BuildInitiateMarkup(ctx, name)
+}
+
 func (_this *markerObjectBuilder) BuildEndContainer(ctx *Context) {
 	_this.child.BuildEndContainer(ctx)
 }

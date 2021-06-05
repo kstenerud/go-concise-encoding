@@ -138,6 +138,13 @@ func (_this *topLevelBuilder) BuildInitiateMap(ctx *Context) {
 	_this.builderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
+func (_this *topLevelBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf(interfaceBuilder{}) {
+		_this.builderGenerator = generateMarkupBuilder
+	}
+	_this.builderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
 func (_this *topLevelBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.containerFinishedCallback(value)
 }

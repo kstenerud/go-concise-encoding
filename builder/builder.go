@@ -63,6 +63,7 @@ type Builder interface {
 	// This gets triggered from a data event.
 	BuildInitiateList(ctx *Context)
 	BuildInitiateMap(ctx *Context)
+	BuildInitiateMarkup(ctx *Context, name []byte)
 
 	// Signals that the source container is finished
 	// This gets triggered from a data event.
@@ -72,6 +73,7 @@ type Builder interface {
 	// This gets called by the parent builder.
 	BuildBeginListContents(ctx *Context)
 	BuildBeginMapContents(ctx *Context)
+	BuildBeginMarkupContents(ctx *Context, name []byte)
 
 	// Notify that a child builder has finished building a container.
 	// This gets triggered from the child builder when the container has ended and the builder unstacked.

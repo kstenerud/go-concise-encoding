@@ -207,7 +207,7 @@ func (_this *BuilderEventReceiver) OnMap() {
 	_this.context.CurrentBuilder.BuildInitiateMap(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnMarkup(id []byte) {
-	panic("TODO: BuilderEventReceiver.OnMarkup")
+	_this.context.CurrentBuilder.BuildInitiateMarkup(&_this.context, id)
 }
 func (_this *BuilderEventReceiver) OnComment() {
 	_this.context.IgnoreNext()

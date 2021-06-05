@@ -108,6 +108,11 @@ func (_this *ignoreBuilder) BuildInitiateMap(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
+func (_this *ignoreBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	ctx.StackBuilder(_this)
+	ctx.StackBuilder(_this)
+}
+
 func (_this *ignoreBuilder) BuildEndContainer(ctx *Context) {
 	ctx.UnstackBuilder()
 }
@@ -117,6 +122,11 @@ func (_this *ignoreBuilder) BuildBeginListContents(ctx *Context) {
 }
 
 func (_this *ignoreBuilder) BuildBeginMapContents(ctx *Context) {
+	ctx.StackBuilder(_this)
+}
+
+func (_this *ignoreBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
+	ctx.StackBuilder(_this)
 	ctx.StackBuilder(_this)
 }
 

@@ -158,12 +158,20 @@ func (_this *interfaceBuilder) BuildInitiateMap(ctx *Context) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
+func (_this *interfaceBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	interfaceMapBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
 func (_this *interfaceBuilder) BuildBeginListContents(ctx *Context) {
 	interfaceSliceBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
+}
+
+func (_this *interfaceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
+	interfaceMapBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
 }
 
 func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id []byte) {

@@ -308,6 +308,10 @@ func (_this *structBuilder) BuildInitiateMap(ctx *Context) {
 	_this.nextBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
+func (_this *structBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	_this.nextBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
 func (_this *structBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
 	ctx.UnstackBuilderAndNotifyChildFinished(object)

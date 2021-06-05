@@ -164,6 +164,10 @@ func (_this *arrayBuilder) BuildInitiateMap(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
+func (_this *arrayBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
 func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
