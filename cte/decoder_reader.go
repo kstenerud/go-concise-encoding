@@ -379,6 +379,20 @@ func (_this *Reader) ReadIdentifier() []byte {
 	return _this.TokenGet()
 }
 
+func (_this *Reader) ReadMarkerIdentifier() []byte {
+	_this.TokenBegin()
+	for {
+		b := _this.ReadByteAllowEOF()
+		// Only do a per-byte check here. The rules will do a per-rune check.
+		if b == chars.EOFMarker || (b < 0x80 && !chars.IsRuneValidMarkerID(rune(b))) {
+			_this.UnreadByte()
+			break
+		}
+		_this.TokenAppendByte(byte(b))
+	}
+	return _this.TokenGet()
+}
+
 func (_this *Reader) ReadStringArray() []byte {
 	_this.TokenBegin()
 	for {

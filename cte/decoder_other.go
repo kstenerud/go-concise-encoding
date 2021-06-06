@@ -434,7 +434,7 @@ var global_advanceAndDecodeMarker advanceAndDecodeMarker
 func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
-	ctx.EventReceiver.OnMarker(ctx.Stream.ReadIdentifier())
+	ctx.EventReceiver.OnMarker(ctx.Stream.ReadMarkerIdentifier())
 	if ctx.Stream.PeekByteNoEOF() != ':' {
 		ctx.Errorf("Missing colon between marker ID and marked value")
 	}
@@ -455,7 +455,7 @@ func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 		return
 	}
 
-	ctx.EventReceiver.OnReference(ctx.Stream.ReadIdentifier())
+	ctx.EventReceiver.OnReference(ctx.Stream.ReadMarkerIdentifier())
 }
 
 type advanceAndDecodeSuffix struct{}

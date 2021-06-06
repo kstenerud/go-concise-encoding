@@ -269,6 +269,18 @@ func (_this *Context) ValidateIdentifier(data []uint8) {
 	}
 }
 
+func (_this *Context) ValidateMarkerID(data []uint8) {
+	if len(data) == 0 {
+		panic(fmt.Errorf("Identifier cannot be empty"))
+	}
+	if len(data) > 127 {
+		panic(fmt.Errorf("Identifier is too long (%v bytes)", len(data)))
+	}
+	if !chars.IsMarkerIDSafe(data) {
+		panic(fmt.Errorf("Identifier contains invalid characters"))
+	}
+}
+
 func (_this *Context) ValidateFullArrayAnyType(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	switch arrayType {
 	case events.ArrayTypeString:

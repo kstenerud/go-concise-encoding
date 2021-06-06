@@ -60,9 +60,6 @@ func GenerateCode(projectDir string, xmlPath string) {
 
 	standard.WriteHeader(writer, path, imports)
 
-	generateNamedCharSwitch(writer, charsUsedInStrings(namedValues...))
-	generateSpacer(writer)
-
 	generatePropertiesType(writer)
 	generateSpacer(writer)
 
@@ -78,6 +75,9 @@ func GenerateCode(projectDir string, xmlPath string) {
 	generatePropertiesTable(writer)
 	generateSpacer(writer)
 
+	generateIdentifierFirstSafeTable(writer)
+	generateSpacer(writer)
+
 	generateIdentifierSafeTable(writer)
 	generateSpacer(writer)
 
@@ -90,8 +90,10 @@ func GenerateCode(projectDir string, xmlPath string) {
 
 func classifyRunes(chars CharSet) {
 	const (
-		safeForID           = true
-		unsafeForID         = false
+		unsafeID            = IdentifierUnsafe
+		safeIDFirst         = IdentifierFirstSafe
+		safeIDRest          = IdentifierRestSafe
+		safeIDAll           = IdentifierAllSafe
 		safeForStringlike   = SafetyAll
 		unsafeForStringlike = SafetyNone
 	)
@@ -99,42 +101,47 @@ func classifyRunes(chars CharSet) {
 	// Character classes (https://unicodebook.readthedocs.io/unicode.html):
 
 	// Private chars
-	setSafety(unsafeForID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.Category == "Co"
 	}))
 
 	// Control chars
-	setSafety(unsafeForID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.Category == "Cc"
 	}))
 
 	// Whitespace
-	setSafety(unsafeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.MajorCategory == 'Z'
 	}))
 
-	// Letters, numbers, mark
-	setSafety(safeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		// TODO: Modifiers OK in identifiers?
-		return char.MajorCategory == 'L' || char.MajorCategory == 'N' || char.MajorCategory == 'M'
+	// Letters, numbers
+	setSafety(safeIDFirst, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'L' || char.MajorCategory == 'N'
+	}))
+
+	// Mark
+	setSafety(safeIDRest, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'M'
 	}))
 
 	// Symbols, Punctuation
-	setSafety(unsafeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.MajorCategory == 'P' || char.MajorCategory == 'S'
 	}))
 
 	// Format chars
-	setSafety(unsafeForID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		// https://262.ecma-international.org/11.0/#sec-unicode-format-control-characters
 		return char.Category == "Cf"
 	}))
 
 	// Structural whitespace
-	setSafety(unsafeForID, safeForStringlike, charSet('\r', '\n', '\t', ' '))
+	setSafety(unsafeID, safeForStringlike, charSet('\r', '\n', '\t', ' '))
 
 	// Symbols allowed in identifiers
-	setSafety(safeForID, safeForStringlike, charSet('-', '_'))
+	setSafety(safeIDRest, safeForStringlike, charSet('-', '.', ':'))
+	setSafety(safeIDAll, safeForStringlike, charSet('_'))
 
 	// Stringlike safety
 	markUnsafeFor(SafetyString, charsAndLookalikes(charSet('\\', '"')...))
@@ -167,26 +174,6 @@ func classifyRunes(chars CharSet) {
 // ---------------
 // Code Generators
 // ---------------
-
-func generateNamedCharSwitch(writer io.Writer, charset []rune) {
-	sort.SliceStable(charset, func(i, j int) bool {
-		return charset[i] < charset[j]
-	})
-
-	if _, err := fmt.Fprintf(writer, "func isNamedStartChar (ch byte) bool {\nswitch ch {\n"); err != nil {
-		panic(err)
-	}
-
-	for _, ch := range charset {
-		if _, err := fmt.Fprintf(writer, "\t\tcase '%c':\n\t\t\treturn true\n", ch); err != nil {
-			panic(err)
-		}
-	}
-
-	if _, err := fmt.Fprintf(writer, "\t\tdefault:\n\t\t\treturn false\n\t}\n}\n"); err != nil {
-		panic(err)
-	}
-}
 
 func generateSpacer(writer io.Writer) {
 	if _, err := fmt.Fprintf(writer, "\n"); err != nil {
@@ -292,6 +279,10 @@ func generateRuneByteCounts(writer io.Writer) {
 	}
 }
 
+func generateIdentifierFirstSafeTable(writer io.Writer) {
+	generateByteTable(writer, "identifierFirstSafe", identifierFirstSafe[:])
+}
+
 func generateIdentifierSafeTable(writer io.Writer) {
 	generateByteTable(writer, "identifierSafe", identifierSafe[:])
 }
@@ -364,13 +355,13 @@ func getUTF8ByteCount(firstByte byte) int {
 }
 
 func setSafety(
-	isIdentifierSafe bool,
+	identifierSafety IdentifierSafety,
 	safeFor SafetyFlags,
 	runes ...[]rune) {
 
 	for _, r := range runes {
 		for _, rr := range r {
-			setRuneSafety(rr, isIdentifierSafe, safeFor)
+			setRuneSafety(rr, identifierSafety, safeFor)
 		}
 	}
 }
@@ -427,11 +418,12 @@ func getBitArrayValue(array []byte, index int) bool {
 	return bits&(1<<(index&7)) != 0
 }
 
-func setRuneSafety(r rune, isIdentifierSafe bool, safeFor SafetyFlags) {
+func setRuneSafety(r rune, identifierSafety IdentifierSafety, safeFor SafetyFlags) {
 	unsafeFor := ^safeFor & SafetyAll
 	isStringlikeSafe := unsafeFor == 0
 
-	setBitArrayValue(identifierSafe[:], int(r), isIdentifierSafe)
+	setBitArrayValue(identifierFirstSafe[:], int(r), identifierSafety&IdentifierFirstSafe != 0)
+	setBitArrayValue(identifierSafe[:], int(r), identifierSafety&(IdentifierRestSafe|IdentifierFirstSafe) != 0)
 	setBitArrayValue(stringlikeSafe[:], int(r), isStringlikeSafe)
 	stringlikeUnsafe[r] = unsafeFor
 }
@@ -445,8 +437,7 @@ func markRuneUnsafeFor(r rune, unsafeFor SafetyFlags) {
 }
 
 func markRuneInvalid(r rune) {
-	// TODO: really mark invalid in a findable way?
-	setRuneSafety(r, false, SafetyAll)
+	setRuneSafety(r, IdentifierUnsafe, SafetyNone)
 }
 
 func markRuneGoSafe(r rune) {
@@ -626,8 +617,28 @@ var safetyNames = map[interface{}]string{
 	SafetyAll:      "SafetyAll",
 }
 
+type IdentifierSafety uint64
+
+const (
+	IdentifierFirstSafe IdentifierSafety = 1 << iota
+	IdentifierRestSafe
+	IdentifierAllSafe = ^IdentifierSafety(0)
+	IdentifierUnsafe  = IdentifierSafety(0)
+)
+
+var identifierSafetyNames = map[interface{}]string{
+	IdentifierUnsafe:    "IdentifierUnsafe",
+	IdentifierFirstSafe: "IdentifierFirstSafe",
+	IdentifierRestSafe:  "IdentifierAllSafe",
+}
+
+func (_this IdentifierSafety) String() string {
+	return datatypes.FlagToString(identifierSafetyNames, _this)
+}
+
 var goSafe [(utf8.MaxRune + 1) / 8]byte
 var identifierSafe [(utf8.MaxRune + 1) / 8]byte
+var identifierFirstSafe [(utf8.MaxRune + 1) / 8]byte
 var stringlikeSafe [(utf8.MaxRune + 1) / 8]byte
 var stringlikeUnsafe = make(map[rune]SafetyFlags)
 var properties [0x100]Properties
