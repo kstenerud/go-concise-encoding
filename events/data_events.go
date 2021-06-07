@@ -208,7 +208,6 @@ func (_this *NullEventReceiver) OnDecimalFloat(compact_float.DFloat) {}
 func (_this *NullEventReceiver) OnBigDecimalFloat(*apd.Decimal)      {}
 func (_this *NullEventReceiver) OnNan(bool)                          {}
 func (_this *NullEventReceiver) OnUID([]byte)                        {}
-func (_this *NullEventReceiver) OnIdentifier([]byte)                 {}
 func (_this *NullEventReceiver) OnTime(time.Time)                    {}
 func (_this *NullEventReceiver) OnCompactTime(compact_time.Time)     {}
 func (_this *NullEventReceiver) OnArray(ArrayType, uint64, []byte)   {}

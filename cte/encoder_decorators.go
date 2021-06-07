@@ -189,10 +189,8 @@ func (_this MarkupContentsDecorator) GetStringContext() stringContext { return s
 func (_this MarkupContentsDecorator) BeforeValue(ctx *EncoderContext) {
 	if !ctx.ContainerHasObjects {
 		ctx.Stream.WriteMarkupContentsBegin()
-		ctx.WriteIndent()
-	} else if ctx.LastMarkupContentsWasComment {
-		ctx.WriteIndent()
 	}
+	ctx.WriteIndent()
 }
 func (_this MarkupContentsDecorator) AfterValue(ctx *EncoderContext) {
 	ctx.LastMarkupContentsWasComment = false

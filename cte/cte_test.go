@@ -1151,10 +1151,6 @@ func TestCTEMarkup(t *testing.T) {
 >`, BD(), EvV, MUP("a"), E(), MUP("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 <a,
-    a<a>
->`, BD(), EvV, MUP("a"), E(), S("a"), MUP("a"), E(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-<a,
     <a>
 >`, BD(), EvV, MUP("a"), E(), MUP("a"), E(), E(), E(), ED())
 	assertDecode(t, nil, `c0 <a 1=2 ,>`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), E(), ED())
@@ -1168,7 +1164,8 @@ func TestCTEMarkup(t *testing.T) {
 >`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), MUP("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 <a 1=2,
-    a <a>
+    a 
+    <a>
 >`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), S("a "), MUP("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 <a,
@@ -1745,7 +1742,8 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     /* The markup type is good for presentation data */
     "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
         <body,
-            Please choose from the following widgets: <div "id"="parent" "style"="normal" "ref-id"=1,
+            Please choose from the following widgets: 
+            <div "id"="parent" "style"="normal" "ref-id"=1,
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
             >
