@@ -2677,3 +2677,15 @@ func (_this *mediaBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *mediaBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
+func (_this *relationshipBuilder) BuildBeginListContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+}
+func (_this *relationshipBuilder) BuildBeginMapContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+}
+func (_this *relationshipBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
+}
+func (_this *relationshipBuilder) BuildEndContainer(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+}

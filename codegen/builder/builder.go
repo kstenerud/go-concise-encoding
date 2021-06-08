@@ -283,6 +283,10 @@ var builders = []Builder{
 		Name:    "media",
 		Methods: []string{Media},
 	},
+	{
+		Name:    "relationship",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Ref, NotifyFinished},
+	},
 }
 
 func GenerateCode(projectDir string) {

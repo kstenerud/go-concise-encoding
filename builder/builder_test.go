@@ -1421,3 +1421,22 @@ func TestBuilderMarkup(t *testing.T) {
 	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
 	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
 }
+
+func TestBuilderRelationship(t *testing.T) {
+	r := types.Relationship{
+		Subject:   NewRID("http://x.com"),
+		Predicate: NewRID("http://y.com"),
+		Object:    NewRID("http://z.com"),
+	}
+	pr := &r
+
+	assertBuild(t, r, REL(), RID("http://x.com"), RID("http://y.com"), RID("http://z.com"))
+	assertBuild(t, pr, REL(), RID("http://x.com"), RID("http://y.com"), RID("http://z.com"))
+
+	r.Subject = []interface{}{NewRID("a"), NewRID("b")}
+	r.Object = 1
+	assertBuild(t, r, REL(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1))
+	assertBuild(t, pr, REL(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1))
+
+	assertBuild(t, []interface{}{pr}, L(), REL(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1), E())
+}

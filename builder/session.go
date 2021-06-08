@@ -218,6 +218,8 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generateMediaBuilder
 		case common.TypeMarkup:
 			return generateMarkupBuilder
+		case common.TypeRelationship:
+			return generateRelationshipBuilder
 		default:
 			return newStructBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}

@@ -140,6 +140,7 @@ func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
 func CMT() *test.TEvent                      { return test.CMT() }
+func REL() *test.TEvent                      { return test.REL() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func CONST(n string) *test.TEvent            { return test.CONST(n) }
