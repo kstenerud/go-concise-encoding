@@ -100,14 +100,14 @@ func classifyRunes(chars CharSet) {
 
 	// Character classes (https://unicodebook.readthedocs.io/unicode.html):
 
-	// Private chars
+	// "Other" chars
 	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.Category == "Co"
+		return char.MajorCategory == 'C'
 	}))
 
-	// Control chars
+	// Separators
 	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.Category == "Cc"
+		return char.Category == "Zl" || char.Category == "Zp"
 	}))
 
 	// Whitespace
@@ -128,12 +128,6 @@ func classifyRunes(chars CharSet) {
 	// Symbols, Punctuation
 	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.MajorCategory == 'P' || char.MajorCategory == 'S'
-	}))
-
-	// Format chars
-	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		// https://262.ecma-international.org/11.0/#sec-unicode-format-control-characters
-		return char.Category == "Cf"
 	}))
 
 	// Structural whitespace
@@ -157,13 +151,6 @@ func classifyRunes(chars CharSet) {
 	addProperties(LowerAF, charRange('a', 'f'))
 	addProperties(UpperAF, charRange('A', 'F'))
 	addProperties(AZ, charRange('a', 'z'), charRange('A', 'Z'))
-
-	// Invalid chars:
-
-	// Surrogates, Reserved
-	markInvalid(chars.RunesWithCriteria(func(char *Char) bool {
-		return char.Category == "Cs" || char.Category == "Cn"
-	}))
 
 	// Mark chars that can be printed in the generated comments
 	markGoSafe(chars.RunesWithCriteria(func(char *Char) bool {
@@ -384,15 +371,6 @@ func addProperties(props Properties, runes ...[]rune) {
 	}
 }
 
-func markInvalid(runes ...[]rune) {
-
-	for _, r := range runes {
-		for _, rr := range r {
-			markRuneInvalid(rr)
-		}
-	}
-}
-
 func markGoSafe(runes ...[]rune) {
 
 	for _, r := range runes {
@@ -434,10 +412,6 @@ func markRuneUnsafeFor(r rune, unsafeFor SafetyFlags) {
 
 	setBitArrayValue(stringlikeSafe[:], int(r), isStringlikeSafe)
 	stringlikeUnsafe[r] = unsafeFor
-}
-
-func markRuneInvalid(r rune) {
-	setRuneSafety(r, IdentifierUnsafe, SafetyNone)
 }
 
 func markRuneGoSafe(r rune) {
