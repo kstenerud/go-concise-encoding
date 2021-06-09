@@ -354,6 +354,14 @@ func TestCTEDate(t *testing.T) {
 	assertDecodeFails(t, "c0 2000-10-a")
 }
 
+var areaLoc127 = "Etc/xyz" + "abcdefghij" + "abcdefghij" +
+	"abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" +
+	"abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij"
+
+var areaLoc128 = "Etc/vxyz" + "abcdefghij" + "abcdefghij" +
+	"abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" +
+	"abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij" + "abcdefghij"
+
 func TestCTETime(t *testing.T) {
 	assertDecode(t, nil, "c0 1:45:00", BD(), EvV, CT(test.NewTime(1, 45, 0, 0, "")), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n23:59:59.101", BD(), EvV, CT(test.NewTime(23, 59, 59, 101000000, "")), ED())
@@ -411,6 +419,10 @@ func TestCTETime(t *testing.T) {
 	assertDecodeFails(t, "c0 10:00:01.93-1260")
 	assertDecodeFails(t, "c0 10:00:01.93+2401")
 	assertDecodeFails(t, "c0 10:00:01.93-2401")
+
+	assertDecode(t, nil, fmt.Sprintf("c0 10:00:01.93/%v", areaLoc127), BD(), EvV, CT(test.NewTime(10, 0, 1, 930000000, areaLoc127)), ED())
+	assertDecodeFails(t, fmt.Sprintf("c0 10:00:01.93/%v", areaLoc128))
+	assertDecodeFails(t, "c0 10:00:01.93/")
 }
 
 func TestCTETimestamp(t *testing.T) {
@@ -492,6 +504,10 @@ func TestCTETimestamp(t *testing.T) {
 		panic(err)
 	}
 	assertEncode(t, nil, "c0\n2020-01-15/10:00:01.93", BD(), EvV, GT(gotime), ED())
+
+	assertDecode(t, nil, fmt.Sprintf("c0 2020-01-15/10:00:01.93/%v", areaLoc127), BD(), EvV, CT(test.NewTS(2020, 1, 15, 10, 0, 1, 930000000, areaLoc127)), ED())
+	assertDecodeFails(t, fmt.Sprintf("c0 2020-01-15/10:00:01.93/%v", areaLoc128))
+	assertDecodeFails(t, "c0 2020-01-15/10:00:01.93/")
 }
 
 func TestCTEConstant(t *testing.T) {
