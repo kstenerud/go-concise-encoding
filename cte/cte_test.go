@@ -602,6 +602,11 @@ func TestCTEArrayBoolean(t *testing.T) {
 	assertDecode(t, nil, "c0\n|b 1 01 1 001 |", BD(), EvV, AB(7, []byte{0b1001101}), ED())
 	assertDecode(t, nil, "c0\n|b 1 0 1 1 0 0 1 1 |", BD(), EvV, AB(8, []byte{0b11001101}), ED())
 	assertDecode(t, nil, "c0\n|b  10  110 0 1 1   1    |", BD(), EvV, AB(9, []byte{0b11001101, 0b1}), ED())
+
+	assertDecodeFails(t, "c0\n|b nan|")
+	assertDecodeFails(t, "c0\n|b snan|")
+	assertDecodeFails(t, "c0\n|b inf|")
+	assertDecodeFails(t, "c0\n|b -inf|")
 }
 
 func TestCTEArrayUintX(t *testing.T) {
@@ -688,6 +693,23 @@ func TestCTEArrayInt8(t *testing.T) {
 	assertDecodeFails(t, "c0 |i8 -129|")
 	assertDecodeFails(t, "c0 |i8x 80|")
 	assertDecodeFails(t, "c0 |i8x -81|")
+
+	assertDecodeFails(t, "c0\n|i8b nan|")
+	assertDecodeFails(t, "c0\n|i8b snan|")
+	assertDecodeFails(t, "c0\n|i8b inf|")
+	assertDecodeFails(t, "c0\n|i8b -inf|")
+	assertDecodeFails(t, "c0\n|i8o nan|")
+	assertDecodeFails(t, "c0\n|i8o snan|")
+	assertDecodeFails(t, "c0\n|i8o inf|")
+	assertDecodeFails(t, "c0\n|i8o -inf|")
+	assertDecodeFails(t, "c0\n|i8 nan|")
+	assertDecodeFails(t, "c0\n|i8 snan|")
+	assertDecodeFails(t, "c0\n|i8 inf|")
+	assertDecodeFails(t, "c0\n|i8 -inf|")
+	assertDecodeFails(t, "c0\n|i8x nan|")
+	assertDecodeFails(t, "c0\n|i8x snan|")
+	assertDecodeFails(t, "c0\n|i8x inf|")
+	assertDecodeFails(t, "c0\n|i8x -inf|")
 }
 
 func TestCTEArrayUint8(t *testing.T) {
@@ -732,6 +754,23 @@ func TestCTEArrayUint8(t *testing.T) {
 	assertDecodeFails(t, "c0 |u8o 400|")
 	assertDecodeFails(t, "c0 |u8 256|")
 	assertDecodeFails(t, "c0 |u8x 100|")
+
+	assertDecodeFails(t, "c0\n|u8b nan|")
+	assertDecodeFails(t, "c0\n|u8b snan|")
+	assertDecodeFails(t, "c0\n|u8b inf|")
+	assertDecodeFails(t, "c0\n|u8b -inf|")
+	assertDecodeFails(t, "c0\n|u8o nan|")
+	assertDecodeFails(t, "c0\n|u8o snan|")
+	assertDecodeFails(t, "c0\n|u8o inf|")
+	assertDecodeFails(t, "c0\n|u8o -inf|")
+	assertDecodeFails(t, "c0\n|u8 nan|")
+	assertDecodeFails(t, "c0\n|u8 snan|")
+	assertDecodeFails(t, "c0\n|u8 inf|")
+	assertDecodeFails(t, "c0\n|u8 -inf|")
+	assertDecodeFails(t, "c0\n|u8x nan|")
+	assertDecodeFails(t, "c0\n|u8x snan|")
+	assertDecodeFails(t, "c0\n|u8x inf|")
+	assertDecodeFails(t, "c0\n|u8x -inf|")
 }
 
 func TestCTEArrayInt16(t *testing.T) {
@@ -768,6 +807,23 @@ func TestCTEArrayInt16(t *testing.T) {
 	assertDecodeFails(t, "c0 |i16 -32769|")
 	assertDecodeFails(t, "c0 |i16x 8000|")
 	assertDecodeFails(t, "c0 |i16x -8001|")
+
+	assertDecodeFails(t, "c0\n|i16b nan|")
+	assertDecodeFails(t, "c0\n|i16b snan|")
+	assertDecodeFails(t, "c0\n|i16b inf|")
+	assertDecodeFails(t, "c0\n|i16b -inf|")
+	assertDecodeFails(t, "c0\n|i16o nan|")
+	assertDecodeFails(t, "c0\n|i16o snan|")
+	assertDecodeFails(t, "c0\n|i16o inf|")
+	assertDecodeFails(t, "c0\n|i16o -inf|")
+	assertDecodeFails(t, "c0\n|i16 nan|")
+	assertDecodeFails(t, "c0\n|i16 snan|")
+	assertDecodeFails(t, "c0\n|i16 inf|")
+	assertDecodeFails(t, "c0\n|i16 -inf|")
+	assertDecodeFails(t, "c0\n|i16x nan|")
+	assertDecodeFails(t, "c0\n|i16x snan|")
+	assertDecodeFails(t, "c0\n|i16x inf|")
+	assertDecodeFails(t, "c0\n|i16x -inf|")
 }
 
 func TestCTEArrayUint16(t *testing.T) {
@@ -804,6 +860,23 @@ func TestCTEArrayUint16(t *testing.T) {
 	assertDecodeFails(t, "c0 |u16o 200000|")
 	assertDecodeFails(t, "c0 |u16 65536|")
 	assertDecodeFails(t, "c0 |u16x 10000|")
+
+	assertDecodeFails(t, "c0\n|u16b nan|")
+	assertDecodeFails(t, "c0\n|u16b snan|")
+	assertDecodeFails(t, "c0\n|u16b inf|")
+	assertDecodeFails(t, "c0\n|u16b -inf|")
+	assertDecodeFails(t, "c0\n|u16o nan|")
+	assertDecodeFails(t, "c0\n|u16o snan|")
+	assertDecodeFails(t, "c0\n|u16o inf|")
+	assertDecodeFails(t, "c0\n|u16o -inf|")
+	assertDecodeFails(t, "c0\n|u16 nan|")
+	assertDecodeFails(t, "c0\n|u16 snan|")
+	assertDecodeFails(t, "c0\n|u16 inf|")
+	assertDecodeFails(t, "c0\n|u16 -inf|")
+	assertDecodeFails(t, "c0\n|u16x nan|")
+	assertDecodeFails(t, "c0\n|u16x snan|")
+	assertDecodeFails(t, "c0\n|u16x inf|")
+	assertDecodeFails(t, "c0\n|u16x -inf|")
 }
 
 func TestCTEArrayInt32(t *testing.T) {
@@ -841,6 +914,23 @@ func TestCTEArrayInt32(t *testing.T) {
 	assertDecodeFails(t, "c0 |i32 -2147483649|")
 	assertDecodeFails(t, "c0 |i32x 80000000|")
 	assertDecodeFails(t, "c0 |i32x -80000001|")
+
+	assertDecodeFails(t, "c0\n|i32b nan|")
+	assertDecodeFails(t, "c0\n|i32b snan|")
+	assertDecodeFails(t, "c0\n|i32b inf|")
+	assertDecodeFails(t, "c0\n|i32b -inf|")
+	assertDecodeFails(t, "c0\n|i32o nan|")
+	assertDecodeFails(t, "c0\n|i32o snan|")
+	assertDecodeFails(t, "c0\n|i32o inf|")
+	assertDecodeFails(t, "c0\n|i32o -inf|")
+	assertDecodeFails(t, "c0\n|i32 nan|")
+	assertDecodeFails(t, "c0\n|i32 snan|")
+	assertDecodeFails(t, "c0\n|i32 inf|")
+	assertDecodeFails(t, "c0\n|i32 -inf|")
+	assertDecodeFails(t, "c0\n|i32x nan|")
+	assertDecodeFails(t, "c0\n|i32x snan|")
+	assertDecodeFails(t, "c0\n|i32x inf|")
+	assertDecodeFails(t, "c0\n|i32x -inf|")
 }
 
 func TestCTEArrayUint32(t *testing.T) {
@@ -877,6 +967,23 @@ func TestCTEArrayUint32(t *testing.T) {
 	assertDecodeFails(t, "c0 |u32o 40000000000|")
 	assertDecodeFails(t, "c0 |u32 4294967296|")
 	assertDecodeFails(t, "c0 |u32x 100000000|")
+
+	assertDecodeFails(t, "c0\n|u32b nan|")
+	assertDecodeFails(t, "c0\n|u32b snan|")
+	assertDecodeFails(t, "c0\n|u32b inf|")
+	assertDecodeFails(t, "c0\n|u32b -inf|")
+	assertDecodeFails(t, "c0\n|u32o nan|")
+	assertDecodeFails(t, "c0\n|u32o snan|")
+	assertDecodeFails(t, "c0\n|u32o inf|")
+	assertDecodeFails(t, "c0\n|u32o -inf|")
+	assertDecodeFails(t, "c0\n|u32 nan|")
+	assertDecodeFails(t, "c0\n|u32 snan|")
+	assertDecodeFails(t, "c0\n|u32 inf|")
+	assertDecodeFails(t, "c0\n|u32 -inf|")
+	assertDecodeFails(t, "c0\n|u32x nan|")
+	assertDecodeFails(t, "c0\n|u32x snan|")
+	assertDecodeFails(t, "c0\n|u32x inf|")
+	assertDecodeFails(t, "c0\n|u32x -inf|")
 }
 
 func TestCTEArrayInt64(t *testing.T) {
@@ -917,6 +1024,23 @@ func TestCTEArrayInt64(t *testing.T) {
 	assertDecodeFails(t, "c0 |i64 -9223372036854775809|")
 	assertDecodeFails(t, "c0 |i64x 8000000000000000|")
 	assertDecodeFails(t, "c0 |i64x -8000000000000001|")
+
+	assertDecodeFails(t, "c0\n|i64b nan|")
+	assertDecodeFails(t, "c0\n|i64b snan|")
+	assertDecodeFails(t, "c0\n|i64b inf|")
+	assertDecodeFails(t, "c0\n|i64b -inf|")
+	assertDecodeFails(t, "c0\n|i64o nan|")
+	assertDecodeFails(t, "c0\n|i64o snan|")
+	assertDecodeFails(t, "c0\n|i64o inf|")
+	assertDecodeFails(t, "c0\n|i64o -inf|")
+	assertDecodeFails(t, "c0\n|i64 nan|")
+	assertDecodeFails(t, "c0\n|i64 snan|")
+	assertDecodeFails(t, "c0\n|i64 inf|")
+	assertDecodeFails(t, "c0\n|i64 -inf|")
+	assertDecodeFails(t, "c0\n|i64x nan|")
+	assertDecodeFails(t, "c0\n|i64x snan|")
+	assertDecodeFails(t, "c0\n|i64x inf|")
+	assertDecodeFails(t, "c0\n|i64x -inf|")
 }
 
 func TestCTEArrayUint64(t *testing.T) {
@@ -953,6 +1077,23 @@ func TestCTEArrayUint64(t *testing.T) {
 	assertDecodeFails(t, "c0 |u64o 2000000000000000000000|")
 	assertDecodeFails(t, "c0 |u64 18446744073709551616|")
 	assertDecodeFails(t, "c0 |u64x 10000000000000000|")
+
+	assertDecodeFails(t, "c0\n|u64b nan|")
+	assertDecodeFails(t, "c0\n|u64b snan|")
+	assertDecodeFails(t, "c0\n|u64b inf|")
+	assertDecodeFails(t, "c0\n|u64b -inf|")
+	assertDecodeFails(t, "c0\n|u64o nan|")
+	assertDecodeFails(t, "c0\n|u64o snan|")
+	assertDecodeFails(t, "c0\n|u64o inf|")
+	assertDecodeFails(t, "c0\n|u64o -inf|")
+	assertDecodeFails(t, "c0\n|u64 nan|")
+	assertDecodeFails(t, "c0\n|u64 snan|")
+	assertDecodeFails(t, "c0\n|u64 inf|")
+	assertDecodeFails(t, "c0\n|u64 -inf|")
+	assertDecodeFails(t, "c0\n|u64x nan|")
+	assertDecodeFails(t, "c0\n|u64x snan|")
+	assertDecodeFails(t, "c0\n|u64x inf|")
+	assertDecodeFails(t, "c0\n|u64x -inf|")
 }
 
 func TestCTEArrayFloat16(t *testing.T) {
@@ -972,6 +1113,17 @@ func TestCTEArrayFloat16(t *testing.T) {
 
 	assertDecode(t, nil, "c0 |f16 0.25 0x4.dp-30|",
 		BD(), EvV, AF16([]uint8{0x80, 0x3e, 0x9a, 0x31}), ED())
+
+	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatHexadecimal
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x nan|", BD(), EvV, AF16([]uint8{0xc1, 0xff}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x snan|", BD(), EvV, AF16([]uint8{0x81, 0xff}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x inf|", BD(), EvV, AF16([]uint8{0x80, 0x7f}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x -inf|", BD(), EvV, AF16([]uint8{0x80, 0xff}), ED())
+	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatUnset
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 nan|", BD(), EvV, AF16([]uint8{0xc1, 0xff}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 snan|", BD(), EvV, AF16([]uint8{0x81, 0xff}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 inf|", BD(), EvV, AF16([]uint8{0x80, 0x7f}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 -inf|", BD(), EvV, AF16([]uint8{0x80, 0xff}), ED())
 
 	assertDecodeFails(t, "c0 |f16 0x1.fep+128|")
 	assertDecodeFails(t, "c0 |f16 0x1.fep-127|")
@@ -997,6 +1149,17 @@ func TestCTEArrayFloat32(t *testing.T) {
 
 	assertDecode(t, nil, "c0 |f32 5.5e+10 -0xe.89p+50|",
 		BD(), EvV, AF32([]float32{5.5e+10, -0xe.89p+50}), ED())
+
+	eOpts.DefaultFormats.Array.Float32 = options.CTEEncodingFormatHexadecimal
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x nan|", BD(), EvV, AF32([]float32{float32(math.NaN())}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x snan|", BD(), EvV, AF32([]float32{float32(common.SignalingNan)}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x inf|", BD(), EvV, AF32([]float32{float32(math.Inf(1))}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x -inf|", BD(), EvV, AF32([]float32{float32(math.Inf(-1))}), ED())
+	eOpts.DefaultFormats.Array.Float32 = options.CTEEncodingFormatUnset
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 nan|", BD(), EvV, AF32([]float32{float32(math.NaN())}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 snan|", BD(), EvV, AF32([]float32{float32(common.SignalingNan)}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 inf|", BD(), EvV, AF32([]float32{float32(math.Inf(1))}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 -inf|", BD(), EvV, AF32([]float32{float32(math.Inf(-1))}), ED())
 
 	assertDecodeFails(t, "c0 |f32 0x1.fep+128|")
 	assertDecodeFails(t, "c0 |f32 0x1.fep-127|")
@@ -1025,6 +1188,17 @@ func TestCTEArrayFloat64(t *testing.T) {
 
 	assertDecode(t, nil, "c0 |f64 5.5e+10 -0xe.89p+50|",
 		BD(), EvV, AF64([]float64{5.5e+10, -0xe.89p+50}), ED())
+
+	eOpts.DefaultFormats.Array.Float64 = options.CTEEncodingFormatHexadecimal
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x nan|", BD(), EvV, AF64([]float64{math.NaN()}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x snan|", BD(), EvV, AF64([]float64{common.SignalingNan}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x inf|", BD(), EvV, AF64([]float64{math.Inf(1)}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x -inf|", BD(), EvV, AF64([]float64{math.Inf(-1)}), ED())
+	eOpts.DefaultFormats.Array.Float64 = options.CTEEncodingFormatUnset
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 nan|", BD(), EvV, AF64([]float64{math.NaN()}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 snan|", BD(), EvV, AF64([]float64{common.SignalingNan}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 inf|", BD(), EvV, AF64([]float64{math.Inf(1)}), ED())
+	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 -inf|", BD(), EvV, AF64([]float64{math.Inf(-1)}), ED())
 
 	assertDecodeFails(t, "c0 |f64 0x1.fep+1024|")
 	assertDecodeFails(t, "c0 |f64 0x1.fep-1023|")

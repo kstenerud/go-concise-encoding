@@ -155,8 +155,68 @@ func (_this *Writer) WriteFloat(value float64) {
 	_this.FlushBuffer(len(used))
 }
 
+func (_this *Writer) WriteFloat32UsingFormat(value float32, format string) {
+	f64 := float64(value)
+	if math.IsNaN(f64) {
+		if common.IsSignalingNan(f64) {
+			_this.WriteSignalingNan()
+		} else {
+			_this.WriteQuietNan()
+		}
+		return
+	}
+	if math.IsInf(f64, 0) {
+		if f64 < 0 {
+			_this.WriteNegInfinity()
+		} else {
+			_this.WritePosInfinity()
+		}
+		return
+	}
+
+	_this.WriteFmt(format, value)
+}
+
+func (_this *Writer) WriteFloatUsingFormat(value float64, format string) {
+	if math.IsNaN(value) {
+		if common.IsSignalingNan(value) {
+			_this.WriteSignalingNan()
+		} else {
+			_this.WriteQuietNan()
+		}
+		return
+	}
+	if math.IsInf(value, 0) {
+		if value < 0 {
+			_this.WriteNegInfinity()
+		} else {
+			_this.WritePosInfinity()
+		}
+		return
+	}
+
+	_this.WriteFmt(format, value)
+}
+
 func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
 	_this.ExpandBuffer(floatStringMaxByteCount)
+	if math.IsNaN(value) {
+		if common.IsSignalingNan(value) {
+			_this.WriteSignalingNan()
+		} else {
+			_this.WriteQuietNan()
+		}
+		return
+	}
+	if math.IsInf(value, 0) {
+		if value < 0 {
+			_this.WriteNegInfinity()
+		} else {
+			_this.WritePosInfinity()
+		}
+		return
+	}
+
 	used := strconv.AppendFloat(_this.Buffer[:0], value, 'x', -1, 64)
 	end := len(used)
 	if bytes.HasSuffix(used, []byte("p+00")) {

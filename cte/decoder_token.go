@@ -21,8 +21,10 @@
 package cte
 
 import (
+	"bytes"
 	"math"
 	"math/big"
+	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
@@ -78,7 +80,8 @@ func (_this Token) assertNotEnd(textPos *TextPositionCounter, tokenOffset int, d
 
 func (_this Token) assertPosIsEnd(textPos *TextPositionCounter, tokenOffset int, decoding string) {
 	if tokenOffset < len(_this) {
-		_this.errorf(textPos, tokenOffset, "unexpected character at end of %v", decoding)
+		r, _ := utf8.DecodeRune(_this[tokenOffset:])
+		_this.errorf(textPos, tokenOffset, "unexpected character %c at end of %v", r, decoding)
 	}
 }
 
@@ -536,29 +539,41 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, co
 func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64, decodedCount int) {
 	_this.AssertNotEmpty(textPos, "float")
 
-	var addToDecodedCount int
+	pos := 0
 
 	sign := int64(1)
 	if _this[0] == '-' {
 		sign = -1
-		_this = _this[1:]
-		addToDecodedCount++
+		pos++
 	}
 
-	pos := 0
-
-	if len(_this) >= 3 && _this[0] == '0' && (_this[1] == 'x' || _this[1] == 'X') {
-		_this = _this[2:]
-		addToDecodedCount += 2
-		value, decodedCount = _this.DecodeSmallHexFloat(textPos)
-		value *= float64(sign)
-		decodedCount += addToDecodedCount
+	if len(_this) >= pos+3 && _this[pos] == '0' && (_this[pos+1] == 'x' || _this[pos+1] == 'X') {
+		pos += 2
+		v, bytesDecoded := _this[pos:].DecodeSmallHexFloat(textPos)
+		value = v * float64(sign)
+		pos += bytesDecoded
+		decodedCount = pos
 		return
 	}
 
-	coefficient, bigCoefficient, coefficientDigitCount, decodedCount := _this[pos:].DecodeUint(textPos)
-	pos += decodedCount
-	if decodedCount == 0 {
+	coefficient, bigCoefficient, coefficientDigitCount, bydesDecoded := _this[pos:].DecodeUint(textPos)
+	pos += bydesDecoded
+	if bydesDecoded == 0 {
+		common.ASCIIBytesToLower(_this)
+		switch {
+		case bytes.Equal(_this, byteStringNan):
+			value = common.QuietNan
+			decodedCount = pos + 3
+			return
+		case bytes.Equal(_this, byteStringSnan):
+			value = common.SignalingNan
+			decodedCount = pos + 4
+			return
+		case bytes.Equal(_this[pos:], byteStringInf):
+			value = math.Inf(int(sign))
+			decodedCount = pos + 3
+			return
+		}
 		_this.UnexpectedChar(textPos, pos, "float")
 	}
 
@@ -569,7 +584,7 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 		}
 		// Just directly convert. This may cause rounding but it's the best way.
 		value = float64(coefficient)
-		decodedCount = pos + addToDecodedCount
+		decodedCount = pos
 		return
 	}
 
@@ -579,9 +594,9 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 	// Note: Do not advance past '.' because CompleteDecimalFloat expects it
 	var dfloatValue compact_float.DFloat
 	var bigValue *apd.Decimal
-	dfloatValue, bigValue, decodedCount = _this[pos:].CompleteDecimalFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
-	pos += decodedCount
-	if decodedCount == 0 {
+	dfloatValue, bigValue, bydesDecoded = _this[pos:].CompleteDecimalFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+	pos += bydesDecoded
+	if bydesDecoded == 0 {
 		_this.UnexpectedChar(textPos, pos, "float")
 	}
 	if bigValue != nil {
@@ -591,7 +606,7 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 
 	// TODO: Check exponent sizes
 	value = dfloatValue.Float()
-	decodedCount = pos + addToDecodedCount
+	decodedCount = pos
 	return
 }
 
@@ -607,9 +622,24 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 
 	// Note: The "0x" is implied, and not actually present in the text.
 
-	coefficient, bigCoefficient, coefficientDigitCount, decodedCount := _this[pos:].DecodeHexUint(textPos)
-	pos += decodedCount
-	if decodedCount == 0 {
+	coefficient, bigCoefficient, coefficientDigitCount, bytesDecoded := _this[pos:].DecodeHexUint(textPos)
+	pos += bytesDecoded
+	if bytesDecoded == 0 {
+		common.ASCIIBytesToLower(_this)
+		switch {
+		case bytes.Equal(_this, byteStringNan):
+			value = common.QuietNan
+			decodedCount = pos + 3
+			return
+		case bytes.Equal(_this, byteStringSnan):
+			value = common.SignalingNan
+			decodedCount = pos + 4
+			return
+		case bytes.Equal(_this[pos:], byteStringInf):
+			value = math.Inf(int(sign))
+			decodedCount = pos + 3
+			return
+		}
 		_this.UnexpectedChar(textPos, pos, "hex float")
 	}
 
@@ -619,7 +649,9 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 			_this.errorf(textPos, pos, "coefficient is too big; use 0x1.1p1 form instead.")
 		}
 		// Just directly convert. This may cause rounding but it's the best way.
-		return float64(coefficient), decodedCount
+		value = float64(coefficient)
+		decodedCount = pos
+		return
 	}
 
 	if _this[pos] != '.' {
@@ -627,9 +659,9 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 	}
 	// Note: Do not advance past '.' because CompleteHexFloat expects it
 	var bigValue *big.Float
-	value, bigValue, decodedCount = _this[pos:].CompleteHexFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
-	pos += decodedCount
-	if decodedCount == 0 {
+	value, bigValue, bytesDecoded = _this[pos:].CompleteHexFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+	pos += bytesDecoded
+	if bytesDecoded == 0 {
 		_this.UnexpectedChar(textPos, pos, "hex float")
 	}
 	if bigValue != nil {

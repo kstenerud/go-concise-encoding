@@ -444,12 +444,20 @@ func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement floatTo
 		}
 		v, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
+		bits := math.Float32bits(float32(v)) >> 16
 		exp := extractFloat64Exponent(v)
 		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
-			ctx.Errorf("Exponent too big for float32 type")
+			if math.IsNaN(v) {
+				if common.IsSignalingNan(v) {
+					bits = uint32(common.Bfloat16SignalingNanBits)
+				} else {
+					bits = uint32(common.Bfloat16QuietNanBits)
+				}
+			} else if !math.IsInf(v, 0) {
+				ctx.Errorf("Exponent too big for float32 type")
+			}
 		}
-		bits := math.Float32bits(float32(v))
-		ctx.Scratch = append(ctx.Scratch, uint8(bits>>16), uint8(bits>>24))
+		ctx.Scratch = append(ctx.Scratch, uint8(bits), uint8(bits>>8))
 	}
 	finishTypedArray(ctx, events.ArrayTypeFloat16, digitType, 2, ctx.Scratch)
 }
@@ -466,7 +474,9 @@ func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement floatTo
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		exp := extractFloat64Exponent(v)
 		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
-			ctx.Errorf("Exponent too big for float32 type")
+			if !math.IsNaN(v) && !math.IsInf(v, 0) {
+				ctx.Errorf("Exponent too big for float32 type")
+			}
 		}
 		bits := math.Float32bits(float32(v))
 		ctx.Scratch = append(ctx.Scratch, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24))

@@ -50,3 +50,7 @@ const (
 func extractFloat64Exponent(v float64) int {
 	return int((math.Float64bits(v)>>52)&0x7ff) - 1023
 }
+
+var byteStringNan = []byte("nan")
+var byteStringSnan = []byte("snan")
+var byteStringInf = []byte("inf")

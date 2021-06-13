@@ -114,6 +114,16 @@ func IsSignalingNan(value float64) bool {
 	return math.Float64bits(value)&QuietNanBit == 0
 }
 
+var Bfloat16SignalingNanBytes = []byte{0x81, 0xff}
+var Bfloat16QuietNanBytes = []byte{0xc1, 0xff}
+
+var Bfloat16SignalingNanBits = uint16(0xff81)
+var Bfloat16QuietNanBits = uint16(0xffc1)
+var Float32SignalingNanBits = math.Float32bits(float32(SignalingNan))
+var Float32QuietNanBits = math.Float32bits(float32(math.NaN()))
+var Float64SignalingNanBits = math.Float64bits(SignalingNan)
+var Float64QuietNanBits = math.Float64bits(math.NaN())
+
 var BigInt0 = big.NewInt(0)
 var BigInt2 = big.NewInt(2)
 var BigInt8 = big.NewInt(8)
