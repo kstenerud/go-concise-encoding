@@ -2117,3 +2117,23 @@ echo hello world
 	assertDecodeEncode(t, nil, nil, `c0
 |a|`, BD(), EvV, MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
 }
+
+func testDecodeCasePermutations(t *testing.T, name string, events ...*test.TEvent) {
+	for _, v := range generateCasePermutations(name) {
+		ev := []*test.TEvent{BD(), EvV}
+		ev = append(ev, events...)
+		ev = append(ev, ED())
+		assertDecode(t, nil, fmt.Sprintf("C0 %v", v), ev...)
+	}
+}
+
+func TestMixedCase(t *testing.T) {
+	testDecodeCasePermutations(t, "nil", N())
+	testDecodeCasePermutations(t, "na:nil", NA(), N())
+	testDecodeCasePermutations(t, "nan", NAN())
+	testDecodeCasePermutations(t, "snan", SNAN())
+	testDecodeCasePermutations(t, "inf", F(math.Inf(1)))
+	testDecodeCasePermutations(t, "-inf", F(math.Inf(-1)))
+	testDecodeCasePermutations(t, "false", FF())
+	testDecodeCasePermutations(t, "true", TT())
+}

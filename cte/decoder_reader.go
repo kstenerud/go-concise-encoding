@@ -306,11 +306,11 @@ var shyBytes = []byte{0xc0, 0xad}
 func (_this *Reader) TokenReadEscape() {
 	escape := _this.ReadByteNoEOF()
 	switch escape {
-	case 't':
+	case 't', 'T':
 		_this.TokenAppendByte('\t')
-	case 'n':
+	case 'n', 'N':
 		_this.TokenAppendByte('\n')
-	case 'r':
+	case 'r', 'R':
 		_this.TokenAppendByte('\r')
 	case '"', '*', '/', '<', '>', '\\', '|':
 		_this.TokenAppendByte(escape)

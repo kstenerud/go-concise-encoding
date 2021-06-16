@@ -105,10 +105,15 @@ func init() {
 		decoderOpsByFirstChar[i] = global_decodeUID
 	}
 	decoderOpsByFirstChar['f'] = global_decodeFalseOrUID
+	decoderOpsByFirstChar['F'] = global_decodeFalseOrUID
 	decoderOpsByFirstChar['i'] = global_decodeNamedValueI
+	decoderOpsByFirstChar['I'] = global_decodeNamedValueI
 	decoderOpsByFirstChar['n'] = global_decodeNamedValueN
+	decoderOpsByFirstChar['N'] = global_decodeNamedValueN
 	decoderOpsByFirstChar['s'] = global_decodeNamedValueS
+	decoderOpsByFirstChar['S'] = global_decodeNamedValueS
 	decoderOpsByFirstChar['t'] = global_decodeNamedValueT
+	decoderOpsByFirstChar['T'] = global_decodeNamedValueT
 	decoderOpsByFirstChar['-'] = global_advanceAndDecodeNumericNegative
 	decoderOpsByFirstChar['@'] = global_advanceAndDecodeResourceID
 	decoderOpsByFirstChar['#'] = global_advanceAndDecodeConstant

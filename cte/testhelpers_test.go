@@ -268,3 +268,26 @@ func assertMarshalUnmarshal(t *testing.T, expectedValue interface{}, expectedDoc
 	}
 	return assertUnmarshal(t, expectedValue, expectedDocument)
 }
+
+func generateCasePermutations(str string) (result []string) {
+	casePermutationDFS([]byte(str), 0, &result)
+	return
+}
+
+func casePermutationDFS(str []byte, index int, result *[]string) {
+	if index == len(str) {
+		*result = append(*result, string(str))
+		return
+	}
+
+	casePermutationDFS(str, index+1, result)
+
+	if isASCIIAlpha(str[index]) {
+		str[index] ^= (1 << 5)
+		casePermutationDFS(str, index+1, result)
+	}
+}
+
+func isASCIIAlpha(c byte) bool {
+	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+}

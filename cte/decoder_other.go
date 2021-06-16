@@ -24,6 +24,8 @@ import (
 	"math"
 	"math/big"
 
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
 
@@ -235,7 +237,8 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	case '0':
 		_this.decode0Based(ctx, token)
 		return
-	case 'i':
+	case 'i', 'I':
+		common.ASCIIBytesToLower(token)
 		namedValue := string(token)
 		if namedValue != "inf" {
 			ctx.Errorf("Unknown named value: %v", namedValue)
@@ -343,6 +346,7 @@ func (_this decodeFalseOrUID) Run(ctx *DecoderContext) {
 		return
 	}
 
+	common.ASCIIBytesToLower(token)
 	named := string(token)
 	switch named {
 	case "false":
