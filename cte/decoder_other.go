@@ -24,9 +24,9 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
+
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
 type decodeInvalidChar struct{}
@@ -42,6 +42,10 @@ type decodeWhitespace struct{}
 var global_decodeWhitespace decodeWhitespace
 
 func (_this decodeWhitespace) Run(ctx *DecoderContext) {
+	if ctx.Stream.PeekByteAllowEOF().HasProperty(chars.StructWS) {
+		ctx.NotifyStructuralWS()
+	}
+
 	ctx.Stream.SkipWhitespace()
 }
 
@@ -88,11 +92,8 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 		version = 0
 	}
 
-	b := ctx.Stream.PeekByteNoEOF()
-	if !chars.ByteHasProperty(b, chars.StructWS) {
-		ctx.UnexpectedChar("whitespace after version")
-	}
 	global_decodeWhitespace.Run(ctx)
+	ctx.AssertHasStructuralWS()
 
 	ctx.EventReceiver.OnBeginDocument()
 	ctx.EventReceiver.OnVersion(version)
@@ -104,6 +105,7 @@ type decodeTopLevel struct{}
 var global_decodeTopLevel decodeTopLevel
 
 func (_this decodeTopLevel) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.ChangeDecoder(global_decodeEndDocument)
 	global_decodeByFirstChar.Run(ctx)
 }
@@ -122,12 +124,14 @@ type decodeNumericPositive struct{}
 var global_decodeNumericPositive decodeNumericPositive
 
 func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 	token.AssertNotEmpty(ctx.TextPos, "numeric")
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
 		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -137,6 +141,7 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 	// 123
 	if token.IsAtEnd(decodedCount) {
 		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -144,21 +149,18 @@ func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
 	case '.':
 		// 1.23
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
-		return
 	case '-':
 		// 2000-01-01
 		// TODO: Check for overflow
 		decodeTokenAsDate(ctx, token, decodedCount, int(value))
-		return
 	case ':':
 		// 10:23:45
 		// TODO: Check for overflow
 		decodeTokenAsTime(ctx, token, decodedCount, int(value))
-		return
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "numeric")
-		return
 	}
+	ctx.RequireStructuralWS()
 }
 
 func reinterpretDecAsHex(v uint64) uint64 {
@@ -175,8 +177,10 @@ type decodeUID struct{}
 var global_decodeUID decodeUID
 
 func (_this decodeUID) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 	ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
+	ctx.RequireStructuralWS()
 }
 
 type advanceAndDecodeNumericNegative struct{}
@@ -227,6 +231,7 @@ func (_this advanceAndDecodeNumericNegative) decode0Based(ctx *DecoderContext, t
 }
 
 func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '-'
 	sign := -1
 
@@ -236,6 +241,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	switch token[0] {
 	case '0':
 		_this.decode0Based(ctx, token)
+		ctx.RequireStructuralWS()
 		return
 	case 'i', 'I':
 		common.ASCIIBytesToLower(token)
@@ -244,6 +250,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 			ctx.Errorf("Unknown named value: %v", namedValue)
 		}
 		ctx.EventReceiver.OnFloat(math.Inf(-1))
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -252,6 +259,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	// 123
 	if token.IsAtEnd(decodedCount) {
 		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -259,16 +267,14 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	case '.':
 		// 1.23
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
-		return
 	case '-':
 		// 2000-01-01
 		// TODO: Check for overflow
 		decodeTokenAsDate(ctx, token, decodedCount, int(value)*sign)
-		return
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "numeric")
-		return
 	}
+	ctx.RequireStructuralWS()
 }
 
 type decode0Based struct{}
@@ -276,6 +282,7 @@ type decode0Based struct{}
 var global_decode0Based decode0Based
 
 func (_this decode0Based) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	// Assumption: First character is 0
 
 	token := ctx.Stream.ReadToken()
@@ -284,12 +291,14 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	// 0
 	if len(token) == 1 {
 		ctx.EventReceiver.OnPositiveInt(0)
+		ctx.RequireStructuralWS()
 		return
 	}
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
 		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -299,14 +308,17 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	case 'b', 'B':
 		// 0b1010
 		decodeTokenAsBinaryInt(ctx, token, sign)
+		ctx.RequireStructuralWS()
 		return
 	case 'o', 'O':
 		// 0o1234
 		decodeTokenAsOctalInt(ctx, token, sign)
+		ctx.RequireStructuralWS()
 		return
 	case 'x', 'X':
 		// 0x1234
 		decodeTokenAsHexNumber(ctx, token, sign)
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -315,6 +327,7 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	// 0123
 	if token.IsAtEnd(decodedCount) {
 		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -322,15 +335,13 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	case '.':
 		// 0.123
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
-		return
 	case ':':
 		// 01:23:45
 		decodeTokenAsTime(ctx, token, decodedCount, int(value))
-		return
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "0-based numeric")
-		return
 	}
+	ctx.RequireStructuralWS()
 }
 
 type decodeFalseOrUID struct{}
@@ -338,11 +349,13 @@ type decodeFalseOrUID struct{}
 var global_decodeFalseOrUID decodeFalseOrUID
 
 func (_this decodeFalseOrUID) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
 		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
+		ctx.RequireStructuralWS()
 		return
 	}
 
@@ -354,6 +367,7 @@ func (_this decodeFalseOrUID) Run(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", named)
 	}
+	ctx.RequireStructuralWS()
 }
 
 type decodeNamedValueI struct{}
@@ -361,6 +375,7 @@ type decodeNamedValueI struct{}
 var global_decodeNamedValueI decodeNamedValueI
 
 func (_this decodeNamedValueI) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "inf":
@@ -368,6 +383,7 @@ func (_this decodeNamedValueI) Run(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
+	ctx.RequireStructuralWS()
 }
 
 type decodeNamedValueN struct{}
@@ -375,6 +391,7 @@ type decodeNamedValueN struct{}
 var global_decodeNamedValueN decodeNamedValueN
 
 func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "na":
@@ -391,6 +408,7 @@ func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
+	ctx.RequireStructuralWS()
 }
 
 type decodeNamedValueS struct{}
@@ -398,6 +416,7 @@ type decodeNamedValueS struct{}
 var global_decodeNamedValueS decodeNamedValueS
 
 func (_this decodeNamedValueS) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "snan":
@@ -405,6 +424,7 @@ func (_this decodeNamedValueS) Run(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
+	ctx.RequireStructuralWS()
 }
 
 type decodeNamedValueT struct{}
@@ -412,6 +432,7 @@ type decodeNamedValueT struct{}
 var global_decodeNamedValueT decodeNamedValueT
 
 func (_this decodeNamedValueT) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "true":
@@ -419,6 +440,7 @@ func (_this decodeNamedValueT) Run(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
+	ctx.RequireStructuralWS()
 }
 
 type advanceAndDecodeConstant struct{}
@@ -426,9 +448,11 @@ type advanceAndDecodeConstant struct{}
 var global_advanceAndDecodeConstant advanceAndDecodeConstant
 
 func (_this advanceAndDecodeConstant) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
 	ctx.EventReceiver.OnConstant(ctx.Stream.ReadIdentifier())
+	ctx.RequireStructuralWS()
 }
 
 type advanceAndDecodeMarker struct{}
@@ -436,6 +460,7 @@ type advanceAndDecodeMarker struct{}
 var global_advanceAndDecodeMarker advanceAndDecodeMarker
 
 func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
 	ctx.EventReceiver.OnMarker(ctx.Stream.ReadMarkerIdentifier())
@@ -451,6 +476,7 @@ type advanceAndDecodeReference struct{}
 var global_advanceAndDecodeReference advanceAndDecodeReference
 
 func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
 	if ctx.Stream.PeekByteNoEOF() == '@' {
@@ -460,16 +486,6 @@ func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
 	}
 
 	ctx.EventReceiver.OnReference(ctx.Stream.ReadMarkerIdentifier())
-}
-
-type advanceAndDecodeSuffix struct{}
-
-var global_advanceAndDecodeSuffix advanceAndDecodeSuffix
-
-func (_this advanceAndDecodeSuffix) Run(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past ':'
-
-	panic("TODO: decodeSuffix")
 }
 
 // ===========================================================================

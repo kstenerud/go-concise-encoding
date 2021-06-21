@@ -120,7 +120,6 @@ func init() {
 	decoderOpsByFirstChar['$'] = global_advanceAndDecodeReference
 	decoderOpsByFirstChar['&'] = global_advanceAndDecodeMarker
 	decoderOpsByFirstChar['/'] = global_advanceAndDecodeComment
-	decoderOpsByFirstChar[':'] = global_advanceAndDecodeSuffix
 	decoderOpsByFirstChar['{'] = global_advanceAndDecodeMapBegin
 	decoderOpsByFirstChar['}'] = global_advanceAndDecodeMapEnd
 	decoderOpsByFirstChar['['] = global_advanceAndDecodeListBegin
@@ -128,7 +127,6 @@ func init() {
 	decoderOpsByFirstChar['<'] = global_advanceAndDecodeMarkupBegin
 	decoderOpsByFirstChar[','] = global_advanceAndDecodeMarkupContentBegin
 	decoderOpsByFirstChar['>'] = global_advanceAndDecodeMarkupEnd
-	decoderOpsByFirstChar['*'] = global_advanceAndDecodeCommentEnd
 	decoderOpsByFirstChar['|'] = global_advanceAndDecodeTypedArrayBegin
 	decoderOpsByFirstChar['('] = global_advanceAndDecodeRelationshipBegin
 

@@ -1586,17 +1586,17 @@ func TestCTECommentSingleLine(t *testing.T) {
 }
 
 func TestCTECommentMultiline(t *testing.T) {
-	assertDecode(t, nil, "c0 /**/1", BD(), EvV, CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /**/1", BD(), EvV, CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /* This is a comment */1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /*This is a comment*/1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, CMT(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, CMT(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /* This is a comment */ 1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /*This is a comment*/ 1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
 }
 
 func TestCTECommentMultilineNested(t *testing.T) {
-	assertDecode(t, nil, "c0 /*/**/*/1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /*/**/*/1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /* /**/ */1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0  /* before/* mid */ after*/1  ", BD(), EvV, CMT(), S("before"), CMT(), S("mid"), E(), S("after"), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /* /**/ */ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0  /* before/* mid */ after*/ 1  ", BD(), EvV, CMT(), S("before"), CMT(), S("mid"), E(), S("after"), E(), PI(1), ED())
 }
 
 func TestCTECommentAfterValue(t *testing.T) {
@@ -2136,4 +2136,22 @@ func TestMixedCase(t *testing.T) {
 	testDecodeCasePermutations(t, "-inf", F(math.Inf(-1)))
 	testDecodeCasePermutations(t, "false", FF())
 	testDecodeCasePermutations(t, "true", TT())
+}
+
+func TestCommentSpacing(t *testing.T) {
+	assertDecodeFails(t, `c0[]`)
+	assertDecodeFails(t, `c0 ["a""b"]`)
+	assertDecodeFails(t, `c0 ["a"[]]`)
+	assertDecodeFails(t, `c0 [[]"a"]`)
+	assertDecodeFails(t, `c0 [[][]]`)
+	assertDecodeFails(t, `c0 [{}"a"]`)
+	assertDecodeFails(t, `c0 [{}{}]`)
+	assertDecodeFails(t, `c0 [<a>"a"]`)
+	assertDecodeFails(t, `c0 [<a><a>]`)
+	assertDecodeFails(t, `c0 [(@"a" @"a" 1)"a"]`)
+	assertDecodeFails(t, `c0 [(@"a" @"a" 1)(@"a" @"a" 1)]`)
+
+	assertDecode(t, nil, `c0 ["a" /* comment */ "b"]`, BD(), EvV, L(), S("a"), CMT(), S("comment"), E(), S("b"), E(), ED())
+	assertDecodeFails(t, `c0 ["a"/* comment */ "b"]`)
+	assertDecodeFails(t, `c0 ["a" /* comment */"b"]`)
 }

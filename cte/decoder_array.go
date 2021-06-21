@@ -32,10 +32,12 @@ type advanceAndDecodeQuotedString struct{}
 var global_advanceAndDecodeQuotedString advanceAndDecodeQuotedString
 
 func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '"'
 
 	bytes := ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
+	ctx.RequireStructuralWS()
 }
 
 type advanceAndDecodeResourceID struct{}
@@ -43,6 +45,7 @@ type advanceAndDecodeResourceID struct{}
 var global_advanceAndDecodeResourceID advanceAndDecodeResourceID
 
 func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '@'
 	if ctx.Stream.ReadByteNoEOF() != '"' {
 		ctx.Stream.UnreadByte()
@@ -52,6 +55,7 @@ func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadQuotedString()
 	if ctx.Stream.PeekByteAllowEOF() != ':' {
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
+		ctx.RequireStructuralWS()
 		return
 	}
 	ctx.Stream.AdvanceByte()
@@ -67,6 +71,7 @@ func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
 	bytes = ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArrayChunk(uint64(len(bytes)), false)
 	ctx.EventReceiver.OnArrayData(bytes)
+	ctx.RequireStructuralWS()
 }
 
 func decodeArrayType(ctx *DecoderContext) []byte {
@@ -113,6 +118,7 @@ func (_this advanceAndDecodeTypedArrayBegin) decodeElementIntOctal(ctx *DecoderC
 }
 
 func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
 	arrayType := decodeArrayType(ctx)
@@ -206,6 +212,7 @@ func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
 	default:
 		decodeMedia(ctx, arrayType)
 	}
+	ctx.RequireStructuralWS()
 }
 
 func decodeMedia(ctx *DecoderContext, arrayType []byte) {

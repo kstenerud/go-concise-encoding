@@ -33,13 +33,14 @@ type DecoderStackEntry struct {
 }
 
 type DecoderContext struct {
-	opts               options.CTEDecoderOptions
-	Stream             Reader
-	TextPos            *TextPositionCounter
-	EventReceiver      events.DataEventReceiver
-	stack              []DecoderStackEntry
-	IsDocumentComplete bool
-	Scratch            []byte
+	opts                 options.CTEDecoderOptions
+	Stream               Reader
+	TextPos              *TextPositionCounter
+	EventReceiver        events.DataEventReceiver
+	stack                []DecoderStackEntry
+	awaitingStructuralWS bool
+	IsDocumentComplete   bool
+	Scratch              []byte
 }
 
 func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
@@ -57,6 +58,24 @@ func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Rea
 
 func (_this *DecoderContext) SetEventReceiver(eventReceiver events.DataEventReceiver) {
 	_this.EventReceiver = eventReceiver
+}
+
+func (_this *DecoderContext) AssertHasStructuralWS() {
+	if _this.awaitingStructuralWS {
+		_this.Errorf("Expected structural whitespace")
+	}
+}
+
+func (_this *DecoderContext) RequireStructuralWS() {
+	_this.awaitingStructuralWS = true
+}
+
+func (_this *DecoderContext) NoNeedForWS() {
+	_this.awaitingStructuralWS = false
+}
+
+func (_this *DecoderContext) NotifyStructuralWS() {
+	_this.awaitingStructuralWS = false
 }
 
 func (_this *DecoderContext) DecodeNext() {
