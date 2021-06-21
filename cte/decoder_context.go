@@ -21,14 +21,34 @@
 package cte
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
+type ContainerType byte
+
+const (
+	ContainerTypeOther ContainerType = iota
+	ContainerTypeList
+	ContainerTypeMap
+)
+
+var containerTypeNames = []string{
+	ContainerTypeOther: "other",
+	ContainerTypeList:  "list",
+	ContainerTypeMap:   "map",
+}
+
+func (_this ContainerType) String() string {
+	return containerTypeNames[_this]
+}
+
 type DecoderStackEntry struct {
 	DecoderFunc      DecoderOp
+	ContainerType    ContainerType
 	IsMarkupContents bool
 }
 
@@ -84,10 +104,7 @@ func (_this *DecoderContext) DecodeNext() {
 }
 
 func (_this *DecoderContext) ChangeDecoder(decoder DecoderOp) {
-	_this.stack[len(_this.stack)-1] = DecoderStackEntry{
-		DecoderFunc:      decoder,
-		IsMarkupContents: false,
-	}
+	_this.stack[len(_this.stack)-1].DecoderFunc = decoder
 }
 
 func (_this *DecoderContext) StackDecoder(decoder DecoderOp) {
@@ -100,6 +117,24 @@ func (_this *DecoderContext) StackDecoder(decoder DecoderOp) {
 func (_this *DecoderContext) UnstackDecoder() DecoderStackEntry {
 	_this.stack = _this.stack[:len(_this.stack)-1]
 	return _this.stack[len(_this.stack)-1]
+}
+
+func (_this *DecoderContext) SetContainerType(containerType ContainerType) {
+	_this.stack[len(_this.stack)-1].ContainerType = containerType
+}
+
+func (_this *DecoderContext) AssertIsInMap() {
+	containerType := _this.stack[len(_this.stack)-1].ContainerType
+	if containerType != ContainerTypeMap {
+		panic(fmt.Errorf("Cannot end a map using %v end", containerType))
+	}
+}
+
+func (_this *DecoderContext) AssertIsInList() {
+	containerType := _this.stack[len(_this.stack)-1].ContainerType
+	if containerType != ContainerTypeList {
+		panic(fmt.Errorf("Cannot end a list using %v end", containerType))
+	}
 }
 
 func (_this *DecoderContext) BeginComment() {

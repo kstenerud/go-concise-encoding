@@ -2155,3 +2155,40 @@ func TestCommentSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0 ["a"/* comment */ "b"]`)
 	assertDecodeFails(t, `c0 ["a" /* comment */"b"]`)
 }
+
+func TestMismatchedContainerEnd(t *testing.T) {
+	assertDecode(t, nil, `c0 []`, BD(), EvV, L(), E(), ED())
+	assertDecodeFails(t, `c0 [}`)
+	assertDecodeFails(t, `c0 [>`)
+	assertDecodeFails(t, `c0 [)`)
+
+	assertDecode(t, nil, `c0 {}`, BD(), EvV, M(), E(), ED())
+	assertDecodeFails(t, `c0 {]`)
+	assertDecodeFails(t, `c0 {>`)
+	assertDecodeFails(t, `c0 {)`)
+
+	assertDecode(t, nil, `c0 <a>`, BD(), EvV, MUP("a"), E(), E(), ED())
+	assertDecodeFails(t, `c0 <a}`)
+	assertDecodeFails(t, `c0 <a]`)
+	assertDecodeFails(t, `c0 <a)`)
+
+	assertDecode(t, nil, `c0 <a 1=2>`, BD(), EvV, MUP("a"), I(1), I(2), E(), E(), ED())
+	assertDecodeFails(t, `c0 <a 1=2}`)
+	assertDecodeFails(t, `c0 <a 1=2]`)
+	assertDecodeFails(t, `c0 <a 1=2)`)
+
+	assertDecode(t, nil, `c0 <a,a>`, BD(), EvV, MUP("a"), E(), S("a"), E(), ED())
+	assertDecodeFails(t, `c0 <a,a}`)
+	assertDecodeFails(t, `c0 <a,a]`)
+	assertDecodeFails(t, `c0 <a,a)`)
+
+	assertDecode(t, nil, `c0 <a 1=2,a>`, BD(), EvV, MUP("a"), I(1), I(2), E(), S("a"), E(), ED())
+	assertDecodeFails(t, `c0 <a 1=2,a}`)
+	assertDecodeFails(t, `c0 <a 1=2,a]`)
+	assertDecodeFails(t, `c0 <a 1=2,a)`)
+
+	assertDecode(t, nil, `c0 (@"a" @"a" 1)`, BD(), EvV, REL(), RID("a"), RID("a"), I(1), ED())
+	assertDecodeFails(t, `c0 (@"a" @"a" 1]`)
+	assertDecodeFails(t, `c0 (@"a" @"a" 1>`)
+	assertDecodeFails(t, `c0 (@"a" @"a" 1}`)
+}

@@ -34,6 +34,7 @@ func (_this advanceAndDecodeMapBegin) Run(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnMap()
 	ctx.StackDecoder(global_decodeMapKey)
+	ctx.SetContainerType(ContainerTypeMap)
 }
 
 type decodeMapKey struct{}
@@ -67,6 +68,7 @@ var global_advanceAndDecodeMapEnd advanceAndDecodeMapEnd
 func (_this advanceAndDecodeMapEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '}'
 
+	ctx.AssertIsInMap()
 	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 	ctx.RequireStructuralWS()
@@ -82,6 +84,7 @@ func (_this advanceAndDecodeListBegin) Run(ctx *DecoderContext) {
 
 	ctx.EventReceiver.OnList()
 	ctx.StackDecoder(global_decodeByFirstChar)
+	ctx.SetContainerType(ContainerTypeList)
 }
 
 type advanceAndDecodeListEnd struct{}
@@ -91,6 +94,7 @@ var global_advanceAndDecodeListEnd advanceAndDecodeListEnd
 func (_this advanceAndDecodeListEnd) Run(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ']'
 
+	ctx.AssertIsInList()
 	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 	ctx.RequireStructuralWS()
