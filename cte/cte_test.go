@@ -1597,6 +1597,8 @@ func TestCTECommentMultilineNested(t *testing.T) {
 	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
 	assertDecode(t, nil, "c0 /* /**/ */ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
 	assertDecode(t, nil, "c0  /* before/* mid */ after*/ 1  ", BD(), EvV, CMT(), S("before"), CMT(), S("mid"), E(), S("after"), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /* x /* y */ 10 */ 5", BD(), EvV, CMT(), S("x"), CMT(), S("y"), E(), S("10"), E(), PI(5), ED())
+	assertDecode(t, nil, "c0 /* x /* y */ na */ 5", BD(), EvV, CMT(), S("x"), CMT(), S("y"), E(), S("na"), E(), PI(5), ED())
 }
 
 func TestCTECommentAfterValue(t *testing.T) {
@@ -2138,7 +2140,7 @@ func TestMixedCase(t *testing.T) {
 	testDecodeCasePermutations(t, "true", TT())
 }
 
-func TestCommentSpacing(t *testing.T) {
+func TestSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0[]`)
 	assertDecodeFails(t, `c0 ["a""b"]`)
 	assertDecodeFails(t, `c0 ["a"[]]`)
