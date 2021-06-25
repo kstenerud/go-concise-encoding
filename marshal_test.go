@@ -70,7 +70,7 @@ func TestDemonstrateRecursiveStructInMap(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
-	// Prints: Re-encoded CBE: [3 0 121 136 109 121 45 118 97 108 117 101 151 0 121 129 97 100 129 98 132 116 101 115 116 129 99 152 0 123 123]
+	// Prints: Re-encoded CBE: [131 0 121 136 109 121 45 118 97 108 117 101 151 1 48 121 129 97 100 129 98 132 116 101 115 116 129 99 152 1 48 123 123]
 }
 
 func TestEmptyListWithIndents(t *testing.T) {

@@ -43,7 +43,7 @@ import (
 var EvV = test.EvV
 
 const (
-	header = 0x03
+	header = 0x83
 	ceVer  = version.ConciseEncodingVersion
 
 	typeDecimal      = 0x65
