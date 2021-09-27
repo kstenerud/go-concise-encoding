@@ -49,9 +49,25 @@ Primary Sections
 
 ### Events
 
-Events form the backbone of the entire library. The major components either consume or produce data events. This architecture makes it easy to mix & match components to produce whatever software design you want.
+Events form the backbone of the entire library. The major components either consume or produce data events. This architecture makes it easy to combine components in ways that match your requirements.
 
-See: [data_events.go](events/data_events.go)
+The most important interface is [`DataEventReceiver`](events/data_events.go), which receives events that present the data depth-first. For example, the following events would describe a document containing a list, which contains three strings and a map containing one entry that maps a string to an integer value (indentation added for clarity):
+
+```
+begin document
+	begin list
+		string
+		string
+		string
+		begin map
+			string
+			integer
+		end container
+	end container
+end document
+```
+
+[Iterators](#iterators) consume arbitrary objects and produce a series of events that describe them. [Builders](#builders) do the opposite, consuming events to produce objects. [Codecs](#codecs) serialize and deserialize those events.
 
 
 ### Iterators
