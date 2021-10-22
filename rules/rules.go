@@ -37,16 +37,17 @@ type EventRule interface {
 	OnChildContainerEnded(ctx *Context, containerType DataType)
 	OnVersion(ctx *Context, version uint64)
 	OnPadding(ctx *Context)
+	OnComment(ctx *Context)
 	OnKeyableObject(ctx *Context, objType DataType)
 	OnNonKeyableObject(ctx *Context, objType DataType)
 	OnNA(ctx *Context)
 	OnNil(ctx *Context)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
+	OnEdge(ctx *Context)
+	OnNode(ctx *Context)
 	OnMarkup(ctx *Context, identifier []byte)
-	OnComment(ctx *Context)
 	OnEnd(ctx *Context)
-	OnRelationship(ctx *Context)
 	OnMarker(ctx *Context, identifier []byte)
 	OnReference(ctx *Context, identifier []byte)
 	OnRIDReference(ctx *Context)
@@ -72,13 +73,11 @@ var (
 	topLevelRule            TopLevelRule
 	naRule                  NARule
 	listRule                ListRule
-	resourceListRule        ResourceListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
 	markupKeyRule           MarkupKeyRule
 	markupValueRule         MarkupValueRule
 	markupContentsRule      MarkupContentsRule
-	commentRule             CommentRule
 	arrayRule               ArrayRule
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule
@@ -93,9 +92,10 @@ var (
 	tlReferenceRIDRule      RIDReferenceRule
 	stringBuilderRule       StringBuilderRule
 	stringBuilderChunkRule  StringBuilderChunkRule
-	subjectRule             SubjectRule
-	predicateRule           PredicateRule
-	objectRule              ObjectRule
+	edgeSourceRule          EdgeSourceRule
+	edgeDescriptionRule     EdgeDescriptionRule
+	edgeDestinationRule     EdgeDestinationRule
+	nodeRule                NodeRule
 )
 
 var arrayTypeToDataType = []DataType{

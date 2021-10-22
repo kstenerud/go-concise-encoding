@@ -26,7 +26,6 @@ import (
 	"os"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
-
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
 
@@ -67,11 +66,8 @@ func generateDataTypeType(writer io.Writer) {
 	}
 	gen.AddCustom(DataTypeInvalid, uint64(DataTypeInvalid))
 	gen.AddCustom("AllowAny", AllowAny)
+	gen.AddCustom("AllowNonNil", AllowNonNil)
 	gen.AddCustom("AllowKeyable", AllowKeyable)
-	gen.AddCustom("AllowResource", AllowResource)
-	gen.AddCustom("AllowSubject", AllowSubject)
-	gen.AddCustom("AllowPredicate", AllowPredicate)
-	gen.AddCustom("AllowObject", AllowObject)
 	gen.AddCustom("AllowString", DataTypeString)
 	gen.AddCustom("AllowResourceID", DataTypeResourceID)
 	gen.EndType()
@@ -153,7 +149,8 @@ const (
 	DataTypeMap
 	DataTypeMarkup
 	DataTypeComment
-	DataTypeRelationship
+	DataTypeEdge
+	DataTypeNode
 	DataTypeString
 	DataTypeResourceID
 	DataTypeArrayBit
@@ -173,16 +170,12 @@ const (
 	DataTypeRIDReference
 	DataTypeCustomText
 	DataTypeCustomBinary
-	DataTypeResourceList
 	EndDataTypes
 
 	DataTypeInvalid = DataType(0)
 	AllowAny        = ^DataType(0)
-	AllowKeyable    = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeResourceID
-	AllowResource   = DataTypeMap | DataTypeRelationship | DataTypeResourceList | DataTypeResourceID
-	AllowSubject    = AllowResource
-	AllowPredicate  = DataTypeResourceID
-	AllowObject     = AllowAny
+	AllowNonNil     = ^DataTypeNil
+	AllowKeyable    = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeResourceID | DataTypeComment
 )
 
 func (_this DataType) String() string {
@@ -201,9 +194,10 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeTime:         "DataTypeTime",
 	DataTypeList:         "DataTypeList",
 	DataTypeMap:          "DataTypeMap",
+	DataTypeEdge:         "DataTypeEdge",
+	DataTypeNode:         "DataTypeNode",
 	DataTypeMarkup:       "DataTypeMarkup",
 	DataTypeComment:      "DataTypeComment",
-	DataTypeRelationship: "DataTypeRelationship",
 	DataTypeString:       "DataTypeString",
 	DataTypeResourceID:   "DataTypeResourceID",
 	DataTypeArrayBit:     "DataTypeArrayBit",
@@ -223,7 +217,6 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeRIDReference: "DataTypeRIDReference",
 	DataTypeCustomText:   "DataTypeCustomText",
 	DataTypeCustomBinary: "DataTypeCustomBinary",
-	DataTypeResourceList: "DataTypeResourceList",
 }
 
 type ContainerType int
@@ -278,6 +271,11 @@ var (
 		MethodType: MethodTypeOther,
 		Signature:  "OnPadding(ctx *Context)",
 	}
+	Comment = &Method{
+		Name:       "comment",
+		MethodType: MethodTypeOther,
+		Signature:  "OnComment(ctx *Context)",
+	}
 	Nil = &Method{
 		Name:       "Nil",
 		MethodType: MethodTypeOther,
@@ -303,25 +301,25 @@ var (
 		MethodType: MethodTypeOther,
 		Signature:  "OnMap(ctx *Context)",
 	}
+	Edge = &Method{
+		Name:       "edge",
+		MethodType: MethodTypeOther,
+		Signature:  "OnEdge(ctx *Context)",
+	}
+	Node = &Method{
+		Name:       "node",
+		MethodType: MethodTypeOther,
+		Signature:  "OnNode(ctx *Context)",
+	}
 	Markup = &Method{
 		Name:       "markup",
 		MethodType: MethodTypeOther,
 		Signature:  "OnMarkup(ctx *Context, identifier []byte)",
 	}
-	Comment = &Method{
-		Name:       "comment",
-		MethodType: MethodTypeOther,
-		Signature:  "OnComment(ctx *Context)",
-	}
 	End = &Method{
 		Name:       "end container",
 		MethodType: MethodTypeOther,
 		Signature:  "OnEnd(ctx *Context)",
-	}
-	Rel = &Method{
-		Name:       "relationship",
-		MethodType: MethodTypeOther,
-		Signature:  "OnRelationship(ctx *Context)",
 	}
 	Marker = &Method{
 		Name:       "marker",
@@ -369,9 +367,9 @@ var (
 		Signature:  "OnArrayData(ctx *Context, data []byte)",
 	}
 
-	allMethods = []*Method{BDoc, EDoc, ECtr, Ver, NA, Pad, Nil, Key, NonKey, List,
-		Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray,
-		ABegin, AChunk, AData}
+	allMethods = []*Method{BDoc, EDoc, ECtr, Ver, NA, Pad, Comment, Nil, Key,
+		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, RIDRef, Const,
+		Array, SArray, ABegin, AChunk, AData}
 )
 
 type Rule struct {
@@ -404,52 +402,42 @@ var allRules = []Rule{
 	{
 		Name:         "TopLevelRule",
 		FriendlyName: "top level",
-		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, RIDRef, Const, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:         "NARule",
 		FriendlyName: "NA",
-		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Array, SArray, ABegin},
 	},
 	{
 		Name:         "ListRule",
 		FriendlyName: "list",
-		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, End, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
-	},
-	{
-		Name:         "ResourceListRule",
-		FriendlyName: "resource list",
-		Methods:      []*Method{ECtr, Pad, Comment, Map, End, Rel, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:         "MapKeyRule",
 		FriendlyName: "map key",
-		Methods:      []*Method{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, Pad, Comment, Key, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:         "MapValueRule",
 		FriendlyName: "map value",
-		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:         "MarkupKeyRule",
 		FriendlyName: "markup key",
-		Methods:      []*Method{ECtr, Pad, Key, Comment, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, Pad, Comment, Key, End, Marker, Ref, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:         "MarkupValueRule",
 		FriendlyName: "markup value",
-		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
 		Name:         "MarkupContentsRule",
 		FriendlyName: "markup contents",
-		Methods:      []*Method{ECtr, Pad, Markup, Comment, End, Array, SArray, ABegin},
-	},
-	{
-		Name:         "CommentRule",
-		FriendlyName: "comment",
-		Methods:      []*Method{ECtr, Pad, Comment, End, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, Pad, Comment, Markup, End, Array, SArray, ABegin},
 	},
 	{
 		Name:         "ArrayRule",
@@ -499,7 +487,7 @@ var allRules = []Rule{
 	{
 		Name:         "MarkedObjectAnyTypeRule",
 		FriendlyName: "marked object",
-		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Markup, Rel, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Array, SArray, ABegin},
 	},
 	{
 		Name:         "ConstantKeyableRule",
@@ -509,7 +497,7 @@ var allRules = []Rule{
 	{
 		Name:         "ConstantAnyTypeRule",
 		FriendlyName: "constant",
-		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, NA, List, Map, Markup, Rel, Array, SArray, ABegin},
+		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, NA, List, Map, Edge, Node, Markup, Array, SArray, ABegin},
 	},
 	{
 		Name:         "RIDReferenceRule",
@@ -517,18 +505,23 @@ var allRules = []Rule{
 		Methods:      []*Method{Pad, Array, SArray, ABegin, ECtr},
 	},
 	{
-		Name:         "SubjectRule",
-		FriendlyName: "relationship subject",
-		Methods:      []*Method{ECtr, Pad, List, Map, Comment, Rel, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:         "EdgeSourceRule",
+		FriendlyName: "edge source",
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:         "PredicateRule",
-		FriendlyName: "relationship predicate",
-		Methods:      []*Method{ECtr, Pad, Comment, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:         "EdgeDescriptionRule",
+		FriendlyName: "edge description",
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 	{
-		Name:         "ObjectRule",
-		FriendlyName: "relationship object",
-		Methods:      []*Method{ECtr, NA, Pad, Nil, Key, NonKey, List, Map, Markup, Comment, Rel, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		Name:         "EdgeDestinationRule",
+		FriendlyName: "edge destination",
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+	},
+	{
+		Name:         "NodeRule",
+		FriendlyName: "node",
+		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
 	},
 }

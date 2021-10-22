@@ -106,6 +106,7 @@ func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func N() *test.TEvent                        { return test.N() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
+func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
@@ -131,8 +132,10 @@ func AI64(v []int64) *test.TEvent            { return test.AI64(v) }
 func AF16(v []byte) *test.TEvent             { return test.AF16(v) }
 func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
+func AUU(v []byte) *test.TEvent              { return test.AUU(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
+func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }
@@ -148,17 +151,19 @@ func AF16B() *test.TEvent                    { return test.AF16B() }
 func AF32B() *test.TEvent                    { return test.AF32B() }
 func AF64B() *test.TEvent                    { return test.AF64B() }
 func AUUB() *test.TEvent                     { return test.AUUB() }
+func MB() *test.TEvent                       { return test.MB() }
 func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
-func CMT() *test.TEvent                      { return test.CMT() }
-func REL() *test.TEvent                      { return test.REL() }
+func NODE() *test.TEvent                     { return test.NODE() }
+func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
 func RIDREF() *test.TEvent                   { return test.RIDREF() }
+func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 

@@ -28,10 +28,6 @@
 // removes all compile-time type protections.
 package types
 
-import (
-	"net/url"
-)
-
 // 128-bit universal identifier.
 type UID [16]byte
 
@@ -79,18 +75,26 @@ func (_this *Markup) AddMarkup(value *Markup) {
 	_this.Content = append(_this.Content, value)
 }
 
-// A relationship stores relationships between subjects and objects.
-type Relationship struct {
-	// Subject can be a resource or a list of resources.
-	// A resource can be a map, a relationship, or a resource ID.
-	Subject interface{}
-
-	// Predicate is the nature of the relationship, and can only be a resource ID.
-	Predicate *url.URL
-
-	// Object can be anything
-	Object interface{}
+// An edge between two vertices in a graph.
+type Edge struct {
+	Source      interface{}
+	Description interface{}
+	Destination interface{}
 }
 
-// Marker type so that at least reflect can recognize a list of resources.
-type ResourceList []interface{}
+const (
+	EdgeFieldIndexSource = iota
+	EdgeFieldIndexDescription
+	EdgeFieldIndexDestination
+)
+
+// A node in a tree.
+type Node struct {
+	Value    interface{}
+	Children []interface{}
+}
+
+const (
+	NodeFieldIndexValue = iota
+	NodeFieldIndexChildren
+)

@@ -87,6 +87,10 @@ func (_this *Encoder) OnPadding(count int) {
 	_this.writer.FlushBuffer(count)
 }
 
+func (_this *Encoder) OnComment(bool, []byte) {
+	// Ignored
+}
+
 func (_this *Encoder) OnBeginDocument() {
 }
 
@@ -417,16 +421,16 @@ func (_this *Encoder) OnMarkup(id []byte) {
 	_this.writer.WriteIdentifier(id)
 }
 
-func (_this *Encoder) OnComment() {
-	_this.writer.WriteType(cbeTypeComment)
+func (_this *Encoder) OnNode() {
+	_this.writer.WriteType(cbeTypeNode)
+}
+
+func (_this *Encoder) OnEdge() {
+	_this.writer.WriteType(cbeTypeEdge)
 }
 
 func (_this *Encoder) OnEnd() {
 	_this.writer.WriteType(cbeTypeEndContainer)
-}
-
-func (_this *Encoder) OnRelationship() {
-	_this.writer.WriteType(cbeTypeRelationship)
 }
 
 func (_this *Encoder) OnMarker(id []byte) {

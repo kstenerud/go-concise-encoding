@@ -29,6 +29,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -80,6 +81,14 @@ func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundred
 
 func NewTestingOuterStruct(baseValue int) *test.TestingOuterStruct {
 	return test.NewTestingOuterStruct(baseValue)
+}
+
+func NewNode(value interface{}, children []interface{}) *types.Node {
+	return test.NewNode(value, children)
+}
+
+func NewEdge(source interface{}, description interface{}, destination interface{}) *types.Edge {
+	return test.NewEdge(source, description, destination)
 }
 
 func TT() *test.TEvent                       { return test.TT() }
@@ -140,7 +149,8 @@ func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
-func CMT() *test.TEvent                      { return test.CMT() }
+func NODE() *test.TEvent                     { return test.NODE() }
+func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }

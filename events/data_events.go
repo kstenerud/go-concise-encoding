@@ -148,6 +148,7 @@ type DataEventReceiver interface {
 
 	OnVersion(version uint64)
 	OnPadding(count int)
+	OnComment(isMultiline bool, contents []byte)
 	OnNA()
 	OnNil()
 	OnBool(value bool)
@@ -167,10 +168,10 @@ type DataEventReceiver interface {
 	OnCompactTime(value compact_time.Time)
 	OnList()
 	OnMap()
+	OnEdge()
+	OnNode()
 	OnMarkup(identifier []byte)
-	OnComment()
 	OnEnd()
-	OnRelationship()
 	OnMarker(identifier []byte)
 	OnReference(identifier []byte)
 	OnRIDReference()
@@ -192,6 +193,7 @@ func NewNullEventReceiver() *NullEventReceiver {
 }
 func (_this *NullEventReceiver) OnBeginDocument()                    {}
 func (_this *NullEventReceiver) OnVersion(uint64)                    {}
+func (_this *NullEventReceiver) OnComment(bool, []byte)              {}
 func (_this *NullEventReceiver) OnPadding(int)                       {}
 func (_this *NullEventReceiver) OnNA()                               {}
 func (_this *NullEventReceiver) OnNil()                              {}
@@ -217,10 +219,10 @@ func (_this *NullEventReceiver) OnArrayChunk(uint64, bool)           {}
 func (_this *NullEventReceiver) OnArrayData([]byte)                  {}
 func (_this *NullEventReceiver) OnList()                             {}
 func (_this *NullEventReceiver) OnMap()                              {}
+func (_this *NullEventReceiver) OnEdge()                             {}
+func (_this *NullEventReceiver) OnNode()                             {}
 func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
-func (_this *NullEventReceiver) OnComment()                          {}
 func (_this *NullEventReceiver) OnEnd()                              {}
-func (_this *NullEventReceiver) OnRelationship()                     {}
 func (_this *NullEventReceiver) OnMarker([]byte)                     {}
 func (_this *NullEventReceiver) OnReference([]byte)                  {}
 func (_this *NullEventReceiver) OnRIDReference()                     {}

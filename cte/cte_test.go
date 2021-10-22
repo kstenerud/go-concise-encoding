@@ -22,6 +22,7 @@ package cte
 
 import (
 	"bytes"
+	// "bytes"
 	"fmt"
 	"math"
 	"strings"
@@ -1484,20 +1485,20 @@ func TestCTEMarkupMarkup(t *testing.T) {
 }
 
 func TestCTEMarkupComment(t *testing.T) {
-	assertDecode(t, nil, "c0 <a,//blah\n>", BD(), EvV, MUP("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, nil, "c0 <a,//blah\n a>", BD(), EvV, MUP("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
-	assertDecode(t, nil, "c0 <a,a//blah\n a>", BD(), EvV, MUP("a"), E(), S("a"), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a,//blah\n>", BD(), EvV, MUP("a"), E(), COM(false, "blah"), E(), ED())
+	assertDecode(t, nil, "c0 <a,//blah\n a>", BD(), EvV, MUP("a"), E(), COM(false, "blah"), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a,a//blah\n a>", BD(), EvV, MUP("a"), E(), S("a"), COM(false, "blah"), S("a"), E(), ED())
 
-	assertDecode(t, nil, "c0 <a,/*blah*/>", BD(), EvV, MUP("a"), E(), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, nil, "c0 <a,a/*blah*/>", BD(), EvV, MUP("a"), E(), S("a"), CMT(), S("blah"), E(), E(), ED())
-	assertDecode(t, nil, "c0 <a,/*blah*/a>", BD(), EvV, MUP("a"), E(), CMT(), S("blah"), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a,/*blah*/>", BD(), EvV, MUP("a"), E(), COM(true, "blah"), E(), ED())
+	assertDecode(t, nil, "c0 <a,a/*blah*/>", BD(), EvV, MUP("a"), E(), S("a"), COM(true, "blah"), E(), ED())
+	assertDecode(t, nil, "c0 <a,/*blah*/a>", BD(), EvV, MUP("a"), E(), COM(true, "blah"), S("a"), E(), ED())
 
-	assertDecode(t, nil, "c0 <a,/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
-	assertDecode(t, nil, "c0 <a,a/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), S("a"), CMT(), CMT(), S("blah"), E(), E(), E(), ED())
-	assertDecode(t, nil, "c0 <a,/*/*blah*/*/a>", BD(), EvV, MUP("a"), E(), CMT(), CMT(), S("blah"), E(), E(), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a,/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), COM(true, "/*blah*/"), E(), ED())
+	assertDecode(t, nil, "c0 <a,a/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), S("a"), COM(true, "/*blah*/"), E(), ED())
+	assertDecode(t, nil, "c0 <a,/*/*blah*/*/a>", BD(), EvV, MUP("a"), E(), COM(true, "/*blah*/"), S("a"), E(), ED())
 
 	// TODO: Should it be picking up the extra space between the x and comment?
-	assertDecode(t, nil, "c0 <a,x /*blah*/ x>", BD(), EvV, MUP("a"), E(), S("x "), CMT(), S("blah"), E(), S("x"), E(), ED())
+	assertDecode(t, nil, "c0 <a,x /*blah*/ x>", BD(), EvV, MUP("a"), E(), S("x "), COM(true, "blah"), S("x"), E(), ED())
 }
 
 func TestCTENamed(t *testing.T) {
@@ -1562,6 +1563,7 @@ func TestCTEMarkerReference2(t *testing.T) {
 }
 
 func TestCTEComment(t *testing.T) {
+	defer test.PassThroughPanics(true)()
 	// TODO: Better comment formatting
 	assertDecodeEncode(t, nil, nil, `c0
 {
@@ -1573,32 +1575,32 @@ func TestCTEComment(t *testing.T) {
 
 func TestCTECommentSingleLine(t *testing.T) {
 	assertDecodeFails(t, "c0 //")
-	assertDecode(t, nil, "c0 //\n1", BD(), EvV, CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 //\r\n1", BD(), EvV, CMT(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 //\n1", BD(), EvV, COM(false, ""), PI(1), ED())
+	assertDecode(t, nil, "c0 //\r\n1", BD(), EvV, COM(false, ""), PI(1), ED())
 	assertDecodeFails(t, "c0 // ")
-	assertDecode(t, nil, "c0 // \n1", BD(), EvV, CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 // \r\n1", BD(), EvV, CMT(), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 // \n1", BD(), EvV, COM(false, " "), PI(1), ED())
+	assertDecode(t, nil, "c0 // \r\n1", BD(), EvV, COM(false, " "), PI(1), ED())
 	assertDecodeFails(t, "c0 //a")
-	assertDecode(t, nil, "c0 //a\n1", BD(), EvV, CMT(), S("a"), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 //a\r\n1", BD(), EvV, CMT(), S("a"), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 // This is a comment\n1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 //a\n1", BD(), EvV, COM(false, "a"), PI(1), ED())
+	assertDecode(t, nil, "c0 //a\r\n1", BD(), EvV, COM(false, "a"), PI(1), ED())
+	assertDecode(t, nil, "c0 // This is a comment\n1", BD(), EvV, COM(false, " This is a comment"), PI(1), ED())
 	assertDecodeFails(t, "c0 /-\n")
 }
 
 func TestCTECommentMultiline(t *testing.T) {
-	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, CMT(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /* This is a comment */ 1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /*This is a comment*/ 1", BD(), EvV, CMT(), S("This is a comment"), E(), PI(1), ED())
+	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, COM(true, ""), PI(1), ED())
+	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, COM(true, ""), PI(1), ED())
+	assertDecode(t, nil, "c0 /* This is a comment */ 1", BD(), EvV, COM(true, " This is a comment "), PI(1), ED())
+	assertDecode(t, nil, "c0 /*This is a comment*/ 1", BD(), EvV, COM(true, "This is a comment"), PI(1), ED())
 }
 
 func TestCTECommentMultilineNested(t *testing.T) {
-	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /* /**/ */ 1", BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
-	assertDecode(t, nil, "c0  /* before/* mid */ after*/ 1  ", BD(), EvV, CMT(), S("before"), CMT(), S("mid"), E(), S("after"), E(), PI(1), ED())
-	assertDecode(t, nil, "c0 /* x /* y */ 10 */ 5", BD(), EvV, CMT(), S("x"), CMT(), S("y"), E(), S("10"), E(), PI(5), ED())
-	assertDecode(t, nil, "c0 /* x /* y */ na */ 5", BD(), EvV, CMT(), S("x"), CMT(), S("y"), E(), S("na"), E(), PI(5), ED())
+	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, COM(true, "/**/"), PI(1), ED())
+	assertDecode(t, nil, "c0 /*/**/ */ 1", BD(), EvV, COM(true, "/**/ "), PI(1), ED())
+	assertDecode(t, nil, "c0 /* /**/ */ 1", BD(), EvV, COM(true, " /**/ "), PI(1), ED())
+	assertDecode(t, nil, "c0  /* before/* mid */ after*/ 1  ", BD(), EvV, COM(true, " before/* mid */ after"), PI(1), ED())
+	assertDecode(t, nil, "c0 /* x /* y */ 10 */ 5", BD(), EvV, COM(true, " x /* y */ 10 "), PI(5), ED())
+	assertDecode(t, nil, "c0 /* x /* y */ na */ 5", BD(), EvV, COM(true, " x /* y */ na "), PI(5), ED())
 }
 
 func TestCTECommentAfterValue(t *testing.T) {
@@ -1606,7 +1608,7 @@ func TestCTECommentAfterValue(t *testing.T) {
 [
     "a"
     /**/
-]`, BD(), EvV, L(), S("a"), CMT(), E(), E(), ED())
+]`, BD(), EvV, L(), S("a"), COM(true, ""), E(), ED())
 }
 
 func TestCTEComplexComment(t *testing.T) {
@@ -1650,11 +1652,11 @@ func TestCTEComplexComment(t *testing.T) {
 }
 
 func TestCTECommentFollowing(t *testing.T) {
-	assertDecode(t, nil, `c0 {"a"="b" /**/}`, BD(), EvV, M(), S("a"), S("b"), CMT(), E(), E(), ED())
-	assertDecode(t, nil, `c0 {"a"=2 /**/}`, BD(), EvV, M(), S("a"), PI(2), CMT(), E(), E(), ED())
-	assertDecode(t, nil, `c0 {"a"=-2 /**/}`, BD(), EvV, M(), S("a"), NI(2), CMT(), E(), E(), ED())
+	assertDecode(t, nil, `c0 {"a"="b" /**/}`, BD(), EvV, M(), S("a"), S("b"), COM(true, ""), E(), ED())
+	assertDecode(t, nil, `c0 {"a"=2 /**/}`, BD(), EvV, M(), S("a"), PI(2), COM(true, ""), E(), ED())
+	assertDecode(t, nil, `c0 {"a"=-2 /**/}`, BD(), EvV, M(), S("a"), NI(2), COM(true, ""), E(), ED())
 	// TODO: All other bare values: float, date/time, etc
-	assertDecode(t, nil, `c0 {"a"=1.5 /**/}`, BD(), EvV, M(), S("a"), DF(NewDFloat("1.5")), CMT(), E(), E(), ED())
+	assertDecode(t, nil, `c0 {"a"=1.5 /**/}`, BD(), EvV, M(), S("a"), DF(NewDFloat("1.5")), COM(true, ""), E(), ED())
 	// TODO: Also test for //
 }
 
@@ -1666,39 +1668,39 @@ func TestCTECommentPretty(t *testing.T) {
 {
     "a" = "b"
     /**/
-}`, BD(), EvV, M(), S("a"), S("b"), CMT(), E(), E(), ED())
+}`, BD(), EvV, M(), S("a"), S("b"), COM(true, ""), E(), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
 /**/
-1`, BD(), EvV, CMT(), E(), PI(1), ED())
+1`, BD(), EvV, COM(true, ""), PI(1), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
 /* a */
-1`, BD(), EvV, CMT(), S("a"), E(), PI(1), ED())
+1`, BD(), EvV, COM(true, " a "), PI(1), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
 /* /**/ */
-1`, BD(), EvV, CMT(), CMT(), E(), E(), PI(1), ED())
+1`, BD(), EvV, COM(true, " /**/ "), PI(1), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
 /* /* a */ */
-1`, BD(), EvV, CMT(), CMT(), S("a"), E(), E(), PI(1), ED())
+1`, BD(), EvV, COM(true, " /* a */ "), PI(1), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
 /**/
-"a"`, BD(), EvV, CMT(), E(), S("a"), ED())
+"a"`, BD(), EvV, COM(true, ""), S("a"), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
 [
     /* xyz */
     "a"
-]`, BD(), EvV, L(), CMT(), S("xyz"), E(), S("a"), E(), ED())
+]`, BD(), EvV, L(), COM(true, " xyz "), S("a"), E(), ED())
 }
 
 func TestCTEMarkupPretty(t *testing.T) {
@@ -1864,66 +1866,6 @@ func TestCTEBufferEdge2(t *testing.T) {
 `)
 }
 
-func TestCTEComplexExample(t *testing.T) {
-	assertDecode(t, nil, `c0
-{
-    /* /* Nested comments are allowed */ */
-    // There are no commas in maps and lists
-    "a_list"         = [1 2 "a string"]
-    "map"            = {2="two" 3=3000 1="one"}
-    "string"         = "A string value"
-    "boolean"        = true
-    "binary int"     = -0b10001011
-    "octal int"      = 0o644
-    "regular int"    = -10000000
-    "hex int"        = 0xfffe0001
-    "decimal float"  = -14.125
-    "hex float"      = 0x5.1ec4p20
-    "uid"           = f1ce4567-e89b-12d3-a456-426655440000
-    "date"           = 2019-7-1
-    "time"           = 18:04:00.940231541/E/Prague
-    "timestamp"      = 2010-7-15/13:28:15.415942344/Z
-    "nil"            = nil
-    "na"             = na:123
-    "bytes"          = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    "url"            = @"https://example.com/"
-    "email"          = @"mailto:me@somewhere.com"
-    1.5              = "Keys don't have to be strings"
-    "long-string"    = "\.ZZZ
-A backtick induces verbatim processing, which in this case will continue
-until three Z characters are encountered, similar to how here documents in
-bash work.
-You can put anything in here, including double-quote ("), or even more
-backticks (`+"`"+`). Verbatim processing stops at the end sequence, which in this
-case is three Z characters, specified earlier as a sentinel.ZZZ"
-    "marked_object"  = &tag1:{
-                                "description" = "This map will be referenced later using $tag1"
-                                "value" = -inf
-                                "child_elements" = nil
-                                "recursive" = $tag1
-                            }
-    "ref1"            = $tag1
-    "ref2"            = $tag1
-    "outside_ref"     = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
-    // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en" ,
-                         <body,
-                           Please choose from the following widgets:
-                           <div "id"="parent" "style"="normal" "ref-id"=1 ,
-                             /* Here we use a backtick to induce verbatim processing.
-                              * In this case, "##" is chosen as the ending sequence
-                              */
-                             <script, \.##
-                               document.getElementById('parent').insertAdjacentHTML('beforeend',
-                                  '<div id="idChild"> content </div>'),
-                             ##>
-                           >
-                         >
-                       >
-}
-`)
-}
-
 func TestCTEEncodeDecodeExample(t *testing.T) {
 	document := `c0
 {
@@ -2009,7 +1951,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "ref1" = $tag1
     "ref2" = $tag1
     "outside_ref" = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
-    /* The markup type is good for presentation data */
+    // The markup type is good for presentation data
     "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
         <body,
             Please choose from the following widgets: 
@@ -2020,7 +1962,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
         >
     >
 }`
-
+	// TODO: "Please choose from the following widgets:" is getting a space appended to it
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()
 	encOpts.Indent = "    "
@@ -2044,7 +1986,7 @@ func TestMapValueComment(t *testing.T) {
 {
     1 = /**/
     1
-}`, BD(), EvV, M(), PI(1), CMT(), E(), PI(1), E(), ED())
+}`, BD(), EvV, M(), PI(1), COM(true, ""), PI(1), E(), ED())
 }
 
 func TestEmptyDocument(t *testing.T) {
@@ -2064,7 +2006,7 @@ func TestNestedComment(t *testing.T) {
 [
     /* a /* nested */ comment */
     1
-]`, BD(), EvV, L(), CMT(), S("a"), CMT(), S("nested"), E(), S("comment"), E(), PI(1), E(), ED())
+]`, BD(), EvV, L(), COM(true, " a /* nested */ comment "), PI(1), E(), ED())
 }
 
 func TestRIDConcat(t *testing.T) {
@@ -2079,12 +2021,12 @@ func TestMarkupComment(t *testing.T) {
 <a,
     /* comment */
     1
->`, BD(), EvV, MUP("a"), E(), CMT(), S("comment"), E(), S("1"), E(), ED())
+>`, BD(), EvV, MUP("a"), E(), COM(true, " comment "), S("1"), E(), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
 <a,
     /* comment */
->`, BD(), EvV, MUP("a"), E(), CMT(), S("comment"), E(), E(), ED())
+>`, BD(), EvV, MUP("a"), E(), COM(true, " comment "), E(), ED())
 }
 
 func TestIdentifier(t *testing.T) {
@@ -2098,14 +2040,14 @@ func TestIdentifier(t *testing.T) {
 	assertDecodeFails(t, "c0 &12345\u000178:1")
 }
 
-func TestCTERelationship(t *testing.T) {
+func TestCTEEdge(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-(@"a" @"b" 1)`, BD(), EvV, REL(), RID("a"), RID("b"), I(1), ED())
+@(@"a" @"b" 1)`, BD(), EvV, EDGE(), RID("a"), RID("b"), I(1), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    true = (@"a" @"b" 1)
-}`, BD(), EvV, M(), TT(), REL(), RID("a"), RID("b"), I(1), E(), ED())
+    true = @(@"a" @"b" 1)
+}`, BD(), EvV, M(), TT(), EDGE(), RID("a"), RID("b"), I(1), E(), ED())
 }
 
 func TestCTEMedia(t *testing.T) {
@@ -2153,9 +2095,10 @@ func TestSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0 [(@"a" @"a" 1)"a"]`)
 	assertDecodeFails(t, `c0 [(@"a" @"a" 1)(@"a" @"a" 1)]`)
 
-	assertDecode(t, nil, `c0 ["a" /* comment */ "b"]`, BD(), EvV, L(), S("a"), CMT(), S("comment"), E(), S("b"), E(), ED())
+	assertDecode(t, nil, `c0 ["a" /* comment */ "b"]`, BD(), EvV, L(), S("a"), COM(true, " comment "), S("b"), E(), ED())
+
+	// TODO: This should not fail
 	assertDecodeFails(t, `c0 ["a"/* comment */ "b"]`)
-	assertDecodeFails(t, `c0 ["a" /* comment */"b"]`)
 }
 
 func TestMismatchedContainerEnd(t *testing.T) {
@@ -2189,8 +2132,54 @@ func TestMismatchedContainerEnd(t *testing.T) {
 	assertDecodeFails(t, `c0 <a 1=2,a]`)
 	assertDecodeFails(t, `c0 <a 1=2,a)`)
 
-	assertDecode(t, nil, `c0 (@"a" @"a" 1)`, BD(), EvV, REL(), RID("a"), RID("a"), I(1), ED())
-	assertDecodeFails(t, `c0 (@"a" @"a" 1]`)
-	assertDecodeFails(t, `c0 (@"a" @"a" 1>`)
-	assertDecodeFails(t, `c0 (@"a" @"a" 1}`)
+	assertDecode(t, nil, `c0 @(@"a" @"a" 1)`, BD(), EvV, EDGE(), RID("a"), RID("a"), I(1), ED())
+	assertDecodeFails(t, `c0 @(@"a" @"a" 1]`)
+	assertDecodeFails(t, `c0 @(@"a" @"a" 1>`)
+	assertDecodeFails(t, `c0 @(@"a" @"a" 1}`)
+}
+
+func TestSingleLineCommentAndObject(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, `c0
+[
+    // a comment
+    1
+]`, BD(), EvV, L(), COM(false, " a comment"), PI(1), E(), ED())
+
+	assertDecodeEncode(t, nil, nil, `c0
+{
+    // a comment
+    1 = 2
+}`, BD(), EvV, M(), COM(false, " a comment"), PI(1), PI(2), E(), ED())
+
+	assertDecodeEncode(t, nil, nil, `c0
+<x,
+    // a comment
+    blah
+>`, BD(), EvV, MUP("x"), E(), COM(false, " a comment"), S("blah"), E(), ED())
+}
+
+func TestNode(t *testing.T) {
+	assertDecodeEncode(t, nil, nil, `c0
+("a"
+    1
+    2
+)`, BD(), EvV, NODE(), S("a"), PI(1), PI(2), E(), ED())
+
+	assertDecodeEncode(t, nil, nil, `c0
+(nil
+    1
+    (2
+    )
+    (3
+        4
+        5
+    )
+)`, BD(), EvV, NODE(), N(),
+		PI(1),
+		NODE(), PI(2), E(),
+		NODE(), PI(3),
+		PI(4),
+		PI(5),
+		E(),
+		E(), ED())
 }

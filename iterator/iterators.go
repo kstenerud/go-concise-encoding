@@ -30,11 +30,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/types"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -180,6 +179,23 @@ func iterateMarkup(context *Context, v reflect.Value) {
 		context.GetIteratorForType(rv.Type())(context, rv)
 	}
 	context.EventReceiver.OnEnd()
+}
+
+func iterateNode(context *Context, v reflect.Value) {
+	context.EventReceiver.OnNode()
+	iterateInterface(context, v.Field(types.NodeFieldIndexValue))
+	children := v.Field(types.NodeFieldIndexChildren)
+	for i := 0; i < children.Len(); i++ {
+		iterateInterface(context, children.Index(i))
+	}
+	context.EventReceiver.OnEnd()
+}
+
+func iterateEdge(context *Context, v reflect.Value) {
+	context.EventReceiver.OnEdge()
+	iterateInterface(context, v.Field(types.EdgeFieldIndexSource))
+	iterateInterface(context, v.Field(types.EdgeFieldIndexDescription))
+	iterateInterface(context, v.Field(types.EdgeFieldIndexDestination))
 }
 
 func iterateInterface(context *Context, v reflect.Value) {

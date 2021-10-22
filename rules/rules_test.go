@@ -391,8 +391,8 @@ func TestRulesMarkupEmpty(t *testing.T) {
 	assertEventsMaxDepth(t, 2, MUP("a"), E(), E(), ED())
 }
 
-func TestRulesCommentEmpty(t *testing.T) {
-	assertEventsMaxDepth(t, 1, CMT(), E(), I(1), ED())
+func TestRulesNodeEmpty(t *testing.T) {
+	assertEventsMaxDepth(t, 1, NODE(), N(), E(), ED())
 }
 
 // =======================
@@ -411,8 +411,9 @@ func TestRulesMarkupSingleItem(t *testing.T) {
 	assertEventsMaxDepth(t, 2, MUP("abcdef"), I(-1), B(true), E(), S("a"), E(), ED())
 }
 
-func TestRulesCommentSingleItem(t *testing.T) {
-	assertEventsMaxDepth(t, 2, CMT(), S("a"), E(), I(1), ED())
+func TestRulesNodeSingleItem(t *testing.T) {
+	assertEventsMaxDepth(t, 1, NODE(), B(true), E(), ED())
+	assertEventsMaxDepth(t, 1, NODE(), N(), B(true), E(), ED())
 }
 
 // ==================
@@ -442,21 +443,6 @@ func TestRulesDeepContainer(t *testing.T) {
 		S("0123456789"), E(), E(), E(), E(), E(), ED())
 }
 
-func TestRulesCommentInt(t *testing.T) {
-	// TODO: Recheck comment validation
-	rules := newRulesWithMaxDepth(2)
-	assertEventsSucceed(t, rules, CMT(), S("blah\r\n\t\tblah"), SB(), AC(1, false))
-	// assertEventsFail(t, rules, AD([]byte{0x00}))
-	// assertEventsFail(t, rules, AD([]byte{0x0b}))
-	// assertEventsFail(t, rules, AD([]byte{0x7f}))
-	// assertEventsFail(t, rules, AD([]byte{0x80}))
-	// assertEvents(t, rules, AD([]byte{0x40}), E(), I(1), ED())
-}
-
-func TestRulesCommentMap(t *testing.T) {
-	assertEventsMaxDepth(t, 3, M(), CMT(), S("a"), E(), I(1), I(-1), E(), ED())
-}
-
 func TestRulesMarkup(t *testing.T) {
 	assertEventsMaxDepth(t, 2, MUP("a"), I(1), I(-1), E(), S("a"), E(), ED())
 }
@@ -473,6 +459,11 @@ func TestRulesMarkerReference(t *testing.T) {
 		E())
 }
 
+func TestRulesNodeFilled(t *testing.T) {
+	assertEventsMaxDepth(t, 2, NODE(), N(), NAN(), B(true), F(0.1), I(1), I(-1),
+		GT(time.Now()), AU8(NewBytes(1, 0)), NODE(), N(), E(), E(), ED())
+}
+
 // ================
 // Error conditions
 // ================
@@ -487,11 +478,11 @@ func TestRulesErrorOnEndTooManyTimes(t *testing.T) {
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, CMT(), E())
+	assertEventsSucceed(t, rules, MUP("a"), E(), E())
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP("a"), E(), E())
+	assertEventsSucceed(t, rules, NODE(), N(), E())
 	assertEventsFail(t, rules, E())
 }
 
@@ -505,15 +496,19 @@ func TestRulesErrorUnendedContainer(t *testing.T) {
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, CMT())
-	assertEventsFail(t, rules, ED())
-
-	rules = newRulesWithMaxDepth(10)
 	assertEventsSucceed(t, rules, MUP("a"))
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
 	assertEventsSucceed(t, rules, MUP("a"), E())
+	assertEventsFail(t, rules, ED())
+
+	rules = newRulesWithMaxDepth(10)
+	assertEventsSucceed(t, rules, NODE())
+	assertEventsFail(t, rules, ED())
+
+	rules = newRulesWithMaxDepth(10)
+	assertEventsSucceed(t, rules, NODE(), N())
 	assertEventsFail(t, rules, ED())
 }
 
@@ -750,12 +745,12 @@ func TestRulesMultichunk(t *testing.T) {
 	assertEventsSucceed(t, rules, SB(), AC(1, true), AD([]byte{'a'}), AC(0, false))
 }
 
-func TestRulesRelationship(t *testing.T) {
+func TestRulesEdge(t *testing.T) {
 	rules := newRulesAfterVersion(nil)
-	assertEventsSucceed(t, rules, REL(), RID("x"), RID("y"), I(1))
+	assertEventsSucceed(t, rules, EDGE(), RID("x"), RID("y"), I(1))
 
 	rules = newRulesAfterVersion(nil)
-	assertEventsSucceed(t, rules, REL(), RID("a"), RID("b"), I(1), ED())
+	assertEventsSucceed(t, rules, EDGE(), RID("a"), RID("b"), I(1), ED())
 }
 
 // =============
@@ -832,24 +827,6 @@ func TestRulesAllowedTypesMapValue(t *testing.T) {
 			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
 			test.InvalidMapValues))
-}
-
-func TestRulesAllowedTypesComment(t *testing.T) {
-	assertEventStreamsSucceed(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{CMT()},
-			[]*test.TEvent{E(), N()},
-			[]*test.TEvent{ED()},
-			test.ValidCommentValues))
-
-	assertEventStreamsFail(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{CMT()},
-			[]*test.TEvent{E(), N()},
-			[]*test.TEvent{ED()},
-			test.InvalidCommentValues))
 }
 
 func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
@@ -991,84 +968,153 @@ func TestRulesAllowedTypesRIDReference(t *testing.T) {
 			test.InvalidRIDReferences))
 }
 
-func TestRulesAllowedTypesSubject(t *testing.T) {
+func TestRulesAllowedTypesNodeValue(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL()},
+			[]*test.TEvent{NODE()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.ValidNodeValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{NODE()},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.InvalidNodeValues))
+}
+
+func TestRulesAllowedTypesNodeChild(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{NODE(), I(1)},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.ValidListValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{NODE(), I(1)},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.InvalidListValues))
+
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{NODE(), I(1), I(1)},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.ValidListValues))
+
+	assertEventStreamsFail(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{NODE(), I(1), I(1)},
+			[]*test.TEvent{E()},
+			[]*test.TEvent{ED()},
+			test.InvalidListValues))
+}
+
+func TestRulesAllowedTypesEdgeSource(t *testing.T) {
+	assertEventStreamsSucceed(t,
+		test.GenerateAllVariants(
+			[]*test.TEvent{BD(), V(ceVer)},
+			[]*test.TEvent{EDGE()},
 			[]*test.TEvent{RID("a"), I(1)},
 			[]*test.TEvent{ED()},
-			test.ValidSubjects))
+			test.ValidEdgeSources))
 
 	assertEventStreamsFail(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL()},
+			[]*test.TEvent{EDGE()},
 			[]*test.TEvent{RID("a"), I(1)},
 			[]*test.TEvent{ED()},
-			test.InvalidSubjects))
+			test.InvalidEdgeSources))
 }
 
-func TestRulesAllowedTypesSubjectResourceList(t *testing.T) {
+func TestRulesAllowedTypesEdgeDescription(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), L()},
-			[]*test.TEvent{E(), RID("a"), I(1)},
-			[]*test.TEvent{ED()},
-			test.ValidResourceListElements))
-
-	assertEventStreamsFail(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), L()},
-			[]*test.TEvent{E(), RID("a"), I(1)},
-			[]*test.TEvent{ED()},
-			test.InvalidResourceListElements))
-}
-
-func TestRulesAllowedTypesPredicate(t *testing.T) {
-	assertEventStreamsSucceed(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), RID("a")},
+			[]*test.TEvent{EDGE(), RID("a")},
 			[]*test.TEvent{I(1)},
 			[]*test.TEvent{ED()},
-			test.ValidPredicates))
+			test.ValidEdgeDescriptions))
 
 	assertEventStreamsFail(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), RID("a")},
+			[]*test.TEvent{EDGE(), RID("a")},
 			[]*test.TEvent{I(1)},
 			[]*test.TEvent{ED()},
-			test.InvalidPredicates))
+			test.InvalidEdgeDescriptions))
 }
 
-func TestRulesAllowedTypesObject(t *testing.T) {
+func TestRulesAllowedTypesEdgeDestination(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), RID("a"), RID("b")},
+			[]*test.TEvent{EDGE(), RID("a"), RID("b")},
 			[]*test.TEvent{},
 			[]*test.TEvent{ED()},
-			test.ValidObjects))
+			test.ValidEdgeDestinations))
 
 	assertEventStreamsFail(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), RID("a"), RID("b")},
+			[]*test.TEvent{EDGE(), RID("a"), RID("b")},
 			[]*test.TEvent{},
 			[]*test.TEvent{ED()},
-			test.InvalidObjects))
+			test.InvalidEdgeDescriptions))
 }
 
-func TestRelationshipObjectNA(t *testing.T) {
+func TestEdgeObjectNA(t *testing.T) {
 	rules := NewRules(events.NewNullEventReceiver(), nil)
-	assertEventsSucceed(t, rules, BD(), V(0), REL(), RID("a"), RID("b"), NA(), N(), ED())
+	assertEventsSucceed(t, rules, BD(), V(0), EDGE(), RID("a"), RID("b"), NA(), N(), ED())
 }
 
 func TestMedia(t *testing.T) {
 	rules := NewRules(events.NewNullEventReceiver(), nil)
 	assertEventsSucceed(t, rules, BD(), V(0), MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
+}
+
+func TestComment(t *testing.T) {
+	assertEvents(t, BD(), V(ceVer), COM(true, "a"), S("b"), ED())
+	assertEvents(t, BD(), V(ceVer), COM(false, "a"), S("b"), ED())
+
+	assertEvents(t, BD(), V(ceVer), L(), COM(true, "a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), L(), COM(true, "a"), S("b"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), L(), S("b"), COM(true, "a"), E(), ED())
+
+	assertEvents(t, BD(), V(ceVer), M(), COM(true, "a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), M(), S("b"), S("b"), COM(true, "a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), M(), S("b"), COM(true, "a"), S("b"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), M(), COM(true, "a"), S("b"), S("b"), E(), ED())
+
+	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), S("b"), S("b"), COM(true, "a"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), S("b"), COM(true, "a"), S("b"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), S("b"), S("b"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), COM(false, "x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), S("a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), COM(false, "x"), S("a"), E(), ED())
+
+	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), COM(true, "a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), COM(true, "a"), S("x"), S("x"), COM(true, "a"), E(), ED())
+
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), S("x"), S("x"), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), COM(true, "a"), S("x"), S("x"), S("x"), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), COM(true, "a"), S("x"), S("x"), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), S("x"), COM(true, "a"), S("x"), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), COM(true, "a"), COM(true, "a"), S("x"), COM(true, "a"), COM(true, "a"), S("x"), COM(true, "a"), COM(true, "a"), S("x"), ED())
+
+	// assertEvents(t, BD(), V(ceVer), AI8B(), AC(1, true), AD([]byte{1}), COM(true, "a"), AC(1, false), AD([]byte{1}), ED())
 }

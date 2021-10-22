@@ -28,6 +28,7 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -54,6 +55,14 @@ func NewBDF(str string) *apd.Decimal {
 
 func NewRID(RIDString string) *url.URL {
 	return test.NewRID(RIDString)
+}
+
+func NewNode(value interface{}, children []interface{}) *types.Node {
+	return test.NewNode(value, children)
+}
+
+func NewEdge(source interface{}, description interface{}, destination interface{}) *types.Edge {
+	return test.NewEdge(source, description, destination)
 }
 
 func NewDate(year, month, day int) compact_time.Time {
@@ -139,8 +148,8 @@ func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
-func CMT() *test.TEvent                      { return test.CMT() }
-func REL() *test.TEvent                      { return test.REL() }
+func NODE() *test.TEvent                     { return test.NODE() }
+func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func CONST(n string) *test.TEvent            { return test.CONST(n) }

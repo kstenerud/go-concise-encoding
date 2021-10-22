@@ -502,21 +502,24 @@ func TestCBEReference(t *testing.T) {
 func TestCBEContainers(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1, typeEndContainer}, BD(), EvV, L(), I(1), E(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeMap, 1, 1, typeEndContainer}, BD(), EvV, M(), I(1), I(1), E(), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeComment, typeString1, 'a', typeEndContainer, 1}, BD(), EvV, CMT(), S("a"), E(), I(1), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeMarkup, 1, 'a', typeEndContainer, typeEndContainer}, BD(), EvV, MUP("a"), E(), E(), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeNode, typeTrue, 1, typeEndContainer}, BD(), EvV, NODE(), TT(), I(1), E(), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeEdge, 1, 2, 3}, BD(), EvV, EDGE(), I(1), I(2), I(3), ED())
 
 	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1,
 		typeList, typeString1, 'a', typeEndContainer,
 		typeMap, typeString1, 'a', 100, typeEndContainer,
-		typeComment, typeString1, 'a', typeEndContainer,
 		typeMarkup, 1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
+		typeNode, typeTrue, 1, typeEndContainer,
+		typeEdge, 1, 2, 3,
 		typeEndContainer,
 	},
 		BD(), EvV, L(), I(1),
 		L(), S("a"), E(),
 		M(), S("a"), I(100), E(),
-		CMT(), S("a"), E(),
 		MUP("a"), S("a"), I(50), E(), S("a"), E(),
+		NODE(), TT(), I(1), E(),
+		EDGE(), I(1), I(2), I(3),
 		E(), ED())
 }
 
@@ -570,10 +573,18 @@ func TestMultichunk(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeString, 0x03, 'a', 0}, BD(), EvV, SB(), AC(1, true), AD([]byte{'a'}), AC(0, false), ED())
 }
 
-func TestRelationship(t *testing.T) {
+func TestEdge(t *testing.T) {
 	assertDecodeEncode(t,
-		[]byte{header, ceVer, typeRelationship, typeRID, 0x02, 'a', typeRID, 0x02, 'b', 1},
-		BD(), EvV, REL(), RID("a"), RID("b"), I(1), ED())
+		[]byte{header, ceVer, typeEdge, typeRID, 0x02, 'a', typeRID, 0x02, 'b', 1},
+		BD(), EvV, EDGE(), RID("a"), RID("b"), I(1), ED())
+}
+
+func TestNode(t *testing.T) {
+	assertDecodeEncode(t,
+		[]byte{header, ceVer,
+			typeNode, typeNil, typeString1, 'a', typeRID, 0x02, 'b',
+			typeNode, typeNil, typeEndContainer, typeEndContainer},
+		BD(), EvV, NODE(), N(), S("a"), RID("b"), NODE(), N(), E(), E(), ED())
 }
 
 func TestMedia(t *testing.T) {

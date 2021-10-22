@@ -32,13 +32,12 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/kstenerud/go-concise-encoding/types"
-
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-concise-encoding/version"
 
 	"github.com/cockroachdb/apd/v2"
@@ -116,6 +115,21 @@ func NewRID(RIDString string) *url.URL {
 		panic(fmt.Errorf("TEST CODE BUG: Bad URL (%v): %w", RIDString, err))
 	}
 	return rid
+}
+
+func NewNode(value interface{}, children []interface{}) *types.Node {
+	return &types.Node{
+		Value:    value,
+		Children: children,
+	}
+}
+
+func NewEdge(source interface{}, description interface{}, destination interface{}) *types.Edge {
+	return &types.Edge{
+		Source:      source,
+		Description: description,
+		Destination: destination,
+	}
 }
 
 func NewDate(year, month, day int) compact_time.Time {
@@ -275,6 +289,7 @@ var (
 	EvED     = ED()
 	EvV      = V(version.ConciseEncodingVersion)
 	EvPAD    = PAD(1)
+	EvCOM    = COM(false, "a")
 	EvNA     = NA()
 	EvN      = N()
 	EvB      = B(true)
@@ -301,8 +316,8 @@ var (
 	EvL      = L()
 	EvM      = M()
 	EvMUP    = MUP("a")
-	EvCMT    = CMT()
-	EvREL    = REL()
+	EvNODE   = NODE()
+	EvEDGE   = EDGE()
 	EvE      = E()
 	EvMARK   = MARK("a")
 	EvREF    = REF("a")
@@ -348,9 +363,9 @@ var (
 )
 
 var allEvents = []*TEvent{
-	EvBD, EvED, EvV, EvPAD, EvNA, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
+	EvBD, EvED, EvV, EvPAD, EvCOM, EvNA, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
-	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvCMT, EvREL, EvE,
+	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvNODE, EvEDGE, EvE,
 	EvMARK, EvREF, EvRIDREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvRBCat, EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
@@ -497,8 +512,9 @@ var (
 	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvREF}
 
 	ValidMapKeys = []*TEvent{
-		EvPAD, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF, EvBDF,
-		EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvRBCat, EvREF, EvCMT, EvE,
+		EvPAD, EvCOM, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF,
+		EvBDF, EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvRBCat,
+		EvREF, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
@@ -508,10 +524,7 @@ var (
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
 	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
 
-	ValidCommentValues   = []*TEvent{EvCMT, EvE, EvS, EvSB, EvPAD}
-	InvalidCommentValues = ComplementaryEvents(ValidCommentValues)
-
-	ValidMarkupContents   = []*TEvent{EvPAD, EvS, EvSB, EvMUP, EvCMT, EvE}
+	ValidMarkupContents   = []*TEvent{EvPAD, EvCOM, EvS, EvSB, EvMUP, EvE}
 	InvalidMarkupContents = ComplementaryEvents(ValidMarkupContents)
 
 	ValidAfterArrayBegin   = []*TEvent{EvAC}
@@ -521,29 +534,23 @@ var (
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvNA, EvE, EvAC, EvAD, EvCMT, EvMARK, EvREF, EvRIDREF}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvNA, EvE, EvAC, EvAD, EvMARK, EvREF, EvRIDREF}
 
 	Padding                     = []*TEvent{EvPAD}
-	CommentsPaddingRefEnd       = []*TEvent{EvCMT, EvPAD, EvREF, EvE}
-	CommentsPaddingMarkerRefEnd = []*TEvent{EvCMT, EvPAD, EvMARK, EvREF, EvE}
+	CommentsPaddingRefEnd       = []*TEvent{EvPAD, EvCOM, EvREF, EvE}
+	CommentsPaddingMarkerRefEnd = []*TEvent{EvPAD, EvCOM, EvMARK, EvREF, EvE}
 
-	ValidSubjects = []*TEvent{
-		EvPAD, EvL, EvM, EvREL, EvRID, EvRB, EvRBCat, EvCMT, EvMARK, EvREF,
-	}
-	InvalidSubjects = ComplementaryEvents(ValidSubjects)
+	ValidEdgeSources   = ComplementaryEvents(InvalidEdgeSources)
+	InvalidEdgeSources = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvN, EvBDFNil, EvBFNil, EvBINil}
 
-	ValidResourceListElements = []*TEvent{
-		EvPAD, EvM, EvREL, EvRID, EvRB, EvRBCat, EvCMT, EvE, EvMARK, EvREF,
-	}
-	InvalidResourceListElements = ComplementaryEvents(ValidResourceListElements)
+	ValidEdgeDescriptions   = ValidListValues
+	InvalidEdgeDescriptions = InvalidListValues
 
-	ValidPredicates = []*TEvent{
-		EvPAD, EvRID, EvRB, EvRBCat, EvCMT, EvMARK, EvREF,
-	}
-	InvalidPredicates = ComplementaryEvents(ValidPredicates)
+	ValidEdgeDestinations    = ValidEdgeSources
+	InvalidOEdgeDestinations = InvalidEdgeSources
 
-	ValidObjects   = ComplementaryEvents(InvalidObjects)
-	InvalidObjects = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+	ValidNodeValues   = ComplementaryEvents(InvalidNodeValues)
+	InvalidNodeValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
 )
 
 func containsEvent(events []*TEvent, event *TEvent) bool {
@@ -575,7 +582,7 @@ func filterAllowableFollowups(baseEvent *TEvent, possibleFollowups []*TEvent) []
 
 func requiresFollowup(event *TEvent) bool {
 	switch event.Type {
-	case TEventMarker, TEventComment:
+	case TEventMarker:
 		return true
 	default:
 		return false
@@ -593,8 +600,8 @@ var basicCompletions = map[TEventType][]*TEvent{
 	TEventList:               []*TEvent{E()},
 	TEventMap:                []*TEvent{E()},
 	TEventMarkup:             []*TEvent{E(), E()},
-	TEventComment:            []*TEvent{E()},
-	TEventRelationship:       []*TEvent{RID("a"), RID("b"), I(1)},
+	TEventNode:               []*TEvent{I(1), E()},
+	TEventEdge:               []*TEvent{RID("a"), RID("b"), I(1)},
 	TEventStringBegin:        []*TEvent{AC(1, false), AD([]byte{'a'})},
 	TEventResourceIDBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
 	TEventResourceIDCatBegin: []*TEvent{AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{'a'})},
@@ -744,6 +751,7 @@ const (
 	TEventBeginDocument TEventType = iota
 	TEventVersion
 	TEventPadding
+	TEventComment
 	TEventNA
 	TEventNil
 	TEventBool
@@ -803,9 +811,9 @@ const (
 	TEventList
 	TEventMap
 	TEventMarkup
-	TEventComment
 	TEventEnd
-	TEventRelationship
+	TEventNode
+	TEventEdge
 	TEventMarker
 	TEventReference
 	TEventRIDReference
@@ -817,6 +825,7 @@ var TEventNames = []string{
 	TEventBeginDocument:      "BD",
 	TEventVersion:            "V",
 	TEventPadding:            "PAD",
+	TEventComment:            "COM",
 	TEventNA:                 "NA",
 	TEventNil:                "N",
 	TEventBool:               "B",
@@ -876,8 +885,8 @@ var TEventNames = []string{
 	TEventList:               "L",
 	TEventMap:                "M",
 	TEventMarkup:             "MUP",
-	TEventComment:            "CMT",
-	TEventRelationship:       "REL",
+	TEventNode:               "NODE",
+	TEventEdge:               "EDGE",
 	TEventEnd:                "E",
 	TEventMarker:             "MARK",
 	TEventReference:          "REF",
@@ -928,13 +937,40 @@ func newTEvent(eventType TEventType, v1 interface{}, v2 interface{}) *TEvent {
 	}
 }
 
+func hexChar(v byte) byte {
+	if v < 10 {
+		return '0' + v
+	}
+	return 'a' + v - 10
+}
+
+func stringify(value interface{}) string {
+	switch v := value.(type) {
+	case []byte:
+		var builder strings.Builder
+		builder.WriteByte('[')
+		for i, b := range v {
+			builder.WriteByte(hexChar(b >> 4))
+			builder.WriteByte(hexChar(b & 15))
+			if i < len(v) {
+				builder.WriteByte(' ')
+			}
+		}
+		builder.WriteByte(']')
+		return builder.String()
+	case string:
+		return fmt.Sprintf("\"%v\"", value)
+	default:
+		return fmt.Sprintf("%v", value)
+	}
+}
+
 func (_this *TEvent) String() string {
 	if _this.V1 != nil {
-		// TODO: Stringify bytes as hex
 		if _this.V2 != nil {
-			return fmt.Sprintf("%v(%v,%v)", _this.Type.String(), _this.V1, _this.V2)
+			return fmt.Sprintf("%v(%v,%v)", _this.Type.String(), stringify(_this.V1), stringify(_this.V2))
 		}
-		return fmt.Sprintf("%v(%v)", _this.Type.String(), _this.V1)
+		return fmt.Sprintf("%v(%v)", _this.Type.String(), stringify(_this.V1))
 	}
 	return _this.Type.String()
 }
@@ -1082,6 +1118,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnVersion(_this.V1.(uint64))
 	case TEventPadding:
 		receiver.OnPadding(_this.V1.(int))
+	case TEventComment:
+		receiver.OnComment(_this.V1.(bool), []byte(_this.V2.(string)))
 	case TEventNA:
 		receiver.OnNA()
 	case TEventNil:
@@ -1216,12 +1254,12 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnMap()
 	case TEventMarkup:
 		receiver.OnMarkup([]byte(_this.V1.(string)))
-	case TEventComment:
-		receiver.OnComment()
 	case TEventEnd:
 		receiver.OnEnd()
-	case TEventRelationship:
-		receiver.OnRelationship()
+	case TEventNode:
+		receiver.OnNode()
+	case TEventEdge:
+		receiver.OnEdge()
 	case TEventMarker:
 		receiver.OnMarker([]byte(_this.V1.(string)))
 	case TEventReference:
@@ -1259,6 +1297,7 @@ func V(v uint64) *TEvent                { return newTEvent(TEventVersion, v, nil
 func NA() *TEvent                       { return newTEvent(TEventNA, nil, nil) }
 func N() *TEvent                        { return newTEvent(TEventNil, nil, nil) }
 func PAD(v int) *TEvent                 { return newTEvent(TEventPadding, v, nil) }
+func COM(m bool, v string) *TEvent      { return newTEvent(TEventComment, m, v) }
 func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
 func NI(v uint64) *TEvent               { return newTEvent(TEventNInt, v, nil) }
@@ -1309,8 +1348,8 @@ func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, n
 func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
 func M() *TEvent                        { return newTEvent(TEventMap, nil, nil) }
 func MUP(id string) *TEvent             { return newTEvent(TEventMarkup, id, nil) }
-func CMT() *TEvent                      { return newTEvent(TEventComment, nil, nil) }
-func REL() *TEvent                      { return newTEvent(TEventRelationship, nil, nil) }
+func NODE() *TEvent                     { return newTEvent(TEventNode, nil, nil) }
+func EDGE() *TEvent                     { return newTEvent(TEventEdge, nil, nil) }
 func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
 func MARK(id string) *TEvent            { return newTEvent(TEventMarker, id, nil) }
 func REF(id string) *TEvent             { return newTEvent(TEventReference, id, nil) }
@@ -1419,6 +1458,10 @@ func (h *TEventPrinter) OnVersion(version uint64) {
 func (h *TEventPrinter) OnPadding(count int) {
 	h.Print(PAD(count))
 	h.Next.OnPadding(count)
+}
+func (h *TEventPrinter) OnComment(isMultiline bool, contents []byte) {
+	h.Print(COM(isMultiline, string(contents)))
+	h.Next.OnComment(isMultiline, contents)
 }
 func (h *TEventPrinter) OnNA() {
 	h.Print(NA())
@@ -1626,17 +1669,17 @@ func (h *TEventPrinter) OnMarkup(id []byte) {
 	h.Print(MUP(string(id)))
 	h.Next.OnMarkup(id)
 }
-func (h *TEventPrinter) OnComment() {
-	h.Print(CMT())
-	h.Next.OnComment()
-}
 func (h *TEventPrinter) OnEnd() {
 	h.Print(E())
 	h.Next.OnEnd()
 }
-func (h *TEventPrinter) OnRelationship() {
-	h.Print(REL())
-	h.Next.OnRelationship()
+func (h *TEventPrinter) OnNode() {
+	h.Print(NODE())
+	h.Next.OnNode()
+}
+func (h *TEventPrinter) OnEdge() {
+	h.Print(EDGE())
+	h.Next.OnEdge()
 }
 func (h *TEventPrinter) OnMarker(id []byte) {
 	h.Print(MARK(string(id)))
@@ -1685,8 +1728,11 @@ func NewTEventStore() *TEventStore {
 func (h *TEventStore) add(event *TEvent) {
 	h.Events = append(h.Events, event)
 }
-func (h *TEventStore) OnVersion(version uint64)                  { h.add(V(version)) }
-func (h *TEventStore) OnPadding(count int)                       { h.add(PAD(count)) }
+func (h *TEventStore) OnVersion(version uint64) { h.add(V(version)) }
+func (h *TEventStore) OnPadding(count int)      { h.add(PAD(count)) }
+func (h *TEventStore) OnComment(isMultiline bool, contents []byte) {
+	h.add(COM(isMultiline, string(contents)))
+}
 func (h *TEventStore) OnNA()                                     { h.add(NA()) }
 func (h *TEventStore) OnNil()                                    { h.add(N()) }
 func (h *TEventStore) OnBool(value bool)                         { h.add(B(value)) }
@@ -1804,9 +1850,9 @@ func (h *TEventStore) OnArrayData(data []byte)                { h.add(AD(CloneBy
 func (h *TEventStore) OnList()                                { h.add(L()) }
 func (h *TEventStore) OnMap()                                 { h.add(M()) }
 func (h *TEventStore) OnMarkup(id []byte)                     { h.add(MUP(string(id))) }
-func (h *TEventStore) OnComment()                             { h.add(CMT()) }
 func (h *TEventStore) OnEnd()                                 { h.add(E()) }
-func (h *TEventStore) OnRelationship()                        { h.add(REL()) }
+func (h *TEventStore) OnNode()                                { h.add(NODE()) }
+func (h *TEventStore) OnEdge()                                { h.add(EDGE()) }
 func (h *TEventStore) OnMarker(id []byte)                     { h.add(MARK(string(id))) }
 func (h *TEventStore) OnReference(id []byte)                  { h.add(REF(string(id))) }
 func (h *TEventStore) OnRIDReference()                        { h.add(RIDREF()) }

@@ -23,7 +23,12 @@
 package rules
 
 import (
+	"math/big"
+
 	"github.com/kstenerud/go-concise-encoding/events"
+
+	"github.com/cockroachdb/apd/v2"
+	"github.com/kstenerud/go-compact-float"
 )
 
 type ListRule struct{}
@@ -32,15 +37,16 @@ func (_this *ListRule) String() string                                 { return 
 func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
 func (_this *ListRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *ListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *ListRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *ListRule) OnNil(ctx *Context)                             { /* Nothing to do */ }
 func (_this *ListRule) OnKeyableObject(ctx *Context, _ DataType)       { /* Nothing to do */ }
 func (_this *ListRule) OnNonKeyableObject(ctx *Context, _ DataType)    { /* Nothing to do */ }
 func (_this *ListRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *ListRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
 func (_this *ListRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
-func (_this *ListRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *ListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
-func (_this *ListRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
+func (_this *ListRule) OnNode(ctx *Context)                            { ctx.BeginNode() }
+func (_this *ListRule) OnEdge(ctx *Context)                            { ctx.BeginEdge() }
 func (_this *ListRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -65,47 +71,14 @@ func (_this *ListRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 
 // =============================================================================
 
-type ResourceListRule struct{}
-
-func (_this *ResourceListRule) String() string                                 { return "Resource List Rule" }
-func (_this *ResourceListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
-func (_this *ResourceListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *ResourceListRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
-func (_this *ResourceListRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *ResourceListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
-func (_this *ResourceListRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
-func (_this *ResourceListRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowResource)
-}
-func (_this *ResourceListRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceObject(identifier, AllowResource)
-}
-func (_this *ResourceListRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
-func (_this *ResourceListRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.AssertArrayType("resource list", arrayType, AllowResource)
-	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-}
-func (_this *ResourceListRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.AssertArrayType("resource list", arrayType, AllowResource)
-	ctx.ValidateFullArrayStringlike(arrayType, data)
-}
-func (_this *ResourceListRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.AssertArrayType("resource list", arrayType, AllowResource)
-	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
 type MapKeyRule struct{}
 
 func (_this *MapKeyRule) String() string                                 { return "Map Key Rule" }
 func (_this *MapKeyRule) switchMapValue(ctx *Context)                    { ctx.ChangeRule(&mapValueRule) }
 func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapValue(ctx) }
 func (_this *MapKeyRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *MapKeyRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapValue(ctx) }
-func (_this *MapKeyRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
 func (_this *MapKeyRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
 func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
@@ -138,14 +111,15 @@ func (_this *MapValueRule) switchMapKey(ctx *Context)                      { ctx
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *MapValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *MapValueRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapValueRule) OnNil(ctx *Context)                             { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *MapValueRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
 func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
-func (_this *MapValueRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *MapValueRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
+func (_this *MapValueRule) OnNode(ctx *Context)                            { ctx.BeginNode() }
+func (_this *MapValueRule) OnEdge(ctx *Context)                            { ctx.BeginEdge() }
 func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -181,8 +155,8 @@ func (_this *MarkupKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchMarkupValue(ctx)
 }
 func (_this *MarkupKeyRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
+func (_this *MarkupKeyRule) OnComment(ctx *Context)                   { /* Nothing to do */ }
 func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupValue(ctx) }
-func (_this *MarkupKeyRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
 func (_this *MarkupKeyRule) OnEnd(ctx *Context)                       { ctx.ChangeRule(&markupContentsRule) }
 func (_this *MarkupKeyRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
@@ -217,6 +191,7 @@ func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 }
 func (_this *MarkupValueRule) OnNA(ctx *Context)                        { ctx.BeginNA() }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
+func (_this *MarkupValueRule) OnComment(ctx *Context)                   { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnNil(ctx *Context)                       { _this.switchMarkupKey(ctx) }
 func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupKey(ctx) }
 func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ DataType) {
@@ -225,8 +200,8 @@ func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ DataType) {
 func (_this *MarkupValueRule) OnList(ctx *Context)                      { ctx.BeginList() }
 func (_this *MarkupValueRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
 func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
-func (_this *MarkupValueRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
-func (_this *MarkupValueRule) OnRelationship(ctx *Context)              { ctx.BeginRelationship() }
+func (_this *MarkupValueRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
+func (_this *MarkupValueRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
 func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -259,11 +234,11 @@ type MarkupContentsRule struct{}
 func (_this *MarkupContentsRule) String() string                                 { return "Markup Contents Rule" }
 func (_this *MarkupContentsRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
 func (_this *MarkupContentsRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *MarkupContentsRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MarkupContentsRule) OnMarkup(ctx *Context, identifier []byte) {
 	ctx.BeginMarkup(identifier)
 }
-func (_this *MarkupContentsRule) OnComment(ctx *Context) { ctx.BeginComment() }
-func (_this *MarkupContentsRule) OnEnd(ctx *Context)     { ctx.EndContainer() }
+func (_this *MarkupContentsRule) OnEnd(ctx *Context) { ctx.EndContainer() }
 func (_this *MarkupContentsRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayMarkupContents(arrayType, elementCount, data)
 }
@@ -276,141 +251,249 @@ func (_this *MarkupContentsRule) OnArrayBegin(ctx *Context, arrayType events.Arr
 
 // =============================================================================
 
-type CommentRule struct{}
+type EdgeSourceRule struct{}
 
-func (_this *CommentRule) String() string                                 { return "Comment Rule" }
-func (_this *CommentRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
-func (_this *CommentRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *CommentRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *CommentRule) OnEnd(ctx *Context)                             { ctx.UnstackRule() }
-func (_this *CommentRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayComment(arrayType, elementCount, data)
+func (_this *EdgeSourceRule) String() string { return "Edge Source Rule" }
+func (_this *EdgeSourceRule) moveToNextRule(ctx *Context) {
+	ctx.ChangeRule(&edgeDescriptionRule)
 }
-func (_this *CommentRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayCommentString(arrayType, data)
+func (_this *EdgeSourceRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnNA(ctx *Context)                           { ctx.BeginNA() }
+func (_this *EdgeSourceRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
 }
-func (_this *CommentRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayComment(arrayType)
+func (_this *EdgeSourceRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
+func (_this *EdgeSourceRule) OnComment(ctx *Context)                    { /* Nothing to do */ }
+func (_this *EdgeSourceRule) OnInt(ctx *Context, value int64)           { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnPositiveInt(ctx *Context, value uint64)  { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnBigInt(ctx *Context, value *big.Int)     { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnFloat(ctx *Context, value float64)       { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnBigFloat(ctx *Context, value *big.Float) { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+	_this.moveToNextRule(ctx)
 }
-
-// =============================================================================
-
-type SubjectRule struct{}
-
-func (_this *SubjectRule) String() string { return "Subject Rule" }
-func (_this *SubjectRule) moveToNextRule(ctx *Context) {
-	ctx.ChangeRule(&predicateRule)
+func (_this *EdgeSourceRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
+	_this.moveToNextRule(ctx)
 }
-func (_this *SubjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.moveToNextRule(ctx) }
-func (_this *SubjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *SubjectRule) OnList(ctx *Context)                            { ctx.BeginResourceList() }
-func (_this *SubjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
-func (_this *SubjectRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *SubjectRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
-func (_this *SubjectRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowSubject)
+func (_this *EdgeSourceRule) OnList(ctx *Context)                      { ctx.BeginList() }
+func (_this *EdgeSourceRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
+func (_this *EdgeSourceRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
+func (_this *EdgeSourceRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
+func (_this *EdgeSourceRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
+func (_this *EdgeSourceRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowNonNil)
 }
-func (_this *SubjectRule) OnReference(ctx *Context, identifier []byte) {
+func (_this *EdgeSourceRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
-func (_this *SubjectRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
-func (_this *SubjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.AssertArrayType("relationship subject", arrayType, AllowSubject)
-	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	_this.moveToNextRule(ctx)
-}
-func (_this *SubjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.AssertArrayType("relationship subject", arrayType, AllowSubject)
-	ctx.ValidateFullArrayStringlike(arrayType, data)
-	_this.moveToNextRule(ctx)
-}
-func (_this *SubjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.AssertArrayType("relationship subject", arrayType, AllowSubject)
-	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type PredicateRule struct{}
-
-func (_this *PredicateRule) String() string { return "Predicate Rule" }
-func (_this *PredicateRule) moveToNextRule(ctx *Context) {
-	ctx.ChangeRule(&objectRule)
-}
-func (_this *PredicateRule) OnChildContainerEnded(ctx *Context, _ DataType) {
-	_this.moveToNextRule(ctx)
-}
-func (_this *PredicateRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *PredicateRule) OnComment(ctx *Context) { ctx.BeginComment() }
-func (_this *PredicateRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowPredicate)
-}
-func (_this *PredicateRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
-	_this.moveToNextRule(ctx)
-}
-func (_this *PredicateRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
-func (_this *PredicateRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.AssertArrayType("relationship predicate", arrayType, AllowPredicate)
-	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	_this.moveToNextRule(ctx)
-}
-func (_this *PredicateRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.AssertArrayType("relationship predicate", arrayType, AllowPredicate)
-	ctx.ValidateFullArrayStringlike(arrayType, data)
-	_this.moveToNextRule(ctx)
-}
-func (_this *PredicateRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.AssertArrayType("relationship predicate", arrayType, AllowPredicate)
-	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type ObjectRule struct{}
-
-func (_this *ObjectRule) String() string                                 { return "List Rule" }
-func (_this *ObjectRule) end(ctx *Context)                               { ctx.EndContainer() }
-func (_this *ObjectRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.end(ctx) }
-func (_this *ObjectRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
-func (_this *ObjectRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *ObjectRule) OnNil(ctx *Context)                             { _this.end(ctx) }
-func (_this *ObjectRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.end(ctx) }
-func (_this *ObjectRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.end(ctx) }
-func (_this *ObjectRule) OnList(ctx *Context)                            { ctx.BeginList() }
-func (_this *ObjectRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
-func (_this *ObjectRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
-func (_this *ObjectRule) OnComment(ctx *Context)                         { ctx.BeginComment() }
-func (_this *ObjectRule) OnRelationship(ctx *Context)                    { ctx.BeginRelationship() }
-func (_this *ObjectRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowAny)
-}
-func (_this *ObjectRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
-	_this.end(ctx)
-}
-func (_this *ObjectRule) OnRIDReference(ctx *Context) {
+func (_this *EdgeSourceRule) OnRIDReference(ctx *Context) {
 	ctx.BeginRIDReference()
 }
-func (_this *ObjectRule) OnConstant(ctx *Context, name []byte) {
+func (_this *EdgeSourceRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
-func (_this *ObjectRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.AssertArrayType("relationship object", arrayType, AllowObject)
+func (_this *EdgeSourceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("edge source", arrayType, AllowNonNil)
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeSourceRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("edge source", arrayType, AllowNonNil)
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeSourceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.AssertArrayType("edge source", arrayType, AllowNonNil)
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type EdgeDescriptionRule struct{}
+
+func (_this *EdgeDescriptionRule) String() string { return "Edge Description Rule" }
+func (_this *EdgeDescriptionRule) moveToNextRule(ctx *Context) {
+	ctx.ChangeRule(&edgeDestinationRule)
+}
+func (_this *EdgeDescriptionRule) OnKeyableObject(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnNonKeyableObject(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnNA(ctx *Context) { ctx.BeginNA() }
+func (_this *EdgeDescriptionRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnPadding(ctx *Context)          { /* Nothing to do */ }
+func (_this *EdgeDescriptionRule) OnComment(ctx *Context)          { /* Nothing to do */ }
+func (_this *EdgeDescriptionRule) OnNil(ctx *Context)              { _this.moveToNextRule(ctx) }
+func (_this *EdgeDescriptionRule) OnInt(ctx *Context, value int64) { _this.moveToNextRule(ctx) }
+func (_this *EdgeDescriptionRule) OnPositiveInt(ctx *Context, value uint64) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnBigInt(ctx *Context, value *big.Int) { _this.moveToNextRule(ctx) }
+func (_this *EdgeDescriptionRule) OnFloat(ctx *Context, value float64)   { _this.moveToNextRule(ctx) }
+func (_this *EdgeDescriptionRule) OnBigFloat(ctx *Context, value *big.Float) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnList(ctx *Context) { ctx.BeginList() }
+func (_this *EdgeDescriptionRule) OnMap(ctx *Context)  { ctx.BeginMap() }
+func (_this *EdgeDescriptionRule) OnMarkup(ctx *Context, identifier []byte) {
+	ctx.BeginMarkup(identifier)
+}
+func (_this *EdgeDescriptionRule) OnNode(ctx *Context) { ctx.BeginNode() }
+func (_this *EdgeDescriptionRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
+func (_this *EdgeDescriptionRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowNonNil)
+}
+func (_this *EdgeDescriptionRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
+}
+func (_this *EdgeDescriptionRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *EdgeDescriptionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("edge description", arrayType, AllowAny)
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("edge description", arrayType, AllowAny)
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	_this.moveToNextRule(ctx)
+}
+func (_this *EdgeDescriptionRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.AssertArrayType("edge description", arrayType, AllowAny)
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type EdgeDestinationRule struct{}
+
+func (_this *EdgeDestinationRule) String() string                                 { return "Edge Destination Rule" }
+func (_this *EdgeDestinationRule) end(ctx *Context)                               { ctx.EndContainer() }
+func (_this *EdgeDestinationRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.end(ctx) }
+func (_this *EdgeDestinationRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
+func (_this *EdgeDestinationRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
+func (_this *EdgeDestinationRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
+func (_this *EdgeDestinationRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.end(ctx) }
+func (_this *EdgeDestinationRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.end(ctx) }
+func (_this *EdgeDestinationRule) OnList(ctx *Context)                            { ctx.BeginList() }
+func (_this *EdgeDestinationRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
+func (_this *EdgeDestinationRule) OnMarkup(ctx *Context, identifier []byte) {
+	ctx.BeginMarkup(identifier)
+}
+func (_this *EdgeDestinationRule) OnNode(ctx *Context) { ctx.BeginNode() }
+func (_this *EdgeDestinationRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
+func (_this *EdgeDestinationRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowAny)
+}
+func (_this *EdgeDestinationRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+	_this.end(ctx)
+}
+func (_this *EdgeDestinationRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
+}
+func (_this *EdgeDestinationRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *EdgeDestinationRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("edge destination", arrayType, AllowNonNil)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.end(ctx)
 }
-func (_this *ObjectRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.AssertArrayType("relationship object", arrayType, AllowObject)
+func (_this *EdgeDestinationRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("edge destination", arrayType, AllowNonNil)
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.end(ctx)
 }
-func (_this *ObjectRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.AssertArrayType("relationship object", arrayType, AllowObject)
+func (_this *EdgeDestinationRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.AssertArrayType("edge destination", arrayType, AllowNonNil)
+	ctx.BeginArrayAnyType(arrayType)
+}
+
+// =============================================================================
+
+type NodeRule struct{}
+
+func (_this *NodeRule) String() string { return "Node Rule" }
+func (_this *NodeRule) moveToNextRule(ctx *Context) {
+	ctx.ChangeRule(&listRule)
+}
+func (_this *NodeRule) OnKeyableObject(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnNonKeyableObject(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnNA(ctx *Context) { ctx.BeginNA() }
+func (_this *NodeRule) OnChildContainerEnded(ctx *Context, _ DataType) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnPadding(ctx *Context)          { /* Nothing to do */ }
+func (_this *NodeRule) OnComment(ctx *Context)          { /* Nothing to do */ }
+func (_this *NodeRule) OnNil(ctx *Context)              { _this.moveToNextRule(ctx) }
+func (_this *NodeRule) OnInt(ctx *Context, value int64) { _this.moveToNextRule(ctx) }
+func (_this *NodeRule) OnPositiveInt(ctx *Context, value uint64) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnBigInt(ctx *Context, value *big.Int) { _this.moveToNextRule(ctx) }
+func (_this *NodeRule) OnFloat(ctx *Context, value float64)   { _this.moveToNextRule(ctx) }
+func (_this *NodeRule) OnBigFloat(ctx *Context, value *big.Float) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnList(ctx *Context) { ctx.BeginList() }
+func (_this *NodeRule) OnMap(ctx *Context)  { ctx.BeginMap() }
+func (_this *NodeRule) OnMarkup(ctx *Context, identifier []byte) {
+	ctx.BeginMarkup(identifier)
+}
+func (_this *NodeRule) OnNode(ctx *Context) { ctx.BeginNode() }
+func (_this *NodeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
+func (_this *NodeRule) OnMarker(ctx *Context, identifier []byte) {
+	ctx.BeginMarkerAnyType(identifier, AllowNonNil)
+}
+func (_this *NodeRule) OnReference(ctx *Context, identifier []byte) {
+	ctx.ReferenceAnyType(identifier)
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnRIDReference(ctx *Context) {
+	ctx.BeginRIDReference()
+}
+func (_this *NodeRule) OnConstant(ctx *Context, name []byte) {
+	ctx.BeginConstantAnyType(name)
+}
+func (_this *NodeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("node", arrayType, AllowAny)
+	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("node", arrayType, AllowAny)
+	ctx.ValidateFullArrayStringlike(arrayType, data)
+	_this.moveToNextRule(ctx)
+}
+func (_this *NodeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.AssertArrayType("node", arrayType, AllowAny)
 	ctx.BeginArrayAnyType(arrayType)
 }

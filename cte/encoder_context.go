@@ -83,7 +83,7 @@ func (_this *EncoderContext) BeforeComment() {
 	_this.Decorator.BeforeComment(_this)
 }
 
-func (_this *EncoderContext) AfterComment() {
+func (_this *EncoderContext) AfterComment(isMultiline bool) {
 	_this.Decorator.AfterComment(_this)
 	_this.ContainerHasObjects = true
 }

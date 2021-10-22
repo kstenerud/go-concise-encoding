@@ -91,6 +91,12 @@ func (_this *RulesEventReceiver) OnPadding(count int) {
 	_this.receiver.OnPadding(count)
 }
 
+func (_this *RulesEventReceiver) OnComment(isMultiline bool, contents []byte) {
+	// TODO: Validate comment contents
+	_this.context.CurrentEntry.Rule.OnComment(&_this.context)
+	_this.receiver.OnComment(isMultiline, contents)
+}
+
 func (_this *RulesEventReceiver) OnNA() {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnNA(&_this.context)
@@ -273,20 +279,19 @@ func (_this *RulesEventReceiver) OnMarkup(identifier []byte) {
 	_this.receiver.OnMarkup(identifier)
 }
 
-func (_this *RulesEventReceiver) OnComment() {
-	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnComment(&_this.context)
-	_this.receiver.OnComment()
-}
-
 func (_this *RulesEventReceiver) OnEnd() {
 	_this.context.CurrentEntry.Rule.OnEnd(&_this.context)
 	_this.receiver.OnEnd()
 }
 
-func (_this *RulesEventReceiver) OnRelationship() {
-	_this.context.CurrentEntry.Rule.OnRelationship(&_this.context)
-	_this.receiver.OnRelationship()
+func (_this *RulesEventReceiver) OnNode() {
+	_this.context.CurrentEntry.Rule.OnNode(&_this.context)
+	_this.receiver.OnNode()
+}
+
+func (_this *RulesEventReceiver) OnEdge() {
+	_this.context.CurrentEntry.Rule.OnEdge(&_this.context)
+	_this.receiver.OnEdge()
 }
 
 func (_this *RulesEventReceiver) OnMarker(identifier []byte) {

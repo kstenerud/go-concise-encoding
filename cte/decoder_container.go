@@ -24,48 +24,32 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
-type advanceAndDecodeMapBegin struct{}
-
-var global_advanceAndDecodeMapBegin advanceAndDecodeMapBegin
-
-func (_this advanceAndDecodeMapBegin) Run(ctx *DecoderContext) {
+func advanceAndDecodeMapBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '{'
 
 	ctx.EventReceiver.OnMap()
-	ctx.StackDecoder(global_decodeMapKey)
+	ctx.StackDecoder(decodeMapKey)
 	ctx.SetContainerType(ContainerTypeMap)
 }
 
-type decodeMapKey struct{}
-
-var global_decodeMapKey decodeMapKey
-
-func (_this decodeMapKey) Run(ctx *DecoderContext) {
-	ctx.ChangeDecoder(global_decodeMapValue)
-	global_decodeByFirstChar.Run(ctx)
+func decodeMapKey(ctx *DecoderContext) {
+	ctx.ChangeDecoder(decodeMapValue)
+	decodeByFirstChar(ctx)
 }
 
-type decodeMapValue struct{}
-
-var global_decodeMapValue decodeMapValue
-
-func (_this decodeMapValue) Run(ctx *DecoderContext) {
-	global_decodeWhitespace.Run(ctx)
+func decodeMapValue(ctx *DecoderContext) {
+	decodeWhitespace(ctx)
 	if ctx.Stream.ReadByteNoEOF() != '=' {
 		ctx.Errorf("Expected map separator (=) but got [%v]", ctx.DescribeCurrentChar())
 	}
 	ctx.NoNeedForWS()
-	global_decodeWhitespace.Run(ctx)
-	ctx.ChangeDecoder(global_decodeMapKey)
-	global_decodeByFirstChar.Run(ctx)
+	decodeWhitespace(ctx)
+	ctx.ChangeDecoder(decodeMapKey)
+	decodeByFirstChar(ctx)
 }
 
-type advanceAndDecodeMapEnd struct{}
-
-var global_advanceAndDecodeMapEnd advanceAndDecodeMapEnd
-
-func (_this advanceAndDecodeMapEnd) Run(ctx *DecoderContext) {
+func advanceAndDecodeMapEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '}'
 
 	ctx.AssertIsInMap()
@@ -74,24 +58,16 @@ func (_this advanceAndDecodeMapEnd) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeListBegin struct{}
-
-var global_advanceAndDecodeListBegin advanceAndDecodeListBegin
-
-func (_this advanceAndDecodeListBegin) Run(ctx *DecoderContext) {
+func advanceAndDecodeListBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '['
 
 	ctx.EventReceiver.OnList()
-	ctx.StackDecoder(global_decodeByFirstChar)
+	ctx.StackDecoder(decodeByFirstChar)
 	ctx.SetContainerType(ContainerTypeList)
 }
 
-type advanceAndDecodeListEnd struct{}
-
-var global_advanceAndDecodeListEnd advanceAndDecodeListEnd
-
-func (_this advanceAndDecodeListEnd) Run(ctx *DecoderContext) {
+func advanceAndDecodeListEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ']'
 
 	ctx.AssertIsInList()
@@ -100,71 +76,46 @@ func (_this advanceAndDecodeListEnd) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeMarkupBegin struct{}
-
-var global_advanceAndDecodeMarkupBegin advanceAndDecodeMarkupBegin
-
-func (_this advanceAndDecodeMarkupBegin) Run(ctx *DecoderContext) {
+func advanceAndDecodeMarkupBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '<'
-	global_decodeMarkupBegin.Run(ctx)
+	decodeMarkupBegin(ctx)
 }
 
-type decodeMarkupBegin struct{}
-
-var global_decodeMarkupBegin decodeMarkupBegin
-
-func (_this decodeMarkupBegin) Run(ctx *DecoderContext) {
+func decodeMarkupBegin(ctx *DecoderContext) {
 	ctx.EventReceiver.OnMarkup(ctx.Stream.ReadIdentifier())
-	ctx.StackDecoder(global_decodeMapKey)
+	ctx.StackDecoder(decodeMapKey)
 }
 
-type advanceAndDecodeMarkupContentBegin struct{}
-
-var global_advanceAndDecodeMarkupContentBegin advanceAndDecodeMarkupContentBegin
-
-func (_this advanceAndDecodeMarkupContentBegin) Run(ctx *DecoderContext) {
+func advanceAndDecodeMarkupContentBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ','
 
 	ctx.EventReceiver.OnEnd()
-	ctx.ChangeDecoder(global_decodeMarkupContents)
+	ctx.ChangeDecoder(decodeMarkupContents)
 }
 
-type decodeMarkupContents struct{}
-
-var global_decodeMarkupContents decodeMarkupContents
-
-func (_this decodeMarkupContents) Run(ctx *DecoderContext) {
+func decodeMarkupContents(ctx *DecoderContext) {
 	ctx.stack[len(ctx.stack)-1].IsMarkupContents = true
 	str, next := ctx.Stream.ReadMarkupContent()
 	if len(str) > 0 {
 		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
 	}
 	switch next {
-	case nextIsCommentBegin:
-		ctx.BeginComment()
-	case nextIsCommentEnd:
-		ctx.EndComment()
+	case nextIsMultiLineComment:
+		contents := ctx.Stream.ReadMultiLineComment()
+		ctx.EventReceiver.OnComment(true, contents)
 	case nextIsSingleLineComment:
-		ctx.EventReceiver.OnComment()
 		contents := ctx.Stream.ReadSingleLineComment()
-		if len(contents) > 0 {
-			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
-		}
-		ctx.EventReceiver.OnEnd()
+		ctx.EventReceiver.OnComment(false, contents)
 	case nextIsMarkupBegin:
-		global_decodeMarkupBegin.Run(ctx)
+		decodeMarkupBegin(ctx)
 	case nextIsMarkupEnd:
 		ctx.EventReceiver.OnEnd()
 		ctx.UnstackDecoder()
 	}
 }
 
-type advanceAndDecodeMarkupEnd struct{}
-
-var global_advanceAndDecodeMarkupEnd advanceAndDecodeMarkupEnd
-
-func (_this advanceAndDecodeMarkupEnd) Run(ctx *DecoderContext) {
+func advanceAndDecodeMarkupEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '>'
 
 	ctx.EventReceiver.OnEnd()
@@ -172,82 +123,42 @@ func (_this advanceAndDecodeMarkupEnd) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeComment struct{}
-
-var global_advanceAndDecodeComment advanceAndDecodeComment
-
-func (_this advanceAndDecodeComment) Run(ctx *DecoderContext) {
-	ctx.AssertHasStructuralWS()
-	ctx.Stream.AdvanceByte() // Advance past '/'
-
-	b := ctx.Stream.ReadByteNoEOF()
-	switch b {
-	case '/':
-		ctx.EventReceiver.OnComment()
-		contents := ctx.Stream.ReadSingleLineComment()
-		if len(contents) > 0 {
-			ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(contents)), contents)
-		}
-		ctx.EventReceiver.OnEnd()
-		ctx.StackDecoder(global_decodePostInvisible)
-	case '*':
-		ctx.BeginComment()
-	default:
-		ctx.Errorf("Unexpected comment initiator: [%c]", b)
-	}
+func decodeEdgeBegin(ctx *DecoderContext) {
+	ctx.EventReceiver.OnEdge()
+	ctx.StackDecoder(decodeEdgeEnd)
+	ctx.StackDecoder(decodeEdgeComponent)
+	ctx.StackDecoder(decodeEdgeComponent)
+	ctx.StackDecoder(decodeEdgeComponent)
 }
 
-type decodeCommentContents struct{}
-
-var global_decodeCommentContents decodeCommentContents
-
-func (_this decodeCommentContents) Run(ctx *DecoderContext) {
-	str, next := ctx.Stream.ReadMultilineComment()
-	if len(str) > 0 {
-		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
-	}
-	switch next {
-	case nextIsCommentBegin:
-		ctx.BeginComment()
-	case nextIsCommentEnd:
-		ctx.EndComment()
-		ctx.RequireStructuralWS()
-	}
+func decodeEdgeComponent(ctx *DecoderContext) {
+	ctx.UnstackDecoder()
+	decodeByFirstChar(ctx)
 }
 
-type advanceAndDecodeRelationshipBegin struct{}
+func decodeEdgeEnd(ctx *DecoderContext) {
+	if ctx.Stream.ReadByteNoEOF() != ')' {
+		ctx.Stream.UnreadByte()
+		ctx.Errorf("Expected ')' at end of edge structure")
+	}
+	ctx.UnstackDecoder()
+	ctx.RequireStructuralWS()
+}
 
-var global_advanceAndDecodeRelationshipBegin advanceAndDecodeRelationshipBegin
-
-func (_this advanceAndDecodeRelationshipBegin) Run(ctx *DecoderContext) {
+func advanceAndDecodeNodeBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '('
 
-	ctx.EventReceiver.OnRelationship()
-	ctx.StackDecoder(global_decodeRelationshipEnd)
-	ctx.StackDecoder(global_decodeRelationshipComponent)
-	ctx.StackDecoder(global_decodeRelationshipComponent)
-	ctx.StackDecoder(global_decodeRelationshipComponent)
+	ctx.EventReceiver.OnNode()
+	ctx.StackDecoder(decodeByFirstChar)
+	ctx.SetContainerType(ContainerTypeNode)
 }
 
-type decodeRelationshipComponent struct{}
+func advanceAndDecodeNodeEnd(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past ')'
 
-var global_decodeRelationshipComponent decodeRelationshipComponent
-
-func (_this decodeRelationshipComponent) Run(ctx *DecoderContext) {
-	ctx.UnstackDecoder()
-	global_decodeByFirstChar.Run(ctx)
-}
-
-type decodeRelationshipEnd struct{}
-
-var global_decodeRelationshipEnd decodeRelationshipEnd
-
-func (_this decodeRelationshipEnd) Run(ctx *DecoderContext) {
-	if ctx.Stream.ReadByteNoEOF() != ')' {
-		ctx.Stream.UnreadByte()
-		ctx.Errorf("Expected ')' at end of relationship structure")
-	}
+	ctx.AssertIsInNode()
+	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
 	ctx.RequireStructuralWS()
 }

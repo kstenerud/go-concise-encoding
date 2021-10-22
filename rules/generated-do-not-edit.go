@@ -44,7 +44,8 @@ const (
 	DataTypeMap
 	DataTypeMarkup
 	DataTypeComment
-	DataTypeRelationship
+	DataTypeEdge
+	DataTypeNode
 	DataTypeString
 	DataTypeResourceID
 	DataTypeArrayBit
@@ -64,14 +65,10 @@ const (
 	DataTypeRIDReference
 	DataTypeCustomText
 	DataTypeCustomBinary
-	DataTypeResourceList
 	DataTypeInvalid = 0x0
-	AllowAny = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
-	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeResourceID
-	AllowResource = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
-	AllowSubject = DataTypeMap | DataTypeRelationship | DataTypeResourceID | DataTypeResourceList
-	AllowPredicate = DataTypeResourceID
-	AllowObject = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeRelationship | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceList
+	AllowAny = DataTypeNil | DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary
+	AllowNonNil = DataTypeNA | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeMarkup | DataTypeComment | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeResourceID | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeMedia | DataTypeRIDReference | DataTypeCustomText | DataTypeCustomBinary
+	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeComment | DataTypeString | DataTypeResourceID
 	AllowString = DataTypeString
 	AllowResourceID = DataTypeResourceID
 )
@@ -83,7 +80,7 @@ func (_this DataType) String() string {
 	} else {
 		isFirst := true
 		builder := strings.Builder{}
-		for i := DataType(1); i <= DataTypeResourceList; i <<= 1 {
+		for i := DataType(1); i <= DataTypeCustomBinary; i <<= 1 {
 			if _this&i != 0 {
 				if isFirst {
 					isFirst = false
@@ -115,7 +112,8 @@ var datatypeNames = map[DataType]string{
 	DataTypeMap: "DataTypeMap",
 	DataTypeMarkup: "DataTypeMarkup",
 	DataTypeComment: "DataTypeComment",
-	DataTypeRelationship: "DataTypeRelationship",
+	DataTypeEdge: "DataTypeEdge",
+	DataTypeNode: "DataTypeNode",
 	DataTypeString: "DataTypeString",
 	DataTypeResourceID: "DataTypeResourceID",
 	DataTypeArrayBit: "DataTypeArrayBit",
@@ -135,7 +133,6 @@ var datatypeNames = map[DataType]string{
 	DataTypeRIDReference: "DataTypeRIDReference",
 	DataTypeCustomText: "DataTypeCustomText",
 	DataTypeCustomBinary: "DataTypeCustomBinary",
-	DataTypeResourceList: "DataTypeResourceList",
 }
 func (_this *BeginDocumentRule) OnEndDocument(ctx *Context) {
 	wrongType("begin document", "end document")
@@ -152,6 +149,9 @@ func (_this *BeginDocumentRule) OnNA(ctx *Context) {
 func (_this *BeginDocumentRule) OnPadding(ctx *Context) {
 	wrongType("begin document", "padding")
 }
+func (_this *BeginDocumentRule) OnComment(ctx *Context) {
+	wrongType("begin document", "comment")
+}
 func (_this *BeginDocumentRule) OnNil(ctx *Context) {
 	wrongType("begin document", "Nil")
 }
@@ -167,17 +167,17 @@ func (_this *BeginDocumentRule) OnList(ctx *Context) {
 func (_this *BeginDocumentRule) OnMap(ctx *Context) {
 	wrongType("begin document", "map")
 }
+func (_this *BeginDocumentRule) OnEdge(ctx *Context) {
+	wrongType("begin document", "edge")
+}
+func (_this *BeginDocumentRule) OnNode(ctx *Context) {
+	wrongType("begin document", "node")
+}
 func (_this *BeginDocumentRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("begin document", "markup")
 }
-func (_this *BeginDocumentRule) OnComment(ctx *Context) {
-	wrongType("begin document", "comment")
-}
 func (_this *BeginDocumentRule) OnEnd(ctx *Context) {
 	wrongType("begin document", "end container")
-}
-func (_this *BeginDocumentRule) OnRelationship(ctx *Context) {
-	wrongType("begin document", "relationship")
 }
 func (_this *BeginDocumentRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("begin document", "marker")
@@ -221,6 +221,9 @@ func (_this *EndDocumentRule) OnNA(ctx *Context) {
 func (_this *EndDocumentRule) OnPadding(ctx *Context) {
 	wrongType("end document", "padding")
 }
+func (_this *EndDocumentRule) OnComment(ctx *Context) {
+	wrongType("end document", "comment")
+}
 func (_this *EndDocumentRule) OnNil(ctx *Context) {
 	wrongType("end document", "Nil")
 }
@@ -236,17 +239,17 @@ func (_this *EndDocumentRule) OnList(ctx *Context) {
 func (_this *EndDocumentRule) OnMap(ctx *Context) {
 	wrongType("end document", "map")
 }
+func (_this *EndDocumentRule) OnEdge(ctx *Context) {
+	wrongType("end document", "edge")
+}
+func (_this *EndDocumentRule) OnNode(ctx *Context) {
+	wrongType("end document", "node")
+}
 func (_this *EndDocumentRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("end document", "markup")
 }
-func (_this *EndDocumentRule) OnComment(ctx *Context) {
-	wrongType("end document", "comment")
-}
 func (_this *EndDocumentRule) OnEnd(ctx *Context) {
 	wrongType("end document", "end container")
-}
-func (_this *EndDocumentRule) OnRelationship(ctx *Context) {
-	wrongType("end document", "relationship")
 }
 func (_this *EndDocumentRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("end document", "marker")
@@ -293,6 +296,9 @@ func (_this *TerminalRule) OnNA(ctx *Context) {
 func (_this *TerminalRule) OnPadding(ctx *Context) {
 	wrongType("terminal", "padding")
 }
+func (_this *TerminalRule) OnComment(ctx *Context) {
+	wrongType("terminal", "comment")
+}
 func (_this *TerminalRule) OnNil(ctx *Context) {
 	wrongType("terminal", "Nil")
 }
@@ -308,17 +314,17 @@ func (_this *TerminalRule) OnList(ctx *Context) {
 func (_this *TerminalRule) OnMap(ctx *Context) {
 	wrongType("terminal", "map")
 }
+func (_this *TerminalRule) OnEdge(ctx *Context) {
+	wrongType("terminal", "edge")
+}
+func (_this *TerminalRule) OnNode(ctx *Context) {
+	wrongType("terminal", "node")
+}
 func (_this *TerminalRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("terminal", "markup")
 }
-func (_this *TerminalRule) OnComment(ctx *Context) {
-	wrongType("terminal", "comment")
-}
 func (_this *TerminalRule) OnEnd(ctx *Context) {
 	wrongType("terminal", "end container")
-}
-func (_this *TerminalRule) OnRelationship(ctx *Context) {
-	wrongType("terminal", "relationship")
 }
 func (_this *TerminalRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("terminal", "marker")
@@ -362,6 +368,9 @@ func (_this *VersionRule) OnNA(ctx *Context) {
 func (_this *VersionRule) OnPadding(ctx *Context) {
 	wrongType("version", "padding")
 }
+func (_this *VersionRule) OnComment(ctx *Context) {
+	wrongType("version", "comment")
+}
 func (_this *VersionRule) OnNil(ctx *Context) {
 	wrongType("version", "Nil")
 }
@@ -377,17 +386,17 @@ func (_this *VersionRule) OnList(ctx *Context) {
 func (_this *VersionRule) OnMap(ctx *Context) {
 	wrongType("version", "map")
 }
+func (_this *VersionRule) OnEdge(ctx *Context) {
+	wrongType("version", "edge")
+}
+func (_this *VersionRule) OnNode(ctx *Context) {
+	wrongType("version", "node")
+}
 func (_this *VersionRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("version", "markup")
 }
-func (_this *VersionRule) OnComment(ctx *Context) {
-	wrongType("version", "comment")
-}
 func (_this *VersionRule) OnEnd(ctx *Context) {
 	wrongType("version", "end container")
-}
-func (_this *VersionRule) OnRelationship(ctx *Context) {
-	wrongType("version", "relationship")
 }
 func (_this *VersionRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("version", "marker")
@@ -488,42 +497,6 @@ func (_this *ListRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollo
 func (_this *ListRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("list", "array data")
 }
-func (_this *ResourceListRule) OnBeginDocument(ctx *Context) {
-	wrongType("resource list", "begin document")
-}
-func (_this *ResourceListRule) OnEndDocument(ctx *Context) {
-	wrongType("resource list", "end document")
-}
-func (_this *ResourceListRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("resource list", "version")
-}
-func (_this *ResourceListRule) OnNA(ctx *Context) {
-	wrongType("resource list", "NA")
-}
-func (_this *ResourceListRule) OnNil(ctx *Context) {
-	wrongType("resource list", "Nil")
-}
-func (_this *ResourceListRule) OnKeyableObject(ctx *Context, objType DataType) {
-	wrongType("resource list", objType)
-}
-func (_this *ResourceListRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("resource list", objType)
-}
-func (_this *ResourceListRule) OnList(ctx *Context) {
-	wrongType("resource list", "list")
-}
-func (_this *ResourceListRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("resource list", "markup")
-}
-func (_this *ResourceListRule) OnRIDReference(ctx *Context) {
-	wrongType("resource list", "RID reference")
-}
-func (_this *ResourceListRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("resource list", "array chunk")
-}
-func (_this *ResourceListRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("resource list", "array data")
-}
 func (_this *MapKeyRule) OnBeginDocument(ctx *Context) {
 	wrongType("map key", "begin document")
 }
@@ -548,11 +521,14 @@ func (_this *MapKeyRule) OnList(ctx *Context) {
 func (_this *MapKeyRule) OnMap(ctx *Context) {
 	wrongType("map key", "map")
 }
+func (_this *MapKeyRule) OnEdge(ctx *Context) {
+	wrongType("map key", "edge")
+}
+func (_this *MapKeyRule) OnNode(ctx *Context) {
+	wrongType("map key", "node")
+}
 func (_this *MapKeyRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("map key", "markup")
-}
-func (_this *MapKeyRule) OnRelationship(ctx *Context) {
-	wrongType("map key", "relationship")
 }
 func (_this *MapKeyRule) OnRIDReference(ctx *Context) {
 	wrongType("map key", "RID reference")
@@ -605,11 +581,14 @@ func (_this *MarkupKeyRule) OnList(ctx *Context) {
 func (_this *MarkupKeyRule) OnMap(ctx *Context) {
 	wrongType("markup key", "map")
 }
+func (_this *MarkupKeyRule) OnEdge(ctx *Context) {
+	wrongType("markup key", "edge")
+}
+func (_this *MarkupKeyRule) OnNode(ctx *Context) {
+	wrongType("markup key", "node")
+}
 func (_this *MarkupKeyRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("markup key", "markup")
-}
-func (_this *MarkupKeyRule) OnRelationship(ctx *Context) {
-	wrongType("markup key", "relationship")
 }
 func (_this *MarkupKeyRule) OnRIDReference(ctx *Context) {
 	wrongType("markup key", "RID reference")
@@ -665,8 +644,11 @@ func (_this *MarkupContentsRule) OnList(ctx *Context) {
 func (_this *MarkupContentsRule) OnMap(ctx *Context) {
 	wrongType("markup contents", "map")
 }
-func (_this *MarkupContentsRule) OnRelationship(ctx *Context) {
-	wrongType("markup contents", "relationship")
+func (_this *MarkupContentsRule) OnEdge(ctx *Context) {
+	wrongType("markup contents", "edge")
+}
+func (_this *MarkupContentsRule) OnNode(ctx *Context) {
+	wrongType("markup contents", "node")
 }
 func (_this *MarkupContentsRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("markup contents", "marker")
@@ -686,57 +668,6 @@ func (_this *MarkupContentsRule) OnArrayChunk(ctx *Context, length uint64, moreC
 func (_this *MarkupContentsRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("markup contents", "array data")
 }
-func (_this *CommentRule) OnBeginDocument(ctx *Context) {
-	wrongType("comment", "begin document")
-}
-func (_this *CommentRule) OnEndDocument(ctx *Context) {
-	wrongType("comment", "end document")
-}
-func (_this *CommentRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("comment", "version")
-}
-func (_this *CommentRule) OnNA(ctx *Context) {
-	wrongType("comment", "NA")
-}
-func (_this *CommentRule) OnNil(ctx *Context) {
-	wrongType("comment", "Nil")
-}
-func (_this *CommentRule) OnKeyableObject(ctx *Context, objType DataType) {
-	wrongType("comment", objType)
-}
-func (_this *CommentRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("comment", objType)
-}
-func (_this *CommentRule) OnList(ctx *Context) {
-	wrongType("comment", "list")
-}
-func (_this *CommentRule) OnMap(ctx *Context) {
-	wrongType("comment", "map")
-}
-func (_this *CommentRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("comment", "markup")
-}
-func (_this *CommentRule) OnRelationship(ctx *Context) {
-	wrongType("comment", "relationship")
-}
-func (_this *CommentRule) OnMarker(ctx *Context, identifier []byte) {
-	wrongType("comment", "marker")
-}
-func (_this *CommentRule) OnReference(ctx *Context, identifier []byte) {
-	wrongType("comment", "reference")
-}
-func (_this *CommentRule) OnRIDReference(ctx *Context) {
-	wrongType("comment", "RID reference")
-}
-func (_this *CommentRule) OnConstant(ctx *Context, identifier []byte) {
-	wrongType("comment", "constant")
-}
-func (_this *CommentRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("comment", "array chunk")
-}
-func (_this *CommentRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("comment", "array data")
-}
 func (_this *ArrayRule) OnBeginDocument(ctx *Context) {
 	wrongType("array", "begin document")
 }
@@ -755,6 +686,9 @@ func (_this *ArrayRule) OnNA(ctx *Context) {
 func (_this *ArrayRule) OnPadding(ctx *Context) {
 	wrongType("array", "padding")
 }
+func (_this *ArrayRule) OnComment(ctx *Context) {
+	wrongType("array", "comment")
+}
 func (_this *ArrayRule) OnNil(ctx *Context) {
 	wrongType("array", "Nil")
 }
@@ -770,17 +704,17 @@ func (_this *ArrayRule) OnList(ctx *Context) {
 func (_this *ArrayRule) OnMap(ctx *Context) {
 	wrongType("array", "map")
 }
+func (_this *ArrayRule) OnEdge(ctx *Context) {
+	wrongType("array", "edge")
+}
+func (_this *ArrayRule) OnNode(ctx *Context) {
+	wrongType("array", "node")
+}
 func (_this *ArrayRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("array", "markup")
 }
-func (_this *ArrayRule) OnComment(ctx *Context) {
-	wrongType("array", "comment")
-}
 func (_this *ArrayRule) OnEnd(ctx *Context) {
 	wrongType("array", "end container")
-}
-func (_this *ArrayRule) OnRelationship(ctx *Context) {
-	wrongType("array", "relationship")
 }
 func (_this *ArrayRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("array", "marker")
@@ -824,6 +758,9 @@ func (_this *ArrayChunkRule) OnNA(ctx *Context) {
 func (_this *ArrayChunkRule) OnPadding(ctx *Context) {
 	wrongType("array chunk", "padding")
 }
+func (_this *ArrayChunkRule) OnComment(ctx *Context) {
+	wrongType("array chunk", "comment")
+}
 func (_this *ArrayChunkRule) OnNil(ctx *Context) {
 	wrongType("array chunk", "Nil")
 }
@@ -839,17 +776,17 @@ func (_this *ArrayChunkRule) OnList(ctx *Context) {
 func (_this *ArrayChunkRule) OnMap(ctx *Context) {
 	wrongType("array chunk", "map")
 }
+func (_this *ArrayChunkRule) OnEdge(ctx *Context) {
+	wrongType("array chunk", "edge")
+}
+func (_this *ArrayChunkRule) OnNode(ctx *Context) {
+	wrongType("array chunk", "node")
+}
 func (_this *ArrayChunkRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("array chunk", "markup")
 }
-func (_this *ArrayChunkRule) OnComment(ctx *Context) {
-	wrongType("array chunk", "comment")
-}
 func (_this *ArrayChunkRule) OnEnd(ctx *Context) {
 	wrongType("array chunk", "end container")
-}
-func (_this *ArrayChunkRule) OnRelationship(ctx *Context) {
-	wrongType("array chunk", "relationship")
 }
 func (_this *ArrayChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("array chunk", "marker")
@@ -893,6 +830,9 @@ func (_this *StringRule) OnNA(ctx *Context) {
 func (_this *StringRule) OnPadding(ctx *Context) {
 	wrongType("string", "padding")
 }
+func (_this *StringRule) OnComment(ctx *Context) {
+	wrongType("string", "comment")
+}
 func (_this *StringRule) OnNil(ctx *Context) {
 	wrongType("string", "Nil")
 }
@@ -908,17 +848,17 @@ func (_this *StringRule) OnList(ctx *Context) {
 func (_this *StringRule) OnMap(ctx *Context) {
 	wrongType("string", "map")
 }
+func (_this *StringRule) OnEdge(ctx *Context) {
+	wrongType("string", "edge")
+}
+func (_this *StringRule) OnNode(ctx *Context) {
+	wrongType("string", "node")
+}
 func (_this *StringRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("string", "markup")
 }
-func (_this *StringRule) OnComment(ctx *Context) {
-	wrongType("string", "comment")
-}
 func (_this *StringRule) OnEnd(ctx *Context) {
 	wrongType("string", "end container")
-}
-func (_this *StringRule) OnRelationship(ctx *Context) {
-	wrongType("string", "relationship")
 }
 func (_this *StringRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("string", "marker")
@@ -962,6 +902,9 @@ func (_this *StringChunkRule) OnNA(ctx *Context) {
 func (_this *StringChunkRule) OnPadding(ctx *Context) {
 	wrongType("string chunk", "padding")
 }
+func (_this *StringChunkRule) OnComment(ctx *Context) {
+	wrongType("string chunk", "comment")
+}
 func (_this *StringChunkRule) OnNil(ctx *Context) {
 	wrongType("string chunk", "Nil")
 }
@@ -977,17 +920,17 @@ func (_this *StringChunkRule) OnList(ctx *Context) {
 func (_this *StringChunkRule) OnMap(ctx *Context) {
 	wrongType("string chunk", "map")
 }
+func (_this *StringChunkRule) OnEdge(ctx *Context) {
+	wrongType("string chunk", "edge")
+}
+func (_this *StringChunkRule) OnNode(ctx *Context) {
+	wrongType("string chunk", "node")
+}
 func (_this *StringChunkRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("string chunk", "markup")
 }
-func (_this *StringChunkRule) OnComment(ctx *Context) {
-	wrongType("string chunk", "comment")
-}
 func (_this *StringChunkRule) OnEnd(ctx *Context) {
 	wrongType("string chunk", "end container")
-}
-func (_this *StringChunkRule) OnRelationship(ctx *Context) {
-	wrongType("string chunk", "relationship")
 }
 func (_this *StringChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("string chunk", "marker")
@@ -1031,6 +974,9 @@ func (_this *StringBuilderRule) OnNA(ctx *Context) {
 func (_this *StringBuilderRule) OnPadding(ctx *Context) {
 	wrongType("string", "padding")
 }
+func (_this *StringBuilderRule) OnComment(ctx *Context) {
+	wrongType("string", "comment")
+}
 func (_this *StringBuilderRule) OnNil(ctx *Context) {
 	wrongType("string", "Nil")
 }
@@ -1046,17 +992,17 @@ func (_this *StringBuilderRule) OnList(ctx *Context) {
 func (_this *StringBuilderRule) OnMap(ctx *Context) {
 	wrongType("string", "map")
 }
+func (_this *StringBuilderRule) OnEdge(ctx *Context) {
+	wrongType("string", "edge")
+}
+func (_this *StringBuilderRule) OnNode(ctx *Context) {
+	wrongType("string", "node")
+}
 func (_this *StringBuilderRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("string", "markup")
 }
-func (_this *StringBuilderRule) OnComment(ctx *Context) {
-	wrongType("string", "comment")
-}
 func (_this *StringBuilderRule) OnEnd(ctx *Context) {
 	wrongType("string", "end container")
-}
-func (_this *StringBuilderRule) OnRelationship(ctx *Context) {
-	wrongType("string", "relationship")
 }
 func (_this *StringBuilderRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("string", "marker")
@@ -1100,6 +1046,9 @@ func (_this *StringBuilderChunkRule) OnNA(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnPadding(ctx *Context) {
 	wrongType("string chunk", "padding")
 }
+func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
+	wrongType("string chunk", "comment")
+}
 func (_this *StringBuilderChunkRule) OnNil(ctx *Context) {
 	wrongType("string chunk", "Nil")
 }
@@ -1115,17 +1064,17 @@ func (_this *StringBuilderChunkRule) OnList(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnMap(ctx *Context) {
 	wrongType("string chunk", "map")
 }
+func (_this *StringBuilderChunkRule) OnEdge(ctx *Context) {
+	wrongType("string chunk", "edge")
+}
+func (_this *StringBuilderChunkRule) OnNode(ctx *Context) {
+	wrongType("string chunk", "node")
+}
 func (_this *StringBuilderChunkRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("string chunk", "markup")
 }
-func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
-	wrongType("string chunk", "comment")
-}
 func (_this *StringBuilderChunkRule) OnEnd(ctx *Context) {
 	wrongType("string chunk", "end container")
-}
-func (_this *StringBuilderChunkRule) OnRelationship(ctx *Context) {
-	wrongType("string chunk", "relationship")
 }
 func (_this *StringBuilderChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("string chunk", "marker")
@@ -1169,6 +1118,9 @@ func (_this *MediaTypeRule) OnNA(ctx *Context) {
 func (_this *MediaTypeRule) OnPadding(ctx *Context) {
 	wrongType("media type", "padding")
 }
+func (_this *MediaTypeRule) OnComment(ctx *Context) {
+	wrongType("media type", "comment")
+}
 func (_this *MediaTypeRule) OnNil(ctx *Context) {
 	wrongType("media type", "Nil")
 }
@@ -1184,17 +1136,17 @@ func (_this *MediaTypeRule) OnList(ctx *Context) {
 func (_this *MediaTypeRule) OnMap(ctx *Context) {
 	wrongType("media type", "map")
 }
+func (_this *MediaTypeRule) OnEdge(ctx *Context) {
+	wrongType("media type", "edge")
+}
+func (_this *MediaTypeRule) OnNode(ctx *Context) {
+	wrongType("media type", "node")
+}
 func (_this *MediaTypeRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("media type", "markup")
 }
-func (_this *MediaTypeRule) OnComment(ctx *Context) {
-	wrongType("media type", "comment")
-}
 func (_this *MediaTypeRule) OnEnd(ctx *Context) {
 	wrongType("media type", "end container")
-}
-func (_this *MediaTypeRule) OnRelationship(ctx *Context) {
-	wrongType("media type", "relationship")
 }
 func (_this *MediaTypeRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("media type", "marker")
@@ -1238,6 +1190,9 @@ func (_this *MediaTypeChunkRule) OnNA(ctx *Context) {
 func (_this *MediaTypeChunkRule) OnPadding(ctx *Context) {
 	wrongType("media type chunk", "padding")
 }
+func (_this *MediaTypeChunkRule) OnComment(ctx *Context) {
+	wrongType("media type chunk", "comment")
+}
 func (_this *MediaTypeChunkRule) OnNil(ctx *Context) {
 	wrongType("media type chunk", "Nil")
 }
@@ -1253,17 +1208,17 @@ func (_this *MediaTypeChunkRule) OnList(ctx *Context) {
 func (_this *MediaTypeChunkRule) OnMap(ctx *Context) {
 	wrongType("media type chunk", "map")
 }
+func (_this *MediaTypeChunkRule) OnEdge(ctx *Context) {
+	wrongType("media type chunk", "edge")
+}
+func (_this *MediaTypeChunkRule) OnNode(ctx *Context) {
+	wrongType("media type chunk", "node")
+}
 func (_this *MediaTypeChunkRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("media type chunk", "markup")
 }
-func (_this *MediaTypeChunkRule) OnComment(ctx *Context) {
-	wrongType("media type chunk", "comment")
-}
 func (_this *MediaTypeChunkRule) OnEnd(ctx *Context) {
 	wrongType("media type chunk", "end container")
-}
-func (_this *MediaTypeChunkRule) OnRelationship(ctx *Context) {
-	wrongType("media type chunk", "relationship")
 }
 func (_this *MediaTypeChunkRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("media type chunk", "marker")
@@ -1301,6 +1256,9 @@ func (_this *MarkedObjectKeyableRule) OnVersion(ctx *Context, version uint64) {
 func (_this *MarkedObjectKeyableRule) OnNA(ctx *Context) {
 	wrongType("marked object", "NA")
 }
+func (_this *MarkedObjectKeyableRule) OnComment(ctx *Context) {
+	wrongType("marked object", "comment")
+}
 func (_this *MarkedObjectKeyableRule) OnNil(ctx *Context) {
 	wrongType("marked object", "Nil")
 }
@@ -1313,17 +1271,17 @@ func (_this *MarkedObjectKeyableRule) OnList(ctx *Context) {
 func (_this *MarkedObjectKeyableRule) OnMap(ctx *Context) {
 	wrongType("marked object", "map")
 }
+func (_this *MarkedObjectKeyableRule) OnEdge(ctx *Context) {
+	wrongType("marked object", "edge")
+}
+func (_this *MarkedObjectKeyableRule) OnNode(ctx *Context) {
+	wrongType("marked object", "node")
+}
 func (_this *MarkedObjectKeyableRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("marked object", "markup")
 }
-func (_this *MarkedObjectKeyableRule) OnComment(ctx *Context) {
-	wrongType("marked object", "comment")
-}
 func (_this *MarkedObjectKeyableRule) OnEnd(ctx *Context) {
 	wrongType("marked object", "end container")
-}
-func (_this *MarkedObjectKeyableRule) OnRelationship(ctx *Context) {
-	wrongType("marked object", "relationship")
 }
 func (_this *MarkedObjectKeyableRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("marked object", "marker")
@@ -1391,6 +1349,9 @@ func (_this *ConstantKeyableRule) OnVersion(ctx *Context, version uint64) {
 func (_this *ConstantKeyableRule) OnNA(ctx *Context) {
 	wrongType("constant", "NA")
 }
+func (_this *ConstantKeyableRule) OnComment(ctx *Context) {
+	wrongType("constant", "comment")
+}
 func (_this *ConstantKeyableRule) OnNil(ctx *Context) {
 	wrongType("constant", "Nil")
 }
@@ -1403,17 +1364,17 @@ func (_this *ConstantKeyableRule) OnList(ctx *Context) {
 func (_this *ConstantKeyableRule) OnMap(ctx *Context) {
 	wrongType("constant", "map")
 }
+func (_this *ConstantKeyableRule) OnEdge(ctx *Context) {
+	wrongType("constant", "edge")
+}
+func (_this *ConstantKeyableRule) OnNode(ctx *Context) {
+	wrongType("constant", "node")
+}
 func (_this *ConstantKeyableRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("constant", "markup")
 }
-func (_this *ConstantKeyableRule) OnComment(ctx *Context) {
-	wrongType("constant", "comment")
-}
 func (_this *ConstantKeyableRule) OnEnd(ctx *Context) {
 	wrongType("constant", "end container")
-}
-func (_this *ConstantKeyableRule) OnRelationship(ctx *Context) {
-	wrongType("constant", "relationship")
 }
 func (_this *ConstantKeyableRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("constant", "marker")
@@ -1478,6 +1439,9 @@ func (_this *RIDReferenceRule) OnVersion(ctx *Context, version uint64) {
 func (_this *RIDReferenceRule) OnNA(ctx *Context) {
 	wrongType("RID reference", "NA")
 }
+func (_this *RIDReferenceRule) OnComment(ctx *Context) {
+	wrongType("RID reference", "comment")
+}
 func (_this *RIDReferenceRule) OnNil(ctx *Context) {
 	wrongType("RID reference", "Nil")
 }
@@ -1493,17 +1457,17 @@ func (_this *RIDReferenceRule) OnList(ctx *Context) {
 func (_this *RIDReferenceRule) OnMap(ctx *Context) {
 	wrongType("RID reference", "map")
 }
+func (_this *RIDReferenceRule) OnEdge(ctx *Context) {
+	wrongType("RID reference", "edge")
+}
+func (_this *RIDReferenceRule) OnNode(ctx *Context) {
+	wrongType("RID reference", "node")
+}
 func (_this *RIDReferenceRule) OnMarkup(ctx *Context, identifier []byte) {
 	wrongType("RID reference", "markup")
 }
-func (_this *RIDReferenceRule) OnComment(ctx *Context) {
-	wrongType("RID reference", "comment")
-}
 func (_this *RIDReferenceRule) OnEnd(ctx *Context) {
 	wrongType("RID reference", "end container")
-}
-func (_this *RIDReferenceRule) OnRelationship(ctx *Context) {
-	wrongType("RID reference", "relationship")
 }
 func (_this *RIDReferenceRule) OnMarker(ctx *Context, identifier []byte) {
 	wrongType("RID reference", "marker")
@@ -1523,102 +1487,81 @@ func (_this *RIDReferenceRule) OnArrayChunk(ctx *Context, length uint64, moreChu
 func (_this *RIDReferenceRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("RID reference", "array data")
 }
-func (_this *SubjectRule) OnBeginDocument(ctx *Context) {
-	wrongType("relationship subject", "begin document")
+func (_this *EdgeSourceRule) OnBeginDocument(ctx *Context) {
+	wrongType("edge source", "begin document")
 }
-func (_this *SubjectRule) OnEndDocument(ctx *Context) {
-	wrongType("relationship subject", "end document")
+func (_this *EdgeSourceRule) OnEndDocument(ctx *Context) {
+	wrongType("edge source", "end document")
 }
-func (_this *SubjectRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("relationship subject", "version")
+func (_this *EdgeSourceRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("edge source", "version")
 }
-func (_this *SubjectRule) OnNA(ctx *Context) {
-	wrongType("relationship subject", "NA")
+func (_this *EdgeSourceRule) OnNil(ctx *Context) {
+	wrongType("edge source", "Nil")
 }
-func (_this *SubjectRule) OnNil(ctx *Context) {
-	wrongType("relationship subject", "Nil")
+func (_this *EdgeSourceRule) OnEnd(ctx *Context) {
+	wrongType("edge source", "end container")
 }
-func (_this *SubjectRule) OnKeyableObject(ctx *Context, objType DataType) {
-	wrongType("relationship subject", objType)
+func (_this *EdgeSourceRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("edge source", "array chunk")
 }
-func (_this *SubjectRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("relationship subject", objType)
+func (_this *EdgeSourceRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("edge source", "array data")
 }
-func (_this *SubjectRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("relationship subject", "markup")
+func (_this *EdgeDescriptionRule) OnBeginDocument(ctx *Context) {
+	wrongType("edge description", "begin document")
 }
-func (_this *SubjectRule) OnEnd(ctx *Context) {
-	wrongType("relationship subject", "end container")
+func (_this *EdgeDescriptionRule) OnEndDocument(ctx *Context) {
+	wrongType("edge description", "end document")
 }
-func (_this *SubjectRule) OnRIDReference(ctx *Context) {
-	wrongType("relationship subject", "RID reference")
+func (_this *EdgeDescriptionRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("edge description", "version")
 }
-func (_this *SubjectRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("relationship subject", "array chunk")
+func (_this *EdgeDescriptionRule) OnEnd(ctx *Context) {
+	wrongType("edge description", "end container")
 }
-func (_this *SubjectRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("relationship subject", "array data")
+func (_this *EdgeDescriptionRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("edge description", "array chunk")
 }
-func (_this *PredicateRule) OnBeginDocument(ctx *Context) {
-	wrongType("relationship predicate", "begin document")
+func (_this *EdgeDescriptionRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("edge description", "array data")
 }
-func (_this *PredicateRule) OnEndDocument(ctx *Context) {
-	wrongType("relationship predicate", "end document")
+func (_this *EdgeDestinationRule) OnBeginDocument(ctx *Context) {
+	wrongType("edge destination", "begin document")
 }
-func (_this *PredicateRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("relationship predicate", "version")
+func (_this *EdgeDestinationRule) OnEndDocument(ctx *Context) {
+	wrongType("edge destination", "end document")
 }
-func (_this *PredicateRule) OnNA(ctx *Context) {
-	wrongType("relationship predicate", "NA")
+func (_this *EdgeDestinationRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("edge destination", "version")
 }
-func (_this *PredicateRule) OnNil(ctx *Context) {
-	wrongType("relationship predicate", "Nil")
+func (_this *EdgeDestinationRule) OnNil(ctx *Context) {
+	wrongType("edge destination", "Nil")
 }
-func (_this *PredicateRule) OnKeyableObject(ctx *Context, objType DataType) {
-	wrongType("relationship predicate", objType)
+func (_this *EdgeDestinationRule) OnEnd(ctx *Context) {
+	wrongType("edge destination", "end container")
 }
-func (_this *PredicateRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("relationship predicate", objType)
+func (_this *EdgeDestinationRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("edge destination", "array chunk")
 }
-func (_this *PredicateRule) OnList(ctx *Context) {
-	wrongType("relationship predicate", "list")
+func (_this *EdgeDestinationRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("edge destination", "array data")
 }
-func (_this *PredicateRule) OnMap(ctx *Context) {
-	wrongType("relationship predicate", "map")
+func (_this *NodeRule) OnBeginDocument(ctx *Context) {
+	wrongType("node", "begin document")
 }
-func (_this *PredicateRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("relationship predicate", "markup")
+func (_this *NodeRule) OnEndDocument(ctx *Context) {
+	wrongType("node", "end document")
 }
-func (_this *PredicateRule) OnEnd(ctx *Context) {
-	wrongType("relationship predicate", "end container")
+func (_this *NodeRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("node", "version")
 }
-func (_this *PredicateRule) OnRelationship(ctx *Context) {
-	wrongType("relationship predicate", "relationship")
+func (_this *NodeRule) OnEnd(ctx *Context) {
+	wrongType("node", "end container")
 }
-func (_this *PredicateRule) OnRIDReference(ctx *Context) {
-	wrongType("relationship predicate", "RID reference")
+func (_this *NodeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("node", "array chunk")
 }
-func (_this *PredicateRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("relationship predicate", "array chunk")
-}
-func (_this *PredicateRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("relationship predicate", "array data")
-}
-func (_this *ObjectRule) OnBeginDocument(ctx *Context) {
-	wrongType("relationship object", "begin document")
-}
-func (_this *ObjectRule) OnEndDocument(ctx *Context) {
-	wrongType("relationship object", "end document")
-}
-func (_this *ObjectRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("relationship object", "version")
-}
-func (_this *ObjectRule) OnEnd(ctx *Context) {
-	wrongType("relationship object", "end container")
-}
-func (_this *ObjectRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("relationship object", "array chunk")
-}
-func (_this *ObjectRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("relationship object", "array data")
+func (_this *NodeRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("node", "array data")
 }

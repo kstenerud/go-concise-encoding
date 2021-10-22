@@ -43,21 +43,17 @@ type arrayBuilder struct {
 func newArrayBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, containerType reflect.Type) BuilderGenerator {
 	elemBuilderGenerator := getBuilderGeneratorForType(containerType.Elem())
 	return func(ctx *Context) Builder {
-		builder := &arrayBuilder{
+		return &arrayBuilder{
 			containerType: containerType,
 			elemGenerator: elemBuilderGenerator,
+			container:     reflect.New(containerType).Elem(),
+			elemIndex:     0,
 		}
-		return builder
 	}
 }
 
 func (_this *arrayBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.containerType.Elem())
-}
-
-func (_this *arrayBuilder) reset() {
-	_this.container = reflect.New(_this.containerType).Elem()
-	_this.elemIndex = 0
 }
 
 func (_this *arrayBuilder) advanceElem() reflect.Value {
@@ -156,15 +152,23 @@ func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time
 	return object
 }
 
-func (_this *arrayBuilder) BuildInitiateList(ctx *Context) {
+func (_this *arrayBuilder) BuildNewList(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginListContents(ctx)
 }
 
-func (_this *arrayBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *arrayBuilder) BuildNewMap(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *arrayBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *arrayBuilder) BuildNewNode(ctx *Context) {
+	_this.elemGenerator(ctx).BuildBeginNodeContents(ctx)
+}
+
+func (_this *arrayBuilder) BuildNewEdge(ctx *Context) {
+	_this.elemGenerator(ctx).BuildBeginEdgeContents(ctx)
+}
+
+func (_this *arrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
 }
 
@@ -175,7 +179,6 @@ func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {
 
 func (_this *arrayBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
-	_this.reset()
 }
 
 func (_this *arrayBuilder) BuildFromReference(ctx *Context, id []byte) {

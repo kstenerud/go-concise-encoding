@@ -59,18 +59,23 @@ var (
 	Time           = "BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value"
 	CTime          = "BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value"
 	Ref            = "BuildFromReference(ctx *Context, id []byte)"
-	ListInit       = "BuildInitiateList(ctx *Context)"
-	MapInit        = "BuildInitiateMap(ctx *Context)"
-	MarkupInit     = "BuildInitiateMarkup(ctx *Context, name []byte)"
+	List           = "BuildNewList(ctx *Context)"
+	Map            = "BuildNewMap(ctx *Context)"
+	Markup         = "BuildNewMarkup(ctx *Context, name []byte)"
+	Node           = "BuildNewNode(ctx *Context)"
+	Edge           = "BuildNewEdge(ctx *Context)"
 	End            = "BuildEndContainer(ctx *Context)"
-	List           = "BuildBeginListContents(ctx *Context)"
-	Map            = "BuildBeginMapContents(ctx *Context)"
-	Markup         = "BuildBeginMarkupContents(ctx *Context, name []byte)"
+	ListContents   = "BuildBeginListContents(ctx *Context)"
+	MapContents    = "BuildBeginMapContents(ctx *Context)"
+	MarkupContents = "BuildBeginMarkupContents(ctx *Context, name []byte)"
+	NodeContents   = "BuildBeginNodeContents(ctx *Context)"
+	EdgeContents   = "BuildBeginEdgeContents(ctx *Context)"
 	NotifyFinished = "NotifyChildContainerFinished(ctx *Context, container reflect.Value)"
 
 	allMethods = []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-		BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit,
-		MarkupInit, List, Map, Markup, End, Ref, NotifyFinished}
+		BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map, Markup,
+		Node, Edge, ListContents, MapContents, MarkupContents, NodeContents,
+		EdgeContents, End, Ref, NotifyFinished}
 )
 
 type Builder struct {
@@ -80,8 +85,10 @@ type Builder struct {
 
 var builders = []Builder{
 	{
-		Name:    "array",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, List, End, Ref, NotifyFinished},
+		Name: "array",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, ListContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "bigDecimalFloat",
@@ -117,23 +124,33 @@ var builders = []Builder{
 	},
 	{
 		Name:    "float32Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "float32Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "float64Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "float64Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
-		Name:    "ignore",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, List, End, Map, Markup, Ref, NotifyFinished},
+		Name: "ignore",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, ListContents, End, MapContents, MarkupContents,
+			NodeContents, EdgeContents, Ref, NotifyFinished},
+	},
+	{
+		Name: "ignoreXTimes",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, ListContents, MapContents, MarkupContents,
+			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
 	{
 		Name:    "int",
@@ -141,55 +158,62 @@ var builders = []Builder{
 	},
 	{
 		Name:    "int8Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "int8Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "int16Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "int16Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "int32Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "int32Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "int64Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "int64Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
-		Name:    "interface",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Map, Markup, List, Ref, NotifyFinished},
+		Name: "interface",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, MapContents, MarkupContents, ListContents,
+			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
 	{
-		Name:    "map",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Map, End, Ref, NotifyFinished},
+		Name: "map",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "markup",
-		Methods: []string{Markup, NotifyFinished},
+		Methods: []string{MarkupContents, NotifyFinished},
 	},
 	{
 		Name:    "markupContents",
-		Methods: []string{MarkupInit, Array, SArray, End, NotifyFinished},
+		Methods: []string{Markup, Array, SArray, End, NotifyFinished},
 	},
 	{
-		Name:    "markerObject",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, MapInit, MarkupInit, ListInit, End, NotifyFinished},
+		Name: "markerObject",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, Map,
+			Markup, Node, Edge, List, End, NotifyFinished},
 	},
 	{
 		Name:    "pBigDecimalFloat",
@@ -208,32 +232,40 @@ var builders = []Builder{
 		Methods: []string{Nil, Time, CTime},
 	},
 	{
-		Name:    "ptr",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map, Markup, NotifyFinished},
+		Name: "ptr",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, ListContents,
+			MapContents, MarkupContents, NodeContents, EdgeContents, NotifyFinished},
 	},
 	{
 		Name:    "pRid",
 		Methods: []string{Nil, Array, SArray},
 	},
 	{
-		Name:    "slice",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, List, End, Ref, NotifyFinished},
+		Name: "slice",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, ListContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "string",
 		Methods: []string{Nil, Array, SArray},
 	},
 	{
-		Name:    "struct",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Map, End, Ref, NotifyFinished},
+		Name: "struct",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "time",
 		Methods: []string{Time, CTime},
 	},
 	{
-		Name:    "topLevel",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, NotifyFinished},
+		Name: "topLevel",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, NotifyFinished},
 	},
 	{
 		Name:    "uint",
@@ -241,35 +273,35 @@ var builders = []Builder{
 	},
 	{
 		Name:    "uint8Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "uint8Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "uint16Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "uint16Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "uint32Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "uint32Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "uint64Array",
-		Methods: []string{Array, List},
+		Methods: []string{Array, ListContents},
 	},
 	{
 		Name:    "uint64Slice",
-		Methods: []string{Nil, Array, List},
+		Methods: []string{Nil, Array, ListContents},
 	},
 	{
 		Name:    "rid",
@@ -284,8 +316,16 @@ var builders = []Builder{
 		Methods: []string{Media},
 	},
 	{
-		Name:    "relationship",
-		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat, BigDFloat, UID, Array, SArray, Media, Time, CTime, ListInit, MapInit, MarkupInit, Ref, NotifyFinished},
+		Name: "edge",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, EdgeContents, Ref, NotifyFinished},
+	},
+	{
+		Name: "node",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, NodeContents, Ref, NotifyFinished},
 	},
 }
 

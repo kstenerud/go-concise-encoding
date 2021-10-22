@@ -27,11 +27,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
-type advanceAndDecodeQuotedString struct{}
-
-var global_advanceAndDecodeQuotedString advanceAndDecodeQuotedString
-
-func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
+func advanceAndDecodeQuotedString(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '"'
 
@@ -40,18 +36,7 @@ func (_this advanceAndDecodeQuotedString) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeResourceID struct{}
-
-var global_advanceAndDecodeResourceID advanceAndDecodeResourceID
-
-func (_this advanceAndDecodeResourceID) Run(ctx *DecoderContext) {
-	ctx.AssertHasStructuralWS()
-	ctx.Stream.AdvanceByte() // Advance past '@'
-	if ctx.Stream.ReadByteNoEOF() != '"' {
-		ctx.Stream.UnreadByte()
-		ctx.Stream.unexpectedChar("resource ID")
-	}
-
+func decodeResourceID(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadQuotedString()
 	if ctx.Stream.PeekByteAllowEOF() != ':' {
 		ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
@@ -94,15 +79,11 @@ func finishTypedArray(ctx *DecoderContext, arrayType events.ArrayType, digitType
 	}
 }
 
-type advanceAndDecodeTypedArrayBegin struct{}
-
-var global_advanceAndDecodeTypedArrayBegin advanceAndDecodeTypedArrayBegin
-
 type uintTokenDecoder func(Token, *TextPositionCounter) (v uint64, digitCount int, decodedCount int)
 type intTokenDecoder func(Token, *TextPositionCounter) (v int64, digitCount int, decodedCount int)
 type floatTokenDecoder func(Token, *TextPositionCounter) (v float64, decodedCount int)
 
-func (_this advanceAndDecodeTypedArrayBegin) decodeElementIntAnyType(ctx *DecoderContext) (v int64, success bool) {
+func decodeElementIntAnyType(ctx *DecoderContext) (v int64, success bool) {
 	token := ctx.Stream.ReadToken()
 	// TODO: This needs to check for other bases
 	value, digitCount, decodedCount := token.DecodeSmallDecimalInt(ctx.TextPos)
@@ -110,14 +91,14 @@ func (_this advanceAndDecodeTypedArrayBegin) decodeElementIntAnyType(ctx *Decode
 	return value, digitCount > 0
 }
 
-func (_this advanceAndDecodeTypedArrayBegin) decodeElementIntOctal(ctx *DecoderContext) (v int64, success bool) {
+func decodeElementIntOctal(ctx *DecoderContext) (v int64, success bool) {
 	token := ctx.Stream.ReadToken()
 	value, digitCount, decodedCount := token.DecodeSmallOctalInt(ctx.TextPos)
 	token[decodedCount:].AssertAtEnd(ctx.TextPos, "integer")
 	return value, digitCount > 0
 }
 
-func (_this advanceAndDecodeTypedArrayBegin) Run(ctx *DecoderContext) {
+func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '|'
 
@@ -517,4 +498,23 @@ func decodeArrayUID(ctx *DecoderContext) {
 		ctx.Stream.SkipWhitespace()
 	}
 	finishTypedArray(ctx, events.ArrayTypeUID, "uid", 16, ctx.Scratch)
+}
+
+func advanceAndDecodeComment(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
+	ctx.Stream.AdvanceByte() // Advance past '/'
+
+	b := ctx.Stream.ReadByteNoEOF()
+	switch b {
+	case '/':
+		contents := ctx.Stream.ReadSingleLineComment()
+		ctx.EventReceiver.OnComment(false, contents)
+		ctx.StackDecoder(decodePostInvisible)
+	case '*':
+		contents := ctx.Stream.ReadMultiLineComment()
+		ctx.EventReceiver.OnComment(true, contents)
+		ctx.StackDecoder(decodePostInvisible)
+	default:
+		ctx.Errorf("Unexpected comment initiator: [%c]", b)
+	}
 }

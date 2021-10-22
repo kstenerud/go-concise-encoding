@@ -59,21 +59,25 @@ type Builder interface {
 	BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value
 	BuildFromReference(ctx *Context, id []byte)
 
-	// Signals that a new source container has begun.
+	// Signals that a new container has begun.
 	// This gets triggered from a data event.
-	BuildInitiateList(ctx *Context)
-	BuildInitiateMap(ctx *Context)
-	BuildInitiateMarkup(ctx *Context, name []byte)
+	BuildNewList(ctx *Context)
+	BuildNewMap(ctx *Context)
+	BuildNewMarkup(ctx *Context, name []byte)
+	BuildNewNode(ctx *Context)
+	BuildNewEdge(ctx *Context)
 
-	// Signals that the source container is finished
+	// Signals that the container is finished
 	// This gets triggered from a data event.
 	BuildEndContainer(ctx *Context)
 
-	// Tells this builder to create a new container to receive the source container's objects.
+	// Tells this builder to prepare to receive the new container's contents.
 	// This gets called by the parent builder.
 	BuildBeginListContents(ctx *Context)
 	BuildBeginMapContents(ctx *Context)
 	BuildBeginMarkupContents(ctx *Context, name []byte)
+	BuildBeginNodeContents(ctx *Context)
+	BuildBeginEdgeContents(ctx *Context)
 
 	// Notify that a child builder has finished building a container.
 	// This gets triggered from the child builder when the container has ended and the builder unstacked.

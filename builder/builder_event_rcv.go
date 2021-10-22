@@ -51,7 +51,7 @@ type BuilderEventReceiver struct {
 
 // Create a new builder event receiver that can build objects of dstType.
 // If opts is nil, default options will be used.
-func NewBuilder(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *BuilderEventReceiver {
+func NewBuilderEventReceiver(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *BuilderEventReceiver {
 	_this := &BuilderEventReceiver{}
 	_this.Init(session, dstType, opts)
 	return _this
@@ -100,9 +100,11 @@ func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 // DataEventReceiver Callbacks
 // ---------------------------
 
-func (_this *BuilderEventReceiver) OnBeginDocument()   {}
-func (_this *BuilderEventReceiver) OnVersion(_ uint64) {}
-func (_this *BuilderEventReceiver) OnPadding(_ int)    {}
+func (_this *BuilderEventReceiver) OnBeginDocument()       {}
+func (_this *BuilderEventReceiver) OnVersion(_ uint64)     {}
+func (_this *BuilderEventReceiver) OnPadding(_ int)        {}
+func (_this *BuilderEventReceiver) OnComment(bool, []byte) {}
+
 func (_this *BuilderEventReceiver) OnNil() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 }
@@ -201,22 +203,22 @@ func (_this *BuilderEventReceiver) OnArrayData(data []byte) {
 	_this.context.AddArrayData(data)
 }
 func (_this *BuilderEventReceiver) OnList() {
-	_this.context.CurrentBuilder.BuildInitiateList(&_this.context)
+	_this.context.CurrentBuilder.BuildNewList(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnMap() {
-	_this.context.CurrentBuilder.BuildInitiateMap(&_this.context)
+	_this.context.CurrentBuilder.BuildNewMap(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnMarkup(id []byte) {
-	_this.context.CurrentBuilder.BuildInitiateMarkup(&_this.context, id)
+	_this.context.CurrentBuilder.BuildNewMarkup(&_this.context, id)
 }
-func (_this *BuilderEventReceiver) OnComment() {
-	_this.context.IgnoreNext()
+func (_this *BuilderEventReceiver) OnNode() {
+	_this.context.CurrentBuilder.BuildNewNode(&_this.context)
+}
+func (_this *BuilderEventReceiver) OnEdge() {
+	_this.context.CurrentBuilder.BuildNewEdge(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnEnd() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
-}
-func (_this *BuilderEventReceiver) OnRelationship() {
-	_this.context.BeginRelationship()
 }
 func (_this *BuilderEventReceiver) OnMarker(id []byte) {
 	_this.context.BeginMarkerObject(id)

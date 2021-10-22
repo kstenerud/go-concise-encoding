@@ -175,6 +175,16 @@ func (_this *ptrBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
 	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
 }
 
+func (_this *ptrBuilder) BuildBeginEdgeContents(ctx *Context) {
+	ctx.StackBuilder(_this)
+	_this.elemGenerator(ctx).BuildBeginEdgeContents(ctx)
+}
+
+func (_this *ptrBuilder) BuildBeginNodeContents(ctx *Context) {
+	ctx.StackBuilder(_this)
+	_this.elemGenerator(ctx).BuildBeginNodeContents(ctx)
+}
+
 func (_this *ptrBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	ctx.UnstackBuilderAndNotifyChildFinished(value.Addr())
 }

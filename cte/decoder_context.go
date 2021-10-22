@@ -34,12 +34,14 @@ const (
 	ContainerTypeOther ContainerType = iota
 	ContainerTypeList
 	ContainerTypeMap
+	ContainerTypeNode
 )
 
 var containerTypeNames = []string{
 	ContainerTypeOther: "other",
 	ContainerTypeList:  "list",
 	ContainerTypeMap:   "map",
+	ContainerTypeNode:  "node",
 }
 
 func (_this ContainerType) String() string {
@@ -100,7 +102,7 @@ func (_this *DecoderContext) NotifyStructuralWS() {
 
 func (_this *DecoderContext) DecodeNext() {
 	entry := _this.stack[len(_this.stack)-1]
-	entry.DecoderFunc.Run(_this)
+	entry.DecoderFunc(_this)
 }
 
 func (_this *DecoderContext) ChangeDecoder(decoder DecoderOp) {
@@ -137,16 +139,10 @@ func (_this *DecoderContext) AssertIsInList() {
 	}
 }
 
-func (_this *DecoderContext) BeginComment() {
-	_this.EventReceiver.OnComment()
-	_this.StackDecoder(global_decodeCommentContents)
-}
-
-func (_this *DecoderContext) EndComment() {
-	_this.EventReceiver.OnEnd()
-	entry := _this.UnstackDecoder()
-	if entry.DecoderFunc != global_decodeCommentContents && entry.DecoderFunc != global_decodeMarkupContents {
-		_this.StackDecoder(global_decodePostInvisible)
+func (_this *DecoderContext) AssertIsInNode() {
+	containerType := _this.stack[len(_this.stack)-1].ContainerType
+	if containerType != ContainerTypeNode {
+		panic(fmt.Errorf("Cannot end a node using %v end", containerType))
 	}
 }
 

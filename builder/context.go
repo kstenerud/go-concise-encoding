@@ -106,10 +106,6 @@ func (_this *Context) NotifyReference(lookingForID []byte, valueSetter func(valu
 	_this.referenceFiller.NotifyReference(lookingForID, valueSetter)
 }
 
-func (_this *Context) BeginRelationship() {
-	_this.StackBuilder(generateRelationshipBuilder(_this))
-}
-
 func (_this *Context) BeginMarkerObject(id []byte) {
 	marker := newMarkerObjectBuilder(id, _this.CurrentBuilder)
 	_this.StackBuilder(marker)

@@ -55,8 +55,8 @@ const (
 	cbeTypeUID                       = 0x73
 	cbeTypeReserved74                = 0x74
 	cbeTypeReserved75                = 0x75
-	cbeTypeRelationship              = 0x76
-	cbeTypeComment                   = 0x77
+	cbeTypeEdge                      = 0x76
+	cbeTypeNode                      = 0x77
 	cbeTypeMarkup                    = 0x78
 	cbeTypeMap                       = 0x79
 	cbeTypeList                      = 0x7a

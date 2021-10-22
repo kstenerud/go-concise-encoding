@@ -1,7 +1,7 @@
 Architecture
 ============
 
-This document describes the architecture of this project. As this is the reference implementation of [Concise Encoding](https://concise-encoding.org/), I've done by best to keep it as readable as possible.
+This document describes the architecture of this project. As this is the reference implementation of [Concise Encoding](https://concise-encoding.org/), I've done my best to keep it as readable as possible.
 
 The code is separated into five primary sections:
 
@@ -27,11 +27,11 @@ Code Organization
 | Directory                  | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
 | [builder](builder)         | [Builders](#builders)                                           |
-| [cbe](cbe)                 | [CBE codec](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) |
+| [cbe](cbe)                 | [CBE](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) codec |
 | [ce](ce)                   | Top-level API                                                   |
 | [codegen](codegen)         | Code generator source (generates all `generated-do-not-edit.go` files) |
 | [conversions](conversions) | Data type converters used by builders and codecs                |
-| [cte](cte)                 | [CTE codec](https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md) |
+| [cte](cte)                 | [CTE](https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md) codec |
 | [debug](debug)             | Tools to help with debugging                                    |
 | [events](events)           | [Events](#events), and a "null" event receiver                  |
 | [internal](internal)       | Various tools used internally by the library                    |
@@ -67,14 +67,14 @@ begin document
 end document
 ```
 
-[Iterators](#iterators) consume arbitrary objects and produce a series of events that describe them. [Builders](#builders) do the opposite, consuming events to produce objects. [Codecs](#codecs) serialize and deserialize those events.
+[Iterators](#iterators) consume arbitrary objects and produce a series of events that describe them (depth-first). [Builders](#builders) do the opposite, consuming events to produce objects. [Codecs](#codecs) serialize and deserialize those events.
 
 
 ### Iterators
 
 Iterators inspect go objects to produce data events. They support all primitives, as well as arrays, slices, maps, pointers, and structs, and can handle recursive pointers. All iterators follow a common interface defined in [iterator.go](iterator/iterator.go).
 
-Iterators are accessed via an iterator session, which caches iterators so that already examined go structs and primitives don't need to be regenerated on every call (examining structs via reflection is slow). The iterators themselves are functions, and the cache itself stores generator functions that generate the iterator functions.
+Iterators are accessed via an iterator session, which caches iterators so that already examined go structs and primitives don't need to be regenerated on every call (examining structs via reflection is slow). The iterators themselves are functions, and the cache stores generator functions that generate the iterator functions.
 
 The [root iterator](iterator/iterator_root.go) acts as a top-level iterator, and coordinates iteration by constructing more specialized iterators depending on the object it's tasked with iterating over.
 
@@ -85,7 +85,7 @@ Builders are the opposite of iterators, ingesting data events to produce go obje
 
 [`BuilderEventReceiver`](builder/builder_event_rcv.go) adapts data events to builder commands, which are then farmed out to builders to build go objects.
 
-Builders are accessed via a builder session, which like the iterator session caches builders (due to the slowness of reflection). The cache itself stores builder generator functions.
+Builders are accessed via a builder session, which like the iterator session caches builders (due to the slowness of reflection). The cache stores builder generator functions.
 
 The [reference filler](builder/reference_filler.go) maintains a list of outstanding [markers](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#marker) and [references](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#reference), filling in referenced data as it becomes available.
 
@@ -108,6 +108,8 @@ Secondary Sections
 
 The [codegen](codegen) directory contains all of the code to generate the more tedious parts of the library. To use it, simply run `go build` inside the [codegen](codegen) directory and then run `./codegen`. It will create/replace files in various places called `generated-do-not-edit.go`. To generate the Unicode character handling code, you'll also need the file `ucd.all.flat.xml` from https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.flat.zip
 
+All of the generated code is checked in to the repository, so you won't need to run the generator unless you actually modify the generator code itself, or need to ingest an updated `ucd.all.flat.xml`.
+
 ### Types
 
 The [types](types) directory contains the Concise Encoding types that are not present in the standard Go library:
@@ -115,7 +117,8 @@ The [types](types) directory contains the Concise Encoding types that are not pr
 - UID
 - Media
 - Markup
-- Relationship
+- Edge
+- Node
 
 ### Debug Helpers
 

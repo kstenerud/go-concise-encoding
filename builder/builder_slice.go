@@ -45,22 +45,20 @@ func newSliceBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter,
 	builderGenerator := getBuilderGeneratorForType(dstType.Elem())
 
 	return func(ctx *Context) Builder {
-		builder := &sliceBuilder{
+		container := reflect.MakeSlice(dstType, 0, defaultSliceCap)
+		ppContainer := new(*reflect.Value)
+		*ppContainer = &container
+
+		return &sliceBuilder{
 			dstType:       dstType,
 			elemGenerator: builderGenerator,
+			ppContainer:   ppContainer,
 		}
-		return builder
 	}
 }
 
 func (_this *sliceBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.elemGenerator)
-}
-
-func (_this *sliceBuilder) reset() {
-	container := reflect.MakeSlice(_this.dstType, 0, defaultSliceCap)
-	_this.ppContainer = new(*reflect.Value)
-	*_this.ppContainer = &container
 }
 
 func (_this *sliceBuilder) newElem() reflect.Value {
@@ -178,16 +176,24 @@ func (_this *sliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time
 	return object
 }
 
-func (_this *sliceBuilder) BuildInitiateList(ctx *Context) {
+func (_this *sliceBuilder) BuildNewList(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginListContents(ctx)
 }
 
-func (_this *sliceBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *sliceBuilder) BuildNewMap(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *sliceBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *sliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *sliceBuilder) BuildNewNode(ctx *Context) {
+	_this.elemGenerator(ctx).BuildBeginNodeContents(ctx)
+}
+
+func (_this *sliceBuilder) BuildNewEdge(ctx *Context) {
+	_this.elemGenerator(ctx).BuildBeginEdgeContents(ctx)
 }
 
 func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {
@@ -197,7 +203,6 @@ func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {
 
 func (_this *sliceBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
-	_this.reset()
 }
 
 func (_this *sliceBuilder) BuildFromReference(ctx *Context, id []byte) {

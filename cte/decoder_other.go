@@ -25,23 +25,14 @@ import (
 	"math/big"
 
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
-type decodeInvalidChar struct{}
-
-var global_decodeInvalidChar decodeInvalidChar
-
-func (_this decodeInvalidChar) Run(ctx *DecoderContext) {
+func decodeInvalidChar(ctx *DecoderContext) {
 	ctx.Errorf("Unexpected [%v]", ctx.DescribeCurrentChar())
 }
 
-type decodeWhitespace struct{}
-
-var global_decodeWhitespace decodeWhitespace
-
-func (_this decodeWhitespace) Run(ctx *DecoderContext) {
+func decodeWhitespace(ctx *DecoderContext) {
 	if ctx.Stream.PeekByteAllowEOF().HasProperty(chars.StructWS) {
 		ctx.NotifyStructuralWS()
 	}
@@ -49,33 +40,21 @@ func (_this decodeWhitespace) Run(ctx *DecoderContext) {
 	ctx.Stream.SkipWhitespace()
 }
 
-type decodeByFirstChar struct{}
-
-var global_decodeByFirstChar decodeByFirstChar
-
-func (_this decodeByFirstChar) Run(ctx *DecoderContext) {
-	global_decodeWhitespace.Run(ctx)
+func decodeByFirstChar(ctx *DecoderContext) {
+	decodeWhitespace(ctx)
 	b := ctx.Stream.PeekByteAllowEOF()
 	decoderOp := decoderOpsByFirstChar[b]
-	decoderOp.Run(ctx)
+	decoderOp(ctx)
 }
 
-type decodePostInvisible struct{}
-
-var global_decodePostInvisible decodePostInvisible
-
-func (_this decodePostInvisible) Run(ctx *DecoderContext) {
+func decodePostInvisible(ctx *DecoderContext) {
 	ctx.UnstackDecoder()
-	global_decodeByFirstChar.Run(ctx)
+	decodeByFirstChar(ctx)
 }
 
-type decodeDocumentBegin struct{}
-
-var global_decodeDocumentBegin decodeDocumentBegin
-
-func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
+func decodeDocumentBegin(ctx *DecoderContext) {
 	// Technically disallowed, but we'll support it anyway.
-	global_decodeWhitespace.Run(ctx)
+	decodeWhitespace(ctx)
 
 	if b := ctx.Stream.ReadByteNoEOF(); b != 'c' && b != 'C' {
 		ctx.Errorf(`Expected document to begin with "c" but got [%v]`, ctx.DescribeCurrentChar())
@@ -92,38 +71,26 @@ func (_this decodeDocumentBegin) Run(ctx *DecoderContext) {
 		version = 0
 	}
 
-	global_decodeWhitespace.Run(ctx)
+	decodeWhitespace(ctx)
 	ctx.AssertHasStructuralWS()
 
 	ctx.EventReceiver.OnBeginDocument()
 	ctx.EventReceiver.OnVersion(version)
-	ctx.ChangeDecoder(global_decodeTopLevel)
+	ctx.ChangeDecoder(decodeTopLevel)
 }
 
-type decodeTopLevel struct{}
-
-var global_decodeTopLevel decodeTopLevel
-
-func (_this decodeTopLevel) Run(ctx *DecoderContext) {
+func decodeTopLevel(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
-	ctx.ChangeDecoder(global_decodeEndDocument)
-	global_decodeByFirstChar.Run(ctx)
+	ctx.ChangeDecoder(decodeEndDocument)
+	decodeByFirstChar(ctx)
 }
 
-type decodeEndDocument struct{}
-
-var global_decodeEndDocument decodeEndDocument
-
-func (_this decodeEndDocument) Run(ctx *DecoderContext) {
+func decodeEndDocument(ctx *DecoderContext) {
 	ctx.EventReceiver.OnEndDocument()
 	ctx.IsDocumentComplete = true
 }
 
-type decodeNumericPositive struct{}
-
-var global_decodeNumericPositive decodeNumericPositive
-
-func (_this decodeNumericPositive) Run(ctx *DecoderContext) {
+func decodeNumericPositive(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 	token.AssertNotEmpty(ctx.TextPos, "numeric")
@@ -172,22 +139,14 @@ func reinterpretDecAsHex(v uint64) uint64 {
 	return result
 }
 
-type decodeUID struct{}
-
-var global_decodeUID decodeUID
-
-func (_this decodeUID) Run(ctx *DecoderContext) {
+func decodeUID(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 	ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeNumericNegative struct{}
-
-var global_advanceAndDecodeNumericNegative advanceAndDecodeNumericNegative
-
-func (_this advanceAndDecodeNumericNegative) decode0Based(ctx *DecoderContext, token Token) {
+func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 	sign := -1
 
 	// 0
@@ -230,7 +189,7 @@ func (_this advanceAndDecodeNumericNegative) decode0Based(ctx *DecoderContext, t
 	}
 }
 
-func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
+func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '-'
 	sign := -1
@@ -240,7 +199,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 
 	switch token[0] {
 	case '0':
-		_this.decode0Based(ctx, token)
+		decodeTokenAsNegative0Based(ctx, token)
 		ctx.RequireStructuralWS()
 		return
 	case 'i', 'I':
@@ -277,11 +236,7 @@ func (_this advanceAndDecodeNumericNegative) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type decode0Based struct{}
-
-var global_decode0Based decode0Based
-
-func (_this decode0Based) Run(ctx *DecoderContext) {
+func decode0Based(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	// Assumption: First character is 0
 
@@ -344,11 +299,7 @@ func (_this decode0Based) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type decodeFalseOrUID struct{}
-
-var global_decodeFalseOrUID decodeFalseOrUID
-
-func (_this decodeFalseOrUID) Run(ctx *DecoderContext) {
+func decodeFalseOrUID(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 
@@ -370,11 +321,7 @@ func (_this decodeFalseOrUID) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type decodeNamedValueI struct{}
-
-var global_decodeNamedValueI decodeNamedValueI
-
-func (_this decodeNamedValueI) Run(ctx *DecoderContext) {
+func decodeNamedValueI(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
@@ -386,11 +333,7 @@ func (_this decodeNamedValueI) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type decodeNamedValueN struct{}
-
-var global_decodeNamedValueN decodeNamedValueN
-
-func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
+func decodeNamedValueN(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
@@ -400,7 +343,7 @@ func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 			ctx.UnexpectedChar("NA")
 		}
 		ctx.EventReceiver.OnNA()
-		global_decodeByFirstChar.Run(ctx)
+		decodeByFirstChar(ctx)
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
 	case "nil":
@@ -411,11 +354,7 @@ func (_this decodeNamedValueN) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type decodeNamedValueS struct{}
-
-var global_decodeNamedValueS decodeNamedValueS
-
-func (_this decodeNamedValueS) Run(ctx *DecoderContext) {
+func decodeNamedValueS(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
@@ -427,11 +366,7 @@ func (_this decodeNamedValueS) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type decodeNamedValueT struct{}
-
-var global_decodeNamedValueT decodeNamedValueT
-
-func (_this decodeNamedValueT) Run(ctx *DecoderContext) {
+func decodeNamedValueT(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
@@ -443,11 +378,7 @@ func (_this decodeNamedValueT) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeConstant struct{}
-
-var global_advanceAndDecodeConstant advanceAndDecodeConstant
-
-func (_this advanceAndDecodeConstant) Run(ctx *DecoderContext) {
+func advanceAndDecodeConstant(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '#'
 
@@ -455,11 +386,7 @@ func (_this advanceAndDecodeConstant) Run(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-type advanceAndDecodeMarker struct{}
-
-var global_advanceAndDecodeMarker advanceAndDecodeMarker
-
-func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
+func advanceAndDecodeMarker(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
@@ -468,24 +395,34 @@ func (_this advanceAndDecodeMarker) Run(ctx *DecoderContext) {
 		ctx.Errorf("Missing colon between marker ID and marked value")
 	}
 	ctx.Stream.AdvanceByte()
-	global_decodeByFirstChar.Run(ctx)
+	decodeByFirstChar(ctx)
 }
 
-type advanceAndDecodeReference struct{}
-
-var global_advanceAndDecodeReference advanceAndDecodeReference
-
-func (_this advanceAndDecodeReference) Run(ctx *DecoderContext) {
+func advanceAndDecodeReference(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
 	if ctx.Stream.PeekByteNoEOF() == '@' {
 		ctx.EventReceiver.OnRIDReference()
-		global_advanceAndDecodeResourceID.Run(ctx)
+		advanceAndDecodeEdgeOrResourceID(ctx)
 		return
 	}
 
 	ctx.EventReceiver.OnReference(ctx.Stream.ReadMarkerIdentifier())
+}
+
+func advanceAndDecodeEdgeOrResourceID(ctx *DecoderContext) {
+	ctx.AssertHasStructuralWS()
+	ctx.Stream.AdvanceByte() // Advance past '@'
+	switch ctx.Stream.ReadByteNoEOF() {
+	case '"':
+		decodeResourceID(ctx)
+	case '(':
+		decodeEdgeBegin(ctx)
+	default:
+		ctx.Stream.UnreadByte()
+		ctx.UnexpectedChar("edge or resource ID")
+	}
 }
 
 // ===========================================================================

@@ -55,9 +55,13 @@ func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, m
 
 	return func(ctx *Context) Builder {
 		builder := &mapBuilder{
-			mapType:      mapType,
-			kvTypes:      kvTypes,
-			kvGenerators: kvGenerators,
+			mapType:         mapType,
+			kvTypes:         kvTypes,
+			kvGenerators:    kvGenerators,
+			container:       reflect.MakeMap(mapType),
+			builderIndex:    kvBuilderKey,
+			nextGenerator:   kvGenerators[kvBuilderKey],
+			nextStoreMethod: mapBuilderKVStoreMethods[kvBuilderKey],
 		}
 		return builder
 	}
@@ -65,14 +69,6 @@ func newMapBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, m
 
 func (_this *mapBuilder) String() string {
 	return fmt.Sprintf("%v<%v:%v>", reflect.TypeOf(_this), _this.kvGenerators[0], _this.kvGenerators[1])
-}
-
-func (_this *mapBuilder) reset() {
-	_this.container = reflect.MakeMap(_this.mapType)
-	_this.key = reflect.Value{}
-	_this.builderIndex = kvBuilderKey
-	_this.nextGenerator = _this.kvGenerators[_this.builderIndex]
-	_this.nextStoreMethod = mapBuilderKVStoreMethods[_this.builderIndex]
 }
 
 func (_this *mapBuilder) storeKey(value reflect.Value) {
@@ -210,16 +206,24 @@ func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value compact_time.T
 	return object
 }
 
-func (_this *mapBuilder) BuildInitiateList(ctx *Context) {
+func (_this *mapBuilder) BuildNewList(ctx *Context) {
 	_this.nextGenerator(ctx).BuildBeginListContents(ctx)
 }
 
-func (_this *mapBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *mapBuilder) BuildNewMap(ctx *Context) {
 	_this.nextGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *mapBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *mapBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	_this.nextGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *mapBuilder) BuildNewEdge(ctx *Context) {
+	_this.nextGenerator(ctx).BuildBeginEdgeContents(ctx)
+}
+
+func (_this *mapBuilder) BuildNewNode(ctx *Context) {
+	_this.nextGenerator(ctx).BuildBeginNodeContents(ctx)
 }
 
 func (_this *mapBuilder) BuildEndContainer(ctx *Context) {
@@ -229,7 +233,6 @@ func (_this *mapBuilder) BuildEndContainer(ctx *Context) {
 
 func (_this *mapBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
-	_this.reset()
 }
 
 func (_this *mapBuilder) BuildFromReference(ctx *Context, id []byte) {

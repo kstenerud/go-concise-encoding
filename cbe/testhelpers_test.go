@@ -63,8 +63,8 @@ const (
 	typeUID          = 0x73
 	typeReserved74   = 0x74
 	typeReserved75   = 0x75
-	typeRelationship = 0x76
-	typeComment      = 0x77
+	typeEdge         = 0x76
+	typeNode         = 0x77
 	typeMarkup       = 0x78
 	typeMap          = 0x79
 	typeList         = 0x7a
@@ -230,8 +230,8 @@ func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
-func CMT() *test.TEvent                      { return test.CMT() }
-func REL() *test.TEvent                      { return test.REL() }
+func NODE() *test.TEvent                     { return test.NODE() }
+func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }

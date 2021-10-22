@@ -179,7 +179,7 @@ func (_this *Reader) TokenReadByteAllowEOF() chars.ByteWithEOF {
 	return b
 }
 
-func (_this *Reader) TokenReadUntilAndIncludingByte(untilByte byte) {
+func (_this *Reader) TokenReadUntilExcludingByte(untilByte byte) {
 	for {
 		b := _this.ReadByteNoEOF()
 		if b == untilByte {
@@ -439,30 +439,35 @@ func trimWhitespaceMarkupEnd(str []byte) []byte {
 
 func (_this *Reader) ReadSingleLineComment() []byte {
 	_this.TokenBegin()
-	_this.TokenReadUntilAndIncludingByte('\n')
+	_this.TokenReadUntilExcludingByte('\n')
 	contents := _this.TokenGet()
+	if len(contents) > 0 && contents[len(contents)-1] == '\r' {
+		contents = contents[:len(contents)-1]
+	}
 
-	return trimWhitespace(contents)
+	return contents
 }
 
-func (_this *Reader) ReadMultilineComment() ([]byte, nextType) {
+func (_this *Reader) ReadMultiLineComment() []byte {
 	_this.TokenBegin()
-	lastByte := _this.TokenReadByteNoEOF()
+	depth := 1
+	b2 := _this.TokenReadByteNoEOF()
 
 	for {
-		firstByte := lastByte
-		lastByte = _this.TokenReadByteNoEOF()
+		b1 := b2
+		b2 = _this.TokenReadByteNoEOF()
 
-		if firstByte == '*' && lastByte == '/' {
-			_this.TokenStripLastBytes(2)
-			contents := _this.TokenGet()
-			return trimWhitespace(contents), nextIsCommentEnd
-		}
-
-		if firstByte == '/' && lastByte == '*' {
-			_this.TokenStripLastBytes(2)
-			contents := _this.TokenGet()
-			return trimWhitespace(contents), nextIsCommentBegin
+		if b1 == '/' && b2 == '*' {
+			depth++
+			b2 = _this.TokenReadByteNoEOF()
+		} else if b1 == '*' && b2 == '/' {
+			depth--
+			if depth <= 0 {
+				_this.TokenStripLastBytes(2)
+				contents := _this.TokenGet()
+				return contents
+			}
+			b2 = _this.TokenReadByteNoEOF()
 		}
 	}
 }
@@ -482,7 +487,7 @@ func (_this *Reader) ReadMarkupContent() ([]byte, nextType) {
 			switch _this.TokenReadByteAllowEOF() {
 			case '*':
 				_this.TokenStripLastBytes(2)
-				return trimWhitespaceMarkupContent(_this.TokenGet()), nextIsCommentBegin
+				return trimWhitespaceMarkupContent(_this.TokenGet()), nextIsMultiLineComment
 			case '/':
 				_this.TokenStripLastBytes(2)
 				return trimWhitespaceMarkupContent(_this.TokenGet()), nextIsSingleLineComment
@@ -502,8 +507,7 @@ func (_this *Reader) ReadMarkupContent() ([]byte, nextType) {
 type nextType int
 
 const (
-	nextIsCommentBegin nextType = iota
-	nextIsCommentEnd
+	nextIsMultiLineComment nextType = iota
 	nextIsSingleLineComment
 	nextIsMarkupBegin
 	nextIsMarkupEnd

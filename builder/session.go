@@ -87,7 +87,7 @@ func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderO
 		t = common.TypeInterface
 	}
 
-	return NewBuilder(_this, t, opts)
+	return NewBuilderEventReceiver(_this, t, opts)
 }
 
 // Register a specific builder for a type.
@@ -218,8 +218,10 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 			return generateMediaBuilder
 		case common.TypeMarkup:
 			return generateMarkupBuilder
-		case common.TypeRelationship:
-			return generateRelationshipBuilder
+		case common.TypeEdge:
+			return generateEdgeBuilder
+		case common.TypeNode:
+			return generateNodeBuilder
 		default:
 			return newStructBuilderGenerator(_this.GetBuilderGeneratorForType, dstType)
 		}
@@ -246,6 +248,8 @@ func (_this *Session) defaultBuilderGeneratorForType(dstType reflect.Type) Build
 var rootSession Session
 var interfaceSliceBuilderGenerator BuilderGenerator
 var interfaceMapBuilderGenerator BuilderGenerator
+var interfaceEdgeBuilderGenerator BuilderGenerator
+var interfaceNodeBuilderGenerator BuilderGenerator
 var listToUint8SliceGenerator BuilderGenerator
 var listToUint16SliceGenerator BuilderGenerator
 var listToUint32SliceGenerator BuilderGenerator
@@ -281,6 +285,8 @@ func init() {
 
 	interfaceMapBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceMap)
 	interfaceSliceBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceSlice)
+	interfaceEdgeBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceEdge)
+	interfaceNodeBuilderGenerator = rootSession.GetBuilderGeneratorForType(common.TypeInterfaceNode)
 	listToUint8SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint8{}))
 	listToUint16SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint16{}))
 	listToUint32SliceGenerator = newSliceBuilderGenerator(rootSession.GetBuilderGeneratorForType, reflect.TypeOf([]uint32{}))

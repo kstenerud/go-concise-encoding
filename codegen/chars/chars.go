@@ -31,7 +31,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
-
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
 

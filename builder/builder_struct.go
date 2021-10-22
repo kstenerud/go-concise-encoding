@@ -126,26 +126,22 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 	}
 
 	return func(ctx *Context) Builder {
-		builder := &structBuilder{
+		return &structBuilder{
 			dstType:                dstType,
 			generatorDescs:         generatorDescs,
 			nameBuilderGenerator:   nameBuilderGenerator,
 			ignoreBuilderGenerator: ignoreBuilderGenerator,
+			nextBuilderGenerator:   nameBuilderGenerator,
+			container:              reflect.New(dstType).Elem(),
+			nextValue:              reflect.Value{},
+			nextIsKey:              true,
+			nextIsIgnored:          false,
 		}
-		return builder
 	}
 }
 
 func (_this *structBuilder) String() string {
 	return fmt.Sprintf("%v<%v>", reflect.TypeOf(_this), _this.dstType)
-}
-
-func (_this *structBuilder) reset() {
-	_this.nextBuilderGenerator = _this.nameBuilderGenerator
-	_this.container = reflect.New(_this.dstType).Elem()
-	_this.nextValue = reflect.Value{}
-	_this.nextIsKey = true
-	_this.nextIsIgnored = false
 }
 
 func (_this *structBuilder) swapKeyValue() {
@@ -300,16 +296,24 @@ func (_this *structBuilder) BuildFromCompactTime(ctx *Context, value compact_tim
 	return object
 }
 
-func (_this *structBuilder) BuildInitiateList(ctx *Context) {
+func (_this *structBuilder) BuildNewList(ctx *Context) {
 	_this.nextBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
-func (_this *structBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *structBuilder) BuildNewMap(ctx *Context) {
 	_this.nextBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *structBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *structBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	_this.nextBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *structBuilder) BuildNewNode(ctx *Context) {
+	_this.nextBuilderGenerator(ctx).BuildBeginNodeContents(ctx)
+}
+
+func (_this *structBuilder) BuildNewEdge(ctx *Context) {
+	_this.nextBuilderGenerator(ctx).BuildBeginEdgeContents(ctx)
 }
 
 func (_this *structBuilder) BuildEndContainer(ctx *Context) {
@@ -319,7 +323,6 @@ func (_this *structBuilder) BuildEndContainer(ctx *Context) {
 
 func (_this *structBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
-	_this.reset()
 }
 
 func (_this *structBuilder) BuildFromReference(ctx *Context, id []byte) {

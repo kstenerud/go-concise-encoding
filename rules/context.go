@@ -138,10 +138,6 @@ func (_this *Context) EndContainer() {
 	_this.endContainerLike()
 }
 
-func (_this *Context) BeginRelationship() {
-	_this.stackRule(&subjectRule, DataTypeRelationship)
-}
-
 func (_this *Context) BeginNA() {
 	_this.stackRule(&naRule, DataTypeNA)
 }
@@ -150,20 +146,20 @@ func (_this *Context) BeginList() {
 	_this.beginContainer(&listRule, DataTypeList)
 }
 
-func (_this *Context) BeginResourceList() {
-	_this.beginContainer(&resourceListRule, DataTypeList)
-}
-
 func (_this *Context) BeginMap() {
 	_this.beginContainer(&mapKeyRule, DataTypeMap)
 }
 
-func (_this *Context) BeginMarkup(identifier []byte) {
-	_this.beginContainer(&markupKeyRule, DataTypeMarkup)
+func (_this *Context) BeginEdge() {
+	_this.stackRule(&edgeSourceRule, DataTypeEdge)
 }
 
-func (_this *Context) BeginComment() {
-	_this.beginContainer(&commentRule, DataTypeComment)
+func (_this *Context) BeginNode() {
+	_this.beginContainer(&nodeRule, DataTypeList)
+}
+
+func (_this *Context) BeginMarkup(identifier []byte) {
+	_this.beginContainer(&markupKeyRule, DataTypeMarkup)
 }
 
 func (_this *Context) BeginMarkerKeyable(id []byte, dataType DataType) {

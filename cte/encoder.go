@@ -75,6 +75,14 @@ func (_this *EncoderEventReceiver) OnPadding(count int) {
 	// Nothing to do
 }
 
+func (_this *EncoderEventReceiver) OnComment(isMultiline bool, contents []byte) {
+	_this.context.BeforeComment()
+	_this.context.Stream.WriteCommentBegin(isMultiline)
+	_this.context.Stream.WriteBytes(contents)
+	_this.context.Stream.WriteCommentEnd(isMultiline)
+	_this.context.AfterComment(isMultiline)
+}
+
 func (_this *EncoderEventReceiver) OnNil() {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteNil()
@@ -226,21 +234,20 @@ func (_this *EncoderEventReceiver) OnMarkup(id []byte) {
 	_this.context.Stack(markupKeyDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnComment() {
-	_this.context.BeforeComment()
-	_this.context.BeginContainer()
-	_this.context.Stream.WriteCommentBegin()
-	_this.context.Stack(commentDecorator)
+func (_this *EncoderEventReceiver) OnEdge() {
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteEdgeBegin()
+	_this.context.Stack(edgeSourceDecorator)
+}
+
+func (_this *EncoderEventReceiver) OnNode() {
+	_this.context.BeforeValue()
+	_this.context.Stream.WriteNodeBegin()
+	_this.context.Stack(nodeValueDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnEnd() {
 	_this.context.EndContainer()
-}
-
-func (_this *EncoderEventReceiver) OnRelationship() {
-	_this.context.BeforeValue()
-	_this.context.Stream.WriteRelationshipBegin()
-	_this.context.Stack(subjectDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnMarker(id []byte) {

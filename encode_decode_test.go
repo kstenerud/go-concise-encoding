@@ -194,44 +194,34 @@ func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
 			test.RemoveEvents(test.ValidMarkupContents, test.ArrayBeginTypes)))
 }
 
-func TestEncodeDecodeAllValidCommentContents(t *testing.T) {
-	assertEncodeDecodeEventStreams(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer), L()},
-			[]*test.TEvent{CMT()},
-			[]*test.TEvent{E()},
-			[]*test.TEvent{E(), ED()},
-			test.RemoveEvents(test.ValidCommentValues, test.ArrayBeginTypes)))
-}
-
-func TestEncodeDecodeAllValidRelationshipSubject(t *testing.T) {
+func TestEncodeDecodeAllValidEdgeSources(t *testing.T) {
 	assertEncodeDecodeEventStreams(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL()},
+			[]*test.TEvent{EDGE()},
 			[]*test.TEvent{RID("x"), I(1)},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidSubjects, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidEdgeSources, test.ArrayBeginTypes)))
 }
 
-func TestEncodeDecodeAllValidRelationshipPredicate(t *testing.T) {
+func TestEncodeDecodeAllValidEdgeDescriptions(t *testing.T) {
 	assertEncodeDecodeEventStreams(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), RID("x")},
+			[]*test.TEvent{EDGE(), RID("x")},
 			[]*test.TEvent{I(1)},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidPredicates, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidEdgeDescriptions, test.ArrayBeginTypes)))
 }
 
-func TestEncodeDecodeAllValidRelationshipObject(t *testing.T) {
+func TestEncodeDecodeAllValidEdgeDestinations(t *testing.T) {
 	assertEncodeDecodeEventStreams(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{REL(), RID("x"), RID("y")},
+			[]*test.TEvent{EDGE(), RID("x"), RID("y")},
 			[]*test.TEvent{},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidObjects, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidEdgeDestinations, test.ArrayBeginTypes)))
 }
 
 func TestDecodeEncodeMapReferences(t *testing.T) {

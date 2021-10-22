@@ -33,7 +33,7 @@ import (
 )
 
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
-// are properly built. See BuildInitiateList and BuildInitiateMap.
+// are properly built. See BuildNewList and BuildNewMap.
 type topLevelBuilder struct {
 	builderGenerator          BuilderGenerator
 	containerFinishedCallback func(value reflect.Value)
@@ -123,7 +123,7 @@ func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value compact_t
 	return dst
 }
 
-func (_this *topLevelBuilder) BuildInitiateList(ctx *Context) {
+func (_this *topLevelBuilder) BuildNewList(ctx *Context) {
 	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf((*interfaceBuilder)(nil)) {
 		_this.builderGenerator = interfaceSliceBuilderGenerator
 	}
@@ -131,14 +131,30 @@ func (_this *topLevelBuilder) BuildInitiateList(ctx *Context) {
 	builder.BuildBeginListContents(ctx)
 }
 
-func (_this *topLevelBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *topLevelBuilder) BuildNewMap(ctx *Context) {
 	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf(interfaceBuilder{}) {
 		_this.builderGenerator = interfaceMapBuilderGenerator
 	}
 	_this.builderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *topLevelBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *topLevelBuilder) BuildNewNode(ctx *Context) {
+	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf((*interfaceBuilder)(nil)) {
+		_this.builderGenerator = interfaceNodeBuilderGenerator
+	}
+	builder := _this.builderGenerator(ctx)
+	builder.BuildBeginNodeContents(ctx)
+}
+
+func (_this *topLevelBuilder) BuildNewEdge(ctx *Context) {
+	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf((*interfaceBuilder)(nil)) {
+		_this.builderGenerator = interfaceEdgeBuilderGenerator
+	}
+	builder := _this.builderGenerator(ctx)
+	builder.BuildBeginEdgeContents(ctx)
+}
+
+func (_this *topLevelBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf(interfaceBuilder{}) {
 		_this.builderGenerator = generateMarkupBuilder
 	}

@@ -119,8 +119,8 @@ var (
 	EvL      = test.EvL
 	EvM      = test.EvM
 	EvMUP    = test.EvMUP
-	EvCMT    = test.EvCMT
-	EvREL    = test.EvREL
+	EvNODE   = test.EvNODE
+	EvEDGE   = test.EvEDGE
 	EvE      = test.EvE
 	EvMARK   = test.EvMARK
 	EvREF    = test.EvREF
@@ -178,6 +178,7 @@ func V(v uint64) *test.TEvent                { return test.V(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func N() *test.TEvent                        { return test.N() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
+func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
@@ -228,8 +229,8 @@ func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
-func CMT() *test.TEvent                      { return test.CMT() }
-func REL() *test.TEvent                      { return test.REL() }
+func NODE() *test.TEvent                     { return test.NODE() }
+func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
@@ -252,6 +253,10 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
 const rulesCodecVersion = 1
 
 var uint8Type = reflect.TypeOf(uint8(0))
+
+func assertEvents(t *testing.T, allEvents ...*test.TEvent) {
+	assertEventsSucceed(t, NewRules(events.NewNullEventReceiver(), nil), allEvents...)
+}
 
 func assertEventsSucceed(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
 	test.AssertNoPanic(t, events, func() {

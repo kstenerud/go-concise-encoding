@@ -41,8 +41,9 @@ type markerObjectBuilder struct {
 
 func newMarkerObjectBuilder(id []byte, child Builder) *markerObjectBuilder {
 	return &markerObjectBuilder{
-		id:    id,
-		child: child,
+		isContainer: false,
+		id:          id,
+		child:       child,
 	}
 }
 
@@ -147,19 +148,29 @@ func (_this *markerObjectBuilder) BuildFromCompactTime(ctx *Context, value compa
 	return object
 }
 
-func (_this *markerObjectBuilder) BuildInitiateList(ctx *Context) {
+func (_this *markerObjectBuilder) BuildNewList(ctx *Context) {
 	_this.isContainer = true
-	_this.child.BuildInitiateList(ctx)
+	_this.child.BuildNewList(ctx)
 }
 
-func (_this *markerObjectBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *markerObjectBuilder) BuildNewMap(ctx *Context) {
 	_this.isContainer = true
-	_this.child.BuildInitiateMap(ctx)
+	_this.child.BuildNewMap(ctx)
 }
 
-func (_this *markerObjectBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *markerObjectBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	_this.isContainer = true
-	_this.child.BuildInitiateMarkup(ctx, name)
+	_this.child.BuildNewMarkup(ctx, name)
+}
+
+func (_this *markerObjectBuilder) BuildNewEdge(ctx *Context) {
+	_this.isContainer = true
+	_this.child.BuildNewEdge(ctx)
+}
+
+func (_this *markerObjectBuilder) BuildNewNode(ctx *Context) {
+	_this.isContainer = true
+	_this.child.BuildNewNode(ctx)
 }
 
 func (_this *markerObjectBuilder) BuildEndContainer(ctx *Context) {

@@ -98,6 +98,7 @@ func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func NA() *test.TEvent                       { return test.NA() }
 func N() *test.TEvent                        { return test.N() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
+func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
@@ -147,8 +148,8 @@ func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
 func MUP(id string) *test.TEvent             { return test.MUP(id) }
-func CMT() *test.TEvent                      { return test.CMT() }
-func REL() *test.TEvent                      { return test.REL() }
+func EDGE() *test.TEvent                     { return test.EDGE() }
+func NODE() *test.TEvent                     { return test.NODE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }

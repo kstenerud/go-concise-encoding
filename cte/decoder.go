@@ -31,9 +31,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type DecoderOp interface {
-	Run(*DecoderContext)
-}
+type DecoderOp func(*DecoderContext)
 
 type Decoder struct {
 	opts options.CTEDecoderOptions
@@ -70,7 +68,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 
 	ctx := DecoderContext{}
 	ctx.Init(&_this.opts, reader, eventReceiver)
-	ctx.StackDecoder(global_decodeDocumentBegin)
+	ctx.StackDecoder(decodeDocumentBegin)
 
 	for !ctx.IsDocumentComplete {
 		ctx.DecodeNext()
@@ -86,49 +84,50 @@ var decoderOpsByFirstChar [0x101]DecoderOp
 
 func init() {
 	for i := 0; i < 0x100; i++ {
-		decoderOpsByFirstChar[i] = global_decodeInvalidChar
+		decoderOpsByFirstChar[i] = decodeInvalidChar
 	}
 
-	decoderOpsByFirstChar['\r'] = global_decodeWhitespace
-	decoderOpsByFirstChar['\n'] = global_decodeWhitespace
-	decoderOpsByFirstChar['\t'] = global_decodeWhitespace
-	decoderOpsByFirstChar[' '] = global_decodeWhitespace
-	decoderOpsByFirstChar['"'] = global_advanceAndDecodeQuotedString
-	decoderOpsByFirstChar['0'] = global_decode0Based
+	decoderOpsByFirstChar['\r'] = decodeWhitespace
+	decoderOpsByFirstChar['\n'] = decodeWhitespace
+	decoderOpsByFirstChar['\t'] = decodeWhitespace
+	decoderOpsByFirstChar[' '] = decodeWhitespace
+	decoderOpsByFirstChar['"'] = advanceAndDecodeQuotedString
+	decoderOpsByFirstChar['0'] = decode0Based
 	for i := '1'; i <= '9'; i++ {
-		decoderOpsByFirstChar[i] = global_decodeNumericPositive
+		decoderOpsByFirstChar[i] = decodeNumericPositive
 	}
 	for i := 'a'; i <= 'f'; i++ {
-		decoderOpsByFirstChar[i] = global_decodeUID
+		decoderOpsByFirstChar[i] = decodeUID
 	}
 	for i := 'A'; i <= 'F'; i++ {
-		decoderOpsByFirstChar[i] = global_decodeUID
+		decoderOpsByFirstChar[i] = decodeUID
 	}
-	decoderOpsByFirstChar['f'] = global_decodeFalseOrUID
-	decoderOpsByFirstChar['F'] = global_decodeFalseOrUID
-	decoderOpsByFirstChar['i'] = global_decodeNamedValueI
-	decoderOpsByFirstChar['I'] = global_decodeNamedValueI
-	decoderOpsByFirstChar['n'] = global_decodeNamedValueN
-	decoderOpsByFirstChar['N'] = global_decodeNamedValueN
-	decoderOpsByFirstChar['s'] = global_decodeNamedValueS
-	decoderOpsByFirstChar['S'] = global_decodeNamedValueS
-	decoderOpsByFirstChar['t'] = global_decodeNamedValueT
-	decoderOpsByFirstChar['T'] = global_decodeNamedValueT
-	decoderOpsByFirstChar['-'] = global_advanceAndDecodeNumericNegative
-	decoderOpsByFirstChar['@'] = global_advanceAndDecodeResourceID
-	decoderOpsByFirstChar['#'] = global_advanceAndDecodeConstant
-	decoderOpsByFirstChar['$'] = global_advanceAndDecodeReference
-	decoderOpsByFirstChar['&'] = global_advanceAndDecodeMarker
-	decoderOpsByFirstChar['/'] = global_advanceAndDecodeComment
-	decoderOpsByFirstChar['{'] = global_advanceAndDecodeMapBegin
-	decoderOpsByFirstChar['}'] = global_advanceAndDecodeMapEnd
-	decoderOpsByFirstChar['['] = global_advanceAndDecodeListBegin
-	decoderOpsByFirstChar[']'] = global_advanceAndDecodeListEnd
-	decoderOpsByFirstChar['<'] = global_advanceAndDecodeMarkupBegin
-	decoderOpsByFirstChar[','] = global_advanceAndDecodeMarkupContentBegin
-	decoderOpsByFirstChar['>'] = global_advanceAndDecodeMarkupEnd
-	decoderOpsByFirstChar['|'] = global_advanceAndDecodeTypedArrayBegin
-	decoderOpsByFirstChar['('] = global_advanceAndDecodeRelationshipBegin
+	decoderOpsByFirstChar['f'] = decodeFalseOrUID
+	decoderOpsByFirstChar['F'] = decodeFalseOrUID
+	decoderOpsByFirstChar['i'] = decodeNamedValueI
+	decoderOpsByFirstChar['I'] = decodeNamedValueI
+	decoderOpsByFirstChar['n'] = decodeNamedValueN
+	decoderOpsByFirstChar['N'] = decodeNamedValueN
+	decoderOpsByFirstChar['s'] = decodeNamedValueS
+	decoderOpsByFirstChar['S'] = decodeNamedValueS
+	decoderOpsByFirstChar['t'] = decodeNamedValueT
+	decoderOpsByFirstChar['T'] = decodeNamedValueT
+	decoderOpsByFirstChar['-'] = advanceAndDecodeNumericNegative
+	decoderOpsByFirstChar['@'] = advanceAndDecodeEdgeOrResourceID
+	decoderOpsByFirstChar['#'] = advanceAndDecodeConstant
+	decoderOpsByFirstChar['$'] = advanceAndDecodeReference
+	decoderOpsByFirstChar['&'] = advanceAndDecodeMarker
+	decoderOpsByFirstChar['/'] = advanceAndDecodeComment
+	decoderOpsByFirstChar['{'] = advanceAndDecodeMapBegin
+	decoderOpsByFirstChar['}'] = advanceAndDecodeMapEnd
+	decoderOpsByFirstChar['['] = advanceAndDecodeListBegin
+	decoderOpsByFirstChar[']'] = advanceAndDecodeListEnd
+	decoderOpsByFirstChar['<'] = advanceAndDecodeMarkupBegin
+	decoderOpsByFirstChar[','] = advanceAndDecodeMarkupContentBegin
+	decoderOpsByFirstChar['>'] = advanceAndDecodeMarkupEnd
+	decoderOpsByFirstChar['|'] = advanceAndDecodeTypedArrayBegin
+	decoderOpsByFirstChar['('] = advanceAndDecodeNodeBegin
+	decoderOpsByFirstChar[')'] = advanceAndDecodeNodeEnd
 
-	decoderOpsByFirstChar[chars.EOFMarker] = global_decodeInvalidChar
+	decoderOpsByFirstChar[chars.EOFMarker] = decodeInvalidChar
 }

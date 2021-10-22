@@ -247,6 +247,10 @@ func (_this *Session) getDefaultIteratorForType(t reflect.Type) IteratorFunction
 			return iterateMedia
 		case common.TypeMarkup:
 			return iterateMarkup
+		case common.TypeNode:
+			return iterateNode
+		case common.TypeEdge:
+			return iterateEdge
 		default:
 			return newStructIterator(&_this.context, t)
 		}

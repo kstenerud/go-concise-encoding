@@ -72,7 +72,7 @@ func (_this *markupContentsBuilder) BuildFromStringlikeArray(ctx *Context, array
 	return reflect.ValueOf(value)
 }
 
-func (_this *markupContentsBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *markupContentsBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	generator := ctx.GetBuilderGeneratorForType(reflect.TypeOf((*types.Markup)(nil)))
 	generator(ctx).BuildBeginMarkupContents(ctx, name)
 }

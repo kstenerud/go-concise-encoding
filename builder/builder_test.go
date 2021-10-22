@@ -28,11 +28,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/types"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-time"
@@ -131,6 +130,8 @@ func TestBuilderBasicTypes(t *testing.T) {
 	cTimeNow := test.AsCompactTime(gTimeNow)
 	cTime := test.NewTimeLL(10, 5, 59, 100, 506, 107)
 	pURL := NewRID("http://x.com")
+	pNode := NewNode("test", []interface{}{"a"})
+	pEdge := NewEdge("a", "b", "c")
 
 	assertBuild(t, true, B(true))
 	assertBuild(t, false, B(false))
@@ -171,6 +172,10 @@ func TestBuilderBasicTypes(t *testing.T) {
 	assertBuild(t, *pURL, RID("http://x.com"))
 	assertBuild(t, (*url.URL)(nil), N())
 	assertBuild(t, interface{}(1234), I(1234))
+	assertBuild(t, pNode, NODE(), S("test"), S("a"), E())
+	assertBuild(t, *pNode, NODE(), S("test"), S("a"), E())
+	assertBuild(t, pEdge, EDGE(), S("a"), S("b"), S("c"))
+	assertBuild(t, *pEdge, EDGE(), S("a"), S("b"), S("c"))
 }
 
 func TestBuilderConvertToBDF(t *testing.T) {
@@ -1350,19 +1355,6 @@ func TestBuilderMedia(t *testing.T) {
 	assertBuild(t, m, M(), I(1), MB(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte{1}), E())
 }
 
-func TestBuilderComment(t *testing.T) {
-	assertBuild(t, 1, CMT(), E(), I(1))
-	assertBuild(t, 1, CMT(), E(), CMT(), E(), I(1))
-	assertBuild(t, 1, CMT(), S("sdgsdfgsdg srg srg srg sr"), E(), I(1))
-	assertBuild(t, 1, CMT(), S("sdgsdfgsdg srg srg srg sr"), CMT(), E(), E(), I(1))
-	assertBuild(t, 1, CMT(), S("sdgsdfgsdg srg srg srg sr"), CMT(), S("abc"), E(), E(), I(1))
-
-	assertBuild(t, []interface{}{}, L(), CMT(), S("xyz"), E(), E())
-	assertBuild(t, map[interface{}]interface{}{}, M(), CMT(), S("xyz"), E(), E())
-	assertBuild(t, map[interface{}]interface{}{1: "a"}, M(), CMT(), S("xyz"), E(), I(1), S("a"), E())
-	assertBuild(t, map[interface{}]interface{}{1: "a"}, M(), I(1), CMT(), S("xyz"), E(), S("a"), E())
-}
-
 func TestBuilderMarkup(t *testing.T) {
 	m := types.Markup{
 		Name: "a",
@@ -1422,21 +1414,21 @@ func TestBuilderMarkup(t *testing.T) {
 	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
 }
 
-func TestBuilderRelationship(t *testing.T) {
-	r := types.Relationship{
-		Subject:   NewRID("http://x.com"),
-		Predicate: NewRID("http://y.com"),
-		Object:    NewRID("http://z.com"),
+func TestBuilderEdge(t *testing.T) {
+	r := types.Edge{
+		Source:      NewRID("http://x.com"),
+		Description: NewRID("http://y.com"),
+		Destination: NewRID("http://z.com"),
 	}
 	pr := &r
 
-	assertBuild(t, r, REL(), RID("http://x.com"), RID("http://y.com"), RID("http://z.com"))
-	assertBuild(t, pr, REL(), RID("http://x.com"), RID("http://y.com"), RID("http://z.com"))
+	assertBuild(t, r, EDGE(), RID("http://x.com"), RID("http://y.com"), RID("http://z.com"))
+	assertBuild(t, pr, EDGE(), RID("http://x.com"), RID("http://y.com"), RID("http://z.com"))
 
-	r.Subject = []interface{}{NewRID("a"), NewRID("b")}
-	r.Object = 1
-	assertBuild(t, r, REL(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1))
-	assertBuild(t, pr, REL(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1))
+	r.Source = []interface{}{NewRID("a"), NewRID("b")}
+	r.Destination = 1
+	assertBuild(t, r, EDGE(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1))
+	assertBuild(t, pr, EDGE(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1))
 
-	assertBuild(t, []interface{}{pr}, L(), REL(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1), E())
+	assertBuild(t, []interface{}{pr}, L(), EDGE(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1), E())
 }

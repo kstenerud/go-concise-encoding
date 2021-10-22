@@ -75,6 +75,7 @@ func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchEndDocument(ctx)
 }
 func (_this *TopLevelRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
+func (_this *TopLevelRule) OnComment(ctx *Context)                    { /* Nothing to do */ }
 func (_this *TopLevelRule) OnNil(ctx *Context)                        { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnInt(ctx *Context, value int64)           { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnPositiveInt(ctx *Context, value uint64)  { _this.switchEndDocument(ctx) }
@@ -90,8 +91,8 @@ func (_this *TopLevelRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 func (_this *TopLevelRule) OnList(ctx *Context)                      { ctx.BeginList() }
 func (_this *TopLevelRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
 func (_this *TopLevelRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
-func (_this *TopLevelRule) OnComment(ctx *Context)                   { ctx.BeginComment() }
-func (_this *TopLevelRule) OnRelationship(ctx *Context)              { ctx.BeginRelationship() }
+func (_this *TopLevelRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
+func (_this *TopLevelRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
 func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -133,7 +134,8 @@ func (_this *NARule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { 
 func (_this *NARule) OnList(ctx *Context)                                     { ctx.BeginList() }
 func (_this *NARule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
 func (_this *NARule) OnMarkup(ctx *Context, identifier []byte)                { ctx.BeginMarkup(identifier) }
-func (_this *NARule) OnRelationship(ctx *Context)                             { ctx.BeginRelationship() }
+func (_this *NARule) OnNode(ctx *Context)                                     { ctx.BeginNode() }
+func (_this *NARule) OnEdge(ctx *Context)                                     { ctx.BeginEdge() }
 func (_this *NARule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	ctx.EndContainer()
@@ -207,6 +209,12 @@ func (_this *ConstantAnyTypeRule) OnMap(ctx *Context) {
 }
 func (_this *ConstantAnyTypeRule) OnMarkup(ctx *Context, identifier []byte) {
 	ctx.ParentRule().OnMarkup(ctx, identifier)
+}
+func (_this *ConstantAnyTypeRule) OnNode(ctx *Context) {
+	ctx.ParentRule().OnNode(ctx)
+}
+func (_this *ConstantAnyTypeRule) OnEdge(ctx *Context) {
+	ctx.ParentRule().OnEdge(ctx)
 }
 func (_this *ConstantAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.UnstackRule()

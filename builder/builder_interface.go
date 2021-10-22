@@ -150,16 +150,24 @@ func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value compact_
 	return dst
 }
 
-func (_this *interfaceBuilder) BuildInitiateList(ctx *Context) {
+func (_this *interfaceBuilder) BuildNewList(ctx *Context) {
 	interfaceSliceBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
-func (_this *interfaceBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *interfaceBuilder) BuildNewMap(ctx *Context) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *interfaceBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *interfaceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *interfaceBuilder) BuildNewEdge(ctx *Context) {
+	interfaceEdgeBuilderGenerator(ctx).BuildBeginEdgeContents(ctx)
+}
+
+func (_this *interfaceBuilder) BuildNewNode(ctx *Context) {
+	interfaceNodeBuilderGenerator(ctx).BuildBeginNodeContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildBeginListContents(ctx *Context) {
@@ -172,6 +180,14 @@ func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
 
 func (_this *interfaceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *interfaceBuilder) BuildBeginEdgeContents(ctx *Context) {
+	interfaceEdgeBuilderGenerator(ctx).BuildBeginEdgeContents(ctx)
+}
+
+func (_this *interfaceBuilder) BuildBeginNodeContents(ctx *Context) {
+	interfaceNodeBuilderGenerator(ctx).BuildBeginNodeContents(ctx)
 }
 
 func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id []byte) {

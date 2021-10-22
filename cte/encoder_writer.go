@@ -610,23 +610,39 @@ func (_this *Writer) WriteArrayEnd() {
 	_this.WriteByte('|')
 }
 
-func (_this *Writer) WriteRelationshipBegin() {
-	_this.WriteByte('(')
+func (_this *Writer) WriteEdgeBegin() {
+	_this.WriteString("@(")
 }
 
-func (_this *Writer) WriteRelationshipEnd() {
+func (_this *Writer) WriteEdgeEnd() {
 	_this.WriteByte(')')
 }
 
-var commentBegin = []byte{'/', '*'}
-var commentEnd = []byte{'*', '/'}
-
-func (_this *Writer) WriteCommentBegin() {
-	_this.WriteBytes(commentBegin)
+func (_this *Writer) WriteNodeBegin() {
+	_this.WriteString("(")
 }
 
-func (_this *Writer) WriteCommentEnd() {
-	_this.WriteBytes(commentEnd)
+func (_this *Writer) WriteNodeEnd() {
+	_this.WriteByte(')')
+}
+
+var commentBeginMultiline = []byte{'/', '*'}
+var commentEndMultiline = []byte{'*', '/'}
+var commentBeginSingle = []byte{'/', '/'}
+
+func (_this *Writer) WriteCommentBegin(isMultiline bool) {
+	if isMultiline {
+		_this.WriteBytes(commentBeginMultiline)
+	} else {
+		_this.WriteBytes(commentBeginSingle)
+	}
+}
+
+func (_this *Writer) WriteCommentEnd(isMultiline bool) {
+	if isMultiline {
+		_this.WriteBytes(commentEndMultiline)
+	}
+	// Don't write the single-line comment terminator because the decorator will do it.
 }
 
 func (_this *Writer) unexpectedError(err error, encoding interface{}) {

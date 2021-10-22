@@ -26,11 +26,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/types"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-equivalence"
@@ -55,6 +54,8 @@ func TestIterateBasic(t *testing.T) {
 		Attributes: map[interface{}]interface{}{"a": 1},
 		Content:    []interface{}{"abc"},
 	}
+	pNode := NewNode("test", []interface{}{"a"})
+	pEdge := NewEdge("a", "b", "c")
 
 	assertIterate(t, nil, N())
 	assertIterate(t, true, B(true))
@@ -98,6 +99,10 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, &uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 	assertIterate(t, media, MB(), AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{0}))
 	assertIterate(t, markup, MUP("x"), S("a"), I(1), E(), S("abc"), E())
+	assertIterate(t, pNode, NODE(), S("test"), S("a"), E())
+	assertIterate(t, *pNode, NODE(), S("test"), S("a"), E())
+	assertIterate(t, pEdge, EDGE(), S("a"), S("b"), S("c"))
+	assertIterate(t, *pEdge, EDGE(), S("a"), S("b"), S("c"))
 }
 
 func TestIterateArrayUint8(t *testing.T) {

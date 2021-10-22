@@ -21,6 +21,7 @@
 package builder
 
 import (
+	"fmt"
 	"math/big"
 	"reflect"
 	"time"
@@ -100,16 +101,24 @@ func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ compact_time.Ti
 	return dst
 }
 
-func (_this *ignoreBuilder) BuildInitiateList(ctx *Context) {
+func (_this *ignoreBuilder) BuildNewList(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildInitiateMap(ctx *Context) {
+func (_this *ignoreBuilder) BuildNewMap(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreBuilder) BuildInitiateMarkup(ctx *Context, name []byte) {
+func (_this *ignoreBuilder) BuildNewMarkup(ctx *Context, name []byte) {
 	ctx.StackBuilder(_this)
+	ctx.StackBuilder(_this)
+}
+
+func (_this *ignoreBuilder) BuildNewEdge(ctx *Context) {
+	ctx.StackBuilder(generateIgnoreEdgeBuilder(ctx))
+}
+
+func (_this *ignoreBuilder) BuildNewNode(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
@@ -130,9 +139,184 @@ func (_this *ignoreBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) 
 	ctx.StackBuilder(_this)
 }
 
+func (_this *ignoreBuilder) BuildBeginEdgeContents(ctx *Context) {
+	ctx.StackBuilder(generateIgnoreEdgeBuilder(ctx))
+}
+
+func (_this *ignoreBuilder) BuildBeginNodeContents(ctx *Context) {
+	ctx.StackBuilder(_this)
+}
+
 func (_this *ignoreBuilder) BuildFromReference(ctx *Context, _ []byte) {
 	// Ignore this directive
 }
 
 func (_this *ignoreBuilder) NotifyChildContainerFinished(ctx *Context, _ reflect.Value) {
+}
+
+// IgnoreXTimesBuilder
+
+type ignoreXTimesBuilder struct {
+	maxIndex int
+	index    int
+}
+
+func generateIgnoreXTimesBuilder(ctx *Context, maxIndex int) Builder {
+	return &ignoreXTimesBuilder{
+		maxIndex: maxIndex,
+		index:    0,
+	}
+}
+
+func generateIgnoreEdgeBuilder(ctx *Context) Builder {
+	return generateIgnoreXTimesBuilder(ctx, 3)
+}
+
+func (_this *ignoreXTimesBuilder) String() string {
+	return fmt.Sprintf("%v(%v)", reflect.TypeOf(_this), _this.maxIndex)
+}
+
+func (_this *ignoreXTimesBuilder) reset() {
+	_this.index = 0
+}
+
+func (_this *ignoreXTimesBuilder) tryFinish(ctx *Context) {
+	_this.index++
+	if _this.index >= _this.maxIndex {
+		ctx.UnstackBuilder()
+		var obj = reflect.ValueOf(nil)
+		ctx.CurrentBuilder.NotifyChildContainerFinished(ctx, obj)
+	}
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildNewList(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginListContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildNewMap(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginMapContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildNewEdge(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginEdgeContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildNewNode(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginNodeContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildNewMarkup(ctx *Context, name []byte) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *ignoreXTimesBuilder) BuildBeginListContents(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginListContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildBeginMapContents(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginMapContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginMarkupContents(ctx, name)
+}
+
+func (_this *ignoreXTimesBuilder) BuildBeginNodeContents(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginNodeContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildBeginEdgeContents(ctx *Context) {
+	_this.tryFinish(ctx)
+	globalIgnoreBuilder.BuildBeginEdgeContents(ctx)
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromReference(ctx *Context, id []byte) {
+	// Ignore this directive
+}
+
+func (_this *ignoreXTimesBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 }
