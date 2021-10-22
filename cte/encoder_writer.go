@@ -28,7 +28,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	ceio "github.com/kstenerud/go-concise-encoding/internal/io"
@@ -244,7 +243,7 @@ func (_this *Writer) WriteBigFloat(value *big.Float) {
 	}
 
 	var buff [64]byte
-	used := value.Append(buff[:0], 'g', conversions.BitsToDecimalDigits(int(value.Prec())))
+	used := value.Append(buff[:0], 'g', common.BitsToDecimalDigits(int(value.Prec())))
 	_this.WriteBytes(used)
 }
 

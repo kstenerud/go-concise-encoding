@@ -509,7 +509,7 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, co
 		return
 	}
 
-	if coefficient > maxFloat64Coefficient {
+	if coefficient > common.Float64CoefficientMax {
 		bigCoefficient = &big.Int{}
 		bigCoefficient = bigCoefficient.SetUint64(coefficient)
 		bigValue = &big.Float{}
@@ -522,7 +522,7 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, co
 	}
 
 	normalizedExponent := exponent - (coefficientDigitCount-1)*4
-	if normalizedExponent > maxFloat64Exponent || normalizedExponent < minFloat64Exponent {
+	if normalizedExponent > common.Float64ExponentMax || normalizedExponent < common.Float64ExponentMin {
 		bigValue = &big.Float{}
 		bigValue = bigValue.SetInt64(int64(coefficient))
 		if sign < 0 {

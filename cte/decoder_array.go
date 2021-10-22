@@ -212,7 +212,7 @@ func decodeMedia(ctx *DecoderContext, arrayType []byte) {
 		}
 		v, _, decodedCount := token.DecodeSmallHexUint(ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v > maxUint8Value {
+		if v > common.Uint8Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v))
@@ -245,7 +245,7 @@ func decodeCustomBinary(ctx *DecoderContext) {
 		}
 		v, _, decodedCount := token.DecodeSmallHexUint(ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v > maxUint8Value {
+		if v > common.Uint8Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v))
@@ -292,7 +292,7 @@ func decodeArrayU8(ctx *DecoderContext, digitType string, decodeElement uintToke
 		}
 		v, _, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v > maxUint8Value {
+		if v > common.Uint8Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v))
@@ -310,7 +310,7 @@ func decodeArrayU16(ctx *DecoderContext, digitType string, decodeElement uintTok
 		}
 		v, _, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v > maxUint16Value {
+		if v > common.Uint16Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8))
@@ -328,7 +328,7 @@ func decodeArrayU32(ctx *DecoderContext, digitType string, decodeElement uintTok
 		}
 		v, _, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v > maxUint32Value {
+		if v > common.Uint32Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
@@ -362,7 +362,7 @@ func decodeArrayI8(ctx *DecoderContext, digitType string, decodeElement intToken
 		}
 		v, _, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v < minInt8Value || v > maxInt8Value {
+		if v < common.Int8Min || v > common.Int8Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v))
@@ -380,7 +380,7 @@ func decodeArrayI16(ctx *DecoderContext, digitType string, decodeElement intToke
 		}
 		v, _, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v < minInt16Value || v > maxInt16Value {
+		if v < common.Int16Min || v > common.Int16Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8))
@@ -398,7 +398,7 @@ func decodeArrayI32(ctx *DecoderContext, digitType string, decodeElement intToke
 		}
 		v, _, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		if v < minInt32Value || v > maxInt32Value {
+		if v < common.Int32Min || v > common.Int32Max {
 			ctx.Errorf("%v value too big for array type", digitType)
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v), uint8(v>>8), uint8(v>>16), uint8(v>>24))
@@ -433,8 +433,8 @@ func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement floatTo
 		v, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
 		bits := math.Float32bits(float32(v)) >> 16
-		exp := extractFloat64Exponent(v)
-		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
+		exp := common.Float64GetExponent(v)
+		if exp < common.Float32ExponentMin || exp > common.Float32ExponentMax {
 			if math.IsNaN(v) {
 				if common.IsSignalingNan(v) {
 					bits = uint32(common.Bfloat16SignalingNanBits)
@@ -460,8 +460,8 @@ func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement floatTo
 		}
 		v, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, digitType)
-		exp := extractFloat64Exponent(v)
-		if exp < minFloat32Exponent || exp > maxFloat32Exponent {
+		exp := common.Float64GetExponent(v)
+		if exp < common.Float32ExponentMin || exp > common.Float32ExponentMax {
 			if !math.IsNaN(v) && !math.IsInf(v, 0) {
 				ctx.Errorf("Exponent too big for float32 type")
 			}

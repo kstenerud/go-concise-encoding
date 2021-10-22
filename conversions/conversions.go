@@ -70,7 +70,7 @@ func BigDecimalFloatToUint(value *apd.Decimal) (uint64, error) {
 // big.Float to other
 
 func BigFloatToPBigDecimalFloat(value *big.Float) (*apd.Decimal, error) {
-	d, _, err := apd.NewFromString(bigFloatToString(value))
+	d, _, err := apd.NewFromString(BigFloatToString(value))
 	return d, err
 }
 
@@ -127,8 +127,8 @@ func BigFloatToUint(value *big.Float) (uint64, error) {
 	return u, nil
 }
 
-func bigFloatToString(value *big.Float) string {
-	return value.Text('g', BitsToDecimalDigits(int(value.Prec())))
+func BigFloatToString(value *big.Float) string {
+	return value.Text('g', common.BitsToDecimalDigits(int(value.Prec())))
 }
 
 // Decimal float to other
@@ -182,12 +182,12 @@ func BigIntToUint(value *big.Int) (uint64, error) {
 
 func FloatToBigDecimalFloat(value float64) (apd.Decimal, error) {
 	var d apd.Decimal
-	_, _, err := apd.BaseContext.SetString(&d, floatToString(value))
+	_, _, err := apd.BaseContext.SetString(&d, FloatToString(value))
 	return d, err
 }
 
 func FloatToPBigDecimalFloat(value float64) (*apd.Decimal, error) {
-	d, _, err := apd.NewFromString(floatToString(value))
+	d, _, err := apd.NewFromString(FloatToString(value))
 	return d, err
 }
 
@@ -195,7 +195,7 @@ func FloatToBigInt(value float64, maxBase2Exponent int) (*big.Int, error) {
 	return BigFloatToBigInt(big.NewFloat(value), maxBase2Exponent)
 }
 
-func floatToString(value float64) string {
+func FloatToString(value float64) string {
 	return strconv.FormatFloat(value, 'g', -1, 64)
 }
 
@@ -247,30 +247,6 @@ func UintToInt(value uint64) (int64, error) {
 // string to other
 
 func StringToBigFloat(value string, significantDigits int) (*big.Float, error) {
-	f, _, err := big.ParseFloat(value, 10, uint(DecimalDigitsToBits(significantDigits)), big.ToNearestEven)
+	f, _, err := big.ParseFloat(value, 10, uint(common.DecimalDigitsToBits(significantDigits)), big.ToNearestEven)
 	return f, err
-}
-
-// Bits to digits
-
-var bitsToHexDigitsTable = []int{0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4}
-var bitsToDecimalDigitsTable = []int{0, 1, 1, 1, 1, 2, 2, 2, 3, 3}
-var decimalDigitsToBitsTable = []int{0, 4, 7}
-
-func BitsToDecimalDigits(bitCount int) int {
-	return (bitCount/10)*3 + bitsToDecimalDigitsTable[bitCount%10]
-}
-
-func DecimalDigitsToBits(digitCount int) int {
-	triadCount := digitCount / 3
-	remainder := digitCount % 3
-	return triadCount*10 + decimalDigitsToBitsTable[remainder]
-}
-
-func BitsToHexDigits(bitCount int) int {
-	return (bitCount/16)*4 + bitsToHexDigitsTable[bitCount&15]
-}
-
-func HexDigitsToBits(digitCount int) int {
-	return digitCount * 4
 }

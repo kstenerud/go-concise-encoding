@@ -20,36 +20,7 @@
 
 package cte
 
-import (
-	"math"
-)
-
-const (
-	minInt8Value   = -0x80
-	maxInt8Value   = 0x7f
-	minInt16Value  = -0x8000
-	maxInt16Value  = 0x7fff
-	minInt32Value  = -0x80000000
-	maxInt32Value  = 0x7fffffff
-	maxUint8Value  = 0xff
-	maxUint16Value = 0xffff
-	maxUint32Value = 0xffffffff
-
-	minFloat32Exponent = -126
-	maxFloat32Exponent = 127
-
-	minFloat64Exponent        = -1022
-	maxFloat64Exponent        = 1023
-	minFloat64DecimalExponent = -308 // Denormalized can technically go to -324
-	maxFloat64DecimalExponent = 308
-	maxFloat64Coefficient     = (uint64(1) << 54) - 1
-
-	charNumericWhitespace = '_'
-)
-
-func extractFloat64Exponent(v float64) int {
-	return int((math.Float64bits(v)>>52)&0x7ff) - 1023
-}
+const charNumericWhitespace = '_'
 
 var byteStringNan = []byte("nan")
 var byteStringSnan = []byte("snan")

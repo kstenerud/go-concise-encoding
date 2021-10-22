@@ -32,7 +32,6 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/arrays"
@@ -80,9 +79,9 @@ func NewBigFloat(str string, base int, significantDigits int) *big.Float {
 	bits := uint(0)
 	switch base {
 	case 10:
-		bits = uint(conversions.DecimalDigitsToBits(significantDigits))
+		bits = uint(common.DecimalDigitsToBits(significantDigits))
 	case 16:
-		bits = uint(conversions.HexDigitsToBits(significantDigits))
+		bits = uint(common.HexDigitsToBits(significantDigits))
 	default:
 		panic(fmt.Errorf("%v: Unhandled base", base))
 	}

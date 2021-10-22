@@ -125,7 +125,3 @@ func PanicBuildFromCustomBinary(builder Builder, src []byte, dstType reflect.Typ
 func PanicBuildFromCustomText(builder Builder, src []byte, dstType reflect.Type, err error) {
 	panic(fmt.Errorf("error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
 }
-
-func nameOf(x interface{}) string {
-	return fmt.Sprintf("%v", reflect.TypeOf(x))
-}

@@ -32,6 +32,7 @@ const (
 	stringContextMarkup
 )
 
+// Encoder decorators take care of indentation and other pretty-printing details.
 type EncoderDecorator interface {
 	String() string
 	GetStringContext() stringContext
