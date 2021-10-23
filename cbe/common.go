@@ -95,22 +95,6 @@ const (
 	cbeTypeTimestamp                 = 0x9b
 
 	// Plane 2 types
-	cbeTypeNA           = 0xe0
-	cbeTypeRIDCat       = 0xe1
-	cbeTypeRIDReference = 0xe2
-	cbeTypeMedia        = 0xe3
-	cbeTypeArrayInt8    = 0xff
-	cbeTypeArrayUint16  = 0xfe
-	cbeTypeArrayInt16   = 0xfd
-	cbeTypeArrayUint32  = 0xfc
-	cbeTypeArrayInt32   = 0xfb
-	cbeTypeArrayUint64  = 0xfa
-	cbeTypeArrayInt64   = 0xf9
-	cbeTypeArrayFloat16 = 0xf8
-	cbeTypeArrayFloat32 = 0xf7
-	cbeTypeArrayFloat64 = 0xf6
-	cbeTypeArrayUID     = 0xf5
-
 	cbeTypeShortArrayInt8    = 0x00
 	cbeTypeShortArrayUint16  = 0x10
 	cbeTypeShortArrayInt16   = 0x20
@@ -122,6 +106,23 @@ const (
 	cbeTypeShortArrayFloat32 = 0x80
 	cbeTypeShortArrayFloat64 = 0x90
 	cbeTypeShortArrayUID     = 0xa0
+
+	cbeTypeNA           = 0xe0
+	cbeTypeRIDCat       = 0xe1
+	cbeTypeRIDReference = 0xe2
+	cbeTypeMedia        = 0xe3
+
+	cbeTypeArrayUID     = 0xf5
+	cbeTypeArrayFloat64 = 0xf6
+	cbeTypeArrayFloat32 = 0xf7
+	cbeTypeArrayFloat16 = 0xf8
+	cbeTypeArrayInt64   = 0xf9
+	cbeTypeArrayUint64  = 0xfa
+	cbeTypeArrayInt32   = 0xfb
+	cbeTypeArrayUint32  = 0xfc
+	cbeTypeArrayInt16   = 0xfd
+	cbeTypeArrayUint16  = 0xfe
+	cbeTypeArrayInt8    = 0xff
 
 	// Special code to mark EOF
 	cbeTypeEOF = 0x100
