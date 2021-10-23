@@ -1118,3 +1118,15 @@ func TestComment(t *testing.T) {
 
 	// assertEvents(t, BD(), V(ceVer), AI8B(), AC(1, true), AD([]byte{1}), COM(true, "a"), AC(1, false), AD([]byte{1}), ED())
 }
+
+func TestEdgeMaxDepth(t *testing.T) {
+	assertEvents(t, BD(), V(ceVer),
+		L(), MARK("a"), PI(1), MARK("b"), PI(2), MARK("c"), PI(3), MARK("d"), PI(4),
+		EDGE(), REF("a"), PI(1), REF("b"),
+		EDGE(), REF("a"), PI(1), REF("c"),
+		EDGE(), REF("b"), PI(1), REF("c"),
+		EDGE(), REF("b"), PI(1), REF("d"),
+		EDGE(), REF("c"), M(), E(), REF("d"),
+		E(),
+		ED())
+}

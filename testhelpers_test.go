@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
+	ev "github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -167,11 +168,18 @@ func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 
+var DebugPrintEvents = false
+
 func cbeDecode(opts *options.CBEDecoderOptions, document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTEventStore()
+	var receiver ev.DataEventReceiver
+	ter := test.NewTEventStore()
+	receiver = ter
+	if DebugPrintEvents {
+		receiver = test.NewStdoutTEventPrinter(receiver)
+	}
 	r := rules.NewRules(receiver, nil)
 	err = ce.NewCBEDecoder(opts).Decode(bytes.NewBuffer(document), r)
-	events = receiver.Events
+	events = ter.Events
 	return
 }
 
@@ -192,10 +200,15 @@ func cbeEncodeDecode(encodeOpts *options.CBEEncoderOptions,
 }
 
 func cteDecode(opts *options.CTEDecoderOptions, document []byte) (events []*test.TEvent, err error) {
-	receiver := test.NewTEventStore()
+	var receiver ev.DataEventReceiver
+	ter := test.NewTEventStore()
+	receiver = ter
+	if DebugPrintEvents {
+		receiver = test.NewStdoutTEventPrinter(receiver)
+	}
 	r := rules.NewRules(receiver, nil)
 	err = ce.NewCTEDecoder(opts).Decode(bytes.NewBuffer(document), r)
-	events = receiver.Events
+	events = ter.Events
 	return
 }
 
@@ -304,6 +317,7 @@ func assertDecodeCBECTE(t *testing.T,
 	cbeExpectedDocument []byte,
 	expectedEvents ...*test.TEvent) {
 
+	var receiver ev.DataEventReceiver
 	var actualEvents *test.TEventStore
 
 	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
@@ -317,7 +331,13 @@ func assertDecodeCBECTE(t *testing.T,
 
 	cbeActualDocument = &bytes.Buffer{}
 	binEncoder.PrepareToEncode(cbeActualDocument)
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(binEncoder, nil)); err != nil {
+	receiver = binEncoder
+	receiver = ce.NewRules(receiver, nil)
+	if DebugPrintEvents {
+		fmt.Printf("--- First Decode ---\n")
+		receiver = test.NewStdoutTEventPrinter(receiver)
+	}
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), receiver); err != nil {
 		t.Error(err)
 		return
 	}
@@ -326,7 +346,13 @@ func assertDecodeCBECTE(t *testing.T,
 	}
 
 	actualEvents = test.NewTEventStore()
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+	receiver = actualEvents
+	receiver = ce.NewRules(receiver, nil)
+	if DebugPrintEvents {
+		fmt.Printf("--- Second Decode ---\n")
+		receiver = test.NewStdoutTEventPrinter(receiver)
+	}
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), receiver); err != nil {
 		t.Error(err)
 		return
 	}

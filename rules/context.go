@@ -134,12 +134,15 @@ func (_this *Context) endContainerLike() {
 }
 
 func (_this *Context) EndContainer() {
+	if _this.containerDepth == 0 {
+		panic("BUG: Too many end container calls")
+	}
 	_this.containerDepth--
 	_this.endContainerLike()
 }
 
 func (_this *Context) BeginNA() {
-	_this.stackRule(&naRule, DataTypeNA)
+	_this.beginContainer(&naRule, DataTypeNA)
 }
 
 func (_this *Context) BeginList() {
@@ -151,7 +154,7 @@ func (_this *Context) BeginMap() {
 }
 
 func (_this *Context) BeginEdge() {
-	_this.stackRule(&edgeSourceRule, DataTypeEdge)
+	_this.beginContainer(&edgeSourceRule, DataTypeEdge)
 }
 
 func (_this *Context) BeginNode() {
