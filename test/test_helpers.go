@@ -250,6 +250,24 @@ func AssertPanics(t *testing.T, name interface{}, function func()) bool {
 }
 
 // ----------------------------------------------------------------------------
+// Utilities
+// ----------------------------------------------------------------------------
+
+func BytesToString(bytes []byte) string {
+	var builder strings.Builder
+	builder.WriteByte('[')
+	for i, c := range bytes {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteByte(hexChar(c >> 4))
+		builder.WriteByte(hexChar(c & 15))
+	}
+	builder.WriteByte(']')
+	return builder.String()
+}
+
+// ----------------------------------------------------------------------------
 // Generators
 // ----------------------------------------------------------------------------
 
