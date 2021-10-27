@@ -108,10 +108,6 @@ func (_this *BuilderEventReceiver) OnComment(bool, []byte) {}
 func (_this *BuilderEventReceiver) OnNil() {
 	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
 }
-func (_this *BuilderEventReceiver) OnNA() {
-	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
-	_this.context.IgnoreNext()
-}
 func (_this *BuilderEventReceiver) OnBool(value bool) {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)
 }
@@ -225,9 +221,6 @@ func (_this *BuilderEventReceiver) OnMarker(id []byte) {
 }
 func (_this *BuilderEventReceiver) OnReference(id []byte) {
 	_this.context.CurrentBuilder.BuildFromReference(&_this.context, id)
-}
-func (_this *BuilderEventReceiver) OnRIDReference() {
-	panic("TODO: BuilderEventReceiver.OnRIDReference")
 }
 func (_this *BuilderEventReceiver) OnConstant(name []byte) {
 	panic(fmt.Errorf("Cannot build from constant (%s)", string(name)))

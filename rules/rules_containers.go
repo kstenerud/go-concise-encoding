@@ -35,7 +35,6 @@ type ListRule struct{}
 
 func (_this *ListRule) String() string                                 { return "List Rule" }
 func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
-func (_this *ListRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *ListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *ListRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *ListRule) OnNil(ctx *Context)                             { /* Nothing to do */ }
@@ -52,9 +51,6 @@ func (_this *ListRule) OnMarker(ctx *Context, identifier []byte) {
 }
 func (_this *ListRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
-}
-func (_this *ListRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *ListRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
@@ -109,7 +105,6 @@ type MapValueRule struct{}
 func (_this *MapValueRule) String() string                                 { return "Map Value Rule" }
 func (_this *MapValueRule) switchMapKey(ctx *Context)                      { ctx.ChangeRule(&mapKeyRule) }
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *MapValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapValueRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapValueRule) OnNil(ctx *Context)                             { _this.switchMapKey(ctx) }
@@ -126,9 +121,6 @@ func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.switchMapKey(ctx)
-}
-func (_this *MapValueRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *MapValueRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
@@ -189,7 +181,6 @@ func (_this *MarkupValueRule) switchMarkupKey(ctx *Context) { ctx.ChangeRule(&ma
 func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchMarkupKey(ctx)
 }
-func (_this *MarkupValueRule) OnNA(ctx *Context)                        { ctx.BeginNA() }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnComment(ctx *Context)                   { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnNil(ctx *Context)                       { _this.switchMarkupKey(ctx) }
@@ -208,9 +199,6 @@ func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
@@ -259,7 +247,6 @@ func (_this *EdgeSourceRule) moveToNextRule(ctx *Context) {
 }
 func (_this *EdgeSourceRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.moveToNextRule(ctx) }
 func (_this *EdgeSourceRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.moveToNextRule(ctx) }
-func (_this *EdgeSourceRule) OnNA(ctx *Context)                           { ctx.BeginNA() }
 func (_this *EdgeSourceRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.moveToNextRule(ctx)
 }
@@ -287,9 +274,6 @@ func (_this *EdgeSourceRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *EdgeSourceRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
-}
-func (_this *EdgeSourceRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *EdgeSourceRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
@@ -323,7 +307,6 @@ func (_this *EdgeDescriptionRule) OnKeyableObject(ctx *Context, _ DataType) {
 func (_this *EdgeDescriptionRule) OnNonKeyableObject(ctx *Context, _ DataType) {
 	_this.moveToNextRule(ctx)
 }
-func (_this *EdgeDescriptionRule) OnNA(ctx *Context) { ctx.BeginNA() }
 func (_this *EdgeDescriptionRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.moveToNextRule(ctx)
 }
@@ -359,9 +342,6 @@ func (_this *EdgeDescriptionRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
-func (_this *EdgeDescriptionRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
-}
 func (_this *EdgeDescriptionRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
@@ -387,7 +367,6 @@ type EdgeDestinationRule struct{}
 func (_this *EdgeDestinationRule) String() string                                 { return "Edge Destination Rule" }
 func (_this *EdgeDestinationRule) end(ctx *Context)                               { ctx.EndContainer() }
 func (_this *EdgeDestinationRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.end(ctx) }
-func (_this *EdgeDestinationRule) OnNA(ctx *Context)                              { ctx.BeginNA() }
 func (_this *EdgeDestinationRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *EdgeDestinationRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
 func (_this *EdgeDestinationRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.end(ctx) }
@@ -405,9 +384,6 @@ func (_this *EdgeDestinationRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *EdgeDestinationRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.end(ctx)
-}
-func (_this *EdgeDestinationRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *EdgeDestinationRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
@@ -441,7 +417,6 @@ func (_this *NodeRule) OnKeyableObject(ctx *Context, _ DataType) {
 func (_this *NodeRule) OnNonKeyableObject(ctx *Context, _ DataType) {
 	_this.moveToNextRule(ctx)
 }
-func (_this *NodeRule) OnNA(ctx *Context) { ctx.BeginNA() }
 func (_this *NodeRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.moveToNextRule(ctx)
 }
@@ -476,9 +451,6 @@ func (_this *NodeRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *NodeRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
-}
-func (_this *NodeRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *NodeRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)

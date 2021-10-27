@@ -59,6 +59,12 @@ func decodeResourceID(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
+func decodeResourceIDReference(ctx *DecoderContext) {
+	bytes := ctx.Stream.ReadQuotedString()
+	ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDRef, uint64(len(bytes)), bytes)
+	ctx.RequireStructuralWS()
+}
+
 func decodeArrayType(ctx *DecoderContext) []byte {
 	arrayType := ctx.Stream.ReadToken()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {

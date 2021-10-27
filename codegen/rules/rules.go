@@ -65,9 +65,10 @@ func generateDataTypeType(writer io.Writer) {
 		gen.AddNamed(i)
 	}
 	gen.AddCustom(DataTypeInvalid, uint64(DataTypeInvalid))
-	gen.AddCustom("AllowAny", AllowAny)
-	gen.AddCustom("AllowNonNil", AllowNonNil)
-	gen.AddCustom("AllowKeyable", AllowKeyable)
+	gen.AddCustom("AllowAny", DataTypesAll)
+	gen.AddCustom("AllowNonNil", DataTypesNonNil)
+	gen.AddCustom("AllowKeyable", DataTypesKeyable)
+	gen.AddCustom("AllowMarkable", DataTypesMarkable)
 	gen.AddCustom("AllowString", DataTypeString)
 	gen.AddCustom("AllowResourceID", DataTypeResourceID)
 	gen.EndType()
@@ -82,7 +83,7 @@ func generateDataTypeType(writer io.Writer) {
 func generateBadEventMethods(writer io.Writer) {
 	for _, rule := range allRules {
 		for _, method := range allMethods {
-			if !containsMethod(method, rule.Methods) {
+			if !rule.hasMethod(method) {
 				generateBadEventMethod(rule, method, writer)
 			}
 		}
@@ -109,15 +110,6 @@ func generateBadEventMethod(rule Rule, method *Method, writer io.Writer) {
 // Utility
 // -------
 
-func containsMethod(lookingFor *Method, inSlice []*Method) bool {
-	for _, v := range inSlice {
-		if v == lookingFor {
-			return true
-		}
-	}
-	return false
-}
-
 func openMethod(rule Rule, method *Method, writer io.Writer) {
 	if _, err := writer.Write([]byte(fmt.Sprintf("func (_this *%s) %s {\n", rule.Name, method.Signature))); err != nil {
 		panic(err)
@@ -138,7 +130,6 @@ type DataType uint64
 
 const (
 	DataTypeNil DataType = 1 << iota
-	DataTypeNA
 	DataTypeNan
 	DataTypeBool
 	DataTypeInt
@@ -147,12 +138,11 @@ const (
 	DataTypeTime
 	DataTypeList
 	DataTypeMap
-	DataTypeMarkup
-	DataTypeComment
 	DataTypeEdge
 	DataTypeNode
+	DataTypeMarkup
 	DataTypeString
-	DataTypeResourceID
+	DataTypeMedia
 	DataTypeArrayBit
 	DataTypeArrayUint8
 	DataTypeArrayUint16
@@ -166,16 +156,60 @@ const (
 	DataTypeArrayFloat32
 	DataTypeArrayFloat64
 	DataTypeArrayUID
-	DataTypeMedia
-	DataTypeRIDReference
 	DataTypeCustomText
 	DataTypeCustomBinary
+	DataTypeMarker
+	DataTypeReference
+	DataTypeResourceID
+	DataTypeResourceIDCat
+	DataTypeResourceIDRef
+	DataTypeConstant
+	DataTypeComment
+	DataTypePadding
 	EndDataTypes
 
-	DataTypeInvalid = DataType(0)
-	AllowAny        = ^DataType(0)
-	AllowNonNil     = ^DataTypeNil
-	AllowKeyable    = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeResourceID | DataTypeComment
+	DataTypeInvalid  = DataType(0)
+	DataTypesNone    = DataType(0)
+	DataTypesAll     = ^DataTypesNone
+	DataTypesNonNil  = ^DataTypeNil
+	DataTypesKeyable = DataTypeBool |
+		DataTypeInt |
+		DataTypeFloat |
+		DataTypeUID |
+		DataTypeTime |
+		DataTypeString |
+		DataTypeResourceID |
+		DataTypeResourceIDCat |
+		DataTypeMarker |
+		DataTypeReference |
+		DataTypeConstant |
+		DataTypePadding |
+		DataTypeComment
+	DataTypesNonKeyable     = ^DataTypesKeyable
+	DataTypesMarkable       = ^(DataTypeMarker | DataTypeReference | DataTypeResourceIDRef | DataTypeConstant | DataTypeComment)
+	DataTypesTopLevel       = ^(DataTypeReference)
+	DataTypesContainer      = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup
+	DataTypesMarkupContents = DataTypeMarkup | DataTypeString | DataTypeComment | DataTypePadding
+	DataTypesStringlike     = DataTypeString |
+		DataTypeResourceID |
+		DataTypeResourceIDCat |
+		DataTypeResourceIDRef |
+		DataTypeCustomText
+	DataTypesBinary = DataTypeArrayBit |
+		DataTypeArrayUint8 |
+		DataTypeArrayUint16 |
+		DataTypeArrayUint32 |
+		DataTypeArrayUint64 |
+		DataTypeArrayInt8 |
+		DataTypeArrayInt16 |
+		DataTypeArrayInt32 |
+		DataTypeArrayInt64 |
+		DataTypeArrayFloat16 |
+		DataTypeArrayFloat32 |
+		DataTypeArrayFloat64 |
+		DataTypeArrayUID |
+		DataTypeCustomBinary
+	DataTypesAllArrays = DataTypesStringlike | DataTypesBinary
 )
 
 func (_this DataType) String() string {
@@ -183,48 +217,45 @@ func (_this DataType) String() string {
 }
 
 var dataTypeNames = map[interface{}]string{
-	DataTypeInvalid:      "DataTypeInvalid",
-	DataTypeNil:          "DataTypeNil",
-	DataTypeNA:           "DataTypeNA",
-	DataTypeNan:          "DataTypeNan",
-	DataTypeBool:         "DataTypeBool",
-	DataTypeInt:          "DataTypeInt",
-	DataTypeFloat:        "DataTypeFloat",
-	DataTypeUID:          "DataTypeUID",
-	DataTypeTime:         "DataTypeTime",
-	DataTypeList:         "DataTypeList",
-	DataTypeMap:          "DataTypeMap",
-	DataTypeEdge:         "DataTypeEdge",
-	DataTypeNode:         "DataTypeNode",
-	DataTypeMarkup:       "DataTypeMarkup",
-	DataTypeComment:      "DataTypeComment",
-	DataTypeString:       "DataTypeString",
-	DataTypeResourceID:   "DataTypeResourceID",
-	DataTypeArrayBit:     "DataTypeArrayBit",
-	DataTypeArrayUint8:   "DataTypeArrayUint8",
-	DataTypeArrayUint16:  "DataTypeArrayUint16",
-	DataTypeArrayUint32:  "DataTypeArrayUint32",
-	DataTypeArrayUint64:  "DataTypeArrayUint64",
-	DataTypeArrayInt8:    "DataTypeArrayInt8",
-	DataTypeArrayInt16:   "DataTypeArrayInt16",
-	DataTypeArrayInt32:   "DataTypeArrayInt32",
-	DataTypeArrayInt64:   "DataTypeArrayInt64",
-	DataTypeArrayFloat16: "DataTypeArrayFloat16",
-	DataTypeArrayFloat32: "DataTypeArrayFloat32",
-	DataTypeArrayFloat64: "DataTypeArrayFloat64",
-	DataTypeArrayUID:     "DataTypeArrayUID",
-	DataTypeMedia:        "DataTypeMedia",
-	DataTypeRIDReference: "DataTypeRIDReference",
-	DataTypeCustomText:   "DataTypeCustomText",
-	DataTypeCustomBinary: "DataTypeCustomBinary",
+	DataTypeInvalid:       "DataTypeInvalid",
+	DataTypeNil:           "DataTypeNil",
+	DataTypeNan:           "DataTypeNan",
+	DataTypeBool:          "DataTypeBool",
+	DataTypeInt:           "DataTypeInt",
+	DataTypeFloat:         "DataTypeFloat",
+	DataTypeUID:           "DataTypeUID",
+	DataTypeTime:          "DataTypeTime",
+	DataTypeList:          "DataTypeList",
+	DataTypeMap:           "DataTypeMap",
+	DataTypeEdge:          "DataTypeEdge",
+	DataTypeNode:          "DataTypeNode",
+	DataTypeMarkup:        "DataTypeMarkup",
+	DataTypeString:        "DataTypeString",
+	DataTypeMedia:         "DataTypeMedia",
+	DataTypeArrayBit:      "DataTypeArrayBit",
+	DataTypeArrayUint8:    "DataTypeArrayUint8",
+	DataTypeArrayUint16:   "DataTypeArrayUint16",
+	DataTypeArrayUint32:   "DataTypeArrayUint32",
+	DataTypeArrayUint64:   "DataTypeArrayUint64",
+	DataTypeArrayInt8:     "DataTypeArrayInt8",
+	DataTypeArrayInt16:    "DataTypeArrayInt16",
+	DataTypeArrayInt32:    "DataTypeArrayInt32",
+	DataTypeArrayInt64:    "DataTypeArrayInt64",
+	DataTypeArrayFloat16:  "DataTypeArrayFloat16",
+	DataTypeArrayFloat32:  "DataTypeArrayFloat32",
+	DataTypeArrayFloat64:  "DataTypeArrayFloat64",
+	DataTypeArrayUID:      "DataTypeArrayUID",
+	DataTypeCustomText:    "DataTypeCustomText",
+	DataTypeCustomBinary:  "DataTypeCustomBinary",
+	DataTypeMarker:        "DataTypeMarker",
+	DataTypeReference:     "DataTypeReference",
+	DataTypeResourceID:    "DataTypeResourceID",
+	DataTypeResourceIDCat: "DataTypeResourceIDCat",
+	DataTypeResourceIDRef: "DataTypeResourceIDRef",
+	DataTypeConstant:      "DataTypeConstant",
+	DataTypeComment:       "DataTypeComment",
+	DataTypePadding:       "DataTypePadding",
 }
-
-type ContainerType int
-
-const (
-	ContainerTypeList = iota
-	ContainerTypeMap
-)
 
 type MethodType int
 
@@ -235,293 +266,335 @@ const (
 )
 
 type Method struct {
-	Name       string
-	Signature  string
-	MethodType MethodType
+	Name            string
+	Signature       string
+	MethodType      MethodType
+	AssociatedTypes DataType
 }
 
 var (
 	BDoc = &Method{
-		Name:       "begin document",
-		MethodType: MethodTypeOther,
-		Signature:  "OnBeginDocument(ctx *Context)",
+		Name:            "begin document",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnBeginDocument(ctx *Context)",
+		AssociatedTypes: 0,
 	}
 	EDoc = &Method{
-		Name:       "end document",
-		MethodType: MethodTypeOther,
-		Signature:  "OnEndDocument(ctx *Context)",
+		Name:            "end document",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnEndDocument(ctx *Context)",
+		AssociatedTypes: 0,
 	}
-	ECtr = &Method{
-		Name:       "child end",
-		MethodType: MethodTypeOther,
-		Signature:  "OnChildContainerEnded(ctx *Context, containerType DataType)",
+	Child = &Method{
+		Name:            "child end",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnChildContainerEnded(ctx *Context, containerType DataType)",
+		AssociatedTypes: DataTypesContainer | DataTypesAllArrays,
 	}
 	Ver = &Method{
-		Name:       "version",
-		MethodType: MethodTypeOther,
-		Signature:  "OnVersion(ctx *Context, version uint64)",
-	}
-	NA = &Method{
-		Name:       "NA",
-		MethodType: MethodTypeOther,
-		Signature:  "OnNA(ctx *Context)",
+		Name:            "version",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnVersion(ctx *Context, version uint64)",
+		AssociatedTypes: 0,
 	}
 	Pad = &Method{
-		Name:       "padding",
-		MethodType: MethodTypeOther,
-		Signature:  "OnPadding(ctx *Context)",
+		Name:            "padding",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnPadding(ctx *Context)",
+		AssociatedTypes: DataTypePadding,
 	}
 	Comment = &Method{
-		Name:       "comment",
-		MethodType: MethodTypeOther,
-		Signature:  "OnComment(ctx *Context)",
+		Name:            "comment",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnComment(ctx *Context)",
+		AssociatedTypes: DataTypeComment,
 	}
 	Nil = &Method{
-		Name:       "Nil",
-		MethodType: MethodTypeOther,
-		Signature:  "OnNil(ctx *Context)",
+		Name:            "Nil",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnNil(ctx *Context)",
+		AssociatedTypes: DataTypeNil,
 	}
 	Key = &Method{
-		Name:       "KEYABLE",
-		MethodType: MethodTypeScalar,
-		Signature:  "OnKeyableObject(ctx *Context, objType DataType)",
+		Name:            "KEYABLE",
+		MethodType:      MethodTypeScalar,
+		Signature:       "OnKeyableObject(ctx *Context, objType DataType)",
+		AssociatedTypes: DataTypesKeyable,
 	}
 	NonKey = &Method{
-		Name:       "NONKEYABLE",
-		MethodType: MethodTypeScalar,
-		Signature:  "OnNonKeyableObject(ctx *Context, objType DataType)",
+		Name:            "NONKEYABLE",
+		MethodType:      MethodTypeScalar,
+		Signature:       "OnNonKeyableObject(ctx *Context, objType DataType)",
+		AssociatedTypes: DataTypesNonKeyable,
+		// TODO: What about stuff handled by other methods like list, map, etc?
 	}
 	List = &Method{
-		Name:       "list",
-		MethodType: MethodTypeOther,
-		Signature:  "OnList(ctx *Context)",
+		Name:            "list",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnList(ctx *Context)",
+		AssociatedTypes: DataTypeList,
 	}
 	Map = &Method{
-		Name:       "map",
-		MethodType: MethodTypeOther,
-		Signature:  "OnMap(ctx *Context)",
+		Name:            "map",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnMap(ctx *Context)",
+		AssociatedTypes: DataTypeMap,
 	}
 	Edge = &Method{
-		Name:       "edge",
-		MethodType: MethodTypeOther,
-		Signature:  "OnEdge(ctx *Context)",
+		Name:            "edge",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnEdge(ctx *Context)",
+		AssociatedTypes: DataTypeEdge,
 	}
 	Node = &Method{
-		Name:       "node",
-		MethodType: MethodTypeOther,
-		Signature:  "OnNode(ctx *Context)",
+		Name:            "node",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnNode(ctx *Context)",
+		AssociatedTypes: DataTypeNode,
 	}
 	Markup = &Method{
-		Name:       "markup",
-		MethodType: MethodTypeOther,
-		Signature:  "OnMarkup(ctx *Context, identifier []byte)",
+		Name:            "markup",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnMarkup(ctx *Context, identifier []byte)",
+		AssociatedTypes: DataTypeMarkup,
 	}
 	End = &Method{
-		Name:       "end container",
-		MethodType: MethodTypeOther,
-		Signature:  "OnEnd(ctx *Context)",
+		Name:            "end container",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnEnd(ctx *Context)",
+		AssociatedTypes: 0,
 	}
 	Marker = &Method{
-		Name:       "marker",
-		MethodType: MethodTypeOther,
-		Signature:  "OnMarker(ctx *Context, identifier []byte)",
+		Name:            "marker",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnMarker(ctx *Context, identifier []byte)",
+		AssociatedTypes: DataTypeMarker,
 	}
 	Ref = &Method{
-		Name:       "reference",
-		MethodType: MethodTypeOther,
-		Signature:  "OnReference(ctx *Context, identifier []byte)",
-	}
-	RIDRef = &Method{
-		Name:       "RID reference",
-		MethodType: MethodTypeOther,
-		Signature:  "OnRIDReference(ctx *Context)",
+		Name:            "reference",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnReference(ctx *Context, identifier []byte)",
+		AssociatedTypes: DataTypeReference,
 	}
 	Const = &Method{
-		Name:       "constant",
-		MethodType: MethodTypeOther,
-		Signature:  "OnConstant(ctx *Context, identifier []byte)",
+		Name:            "constant",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnConstant(ctx *Context, identifier []byte)",
+		AssociatedTypes: DataTypeConstant,
 	}
 	Array = &Method{
-		Name:       "array",
-		MethodType: MethodTypeArray,
-		Signature:  "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)",
+		Name:            "array",
+		MethodType:      MethodTypeArray,
+		Signature:       "OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)",
+		AssociatedTypes: DataTypesAllArrays,
 	}
-	SArray = &Method{
-		Name:       "array",
-		MethodType: MethodTypeArray,
-		Signature:  "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)",
+	Stringlike = &Method{
+		Name:            "array",
+		MethodType:      MethodTypeArray,
+		Signature:       "OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)",
+		AssociatedTypes: DataTypesStringlike,
 	}
 	ABegin = &Method{
-		Name:       "array begin",
-		MethodType: MethodTypeArray,
-		Signature:  "OnArrayBegin(ctx *Context, arrayType events.ArrayType)",
+		Name:            "array begin",
+		MethodType:      MethodTypeArray,
+		Signature:       "OnArrayBegin(ctx *Context, arrayType events.ArrayType)",
+		AssociatedTypes: DataTypesAllArrays,
 	}
 	AChunk = &Method{
-		Name:       "array chunk",
-		MethodType: MethodTypeOther,
-		Signature:  "OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)",
+		Name:            "array chunk",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool)",
+		AssociatedTypes: 0,
 	}
 	AData = &Method{
-		Name:       "array data",
-		MethodType: MethodTypeOther,
-		Signature:  "OnArrayData(ctx *Context, data []byte)",
+		Name:            "array data",
+		MethodType:      MethodTypeOther,
+		Signature:       "OnArrayData(ctx *Context, data []byte)",
+		AssociatedTypes: 0,
 	}
 
-	allMethods = []*Method{BDoc, EDoc, ECtr, Ver, NA, Pad, Comment, Nil, Key,
-		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, RIDRef, Const,
-		Array, SArray, ABegin, AChunk, AData}
+	allMethods = []*Method{BDoc, EDoc, Child, Ver, Pad, Comment, Nil, Key,
+		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, Const,
+		Array, Stringlike, ABegin, AChunk, AData}
 )
 
 type Rule struct {
-	Name         string
-	FriendlyName string
-	Methods      []*Method
+	Name           string
+	FriendlyName   string
+	AllowedTypes   DataType
+	IncludeMethods []*Method
+	ExcludeMethods []*Method
+}
+
+func (_this *Rule) hasMethod(method *Method) bool {
+	for _, v := range _this.ExcludeMethods {
+		if v == method {
+			return false
+		}
+	}
+
+	if _this.AllowedTypes&method.AssociatedTypes != 0 {
+		return true
+	}
+
+	for _, v := range _this.IncludeMethods {
+		if v == method {
+			return true
+		}
+	}
+	return false
 }
 
 var allRules = []Rule{
 	{
-		Name:         "BeginDocumentRule",
-		FriendlyName: "begin document",
-		Methods:      []*Method{BDoc},
+		Name:           "BeginDocumentRule",
+		FriendlyName:   "begin document",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{BDoc},
 	},
 	{
-		Name:         "EndDocumentRule",
-		FriendlyName: "end document",
-		Methods:      []*Method{EDoc},
+		Name:           "EndDocumentRule",
+		FriendlyName:   "end document",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{EDoc},
 	},
 	{
 		Name:         "TerminalRule",
 		FriendlyName: "terminal",
-		Methods:      []*Method{},
+		AllowedTypes: DataTypesNone,
 	},
 	{
-		Name:         "VersionRule",
-		FriendlyName: "version",
-		Methods:      []*Method{Ver},
+		Name:           "VersionRule",
+		FriendlyName:   "version",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{Ver},
 	},
 	{
 		Name:         "TopLevelRule",
 		FriendlyName: "top level",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesTopLevel,
 	},
 	{
-		Name:         "NARule",
-		FriendlyName: "NA",
-		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Array, SArray, ABegin},
+		Name:           "ListRule",
+		FriendlyName:   "list",
+		AllowedTypes:   DataTypesAll,
+		IncludeMethods: []*Method{End},
 	},
 	{
-		Name:         "ListRule",
-		FriendlyName: "list",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
-	},
-	{
-		Name:         "MapKeyRule",
-		FriendlyName: "map key",
-		Methods:      []*Method{ECtr, Pad, Comment, Key, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:           "MapKeyRule",
+		FriendlyName:   "map key",
+		AllowedTypes:   DataTypesKeyable,
+		IncludeMethods: []*Method{End},
 	},
 	{
 		Name:         "MapValueRule",
 		FriendlyName: "map value",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesAll,
 	},
 	{
-		Name:         "MarkupKeyRule",
-		FriendlyName: "markup key",
-		Methods:      []*Method{ECtr, Pad, Comment, Key, End, Marker, Ref, Const, Array, SArray, ABegin},
+		Name:           "MarkupKeyRule",
+		FriendlyName:   "markup key",
+		AllowedTypes:   DataTypesKeyable,
+		IncludeMethods: []*Method{End},
 	},
 	{
 		Name:         "MarkupValueRule",
 		FriendlyName: "markup value",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesAll,
 	},
 	{
-		Name:         "MarkupContentsRule",
-		FriendlyName: "markup contents",
-		Methods:      []*Method{ECtr, Pad, Comment, Markup, End, Array, SArray, ABegin},
+		Name:           "MarkupContentsRule",
+		FriendlyName:   "markup contents",
+		AllowedTypes:   DataTypesMarkupContents,
+		IncludeMethods: []*Method{End},
+		ExcludeMethods: []*Method{Key, NonKey},
 	},
 	{
 		Name:         "ArrayRule",
 		FriendlyName: "array",
-		Methods:      []*Method{AChunk},
+		// TODO: AllowedTypes:   DataTypeComment,
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AChunk},
 	},
 	{
-		Name:         "ArrayChunkRule",
-		FriendlyName: "array chunk",
-		Methods:      []*Method{AData},
+		Name:           "ArrayChunkRule",
+		FriendlyName:   "array chunk",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AData},
 	},
 	{
-		Name:         "StringRule",
-		FriendlyName: "string",
-		Methods:      []*Method{AChunk},
+		Name:           "StringRule",
+		FriendlyName:   "string",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AChunk},
 	},
 	{
-		Name:         "StringChunkRule",
-		FriendlyName: "string chunk",
-		Methods:      []*Method{AData},
+		Name:           "StringChunkRule",
+		FriendlyName:   "string chunk",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AData},
 	},
 	{
-		Name:         "StringBuilderRule",
-		FriendlyName: "string",
-		Methods:      []*Method{AChunk},
+		Name:           "StringBuilderRule",
+		FriendlyName:   "string",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AChunk},
 	},
 	{
-		Name:         "StringBuilderChunkRule",
-		FriendlyName: "string chunk",
-		Methods:      []*Method{AData},
+		Name:           "StringBuilderChunkRule",
+		FriendlyName:   "string chunk",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AData},
 	},
 	{
-		Name:         "MediaTypeRule",
-		FriendlyName: "media type",
-		Methods:      []*Method{AChunk},
+		Name:           "MediaTypeRule",
+		FriendlyName:   "media type",
+		AllowedTypes:   DataTypesNone,
+		IncludeMethods: []*Method{AChunk},
 	},
 	{
-		Name:         "MediaTypeChunkRule",
-		FriendlyName: "media type chunk",
-		Methods:      []*Method{AData},
+		Name:           "MediaTypeChunkRule",
+		IncludeMethods: []*Method{AData},
+		FriendlyName:   "media type chunk",
 	},
 	{
 		Name:         "MarkedObjectKeyableRule",
 		FriendlyName: "marked object",
-		Methods:      []*Method{ECtr, Pad, Key, Array, SArray, ABegin},
+		AllowedTypes: DataTypesMarkable & DataTypesKeyable,
 	},
 	{
 		Name:         "MarkedObjectAnyTypeRule",
 		FriendlyName: "marked object",
-		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Array, SArray, ABegin},
+		AllowedTypes: DataTypesMarkable,
 	},
 	{
 		Name:         "ConstantKeyableRule",
 		FriendlyName: "constant",
-		Methods:      []*Method{ECtr, Pad, Key, Array, SArray, ABegin},
+		AllowedTypes: DataTypesKeyable,
 	},
 	{
 		Name:         "ConstantAnyTypeRule",
 		FriendlyName: "constant",
-		Methods:      []*Method{ECtr, Pad, Nil, Key, NonKey, NA, List, Map, Edge, Node, Markup, Array, SArray, ABegin},
-	},
-	{
-		Name:         "RIDReferenceRule",
-		FriendlyName: "RID reference",
-		Methods:      []*Method{Pad, Array, SArray, ABegin, ECtr},
+		AllowedTypes: DataTypesAll,
 	},
 	{
 		Name:         "EdgeSourceRule",
 		FriendlyName: "edge source",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesNonNil,
 	},
 	{
 		Name:         "EdgeDescriptionRule",
 		FriendlyName: "edge description",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesAll,
 	},
 	{
 		Name:         "EdgeDestinationRule",
 		FriendlyName: "edge destination",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesNonNil,
 	},
 	{
 		Name:         "NodeRule",
 		FriendlyName: "node",
-		Methods:      []*Method{ECtr, NA, Pad, Comment, Nil, Key, NonKey, List, Map, Edge, Node, Markup, Marker, Ref, RIDRef, Const, Array, SArray, ABegin},
+		AllowedTypes: DataTypesAll,
 	},
 }

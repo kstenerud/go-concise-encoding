@@ -97,12 +97,6 @@ func (_this *RulesEventReceiver) OnComment(isMultiline bool, contents []byte) {
 	_this.receiver.OnComment(isMultiline, contents)
 }
 
-func (_this *RulesEventReceiver) OnNA() {
-	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnNA(&_this.context)
-	_this.receiver.OnNA()
-}
-
 func (_this *RulesEventReceiver) OnNil() {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnNil(&_this.context)
@@ -305,12 +299,6 @@ func (_this *RulesEventReceiver) OnReference(identifier []byte) {
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnReference(&_this.context, identifier)
 	_this.receiver.OnReference(identifier)
-}
-
-func (_this *RulesEventReceiver) OnRIDReference() {
-	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnRIDReference(&_this.context)
-	_this.receiver.OnRIDReference()
 }
 
 func (_this *RulesEventReceiver) OnConstant(identifier []byte) {

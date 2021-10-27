@@ -141,10 +141,6 @@ func (_this *Context) EndContainer() {
 	_this.endContainerLike()
 }
 
-func (_this *Context) BeginNA() {
-	_this.beginContainer(&naRule, DataTypeNA)
-}
-
 func (_this *Context) BeginList() {
 	_this.beginContainer(&listRule, DataTypeList)
 }
@@ -175,20 +171,12 @@ func (_this *Context) BeginMarkerAnyType(id []byte, dataType DataType) {
 	_this.stackRule(&markedObjectAnyTypeRule, dataType)
 }
 
-func (_this *Context) BeginRIDReference() {
-	_this.stackRule(&ridReferenceRule, DataTypeRIDReference)
-}
-
 func (_this *Context) ReferenceKeyable(identifier []byte) {
 	_this.ReferenceObject(identifier, AllowKeyable)
 }
 
 func (_this *Context) ReferenceAnyType(identifier []byte) {
 	_this.ReferenceObject(identifier, AllowAny)
-}
-
-func (_this *Context) BeginTopLevelReference() {
-	_this.stackRule(&tlReferenceRIDRule, DataTypeRIDReference)
 }
 
 func (_this *Context) BeginConstantKeyable(name []byte) {

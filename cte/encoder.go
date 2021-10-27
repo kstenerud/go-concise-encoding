@@ -89,12 +89,6 @@ func (_this *EncoderEventReceiver) OnNil() {
 	_this.context.AfterValue()
 }
 
-func (_this *EncoderEventReceiver) OnNA() {
-	_this.context.BeforeValue()
-	_this.context.Stream.WriteNA()
-	_this.context.Stack(concatDecorator)
-}
-
 func (_this *EncoderEventReceiver) OnBool(value bool) {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteBool(value)

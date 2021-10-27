@@ -211,7 +211,6 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, NA())
 	assertBuildPanics(t, *v, N())
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, S("1"))
@@ -258,7 +257,6 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, NA())
 	assertBuildPanics(t, *v, N())
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, S("1"))
@@ -317,7 +315,6 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, NA())
 	assertBuildPanics(t, *v, N())
 	assertBuildPanics(t, *v, F(1.1))
 	assertBuildPanics(t, *v, B(true))
@@ -356,7 +353,6 @@ func TestBuilderConvertToDecimalFloat(t *testing.T) {
 
 func TestBuilderDecimalFloatFail(t *testing.T) {
 	v := NewDFloat("1")
-	assertBuildPanics(t, v, NA())
 	assertBuildPanics(t, v, N())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, S("1"))
@@ -385,7 +381,6 @@ func TestBuilderConvertToFloat(t *testing.T) {
 func TestBuilderConvertToFloatFail(t *testing.T) {
 	// TODO: How to define required conversion accuracy?
 	v := 1.0
-	assertBuildPanics(t, v, NA())
 	assertBuildPanics(t, v, N())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, PI(0xffffffffffffffff))
@@ -416,7 +411,6 @@ func TestBuilderConvertToInt(t *testing.T) {
 }
 
 func TestBuilderConvertToIntFail(t *testing.T) {
-	assertBuildPanics(t, int(1), NA())
 	assertBuildPanics(t, int(1), N())
 	assertBuildPanics(t, int(1), B(true))
 	assertBuildPanics(t, int(1), PI(0x8000000000000000))
@@ -481,7 +475,6 @@ func TestBuilderConvertToUint(t *testing.T) {
 }
 
 func TestBuilderConvertToUintFail(t *testing.T) {
-	assertBuildPanics(t, uint(1), NA())
 	assertBuildPanics(t, uint(1), N())
 	assertBuildPanics(t, uint(1), B(true))
 	assertBuildPanics(t, uint(1), NI(1))
@@ -624,7 +617,6 @@ func TestBuilderGoTime(t *testing.T) {
 func TestBuilderGoTimeFail(t *testing.T) {
 	gtime := time.Time{}
 	ctime := test.NewTimeLL(1, 1, 1, 1, 100, 0)
-	assertBuildPanics(t, gtime, NA())
 	assertBuildPanics(t, gtime, N())
 	assertBuildPanics(t, gtime, B(true))
 	assertBuildPanics(t, gtime, PI(1))
@@ -704,7 +696,6 @@ func TestBuilderSlice(t *testing.T) {
 }
 
 func TestBuilderSliceFail(t *testing.T) {
-	assertBuildPanics(t, []int{}, NA())
 	assertBuildPanics(t, []int{}, N())
 	assertBuildPanics(t, []int{}, M())
 	assertBuildPanics(t, [][]int{}, L(), M())
@@ -733,7 +724,6 @@ func TestBuilderArray(t *testing.T) {
 }
 
 func TestBuilderArrayFail(t *testing.T) {
-	assertBuildPanics(t, [1]int{}, NA())
 	assertBuildPanics(t, [1]int{}, N())
 	assertBuildPanics(t, [1]int{}, M())
 	assertBuildPanics(t, [1][]int{}, L(), M())
@@ -744,7 +734,6 @@ func TestBuilderByteArray(t *testing.T) {
 }
 
 func TestBuilderByteArrayFail(t *testing.T) {
-	assertBuildPanics(t, [1]byte{}, NA())
 	assertBuildPanics(t, [1]byte{}, N())
 	assertBuildPanics(t, [1]byte{}, B(false))
 	assertBuildPanics(t, [1]byte{}, PI(1))
@@ -1315,11 +1304,6 @@ func TestBuilderStructTags(t *testing.T) {
 	}, M(),
 		S("test"), S("Something"),
 		E())
-}
-
-func TestBuilderNA(t *testing.T) {
-	assertBuild(t, nil, NA(), I(1))
-	assertBuild(t, nil, NA(), M(), I(1), S("test"), E())
 }
 
 func TestBuilderRIDCat(t *testing.T) {

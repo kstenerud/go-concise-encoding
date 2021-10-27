@@ -150,6 +150,7 @@ var isPlane2Array = []bool{
 	events.ArrayTypeString:           false,
 	events.ArrayTypeResourceID:       false,
 	events.ArrayTypeResourceIDConcat: true,
+	events.ArrayTypeResourceIDRef:    true,
 	events.ArrayTypeMedia:            true,
 	events.ArrayTypeCustomBinary:     false,
 	events.ArrayTypeCustomText:       false,
@@ -174,6 +175,7 @@ var arrayTypeToCBEType = []cbeTypeField{
 	events.ArrayTypeCustomBinary:     cbeTypeCustomBinary,
 	events.ArrayTypeCustomText:       cbeTypeCustomText,
 	events.ArrayTypeResourceIDConcat: cbeTypeRIDCat,
+	events.ArrayTypeResourceIDRef:    cbeTypeRIDReference,
 	events.ArrayTypeMedia:            cbeTypeMedia,
 }
 

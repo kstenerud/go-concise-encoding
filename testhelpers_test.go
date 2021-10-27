@@ -104,7 +104,6 @@ func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
-func NA() *test.TEvent                       { return test.NA() }
 func N() *test.TEvent                        { return test.N() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
@@ -163,7 +162,7 @@ func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
-func RIDREF() *test.TEvent                   { return test.RIDREF() }
+func RIDREF(v string) *test.TEvent           { return test.RIDREF(v) }
 func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }

@@ -42,6 +42,7 @@ const (
 	ArrayTypeResourceID
 	ArrayTypeResourceIDConcat
 	ArrayTypeResourceIDConcat2
+	ArrayTypeResourceIDRef
 	ArrayTypeCustomText
 	ArrayTypeCustomBinary
 	// Note: Boolean arrays are passed in the CBE boolean array representation,
@@ -80,6 +81,7 @@ var arrayTypeNames = [...]string{
 	ArrayTypeResourceID:        "ResourceID",
 	ArrayTypeResourceIDConcat:  "ResourceIDConcat",
 	ArrayTypeResourceIDConcat2: "ResourceIDConcat 2",
+	ArrayTypeResourceIDRef:     "ResourceIDRef",
 	ArrayTypeCustomText:        "Custom Text",
 	ArrayTypeCustomBinary:      "Custom Binary",
 	ArrayTypeBit:               "Boolean",
@@ -100,27 +102,29 @@ var arrayTypeNames = [...]string{
 }
 
 var arrayTypeElementSizes = [...]int{
-	ArrayTypeInvalid:          0,
-	ArrayTypeString:           8,
-	ArrayTypeResourceID:       8,
-	ArrayTypeResourceIDConcat: 8,
-	ArrayTypeCustomText:       8,
-	ArrayTypeCustomBinary:     8,
-	ArrayTypeBit:              1,
-	ArrayTypeUint8:            8,
-	ArrayTypeUint16:           16,
-	ArrayTypeUint32:           32,
-	ArrayTypeUint64:           64,
-	ArrayTypeInt8:             8,
-	ArrayTypeInt16:            16,
-	ArrayTypeInt32:            32,
-	ArrayTypeInt64:            64,
-	ArrayTypeFloat16:          16,
-	ArrayTypeFloat32:          32,
-	ArrayTypeFloat64:          64,
-	ArrayTypeUID:              128,
-	ArrayTypeMedia:            8,
-	ArrayTypeMediaData:        8,
+	ArrayTypeInvalid:           0,
+	ArrayTypeString:            8,
+	ArrayTypeResourceID:        8,
+	ArrayTypeResourceIDConcat:  8,
+	ArrayTypeResourceIDConcat2: 8,
+	ArrayTypeResourceIDRef:     8,
+	ArrayTypeCustomText:        8,
+	ArrayTypeCustomBinary:      8,
+	ArrayTypeBit:               1,
+	ArrayTypeUint8:             8,
+	ArrayTypeUint16:            16,
+	ArrayTypeUint32:            32,
+	ArrayTypeUint64:            64,
+	ArrayTypeInt8:              8,
+	ArrayTypeInt16:             16,
+	ArrayTypeInt32:             32,
+	ArrayTypeInt64:             64,
+	ArrayTypeFloat16:           16,
+	ArrayTypeFloat32:           32,
+	ArrayTypeFloat64:           64,
+	ArrayTypeUID:               128,
+	ArrayTypeMedia:             8,
+	ArrayTypeMediaData:         8,
 }
 
 // DataEventReceiver receives data events (int, string, etc) and performs
@@ -149,7 +153,6 @@ type DataEventReceiver interface {
 	OnVersion(version uint64)
 	OnPadding(count int)
 	OnComment(isMultiline bool, contents []byte)
-	OnNA()
 	OnNil()
 	OnBool(value bool)
 	OnTrue()
@@ -174,7 +177,6 @@ type DataEventReceiver interface {
 	OnEnd()
 	OnMarker(identifier []byte)
 	OnReference(identifier []byte)
-	OnRIDReference()
 	OnConstant(identifier []byte)
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
 	OnArrayBegin(arrayType ArrayType)
@@ -195,7 +197,6 @@ func (_this *NullEventReceiver) OnBeginDocument()                    {}
 func (_this *NullEventReceiver) OnVersion(uint64)                    {}
 func (_this *NullEventReceiver) OnComment(bool, []byte)              {}
 func (_this *NullEventReceiver) OnPadding(int)                       {}
-func (_this *NullEventReceiver) OnNA()                               {}
 func (_this *NullEventReceiver) OnNil()                              {}
 func (_this *NullEventReceiver) OnBool(bool)                         {}
 func (_this *NullEventReceiver) OnTrue()                             {}
@@ -225,6 +226,5 @@ func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker([]byte)                     {}
 func (_this *NullEventReceiver) OnReference([]byte)                  {}
-func (_this *NullEventReceiver) OnRIDReference()                     {}
 func (_this *NullEventReceiver) OnConstant(_ []byte)                 {}
 func (_this *NullEventReceiver) OnEndDocument()                      {}

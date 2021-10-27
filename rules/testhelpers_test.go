@@ -94,7 +94,6 @@ var (
 	EvED     = test.EvED
 	EvV      = test.EvV
 	EvPAD    = test.EvPAD
-	EvNA     = test.EvNA
 	EvB      = test.EvB
 	EvTT     = test.EvTT
 	EvFF     = test.EvFF
@@ -175,7 +174,6 @@ func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
-func NA() *test.TEvent                       { return test.NA() }
 func N() *test.TEvent                        { return test.N() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
@@ -190,6 +188,7 @@ func GT(v time.Time) *test.TEvent            { return test.GT(v) }
 func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
+func RIDREF(v string) *test.TEvent           { return test.RIDREF(v) }
 func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
 func CUT(v string) *test.TEvent              { return test.CUT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
@@ -207,6 +206,7 @@ func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func AUU(v []byte) *test.TEvent              { return test.AUU(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
+func RRB() *test.TEvent                      { return test.RRB() }
 func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
@@ -234,7 +234,6 @@ func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
-func RIDREF() *test.TEvent                   { return test.RIDREF() }
 func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }

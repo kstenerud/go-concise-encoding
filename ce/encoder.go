@@ -46,7 +46,6 @@ type Encoder interface {
 	OnVersion(version uint64)
 	OnPadding(count int)
 	OnComment(isMultiline bool, contents []byte)
-	OnNA()
 	OnNil()
 	OnBool(value bool)
 	OnTrue()
@@ -78,6 +77,5 @@ type Encoder interface {
 	OnEnd()
 	OnMarker(id []byte)
 	OnReference(id []byte)
-	OnRIDReference()
 	OnConstant(name []byte)
 }

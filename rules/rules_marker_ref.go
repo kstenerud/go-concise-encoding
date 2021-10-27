@@ -90,6 +90,7 @@ func (_this *MarkedObjectAnyTypeRule) OnMarkup(ctx *Context, identifier []byte) 
 func (_this *MarkedObjectAnyTypeRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *MarkedObjectAnyTypeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.AssertArrayType("marked object", arrayType, AllowMarkable)
 	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
@@ -101,17 +102,19 @@ func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.Arr
 	}
 }
 func (_this *MarkedObjectAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.AssertArrayType("marked object", arrayType, AllowMarkable)
 	dataType := arrayTypeToDataType[arrayType]
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
 	switch arrayType {
-	case events.ArrayTypeString, events.ArrayTypeResourceID:
+	case events.ArrayTypeString:
 		ctx.MarkObject(dataType)
 	default:
 		ctx.MarkObject(dataType)
 	}
 }
 func (_this *MarkedObjectAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.AssertArrayType("marked object", arrayType, AllowMarkable)
 	ctx.ParentRule().OnArrayBegin(ctx, arrayType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnChildContainerEnded(ctx *Context, cType DataType) {

@@ -71,14 +71,6 @@ func TestCTEVersion(t *testing.T) {
 	}
 }
 
-func TestCTENA(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\nna:1", BD(), EvV, NA(), I(1), ED())
-	assertDecodeFails(t, "c0 -na")
-	assertDecodeFails(t, "c0 na:na:1")
-	assertDecodeFails(t, "c0 na:na:na")
-	assertDecodeFails(t, "c0 [na:na:1]")
-}
-
 func TestCTENil(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\nnil", BD(), EvV, N(), ED())
 }
@@ -1538,7 +1530,7 @@ func TestCTEReference(t *testing.T) {
     "a"
 ]`, BD(), EvV, L(), MARK("a"), S("aaaaa"), S("a"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-$@"http://x.y"`, BD(), EvV, RIDREF(), RID("http://x.y"), ED())
+$"http://x.y"`, BD(), EvV, RIDREF("http://x.y"), ED())
 	assertDecodeFails(t, `c0 $ 1`)
 }
 
@@ -1902,7 +1894,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     }
     "ref1" = $tag1
     "ref2" = $tag1
-    "outside_ref" = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
+    "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
     "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
         <body,
@@ -1950,7 +1942,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     }
     "ref1" = $tag1
     "ref2" = $tag1
-    "outside_ref" = $@"https://somewhere.else.com/path/to/document.cte#some_tag"
+    "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
     "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
         <body,
@@ -2073,7 +2065,6 @@ func testDecodeCasePermutations(t *testing.T, name string, events ...*test.TEven
 
 func TestMixedCase(t *testing.T) {
 	testDecodeCasePermutations(t, "nil", N())
-	testDecodeCasePermutations(t, "na:nil", NA(), N())
 	testDecodeCasePermutations(t, "nan", NAN())
 	testDecodeCasePermutations(t, "snan", SNAN())
 	testDecodeCasePermutations(t, "inf", F(math.Inf(1)))

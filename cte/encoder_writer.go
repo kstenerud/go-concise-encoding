@@ -48,10 +48,6 @@ func (_this *Writer) WriteConcat() {
 	_this.WriteByte(':')
 }
 
-func (_this *Writer) WriteNA() {
-	_this.WriteString("na:")
-}
-
 func (_this *Writer) WriteNil() {
 	_this.WriteString("nil")
 }

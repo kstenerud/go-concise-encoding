@@ -337,13 +337,6 @@ func decodeNamedValueN(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
-	case "na":
-		if ctx.Stream.ReadByteNoEOF() != ':' {
-			ctx.Stream.UnreadByte()
-			ctx.UnexpectedChar("NA")
-		}
-		ctx.EventReceiver.OnNA()
-		decodeByFirstChar(ctx)
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
 	case "nil":
@@ -402,9 +395,9 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
-	if ctx.Stream.PeekByteNoEOF() == '@' {
-		ctx.EventReceiver.OnRIDReference()
-		advanceAndDecodeEdgeOrResourceID(ctx)
+	if ctx.Stream.PeekByteNoEOF() == '"' {
+		ctx.Stream.AdvanceByte() // Advance past '"'
+		decodeResourceIDReference(ctx)
 		return
 	}
 

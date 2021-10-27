@@ -46,10 +46,6 @@ func TestCBENil(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeNil}, BD(), EvV, N(), ED())
 }
 
-func TestCBENA(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeNA, 1}, BD(), EvV, NA(), I(1), ED())
-}
-
 func TestCBEBool(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeTrue}, BD(), EvV, TT(), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeFalse}, BD(), EvV, FF(), ED())
@@ -566,7 +562,7 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 }
 
 func TestRIDReference(t *testing.T) {
-	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeRIDRef, 0x91, 0x02, 'a'}, BD(), EvV, RIDREF(), RID("a"), ED())
+	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeRIDRef, 0x02, 'a'}, BD(), EvV, RIDREF("a"), ED())
 }
 
 func TestMultichunk(t *testing.T) {

@@ -40,7 +40,6 @@ type EventRule interface {
 	OnComment(ctx *Context)
 	OnKeyableObject(ctx *Context, objType DataType)
 	OnNonKeyableObject(ctx *Context, objType DataType)
-	OnNA(ctx *Context)
 	OnNil(ctx *Context)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
@@ -50,7 +49,6 @@ type EventRule interface {
 	OnEnd(ctx *Context)
 	OnMarker(ctx *Context, identifier []byte)
 	OnReference(ctx *Context, identifier []byte)
-	OnRIDReference(ctx *Context)
 	OnConstant(ctx *Context, identifier []byte)
 	OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)
@@ -71,7 +69,6 @@ var (
 	terminalRule            TerminalRule
 	versionRule             VersionRule
 	topLevelRule            TopLevelRule
-	naRule                  NARule
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
@@ -86,10 +83,8 @@ var (
 	mediaTypeChunkRule      MediaTypeChunkRule
 	markedObjectKeyableRule MarkedObjectKeyableRule
 	markedObjectAnyTypeRule MarkedObjectAnyTypeRule
-	ridReferenceRule        RIDReferenceRule
 	constantKeyableRule     ConstantKeyableRule
 	constantAnyTypeRule     ConstantAnyTypeRule
-	tlReferenceRIDRule      RIDReferenceRule
 	stringBuilderRule       StringBuilderRule
 	stringBuilderChunkRule  StringBuilderChunkRule
 	edgeSourceRule          EdgeSourceRule
@@ -103,6 +98,7 @@ var arrayTypeToDataType = []DataType{
 	events.ArrayTypeString:           DataTypeString,
 	events.ArrayTypeResourceID:       DataTypeResourceID,
 	events.ArrayTypeResourceIDConcat: DataTypeResourceID,
+	events.ArrayTypeResourceIDRef:    DataTypeResourceIDRef,
 	events.ArrayTypeCustomText:       DataTypeCustomText,
 	events.ArrayTypeCustomBinary:     DataTypeCustomBinary,
 	events.ArrayTypeBit:              DataTypeArrayBit,

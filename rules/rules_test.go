@@ -50,10 +50,6 @@ func TestRulesVersion(t *testing.T) {
 	assertEventsFail(t, rules, EvV)
 }
 
-func TestRulesNA(t *testing.T) {
-	assertEventsMaxDepth(t, 1, NA(), I(1), ED())
-}
-
 func TestRulesNil(t *testing.T) {
 	assertEventsMaxDepth(t, 1, N(), ED())
 }
@@ -150,13 +146,13 @@ func TestRulesReference(t *testing.T) {
 
 	rules = newRulesWithMaxDepth(10)
 
-	assertEventsSucceed(t, rules, L(), RIDREF(), RID("http://example.com"), E())
+	assertEventsSucceed(t, rules, L(), RIDREF("http://example.com"), E())
 
 	rules = newRulesWithMaxDepth(10)
 
 	assertEventsSucceed(t, rules, L(), MARK("a"), F(0.1), MARK("blah"), GT(time.Now()),
 		REF("a"),
-		RIDREF(), RID("http://example.com"),
+		RIDREF("http://example.com"),
 		REF("blah"),
 		S("test"),
 		E())
@@ -166,7 +162,7 @@ func TestRulesReference(t *testing.T) {
 	assertEventsSucceed(t, rules, L(),
 		MARK("a"), F(0.1),
 		MARK("blah"), GT(time.Now()),
-		REF("a"), RIDREF(), RBCat(), AC(18, false), AD([]byte("http://example.com")), AC(1, false), AD([]byte("1")),
+		REF("a"), RRB(), AC(18, false), AD([]byte("http://example.com")),
 		REF("blah"),
 		S("test"),
 		E())
@@ -676,7 +672,7 @@ func TestRulesReset(t *testing.T) {
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsSucceed(t, rules, BD(), EvV, RIDREF(), RID("http://x.y"), ED())
+	assertEventsSucceed(t, rules, BD(), EvV, RIDREF("http://x.y"), ED())
 }
 
 func TestRulesForwardReference(t *testing.T) {
@@ -950,24 +946,6 @@ func TestRulesAllowedTypesMarkerValue(t *testing.T) {
 			test.InvalidMarkerValues))
 }
 
-func TestRulesAllowedTypesRIDReference(t *testing.T) {
-	assertEventStreamsSucceed(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{RIDREF()},
-			[]*test.TEvent{},
-			[]*test.TEvent{ED()},
-			test.ValidRIDReferences))
-
-	assertEventStreamsFail(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{RIDREF()},
-			[]*test.TEvent{},
-			[]*test.TEvent{ED()},
-			test.InvalidRIDReferences))
-}
-
 func TestRulesAllowedTypesNodeValue(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
@@ -1072,11 +1050,6 @@ func TestRulesAllowedTypesEdgeDestination(t *testing.T) {
 			[]*test.TEvent{},
 			[]*test.TEvent{ED()},
 			test.InvalidEdgeDescriptions))
-}
-
-func TestEdgeObjectNA(t *testing.T) {
-	rules := NewRules(events.NewNullEventReceiver(), nil)
-	assertEventsSucceed(t, rules, BD(), V(0), EDGE(), RID("a"), RID("b"), NA(), N(), ED())
 }
 
 func TestMedia(t *testing.T) {

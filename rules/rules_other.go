@@ -70,7 +70,6 @@ func (_this *TopLevelRule) String() string                              { return
 func (_this *TopLevelRule) switchEndDocument(ctx *Context)              { ctx.ChangeRule(&endDocumentRule) }
 func (_this *TopLevelRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.switchEndDocument(ctx) }
-func (_this *TopLevelRule) OnNA(ctx *Context)                           { ctx.BeginNA() }
 func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchEndDocument(ctx)
 }
@@ -95,9 +94,6 @@ func (_this *TopLevelRule) OnNode(ctx *Context)                      { ctx.Begin
 func (_this *TopLevelRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
 func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
-}
-func (_this *TopLevelRule) OnRIDReference(ctx *Context) {
-	ctx.BeginRIDReference()
 }
 func (_this *TopLevelRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
@@ -188,10 +184,6 @@ func (_this *ConstantAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ 
 func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-}
-func (_this *ConstantAnyTypeRule) OnNA(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnNA(ctx)
 }
 func (_this *ConstantAnyTypeRule) OnNil(ctx *Context) {
 	ctx.UnstackRule()
