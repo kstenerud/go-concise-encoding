@@ -339,7 +339,7 @@ func decodeNamedValueN(ctx *DecoderContext) {
 	switch string(namedValue) {
 	case "nan":
 		ctx.EventReceiver.OnNan(false)
-	case "nil":
+	case "null":
 		ctx.EventReceiver.OnNil()
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))

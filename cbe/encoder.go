@@ -100,7 +100,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 }
 
 func (_this *Encoder) OnNil() {
-	_this.writer.WriteType(cbeTypeNil)
+	_this.writer.WriteType(cbeTypeNull)
 }
 
 func (_this *Encoder) OnNA() {
@@ -169,7 +169,7 @@ func (_this *Encoder) OnNegativeInt(value uint64) {
 
 func (_this *Encoder) OnBigInt(value *big.Int) {
 	if value == nil {
-		_this.writer.WriteType(cbeTypeNil)
+		_this.writer.WriteType(cbeTypeNull)
 		return
 	}
 
@@ -232,7 +232,7 @@ func (_this *Encoder) OnFloat(value float64) {
 
 func (_this *Encoder) OnBigFloat(value *big.Float) {
 	if value == nil {
-		_this.writer.WriteType(cbeTypeNil)
+		_this.writer.WriteType(cbeTypeNull)
 		return
 	}
 
@@ -249,7 +249,7 @@ func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
 
 func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
-		_this.writer.WriteType(cbeTypeNil)
+		_this.writer.WriteType(cbeTypeNull)
 		return
 	}
 
@@ -280,7 +280,7 @@ var ctimeToCBEType = [...]cbeTypeField{
 
 func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 	if value.IsZeroValue() {
-		_this.writer.WriteType(cbeTypeNil)
+		_this.writer.WriteType(cbeTypeNull)
 		return
 	}
 

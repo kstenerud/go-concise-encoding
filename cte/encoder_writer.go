@@ -49,7 +49,7 @@ func (_this *Writer) WriteConcat() {
 }
 
 func (_this *Writer) WriteNil() {
-	_this.WriteString("nil")
+	_this.WriteString("null")
 }
 
 func (_this *Writer) WriteTrue() {

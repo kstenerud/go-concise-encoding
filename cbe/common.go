@@ -63,7 +63,7 @@ const (
 	cbeTypeEndContainer              = 0x7b
 	cbeTypeFalse                     = 0x7c
 	cbeTypeTrue                      = 0x7d
-	cbeTypeNil                       = 0x7e
+	cbeTypeNull                      = 0x7e
 	cbeTypePadding                   = 0x7f
 	cbeTypeString0                   = 0x80
 	cbeTypeString1                   = 0x81

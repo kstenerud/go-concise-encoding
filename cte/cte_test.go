@@ -72,7 +72,7 @@ func TestCTEVersion(t *testing.T) {
 }
 
 func TestCTENil(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\nnil", BD(), EvV, N(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, N(), ED())
 }
 
 func TestCTEBool(t *testing.T) {
@@ -1285,7 +1285,7 @@ func TestCTEMap(t *testing.T) {
 	assertDecode(t, nil, "c0 {  1 = 2 3=4 \t}", BD(), EvV, M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 {
-    "nil" = nil
+    "null" = null
     1.5 = 1000
 }`)
 
@@ -1494,7 +1494,7 @@ func TestCTEMarkupComment(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\nnil", BD(), EvV, N(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, N(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nnan", BD(), EvV, NAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nsnan", BD(), EvV, SNAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\ninf", BD(), EvV, F(math.Inf(1)), ED())
@@ -1881,7 +1881,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/E/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344/Z
-    "nil" = nil
+    "null" = null
     "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     "url" = @"https://example.com/"
     "email" = @"mailto:me@somewhere.com"
@@ -1889,7 +1889,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
         "value" = -inf
-        "child_elements" = nil
+        "child_elements" = null
         "recursive" = $tag1
     }
     "ref1" = $tag1
@@ -1929,7 +1929,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "date" = 2019-07-01
     "time" = 18:04:00.940231541/Europe/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344
-    "nil" = nil
+    "null" = null
     "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
     "url" = @"https://example.com/"
     "email" = @"mailto:me@somewhere.com"
@@ -1937,7 +1937,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
         "value" = -inf
-        "child_elements" = nil
+        "child_elements" = null
         "recursive" = $tag1
     }
     "ref1" = $tag1
@@ -1983,7 +1983,7 @@ func TestMapValueComment(t *testing.T) {
 
 func TestEmptyDocument(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-nil`, BD(), EvV, N(), ED())
+null`, BD(), EvV, N(), ED())
 }
 
 func TestRIDCat(t *testing.T) {
@@ -2064,7 +2064,7 @@ func testDecodeCasePermutations(t *testing.T, name string, events ...*test.TEven
 }
 
 func TestMixedCase(t *testing.T) {
-	testDecodeCasePermutations(t, "nil", N())
+	testDecodeCasePermutations(t, "null", N())
 	testDecodeCasePermutations(t, "nan", NAN())
 	testDecodeCasePermutations(t, "snan", SNAN())
 	testDecodeCasePermutations(t, "inf", F(math.Inf(1)))
@@ -2157,7 +2157,7 @@ func TestNode(t *testing.T) {
 )`, BD(), EvV, NODE(), S("a"), PI(1), PI(2), E(), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
-(nil
+(null
     1
     (2
     )
