@@ -70,7 +70,7 @@ func NewBigInt(str string, base int) *big.Int {
 	bi := new(big.Int)
 	_, success := bi.SetString(str, base)
 	if !success {
-		panic(fmt.Errorf("cannot convert %v to big.Int", str))
+		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to big.Int", str))
 	}
 	return bi
 }
@@ -83,11 +83,11 @@ func NewBigFloat(str string, base int, significantDigits int) *big.Float {
 	case 16:
 		bits = uint(common.HexDigitsToBits(significantDigits))
 	default:
-		panic(fmt.Errorf("%v: Unhandled base", base))
+		panic(fmt.Errorf("Malformed unit test: %v: Unhandled base", base))
 	}
 	f, _, err := big.ParseFloat(str, base, bits, big.ToNearestEven)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to big.Float: %w", str, err))
 	}
 	return f
 }
@@ -95,7 +95,7 @@ func NewBigFloat(str string, base int, significantDigits int) *big.Float {
 func NewDFloat(str string) compact_float.DFloat {
 	df, err := compact_float.DFloatFromString(str)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to compact_float.DFloat: %w", str, err))
 	}
 	return df
 }
@@ -103,7 +103,7 @@ func NewDFloat(str string) compact_float.DFloat {
 func NewBDF(str string) *apd.Decimal {
 	v, _, err := apd.NewFromString(str)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to apd.Decimal: %w", str, err))
 	}
 	return v
 }
@@ -111,7 +111,7 @@ func NewBDF(str string) *apd.Decimal {
 func NewRID(RIDString string) *url.URL {
 	rid, err := url.Parse(RIDString)
 	if err != nil {
-		panic(fmt.Errorf("TEST CODE BUG: Bad URL (%v): %w", RIDString, err))
+		panic(fmt.Errorf("Malformed unit test: Bad URL (%v): %w", RIDString, err))
 	}
 	return rid
 }
@@ -926,7 +926,7 @@ type TEvent struct {
 	V2   interface{}
 }
 
-func newTEvent(eventType TEventType, v1 interface{}, v2 interface{}) *TEvent {
+func NewTEvent(eventType TEventType, v1 interface{}, v2 interface{}) *TEvent {
 	return &TEvent{
 		Type: eventType,
 		V1:   v1,
@@ -1276,84 +1276,84 @@ func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	if value == nil {
 		eventType = TEventNil
 	}
-	return newTEvent(eventType, value, nil)
+	return NewTEvent(eventType, value, nil)
 }
 
 // ----------------------------------------------------------------------------
 // Stored event convenience constructors
 // ----------------------------------------------------------------------------
 
-func TT() *TEvent                       { return newTEvent(TEventTrue, nil, nil) }
-func FF() *TEvent                       { return newTEvent(TEventFalse, nil, nil) }
-func I(v int64) *TEvent                 { return newTEvent(TEventInt, v, nil) }
-func F(v float64) *TEvent               { return newTEvent(TEventFloat, v, nil) }
+func TT() *TEvent                       { return NewTEvent(TEventTrue, nil, nil) }
+func FF() *TEvent                       { return NewTEvent(TEventFalse, nil, nil) }
+func I(v int64) *TEvent                 { return NewTEvent(TEventInt, v, nil) }
+func F(v float64) *TEvent               { return NewTEvent(TEventFloat, v, nil) }
 func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
-func DF(v compact_float.DFloat) *TEvent { return newTEvent(TEventDecimalFloat, v, nil) }
+func DF(v compact_float.DFloat) *TEvent { return NewTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
-func V(v uint64) *TEvent                { return newTEvent(TEventVersion, v, nil) }
-func N() *TEvent                        { return newTEvent(TEventNil, nil, nil) }
-func PAD(v int) *TEvent                 { return newTEvent(TEventPadding, v, nil) }
-func COM(m bool, v string) *TEvent      { return newTEvent(TEventComment, m, v) }
-func B(v bool) *TEvent                  { return newTEvent(TEventBool, v, nil) }
-func PI(v uint64) *TEvent               { return newTEvent(TEventPInt, v, nil) }
-func NI(v uint64) *TEvent               { return newTEvent(TEventNInt, v, nil) }
+func V(v uint64) *TEvent                { return NewTEvent(TEventVersion, v, nil) }
+func N() *TEvent                        { return NewTEvent(TEventNil, nil, nil) }
+func PAD(v int) *TEvent                 { return NewTEvent(TEventPadding, v, nil) }
+func COM(m bool, v string) *TEvent      { return NewTEvent(TEventComment, m, v) }
+func B(v bool) *TEvent                  { return NewTEvent(TEventBool, v, nil) }
+func PI(v uint64) *TEvent               { return NewTEvent(TEventPInt, v, nil) }
+func NI(v uint64) *TEvent               { return NewTEvent(TEventNInt, v, nil) }
 func BI(v *big.Int) *TEvent             { return EventOrNil(TEventBigInt, v) }
-func NAN() *TEvent                      { return newTEvent(TEventNan, nil, nil) }
-func SNAN() *TEvent                     { return newTEvent(TEventSNan, nil, nil) }
-func UID(v []byte) *TEvent              { return newTEvent(TEventUID, v, nil) }
-func GT(v time.Time) *TEvent            { return newTEvent(TEventTime, v, nil) }
+func NAN() *TEvent                      { return NewTEvent(TEventNan, nil, nil) }
+func SNAN() *TEvent                     { return NewTEvent(TEventSNan, nil, nil) }
+func UID(v []byte) *TEvent              { return NewTEvent(TEventUID, v, nil) }
+func GT(v time.Time) *TEvent            { return NewTEvent(TEventTime, v, nil) }
 func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
-func S(v string) *TEvent                { return newTEvent(TEventString, v, nil) }
-func RID(v string) *TEvent              { return newTEvent(TEventResourceID, v, nil) }
-func RIDREF(v string) *TEvent           { return newTEvent(TEventResourceIDRef, v, nil) }
-func CUB(v []byte) *TEvent              { return newTEvent(TEventCustomBinary, v, nil) }
-func CUT(v string) *TEvent              { return newTEvent(TEventCustomText, v, nil) }
-func AB(l uint64, v []byte) *TEvent     { return newTEvent(TEventArrayBoolean, l, v) }
-func AI8(v []int8) *TEvent              { return newTEvent(TEventArrayInt8, v, nil) }
-func AI16(v []int16) *TEvent            { return newTEvent(TEventArrayInt16, v, nil) }
-func AI32(v []int32) *TEvent            { return newTEvent(TEventArrayInt32, v, nil) }
-func AI64(v []int64) *TEvent            { return newTEvent(TEventArrayInt64, v, nil) }
-func AU8(v []byte) *TEvent              { return newTEvent(TEventArrayUint8, v, nil) }
-func AU16(v []uint16) *TEvent           { return newTEvent(TEventArrayUint16, v, nil) }
-func AU32(v []uint32) *TEvent           { return newTEvent(TEventArrayUint32, v, nil) }
-func AU64(v []uint64) *TEvent           { return newTEvent(TEventArrayUint64, v, nil) }
-func AF16(v []byte) *TEvent             { return newTEvent(TEventArrayFloat16, v, nil) }
-func AF32(v []float32) *TEvent          { return newTEvent(TEventArrayFloat32, v, nil) }
-func AF64(v []float64) *TEvent          { return newTEvent(TEventArrayFloat64, v, nil) }
-func AUU(v []byte) *TEvent              { return newTEvent(TEventArrayUID, v, nil) }
-func SB() *TEvent                       { return newTEvent(TEventStringBegin, nil, nil) }
-func RB() *TEvent                       { return newTEvent(TEventResourceIDBegin, nil, nil) }
-func RRB() *TEvent                      { return newTEvent(TEventResourceIDRefBegin, nil, nil) }
-func RBCat() *TEvent                    { return newTEvent(TEventResourceIDCatBegin, nil, nil) }
-func CBB() *TEvent                      { return newTEvent(TEventCustomBinaryBegin, nil, nil) }
-func CTB() *TEvent                      { return newTEvent(TEventCustomTextBegin, nil, nil) }
-func ABB() *TEvent                      { return newTEvent(TEventArrayBooleanBegin, nil, nil) }
-func AI8B() *TEvent                     { return newTEvent(TEventArrayInt8Begin, nil, nil) }
-func AI16B() *TEvent                    { return newTEvent(TEventArrayInt16Begin, nil, nil) }
-func AI32B() *TEvent                    { return newTEvent(TEventArrayInt32Begin, nil, nil) }
-func AI64B() *TEvent                    { return newTEvent(TEventArrayInt64Begin, nil, nil) }
-func AU8B() *TEvent                     { return newTEvent(TEventArrayUint8Begin, nil, nil) }
-func AU16B() *TEvent                    { return newTEvent(TEventArrayUint16Begin, nil, nil) }
-func AU32B() *TEvent                    { return newTEvent(TEventArrayUint32Begin, nil, nil) }
-func AU64B() *TEvent                    { return newTEvent(TEventArrayUint64Begin, nil, nil) }
-func AF16B() *TEvent                    { return newTEvent(TEventArrayFloat16Begin, nil, nil) }
-func AF32B() *TEvent                    { return newTEvent(TEventArrayFloat32Begin, nil, nil) }
-func AF64B() *TEvent                    { return newTEvent(TEventArrayFloat64Begin, nil, nil) }
-func AUUB() *TEvent                     { return newTEvent(TEventArrayUIDBegin, nil, nil) }
-func MB() *TEvent                       { return newTEvent(TEventMediaBegin, nil, nil) }
-func AC(l uint64, more bool) *TEvent    { return newTEvent(TEventArrayChunk, l, more) }
-func AD(v []byte) *TEvent               { return newTEvent(TEventArrayData, v, nil) }
-func L() *TEvent                        { return newTEvent(TEventList, nil, nil) }
-func M() *TEvent                        { return newTEvent(TEventMap, nil, nil) }
-func MUP(id string) *TEvent             { return newTEvent(TEventMarkup, id, nil) }
-func NODE() *TEvent                     { return newTEvent(TEventNode, nil, nil) }
-func EDGE() *TEvent                     { return newTEvent(TEventEdge, nil, nil) }
-func E() *TEvent                        { return newTEvent(TEventEnd, nil, nil) }
-func MARK(id string) *TEvent            { return newTEvent(TEventMarker, id, nil) }
-func REF(id string) *TEvent             { return newTEvent(TEventReference, id, nil) }
-func CONST(n string) *TEvent            { return newTEvent(TEventConstant, n, nil) }
-func BD() *TEvent                       { return newTEvent(TEventBeginDocument, nil, nil) }
-func ED() *TEvent                       { return newTEvent(TEventEndDocument, nil, nil) }
+func S(v string) *TEvent                { return NewTEvent(TEventString, v, nil) }
+func RID(v string) *TEvent              { return NewTEvent(TEventResourceID, v, nil) }
+func RIDREF(v string) *TEvent           { return NewTEvent(TEventResourceIDRef, v, nil) }
+func CUB(v []byte) *TEvent              { return NewTEvent(TEventCustomBinary, v, nil) }
+func CUT(v string) *TEvent              { return NewTEvent(TEventCustomText, v, nil) }
+func AB(l uint64, v []byte) *TEvent     { return NewTEvent(TEventArrayBoolean, l, v) }
+func AI8(v []int8) *TEvent              { return NewTEvent(TEventArrayInt8, v, nil) }
+func AI16(v []int16) *TEvent            { return NewTEvent(TEventArrayInt16, v, nil) }
+func AI32(v []int32) *TEvent            { return NewTEvent(TEventArrayInt32, v, nil) }
+func AI64(v []int64) *TEvent            { return NewTEvent(TEventArrayInt64, v, nil) }
+func AU8(v []byte) *TEvent              { return NewTEvent(TEventArrayUint8, v, nil) }
+func AU16(v []uint16) *TEvent           { return NewTEvent(TEventArrayUint16, v, nil) }
+func AU32(v []uint32) *TEvent           { return NewTEvent(TEventArrayUint32, v, nil) }
+func AU64(v []uint64) *TEvent           { return NewTEvent(TEventArrayUint64, v, nil) }
+func AF16(v []byte) *TEvent             { return NewTEvent(TEventArrayFloat16, v, nil) }
+func AF32(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat32, v, nil) }
+func AF64(v []float64) *TEvent          { return NewTEvent(TEventArrayFloat64, v, nil) }
+func AUU(v []byte) *TEvent              { return NewTEvent(TEventArrayUID, v, nil) }
+func SB() *TEvent                       { return NewTEvent(TEventStringBegin, nil, nil) }
+func RB() *TEvent                       { return NewTEvent(TEventResourceIDBegin, nil, nil) }
+func RRB() *TEvent                      { return NewTEvent(TEventResourceIDRefBegin, nil, nil) }
+func RBCat() *TEvent                    { return NewTEvent(TEventResourceIDCatBegin, nil, nil) }
+func CBB() *TEvent                      { return NewTEvent(TEventCustomBinaryBegin, nil, nil) }
+func CTB() *TEvent                      { return NewTEvent(TEventCustomTextBegin, nil, nil) }
+func ABB() *TEvent                      { return NewTEvent(TEventArrayBooleanBegin, nil, nil) }
+func AI8B() *TEvent                     { return NewTEvent(TEventArrayInt8Begin, nil, nil) }
+func AI16B() *TEvent                    { return NewTEvent(TEventArrayInt16Begin, nil, nil) }
+func AI32B() *TEvent                    { return NewTEvent(TEventArrayInt32Begin, nil, nil) }
+func AI64B() *TEvent                    { return NewTEvent(TEventArrayInt64Begin, nil, nil) }
+func AU8B() *TEvent                     { return NewTEvent(TEventArrayUint8Begin, nil, nil) }
+func AU16B() *TEvent                    { return NewTEvent(TEventArrayUint16Begin, nil, nil) }
+func AU32B() *TEvent                    { return NewTEvent(TEventArrayUint32Begin, nil, nil) }
+func AU64B() *TEvent                    { return NewTEvent(TEventArrayUint64Begin, nil, nil) }
+func AF16B() *TEvent                    { return NewTEvent(TEventArrayFloat16Begin, nil, nil) }
+func AF32B() *TEvent                    { return NewTEvent(TEventArrayFloat32Begin, nil, nil) }
+func AF64B() *TEvent                    { return NewTEvent(TEventArrayFloat64Begin, nil, nil) }
+func AUUB() *TEvent                     { return NewTEvent(TEventArrayUIDBegin, nil, nil) }
+func MB() *TEvent                       { return NewTEvent(TEventMediaBegin, nil, nil) }
+func AC(l uint64, more bool) *TEvent    { return NewTEvent(TEventArrayChunk, l, more) }
+func AD(v []byte) *TEvent               { return NewTEvent(TEventArrayData, v, nil) }
+func L() *TEvent                        { return NewTEvent(TEventList, nil, nil) }
+func M() *TEvent                        { return NewTEvent(TEventMap, nil, nil) }
+func MUP(id string) *TEvent             { return NewTEvent(TEventMarkup, id, nil) }
+func NODE() *TEvent                     { return NewTEvent(TEventNode, nil, nil) }
+func EDGE() *TEvent                     { return NewTEvent(TEventEdge, nil, nil) }
+func E() *TEvent                        { return NewTEvent(TEventEnd, nil, nil) }
+func MARK(id string) *TEvent            { return NewTEvent(TEventMarker, id, nil) }
+func REF(id string) *TEvent             { return NewTEvent(TEventReference, id, nil) }
+func CONST(n string) *TEvent            { return NewTEvent(TEventConstant, n, nil) }
+func BD() *TEvent                       { return NewTEvent(TEventBeginDocument, nil, nil) }
+func ED() *TEvent                       { return NewTEvent(TEventEndDocument, nil, nil) }
 
 // Converts a go value into a stored event
 func EventForValue(value interface{}) *TEvent {
@@ -1505,7 +1505,7 @@ func (h *TEventPrinter) OnFloat(value float64) {
 	h.Next.OnFloat(value)
 }
 func (h *TEventPrinter) OnBigFloat(value *big.Float) {
-	h.Print(newTEvent(TEventBigFloat, value, nil))
+	h.Print(NewTEvent(TEventBigFloat, value, nil))
 	h.Next.OnBigFloat(value)
 }
 func (h *TEventPrinter) OnDecimalFloat(value compact_float.DFloat) {
@@ -1737,7 +1737,7 @@ func (h *TEventStore) OnNegativeInt(value uint64)                { h.add(NI(valu
 func (h *TEventStore) OnInt(value int64)                         { h.add(I(value)) }
 func (h *TEventStore) OnBigInt(value *big.Int)                   { h.add(BI(value)) }
 func (h *TEventStore) OnFloat(value float64)                     { h.add(F(value)) }
-func (h *TEventStore) OnBigFloat(value *big.Float)               { h.add(newTEvent(TEventBigFloat, value, nil)) }
+func (h *TEventStore) OnBigFloat(value *big.Float)               { h.add(NewTEvent(TEventBigFloat, value, nil)) }
 func (h *TEventStore) OnDecimalFloat(value compact_float.DFloat) { h.add(DF(value)) }
 func (h *TEventStore) OnBigDecimalFloat(value *apd.Decimal)      { h.add(BDF(value)) }
 func (h *TEventStore) OnUID(value []byte)                        { h.add(UID(CloneBytes(value))) }

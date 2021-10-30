@@ -1,0 +1,37 @@
+c0
+{
+	"references" = []
+	"tests" = [
+		{
+			"name" = "example"
+			"cte" = "\.^^
+c0
+[
+    1
+    2
+    3
+]
+	        ^^"
+			"cbe"    = |u8x 83 00 7a 01 02 03 7b|
+			"events" = ["bd" "v 0" "l" "i 1"  "i 2" "i 3" "e" "ed"]
+			"from"   = ["t" "b" "e"]
+			"to"     = ["t" "b" "e"]
+			"fail"   = false // Expect failure?
+			"panic"  = false // Let panics escape instead of capturing them?
+			"debug"  = false // Print debug information while testing?
+			"skip"   = false // Skip this test?
+		}
+
+		{
+			"name" = "work"
+			"cte" = "\.^^
+c0
+|i8 1 -1|
+	        ^^"
+			"cbe"    = |u8x 83 00 94 02 01 ff|
+			"events" = ["bd" "v 0" "ai8 1 -1" "ed"]
+			"from"   = ["t" "b" "e"]
+			"to"     = ["t" "b" "e"]
+		}
+	]
+}
