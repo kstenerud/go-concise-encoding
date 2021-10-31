@@ -904,6 +904,39 @@ func (_this *float64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *float64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
+func (_this *ignoreBuilder) BuildBeginListContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreBuilder) BuildBeginMapContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreBuilder) BuildBeginNodeContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreBuilder) BuildBeginEdgeContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreBuilder) BuildEndContainer(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+}
+func (_this *ignoreXTimesBuilder) BuildBeginListContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreXTimesBuilder) BuildBeginMapContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreXTimesBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreXTimesBuilder) BuildBeginNodeContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+}
+func (_this *ignoreXTimesBuilder) BuildBeginEdgeContents(ctx *Context) {
+	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+}
 func (_this *ignoreXTimesBuilder) BuildEndContainer(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
 }

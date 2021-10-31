@@ -1416,3 +1416,14 @@ func TestBuilderEdge(t *testing.T) {
 
 	assertBuild(t, []interface{}{pr}, L(), EDGE(), L(), RID("a"), RID("b"), E(), RID("http://y.com"), I(1), E())
 }
+
+type MyStruct struct {
+	Aaa int
+	Bbb []int
+}
+
+func TestBuilderStructBadFieldName(t *testing.T) {
+	s := &MyStruct{}
+	assertBuild(t, s, M(), S("aaa"), PI(0), S("bbb"), L(), E(), E())
+	assertBuild(t, s, M(), S("x"), PI(0), S("bbb"), L(), E(), E())
+}

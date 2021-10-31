@@ -80,15 +80,13 @@ func (_this *structBuilderField) applyTags(tags string) {
 }
 
 type structBuilder struct {
-	dstType                reflect.Type
-	generatorDescs         map[string]*structBuilderGeneratorDesc
-	nameBuilderGenerator   BuilderGenerator
-	ignoreBuilderGenerator BuilderGenerator
-	nextBuilderGenerator   BuilderGenerator
-	container              reflect.Value
-	nextValue              reflect.Value
-	nextIsKey              bool
-	nextIsIgnored          bool
+	dstType              reflect.Type
+	generatorDescs       map[string]*structBuilderGeneratorDesc
+	nameBuilderGenerator BuilderGenerator
+	nextBuilderGenerator BuilderGenerator
+	container            reflect.Value
+	nextValue            reflect.Value
+	nextIsKey            bool
 }
 
 type structBuilderGeneratorDesc struct {
@@ -98,7 +96,6 @@ type structBuilderGeneratorDesc struct {
 
 func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
 	nameBuilderGenerator := getBuilderGeneratorForType(reflect.TypeOf(""))
-	ignoreBuilderGenerator := generateIgnoreBuilder
 	generatorDescs := make(map[string]*structBuilderGeneratorDesc)
 
 	for i := 0; i < dstType.NumField(); i++ {
@@ -127,15 +124,13 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 
 	return func(ctx *Context) Builder {
 		return &structBuilder{
-			dstType:                dstType,
-			generatorDescs:         generatorDescs,
-			nameBuilderGenerator:   nameBuilderGenerator,
-			ignoreBuilderGenerator: ignoreBuilderGenerator,
-			nextBuilderGenerator:   nameBuilderGenerator,
-			container:              reflect.New(dstType).Elem(),
-			nextValue:              reflect.Value{},
-			nextIsKey:              true,
-			nextIsIgnored:          false,
+			dstType:              dstType,
+			generatorDescs:       generatorDescs,
+			nameBuilderGenerator: nameBuilderGenerator,
+			nextBuilderGenerator: nameBuilderGenerator,
+			container:            reflect.New(dstType).Elem(),
+			nextValue:            reflect.Value{},
+			nextIsKey:            true,
 		}
 	}
 }
@@ -218,7 +213,7 @@ func (_this *structBuilder) BuildFromUID(ctx *Context, value []byte, _ reflect.V
 	return object
 }
 
-func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, _ reflect.Value) reflect.Value {
+func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, rv reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
@@ -231,9 +226,8 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 				_this.nextBuilderGenerator = generatorDesc.builderGenerator
 				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
 			} else {
-				_this.nextBuilderGenerator = _this.ignoreBuilderGenerator
-				_this.nextIsIgnored = true
-				break
+				ctx.StackBuilder(globalIgnoreBuilder)
+				return rv
 			}
 		} else {
 			_this.nextBuilderGenerator(ctx).BuildFromArray(ctx, arrayType, value, _this.nextValue)
@@ -246,7 +240,7 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 	return object
 }
 
-func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
+func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, rv reflect.Value) reflect.Value {
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
@@ -260,9 +254,8 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 				_this.nextBuilderGenerator = generatorDesc.builderGenerator
 				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
 			} else {
-				_this.nextBuilderGenerator = _this.ignoreBuilderGenerator
-				_this.nextIsIgnored = true
-				break
+				ctx.StackBuilder(globalIgnoreBuilder)
+				return rv
 			}
 		} else {
 			_this.nextBuilderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, _this.nextValue)
@@ -334,11 +327,6 @@ func (_this *structBuilder) BuildFromReference(ctx *Context, id []byte) {
 }
 
 func (_this *structBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
-	if _this.nextIsIgnored {
-		_this.nextIsIgnored = false
-		return
-	}
-
 	_this.nextValue.Set(value)
 	_this.swapKeyValue()
 }

@@ -142,14 +142,19 @@ var builders = []Builder{
 		Name: "ignore",
 		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, ListContents, End, MapContents, MarkupContents,
-			NodeContents, EdgeContents, Ref, NotifyFinished},
+			Markup, Node, Edge, Ref, NotifyFinished},
 	},
 	{
 		Name: "ignoreXTimes",
 		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, ListContents, MapContents, MarkupContents,
+			Markup, Node, Edge, Ref, NotifyFinished},
+	},
+	{
+		Name: "ignoreContainer",
+		Methods: []string{Nil, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Markup, Node, Edge, End, ListContents, MapContents, MarkupContents,
 			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
 	{
