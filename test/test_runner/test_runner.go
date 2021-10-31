@@ -30,12 +30,12 @@ import (
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/event_parser"
 
-	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
 
@@ -56,7 +56,10 @@ func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
 	testSuite = testSuiteIntf.(*CETestSuite)
 	testSuite.TestFile = testDescriptorFile
 	testSuite.postDecodeInit()
+
+	debug.DebugOptions.PassThroughPanics = true
 	testSuite.run(t)
+	debug.DebugOptions.PassThroughPanics = false
 }
 
 // Test Suite
@@ -65,10 +68,6 @@ type CETestSuite struct {
 	TestFile string
 	Tests    []*CETestRunner
 }
-
-// func (_this *CETestSuite) String() string {
-// 	return describe.D(_this)
-// }
 
 func (_this *CETestSuite) postDecodeInit() {
 	index := 0
@@ -145,18 +144,22 @@ type CETestRunner struct {
 	Panic     bool
 	Skip      bool
 
-	decodedEvents      []*test.TEvent
+	events             []*test.TEvent
 	srcEventTypes      map[string]bool
 	dstEventTypes      map[string]bool
 	requiredEventTypes map[string]bool
+	context            string
 }
 
-// func (_this *CETest) String() string {
-// 	return describe.D(_this)
-// }
+func (_this *CETestRunner) Description() string {
+	if len(_this.context) > 0 {
+		return fmt.Sprintf("%v index %v (%v): %v", _this.TestFile, _this.TestIndex, _this.Name, _this.context)
+	}
+	return fmt.Sprintf("%v index %v (%v)", _this.TestFile, _this.TestIndex, _this.Name)
+}
 
 func (_this *CETestRunner) postDecodeInit() {
-	_this.decodedEvents = event_parser.ParseEvents(_this.Events)
+	_this.events = event_parser.ParseEvents(_this.Events)
 	_this.Cte = strings.TrimSpace(_this.Cte)
 	_this.srcEventTypes = toMembershipSet(_this.From)
 	_this.dstEventTypes = toMembershipSet(_this.To)
@@ -169,7 +172,7 @@ func (_this *CETestRunner) validate() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("Test %v: %w", _this.Name, v))
+				panic(fmt.Errorf("%v: %w", _this.Description(), v))
 			default:
 				panic(v)
 			}
@@ -209,68 +212,69 @@ func (_this *CETestRunner) validate() {
 func (_this *CETestRunner) run(t *testing.T) {
 	if _this.Skip {
 		if _this.Debug {
-			fmt.Printf("Skipping %v\n", _this.description())
+			fmt.Printf("Skipping CE Test %v\n", _this.Description())
 		}
 		return
 	}
 
 	if _this.Debug {
-		fmt.Printf("CE Test %v:\n", _this.description())
+		fmt.Printf("Running CE Test %v:\n", _this.Description())
 	}
 
 	defer func() {
 		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("Test %v: %w", _this.Name, v))
-			default:
-				panic(v)
+			if !_this.Fail {
+				if _this.Panic {
+					panic(fmt.Errorf("%v: %w", _this.Description(), r))
+				} else {
+					t.Errorf("%v: %v", _this.Description(), r)
+				}
 			}
 		}
 	}()
 
 	if _this.srcEventTypes["e"] {
 		if len(_this.dstEventTypes) == 0 {
-			_this.runEventToNothing(t)
+			_this.runEventToNothing()
 		}
 		if _this.dstEventTypes["e"] {
-			_this.runEventToEvent(t)
+			_this.runEventToEvent()
 		}
 		if _this.dstEventTypes["b"] {
-			_this.runEventToCBE(t)
+			_this.runEventToCBE()
 		}
 		if _this.dstEventTypes["t"] {
-			_this.runEventToCTE(t)
+			_this.runEventToCTE()
 		}
 	}
 
 	if _this.srcEventTypes["b"] {
 		if len(_this.dstEventTypes) == 0 {
-			_this.runCBEToNothing(t)
+			_this.runCBEToNothing()
 		}
 		if _this.dstEventTypes["e"] {
-			_this.runCBEToEvent(t)
+			_this.runCBEToEvent()
 		}
 		if _this.dstEventTypes["b"] {
-			_this.runCBEToCBE(t)
+			_this.runCBEToCBE()
 		}
 		if _this.dstEventTypes["t"] {
-			_this.runCBEToCTE(t)
+			_this.runCBEToCTE()
 		}
 	}
 
 	if _this.srcEventTypes["t"] {
 		if len(_this.dstEventTypes) == 0 {
-			_this.runCTEToNothing(t)
+			_this.runCTEToNothing()
 		}
 		if _this.dstEventTypes["e"] {
-			_this.runCTEToEvent(t)
+			_this.runCTEToEvent()
 		}
 		if _this.dstEventTypes["b"] {
-			_this.runCTEToCBE(t)
+			_this.runCTEToCBE()
 		}
 		if _this.dstEventTypes["t"] {
-			_this.runCTEToCTE(t)
+			_this.runCTEToCTE()
 		}
 	}
 }
@@ -291,271 +295,312 @@ func (_this *CETestRunner) capturePanic(operation func()) (err error) {
 	return
 }
 
-func (_this *CETestRunner) description() string {
-	return fmt.Sprintf("%v:%v (%v)", _this.TestFile, _this.TestIndex, _this.Name)
+func (_this *CETestRunner) testFailed(format string, args ...interface{}) {
+	panic(fmt.Errorf(format, args...))
 }
 
-func (_this *CETestRunner) fatalf(t *testing.T, format string, args ...interface{}) {
-	message := fmt.Sprintf(format, args...)
-	t.Fatalf("%v: %v", _this.description(), message)
-}
+// func (_this *CETestRunner) assertPanics(operation func()) {
+// 	if err := _this.capturePanic(operation); err == nil {
+// 		_this.testFailed("Expected a panic")
+// 	}
+// }
 
-func (_this *CETestRunner) assertPanics(t *testing.T, operation func()) {
-	if err := _this.capturePanic(operation); err == nil {
-		_this.fatalf(t, "Expected a panic")
-	}
-}
+// func (_this *CETestRunner) assertNoPanic(operation func()) {
+// 	if _this.Panic {
+// 		operation()
+// 	}
+// 	if err := _this.capturePanic(operation); err != nil {
+// 		_this.testFailed("Unexpected panic: %v", err)
+// 	}
+// }
 
-func (_this *CETestRunner) assertNoPanic(t *testing.T, operation func()) {
-	if _this.Panic {
-		operation()
-	}
-	if err := _this.capturePanic(operation); err != nil {
-		_this.fatalf(t, "Unexpected panic: %v", err)
-	}
-}
+// func (_this *CETestRunner) assertEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
+// 	operation := func() {
+// 		for _, event := range events {
+// 			event.Invoke(receiver)
+// 		}
+// 	}
+// 	if _this.Fail {
+// 		_this.assertPanics(operation)
+// 	} else {
+// 		if _this.Panic {
+// 			operation()
+// 		} else {
 
-func (_this *CETestRunner) assertEvents(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
-	operation := func() {
-		for _, event := range events {
-			event.Invoke(receiver)
-		}
-	}
-	if _this.Fail {
-		_this.assertPanics(t, operation)
-	} else {
-		_this.assertNoPanic(t, operation)
-	}
-}
+// 		}
 
-func (_this *CETestRunner) runEventToNothing(t *testing.T) {
-	var receiver events.DataEventReceiver = events.NewNullEventReceiver()
+// 		eventStore := test.NewTEventStore(receiver)
+// 		receiver = eventStore
+
+// 		_this.assertNoPanic(operation)
+// 	}
+// }
+
+func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
+	operation func(receiver events.DataEventReceiver),
+	describeSrc func() string) {
+
 	if _this.Debug {
 		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runEventToNothing]\n")
 	}
-	receiver = rules.NewRules(receiver, nil)
 
-	_this.assertEvents(t, receiver, _this.decodedEvents...)
-}
-
-func (_this *CETestRunner) runCBEToNothing(t *testing.T) {
-	eventStore := test.NewTEventStore()
-	var receiver events.DataEventReceiver = eventStore
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCBEToNothing]\n")
+	if !_this.Fail && _this.Panic {
+		operation(receiver)
+		return
 	}
-	receiver = rules.NewRules(receiver, nil)
 
-	err := cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), receiver)
-	if _this.Fail && err == nil {
-		_this.fatalf(t, "B2N: Expected %v to fail, but produced %v", describe.D(_this.Cbe), eventStore.Events)
-	} else if !_this.Fail && err != nil {
-		_this.fatalf(t, "B2N: %v unexpectedly failed after producing %v: %v", describe.D(_this.Cbe), eventStore.Events, err)
+	eventStore := test.NewTEventStore(receiver)
+	receiver = eventStore
+
+	err := _this.capturePanic(func() {
+		operation(receiver)
+	})
+
+	if !_this.Fail && err != nil {
+		_this.testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
+	} else if _this.Fail && err == nil {
+		_this.testFailed("%v unexpectedly succeeded and produced events %v", describeSrc(), eventStore.Events)
 	}
 }
 
-func (_this *CETestRunner) runCTEToNothing(t *testing.T) {
-	eventStore := test.NewTEventStore()
-	var receiver events.DataEventReceiver = eventStore
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCTEToNothing]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-
-	err := cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), receiver)
-	if _this.Fail && err == nil {
-		_this.fatalf(t, "T2N: Expected [%v] to fail, but produced %v", _this.Cte, eventStore.Events)
-	} else if !_this.Fail && err != nil {
-		_this.fatalf(t, "T2N: [%v] unexpectedly failed after producing %v: %v", _this.Cte, eventStore.Events, err)
+func (_this *CETestRunner) driveEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
+	for _, event := range events {
+		event.Invoke(receiver)
 	}
 }
 
-func (_this *CETestRunner) runEventToEvent(t *testing.T) {
-	eventStore := test.NewTEventStore()
-	var receiver events.DataEventReceiver = eventStore
+func (_this *CETestRunner) beginTestPhase(phase string) {
+	_this.context = phase
 	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runEventToEvent]\n")
+		fmt.Printf("Running test phase %v\n", _this.Description())
 	}
-	receiver = rules.NewRules(receiver, nil)
-	expectedEvents := _this.decodedEvents
-	_this.assertEvents(t, receiver, expectedEvents...)
+}
+
+func (_this *CETestRunner) runEventToNothing() {
+	_this.beginTestPhase("E2N")
+
+	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			_this.driveEvents(recv, _this.events...)
+		}, func() string {
+			return fmt.Sprintf("Events %v", _this.events)
+		})
+}
+
+func (_this *CETestRunner) runCBEToNothing() {
+	_this.beginTestPhase("B2N")
+
+	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+		}, func() string {
+			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
+		})
+}
+
+func (_this *CETestRunner) runCTEToNothing() {
+	_this.beginTestPhase("T2N")
+
+	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+		}, func() string {
+			return fmt.Sprintf("CTE %v", desc(_this.Cte))
+		})
+}
+
+func (_this *CETestRunner) runEventToEvent() {
+	_this.beginTestPhase("E2E")
+
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver := rules.NewRules(eventStore, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			_this.driveEvents(recv, _this.events...)
+		}, func() string {
+			return fmt.Sprintf("Events %v", _this.events)
+		})
+
+	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEqual(actualEvents, expectedEvents) {
-		_this.fatalf(t, "E2E: Expected %v but got %v", expectedEvents, actualEvents)
+	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+		_this.testFailed("Expected events %v to produce events %v but got %v",
+			_this.events, expectedEvents, actualEvents)
 	}
 }
 
-func (_this *CETestRunner) runEventToCBE(t *testing.T) {
+func (_this *CETestRunner) runEventToCBE() {
+	_this.beginTestPhase("E2B")
+
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	var receiver events.DataEventReceiver = encoder
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runEventToCBE]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	_this.assertEvents(t, receiver, _this.decodedEvents...)
+	receiver := rules.NewRules(encoder, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			_this.driveEvents(recv, _this.events...)
+		}, func() string {
+			return fmt.Sprintf("Events %v", _this.events)
+		})
+
 	expectedDocument := _this.Cbe
 	actualDocument := buffer.Bytes()
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		_this.fatalf(t, "E2B: Expected %v but got %v after events %v", describe.D(expectedDocument), describe.D(actualDocument), _this.decodedEvents)
+	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
+		_this.testFailed("Expected events %v to produce CBE %v but got %v",
+			_this.events, desc(expectedDocument), desc(actualDocument))
 	}
 }
 
-func (_this *CETestRunner) runEventToCTE(t *testing.T) {
+func (_this *CETestRunner) runEventToCTE() {
+	_this.beginTestPhase("E2T")
+
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	var receiver events.DataEventReceiver = encoder
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runEventToCTE]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	_this.assertEvents(t, receiver, _this.decodedEvents...)
+	receiver := rules.NewRules(encoder, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			_this.driveEvents(recv, _this.events...)
+		}, func() string {
+			return fmt.Sprintf("Events %v", _this.events)
+		})
+
 	expectedDocument := _this.Cte
 	actualDocument := string(buffer.Bytes())
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		_this.fatalf(t, "E2T: Expected %v but got %v after events %v", expectedDocument, actualDocument, _this.decodedEvents)
+	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
+		_this.testFailed("Expected events %v to produce CTE %v but got %v after events %v",
+			_this.events, desc(expectedDocument), desc(actualDocument), _this.events)
 	}
 }
 
-func (_this *CETestRunner) runCBEToEvent(t *testing.T) {
-	eventStore := test.NewTEventStore()
-	var receiver events.DataEventReceiver = eventStore
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCBEToEvent]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	err := cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), receiver)
-	if !_this.Fail {
-		if err != nil {
-			_this.fatalf(t, "T2E: %v unexpectedly failed after events %v: %v", describe.D(_this.Cbe), eventStore.Events, err)
-		}
-		expectedEvents := _this.decodedEvents
-		actualEvents := eventStore.Events
-		if !test.AreAllEventsEqual(actualEvents, expectedEvents) {
-			_this.fatalf(t, "T2E: Expected %v to produce %v but got %v", describe.D(_this.Cbe), expectedEvents, actualEvents)
-		}
-	} else if err == nil {
-		_this.fatalf(t, "T2E: Expected %v to fail, but produced %v", describe.D(_this.Cbe), eventStore.Events)
+func (_this *CETestRunner) runCBEToEvent() {
+	_this.beginTestPhase("B2E")
+
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver := rules.NewRules(eventStore, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+		}, func() string {
+			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
+		})
+
+	expectedEvents := _this.events
+	actualEvents := eventStore.Events
+	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+		_this.testFailed("Expected CBE %v to produce events %v but got %v",
+			desc(_this.Cbe), expectedEvents, actualEvents)
 	}
 }
 
-func (_this *CETestRunner) runCBEToCBE(t *testing.T) {
+func (_this *CETestRunner) runCBEToCBE() {
+	_this.beginTestPhase("B2B")
+
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	var receiver events.DataEventReceiver = encoder
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCBEToCBE]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	err := cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), receiver)
+	receiver := rules.NewRules(encoder, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+		}, func() string {
+			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
+		})
+
 	expectedDocument := _this.Cbe
 	actualDocument := buffer.Bytes()
-	if _this.Fail && err == nil {
-		_this.fatalf(t, "B2B: Expected %v to fail, but produced %v", describe.D(expectedDocument), describe.D(actualDocument))
-	} else if !_this.Fail && err != nil {
-		_this.fatalf(t, "B2B: %v unexpectedly failed: %v", describe.D(_this.Cbe), err)
-	} else if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
-		_this.fatalf(t, "B2B: Expected %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
+	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
+		_this.testFailed("Expected CBE %v to produce CBE %v but got %v",
+			desc(_this.Cbe), desc(expectedDocument), desc(actualDocument))
 	}
 }
 
-func (_this *CETestRunner) runCBEToCTE(t *testing.T) {
+func (_this *CETestRunner) runCBEToCTE() {
+	_this.beginTestPhase("B2T")
+
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	var receiver events.DataEventReceiver = encoder
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCBEToCTE]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	err := cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), receiver)
+	receiver := rules.NewRules(encoder, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+		}, func() string {
+			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
+		})
+
 	expectedDocument := _this.Cte
 	actualDocument := string(buffer.Bytes())
-	if _this.Fail && err == nil {
-		_this.fatalf(t, "B2T: Expected %v to fail, but produced %v", describe.D(_this.Cbe), describe.D(actualDocument))
-	} else if !_this.Fail && err != nil {
-		_this.fatalf(t, "B2T: %v unexpectedly failed: %v", describe.D(_this.Cbe), err)
-	} else if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
-		_this.fatalf(t, "B2T: Expected %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
+	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
+		_this.testFailed("Expected CBE %v to produce CTE %v but got %v",
+			desc(_this.Cbe), desc(expectedDocument), desc(actualDocument))
 	}
 }
 
-func (_this *CETestRunner) runCTEToEvent(t *testing.T) {
-	eventStore := test.NewTEventStore()
-	var receiver events.DataEventReceiver = eventStore
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCTEToEvent]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	err := cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), receiver)
-	if !_this.Fail {
-		if err != nil {
-			_this.fatalf(t, "T2E: %v unexpectedly failed after %v: %v", _this.Cte, eventStore.Events, err)
-		}
-		expectedEvents := _this.decodedEvents
-		actualEvents := eventStore.Events
-		if !test.AreAllEventsEqual(actualEvents, expectedEvents) {
-			_this.fatalf(t, "T2E: Expected %v to produce %v but got %v", _this.Cte, expectedEvents, actualEvents)
-		}
-	} else if err == nil {
-		_this.fatalf(t, "T2E: Expected %v to fail, but produced %v", _this.Cte, eventStore.Events)
+func (_this *CETestRunner) runCTEToEvent() {
+	_this.beginTestPhase("T2E")
+
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver := rules.NewRules(eventStore, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+		}, func() string {
+			return fmt.Sprintf("CTE %v", desc(_this.Cte))
+		})
+
+	expectedEvents := _this.events
+	actualEvents := eventStore.Events
+	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+		_this.testFailed("Expected CTE %v to produce events %v but got %v",
+			desc(_this.Cte), expectedEvents, actualEvents)
 	}
 }
 
-func (_this *CETestRunner) runCTEToCBE(t *testing.T) {
+func (_this *CETestRunner) runCTEToCBE() {
+	_this.beginTestPhase("T2B")
+
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	var receiver events.DataEventReceiver = encoder
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCTEToCBE]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	err := cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), receiver)
+	receiver := rules.NewRules(encoder, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+		}, func() string {
+			return fmt.Sprintf("CTE %v", desc(_this.Cte))
+		})
+
 	expectedDocument := _this.Cbe
 	actualDocument := buffer.Bytes()
-	if _this.Fail && err == nil {
-		_this.fatalf(t, "T2B: Expected %v to fail, but produced %v", _this.Cte, describe.D(actualDocument))
-	} else if !_this.Fail && err != nil {
-		_this.fatalf(t, "T2B: %v unexpectedly failed: %v", _this.Cte, err)
-	} else if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
-		_this.fatalf(t, "T2B: Expected %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
+	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
+		_this.testFailed("Expected CTE %v to produce CBE %v but got %v",
+			desc(_this.Cte), desc(expectedDocument), desc(actualDocument))
 	}
 }
 
-func (_this *CETestRunner) runCTEToCTE(t *testing.T) {
+func (_this *CETestRunner) runCTEToCTE() {
+	_this.beginTestPhase("T2T")
+
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	var receiver events.DataEventReceiver = encoder
-	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-		fmt.Printf("[runCTEToCTE]\n")
-	}
-	receiver = rules.NewRules(receiver, nil)
-	err := cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), receiver)
+	receiver := rules.NewRules(encoder, nil)
+	_this.assertOperation(receiver,
+		func(recv events.DataEventReceiver) {
+			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+		}, func() string {
+			return fmt.Sprintf("CTE %v", desc(_this.Cte))
+		})
+
 	expectedDocument := _this.Cte
 	actualDocument := string(buffer.Bytes())
-	if _this.Fail && err == nil {
-		_this.fatalf(t, "T2T: Expected %v to fail, but produced %v", _this.Cte, actualDocument)
-	} else if !_this.Fail && err != nil {
-		_this.fatalf(t, "T2T: %v unexpectedly failed: %v", _this.Cte, err)
-	} else if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
-		_this.fatalf(t, "T2T: Expected %v but got %v", describe.D(expectedDocument), describe.D(actualDocument))
+	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
+		_this.testFailed("Expected CTE %v to produce CTE %v but got %v",
+			desc(_this.Cte), desc(expectedDocument), desc(actualDocument))
 	}
 }
 
@@ -568,4 +613,24 @@ func toMembershipSet(valueArrays ...[]string) map[string]bool {
 		}
 	}
 	return set
+}
+
+func desc(v interface{}) string {
+	switch v.(type) {
+	case string:
+		return fmt.Sprintf("[%v]", v)
+	case []byte:
+		sb := strings.Builder{}
+		sb.WriteByte('[')
+		for i, b := range v.([]byte) {
+			sb.WriteString(fmt.Sprintf("%02x", b))
+			if i < len(v.([]byte))-1 {
+				sb.WriteByte(' ')
+			}
+		}
+		sb.WriteByte(']')
+		return sb.String()
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }

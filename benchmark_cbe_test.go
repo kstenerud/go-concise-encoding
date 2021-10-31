@@ -265,7 +265,7 @@ func BenchmarkJSONUnmarshal(b *testing.B) {
 
 func BenchmarkRules(b *testing.B) {
 	b.Helper()
-	store := test.NewTEventStore()
+	store := test.NewTEventStore(events.NewNullEventReceiver())
 	iterSession := iterator.NewSession(nil, nil)
 	iterOptions := options.DefaultIteratorOptions()
 	iterOptions.RecursionSupport = false
@@ -291,7 +291,7 @@ func BenchmarkRules(b *testing.B) {
 
 func BenchmarkBuilder(b *testing.B) {
 	b.Helper()
-	store := test.NewTEventStore()
+	store := test.NewTEventStore(events.NewNullEventReceiver())
 	iterSession := iterator.NewSession(nil, nil)
 	iterOptions := options.DefaultIteratorOptions()
 	iterOptions.RecursionSupport = false
