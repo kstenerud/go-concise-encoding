@@ -41,6 +41,7 @@ import (
 
 // API
 
+// Run a CE test suite, described by the CTE document at testDescriptorFile
 func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
 	file, err := os.Open(testDescriptorFile)
 	if err != nil {
@@ -62,10 +63,7 @@ func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
 
 type CETestSuite struct {
 	TestFile string
-	// TODO: Decoding silently fails if nonexistent field is in CTE and is a list?
-	// But int is ok, and string causes printing to show everything???
-	References interface{}
-	Tests      []*CETest
+	Tests    []*CETestRunner
 }
 
 // func (_this *CETestSuite) String() string {
@@ -85,7 +83,7 @@ func (_this *CETestSuite) postDecodeInit() {
 		}
 	}()
 
-	var unitTest *CETest
+	var unitTest *CETestRunner
 	for index, unitTest = range _this.Tests {
 		unitTest.TestFile = _this.TestFile
 		unitTest.TestIndex = index
@@ -106,7 +104,7 @@ func (_this *CETestSuite) validate() {
 		}
 	}()
 
-	var unitTest *CETest
+	var unitTest *CETestRunner
 	for index, unitTest = range _this.Tests {
 		unitTest.validate()
 	}
@@ -125,7 +123,7 @@ func (_this *CETestSuite) run(t *testing.T) {
 		}
 	}()
 
-	var unitTest *CETest
+	var unitTest *CETestRunner
 	for index, unitTest = range _this.Tests {
 		unitTest.run(t)
 	}
@@ -133,7 +131,7 @@ func (_this *CETestSuite) run(t *testing.T) {
 
 // Unit Test
 
-type CETest struct {
+type CETestRunner struct {
 	Name      string
 	TestFile  string
 	TestIndex int
@@ -157,7 +155,7 @@ type CETest struct {
 // 	return describe.D(_this)
 // }
 
-func (_this *CETest) postDecodeInit() {
+func (_this *CETestRunner) postDecodeInit() {
 	_this.decodedEvents = event_parser.ParseEvents(_this.Events)
 	_this.Cte = strings.TrimSpace(_this.Cte)
 	_this.srcEventTypes = toMembershipSet(_this.From)
@@ -166,7 +164,7 @@ func (_this *CETest) postDecodeInit() {
 	_this.validate()
 }
 
-func (_this *CETest) validate() {
+func (_this *CETestRunner) validate() {
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
@@ -208,7 +206,7 @@ func (_this *CETest) validate() {
 	}
 }
 
-func (_this *CETest) run(t *testing.T) {
+func (_this *CETestRunner) run(t *testing.T) {
 	if _this.Skip {
 		if _this.Debug {
 			fmt.Printf("Skipping %v\n", _this.description())
@@ -277,7 +275,7 @@ func (_this *CETest) run(t *testing.T) {
 	}
 }
 
-func (_this *CETest) capturePanic(operation func()) (err error) {
+func (_this *CETestRunner) capturePanic(operation func()) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
@@ -293,22 +291,22 @@ func (_this *CETest) capturePanic(operation func()) (err error) {
 	return
 }
 
-func (_this *CETest) description() string {
+func (_this *CETestRunner) description() string {
 	return fmt.Sprintf("%v:%v (%v)", _this.TestFile, _this.TestIndex, _this.Name)
 }
 
-func (_this *CETest) fatalf(t *testing.T, format string, args ...interface{}) {
+func (_this *CETestRunner) fatalf(t *testing.T, format string, args ...interface{}) {
 	message := fmt.Sprintf(format, args...)
 	t.Fatalf("%v: %v", _this.description(), message)
 }
 
-func (_this *CETest) assertPanics(t *testing.T, operation func()) {
+func (_this *CETestRunner) assertPanics(t *testing.T, operation func()) {
 	if err := _this.capturePanic(operation); err == nil {
 		_this.fatalf(t, "Expected a panic")
 	}
 }
 
-func (_this *CETest) assertNoPanic(t *testing.T, operation func()) {
+func (_this *CETestRunner) assertNoPanic(t *testing.T, operation func()) {
 	if _this.Panic {
 		operation()
 	}
@@ -317,7 +315,7 @@ func (_this *CETest) assertNoPanic(t *testing.T, operation func()) {
 	}
 }
 
-func (_this *CETest) assertEvents(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
+func (_this *CETestRunner) assertEvents(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
 	operation := func() {
 		for _, event := range events {
 			event.Invoke(receiver)
@@ -330,7 +328,7 @@ func (_this *CETest) assertEvents(t *testing.T, receiver events.DataEventReceive
 	}
 }
 
-func (_this *CETest) runEventToNothing(t *testing.T) {
+func (_this *CETestRunner) runEventToNothing(t *testing.T) {
 	var receiver events.DataEventReceiver = events.NewNullEventReceiver()
 	if _this.Debug {
 		receiver = test.NewStdoutTEventPrinter(receiver)
@@ -341,7 +339,7 @@ func (_this *CETest) runEventToNothing(t *testing.T) {
 	_this.assertEvents(t, receiver, _this.decodedEvents...)
 }
 
-func (_this *CETest) runCBEToNothing(t *testing.T) {
+func (_this *CETestRunner) runCBEToNothing(t *testing.T) {
 	eventStore := test.NewTEventStore()
 	var receiver events.DataEventReceiver = eventStore
 	if _this.Debug {
@@ -358,7 +356,7 @@ func (_this *CETest) runCBEToNothing(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCTEToNothing(t *testing.T) {
+func (_this *CETestRunner) runCTEToNothing(t *testing.T) {
 	eventStore := test.NewTEventStore()
 	var receiver events.DataEventReceiver = eventStore
 	if _this.Debug {
@@ -375,7 +373,7 @@ func (_this *CETest) runCTEToNothing(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runEventToEvent(t *testing.T) {
+func (_this *CETestRunner) runEventToEvent(t *testing.T) {
 	eventStore := test.NewTEventStore()
 	var receiver events.DataEventReceiver = eventStore
 	if _this.Debug {
@@ -391,7 +389,7 @@ func (_this *CETest) runEventToEvent(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runEventToCBE(t *testing.T) {
+func (_this *CETestRunner) runEventToCBE(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -409,7 +407,7 @@ func (_this *CETest) runEventToCBE(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runEventToCTE(t *testing.T) {
+func (_this *CETestRunner) runEventToCTE(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -427,7 +425,7 @@ func (_this *CETest) runEventToCTE(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCBEToEvent(t *testing.T) {
+func (_this *CETestRunner) runCBEToEvent(t *testing.T) {
 	eventStore := test.NewTEventStore()
 	var receiver events.DataEventReceiver = eventStore
 	if _this.Debug {
@@ -450,7 +448,7 @@ func (_this *CETest) runCBEToEvent(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCBEToCBE(t *testing.T) {
+func (_this *CETestRunner) runCBEToCBE(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -472,7 +470,7 @@ func (_this *CETest) runCBEToCBE(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCBEToCTE(t *testing.T) {
+func (_this *CETestRunner) runCBEToCTE(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -494,7 +492,7 @@ func (_this *CETest) runCBEToCTE(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCTEToEvent(t *testing.T) {
+func (_this *CETestRunner) runCTEToEvent(t *testing.T) {
 	eventStore := test.NewTEventStore()
 	var receiver events.DataEventReceiver = eventStore
 	if _this.Debug {
@@ -517,7 +515,7 @@ func (_this *CETest) runCTEToEvent(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCTEToCBE(t *testing.T) {
+func (_this *CETestRunner) runCTEToCBE(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -539,7 +537,7 @@ func (_this *CETest) runCTEToCBE(t *testing.T) {
 	}
 }
 
-func (_this *CETest) runCTEToCTE(t *testing.T) {
+func (_this *CETestRunner) runCTEToCTE(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)

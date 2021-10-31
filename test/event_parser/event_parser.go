@@ -35,6 +35,7 @@ import (
 
 // API
 
+// Parse a string shorthand into an event for testing
 func ParseEvent(eventStr string) *test.TEvent {
 	components := parseEventName.FindSubmatch([]byte(eventStr))
 	if len(components) == 0 {
@@ -48,6 +49,7 @@ func ParseEvent(eventStr string) *test.TEvent {
 	return parser.ParseEvent(eventStr)
 }
 
+// Parse multiple events
 func ParseEvents(eventStrings []string) []*test.TEvent {
 	var index = 0
 	var eventStr string

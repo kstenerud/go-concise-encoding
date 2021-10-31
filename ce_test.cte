@@ -1,37 +1,81 @@
 c0
 {
-	"references" = []
-	"tests" = [
-		{
-			"name" = "example"
-			"cte" = "\.^^
-c0
-[
-    1
-    2
-    3
-]
-	        ^^"
-			"cbe"    = |u8x 83 00 7a 01 02 03 7b|
-			"events" = ["bd" "v 0" "l" "i 1"  "i 2" "i 3" "e" "ed"]
-			"from"   = ["t" "b" "e"]
-			"to"     = ["t" "b" "e"]
-			"fail"   = false // Expect failure?
-			"panic"  = false // Let panics escape instead of capturing them?
-			"debug"  = false // Print debug information while testing?
-			"skip"   = false // Skip this test?
-		}
+    "references" = []
+    "tests" = [
 
-		{
-			"name" = "work"
-			"cte" = "\.^^
+        // ====================================================================
+
+        /* Test case template
+         *
+         * Fields (see test/test_runner/test_runner.go):
+         * - name:   Name of this test (required)
+         * - cte:    Encoded CTE data (required if "t" specified in TO or FROM)
+         * - cbe:    Encoded CBE data (required if "b" specified in TO or FROM)
+         * - events: CE codec events (required if "e" specified in TO or FROM)
+         * - to:     Test converting to CTE ("t"), CBE ("b"), events ("e")
+         * - from:   Test converting from CTE ("t"), CBE ("b"), events ("e")
+         * - fail:   Expect failure? (default false)
+         * - panic:  Let panics escape instead of capturing them? (default false)
+         * - debug:  Print debug information while testing? (default false)
+         * - skip:   Skip this test? (default false)
+         *
+         * Notes:
+         * - Events are shorthand representations of events associated with CE data
+         *   (see test/event_parser/event_parser.go).
+         * - If TO is empty, the data will simply run through the rules engine.
+         * - CTE data is string compared (after trimming leading and trailing whitespace),
+         *   so unexpected indentation will cause the comparison to fail.
+         */
+
+        {
+            "name" = "Template"
+            "cte" = "\.^^
+c0
+null
+            ^^"
+            "cbe"    = |u8x 83 00 7e|
+            "events" = ["bd" "v 0" "n" "ed"]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["t" "b" "e"]
+            "fail"   = false
+            "panic"  = false
+            "debug"  = false
+            "skip"   = false
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Empty document"
+            "cte" = "\.^^
+c0
+null
+            ^^"
+            "cbe"    = |u8x 83 00 7e|
+            "events" = ["bd" "v 0" "n" "ed"]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["t" "b" "e"]
+            "fail"   = false // Expect failure?
+            "panic"  = false // Let panics escape instead of capturing them?
+            "debug"  = false // Print debug information while testing?
+            "skip"   = false // Skip this test?
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int8 array"
+            "cte" = "\.^^
 c0
 |i8 1 -1|
-	        ^^"
-			"cbe"    = |u8x 83 00 94 02 01 ff|
-			"events" = ["bd" "v 0" "ai8 1 -1" "ed"]
-			"from"   = ["t" "b" "e"]
-			"to"     = ["t" "b" "e"]
-		}
-	]
+            ^^"
+            "cbe"    = |u8x 83 00 94 02 01 ff|
+            "events" = ["bd" "v 0" "ai8 1 -1" "ed"]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["t" "b" "e"]
+        }
+
+        // ====================================================================
+
+    ]
 }
