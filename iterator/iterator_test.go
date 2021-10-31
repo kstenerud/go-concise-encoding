@@ -26,6 +26,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kstenerud/go-concise-encoding/events"
+
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -256,7 +258,7 @@ func TestIterateStruct(t *testing.T) {
 
 func TestIterateNilOpts(t *testing.T) {
 	expected := []*test.TEvent{BD(), EvV, I(1), ED()}
-	receiver := test.NewTEventStore()
+	receiver := test.NewTEventStore(events.NewNullEventReceiver())
 	iterateObject(1, receiver, nil, nil)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
@@ -279,7 +281,7 @@ func TestIterateRecurse(t *testing.T) {
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true
-	receiver := test.NewTEventStore()
+	receiver := test.NewTEventStore(events.NewNullEventReceiver())
 	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {

@@ -175,11 +175,11 @@ func assertIterateWithOptions(t *testing.T,
 	sessionOptions *options.IteratorSessionOptions,
 	iteratorOptions *options.IteratorOptions,
 	obj interface{},
-	events ...*test.TEvent) {
+	evts ...*test.TEvent) {
 
-	expected := append([]*test.TEvent{BD(), EvV}, events...)
+	expected := append([]*test.TEvent{BD(), EvV}, evts...)
 	expected = append(expected, ED())
-	receiver := test.NewTEventStore()
+	receiver := test.NewTEventStore(events.NewNullEventReceiver())
 	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {

@@ -21,11 +21,12 @@
 package cte
 
 import (
-	"math"
 	"math/big"
 
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+
+	"github.com/kstenerud/go-compact-float"
 )
 
 func decodeInvalidChar(ctx *DecoderContext) {
@@ -208,7 +209,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 		if namedValue != "inf" {
 			ctx.Errorf("Unknown named value: %v", namedValue)
 		}
-		ctx.EventReceiver.OnFloat(math.Inf(-1))
+		ctx.EventReceiver.OnDecimalFloat(compact_float.NegativeInfinity())
 		ctx.RequireStructuralWS()
 		return
 	}
@@ -326,7 +327,7 @@ func decodeNamedValueI(ctx *DecoderContext) {
 	namedValue := ctx.Stream.ReadNamedValue()
 	switch string(namedValue) {
 	case "inf":
-		ctx.EventReceiver.OnFloat(math.Inf(1))
+		ctx.EventReceiver.OnDecimalFloat(compact_float.Infinity())
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}

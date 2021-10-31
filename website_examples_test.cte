@@ -1,0 +1,64 @@
+c0
+{
+    "references" = []
+    "tests" = [
+
+        // ====================================================================
+
+        {
+            "name" = "Numeric types"
+            "cte" = "\.^^
+c0
+{
+    "boolean"       = true
+    "binary-int"    = -0b10001011
+    "octal-int"     = 0o644
+    "decimal-int"   = -10000000
+    "hex-int"       = 0xfffe0001
+    "very-long-int" = 100000000000000000000000000000000000009
+    "decimal-float" = -14.125
+    "hex-float"     = 0x5.1ec4p+20
+    "very-long-flt" = 4.957234990634579394723460546348e+100000
+    "not-a-number"  = nan
+    "infinity"      = inf
+    "neg-infinity"  = -inf
+}
+            ^^"
+            "cbe"    = |u8x 83 00 79 87 62 6f 6f 6c 65 61 6e 7d 8a 62 69 6e
+                            61 72 79 2d 69 6e 74 69 8b 89 6f 63 74 61 6c 2d
+                            69 6e 74 6a a4 01 8b 64 65 63 69 6d 61 6c 2d 69
+                            6e 74 6d 80 96 98 00 87 68 65 78 2d 69 6e 74 6c
+                            01 00 fe ff 8d 76 65 72 79 2d 6c 6f 6e 67 2d 69
+                            6e 74 66 10 09 00 00 00 40 22 8a 09 7a c4 86 5a
+                            a8 4c 3b 4b 8d 64 65 63 69 6d 61 6c 2d 66 6c 6f
+                            61 74 65 0f ad 6e 89 68 65 78 2d 66 6c 6f 61 74
+                            71 80 d8 a3 4a 8d 76 65 72 79 2d 6c 6f 6e 67 2d
+                            66 6c 74 65 88 b4 18 ac fe 87 98 b5 a3 d5 e3 db
+                            ac b4 85 9b d2 0f 8c 6e 6f 74 2d 61 2d 6e 75 6d
+                            62 65 72 65 80 00 88 69 6e 66 69 6e 69 74 79 65
+                            82 00 8c 6e 65 67 2d 69 6e 66 69 6e 69 74 79 65
+                            83 00 7b|
+            "events" = [
+                            "bd" "v 0" "m"
+                                "s boolean"       "tt"
+                                "s binary-int"    "ni 0b10001011"
+                                "s octal-int"     "pi 0o644"
+                                "s decimal-int"   "ni 10000000"
+                                "s hex-int"       "pi 0xfffe0001"
+                                "s very-long-int" "bi 100000000000000000000000000000000000009"
+                                "s decimal-float" "df -14.125"
+                                "s hex-float"     "f 0x5.1ec4p+20"
+                                "s very-long-flt" "bdf 4.957234990634579394723460546348e+100000"
+                                "s not-a-number"  "nan"
+                                "s infinity"      "df inf"
+                                "s neg-infinity"  "df -inf"
+                            "e" "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
+    ]
+}

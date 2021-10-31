@@ -248,7 +248,7 @@ var DebugPrintEvents = false
 
 func decodeToEvents(opts *options.CBEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var topLevelReceiver events.DataEventReceiver
-	ter := test.NewTEventStore()
+	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	topLevelReceiver = rules.NewRules(ter, nil)
 	if DebugPrintEvents {
 		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)

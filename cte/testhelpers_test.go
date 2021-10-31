@@ -161,7 +161,7 @@ var DebugPrintEvents = false
 
 func decodeToEvents(opts *options.CTEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var receiver events.DataEventReceiver
-	ter := test.NewTEventStore()
+	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver = ter
 	receiver = rules.NewRules(receiver, nil)
 	if DebugPrintEvents {

@@ -31,6 +31,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
+
+	"github.com/kstenerud/go-compact-float"
 )
 
 // TODO: Remove this when releasing V1
@@ -1497,8 +1499,8 @@ func TestCTENamed(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, N(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nnan", BD(), EvV, NAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nsnan", BD(), EvV, SNAN(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\ninf", BD(), EvV, F(math.Inf(1)), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n-inf", BD(), EvV, F(math.Inf(-1)), ED())
+	assertDecodeEncode(t, nil, nil, "c0\ninf", BD(), EvV, DF(compact_float.Infinity()), ED())
+	assertDecodeEncode(t, nil, nil, "c0\n-inf", BD(), EvV, DF(compact_float.NegativeInfinity()), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nfalse", BD(), EvV, FF(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\ntrue", BD(), EvV, TT(), ED())
 }
@@ -2067,8 +2069,8 @@ func TestMixedCase(t *testing.T) {
 	testDecodeCasePermutations(t, "null", N())
 	testDecodeCasePermutations(t, "nan", NAN())
 	testDecodeCasePermutations(t, "snan", SNAN())
-	testDecodeCasePermutations(t, "inf", F(math.Inf(1)))
-	testDecodeCasePermutations(t, "-inf", F(math.Inf(-1)))
+	testDecodeCasePermutations(t, "inf", DF(compact_float.Infinity()))
+	testDecodeCasePermutations(t, "-inf", DF(compact_float.NegativeInfinity()))
 	testDecodeCasePermutations(t, "false", FF())
 	testDecodeCasePermutations(t, "true", TT())
 }

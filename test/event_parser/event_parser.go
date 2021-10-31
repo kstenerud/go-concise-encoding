@@ -129,12 +129,22 @@ func parseBool(bytes []byte) interface{} {
 	panic(fmt.Errorf("Error parsing bool [%v]", string(bytes)))
 }
 
-func parseInt(bytes []byte) interface{} {
-	base := 10
-	if len(bytes) > 1 && bytes[0] == '0' && (bytes[1] == 'x' || bytes[1] == 'X') {
-		base = 16
+func getBase(bytes []byte) int {
+	if len(bytes) > 1 && bytes[0] == '0' {
+		switch bytes[1] {
+		case 'b', 'B':
+			return 2
+		case 'o', 'O':
+			return 8
+		case 'x', 'X':
+			return 16
+		}
 	}
-	value, err := strconv.ParseInt(string(bytes), base, 64)
+	return 10
+}
+
+func parseInt(bytes []byte) interface{} {
+	value, err := strconv.ParseInt(string(bytes), 0, 64)
 	if err != nil {
 		panic(fmt.Errorf("Error parsing int [%v]: %w", string(bytes), err))
 	}
@@ -142,11 +152,7 @@ func parseInt(bytes []byte) interface{} {
 }
 
 func parseUint(bytes []byte) interface{} {
-	base := 10
-	if len(bytes) > 1 && bytes[0] == '0' && (bytes[1] == 'x' || bytes[1] == 'X') {
-		base = 16
-	}
-	value, err := strconv.ParseUint(string(bytes), base, 64)
+	value, err := strconv.ParseUint(string(bytes), 0, 64)
 	if err != nil {
 		panic(fmt.Errorf("Error parsing uint [%v]: %w", string(bytes), err))
 	}
@@ -154,11 +160,7 @@ func parseUint(bytes []byte) interface{} {
 }
 
 func parseBigInt(bytes []byte) interface{} {
-	base := 10
-	if len(bytes) > 1 && bytes[0] == '0' && (bytes[1] == 'x' || bytes[1] == 'X') {
-		base = 16
-	}
-	return test.NewBigInt(string(bytes), base)
+	return test.NewBigInt(string(bytes), getBase(bytes))
 }
 
 func parseFloat(bytes []byte) interface{} {
