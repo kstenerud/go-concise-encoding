@@ -443,9 +443,9 @@ func (_this *Encoder) OnReference(id []byte) {
 	_this.writer.WriteIdentifier(id)
 }
 
-func (_this *Encoder) OnRIDReference() {
+func (_this *Encoder) OnRemoteReference() {
 	_this.writer.WriteType(cbeTypePlane2)
-	_this.writer.WriteType(cbeTypeRIDReference)
+	_this.writer.WriteType(cbeTypeRemoteReference)
 }
 
 func (_this *Encoder) OnConstant(name []byte) {

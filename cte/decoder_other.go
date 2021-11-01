@@ -398,7 +398,7 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 
 	if ctx.Stream.PeekByteNoEOF() == '"' {
 		ctx.Stream.AdvanceByte() // Advance past '"'
-		decodeResourceIDReference(ctx)
+		decodeRemoteReference(ctx)
 		return
 	}
 

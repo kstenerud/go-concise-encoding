@@ -42,7 +42,7 @@ const (
 	ArrayTypeResourceID
 	ArrayTypeResourceIDConcat
 	ArrayTypeResourceIDConcat2
-	ArrayTypeResourceIDRef
+	ArrayTypeRemoteRef
 	ArrayTypeCustomText
 	ArrayTypeCustomBinary
 	// Note: Boolean arrays are passed in the CBE boolean array representation,
@@ -81,7 +81,7 @@ var arrayTypeNames = [...]string{
 	ArrayTypeResourceID:        "ResourceID",
 	ArrayTypeResourceIDConcat:  "ResourceIDConcat",
 	ArrayTypeResourceIDConcat2: "ResourceIDConcat 2",
-	ArrayTypeResourceIDRef:     "ResourceIDRef",
+	ArrayTypeRemoteRef:         "RemoteRef",
 	ArrayTypeCustomText:        "Custom Text",
 	ArrayTypeCustomBinary:      "Custom Binary",
 	ArrayTypeBit:               "Boolean",
@@ -107,7 +107,7 @@ var arrayTypeElementSizes = [...]int{
 	ArrayTypeResourceID:        8,
 	ArrayTypeResourceIDConcat:  8,
 	ArrayTypeResourceIDConcat2: 8,
-	ArrayTypeResourceIDRef:     8,
+	ArrayTypeRemoteRef:         8,
 	ArrayTypeCustomText:        8,
 	ArrayTypeCustomBinary:      8,
 	ArrayTypeBit:               1,

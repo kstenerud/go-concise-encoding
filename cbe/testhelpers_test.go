@@ -116,7 +116,7 @@ const (
 
 	typeNA           = 0xe0
 	typeRIDCat       = 0xe1
-	typeRIDRef       = 0xe2
+	typeRemoteRef    = 0xe2
 	typeMedia        = 0xe3
 	typeArrayInt8    = 0xff
 	typeArrayUint16  = 0xfe
@@ -234,7 +234,7 @@ func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
-func RIDREF(v string) *test.TEvent           { return test.RIDREF(v) }
+func RREF(v string) *test.TEvent             { return test.RREF(v) }
 func RRB() *test.TEvent                      { return test.RRB() }
 func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func BD() *test.TEvent                       { return test.BD() }

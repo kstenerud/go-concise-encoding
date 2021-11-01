@@ -256,8 +256,8 @@ func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEv
 	}
 
 	switch cbeType {
-	case cbeTypeRIDReference:
-		_this.decodeArray(events.ArrayTypeResourceIDRef, eventReceiver)
+	case cbeTypeRemoteReference:
+		_this.decodeArray(events.ArrayTypeRemoteRef, eventReceiver)
 	case cbeTypeRIDCat:
 		_this.decodeRIDCat(eventReceiver)
 	case cbeTypeMedia:

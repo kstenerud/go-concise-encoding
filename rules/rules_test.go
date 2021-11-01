@@ -146,13 +146,13 @@ func TestRulesReference(t *testing.T) {
 
 	rules = newRulesWithMaxDepth(10)
 
-	assertEventsSucceed(t, rules, L(), RIDREF("http://example.com"), E())
+	assertEventsSucceed(t, rules, L(), RREF("http://example.com"), E())
 
 	rules = newRulesWithMaxDepth(10)
 
 	assertEventsSucceed(t, rules, L(), MARK("a"), F(0.1), MARK("blah"), GT(time.Now()),
 		REF("a"),
-		RIDREF("http://example.com"),
+		RREF("http://example.com"),
 		REF("blah"),
 		S("test"),
 		E())
@@ -672,7 +672,7 @@ func TestRulesReset(t *testing.T) {
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	rules := NewRules(events.NewNullEventReceiver(), opts)
-	assertEventsSucceed(t, rules, BD(), EvV, RIDREF("http://x.y"), ED())
+	assertEventsSucceed(t, rules, BD(), EvV, RREF("http://x.y"), ED())
 }
 
 func TestRulesForwardReference(t *testing.T) {

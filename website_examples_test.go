@@ -242,7 +242,7 @@ func TestWebsiteExampleReferences(t *testing.T) {
 		S("ref1"), REF("id1"),
 		S("ref2"), REF("id1"),
 		COM(false, " Reference pointing to part of another document."),
-		S("outside ref"), RIDREF("https://xyz.com/document.cte#some_id"),
+		S("outside ref"), RREF("https://xyz.com/document.cte#some_id"),
 		E(), ED())
 }
 

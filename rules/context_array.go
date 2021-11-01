@@ -176,7 +176,7 @@ func (_this *Context) BeginArrayString(contextDesc string, arrayType events.Arra
 	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 }
 
-func (_this *Context) BeginArrayRIDReference(arrayType events.ArrayType) {
+func (_this *Context) BeginArrayRemoteReference(arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayType("resource ID reference", arrayType, AllowResourceID)
 	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)

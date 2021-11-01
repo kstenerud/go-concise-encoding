@@ -390,7 +390,6 @@ func init() {
 	eventParsersByName["ct"] = newParser(test.TEventCompactTime, parseCompactTime)
 	eventParsersByName["s"] = newParser(test.TEventString, parseString)
 	eventParsersByName["rid"] = newParser(test.TEventResourceID, parseString)
-	eventParsersByName["ridref"] = newParser(test.TEventResourceIDRef, parseString)
 	eventParsersByName["cub"] = newParser(test.TEventCustomBinary, parseBytes)
 	eventParsersByName["cut"] = newParser(test.TEventCustomText, parseString)
 	// func AB(l uint64, v []byte) *test.TEvent     { return test.NewTEvent(test.TEventArrayBoolean, l, v) }
@@ -408,7 +407,7 @@ func init() {
 	// func AUU(v []byte) *test.TEvent              { return test.NewTEvent(test.TEventArrayUID, v, nil) }
 	eventParsersByName["sb"] = newParser(test.TEventStringBegin)
 	eventParsersByName["rb"] = newParser(test.TEventResourceIDBegin)
-	eventParsersByName["rrb"] = newParser(test.TEventResourceIDRefBegin)
+	eventParsersByName["rrb"] = newParser(test.TEventRemoteRefBegin)
 	eventParsersByName["rbcat"] = newParser(test.TEventResourceIDCatBegin)
 	eventParsersByName["cbb"] = newParser(test.TEventCustomBinaryBegin)
 	eventParsersByName["ctb"] = newParser(test.TEventCustomTextBegin)
@@ -434,5 +433,6 @@ func init() {
 	eventParsersByName["e"] = newParser(test.TEventEnd)
 	eventParsersByName["mark"] = newParser(test.TEventMarker, parseString)
 	eventParsersByName["ref"] = newParser(test.TEventReference, parseString)
+	eventParsersByName["rref"] = newParser(test.TEventRemoteRef, parseString)
 	eventParsersByName["const"] = newParser(test.TEventConstant, parseString)
 }

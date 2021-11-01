@@ -256,7 +256,7 @@ func (_this *EncoderEventReceiver) OnReference(id []byte) {
 	_this.context.AfterValue()
 }
 
-func (_this *EncoderEventReceiver) OnRIDReference() {
+func (_this *EncoderEventReceiver) OnRemoteReference() {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteReferenceBegin()
 	_this.context.Stack(concatDecorator)

@@ -337,7 +337,7 @@ var (
 	EvE      = E()
 	EvMARK   = MARK("a")
 	EvREF    = REF("a")
-	EvRIDREF = RIDREF("a")
+	EvRREF   = RREF("a")
 	EvAC     = AC(1, false)
 	EvAD     = AD([]byte{1})
 	EvS      = S("a")
@@ -382,7 +382,7 @@ var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvCOM, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvNODE, EvEDGE, EvE,
-	EvMARK, EvREF, EvRIDREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
+	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvRBCat, EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
 	EvAI32, EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
@@ -432,7 +432,7 @@ func FilterCTE(event *TEvent) []*TEvent {
 		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
 		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUIDBegin,
 		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
-		TEventResourceIDRefBegin, TEventStringBegin:
+		TEventRemoteRefBegin, TEventStringBegin:
 		return []*TEvent{S("x")}
 	case TEventResourceIDCatBegin:
 		return []*TEvent{RBCat(), AC(1, true), AD([]byte{'a'}), AC(0, false)}
@@ -532,7 +532,7 @@ var (
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMARK, EvREF, EvRIDREF}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMARK, EvREF, EvRREF}
 
 	Padding                     = []*TEvent{EvPAD}
 	CommentsPaddingRefEnd       = []*TEvent{EvPAD, EvCOM, EvREF, EvE}
@@ -601,7 +601,7 @@ var basicCompletions = map[TEventType][]*TEvent{
 	TEventEdge:               []*TEvent{RID("a"), RID("b"), I(1)},
 	TEventStringBegin:        []*TEvent{AC(1, false), AD([]byte{'a'})},
 	TEventResourceIDBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventResourceIDRefBegin: []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventRemoteRefBegin:     []*TEvent{AC(1, false), AD([]byte{'a'})},
 	TEventResourceIDCatBegin: []*TEvent{AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{'a'})},
 	TEventCustomBinaryBegin:  []*TEvent{AC(1, false), AD([]byte{1})},
 	TEventCustomTextBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
@@ -680,7 +680,7 @@ func allPossibleEventStreams(
 		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
 		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUIDBegin,
 		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
-		TEventResourceIDRefBegin, TEventStringBegin:
+		TEventRemoteRefBegin, TEventStringBegin:
 		newStream := copyEvents(docBegin)
 		newStream = append(newStream, prefix...)
 		newStream = append(newStream, event)
@@ -768,7 +768,7 @@ const (
 	TEventCompactTime
 	TEventString
 	TEventResourceID
-	TEventResourceIDRef
+	TEventRemoteRef
 	TEventCustomBinary
 	TEventCustomText
 	TEventArrayBoolean
@@ -786,7 +786,7 @@ const (
 	TEventArrayUID
 	TEventStringBegin
 	TEventResourceIDBegin
-	TEventResourceIDRefBegin
+	TEventRemoteRefBegin
 	TEventResourceIDCatBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
@@ -842,7 +842,7 @@ var TEventNames = []string{
 	TEventCompactTime:        "CT",
 	TEventString:             "S",
 	TEventResourceID:         "RID",
-	TEventResourceIDRef:      "RIDREF",
+	TEventRemoteRef:          "RREF",
 	TEventCustomBinary:       "CUB",
 	TEventCustomText:         "CUT",
 	TEventArrayBoolean:       "AB",
@@ -860,7 +860,7 @@ var TEventNames = []string{
 	TEventArrayUID:           "AUU",
 	TEventStringBegin:        "SB",
 	TEventResourceIDBegin:    "RB",
-	TEventResourceIDRefBegin: "RRB",
+	TEventRemoteRefBegin:     "RRB",
 	TEventResourceIDCatBegin: "RBCat",
 	TEventCustomBinaryBegin:  "CBB",
 	TEventCustomTextBegin:    "CTB",
@@ -1155,8 +1155,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnStringlikeArray(events.ArrayTypeString, _this.V1.(string))
 	case TEventResourceID:
 		receiver.OnStringlikeArray(events.ArrayTypeResourceID, _this.V1.(string))
-	case TEventResourceIDRef:
-		receiver.OnStringlikeArray(events.ArrayTypeResourceIDRef, _this.V1.(string))
+	case TEventRemoteRef:
+		receiver.OnStringlikeArray(events.ArrayTypeRemoteRef, _this.V1.(string))
 	case TEventCustomBinary:
 		bytes := _this.V1.([]byte)
 		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
@@ -1207,8 +1207,8 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArrayBegin(events.ArrayTypeString)
 	case TEventResourceIDBegin:
 		receiver.OnArrayBegin(events.ArrayTypeResourceID)
-	case TEventResourceIDRefBegin:
-		receiver.OnArrayBegin(events.ArrayTypeResourceIDRef)
+	case TEventRemoteRefBegin:
+		receiver.OnArrayBegin(events.ArrayTypeRemoteRef)
 	case TEventResourceIDCatBegin:
 		receiver.OnArrayBegin(events.ArrayTypeResourceIDConcat)
 	case TEventCustomBinaryBegin:
@@ -1305,7 +1305,7 @@ func GT(v time.Time) *TEvent            { return NewTEvent(TEventTime, v, nil) }
 func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
 func S(v string) *TEvent                { return NewTEvent(TEventString, v, nil) }
 func RID(v string) *TEvent              { return NewTEvent(TEventResourceID, v, nil) }
-func RIDREF(v string) *TEvent           { return NewTEvent(TEventResourceIDRef, v, nil) }
+func RREF(v string) *TEvent             { return NewTEvent(TEventRemoteRef, v, nil) }
 func CUB(v []byte) *TEvent              { return NewTEvent(TEventCustomBinary, v, nil) }
 func CUT(v string) *TEvent              { return NewTEvent(TEventCustomText, v, nil) }
 func AB(l uint64, v []byte) *TEvent     { return NewTEvent(TEventArrayBoolean, l, v) }
@@ -1323,7 +1323,7 @@ func AF64(v []float64) *TEvent          { return NewTEvent(TEventArrayFloat64, v
 func AUU(v []byte) *TEvent              { return NewTEvent(TEventArrayUID, v, nil) }
 func SB() *TEvent                       { return NewTEvent(TEventStringBegin, nil, nil) }
 func RB() *TEvent                       { return NewTEvent(TEventResourceIDBegin, nil, nil) }
-func RRB() *TEvent                      { return NewTEvent(TEventResourceIDRefBegin, nil, nil) }
+func RRB() *TEvent                      { return NewTEvent(TEventRemoteRefBegin, nil, nil) }
 func RBCat() *TEvent                    { return NewTEvent(TEventResourceIDCatBegin, nil, nil) }
 func CBB() *TEvent                      { return NewTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return NewTEvent(TEventCustomTextBegin, nil, nil) }
@@ -1549,8 +1549,8 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 		h.Print(S(string(value)))
 	case events.ArrayTypeResourceID:
 		h.Print(RID(string(value)))
-	case events.ArrayTypeResourceIDRef:
-		h.Print(RIDREF(string(value)))
+	case events.ArrayTypeRemoteRef:
+		h.Print(RREF(string(value)))
 	case events.ArrayTypeCustomBinary:
 		h.Print(CUB(value))
 	case events.ArrayTypeCustomText:
@@ -1592,8 +1592,8 @@ func (h *TEventPrinter) OnStringlikeArray(arrayType events.ArrayType, value stri
 		h.Print(S(value))
 	case events.ArrayTypeResourceID:
 		h.Print(RID(value))
-	case events.ArrayTypeResourceIDRef:
-		h.Print(RIDREF(value))
+	case events.ArrayTypeRemoteRef:
+		h.Print(RREF(value))
 	case events.ArrayTypeCustomText:
 		h.Print(CUT(value))
 	default:
@@ -1607,7 +1607,7 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 		h.Print(SB())
 	case events.ArrayTypeResourceID:
 		h.Print(RB())
-	case events.ArrayTypeResourceIDRef:
+	case events.ArrayTypeRemoteRef:
 		h.Print(RRB())
 	case events.ArrayTypeResourceIDConcat:
 		h.Print(RBCat())
@@ -1803,8 +1803,8 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 		h.add(S(string(value)))
 	case events.ArrayTypeResourceID:
 		h.add(RID(string(value)))
-	case events.ArrayTypeResourceIDRef:
-		h.add(RIDREF(string(value)))
+	case events.ArrayTypeRemoteRef:
+		h.add(RREF(string(value)))
 	case events.ArrayTypeCustomBinary:
 		h.add(CUB(CloneBytes(value)))
 	case events.ArrayTypeCustomText:
@@ -1846,8 +1846,8 @@ func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string
 		h.add(S(value))
 	case events.ArrayTypeResourceID:
 		h.add(RID(value))
-	case events.ArrayTypeResourceIDRef:
-		h.add(RIDREF(value))
+	case events.ArrayTypeRemoteRef:
+		h.add(RREF(value))
 	case events.ArrayTypeCustomText:
 		h.add(CUT(value))
 	default:
@@ -1861,7 +1861,7 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 		h.add(SB())
 	case events.ArrayTypeResourceID:
 		h.add(RB())
-	case events.ArrayTypeResourceIDRef:
+	case events.ArrayTypeRemoteRef:
 		h.add(RRB())
 	case events.ArrayTypeResourceIDConcat:
 		h.add(RBCat())

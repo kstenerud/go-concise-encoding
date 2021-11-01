@@ -1532,7 +1532,7 @@ func TestCTEReference(t *testing.T) {
     "a"
 ]`, BD(), EvV, L(), MARK("a"), S("aaaaa"), S("a"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-$"http://x.y"`, BD(), EvV, RIDREF("http://x.y"), ED())
+$"http://x.y"`, BD(), EvV, RREF("http://x.y"), ED())
 	assertDecodeFails(t, `c0 $ 1`)
 }
 

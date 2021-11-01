@@ -98,7 +98,7 @@ var arrayTypeToDataType = []DataType{
 	events.ArrayTypeString:           DataTypeString,
 	events.ArrayTypeResourceID:       DataTypeResourceID,
 	events.ArrayTypeResourceIDConcat: DataTypeResourceID,
-	events.ArrayTypeResourceIDRef:    DataTypeResourceIDRef,
+	events.ArrayTypeRemoteRef:        DataTypeRemoteRef,
 	events.ArrayTypeCustomText:       DataTypeCustomText,
 	events.ArrayTypeCustomBinary:     DataTypeCustomBinary,
 	events.ArrayTypeBit:              DataTypeArrayBit,

@@ -109,7 +109,7 @@ const (
 
 	cbeTypeNA           = 0xe0
 	cbeTypeRIDCat       = 0xe1
-	cbeTypeRIDReference = 0xe2
+	cbeTypeRemoteReference = 0xe2
 	cbeTypeMedia        = 0xe3
 
 	cbeTypeArrayUID     = 0xf5
@@ -150,7 +150,7 @@ var isPlane2Array = []bool{
 	events.ArrayTypeString:           false,
 	events.ArrayTypeResourceID:       false,
 	events.ArrayTypeResourceIDConcat: true,
-	events.ArrayTypeResourceIDRef:    true,
+	events.ArrayTypeRemoteRef:        true,
 	events.ArrayTypeMedia:            true,
 	events.ArrayTypeCustomBinary:     false,
 	events.ArrayTypeCustomText:       false,
@@ -175,7 +175,7 @@ var arrayTypeToCBEType = []cbeTypeField{
 	events.ArrayTypeCustomBinary:     cbeTypeCustomBinary,
 	events.ArrayTypeCustomText:       cbeTypeCustomText,
 	events.ArrayTypeResourceIDConcat: cbeTypeRIDCat,
-	events.ArrayTypeResourceIDRef:    cbeTypeRIDReference,
+	events.ArrayTypeRemoteRef:        cbeTypeRemoteReference,
 	events.ArrayTypeMedia:            cbeTypeMedia,
 }
 

@@ -561,8 +561,8 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	assertMarshalUnmarshal(t, v, []byte{header, ceVer, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
 }
 
-func TestRIDReference(t *testing.T) {
-	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeRIDRef, 0x02, 'a'}, BD(), EvV, RIDREF("a"), ED())
+func TestRemoteReference(t *testing.T) {
+	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeRemoteRef, 0x02, 'a'}, BD(), EvV, RREF("a"), ED())
 }
 
 func TestMultichunk(t *testing.T) {

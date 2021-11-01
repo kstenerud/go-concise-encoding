@@ -59,9 +59,9 @@ func decodeResourceID(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-func decodeResourceIDReference(ctx *DecoderContext) {
+func decodeRemoteReference(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadQuotedString()
-	ctx.EventReceiver.OnArray(events.ArrayTypeResourceIDRef, uint64(len(bytes)), bytes)
+	ctx.EventReceiver.OnArray(events.ArrayTypeRemoteRef, uint64(len(bytes)), bytes)
 	ctx.RequireStructuralWS()
 }
 

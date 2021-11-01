@@ -125,11 +125,11 @@ func (_this *MarkedObjectAnyTypeRule) OnChildContainerEnded(ctx *Context, cType 
 
 // =============================================================================
 
-type RIDReferenceRule struct{}
+type RemoteReferenceRule struct{}
 
-func (_this *RIDReferenceRule) String() string         { return "Resource ID Reference Rule" }
-func (_this *RIDReferenceRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *RIDReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+func (_this *RemoteReferenceRule) String() string         { return "Remote Reference Rule" }
+func (_this *RemoteReferenceRule) OnPadding(ctx *Context) { /* Nothing to do */ }
+func (_this *RemoteReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	dataType := arrayTypeToDataType[arrayType]
 	switch arrayType {
 	case events.ArrayTypeResourceID:
@@ -137,17 +137,17 @@ func (_this *RIDReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType,
 		ctx.UnstackRule()
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, dataType)
 	default:
-		panic(fmt.Errorf("Reference Resource ID cannot be type %v", arrayType))
+		panic(fmt.Errorf("Remote reference cannot be type %v", arrayType))
 	}
 }
-func (_this *RIDReferenceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayRIDReference(arrayType)
+func (_this *RemoteReferenceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginArrayRemoteReference(arrayType)
 }
-func (_this *RIDReferenceRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+func (_this *RemoteReferenceRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	// TODO: Make this properly
 	_this.OnArray(ctx, arrayType, uint64(len(data)), []byte(data))
 }
-func (_this *RIDReferenceRule) OnChildContainerEnded(ctx *Context, cType DataType) {
+func (_this *RemoteReferenceRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, cType)
 }

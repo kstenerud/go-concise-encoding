@@ -162,7 +162,7 @@ const (
 	DataTypeReference
 	DataTypeResourceID
 	DataTypeResourceIDCat
-	DataTypeResourceIDRef
+	DataTypeRemoteRef
 	DataTypeConstant
 	DataTypeComment
 	DataTypePadding
@@ -186,14 +186,14 @@ const (
 		DataTypePadding |
 		DataTypeComment
 	DataTypesNonKeyable     = ^DataTypesKeyable
-	DataTypesMarkable       = ^(DataTypeMarker | DataTypeReference | DataTypeResourceIDRef | DataTypeConstant | DataTypeComment)
+	DataTypesMarkable       = ^(DataTypeMarker | DataTypeReference | DataTypeRemoteRef | DataTypeConstant | DataTypeComment)
 	DataTypesTopLevel       = ^(DataTypeReference)
 	DataTypesContainer      = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup
 	DataTypesMarkupContents = DataTypeMarkup | DataTypeString | DataTypeComment | DataTypePadding
 	DataTypesStringlike     = DataTypeString |
 		DataTypeResourceID |
 		DataTypeResourceIDCat |
-		DataTypeResourceIDRef |
+		DataTypeRemoteRef |
 		DataTypeCustomText
 	DataTypesBinary = DataTypeArrayBit |
 		DataTypeArrayUint8 |
@@ -251,7 +251,7 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeReference:     "DataTypeReference",
 	DataTypeResourceID:    "DataTypeResourceID",
 	DataTypeResourceIDCat: "DataTypeResourceIDCat",
-	DataTypeResourceIDRef: "DataTypeResourceIDRef",
+	DataTypeRemoteRef:     "DataTypeRemoteRef",
 	DataTypeConstant:      "DataTypeConstant",
 	DataTypeComment:       "DataTypeComment",
 	DataTypePadding:       "DataTypePadding",
