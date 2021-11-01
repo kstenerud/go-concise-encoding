@@ -159,6 +159,10 @@ func (_this *CETestRunner) Description() string {
 }
 
 func (_this *CETestRunner) postDecodeInit() {
+	if _this.Skip {
+		return
+	}
+
 	_this.events = event_parser.ParseEvents(_this.Events)
 	_this.Cte = strings.TrimSpace(_this.Cte)
 	_this.srcEventTypes = toMembershipSet(_this.From)
@@ -168,6 +172,10 @@ func (_this *CETestRunner) postDecodeInit() {
 }
 
 func (_this *CETestRunner) validate() {
+	if _this.Skip {
+		return
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
@@ -298,43 +306,6 @@ func (_this *CETestRunner) capturePanic(operation func()) (err error) {
 func (_this *CETestRunner) testFailed(format string, args ...interface{}) {
 	panic(fmt.Errorf(format, args...))
 }
-
-// func (_this *CETestRunner) assertPanics(operation func()) {
-// 	if err := _this.capturePanic(operation); err == nil {
-// 		_this.testFailed("Expected a panic")
-// 	}
-// }
-
-// func (_this *CETestRunner) assertNoPanic(operation func()) {
-// 	if _this.Panic {
-// 		operation()
-// 	}
-// 	if err := _this.capturePanic(operation); err != nil {
-// 		_this.testFailed("Unexpected panic: %v", err)
-// 	}
-// }
-
-// func (_this *CETestRunner) assertEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
-// 	operation := func() {
-// 		for _, event := range events {
-// 			event.Invoke(receiver)
-// 		}
-// 	}
-// 	if _this.Fail {
-// 		_this.assertPanics(operation)
-// 	} else {
-// 		if _this.Panic {
-// 			operation()
-// 		} else {
-
-// 		}
-
-// 		eventStore := test.NewTEventStore(receiver)
-// 		receiver = eventStore
-
-// 		_this.assertNoPanic(operation)
-// 	}
-// }
 
 func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 	operation func(receiver events.DataEventReceiver),

@@ -31,13 +31,14 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test"
 
 	"github.com/google/uuid"
+	"github.com/kstenerud/go-compact-time"
 )
 
 // API
 
 // Parse a string shorthand into an event for testing
 func ParseEvent(eventStr string) *test.TEvent {
-	components := parseEventName.FindSubmatch([]byte(eventStr))
+	components := eventNameMatcher.FindSubmatch([]byte(eventStr))
 	if len(components) == 0 {
 		panic(fmt.Errorf("Could not extract event name from [%v]", eventStr))
 	}
@@ -92,21 +93,30 @@ func (_this *eventParser) ParseEvent(eventStr string) *test.TEvent {
 	case 0:
 		return test.NewTEvent(_this.eventType, nil, nil)
 	case 1:
-		components := parseOneParamEvent.FindSubmatch([]byte(eventStr))
-		if len(components) == 0 {
-			panic(fmt.Errorf("Could not extract event components from [%v]", eventStr))
+		asBytes := []byte(eventStr)
+		indices := eventNameAndWSMatcher.FindSubmatchIndex(asBytes)
+		if len(indices) != 2 {
+			panic(fmt.Errorf("Could not extract 1-param event components from [%v]", eventStr))
 		}
+		param := asBytes[indices[1]:]
 		return test.NewTEvent(_this.eventType,
-			_this.paramParsers[0](components[1]),
+			_this.paramParsers[0](param),
 			nil)
 	case 2:
-		components := parseOneParamEvent.FindSubmatch([]byte(eventStr))
-		if len(components) == 0 {
-			panic(fmt.Errorf("Could not extract event components from [%v]", eventStr))
+		asBytes := []byte(eventStr)
+		indices := firstParamAndWSMatcher.FindSubmatchIndex(asBytes)
+		if len(indices) != 4 {
+			panic(fmt.Errorf("Could not extract 2-param event components from [%v]", eventStr))
 		}
+		param1 := asBytes[indices[2]:indices[3]]
+		param2 := asBytes[indices[3]:]
+		if param2[0] == ' ' || param2[0] == '\r' || param2[0] == '\n' || param2[0] == '\t' {
+			param2 = param2[1:]
+		}
+
 		return test.NewTEvent(_this.eventType,
-			_this.paramParsers[0](components[1]),
-			_this.paramParsers[1](components[2]))
+			_this.paramParsers[0](param1),
+			_this.paramParsers[1](param2))
 	default:
 		panic(fmt.Errorf("BUG: Event parser has %v param parsers", len(_this.paramParsers)))
 	}
@@ -114,7 +124,16 @@ func (_this *eventParser) ParseEvent(eventStr string) *test.TEvent {
 
 type eventParamParser func(bytes []byte) interface{}
 
-func passthroughString(bytes []byte) interface{} {
+func containsEscape(bytes []byte) bool {
+	for _, b := range bytes {
+		if b == '\\' {
+			return true
+		}
+	}
+	return false
+}
+
+func parseString(bytes []byte) interface{} {
 	return string(bytes)
 }
 
@@ -200,7 +219,81 @@ func parseUUID(bytes []byte) interface{} {
 	if err != nil {
 		panic(fmt.Errorf("Error parsing UUID [%v]: %w", string(bytes), err))
 	}
-	return value
+	return value[:]
+}
+
+func bytesToInt(bytes []byte) int {
+	if len(bytes) == 0 {
+		panic(fmt.Errorf("Tried to parse empty byte array as int"))
+	}
+	sign := 1
+	if bytes[0] == '-' {
+		sign = -1
+		bytes = bytes[1:]
+	}
+	accum := 0
+	for _, b := range bytes {
+		accum = accum*10 + int(b-'0')
+	}
+	return accum * sign
+}
+
+var dateMatcher = regexp.MustCompile(`^(-?\d+)-(\d+)-(\d+)`)
+var timeMatcher = regexp.MustCompile(`^(\d+):(\d+):(\d+)(.\d+)?`)
+
+func parseCompactTime(bytes []byte) interface{} {
+	originalBytes := bytes
+	indices := dateMatcher.FindSubmatchIndex(bytes)
+	year := 0
+	month := 0
+	day := 0
+	if len(indices) != 0 {
+		year = bytesToInt(bytes[indices[2]:indices[3]])
+		month = bytesToInt(bytes[indices[4]:indices[5]])
+		day = bytesToInt(bytes[indices[6]:indices[7]])
+		bytes = bytes[indices[1]:]
+		if len(bytes) == 0 {
+			date := compact_time.NewDate(year, month, day)
+			if err := date.Validate(); err != nil {
+				panic(fmt.Errorf("Error parsing date [%v]: %w", string(originalBytes), err))
+			}
+			return date
+		}
+		bytes = bytes[1:]
+	}
+
+	indices = timeMatcher.FindSubmatchIndex(bytes)
+	if len(indices) == 0 {
+		panic(fmt.Errorf("Malformed time [%v]", string(originalBytes)))
+	}
+	hour := bytesToInt(bytes[indices[2]:indices[3]])
+	minute := bytesToInt(bytes[indices[4]:indices[5]])
+	second := bytesToInt(bytes[indices[6]:indices[7]])
+	subsecond := 0
+	if indices[8] >= 0 {
+		subsecond := bytesToInt(bytes[indices[8]:indices[9]])
+		for i := indices[9] - indices[8]; i <= 9; i++ {
+			subsecond *= 10
+		}
+	}
+	bytes = bytes[indices[1]:]
+
+	var tz compact_time.Timezone = compact_time.TZAtUTC()
+	if len(bytes) != 0 {
+		tz = compact_time.TZAtAreaLocation(string(bytes))
+	}
+
+	var time compact_time.Time
+	if year == 0 && month == 0 && day == 0 {
+		time = compact_time.NewTime(hour, minute, second, subsecond, tz)
+	} else {
+		time = compact_time.NewTimestamp(year, month, day, hour, minute, second, subsecond, tz)
+	}
+	if err := time.Validate(); err != nil {
+		panic(fmt.Errorf("Error parsing time [%v]: %w", string(originalBytes), err))
+	}
+	return time
+
 }
 
 func parseBytes(data []byte) interface{} {
@@ -228,6 +321,10 @@ func parseBytes(data []byte) interface{} {
 		}
 	}
 	return buff.Bytes()
+}
+
+func parseTextAsBytes(data []byte) interface{} {
+	return data
 }
 
 func newArrayParser(elemType reflect.Type, elementParser eventParamParser) eventParamParser {
@@ -263,9 +360,9 @@ func newArrayParser(elemType reflect.Type, elementParser eventParamParser) event
 	}
 }
 
-var parseEventName = regexp.MustCompile("^([a-z0-9]+)")
-var parseOneParamEvent = regexp.MustCompile("^[a-z0-9]+ (.+)$")
-var parseTwoParamEvent = regexp.MustCompile("^[a-z0-9]+ (\\w+) (.+)$")
+var eventNameMatcher = regexp.MustCompile(`^(\w+)`)
+var eventNameAndWSMatcher = regexp.MustCompile(`^\w+\s+`)
+var firstParamAndWSMatcher = regexp.MustCompile(`^\w+\s+(\w+)\s+`)
 
 var eventParsersByName = make(map[string]*eventParser)
 
@@ -281,7 +378,7 @@ func init() {
 	eventParsersByName["df"] = newParser(test.TEventDecimalFloat, parseDecimalFloat)
 	eventParsersByName["bdf"] = newParser(test.TEventBigDecimalFloat, parseBigDecimalFloat)
 	eventParsersByName["n"] = newParser(test.TEventNil)
-	eventParsersByName["com"] = newParser(test.TEventComment, parseBool, passthroughString)
+	eventParsersByName["com"] = newParser(test.TEventComment, parseBool, parseString)
 	eventParsersByName["b"] = newParser(test.TEventBool, parseBool)
 	eventParsersByName["pi"] = newParser(test.TEventPInt, parseUint)
 	eventParsersByName["ni"] = newParser(test.TEventNInt, parseUint)
@@ -290,12 +387,12 @@ func init() {
 	eventParsersByName["snan"] = newParser(test.TEventSNan)
 	eventParsersByName["uid"] = newParser(test.TEventUID, parseUUID)
 	// func GT(v time.Time) *test.TEvent            { return test.NewTEvent(test.TEventTime, v, nil) }
-	// func CT(v compact_time.Time) *test.TEvent    { return EventOrNil(test.TEventCompactTime, v) }
-	eventParsersByName["s"] = newParser(test.TEventString, passthroughString)
-	eventParsersByName["rid"] = newParser(test.TEventResourceID, passthroughString)
-	eventParsersByName["ridref"] = newParser(test.TEventResourceIDRef, passthroughString)
+	eventParsersByName["ct"] = newParser(test.TEventCompactTime, parseCompactTime)
+	eventParsersByName["s"] = newParser(test.TEventString, parseString)
+	eventParsersByName["rid"] = newParser(test.TEventResourceID, parseString)
+	eventParsersByName["ridref"] = newParser(test.TEventResourceIDRef, parseString)
 	eventParsersByName["cub"] = newParser(test.TEventCustomBinary, parseBytes)
-	eventParsersByName["cut"] = newParser(test.TEventCustomText, passthroughString)
+	eventParsersByName["cut"] = newParser(test.TEventCustomText, parseString)
 	// func AB(l uint64, v []byte) *test.TEvent     { return test.NewTEvent(test.TEventArrayBoolean, l, v) }
 	eventParsersByName["ai8"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt))
 	eventParsersByName["ai16"] = newParser(test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt))
@@ -328,13 +425,14 @@ func init() {
 	eventParsersByName["mb"] = newParser(test.TEventMediaBegin)
 	eventParsersByName["ac"] = newParser(test.TEventArrayChunk, parseUint, parseBool)
 	eventParsersByName["ad"] = newParser(test.TEventArrayData, parseBytes)
+	eventParsersByName["adt"] = newParser(test.TEventArrayData, parseTextAsBytes)
 	eventParsersByName["l"] = newParser(test.TEventList)
 	eventParsersByName["m"] = newParser(test.TEventMap)
-	eventParsersByName["mup"] = newParser(test.TEventMarkup, passthroughString)
+	eventParsersByName["mup"] = newParser(test.TEventMarkup, parseString)
 	eventParsersByName["node"] = newParser(test.TEventNode)
 	eventParsersByName["edge"] = newParser(test.TEventEdge)
 	eventParsersByName["e"] = newParser(test.TEventEnd)
-	eventParsersByName["mark"] = newParser(test.TEventMarker, passthroughString)
-	eventParsersByName["ref"] = newParser(test.TEventReference, passthroughString)
-	eventParsersByName["const"] = newParser(test.TEventConstant, passthroughString)
+	eventParsersByName["mark"] = newParser(test.TEventMarker, parseString)
+	eventParsersByName["ref"] = newParser(test.TEventReference, parseString)
+	eventParsersByName["const"] = newParser(test.TEventConstant, parseString)
 }
