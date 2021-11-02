@@ -141,7 +141,7 @@ type CETestRunner struct {
 	To        []string
 	Fail      bool
 	Debug     bool
-	Panic     bool
+	Trace     bool
 	Skip      bool
 
 	events             []*test.TEvent
@@ -232,7 +232,7 @@ func (_this *CETestRunner) run(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			if !_this.Fail {
-				if _this.Panic {
+				if _this.Trace {
 					panic(fmt.Errorf("%v: %w", _this.Description(), r))
 				} else {
 					t.Errorf("%v: %v", _this.Description(), r)
@@ -315,7 +315,7 @@ func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 		receiver = test.NewStdoutTEventPrinter(receiver)
 	}
 
-	if !_this.Fail && _this.Panic {
+	if !_this.Fail && _this.Trace {
 		operation(receiver)
 		return
 	}

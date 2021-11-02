@@ -7,7 +7,7 @@ c0
 
         {
             "name" = "Numeric Types"
-            "cte" = "\.^^
+            "cte" = "\.%%%%
 c0
 {
     "boolean"       = true
@@ -23,7 +23,7 @@ c0
     "infinity"      = inf
     "neg infinity"  = -inf
 }
-            ^^"
+            %%%%"
             "cbe"    = |u8x 83 00 79 87 62 6f 6f 6c 65 61 6e 7d 8a 62 69 6e
                             61 72 79 20 69 6e 74 69 8b 89 6f 63 74 61 6c 20
                             69 6e 74 6a a4 01 8b 64 65 63 69 6d 61 6c 20 69
@@ -62,14 +62,14 @@ c0
 
         {
             "name" = "String Types"
-            "cte" = "\.^^
+            "cte" = "\.%%%%
 c0
 {
     "string" = "Strings support escape sequences: \n \t \51F415"
     "url"    = @"https://example.com/"
     "email"  = @"mailto:me@somewhere.com"
 }
-            ^^"
+            %%%%"
             "cbe"    = |u8x 83 00 79 86 73 74 72 69 6e 67 90 54 53 74 72 69
                             6e 67 73 20 73 75 70 70 6f 72 74 20 65 73 63 61
                             70 65 20 73 65 71 75 65 6e 63 65 73 3a 20 0a 20
@@ -93,7 +93,7 @@ c0
         {
             "skip" = true // TODO: TZ printing appears broken?
             "name" = "Other Basic Types"
-            "cte" = "\.^^
+            "cte" = "\.%%%%
 c0
 {
     "uuid" = f1ce4567-e89b-12d3-a456-426655440000
@@ -103,7 +103,7 @@ c0
     "null" = null
     "media" = |application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
 }
-            ^^"
+            %%%%"
             "cbe"    = |u8x 83 00 79 84 75 75 69 64 73 f1 ce 45 67 e8 9b 12
                             d3 a4 56 42 66 55 44 00 00 84 64 61 74 65 99 e1
                             4c 00 84 74 69 6d 65 9a 01 08 f9 12 2f 45 2f 50

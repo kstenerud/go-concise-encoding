@@ -1,0 +1,42 @@
+c0
+/**
+ * Unit test to demonstrate a bug in the codec (for use in bug reports).
+ *
+ * For information about the "events" field, see:
+ *     https://github.com/kstenerud/go-concise-encoding/blob/master/TESTING.md
+ *
+ * Note: The "cte" field is using a verbatim sequence:
+ *       https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#verbatim-sequence
+ *       Make sure the end-of-sequence identifier is unique enough that your
+ *       CTE document doesn't also contain it!
+ *
+ * Instructions:
+ *
+ * - Make sure your git repo is up to date.
+ * - Modify this document to craft a test that demonstrates a bug in the codec.
+ * - From the "bugreport" dir, run the bugreport test (`go test`) and verify that the test fails.
+ * - Paste the contents of bugreport.cte into your bug report.
+ *
+ * Note: There are unit test templates in the "templates" dir for common classes of bugs.
+ */
+{
+    "tests" = [
+        {
+            "name" = "My Bug Report"
+            "cte" = "\.%%%%
+c0
+{
+    "a" = true
+}
+            %%%%"
+            "cbe"    = |u8x 83 00 79 81 61 7d 7b|
+            "events" = [
+                            "bd" "v 0" "m"
+                                "s a" "tt"
+                            "e" "ed"
+                       ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["t" "b" "e"]
+        }
+    ]
+}
