@@ -239,61 +239,97 @@ func bytesToInt(bytes []byte) int {
 }
 
 var dateMatcher = regexp.MustCompile(`^(-?\d+)-(\d+)-(\d+)`)
-var timeMatcher = regexp.MustCompile(`^(\d+):(\d+):(\d+)(.\d+)?`)
 
-func parseCompactTime(bytes []byte) interface{} {
-	originalBytes := bytes
+func tryParseDate(bytes []byte) (date compact_time.Time, remainingBytes []byte) {
+	remainingBytes = bytes
 	indices := dateMatcher.FindSubmatchIndex(bytes)
-	year := 0
-	month := 0
-	day := 0
-	if len(indices) != 0 {
-		year = bytesToInt(bytes[indices[2]:indices[3]])
-		month = bytesToInt(bytes[indices[4]:indices[5]])
-		day = bytesToInt(bytes[indices[6]:indices[7]])
-		bytes = bytes[indices[1]:]
-		if len(bytes) == 0 {
-			date := compact_time.NewDate(year, month, day)
-			if err := date.Validate(); err != nil {
-				panic(fmt.Errorf("Error parsing date [%v]: %w", string(originalBytes), err))
-			}
-			return date
-		}
-		bytes = bytes[1:]
+	if len(indices) == 0 {
+		return
 	}
 
-	indices = timeMatcher.FindSubmatchIndex(bytes)
+	year := bytesToInt(bytes[indices[2]:indices[3]])
+	month := bytesToInt(bytes[indices[4]:indices[5]])
+	day := bytesToInt(bytes[indices[6]:indices[7]])
+
+	remainingBytes = bytes[indices[1]:]
+	if len(remainingBytes) > 0 && remainingBytes[0] == '/' {
+		remainingBytes = remainingBytes[1:]
+	}
+	date = compact_time.NewDate(year, month, day)
+	if err := date.Validate(); err != nil {
+		panic(fmt.Errorf("Error parsing date [%v]: %w", string(bytes), err))
+	}
+	return
+}
+
+func parseTimezone(bytes []byte) (tz compact_time.Timezone) {
+	// TODO: lat/long
+	tz = compact_time.TZAtUTC()
+	if len(bytes) == 0 {
+		return
+	}
+
+	switch bytes[0] {
+	case '-', '+':
+	case '/':
+		bytes = bytes[1:]
+	default:
+		panic(fmt.Errorf("%v: Invalid timezone", string(bytes)))
+	}
+	tz = compact_time.TZAtAreaLocation(string(bytes))
+	return
+}
+
+var timeMatcher = regexp.MustCompile(`^(\d+):(\d+):(\d+)(.\d+)?`)
+
+func parseTime(bytes []byte) (t compact_time.Time) {
+	indices := timeMatcher.FindSubmatchIndex(bytes)
 	if len(indices) == 0 {
-		panic(fmt.Errorf("Malformed time [%v]", string(originalBytes)))
+		return
 	}
 	hour := bytesToInt(bytes[indices[2]:indices[3]])
 	minute := bytesToInt(bytes[indices[4]:indices[5]])
 	second := bytesToInt(bytes[indices[6]:indices[7]])
 	subsecond := 0
 	if indices[8] >= 0 {
-		subsecond := bytesToInt(bytes[indices[8]:indices[9]])
-		for i := indices[9] - indices[8]; i <= 9; i++ {
+		begin := indices[8] + 1
+		end := indices[9]
+		subsecond = bytesToInt(bytes[begin:end])
+		for i := end - begin; i < 9; i++ {
 			subsecond *= 10
 		}
 	}
 	bytes = bytes[indices[1]:]
+	tz := parseTimezone(bytes)
+	return compact_time.NewTime(hour, minute, second, subsecond, tz)
+}
 
-	var tz compact_time.Timezone = compact_time.TZAtUTC()
-	if len(bytes) != 0 {
-		tz = compact_time.TZAtAreaLocation(string(bytes))
+func parseCompactTime(bytes []byte) interface{} {
+	originalBytes := bytes
+	var datePart compact_time.Time
+	datePart, bytes = tryParseDate(bytes)
+	timePart := parseTime(bytes)
+
+	if datePart.IsZeroValue() && timePart.IsZeroValue() {
+		panic(fmt.Errorf("Could not parse date [%v]: no date data found", string(originalBytes)))
 	}
 
-	var time compact_time.Time
-	if year == 0 && month == 0 && day == 0 {
-		time = compact_time.NewTime(hour, minute, second, subsecond, tz)
-	} else {
-		time = compact_time.NewTimestamp(year, month, day, hour, minute, second, subsecond, tz)
+	if !datePart.IsZeroValue() {
+		if err := datePart.Validate(); err != nil {
+			panic(fmt.Errorf("Error parsing date [%v]: %w", string(originalBytes), err))
+		}
+		if timePart.IsZeroValue() {
+			return datePart
+		}
+		timePart.Year = datePart.Year
+		timePart.Month = datePart.Month
+		timePart.Day = datePart.Day
+		timePart.Type = compact_time.TimeTypeTimestamp
 	}
-	if err := time.Validate(); err != nil {
-		panic(fmt.Errorf("Error parsing time [%v]: %w", string(originalBytes), err))
+	if err := timePart.Validate(); err != nil {
+		panic(fmt.Errorf("Error parsing time value [%v]: %w", string(originalBytes), err))
 	}
-	return time
-
+	return timePart
 }
 
 func parseBytes(data []byte) interface{} {

@@ -332,11 +332,10 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 		_this.WriteDecimalUintDigits(uint64(value.Day), 2)
 	}
 
-	if value.Type == compact_time.TimeTypeDate {
+	switch value.Type {
+	case compact_time.TimeTypeDate:
 		return
-	}
-
-	if value.Type == compact_time.TimeTypeTimestamp {
+	case compact_time.TimeTypeTimestamp:
 		_this.WriteByte('/')
 	}
 
@@ -367,7 +366,7 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 		}
 		_this.WriteFmt("%c%02d%02d", sign, minutes/60, minutes%60)
 	default:
-		panic(fmt.Errorf("unknown compact time timezone type %v", value.Timezone.Type))
+		panic(fmt.Errorf("BUG: unknown compact time timezone type %v", value.Timezone.Type))
 	}
 }
 
