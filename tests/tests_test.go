@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package concise_encoding
+package tests
 
 import (
 	"testing"
@@ -26,6 +26,10 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 )
 
+func TestWebsiteExamples(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "website-examples.cte")
+}
+
 func TestCE(t *testing.T) {
-	test_runner.RunCEUnitTests(t, "ce_test.cte")
+	test_runner.RunCEUnitTests(t, "ce-basic.cte")
 }
