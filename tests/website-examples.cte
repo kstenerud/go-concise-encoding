@@ -116,9 +116,9 @@ c0
             "events" = [
                             "bd" "v 0" "m"
                                 "s uuid"      "uid f1ce4567-e89b-12d3-a456-426655440000"
-                                "s date"      "ct 2019-07-01"
-                                "s time"      "ct 18:04:00.948/E/Prague"
-                                "s timestamp" "ct 2010-07-15/13:28:15.415942344"
+                                "s date"      "t 2019-07-01"
+                                "s time"      "t 18:04:00.948/E/Prague"
+                                "s timestamp" "t 2010-07-15/13:28:15.415942344"
                                 "s null"      "n"
                                 "s media" "mb"
                                     "ac 16 false"
@@ -157,7 +157,7 @@ c0
             "events" = [
                             "bd" "v 0" "m"
                                 "s list"          "l" "i 1" "df 2.5" "s a string" "e"
-                                "s map"           "m" "s one" "i 1" "i 2" "s two" "s today" "ct 2020-09-10" "e"
+                                "s map"           "m" "s one" "i 1" "i 2" "s two" "s today" "t 2020-09-10" "e"
                                 "s bytes"         "au8x 01 ff de ad be ef"
                                 "s int16 array"   "ai16 7374 17466 -9957"
                                 "s uint16 hex"    "au16x 91fe 443a 9c15"
@@ -429,8 +429,8 @@ c0
                             28 3c 40 00 00 40 40 7b|
             "events" = [
                             "bd" "v 0" "m"
-                                "s custom text" "cut cplx(2.94+3i)"
-                                "s custom binary" "cub 04 f6 28 3c 40 00 00 40 40"
+                                "s custom text" "ct cplx(2.94+3i)"
+                                "s custom binary" "cb 04 f6 28 3c 40 00 00 40 40"
                             "e" "ed"
                         ]
             "from"   = ["t" "b" "e"]

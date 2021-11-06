@@ -26,10 +26,14 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 )
 
+func TestCE(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "ce-basic.cte")
+}
+
 func TestWebsiteExamples(t *testing.T) {
 	test_runner.RunCEUnitTests(t, "website-examples.cte")
 }
 
-func TestCE(t *testing.T) {
-	test_runner.RunCEUnitTests(t, "ce-basic.cte")
+func TestCESpecificationExamples(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "ce-specification-examples.cte")
 }

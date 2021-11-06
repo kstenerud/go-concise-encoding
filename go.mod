@@ -6,7 +6,7 @@ require (
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/google/uuid v1.3.0
 	github.com/kstenerud/go-compact-float v1.5.0
-	github.com/kstenerud/go-compact-time v1.8.2
+	github.com/kstenerud/go-compact-time v1.8.3
 	github.com/kstenerud/go-describe v1.2.13
 	github.com/kstenerud/go-duplicates v1.1.1
 	github.com/kstenerud/go-equivalence v1.0.4

@@ -262,7 +262,11 @@ func bytesToInt(bytes []byte) int {
 	}
 	accum := 0
 	for _, b := range bytes {
-		accum = accum*10 + int(b-'0')
+		digit := int(b - '0')
+		if digit < 0 || digit > 9 {
+			panic(fmt.Errorf("%c: Invalid integer digit", b))
+		}
+		accum = accum*10 + digit
 	}
 	return accum * sign
 }
@@ -286,58 +290,106 @@ func tryParseDate(bytes []byte) (date compact_time.Time, remainingBytes []byte) 
 	}
 	date = compact_time.NewDate(year, month, day)
 	if err := date.Validate(); err != nil {
-		panic(fmt.Errorf("Error parsing date [%v]: %w", string(bytes), err))
+		panic(fmt.Errorf("Error parsing date from [%v]: %w", string(bytes), err))
 	}
 	return
 }
 
-func parseTimezone(bytes []byte) (tz compact_time.Timezone) {
-	// TODO: lat/long
+var utcOffsetMatcher = regexp.MustCompile(`^([+-]\d\d):(\d\d)$`)
+
+func parseTZUTCOffset(data []byte) compact_time.Timezone {
+	components := utcOffsetMatcher.FindSubmatch(data)
+	if len(components) == 0 {
+		panic(fmt.Errorf("Could not parse UTC offset from [%v]", string(data)))
+	}
+	sign := 1
+	if data[0] == '-' {
+		sign = -1
+	}
+	hours := bytesToInt(components[1])
+	minutes := bytesToInt(components[2])
+	return compact_time.TZWithMiutesOffsetFromUTC(sign * (hours*60 + minutes))
+}
+
+var latLongMatcher = regexp.MustCompile(`^(-?\d+(\.\d+)?)/(-?\d+(\.\d+)?)$`)
+
+func parseTZLatLong(data []byte) compact_time.Timezone {
+	components := latLongMatcher.FindSubmatch(data)
+	if len(components) == 0 {
+		panic(fmt.Errorf("Could not parse lat/long from [%v]", string(data)))
+	}
+	lat, err := strconv.ParseFloat(string(components[1]), 64)
+	if err != nil {
+		panic(fmt.Errorf("Error parsing latitude from [%v]: %w", string(components[1]), err))
+	}
+	long, err := strconv.ParseFloat(string(components[3]), 64)
+	if err != nil {
+		panic(fmt.Errorf("Error parsing longitude from [%v]: %w", string(components[3]), err))
+	}
+	return compact_time.TZAtLatLong(int(lat*100), int(long*100))
+}
+
+func parseTZAreaLocation(data []byte) compact_time.Timezone {
+	return compact_time.TZAtAreaLocation(string(data))
+}
+
+func parseTZAreaLocationOrLatLong(data []byte) compact_time.Timezone {
+	if len(data) == 0 {
+		panic(fmt.Errorf("TZ data missing"))
+	}
+	switch data[0] {
+	case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		return parseTZLatLong(data)
+	default:
+		return parseTZAreaLocation(data)
+	}
+}
+
+func parseTimezone(data []byte) (tz compact_time.Timezone) {
 	tz = compact_time.TZAtUTC()
-	if len(bytes) == 0 {
+	if len(data) == 0 {
 		return
 	}
 
-	switch bytes[0] {
-	case '-', '+':
+	switch data[0] {
+	case '+', '-':
+		return parseTZUTCOffset(data)
 	case '/':
-		bytes = bytes[1:]
+		return parseTZAreaLocationOrLatLong(data[1:])
 	default:
-		panic(fmt.Errorf("%v: Invalid timezone", string(bytes)))
+		panic(fmt.Errorf("%v: Invalid timezone", string(data)))
 	}
-	tz = compact_time.TZAtAreaLocation(string(bytes))
-	return
 }
 
-var timeMatcher = regexp.MustCompile(`^(\d+):(\d+):(\d+)(.\d+)?`)
+var timeMatcher = regexp.MustCompile(`^(\d+):(\d+):(\d+)(\.\d+)?`)
 
-func parseTime(bytes []byte) (t compact_time.Time) {
-	indices := timeMatcher.FindSubmatchIndex(bytes)
+func parseTime(data []byte) (t compact_time.Time) {
+	indices := timeMatcher.FindSubmatchIndex(data)
 	if len(indices) == 0 {
 		return
 	}
-	hour := bytesToInt(bytes[indices[2]:indices[3]])
-	minute := bytesToInt(bytes[indices[4]:indices[5]])
-	second := bytesToInt(bytes[indices[6]:indices[7]])
+	hour := bytesToInt(data[indices[2]:indices[3]])
+	minute := bytesToInt(data[indices[4]:indices[5]])
+	second := bytesToInt(data[indices[6]:indices[7]])
 	subsecond := 0
 	if indices[8] >= 0 {
 		begin := indices[8] + 1
 		end := indices[9]
-		subsecond = bytesToInt(bytes[begin:end])
+		subsecond = bytesToInt(data[begin:end])
 		for i := end - begin; i < 9; i++ {
 			subsecond *= 10
 		}
 	}
-	bytes = bytes[indices[1]:]
-	tz := parseTimezone(bytes)
+	data = data[indices[1]:]
+	tz := parseTimezone(data)
 	return compact_time.NewTime(hour, minute, second, subsecond, tz)
 }
 
-func parseCompactTime(bytes []byte) interface{} {
-	originalBytes := bytes
+func parseTemporal(data []byte) interface{} {
+	originalBytes := data
 	var datePart compact_time.Time
-	datePart, bytes = tryParseDate(bytes)
-	timePart := parseTime(bytes)
+	datePart, data = tryParseDate(data)
+	timePart := parseTime(data)
 
 	if datePart.IsZeroValue() && timePart.IsZeroValue() {
 		panic(fmt.Errorf("Could not parse date [%v]: no date data found", string(originalBytes)))
@@ -424,13 +476,12 @@ func init() {
 	eventParsersByName["nan"] = newParser(test.TEventNan)
 	eventParsersByName["snan"] = newParser(test.TEventSNan)
 	eventParsersByName["uid"] = newParser(test.TEventUID, parseUUID)
-	// func GT(v time.Time) *test.TEvent            { return test.NewTEvent(test.TEventTime, v, nil) }
-	eventParsersByName["ct"] = newParser(test.TEventCompactTime, parseCompactTime)
+	eventParsersByName["t"] = newParser(test.TEventCompactTime, parseTemporal)
 	eventParsersByName["s"] = newParser(test.TEventString, parseString)
 	eventParsersByName["rid"] = newParser(test.TEventResourceID, parseString)
-	eventParsersByName["cub"] = newParser(test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex))
-	eventParsersByName["cut"] = newParser(test.TEventCustomText, parseString)
-	// func AB(l uint64, v []byte) *test.TEvent     { return test.NewTEvent(test.TEventArrayBoolean, l, v) }
+	eventParsersByName["cb"] = newParser(test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex))
+	eventParsersByName["ct"] = newParser(test.TEventCustomText, parseString)
+	// TODO: eventParsersByName["ab"] = newParser(test.TEventArrayBoolean, newArrayParser(reflect.TypeOf(int8(0)), parseBits))
 	eventParsersByName["ai8"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt))
 	eventParsersByName["ai8x"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseIntHex))
 	eventParsersByName["ai16"] = newParser(test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt))
@@ -447,10 +498,10 @@ func init() {
 	eventParsersByName["au32x"] = newParser(test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUintHex))
 	eventParsersByName["au64"] = newParser(test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUint))
 	eventParsersByName["au64x"] = newParser(test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUintHex))
-	// func AF16(v []byte) *test.TEvent             { return test.NewTEvent(test.TEventArrayFloat16, v, nil) }
+	// TODO: eventParsersByName["af16"] = newParser(test.TEventArrayFloat16, newArrayParser(reflect.TypeOf(float32(0)), parseFloat))
 	eventParsersByName["af32"] = newParser(test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat))
 	eventParsersByName["af64"] = newParser(test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat))
-	// func AUU(v []byte) *test.TEvent              { return test.NewTEvent(test.TEventArrayUID, v, nil) }
+	eventParsersByName["auu"] = newParser(test.TEventArrayUID, newArrayParser(reflect.TypeOf(float64(0)), parseUUID))
 	eventParsersByName["sb"] = newParser(test.TEventStringBegin)
 	eventParsersByName["rb"] = newParser(test.TEventResourceIDBegin)
 	eventParsersByName["rrb"] = newParser(test.TEventRemoteRefBegin)

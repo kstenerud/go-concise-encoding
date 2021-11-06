@@ -43,23 +43,53 @@ import (
 
 // Run a CE test suite, described by the CTE document at testDescriptorFile
 func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
+	runTestSuite(t, loadTestSuite(testDescriptorFile))
+}
+
+func runTestSuite(t *testing.T, testSuite *CETestSuite) {
+	defer func() {
+		if r := recover(); r != nil {
+			switch v := r.(type) {
+			case error:
+				panic(fmt.Errorf("While running test suite %v: %w", testSuite, v))
+			default:
+				panic(v)
+			}
+		}
+	}()
+
+	debug.DebugOptions.PassThroughPanics = true
+	testSuite.run(t)
+	debug.DebugOptions.PassThroughPanics = false
+}
+
+func loadTestSuite(testDescriptorFile string) *CETestSuite {
+	defer func() {
+		if r := recover(); r != nil {
+			switch v := r.(type) {
+			case error:
+				panic(fmt.Errorf("While loading test suite %v: %w", testDescriptorFile, v))
+			default:
+				panic(v)
+			}
+		}
+	}()
+
 	file, err := os.Open(testDescriptorFile)
 	if err != nil {
-		panic(fmt.Errorf("Unexpected error opening unit test file %v: %v", testDescriptorFile, err))
+		panic(fmt.Errorf("Unexpected error opening test suite file: %v", err))
 	}
 	var testSuite *CETestSuite
 
 	testSuiteIntf, err := ce.UnmarshalCTE(file, testSuite, nil)
 	if err != nil {
-		panic(fmt.Errorf("Malformed unit test: Unexpected CTE decode error in file %v: %w", testDescriptorFile, err))
+		panic(fmt.Errorf("Malformed unit test: Unexpected CTE decode error in test suite file: %w", err))
 	}
 	testSuite = testSuiteIntf.(*CETestSuite)
 	testSuite.TestFile = testDescriptorFile
 	testSuite.postDecodeInit()
 
-	debug.DebugOptions.PassThroughPanics = true
-	testSuite.run(t)
-	debug.DebugOptions.PassThroughPanics = false
+	return testSuite
 }
 
 // Test Suite
@@ -69,13 +99,17 @@ type CETestSuite struct {
 	Tests    []*CETestRunner
 }
 
+func (_this *CETestSuite) String() string {
+	return _this.TestFile
+}
+
 func (_this *CETestSuite) postDecodeInit() {
 	index := 0
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("Malformed unit test: Test index %v: %w", index, v))
+				panic(fmt.Errorf("Malformed unit test \"%v\": %w", _this.Tests[index].Name, v))
 			default:
 				panic(v)
 			}
@@ -84,7 +118,6 @@ func (_this *CETestSuite) postDecodeInit() {
 
 	var unitTest *CETestRunner
 	for index, unitTest = range _this.Tests {
-		unitTest.TestFile = _this.TestFile
 		unitTest.TestIndex = index
 		unitTest.postDecodeInit()
 	}
@@ -96,7 +129,7 @@ func (_this *CETestSuite) validate() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("Malformed unit test: Test index %v: %w", index, v))
+				panic(fmt.Errorf("Malformed unit test \"%v\": %w", _this.Tests[index].Name, v))
 			default:
 				panic(v)
 			}
@@ -115,7 +148,7 @@ func (_this *CETestSuite) run(t *testing.T) {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("Unit test failed: Test index %v: %w", index, v))
+				panic(fmt.Errorf("Unit test failed: %v: %w", _this.Tests[index], v))
 			default:
 				panic(v)
 			}
@@ -132,7 +165,6 @@ func (_this *CETestSuite) run(t *testing.T) {
 
 type CETestRunner struct {
 	Name      string
-	TestFile  string
 	TestIndex int
 	Events    []string
 	Cte       string
@@ -151,11 +183,11 @@ type CETestRunner struct {
 	context            string
 }
 
-func (_this *CETestRunner) Description() string {
+func (_this *CETestRunner) String() string {
 	if len(_this.context) > 0 {
-		return fmt.Sprintf("%v index %v (%v): %v", _this.TestFile, _this.TestIndex, _this.Name, _this.context)
+		return fmt.Sprintf("\"%v\" (index %v: %v)", _this.Name, _this.TestIndex, _this.context)
 	}
-	return fmt.Sprintf("%v index %v (%v)", _this.TestFile, _this.TestIndex, _this.Name)
+	return fmt.Sprintf("\"%v\" (index %v)", _this.Name, _this.TestIndex)
 }
 
 func (_this *CETestRunner) postDecodeInit() {
@@ -180,7 +212,7 @@ func (_this *CETestRunner) validate() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("%v: %w", _this.Description(), v))
+				panic(fmt.Errorf("%v: %w", _this, v))
 			default:
 				panic(v)
 			}
@@ -220,22 +252,22 @@ func (_this *CETestRunner) validate() {
 func (_this *CETestRunner) run(t *testing.T) {
 	if _this.Skip {
 		if _this.Debug {
-			fmt.Printf("Skipping CE Test %v\n", _this.Description())
+			fmt.Printf("Skipping CE Test %v\n", _this)
 		}
 		return
 	}
 
 	if _this.Debug {
-		fmt.Printf("Running CE Test %v:\n", _this.Description())
+		fmt.Printf("Running CE Test %v:\n", _this)
 	}
 
 	defer func() {
 		if r := recover(); r != nil {
 			if !_this.Fail {
 				if _this.Trace {
-					panic(fmt.Errorf("%v: %w", _this.Description(), r))
+					panic(fmt.Errorf("%v: %w", _this, r))
 				} else {
-					t.Errorf("%v: %v", _this.Description(), r)
+					t.Errorf("%v: %v", _this, r)
 				}
 			}
 		}
@@ -343,7 +375,7 @@ func (_this *CETestRunner) driveEvents(receiver events.DataEventReceiver, events
 func (_this *CETestRunner) beginTestPhase(phase string) {
 	_this.context = phase
 	if _this.Debug {
-		fmt.Printf("Running test phase %v\n", _this.Description())
+		fmt.Printf("Running test phase %v\n", _this)
 	}
 }
 
