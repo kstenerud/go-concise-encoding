@@ -40,8 +40,6 @@ const (
 	ArrayTypeInvalid ArrayType = iota
 	ArrayTypeString
 	ArrayTypeResourceID
-	ArrayTypeResourceIDConcat
-	ArrayTypeResourceIDConcatEnd
 	ArrayTypeRemoteRef
 	ArrayTypeCustomText
 	ArrayTypeCustomBinary
@@ -76,55 +74,51 @@ func (_this ArrayType) ElementSize() int {
 }
 
 var arrayTypeNames = [...]string{
-	ArrayTypeInvalid:             "Invalid",
-	ArrayTypeString:              "String",
-	ArrayTypeResourceID:          "ResourceID",
-	ArrayTypeResourceIDConcat:    "ResourceIDConcat",
-	ArrayTypeResourceIDConcatEnd: "ResourceIDConcat End",
-	ArrayTypeRemoteRef:           "RemoteRef",
-	ArrayTypeCustomText:          "Custom Text",
-	ArrayTypeCustomBinary:        "Custom Binary",
-	ArrayTypeBit:                 "Boolean",
-	ArrayTypeUint8:               "Uint8",
-	ArrayTypeUint16:              "Uint16",
-	ArrayTypeUint32:              "Uint32",
-	ArrayTypeUint64:              "Uint64",
-	ArrayTypeInt8:                "Int8",
-	ArrayTypeInt16:               "Int16",
-	ArrayTypeInt32:               "Int32",
-	ArrayTypeInt64:               "Int64",
-	ArrayTypeFloat16:             "Float16",
-	ArrayTypeFloat32:             "Float32",
-	ArrayTypeFloat64:             "Float64",
-	ArrayTypeUID:                 "UID",
-	ArrayTypeMedia:               "Media",
-	ArrayTypeMediaData:           "MediaData",
+	ArrayTypeInvalid:      "Invalid",
+	ArrayTypeString:       "String",
+	ArrayTypeResourceID:   "ResourceID",
+	ArrayTypeRemoteRef:    "RemoteRef",
+	ArrayTypeCustomText:   "Custom Text",
+	ArrayTypeCustomBinary: "Custom Binary",
+	ArrayTypeBit:          "Boolean",
+	ArrayTypeUint8:        "Uint8",
+	ArrayTypeUint16:       "Uint16",
+	ArrayTypeUint32:       "Uint32",
+	ArrayTypeUint64:       "Uint64",
+	ArrayTypeInt8:         "Int8",
+	ArrayTypeInt16:        "Int16",
+	ArrayTypeInt32:        "Int32",
+	ArrayTypeInt64:        "Int64",
+	ArrayTypeFloat16:      "Float16",
+	ArrayTypeFloat32:      "Float32",
+	ArrayTypeFloat64:      "Float64",
+	ArrayTypeUID:          "UID",
+	ArrayTypeMedia:        "Media",
+	ArrayTypeMediaData:    "MediaData",
 }
 
 var arrayTypeElementSizes = [...]int{
-	ArrayTypeInvalid:             0,
-	ArrayTypeString:              8,
-	ArrayTypeResourceID:          8,
-	ArrayTypeResourceIDConcat:    8,
-	ArrayTypeResourceIDConcatEnd: 8,
-	ArrayTypeRemoteRef:           8,
-	ArrayTypeCustomText:          8,
-	ArrayTypeCustomBinary:        8,
-	ArrayTypeBit:                 1,
-	ArrayTypeUint8:               8,
-	ArrayTypeUint16:              16,
-	ArrayTypeUint32:              32,
-	ArrayTypeUint64:              64,
-	ArrayTypeInt8:                8,
-	ArrayTypeInt16:               16,
-	ArrayTypeInt32:               32,
-	ArrayTypeInt64:               64,
-	ArrayTypeFloat16:             16,
-	ArrayTypeFloat32:             32,
-	ArrayTypeFloat64:             64,
-	ArrayTypeUID:                 128,
-	ArrayTypeMedia:               8,
-	ArrayTypeMediaData:           8,
+	ArrayTypeInvalid:      0,
+	ArrayTypeString:       8,
+	ArrayTypeResourceID:   8,
+	ArrayTypeRemoteRef:    8,
+	ArrayTypeCustomText:   8,
+	ArrayTypeCustomBinary: 8,
+	ArrayTypeBit:          1,
+	ArrayTypeUint8:        8,
+	ArrayTypeUint16:       16,
+	ArrayTypeUint32:       32,
+	ArrayTypeUint64:       64,
+	ArrayTypeInt8:         8,
+	ArrayTypeInt16:        16,
+	ArrayTypeInt32:        32,
+	ArrayTypeInt64:        64,
+	ArrayTypeFloat16:      16,
+	ArrayTypeFloat32:      32,
+	ArrayTypeFloat64:      64,
+	ArrayTypeUID:          128,
+	ArrayTypeMedia:        8,
+	ArrayTypeMediaData:    8,
 }
 
 // DataEventReceiver receives data events (int, string, etc) and performs
@@ -134,9 +128,6 @@ var arrayTypeElementSizes = [...]int{
 // WARNING: Do not directly store slice data! The underlying contents should be
 // considered volatile and likely to change after the method returns (the
 // decoders re-use memory).
-//
-// WARNING: Do not use OnArray or OnStringlikeArray to pass concatenated array
-// types! Use OnArrayBegin and then two sets of OnArrayChunk sequences.
 //
 // IMPORTANT: DataEventReceiver's methods signal errors via panics, not
 // returned errors.

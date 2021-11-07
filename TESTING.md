@@ -126,7 +126,6 @@ If present, this field contains string-encoded elements that are a kind of short
 | au    | uuids         |         | Array (uid)                    | `auu f1ce4567-e89b-12d3-a456-426655440000 a1424567-e544-1223-a4f6-4266c5440a00` |
 | sb    |               |         | Begin string                   | `sb`                                       |
 | rb    |               |         | Begin resource ID              | `rb`                                       |
-| rbcat |               |         | Begin concatenated resource ID | `rbcat`                                    |
 | rrb   |               |         | Begin remote ref               | `rrb`                                      |
 | cbb   |               |         | Begin custom binary            | `cbb`                                      |
 | ctb   |               |         | Begin custom text              | `ctb`                                      |

@@ -251,19 +251,12 @@ func TestCBEString(t *testing.T) {
 func TestCBERIDEOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typeRID, 0x02})
 	assertDecodeFails(t, []byte{header, ceVer, typeRID, 0x04, 'a'})
-
-	assertDecodeFails(t, []byte{header, ceVer, typeRIDCat, 0x02})
-	assertDecodeFails(t, []byte{header, ceVer, typeRIDCat, 0x04, 'a'})
 }
 
 func TestCBERID(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeRID, 0x00}, BD(), EvV, RID(""), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeRID, 0x02, 'a'}, BD(), EvV, RID("a"), ED())
 	assertDecodeEncode(t, []byte{header, ceVer, typeRID, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), EvV, RID("00000000001111111111"), ED())
-
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeRIDCat, 0x00, 0x00}, BD(), EvV, RBCat(), AC(0, false), AC(0, false), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeRIDCat, 0x02, 'a', 02, '1'}, BD(), EvV, RBCat(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte("1")), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeRIDCat, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 02, '1'}, BD(), EvV, RBCat(), AC(20, false), AD([]byte("00000000001111111111")), AC(1, false), AD([]byte("1")), ED())
 }
 
 func TestCBECustomBinaryEOF(t *testing.T) {

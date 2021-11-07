@@ -46,11 +46,6 @@ func (_this *Context) tryEndArray(moreChunksFollow bool, validator func(data []b
 	if moreChunksFollow {
 		return false
 	}
-	switch _this.arrayType {
-	case events.ArrayTypeResourceIDConcat:
-		_this.arrayType = events.ArrayTypeResourceIDConcatEnd
-		return false
-	}
 	if validator != nil {
 		validator(_this.builtArrayBuffer)
 	}
@@ -130,7 +125,7 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 	switch arrayType {
 	case events.ArrayTypeString:
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
@@ -287,7 +282,7 @@ func (_this *Context) ValidateFullArrayAnyType(arrayType events.ArrayType, eleme
 		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthString(uint64(len(data)))
 		_this.ValidateContentsString(data)
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthRID(uint64(len(data)))
 		_this.ValidateContentsRID(data)
@@ -306,7 +301,7 @@ func (_this *Context) ValidateFullArrayStringlike(arrayType events.ArrayType, da
 	case events.ArrayTypeString:
 		_this.ValidateLengthString(uint64(len(data)))
 		_this.ValidateContentsStringlike(data)
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		_this.ValidateLengthRID(uint64(len(data)))
 		_this.ValidateContentsRIDString(data)
 	case events.ArrayTypeCustomText:

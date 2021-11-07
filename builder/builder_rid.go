@@ -35,7 +35,7 @@ func (_this *ridBuilder) String() string      { return reflect.TypeOf(_this).Str
 
 func (_this *ridBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		setRIDFromString(string(value), dst)
 	default:
 		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
@@ -45,7 +45,7 @@ func (_this *ridBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 
 func (_this *ridBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	switch arrayType {
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		setRIDFromString(value, dst)
 	default:
 		PanicBadEvent(_this, "BuildFromStringlikeArray(%v)", arrayType)
@@ -69,7 +69,7 @@ func (_this *pRidBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.
 
 func (_this *pRidBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		setPRIDFromString(string(value), dst)
 	default:
 		PanicBadEvent(_this, "BuildFromArray(%v)", arrayType)
@@ -79,7 +79,7 @@ func (_this *pRidBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 
 func (_this *pRidBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	switch arrayType {
-	case events.ArrayTypeResourceID, events.ArrayTypeResourceIDConcat:
+	case events.ArrayTypeResourceID:
 		setPRIDFromString(value, dst)
 	default:
 		PanicBadEvent(_this, "BuildFromStringlikeArray(%v)", arrayType)

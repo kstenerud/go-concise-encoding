@@ -1306,16 +1306,6 @@ func TestBuilderStructTags(t *testing.T) {
 		E())
 }
 
-func TestBuilderRIDCat(t *testing.T) {
-	pURL := NewRID("http://x.com/1")
-
-	assertBuild(t, pURL, RID("http://x.com/1"))
-	// TODO: These are still broken
-	// assertBuild(t, pURL, RID("http://x.com/"), S("1"))
-	// assertBuild(t, *pURL, RIDCat("http://x.com/1"))
-	assertBuild(t, *pURL, RBCat(), AC(13, false), AD([]byte("http://x.com/")), AC(1, false), AD([]byte("1")))
-}
-
 func TestBuilderUID(t *testing.T) {
 	uid := types.UID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 

@@ -572,8 +572,6 @@ func TestCTERID(t *testing.T) {
 @"http://example.com"`, BD(), EvV, RID("http://example.com"), ED())
 	assertDecodeEncode(t, nil, nil, `c0
 @"http://x.com/\""`, BD(), EvV, RID(`http://x.com/"`), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-@"http://example.com":"1"`, BD(), EvV, RBCat(), AC(18, false), AD([]byte("http://example.com")), AC(1, false), AD([]byte("1")), ED())
 }
 
 func TestCTEArrayBoolean(t *testing.T) {
@@ -1988,26 +1986,12 @@ func TestEmptyDocument(t *testing.T) {
 null`, BD(), EvV, N(), ED())
 }
 
-func TestRIDCat(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    @"http://z.com":"1"
-]`, BD(), EvV, L(), RBCat(), AC(12, false), AD([]byte("http://z.com")), AC(1, false), AD([]byte("1")), E(), ED())
-}
-
 func TestNestedComment(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 [
     /* a /* nested */ comment */
     1
 ]`, BD(), EvV, L(), COM(true, " a /* nested */ comment "), PI(1), E(), ED())
-}
-
-func TestRIDConcat(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    @"http://z.com":"a"
-]`, BD(), EvV, L(), RBCat(), AC(12, false), AD([]byte("http://z.com")), AC(1, false), AD([]byte("a")), E(), ED())
 }
 
 func TestMarkupComment(t *testing.T) {

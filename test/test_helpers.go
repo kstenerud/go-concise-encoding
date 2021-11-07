@@ -344,7 +344,6 @@ var (
 	EvSB     = SB()
 	EvRID    = RID("http://z.com")
 	EvRB     = RB()
-	EvRBCat  = RBCat()
 	EvCUB    = CUB([]byte{1})
 	EvCBB    = CBB()
 	EvCUT    = CUT("a")
@@ -383,7 +382,7 @@ var allEvents = []*TEvent{
 	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
 	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvNODE, EvEDGE, EvE,
 	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
-	EvRBCat, EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
+	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
 	EvAI32, EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
 	EvAF64B, EvAUU, EvAUUB, EvMB,
@@ -434,8 +433,6 @@ func FilterCTE(event *TEvent) []*TEvent {
 		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
 		TEventRemoteRefBegin, TEventStringBegin:
 		return []*TEvent{S("x")}
-	case TEventResourceIDCatBegin:
-		return []*TEvent{RBCat(), AC(1, true), AD([]byte{'a'}), AC(0, false)}
 	case TEventArrayChunk, TEventArrayData:
 		return []*TEvent{}
 	default:
@@ -511,7 +508,7 @@ var (
 
 	ValidMapKeys = []*TEvent{
 		EvPAD, EvCOM, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF,
-		EvBDF, EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB, EvRBCat,
+		EvBDF, EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB,
 		EvREF, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
@@ -594,31 +591,30 @@ func copyEvents(events []*TEvent) []*TEvent {
 }
 
 var basicCompletions = map[TEventType][]*TEvent{
-	TEventList:               []*TEvent{E()},
-	TEventMap:                []*TEvent{E()},
-	TEventMarkup:             []*TEvent{E(), E()},
-	TEventNode:               []*TEvent{I(1), E()},
-	TEventEdge:               []*TEvent{RID("a"), RID("b"), I(1)},
-	TEventStringBegin:        []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventResourceIDBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventRemoteRefBegin:     []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventResourceIDCatBegin: []*TEvent{AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{'a'})},
-	TEventCustomBinaryBegin:  []*TEvent{AC(1, false), AD([]byte{1})},
-	TEventCustomTextBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventArrayBooleanBegin:  []*TEvent{AC(1, false), AD([]byte{1})},
-	TEventArrayUint8Begin:    []*TEvent{AC(1, false), AD(binBytes(1, 1))},
-	TEventArrayUint16Begin:   []*TEvent{AC(1, false), AD(binBytes(2, 1))},
-	TEventArrayUint32Begin:   []*TEvent{AC(1, false), AD(binBytes(4, 1))},
-	TEventArrayUint64Begin:   []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayInt8Begin:     []*TEvent{AC(1, false), AD(binBytes(1, 1))},
-	TEventArrayInt16Begin:    []*TEvent{AC(1, false), AD(binBytes(2, 1))},
-	TEventArrayInt32Begin:    []*TEvent{AC(1, false), AD(binBytes(4, 1))},
-	TEventArrayInt64Begin:    []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayFloat16Begin:  []*TEvent{AC(1, false), AD(binBytes(2, 1))},
-	TEventArrayFloat32Begin:  []*TEvent{AC(1, false), AD(binBytes(4, 1))},
-	TEventArrayFloat64Begin:  []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayUIDBegin:      []*TEvent{AC(1, false), AD(binBytes(16, 1))},
-	TEventMediaBegin:         []*TEvent{AC(1, false), AD([]byte{'a'}), AC(0, false)},
+	TEventList:              []*TEvent{E()},
+	TEventMap:               []*TEvent{E()},
+	TEventMarkup:            []*TEvent{E(), E()},
+	TEventNode:              []*TEvent{I(1), E()},
+	TEventEdge:              []*TEvent{RID("a"), RID("b"), I(1)},
+	TEventStringBegin:       []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventResourceIDBegin:   []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventRemoteRefBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventCustomBinaryBegin: []*TEvent{AC(1, false), AD([]byte{1})},
+	TEventCustomTextBegin:   []*TEvent{AC(1, false), AD([]byte{'a'})},
+	TEventArrayBooleanBegin: []*TEvent{AC(1, false), AD([]byte{1})},
+	TEventArrayUint8Begin:   []*TEvent{AC(1, false), AD(binBytes(1, 1))},
+	TEventArrayUint16Begin:  []*TEvent{AC(1, false), AD(binBytes(2, 1))},
+	TEventArrayUint32Begin:  []*TEvent{AC(1, false), AD(binBytes(4, 1))},
+	TEventArrayUint64Begin:  []*TEvent{AC(1, false), AD(binBytes(8, 1))},
+	TEventArrayInt8Begin:    []*TEvent{AC(1, false), AD(binBytes(1, 1))},
+	TEventArrayInt16Begin:   []*TEvent{AC(1, false), AD(binBytes(2, 1))},
+	TEventArrayInt32Begin:   []*TEvent{AC(1, false), AD(binBytes(4, 1))},
+	TEventArrayInt64Begin:   []*TEvent{AC(1, false), AD(binBytes(8, 1))},
+	TEventArrayFloat16Begin: []*TEvent{AC(1, false), AD(binBytes(2, 1))},
+	TEventArrayFloat32Begin: []*TEvent{AC(1, false), AD(binBytes(4, 1))},
+	TEventArrayFloat64Begin: []*TEvent{AC(1, false), AD(binBytes(8, 1))},
+	TEventArrayUIDBegin:     []*TEvent{AC(1, false), AD(binBytes(16, 1))},
+	TEventMediaBegin:        []*TEvent{AC(1, false), AD([]byte{'a'}), AC(0, false)},
 }
 
 func getBasicCompletion(stream []*TEvent) []*TEvent {
@@ -685,14 +681,6 @@ func allPossibleEventStreams(
 		newStream = append(newStream, prefix...)
 		newStream = append(newStream, event)
 		newStream = append(newStream, AC(0, false))
-		newStream = append(newStream, suffix...)
-		newStream = append(newStream, docEnd...)
-		allEvents = append(allEvents, newStream)
-	case TEventResourceIDCatBegin:
-		newStream := copyEvents(docBegin)
-		newStream = append(newStream, prefix...)
-		newStream = append(newStream, event)
-		newStream = append(newStream, AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{'a'}))
 		newStream = append(newStream, suffix...)
 		newStream = append(newStream, docEnd...)
 		allEvents = append(allEvents, newStream)
@@ -787,7 +775,6 @@ const (
 	TEventStringBegin
 	TEventResourceIDBegin
 	TEventRemoteRefBegin
-	TEventResourceIDCatBegin
 	TEventCustomBinaryBegin
 	TEventCustomTextBegin
 	TEventArrayBooleanBegin
@@ -819,77 +806,76 @@ const (
 )
 
 var TEventNames = []string{
-	TEventBeginDocument:      "BD",
-	TEventVersion:            "V",
-	TEventPadding:            "PAD",
-	TEventComment:            "COM",
-	TEventNil:                "N",
-	TEventBool:               "B",
-	TEventTrue:               "TT",
-	TEventFalse:              "FF",
-	TEventPInt:               "PI",
-	TEventNInt:               "NI",
-	TEventInt:                "I",
-	TEventBigInt:             "BI",
-	TEventFloat:              "F",
-	TEventBigFloat:           "BF",
-	TEventDecimalFloat:       "DF",
-	TEventBigDecimalFloat:    "BDF",
-	TEventNan:                "NAN",
-	TEventSNan:               "SNAN",
-	TEventUID:                "UID",
-	TEventTime:               "GT",
-	TEventCompactTime:        "CT",
-	TEventString:             "S",
-	TEventResourceID:         "RID",
-	TEventRemoteRef:          "RREF",
-	TEventCustomBinary:       "CUB",
-	TEventCustomText:         "CUT",
-	TEventArrayBoolean:       "AB",
-	TEventArrayInt8:          "AI8",
-	TEventArrayInt16:         "AI16",
-	TEventArrayInt32:         "AI32",
-	TEventArrayInt64:         "AI64",
-	TEventArrayUint8:         "AU8",
-	TEventArrayUint16:        "AU16",
-	TEventArrayUint32:        "AU32",
-	TEventArrayUint64:        "AU64",
-	TEventArrayFloat16:       "AF16",
-	TEventArrayFloat32:       "AF32",
-	TEventArrayFloat64:       "AF64",
-	TEventArrayUID:           "AUU",
-	TEventStringBegin:        "SB",
-	TEventResourceIDBegin:    "RB",
-	TEventRemoteRefBegin:     "RRB",
-	TEventResourceIDCatBegin: "RBCat",
-	TEventCustomBinaryBegin:  "CBB",
-	TEventCustomTextBegin:    "CTB",
-	TEventArrayBooleanBegin:  "ABB",
-	TEventArrayInt8Begin:     "AI8B",
-	TEventArrayInt16Begin:    "AI16B",
-	TEventArrayInt32Begin:    "AI32B",
-	TEventArrayInt64Begin:    "AI64B",
-	TEventArrayUint8Begin:    "AU8B",
-	TEventArrayUint16Begin:   "AU16B",
-	TEventArrayUint32Begin:   "AU32B",
-	TEventArrayUint64Begin:   "AU64B",
-	TEventArrayFloat16Begin:  "AF16B",
-	TEventArrayFloat32Begin:  "AF32B",
-	TEventArrayFloat64Begin:  "AF64B",
-	TEventArrayUIDBegin:      "AUUB",
-	TEventMediaBegin:         "MB",
-	TEventArrayChunk:         "AC",
-	TEventArrayData:          "AD",
-	TEventList:               "L",
-	TEventMap:                "M",
-	TEventMarkup:             "MUP",
-	TEventNode:               "NODE",
-	TEventEdge:               "EDGE",
-	TEventEnd:                "E",
-	TEventMarker:             "MARK",
-	TEventReference:          "REF",
-	TEventConstant:           "CONST",
-	TEventEndDocument:        "ED",
+	TEventBeginDocument:     "BD",
+	TEventVersion:           "V",
+	TEventPadding:           "PAD",
+	TEventComment:           "COM",
+	TEventNil:               "N",
+	TEventBool:              "B",
+	TEventTrue:              "TT",
+	TEventFalse:             "FF",
+	TEventPInt:              "PI",
+	TEventNInt:              "NI",
+	TEventInt:               "I",
+	TEventBigInt:            "BI",
+	TEventFloat:             "F",
+	TEventBigFloat:          "BF",
+	TEventDecimalFloat:      "DF",
+	TEventBigDecimalFloat:   "BDF",
+	TEventNan:               "NAN",
+	TEventSNan:              "SNAN",
+	TEventUID:               "UID",
+	TEventTime:              "GT",
+	TEventCompactTime:       "CT",
+	TEventString:            "S",
+	TEventResourceID:        "RID",
+	TEventRemoteRef:         "RREF",
+	TEventCustomBinary:      "CUB",
+	TEventCustomText:        "CUT",
+	TEventArrayBoolean:      "AB",
+	TEventArrayInt8:         "AI8",
+	TEventArrayInt16:        "AI16",
+	TEventArrayInt32:        "AI32",
+	TEventArrayInt64:        "AI64",
+	TEventArrayUint8:        "AU8",
+	TEventArrayUint16:       "AU16",
+	TEventArrayUint32:       "AU32",
+	TEventArrayUint64:       "AU64",
+	TEventArrayFloat16:      "AF16",
+	TEventArrayFloat32:      "AF32",
+	TEventArrayFloat64:      "AF64",
+	TEventArrayUID:          "AUU",
+	TEventStringBegin:       "SB",
+	TEventResourceIDBegin:   "RB",
+	TEventRemoteRefBegin:    "RRB",
+	TEventCustomBinaryBegin: "CBB",
+	TEventCustomTextBegin:   "CTB",
+	TEventArrayBooleanBegin: "ABB",
+	TEventArrayInt8Begin:    "AI8B",
+	TEventArrayInt16Begin:   "AI16B",
+	TEventArrayInt32Begin:   "AI32B",
+	TEventArrayInt64Begin:   "AI64B",
+	TEventArrayUint8Begin:   "AU8B",
+	TEventArrayUint16Begin:  "AU16B",
+	TEventArrayUint32Begin:  "AU32B",
+	TEventArrayUint64Begin:  "AU64B",
+	TEventArrayFloat16Begin: "AF16B",
+	TEventArrayFloat32Begin: "AF32B",
+	TEventArrayFloat64Begin: "AF64B",
+	TEventArrayUIDBegin:     "AUUB",
+	TEventMediaBegin:        "MB",
+	TEventArrayChunk:        "AC",
+	TEventArrayData:         "AD",
+	TEventList:              "L",
+	TEventMap:               "M",
+	TEventMarkup:            "MUP",
+	TEventNode:              "NODE",
+	TEventEdge:              "EDGE",
+	TEventEnd:               "E",
+	TEventMarker:            "MARK",
+	TEventReference:         "REF",
+	TEventConstant:          "CONST",
+	TEventEndDocument:       "ED",
 }
 
 func (_this TEventType) String() string {
@@ -1209,8 +1195,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnArrayBegin(events.ArrayTypeResourceID)
 	case TEventRemoteRefBegin:
 		receiver.OnArrayBegin(events.ArrayTypeRemoteRef)
-	case TEventResourceIDCatBegin:
-		receiver.OnArrayBegin(events.ArrayTypeResourceIDConcat)
 	case TEventCustomBinaryBegin:
 		receiver.OnArrayBegin(events.ArrayTypeCustomBinary)
 	case TEventCustomTextBegin:
@@ -1324,7 +1308,6 @@ func AUU(v [][]byte) *TEvent            { return NewTEvent(TEventArrayUID, v, ni
 func SB() *TEvent                       { return NewTEvent(TEventStringBegin, nil, nil) }
 func RB() *TEvent                       { return NewTEvent(TEventResourceIDBegin, nil, nil) }
 func RRB() *TEvent                      { return NewTEvent(TEventRemoteRefBegin, nil, nil) }
-func RBCat() *TEvent                    { return NewTEvent(TEventResourceIDCatBegin, nil, nil) }
 func CBB() *TEvent                      { return NewTEvent(TEventCustomBinaryBegin, nil, nil) }
 func CTB() *TEvent                      { return NewTEvent(TEventCustomTextBegin, nil, nil) }
 func ABB() *TEvent                      { return NewTEvent(TEventArrayBooleanBegin, nil, nil) }
@@ -1609,8 +1592,6 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 		h.Print(RB())
 	case events.ArrayTypeRemoteRef:
 		h.Print(RRB())
-	case events.ArrayTypeResourceIDConcat:
-		h.Print(RBCat())
 	case events.ArrayTypeCustomBinary:
 		h.Print(CBB())
 	case events.ArrayTypeCustomText:
@@ -1863,8 +1844,6 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 		h.add(RB())
 	case events.ArrayTypeRemoteRef:
 		h.add(RRB())
-	case events.ArrayTypeResourceIDConcat:
-		h.add(RBCat())
 	case events.ArrayTypeCustomBinary:
 		h.add(CBB())
 	case events.ArrayTypeCustomText:

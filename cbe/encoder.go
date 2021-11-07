@@ -103,11 +103,6 @@ func (_this *Encoder) OnNil() {
 	_this.writer.WriteType(cbeTypeNull)
 }
 
-func (_this *Encoder) OnNA() {
-	_this.writer.WriteType(cbeTypePlane2)
-	_this.writer.WriteType(cbeTypeNA)
-}
-
 func (_this *Encoder) OnBool(value bool) {
 	if value {
 		_this.OnTrue()

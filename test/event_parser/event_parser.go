@@ -572,7 +572,6 @@ func init() {
 	eventParsersByName["sb"] = newParser(test.TEventStringBegin)
 	eventParsersByName["rb"] = newParser(test.TEventResourceIDBegin)
 	eventParsersByName["rrb"] = newParser(test.TEventRemoteRefBegin)
-	eventParsersByName["rbcat"] = newParser(test.TEventResourceIDCatBegin)
 	eventParsersByName["cbb"] = newParser(test.TEventCustomBinaryBegin)
 	eventParsersByName["ctb"] = newParser(test.TEventCustomTextBegin)
 	eventParsersByName["abb"] = newParser(test.TEventArrayBooleanBegin)

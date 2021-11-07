@@ -172,12 +172,6 @@ func (_this *BuilderEventReceiver) OnStringlikeArray(arrayType events.ArrayType,
 func (_this *BuilderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.BeginArray(func(ctx *Context) {
 		switch arrayType {
-		case events.ArrayTypeResourceIDConcat:
-			ctx.ContinueMultiComponentArray(func(ctx *Context) {
-				bytes := ctx.chunkedData
-				elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
-				_this.OnArray(arrayType, elementCount, bytes)
-			})
 		case events.ArrayTypeMedia:
 			mediaType := string(ctx.chunkedData)
 			ctx.chunkedData = ctx.chunkedData[:0]

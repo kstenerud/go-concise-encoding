@@ -114,10 +114,8 @@ const (
 	typeShortArrayFloat64 = 0x90
 	typeShortArrayUID     = 0xa0
 
-	typeNA           = 0xe0
-	typeRIDCat       = 0xe1
-	typeRemoteRef    = 0xe2
-	typeMedia        = 0xe3
+	typeRemoteRef    = 0xe0
+	typeMedia        = 0xe1
 	typeArrayInt8    = 0xff
 	typeArrayUint16  = 0xfe
 	typeArrayInt16   = 0xfd
@@ -207,7 +205,6 @@ func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
-func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }

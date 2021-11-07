@@ -107,10 +107,8 @@ const (
 	cbeTypeShortArrayFloat64 = 0x90
 	cbeTypeShortArrayUID     = 0xa0
 
-	cbeTypeNA           = 0xe0
-	cbeTypeRIDCat       = 0xe1
-	cbeTypeRemoteReference = 0xe2
-	cbeTypeMedia        = 0xe3
+	cbeTypeRemoteReference = 0xe0
+	cbeTypeMedia           = 0xe1
 
 	cbeTypeArrayUID     = 0xf5
 	cbeTypeArrayFloat64 = 0xf6
@@ -134,49 +132,47 @@ const (
 )
 
 var isPlane2Array = []bool{
-	events.ArrayTypeBit:              false,
-	events.ArrayTypeUint8:            false,
-	events.ArrayTypeUint16:           true,
-	events.ArrayTypeUint32:           true,
-	events.ArrayTypeUint64:           true,
-	events.ArrayTypeInt8:             true,
-	events.ArrayTypeInt16:            true,
-	events.ArrayTypeInt32:            true,
-	events.ArrayTypeInt64:            true,
-	events.ArrayTypeFloat16:          true,
-	events.ArrayTypeFloat32:          true,
-	events.ArrayTypeFloat64:          true,
-	events.ArrayTypeUID:              true,
-	events.ArrayTypeString:           false,
-	events.ArrayTypeResourceID:       false,
-	events.ArrayTypeResourceIDConcat: true,
-	events.ArrayTypeRemoteRef:        true,
-	events.ArrayTypeMedia:            true,
-	events.ArrayTypeCustomBinary:     false,
-	events.ArrayTypeCustomText:       false,
+	events.ArrayTypeBit:          false,
+	events.ArrayTypeUint8:        false,
+	events.ArrayTypeUint16:       true,
+	events.ArrayTypeUint32:       true,
+	events.ArrayTypeUint64:       true,
+	events.ArrayTypeInt8:         true,
+	events.ArrayTypeInt16:        true,
+	events.ArrayTypeInt32:        true,
+	events.ArrayTypeInt64:        true,
+	events.ArrayTypeFloat16:      true,
+	events.ArrayTypeFloat32:      true,
+	events.ArrayTypeFloat64:      true,
+	events.ArrayTypeUID:          true,
+	events.ArrayTypeString:       false,
+	events.ArrayTypeResourceID:   false,
+	events.ArrayTypeRemoteRef:    true,
+	events.ArrayTypeMedia:        true,
+	events.ArrayTypeCustomBinary: false,
+	events.ArrayTypeCustomText:   false,
 }
 
 var arrayTypeToCBEType = []cbeTypeField{
-	events.ArrayTypeBit:              cbeTypeArrayBit,
-	events.ArrayTypeUint8:            cbeTypeArrayUint8,
-	events.ArrayTypeUint16:           cbeTypeArrayUint16,
-	events.ArrayTypeUint32:           cbeTypeArrayUint32,
-	events.ArrayTypeUint64:           cbeTypeArrayUint64,
-	events.ArrayTypeInt8:             cbeTypeArrayInt8,
-	events.ArrayTypeInt16:            cbeTypeArrayInt16,
-	events.ArrayTypeInt32:            cbeTypeArrayInt32,
-	events.ArrayTypeInt64:            cbeTypeArrayInt64,
-	events.ArrayTypeFloat16:          cbeTypeArrayFloat16,
-	events.ArrayTypeFloat32:          cbeTypeArrayFloat32,
-	events.ArrayTypeFloat64:          cbeTypeArrayFloat64,
-	events.ArrayTypeUID:              cbeTypeArrayUID,
-	events.ArrayTypeString:           cbeTypeString,
-	events.ArrayTypeResourceID:       cbeTypeRID,
-	events.ArrayTypeCustomBinary:     cbeTypeCustomBinary,
-	events.ArrayTypeCustomText:       cbeTypeCustomText,
-	events.ArrayTypeResourceIDConcat: cbeTypeRIDCat,
-	events.ArrayTypeRemoteRef:        cbeTypeRemoteReference,
-	events.ArrayTypeMedia:            cbeTypeMedia,
+	events.ArrayTypeBit:          cbeTypeArrayBit,
+	events.ArrayTypeUint8:        cbeTypeArrayUint8,
+	events.ArrayTypeUint16:       cbeTypeArrayUint16,
+	events.ArrayTypeUint32:       cbeTypeArrayUint32,
+	events.ArrayTypeUint64:       cbeTypeArrayUint64,
+	events.ArrayTypeInt8:         cbeTypeArrayInt8,
+	events.ArrayTypeInt16:        cbeTypeArrayInt16,
+	events.ArrayTypeInt32:        cbeTypeArrayInt32,
+	events.ArrayTypeInt64:        cbeTypeArrayInt64,
+	events.ArrayTypeFloat16:      cbeTypeArrayFloat16,
+	events.ArrayTypeFloat32:      cbeTypeArrayFloat32,
+	events.ArrayTypeFloat64:      cbeTypeArrayFloat64,
+	events.ArrayTypeUID:          cbeTypeArrayUID,
+	events.ArrayTypeString:       cbeTypeString,
+	events.ArrayTypeResourceID:   cbeTypeRID,
+	events.ArrayTypeCustomBinary: cbeTypeCustomBinary,
+	events.ArrayTypeCustomText:   cbeTypeCustomText,
+	events.ArrayTypeRemoteRef:    cbeTypeRemoteReference,
+	events.ArrayTypeMedia:        cbeTypeMedia,
 }
 
 var cbePlane2TypeToArrayType = [256]events.ArrayType{
@@ -193,6 +189,5 @@ var cbePlane2TypeToArrayType = [256]events.ArrayType{
 	cbeTypeArrayFloat32: events.ArrayTypeFloat32,
 	cbeTypeArrayFloat64: events.ArrayTypeFloat64,
 	cbeTypeArrayUID:     events.ArrayTypeUID,
-	cbeTypeRIDCat:       events.ArrayTypeResourceIDConcat,
 	cbeTypeMedia:        events.ArrayTypeMedia,
 }

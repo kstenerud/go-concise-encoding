@@ -260,21 +260,6 @@ func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 	}
 }
 
-func (_this *arrayEncoderEngine) beginArrayResourceIDConcat(onComplete func()) {
-	_this.setElementByteWidth(1)
-	_this.stream.WriteByte('@')
-	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
-	_this.onComplete = func() {
-		_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
-		_this.stringBuffer = _this.stringBuffer[:0]
-		_this.stream.WriteByte(':')
-		_this.onComplete = func() {
-			_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
-			onComplete()
-		}
-	}
-}
-
 func (_this *arrayEncoderEngine) beginArrayIdentifier(onComplete func()) {
 	_this.setElementByteWidth(1)
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
@@ -571,25 +556,24 @@ func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
 // Data
 
 var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
-	events.ArrayTypeBit:              (*arrayEncoderEngine).beginArrayBoolean,
-	events.ArrayTypeString:           (*arrayEncoderEngine).beginArrayString,
-	events.ArrayTypeResourceID:       (*arrayEncoderEngine).beginArrayResourceID,
-	events.ArrayTypeResourceIDConcat: (*arrayEncoderEngine).beginArrayResourceIDConcat,
-	events.ArrayTypeCustomText:       (*arrayEncoderEngine).beginArrayCustomText,
-	events.ArrayTypeCustomBinary:     (*arrayEncoderEngine).beginArrayCustomBinary,
-	events.ArrayTypeUint8:            (*arrayEncoderEngine).beginArrayUint8,
-	events.ArrayTypeUint16:           (*arrayEncoderEngine).beginArrayUint16,
-	events.ArrayTypeUint32:           (*arrayEncoderEngine).beginArrayUint32,
-	events.ArrayTypeUint64:           (*arrayEncoderEngine).beginArrayUint64,
-	events.ArrayTypeInt8:             (*arrayEncoderEngine).beginArrayInt8,
-	events.ArrayTypeInt16:            (*arrayEncoderEngine).beginArrayInt16,
-	events.ArrayTypeInt32:            (*arrayEncoderEngine).beginArrayInt32,
-	events.ArrayTypeInt64:            (*arrayEncoderEngine).beginArrayInt64,
-	events.ArrayTypeFloat16:          (*arrayEncoderEngine).beginArrayFloat16,
-	events.ArrayTypeFloat32:          (*arrayEncoderEngine).beginArrayFloat32,
-	events.ArrayTypeFloat64:          (*arrayEncoderEngine).beginArrayFloat64,
-	events.ArrayTypeUID:              (*arrayEncoderEngine).beginArrayUID,
-	events.ArrayTypeMedia:            (*arrayEncoderEngine).beginArrayMedia,
+	events.ArrayTypeBit:          (*arrayEncoderEngine).beginArrayBoolean,
+	events.ArrayTypeString:       (*arrayEncoderEngine).beginArrayString,
+	events.ArrayTypeResourceID:   (*arrayEncoderEngine).beginArrayResourceID,
+	events.ArrayTypeCustomText:   (*arrayEncoderEngine).beginArrayCustomText,
+	events.ArrayTypeCustomBinary: (*arrayEncoderEngine).beginArrayCustomBinary,
+	events.ArrayTypeUint8:        (*arrayEncoderEngine).beginArrayUint8,
+	events.ArrayTypeUint16:       (*arrayEncoderEngine).beginArrayUint16,
+	events.ArrayTypeUint32:       (*arrayEncoderEngine).beginArrayUint32,
+	events.ArrayTypeUint64:       (*arrayEncoderEngine).beginArrayUint64,
+	events.ArrayTypeInt8:         (*arrayEncoderEngine).beginArrayInt8,
+	events.ArrayTypeInt16:        (*arrayEncoderEngine).beginArrayInt16,
+	events.ArrayTypeInt32:        (*arrayEncoderEngine).beginArrayInt32,
+	events.ArrayTypeInt64:        (*arrayEncoderEngine).beginArrayInt64,
+	events.ArrayTypeFloat16:      (*arrayEncoderEngine).beginArrayFloat16,
+	events.ArrayTypeFloat32:      (*arrayEncoderEngine).beginArrayFloat32,
+	events.ArrayTypeFloat64:      (*arrayEncoderEngine).beginArrayFloat64,
+	events.ArrayTypeUID:          (*arrayEncoderEngine).beginArrayUID,
+	events.ArrayTypeMedia:        (*arrayEncoderEngine).beginArrayMedia,
 }
 
 var arrayFormatsGeneral = []string{

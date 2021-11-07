@@ -161,7 +161,6 @@ const (
 	DataTypeMarker
 	DataTypeReference
 	DataTypeResourceID
-	DataTypeResourceIDCat
 	DataTypeRemoteRef
 	DataTypeConstant
 	DataTypeComment
@@ -179,7 +178,6 @@ const (
 		DataTypeTime |
 		DataTypeString |
 		DataTypeResourceID |
-		DataTypeResourceIDCat |
 		DataTypeMarker |
 		DataTypeReference |
 		DataTypeConstant |
@@ -192,7 +190,6 @@ const (
 	DataTypesMarkupContents = DataTypeMarkup | DataTypeString | DataTypeComment | DataTypePadding
 	DataTypesStringlike     = DataTypeString |
 		DataTypeResourceID |
-		DataTypeResourceIDCat |
 		DataTypeRemoteRef |
 		DataTypeCustomText
 	DataTypesBinary = DataTypeArrayBit |
@@ -217,44 +214,43 @@ func (_this DataType) String() string {
 }
 
 var dataTypeNames = map[interface{}]string{
-	DataTypeInvalid:       "DataTypeInvalid",
-	DataTypeNil:           "DataTypeNil",
-	DataTypeNan:           "DataTypeNan",
-	DataTypeBool:          "DataTypeBool",
-	DataTypeInt:           "DataTypeInt",
-	DataTypeFloat:         "DataTypeFloat",
-	DataTypeUID:           "DataTypeUID",
-	DataTypeTime:          "DataTypeTime",
-	DataTypeList:          "DataTypeList",
-	DataTypeMap:           "DataTypeMap",
-	DataTypeEdge:          "DataTypeEdge",
-	DataTypeNode:          "DataTypeNode",
-	DataTypeMarkup:        "DataTypeMarkup",
-	DataTypeString:        "DataTypeString",
-	DataTypeMedia:         "DataTypeMedia",
-	DataTypeArrayBit:      "DataTypeArrayBit",
-	DataTypeArrayUint8:    "DataTypeArrayUint8",
-	DataTypeArrayUint16:   "DataTypeArrayUint16",
-	DataTypeArrayUint32:   "DataTypeArrayUint32",
-	DataTypeArrayUint64:   "DataTypeArrayUint64",
-	DataTypeArrayInt8:     "DataTypeArrayInt8",
-	DataTypeArrayInt16:    "DataTypeArrayInt16",
-	DataTypeArrayInt32:    "DataTypeArrayInt32",
-	DataTypeArrayInt64:    "DataTypeArrayInt64",
-	DataTypeArrayFloat16:  "DataTypeArrayFloat16",
-	DataTypeArrayFloat32:  "DataTypeArrayFloat32",
-	DataTypeArrayFloat64:  "DataTypeArrayFloat64",
-	DataTypeArrayUID:      "DataTypeArrayUID",
-	DataTypeCustomText:    "DataTypeCustomText",
-	DataTypeCustomBinary:  "DataTypeCustomBinary",
-	DataTypeMarker:        "DataTypeMarker",
-	DataTypeReference:     "DataTypeReference",
-	DataTypeResourceID:    "DataTypeResourceID",
-	DataTypeResourceIDCat: "DataTypeResourceIDCat",
-	DataTypeRemoteRef:     "DataTypeRemoteRef",
-	DataTypeConstant:      "DataTypeConstant",
-	DataTypeComment:       "DataTypeComment",
-	DataTypePadding:       "DataTypePadding",
+	DataTypeInvalid:      "DataTypeInvalid",
+	DataTypeNil:          "DataTypeNil",
+	DataTypeNan:          "DataTypeNan",
+	DataTypeBool:         "DataTypeBool",
+	DataTypeInt:          "DataTypeInt",
+	DataTypeFloat:        "DataTypeFloat",
+	DataTypeUID:          "DataTypeUID",
+	DataTypeTime:         "DataTypeTime",
+	DataTypeList:         "DataTypeList",
+	DataTypeMap:          "DataTypeMap",
+	DataTypeEdge:         "DataTypeEdge",
+	DataTypeNode:         "DataTypeNode",
+	DataTypeMarkup:       "DataTypeMarkup",
+	DataTypeString:       "DataTypeString",
+	DataTypeMedia:        "DataTypeMedia",
+	DataTypeArrayBit:     "DataTypeArrayBit",
+	DataTypeArrayUint8:   "DataTypeArrayUint8",
+	DataTypeArrayUint16:  "DataTypeArrayUint16",
+	DataTypeArrayUint32:  "DataTypeArrayUint32",
+	DataTypeArrayUint64:  "DataTypeArrayUint64",
+	DataTypeArrayInt8:    "DataTypeArrayInt8",
+	DataTypeArrayInt16:   "DataTypeArrayInt16",
+	DataTypeArrayInt32:   "DataTypeArrayInt32",
+	DataTypeArrayInt64:   "DataTypeArrayInt64",
+	DataTypeArrayFloat16: "DataTypeArrayFloat16",
+	DataTypeArrayFloat32: "DataTypeArrayFloat32",
+	DataTypeArrayFloat64: "DataTypeArrayFloat64",
+	DataTypeArrayUID:     "DataTypeArrayUID",
+	DataTypeCustomText:   "DataTypeCustomText",
+	DataTypeCustomBinary: "DataTypeCustomBinary",
+	DataTypeMarker:       "DataTypeMarker",
+	DataTypeReference:    "DataTypeReference",
+	DataTypeResourceID:   "DataTypeResourceID",
+	DataTypeRemoteRef:    "DataTypeRemoteRef",
+	DataTypeConstant:     "DataTypeConstant",
+	DataTypeComment:      "DataTypeComment",
+	DataTypePadding:      "DataTypePadding",
 }
 
 type MethodType int

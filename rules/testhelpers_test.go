@@ -207,7 +207,6 @@ func AUU(v [][]byte) *test.TEvent            { return test.AUU(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
 func RRB() *test.TEvent                      { return test.RRB() }
-func RBCat() *test.TEvent                    { return test.RBCat() }
 func CBB() *test.TEvent                      { return test.CBB() }
 func CTB() *test.TEvent                      { return test.CTB() }
 func ABB() *test.TEvent                      { return test.ABB() }

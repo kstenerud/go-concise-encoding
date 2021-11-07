@@ -127,7 +127,6 @@ func TestRulesArrayOneshot(t *testing.T) {
 
 func TestRulesResourceIDOneshot(t *testing.T) {
 	assertEventsMaxDepth(t, 1, RID("http://example.com"), ED())
-	assertEventsMaxDepth(t, 1, RBCat(), AC(18, false), AD([]byte("http://example.com")), AC(1, false), AD([]byte("1")), ED())
 }
 
 func TestRulesCustomOneshot(t *testing.T) {

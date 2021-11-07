@@ -258,21 +258,14 @@ c0
 c0
 [
     @"https://x.com/"
-    @"https://x.com/":"something"
-    @"https://x.com/":"1234"
 ]
             %%%%"
             "cbe"    = |u8x 83 00 7a 91 1c 68 74 74 70 73 3a 2f 2f 78 2e 63
-                            6f 6d 2f 94 e1 1c 68 74 74 70 73 3a 2f 2f 78 2e
-                            63 6f 6d 2f 12 73 6f 6d 65 74 68 69 6e 67 94 e1
-                            1c 68 74 74 70 73 3a 2f 2f 78 2e 63 6f 6d 2f 08
-                            31 32 33 34 7b|
+                            6f 6d 2f 7b|
             "events" = [
                             "bd" "v 0"
                                 "l"
                                     "rid https://x.com/"
-                                    "rbcat" "ac 14 false" "as https://x.com/" "ac 9 false" "as something"
-                                    "rbcat" "ac 14 false" "as https://x.com/" "ac 4 false" "as 1234"
                                 "e"
                             "ed"
                         ]
@@ -324,7 +317,7 @@ c0
     |application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
 ]
             %%%%"
-            "cbe"    = |u8x 83 00 7a 94 e3 20 61 70 70 6c 69 63 61 74 69 6f
+            "cbe"    = |u8x 83 00 7a 94 e1 20 61 70 70 6c 69 63 61 74 69 6f
                             6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f 73 68
                             0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72
                             6c 64 0a 7b|
@@ -460,6 +453,91 @@ c0
                                         "rid https://springfield.gov/people#homer_simpson"
                                         "rid https://example.org/employer"
                                         "rid https://springfield.gov/employers/nuclear_power_plant"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Edge Complex"
+            "cte" = "\.%%%%
+c0
+{
+    @"https://springfield.gov/people#homer_simpson" = {
+        @"https://mypredicates.org/wife" = @"https://springfield.gov/people#marge_simpson"
+        @"https://mypredicates.org/regrets" = [
+            $firing
+            $forgotten_birthday
+        ]
+        @"https://mypredicates.org/troubles" = $troubles
+    }
+
+    "graph edges" = [
+        &marge_birthday:@(
+            @"https://springfield.gov/people#marge_simpson"
+            @"https://mypredicates.org/birthday"
+            1956-10-01
+        )
+        &forgotten_birthday:@(
+            @"https://springfield.gov/people#homer_simpson"
+            @"https://mypredicates.org/forgot"
+            $marge_birthday
+        )
+        &firing:@(
+            @"https://springfield.gov/people#montgomery_burns"
+            @"https://mypredicates.org/fired"
+            @"https://springfield.gov/people#homer_simpson"
+        )
+
+        &troubles:@(
+            [
+                $firing
+                $forgotten_birthday
+            ]
+            @"https://mypredicates.org/contribute"
+            @"https://myobjects.org/marital_strife"
+        )
+    ]
+}
+            %%%%"
+            "cbe"    = |u8x 83 00 79 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e 79 91 3a 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 77 69 66 65 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 6d 61 72 67 65 5f 73 69 6d 70 73 6f 6e 91 40 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 72 65 67 72 65 74 73 7a 98 06 66 69 72 69 6e 67 98 12 66 6f 72 67 6f 74 74 65 6e 5f 62 69 72 74 68 64 61 79 7b 91 42 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 74 72 6f 75 62 6c 65 73 98 08 74 72 6f 75 62 6c 65 73 7b 8b 67 72 61 70 68 20 65 64 67 65 73 7a 97 0e 6d 61 72 67 65 5f 62 69 72 74 68 64 61 79 76 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 6d 61 72 67 65 5f 73 69 6d 70 73 6f 6e 91 42 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 62 69 72 74 68 64 61 79 99 41 af 00 97 12 66 6f 72 67 6f 74 74 65 6e 5f 62 69 72 74 68 64 61 79 76 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e 91 3e 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 66 6f 72 67 6f 74 98 0e 6d 61 72 67 65 5f 62 69 72 74 68 64 61 79 97 06 66 69 72 69 6e 67 76 91 5e 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 6d 6f 6e 74 67 6f 6d 65 72 79 5f 62 75 72 6e 73 91 3c 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 66 69 72 65 64 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e 97 08 74 72 6f 75 62 6c 65 73 76 7a 98 06 66 69 72 69 6e 67 98 12 66 6f 72 67 6f 74 74 65 6e 5f 62 69 72 74 68 64 61 79 7b 91 46 68 74 74 70 73 3a 2f 2f 6d 79 70 72 65 64 69 63 61 74 65 73 2e 6f 72 67 2f 63 6f 6e 74 72 69 62 75 74 65 91 48 68 74 74 70 73 3a 2f 2f 6d 79 6f 62 6a 65 63 74 73 2e 6f 72 67 2f 6d 61 72 69 74 61 6c 5f 73 74 72 69 66 65 7b 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "m"
+                                    "rid https://springfield.gov/people#homer_simpson" "m"
+                                        "rid https://mypredicates.org/wife" "rid https://springfield.gov/people#marge_simpson"
+                                        "rid https://mypredicates.org/regrets" "l"
+                                            "ref firing"
+                                            "ref forgotten_birthday"
+                                        "e"
+                                        "rid https://mypredicates.org/troubles" "ref troubles"
+                                    "e"
+                                    "s graph edges" "l"
+                                        "mark marge_birthday" "edge"
+                                            "rid https://springfield.gov/people#marge_simpson"
+                                            "rid https://mypredicates.org/birthday"
+                                            "t 1956-10-01"
+                                        "mark forgotten_birthday" "edge"
+                                            "rid https://springfield.gov/people#homer_simpson"
+                                            "rid https://mypredicates.org/forgot"
+                                            "ref marge_birthday"
+                                        "mark firing" "edge"
+                                            "rid https://springfield.gov/people#montgomery_burns"
+                                            "rid https://mypredicates.org/fired"
+                                            "rid https://springfield.gov/people#homer_simpson"
+
+                                        "mark troubles" "edge"
+                                            "l"
+                                                "ref firing"
+                                                "ref forgotten_birthday"
+                                            "e"
+                                            "rid https://mypredicates.org/contribute"
+                                            "rid https://myobjects.org/marital_strife"
+                                    "e"
                                 "e"
                             "ed"
                         ]

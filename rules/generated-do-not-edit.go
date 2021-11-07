@@ -64,16 +64,15 @@ const (
 	DataTypeMarker
 	DataTypeReference
 	DataTypeResourceID
-	DataTypeResourceIDCat
 	DataTypeRemoteRef
 	DataTypeConstant
 	DataTypeComment
 	DataTypePadding
 	DataTypeInvalid = 0x0
-	AllowAny = DataTypeNil | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeResourceIDCat | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
-	AllowNonNil = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeResourceIDCat | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
-	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeResourceIDCat | DataTypeConstant | DataTypeComment | DataTypePadding
-	AllowMarkable = DataTypeNil | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypeResourceIDCat | DataTypePadding
+	AllowAny = DataTypeNil | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
+	AllowNonNil = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
+	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeConstant | DataTypeComment | DataTypePadding
+	AllowMarkable = DataTypeNil | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
 	AllowString = DataTypeString
 	AllowResourceID = DataTypeResourceID
 )
@@ -137,7 +136,6 @@ var datatypeNames = map[DataType]string{
 	DataTypeMarker: "DataTypeMarker",
 	DataTypeReference: "DataTypeReference",
 	DataTypeResourceID: "DataTypeResourceID",
-	DataTypeResourceIDCat: "DataTypeResourceIDCat",
 	DataTypeRemoteRef: "DataTypeRemoteRef",
 	DataTypeConstant: "DataTypeConstant",
 	DataTypeComment: "DataTypeComment",

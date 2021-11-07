@@ -95,7 +95,7 @@ func (_this *Writer) WriteTypedInt(cbeType cbeTypeField, value uint64) {
 
 func (_this *Writer) WriteTypedBigInt(cbeType cbeTypeField, value *big.Int) {
 	if value == nil {
-		_this.WriteType(cbeTypeNA)
+		_this.WriteType(cbeTypeNull)
 		return
 	}
 	words := value.Bits()
