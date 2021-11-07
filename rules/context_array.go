@@ -48,7 +48,7 @@ func (_this *Context) tryEndArray(moreChunksFollow bool, validator func(data []b
 	}
 	switch _this.arrayType {
 	case events.ArrayTypeResourceIDConcat:
-		_this.arrayType = events.ArrayTypeResourceIDConcat2
+		_this.arrayType = events.ArrayTypeResourceIDConcatEnd
 		return false
 	}
 	if validator != nil {
