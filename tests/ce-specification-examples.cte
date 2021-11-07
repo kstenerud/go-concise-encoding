@@ -316,5 +316,158 @@ c0
 
         // ====================================================================
 
+        {
+            "name" = "Media"
+            "cte" = "\.%%%%
+c0
+[
+    |application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
+]
+            %%%%"
+            "cbe"    = |u8x 83 00 7a 94 e3 20 61 70 70 6c 69 63 61 74 69 6f
+                            6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f 73 68
+                            0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72
+                            6c 64 0a 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "l"
+                                    "mb" "ac 16 false" "as application/x-sh" "ac 28 false" "as \.@@
+#!/bin/sh
+
+echo hello world
+@@"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Custom Types"
+            "cte" = "\.%%%%
+c0
+[
+    |ct cplx(2.94+3i)|
+]
+            %%%%"
+            "cbe"    = |u8x 83 00 7a 93 1a 63 70 6c 78 28 32 2e 39 34 2b 33 69 29 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "l"
+                                    "ct cplx(2.94+3i)"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "List"
+            "cte" = "\.%%%%
+c0
+[
+    1
+    "two"
+    3.1
+    {}
+    null
+]
+            %%%%"
+            "cbe"    = |u8x 83 00 7a 01 83 74 77 6f 65 06 1f 79 7b 7e 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "l"
+                                    "i 1"
+                                    "s two"
+                                    "df 3.1"
+                                    "m" "e"
+                                    "n"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Map"
+            "cte" = "\.%%%%
+c0
+{
+    1 = "alpha"
+    2 = "beta"
+    "a map" = {"one"=1 "two"=2}
+    2000-01-01 = "New millenium"
+}
+            %%%%"
+            "cbe"    = |u8x 83 00 79 01 85 61 6c 70 68 61 02 84 62 65 74 61
+                            85 61 20 6d 61 70 79 83 6f 6e 65 01 83 74 77 6f
+                            02 7b 99 21 00 00 8d 4e 65 77 20 6d 69 6c 6c 65
+                            6e 69 75 6d 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "m"
+                                    "i 1" "s alpha"
+                                    "i 2" "s beta"
+                                    "s a map" "m"
+                                        "s one" "i 1"
+                                        "s two" "i 2"
+                                    "e"
+                                    "t 2000-01-01" "s New millenium"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Edge"
+            "cte" = "\.%%%%
+c0
+[
+    @(
+        @"https://springfield.gov/people#homer_simpson"
+        @"https://example.org/wife"
+        @"https://springfield.gov/people#marge_simpson"
+    )
+    @(
+        @"https://springfield.gov/people#homer_simpson"
+        @"https://example.org/employer"
+        @"https://springfield.gov/employers/nuclear_power_plant"
+    )
+]
+            %%%%"
+            "cbe"    = |u8x 83 00 7a 76 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e 91 30 68 74 74 70 73 3a 2f 2f 65 78 61 6d 70 6c 65 2e 6f 72 67 2f 77 69 66 65 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 6d 61 72 67 65 5f 73 69 6d 70 73 6f 6e 76 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e 91 38 68 74 74 70 73 3a 2f 2f 65 78 61 6d 70 6c 65 2e 6f 72 67 2f 65 6d 70 6c 6f 79 65 72 91 6a 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 65 6d 70 6c 6f 79 65 72 73 2f 6e 75 63 6c 65 61 72 5f 70 6f 77 65 72 5f 70 6c 61 6e 74 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "l"
+                                    "edge"
+                                        "rid https://springfield.gov/people#homer_simpson"
+                                        "rid https://example.org/wife"
+                                        "rid https://springfield.gov/people#marge_simpson"
+                                    "edge"
+                                        "rid https://springfield.gov/people#homer_simpson"
+                                        "rid https://example.org/employer"
+                                        "rid https://springfield.gov/employers/nuclear_power_plant"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
+        }
+
+        // ====================================================================
+
     ]
 }

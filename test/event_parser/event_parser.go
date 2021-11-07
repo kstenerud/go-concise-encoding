@@ -99,7 +99,7 @@ func (_this *generalEventParser) ParseEvent(eventStr string) *test.TEvent {
 		asBytes := []byte(eventStr)
 		indices := eventNameAndWSMatcher.FindSubmatchIndex(asBytes)
 		if len(indices) != 2 {
-			panic(fmt.Errorf("Could not extract 1-param event components from [%v]", eventStr))
+			panic(fmt.Errorf("Event [%v] requires 1 parameter", eventStr))
 		}
 		param := asBytes[indices[1]:]
 		return test.NewTEvent(_this.eventType,
@@ -109,7 +109,7 @@ func (_this *generalEventParser) ParseEvent(eventStr string) *test.TEvent {
 		asBytes := []byte(eventStr)
 		indices := firstParamAndWSMatcher.FindSubmatchIndex(asBytes)
 		if len(indices) != 4 {
-			panic(fmt.Errorf("Could not extract 2-param event components from [%v]", eventStr))
+			panic(fmt.Errorf("Event [%v] requires 2 parameters", eventStr))
 		}
 		param1 := asBytes[indices[2]:indices[3]]
 		param2 := asBytes[indices[3]:]

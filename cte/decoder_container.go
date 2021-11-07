@@ -137,6 +137,7 @@ func decodeEdgeComponent(ctx *DecoderContext) {
 }
 
 func decodeEdgeEnd(ctx *DecoderContext) {
+	ctx.Stream.SkipWhitespace()
 	if ctx.Stream.ReadByteNoEOF() != ')' {
 		ctx.Stream.UnreadByte()
 		ctx.Errorf("Expected ')' at end of edge structure")
