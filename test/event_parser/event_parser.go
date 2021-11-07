@@ -21,6 +21,7 @@
 package event_parser
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -29,7 +30,6 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/test"
 
-	"github.com/google/uuid"
 	"github.com/kstenerud/go-compact-time"
 )
 
@@ -75,19 +75,23 @@ func ParseEvents(eventStrings []string) []*test.TEvent {
 
 // Parsers
 
-type eventParser struct {
+type eventParser interface {
+	ParseEvent(eventStr string) *test.TEvent
+}
+
+type generalEventParser struct {
 	eventType    test.TEventType
 	paramParsers []eventParamParser
 }
 
-func newParser(eventType test.TEventType, paramParsers ...eventParamParser) *eventParser {
-	return &eventParser{
+func newParser(eventType test.TEventType, paramParsers ...eventParamParser) *generalEventParser {
+	return &generalEventParser{
 		eventType:    eventType,
 		paramParsers: paramParsers,
 	}
 }
 
-func (_this *eventParser) ParseEvent(eventStr string) *test.TEvent {
+func (_this *generalEventParser) ParseEvent(eventStr string) *test.TEvent {
 	switch len(_this.paramParsers) {
 	case 0:
 		return test.NewTEvent(_this.eventType, nil, nil)
@@ -243,12 +247,21 @@ func parseBigDecimalFloat(bytes []byte) interface{} {
 	return test.NewBDF(string(bytes))
 }
 
-func parseUUID(bytes []byte) interface{} {
-	value, err := uuid.Parse(string(bytes))
-	if err != nil {
-		panic(fmt.Errorf("Error parsing UUID [%v]: %w", string(bytes), err))
+var uuidMatcher = regexp.MustCompile(`^([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})`)
+
+func parseUUID(data []byte) interface{} {
+	components := uuidMatcher.FindSubmatch(data)
+	if len(components) == 0 {
+		panic(fmt.Errorf("Error parsing UUID [%v]: not a UUID", string(data)))
 	}
-	return value[:]
+	buff := bytes.Buffer{}
+	for iComponent := 1; iComponent < len(components); iComponent++ {
+		component := components[iComponent]
+		for iByte := 0; iByte < len(component); iByte += 2 {
+			buff.WriteByte(byte(parseHex(component[iByte : iByte+2])))
+		}
+	}
+	return buff.Bytes()
 }
 
 func bytesToInt(bytes []byte) int {
@@ -417,6 +430,52 @@ func parseTextAsBytes(data []byte) interface{} {
 	return data
 }
 
+type boolArrayParser struct{}
+
+var boolArrayMatcher = regexp.MustCompile(`(\s*[01])+`)
+
+func (_this *boolArrayParser) ParseEvent(eventStr string) *test.TEvent {
+	var array []byte
+	asBytes := []byte(eventStr[3:])
+
+	iBytes := 0
+	generator := func() (next byte, bitCount int) {
+		for ; iBytes < len(asBytes); iBytes++ {
+			b := asBytes[iBytes]
+			switch b {
+			case '1':
+				next |= byte(1 << bitCount)
+				bitCount++
+			case '0':
+				bitCount++
+			case ' ', '\r', '\n', '\t':
+				// Skip whitespace
+			default:
+				panic(fmt.Errorf("[%c]: Invalid bit array character", b))
+			}
+			if bitCount >= 8 {
+				return
+			}
+		}
+		return
+	}
+
+	// first byte low bit is first bit of array
+	totalBits := uint64(0)
+	for {
+		b, bitCount := generator()
+		if bitCount == 0 {
+			break
+		}
+		totalBits += uint64(bitCount)
+		array = append(array, b)
+	}
+
+	return test.NewTEvent(test.TEventArrayBoolean,
+		totalBits,
+		array)
+}
+
 func newArrayParser(elemType reflect.Type, elementParser eventParamParser) eventParamParser {
 	var typeAppropriate func(src interface{}) reflect.Value
 	switch elemType.Kind() {
@@ -438,6 +497,14 @@ func newArrayParser(elemType reflect.Type, elementParser eventParamParser) event
 			value.SetFloat(reflect.ValueOf(src).Float())
 			return value
 		}
+	case reflect.Slice:
+		typeAppropriate = func(src interface{}) reflect.Value {
+			value := reflect.New(elemType).Elem()
+			value.Set(reflect.ValueOf(src))
+			return value
+		}
+	default:
+		panic(fmt.Errorf("No parser defined for array type %v", elemType))
 	}
 	return func(data []byte) interface{} {
 		fields := strings.Fields(string(data))
@@ -454,7 +521,7 @@ var eventNameMatcher = regexp.MustCompile(`^(\w+)`)
 var eventNameAndWSMatcher = regexp.MustCompile(`^\w+\s`)
 var firstParamAndWSMatcher = regexp.MustCompile(`^\w+\s+(\w+)\s`)
 
-var eventParsersByName = make(map[string]*eventParser)
+var eventParsersByName = make(map[string]eventParser)
 
 func init() {
 	eventParsersByName["bd"] = newParser(test.TEventBeginDocument)
@@ -481,7 +548,7 @@ func init() {
 	eventParsersByName["rid"] = newParser(test.TEventResourceID, parseString)
 	eventParsersByName["cb"] = newParser(test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex))
 	eventParsersByName["ct"] = newParser(test.TEventCustomText, parseString)
-	// TODO: eventParsersByName["ab"] = newParser(test.TEventArrayBoolean, newArrayParser(reflect.TypeOf(int8(0)), parseBits))
+	eventParsersByName["ab"] = &boolArrayParser{}
 	eventParsersByName["ai8"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt))
 	eventParsersByName["ai8x"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseIntHex))
 	eventParsersByName["ai16"] = newParser(test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt))
@@ -501,7 +568,7 @@ func init() {
 	// TODO: eventParsersByName["af16"] = newParser(test.TEventArrayFloat16, newArrayParser(reflect.TypeOf(float32(0)), parseFloat))
 	eventParsersByName["af32"] = newParser(test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat))
 	eventParsersByName["af64"] = newParser(test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat))
-	eventParsersByName["auu"] = newParser(test.TEventArrayUID, newArrayParser(reflect.TypeOf(float64(0)), parseUUID))
+	eventParsersByName["au"] = newParser(test.TEventArrayUID, newArrayParser(reflect.TypeOf([]byte{}), parseUUID))
 	eventParsersByName["sb"] = newParser(test.TEventStringBegin)
 	eventParsersByName["rb"] = newParser(test.TEventResourceIDBegin)
 	eventParsersByName["rrb"] = newParser(test.TEventRemoteRefBegin)
@@ -517,11 +584,11 @@ func init() {
 	eventParsersByName["au16b"] = newParser(test.TEventArrayUint16Begin)
 	eventParsersByName["au32b"] = newParser(test.TEventArrayUint32Begin)
 	eventParsersByName["au64b"] = newParser(test.TEventArrayUint64Begin)
-	eventParsersByName["auub"] = newParser(test.TEventArrayUIDBegin)
+	eventParsersByName["aub"] = newParser(test.TEventArrayUIDBegin)
 	eventParsersByName["mb"] = newParser(test.TEventMediaBegin)
 	eventParsersByName["ac"] = newParser(test.TEventArrayChunk, parseUint, parseBool)
 	eventParsersByName["ad"] = newParser(test.TEventArrayData, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex))
-	eventParsersByName["adt"] = newParser(test.TEventArrayData, parseTextAsBytes)
+	eventParsersByName["as"] = newParser(test.TEventArrayData, parseTextAsBytes)
 	eventParsersByName["l"] = newParser(test.TEventList)
 	eventParsersByName["m"] = newParser(test.TEventMap)
 	eventParsersByName["mup"] = newParser(test.TEventMarkup, parseString)

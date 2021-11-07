@@ -57,3 +57,7 @@ func BytesToUint64Slice(data []byte) []uint64 { return bytesToUint64Slice(data) 
 func BytesToInt64Slice(data []byte) []int64 { return bytesToInt64Slice(data) }
 
 func BytesToFloat64Slice(data []byte) []float64 { return bytesToFloat64Slice(data) }
+
+func UUIDSliceAsBytes(data [][]byte) []byte { return uuidSliceToBytes(data) }
+
+func BytesToUUIDSlice(data []byte) [][]byte { return bytesToUUIDSlice(data) }

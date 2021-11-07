@@ -373,7 +373,7 @@ var (
 	EvAF32B  = AF32B()
 	EvAF64   = AF64([]float64{1})
 	EvAF64B  = AF64B()
-	EvAUU    = AUU([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	EvAUU    = AUU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
 	EvAUUB   = AUUB()
 	EvMB     = MB()
 )
@@ -1201,7 +1201,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		bytes := arrays.Float64SliceAsBytes(_this.V1.([]float64))
 		receiver.OnArray(events.ArrayTypeFloat64, uint64(len(bytes)/8), bytes)
 	case TEventArrayUID:
-		bytes := _this.V1.([]byte)
+		bytes := arrays.UUIDSliceAsBytes(_this.V1.([][]byte))
 		receiver.OnArray(events.ArrayTypeUID, uint64(len(bytes)/16), bytes)
 	case TEventStringBegin:
 		receiver.OnArrayBegin(events.ArrayTypeString)
@@ -1320,7 +1320,7 @@ func AU64(v []uint64) *TEvent           { return NewTEvent(TEventArrayUint64, v,
 func AF16(v []byte) *TEvent             { return NewTEvent(TEventArrayFloat16, v, nil) }
 func AF32(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat32, v, nil) }
 func AF64(v []float64) *TEvent          { return NewTEvent(TEventArrayFloat64, v, nil) }
-func AUU(v []byte) *TEvent              { return NewTEvent(TEventArrayUID, v, nil) }
+func AUU(v [][]byte) *TEvent            { return NewTEvent(TEventArrayUID, v, nil) }
 func SB() *TEvent                       { return NewTEvent(TEventStringBegin, nil, nil) }
 func RB() *TEvent                       { return NewTEvent(TEventResourceIDBegin, nil, nil) }
 func RRB() *TEvent                      { return NewTEvent(TEventRemoteRefBegin, nil, nil) }
@@ -1580,7 +1580,7 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	case events.ArrayTypeFloat64:
 		h.Print(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUID:
-		h.Print(AUU(value))
+		h.Print(AUU(arrays.BytesToUUIDSlice(value)))
 	default:
 		panic(fmt.Errorf("TODO: TEventPrinter.OnArray: Typed array support for %v", arrayType))
 	}
@@ -1834,7 +1834,7 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeFloat64:
 		h.add(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUID:
-		h.add(AUU(CloneBytes(value)))
+		h.add(AUU(arrays.BytesToUUIDSlice(CloneBytes(value))))
 	default:
 		panic(fmt.Errorf("TODO: TEventStore.OnArray: Typed array support for %v", arrayType))
 	}

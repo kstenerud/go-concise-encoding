@@ -204,7 +204,9 @@ c0
     09:00:00/Local
 ]
             %%%%"
-            "cbe"    = |u8x 83 00 7a 9a fe 4f d6 dc f7 fd fe 9a 32 43 2e d8 9a 01 00 f2 0e 53 2f 54 6f 6b 79 6f 9a 19 d2 f8 6d f5 ac bc 9a 01 80 f4 02 4c 7b|
+            "cbe"    = |u8x 83 00 7a 9a fe 4f d6 dc f7 fd fe 9a 32 43 2e d8
+                            9a 01 00 f2 0e 53 2f 54 6f 6b 79 6f 9a 19 d2 f8
+                            6d f5 ac bc 9a 01 80 f4 02 4c 7b|
             "events" = [
                             "bd" "v 0"
                                 "l"
@@ -232,7 +234,9 @@ c0
     5192-11-01/03:00:00/48.86/2.36
 ]
             %%%%"
-            "cbe"    = |u8x 83 00 7a 9b ec e5 f2 19 71 37 4c 00 9b 4b 23 a0 82 d6 0e 1a 4d 2f 4c 6f 73 5f 41 6e 67 65 6c 65 73 9b 01 80 11 16 9e 06 2d 26 ec 00 7b|
+            "cbe"    = |u8x 83 00 7a 9b ec e5 f2 19 71 37 4c 00 9b 4b 23 a0
+                            82 d6 0e 1a 4d 2f 4c 6f 73 5f 41 6e 67 65 6c 65
+                            73 9b 01 80 11 16 9e 06 2d 26 ec 00 7b|
             "events" = [
                             "bd" "v 0"
                                 "l"
@@ -244,6 +248,70 @@ c0
                         ]
             "from"   = ["t" "e"]
             "to"     = ["t" "b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Resource Identifier"
+            "cte" = "\.%%%%
+c0
+[
+    @"https://x.com/"
+    @"https://x.com/":"something"
+    @"https://x.com/":"1234"
+]
+            %%%%"
+            "cbe"    = |u8x 83 00 7a 91 1c 68 74 74 70 73 3a 2f 2f 78 2e 63
+                            6f 6d 2f 94 e1 1c 68 74 74 70 73 3a 2f 2f 78 2e
+                            63 6f 6d 2f 12 73 6f 6d 65 74 68 69 6e 67 94 e1
+                            1c 68 74 74 70 73 3a 2f 2f 78 2e 63 6f 6d 2f 08
+                            31 32 33 34 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "l"
+                                    "rid https://x.com/"
+                                    "rbcat" "ac 14 false" "as https://x.com/" "ac 9 false" "as something"
+                                    "rbcat" "ac 14 false" "as https://x.com/" "ac 4 false" "as 1234"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "e"]
+            "to"     = ["t" "b" "e"]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Typed Array"
+            "cte" = "\.%%%%
+c0
+[
+    |u8x 9f 47 cb 9a 3c|
+    |f32 1.5 0x4.f391p100 30 9.31e-30|
+    |i16 0b1001010 0o744 1000 0x7fff|
+    |u 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f|
+    |b 1 1 0 1 0|
+]
+            %%%%"
+            "cbe"    = |u8x 83 00 7a 95 0a 9f 47 cb 9a 3c 94 84 00 00 c0 3f
+                            20 72 9e 72 00 00 f0 41 49 d4 3c 0f 94 24 4a 00
+                            e4 01 e8 03 ff 7f 94 a2 3a 04 f6 2f ce a5 4d 2a
+                            85 98 bc 15 6b 99 ea 3b 1d 4e 20 5c 5e a3 46 ea
+                            92 a3 98 d9 d3 e6 33 2f 96 0a 0b 7b|
+            "events" = [
+                            "bd" "v 0"
+                                "l"
+                                    "au8x 9f 47 cb 9a 3c"
+                                    "af32 1.5 0x4.f391p100 30 9.31e-30"
+                                    "ai16 0b1001010 0o744 1000 0x7fff"
+                                    "au 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f"
+                                    "ab 1 1 0 1 0"
+                                "e"
+                            "ed"
+                        ]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["b" "e"]
         }
 
         // ====================================================================

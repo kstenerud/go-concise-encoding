@@ -251,3 +251,22 @@ func float64SliceToBytes(data []float64) []byte {
 	}
 	return result
 }
+
+func uuidSliceToBytes(data [][]byte) []byte {
+	if len(data) == 0 {
+		return []byte{}
+	}
+	result := data[0]
+	for i := 1; i < len(data); i++ {
+		result = append(result, data[i]...)
+	}
+	return result
+}
+
+func bytesToUUIDSlice(data []byte) [][]byte {
+	result := [][]byte{}
+	for i := 0; i < len(data); i += 16 {
+		result = append(result, data[i:i+16])
+	}
+	return result
+}

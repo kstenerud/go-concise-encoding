@@ -541,7 +541,7 @@ func (_this *arrayEncoderEngine) beginArrayUID(onComplete func()) {
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByte(' ')
-			_this.stream.WriteUID(data)
+			_this.stream.WriteUID(data[:elemWidth])
 			data = data[elemWidth:]
 		}
 	}

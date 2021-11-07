@@ -109,8 +109,8 @@ If present, this field contains string-encoded elements that are a kind of short
 | s     | string        |         | String                         | `s this is a string`                       |
 | rid   | url           |         | Resource ID                    | `rid https://www.example.com`              |
 | rref  | url           |         | Remote Reference               | `rref https://www.example.com`             |
-| cub   | bytes         |         | Custom Binary                  | `cub 00 9f 1a bb 54`                       |
-| cut   | string        |         | Custom Text                    | `cut cplx(5.0, 2)`                         |
+| cb    | bytes         |         | Custom Binary                  | `cb 00 9f 1a bb 54`                        |
+| ct    | string        |         | Custom Text                    | `ct cplx(5.0, 2)`                          |
 | ab    | bits          |         | Array (binary)                 | `ab 1101001011101011100`                   |
 | ai8   | int8s         |         | Array (int8)                   | `ai8 -4 59 100 -36`                        |
 | ai16  | int16s        |         | Array (int16)                  | `ai16 1000 2000 -3000`                     |
@@ -123,7 +123,7 @@ If present, this field contains string-encoded elements that are a kind of short
 | af16  | float16s      |         | Array (float16)                | `af16 1.5 2.923`                           |
 | af32  | float32s      |         | Array (float32)                | `af32 6.41239 4.42e9`                      |
 | af64  | float64s      |         | Array (float64)                | `af64 4.2944923e-40 2.4e70`                |
-| auu   | uuids         |         | Array (uid)                    | `auu f1ce4567-e89b-12d3-a456-426655440000 a1424567-e544-1223-a4f6-4266c5440a00` |
+| au    | uuids         |         | Array (uid)                    | `auu f1ce4567-e89b-12d3-a456-426655440000 a1424567-e544-1223-a4f6-4266c5440a00` |
 | sb    |               |         | Begin string                   | `sb`                                       |
 | rb    |               |         | Begin resource ID              | `rb`                                       |
 | rbcat |               |         | Begin concatenated resource ID | `rbcat`                                    |
@@ -139,11 +139,11 @@ If present, this field contains string-encoded elements that are a kind of short
 | au16b |               |         | Begin array (uint16)           | `au16b`                                    |
 | au32b |               |         | Begin array (uint32)           | `au32b`                                    |
 | au64b |               |         | Begin array (uint64)           | `au64b`                                    |
-| auub  |               |         | Begin array (uid)              | `auub`                                     |
+| aub   |               |         | Begin array (uid)              | `auub`                                     |
 | mb    |               |         | Begin Media                    | `mb`                                       |
 | ac    | uint          | bool    | Begin array chunk              | `ac 10`                                    |
 | ad    | bytes         |         | Array data                     | `ad f8 ee 41 9a 13`                        |
-| adt   | string        |         | Array data (as string)         | `adt some string data`                     |
+| as    | string        |         | Array data (as string)         | `as some string data`                      |
 | l     |               |         | Begin list                     | `l`                                        |
 | m     |               |         | Begin map                      | `m`                                        |
 | mup   | string        |         | Begin markup                   | `mup some-name`                            |

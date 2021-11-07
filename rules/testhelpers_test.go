@@ -203,7 +203,7 @@ func AI64(v []int64) *test.TEvent            { return test.AI64(v) }
 func AF16(v []byte) *test.TEvent             { return test.AF16(v) }
 func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
-func AUU(v []byte) *test.TEvent              { return test.AUU(v) }
+func AUU(v [][]byte) *test.TEvent            { return test.AUU(v) }
 func SB() *test.TEvent                       { return test.SB() }
 func RB() *test.TEvent                       { return test.RB() }
 func RRB() *test.TEvent                      { return test.RRB() }
