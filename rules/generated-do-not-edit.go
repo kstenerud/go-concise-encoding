@@ -612,9 +612,6 @@ func (_this *ArrayRule) OnVersion(ctx *Context, version uint64) {
 func (_this *ArrayRule) OnPadding(ctx *Context) {
 	wrongType("array", "padding")
 }
-func (_this *ArrayRule) OnComment(ctx *Context) {
-	wrongType("array", "comment")
-}
 func (_this *ArrayRule) OnNil(ctx *Context) {
 	wrongType("array", "Nil")
 }
@@ -1007,9 +1004,6 @@ func (_this *MediaTypeRule) OnVersion(ctx *Context, version uint64) {
 }
 func (_this *MediaTypeRule) OnPadding(ctx *Context) {
 	wrongType("media type", "padding")
-}
-func (_this *MediaTypeRule) OnComment(ctx *Context) {
-	wrongType("media type", "comment")
 }
 func (_this *MediaTypeRule) OnNil(ctx *Context) {
 	wrongType("media type", "Nil")

@@ -506,11 +506,10 @@ var allRules = []Rule{
 		ExcludeMethods: []*Method{Key, NonKey},
 	},
 	{
-		Name:         "ArrayRule",
-		FriendlyName: "array",
-		// TODO: AllowedTypes:   DataTypeComment,
+		Name:           "ArrayRule",
+		FriendlyName:   "array",
 		AllowedTypes:   DataTypesNone,
-		IncludeMethods: []*Method{AChunk},
+		IncludeMethods: []*Method{AChunk, Comment},
 	},
 	{
 		Name:           "ArrayChunkRule",
@@ -546,7 +545,7 @@ var allRules = []Rule{
 		Name:           "MediaTypeRule",
 		FriendlyName:   "media type",
 		AllowedTypes:   DataTypesNone,
-		IncludeMethods: []*Method{AChunk},
+		IncludeMethods: []*Method{AChunk, Comment},
 	},
 	{
 		Name:           "MediaTypeChunkRule",

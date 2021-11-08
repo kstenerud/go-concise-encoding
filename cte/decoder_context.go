@@ -62,7 +62,20 @@ type DecoderContext struct {
 	stack                []DecoderStackEntry
 	awaitingStructuralWS bool
 	IsDocumentComplete   bool
-	Scratch              []byte
+
+	ArrayContainsComments bool
+	ArrayType             events.ArrayType
+	ArrayBytesPerElement     int
+	ArrayDigitType        string
+	Scratch               []byte
+}
+
+func (_this *DecoderContext) BeginArray(digitType string, arrayType events.ArrayType, elementWidth int) {
+	_this.Scratch = _this.Scratch[:0]
+	_this.ArrayDigitType = digitType
+	_this.ArrayType = arrayType
+	_this.ArrayBytesPerElement = elementWidth
+	_this.ArrayContainsComments = false
 }
 
 func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {

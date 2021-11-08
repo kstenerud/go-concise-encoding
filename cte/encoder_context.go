@@ -140,7 +140,19 @@ func (_this *EncoderContext) EncodeArray(arrayType events.ArrayType, elementCoun
 }
 
 func (_this *EncoderContext) BeginArray(arrayType events.ArrayType, completion func()) {
-	_this.ArrayEngine.BeginArray(_this.Decorator.GetStringContext(), arrayType, completion)
+	finalCompletion := completion
+	switch arrayType {
+	case events.ArrayTypeCustomText, events.ArrayTypeRemoteRef, events.ArrayTypeResourceID, events.ArrayTypeString:
+		// Do nothing
+	default:
+		_this.Stack(nonStringArrayDecorator)
+		finalCompletion = func() {
+			_this.Unstack()
+			completion()
+		}
+	}
+
+	_this.ArrayEngine.BeginArray(_this.Decorator.GetStringContext(), arrayType, finalCompletion)
 }
 
 func (_this *EncoderContext) BeginArrayChunk(elementCount uint64, moreChunksFollow bool) {

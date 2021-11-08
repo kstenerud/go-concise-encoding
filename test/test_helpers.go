@@ -503,6 +503,15 @@ var (
 		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB, EvMB,
 	}
 
+	StringArrayBeginTypes = []*TEvent{
+		EvSB, EvRB, EvCTB,
+	}
+
+	NonStringArrayBeginTypes = []*TEvent{
+		EvCBB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
+		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB, EvMB,
+	}
+
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
 	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvREF}
 
@@ -522,8 +531,11 @@ var (
 	ValidMarkupContents   = []*TEvent{EvPAD, EvCOM, EvS, EvSB, EvMUP, EvE}
 	InvalidMarkupContents = ComplementaryEvents(ValidMarkupContents)
 
-	ValidAfterArrayBegin   = []*TEvent{EvAC}
-	InvalidAfterArrayBegin = ComplementaryEvents(ValidAfterArrayBegin)
+	ValidAfterNonStringArrayBegin   = []*TEvent{EvAC, EvCOM}
+	InvalidAfterNonStringArrayBegin = ComplementaryEvents(ValidAfterNonStringArrayBegin)
+
+	ValidAfterStringArrayBegin   = []*TEvent{EvAC}
+	InvalidAfterStringArrayBegin = ComplementaryEvents(ValidAfterStringArrayBegin)
 
 	ValidAfterArrayChunk   = []*TEvent{EvAD}
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)

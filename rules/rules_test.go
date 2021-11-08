@@ -878,9 +878,9 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 			test.InvalidMarkupContents))
 }
 
-func TestRulesAllowedTypesArrayBegin(t *testing.T) {
+func TestRulesAllowedTypesNonStringArrayBegin(t *testing.T) {
 	assertSuccess := func(events ...*test.TEvent) {
-		for _, arrayType := range test.ArrayBeginTypes {
+		for _, arrayType := range test.NonStringArrayBeginTypes {
 			for _, event := range events {
 				rules := newRulesWithMaxDepth(10)
 				assertEventsSucceed(t, rules, arrayType)
@@ -889,7 +889,7 @@ func TestRulesAllowedTypesArrayBegin(t *testing.T) {
 		}
 	}
 	assertFail := func(events ...*test.TEvent) {
-		for _, arrayType := range test.ArrayBeginTypes {
+		for _, arrayType := range test.NonStringArrayBeginTypes {
 			for _, event := range events {
 				rules := newRulesWithMaxDepth(10)
 				assertEventsSucceed(t, rules, arrayType)
@@ -898,8 +898,32 @@ func TestRulesAllowedTypesArrayBegin(t *testing.T) {
 		}
 	}
 
-	assertSuccess(test.ValidAfterArrayBegin...)
-	assertFail(test.InvalidAfterArrayBegin...)
+	assertSuccess(test.ValidAfterNonStringArrayBegin...)
+	assertFail(test.InvalidAfterNonStringArrayBegin...)
+}
+
+func TestRulesAllowedTypesStringArrayBegin(t *testing.T) {
+	assertSuccess := func(events ...*test.TEvent) {
+		for _, arrayType := range test.StringArrayBeginTypes {
+			for _, event := range events {
+				rules := newRulesWithMaxDepth(10)
+				assertEventsSucceed(t, rules, arrayType)
+				assertEventsSucceed(t, rules, event)
+			}
+		}
+	}
+	assertFail := func(events ...*test.TEvent) {
+		for _, arrayType := range test.StringArrayBeginTypes {
+			for _, event := range events {
+				rules := newRulesWithMaxDepth(10)
+				assertEventsSucceed(t, rules, arrayType)
+				assertEventsFail(t, rules, event)
+			}
+		}
+	}
+
+	assertSuccess(test.ValidAfterStringArrayBegin...)
+	assertFail(test.InvalidAfterStringArrayBegin...)
 }
 
 func TestRulesAllowedTypesArrayChunk(t *testing.T) {

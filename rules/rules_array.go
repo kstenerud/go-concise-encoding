@@ -33,6 +33,7 @@ func (_this *ArrayRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFoll
 
 	ctx.BeginChunkAnyType(length, moreChunksFollow)
 }
+func (_this *ArrayRule) OnComment(ctx *Context) { /* Nothing to do */ }
 
 // =============================================================================
 
@@ -117,6 +118,7 @@ func (_this *MediaTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunks
 
 	ctx.BeginChunkMediaType(length, moreChunksFollow)
 }
+func (_this *MediaTypeRule) OnComment(ctx *Context) { /* Nothing to do */ }
 
 // =============================================================================
 

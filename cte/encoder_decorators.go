@@ -332,3 +332,31 @@ func (_this NodeChildrenDecorator) EndContainer(ctx *EncoderContext) {
 	ctx.Unstack()
 	ctx.AfterValue()
 }
+
+// ===========================================================================
+
+type NonStringArrayDecorator struct{}
+
+var nonStringArrayDecorator NonStringArrayDecorator
+
+func (_this NonStringArrayDecorator) String() string                  { return "NonStringArrayDecorator" }
+func (_this NonStringArrayDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this NonStringArrayDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteIndent()
+}
+func (_this NonStringArrayDecorator) AfterValue(ctx *EncoderContext) {}
+func (_this NonStringArrayDecorator) BeforeComment(ctx *EncoderContext) {
+	ctx.WriteIndent()
+}
+func (_this NonStringArrayDecorator) AfterComment(ctx *EncoderContext) {
+	ctx.WriteIndent()
+}
+func (_this NonStringArrayDecorator) EndContainer(ctx *EncoderContext) {
+	ctx.Unindent()
+	if ctx.ContainerHasObjects {
+		ctx.WriteIndent()
+	}
+	ctx.Stream.WriteListEnd()
+	ctx.Unstack()
+	ctx.AfterValue()
+}

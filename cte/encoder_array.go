@@ -148,6 +148,10 @@ func (_this *arrayEncoderEngine) BeginArray(stringContext stringContext, arrayTy
 	beginOp(_this, onComplete)
 }
 
+func (_this *arrayEncoderEngine) endArray() {
+	_this.onComplete()
+}
+
 func (_this *arrayEncoderEngine) handleFirstElement(data []byte) {
 	if !_this.hasWrittenElements && len(data) > 0 {
 		_this.stream.WriteByte(' ')
@@ -160,7 +164,7 @@ func (_this *arrayEncoderEngine) BeginChunk(elementCount uint64, moreChunksFollo
 	_this.moreChunksFollow = moreChunksFollow
 
 	if elementCount == 0 && !moreChunksFollow {
-		_this.onComplete()
+		_this.endArray()
 	}
 }
 
@@ -191,7 +195,7 @@ func (_this *arrayEncoderEngine) addBooleanArrayData(data []byte) {
 		_this.remainingChunkElements -= count
 	}
 	if _this.remainingChunkElements == 0 && !_this.moreChunksFollow {
-		_this.onComplete()
+		_this.endArray()
 	}
 }
 
@@ -228,7 +232,7 @@ func (_this *arrayEncoderEngine) AddArrayData(data []byte) {
 	_this.addElementsFunc(data)
 	_this.remainingChunkElements -= uint64(len(data) / _this.arrayElementByteWidth)
 	if _this.remainingChunkElements == 0 && !_this.moreChunksFollow {
-		_this.onComplete()
+		_this.endArray()
 	}
 }
 
