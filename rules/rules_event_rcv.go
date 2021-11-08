@@ -59,11 +59,16 @@ func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) 
 	return _this
 }
 
+var nullReceiver = &events.NullEventReceiver{}
+
 // Initialize a rules set.
 // If opts = nil, defaults are used.
 func (_this *RulesEventReceiver) Init(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.receiver = nextReceiver
+	if _this.receiver == nil {
+		_this.receiver = nullReceiver
+	}
 	_this.context.Init(version.ConciseEncodingVersion, opts)
 }
 
