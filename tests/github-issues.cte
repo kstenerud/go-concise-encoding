@@ -22,5 +22,22 @@ c0 |u8x /* foo */ 1 2 3|
 
         // ====================================================================
 
+        {
+            "name" = "Whitespace before an edge closure"
+            "issue link" = @"https://github.com/kstenerud/enctool/issues/27"
+            "cte" = "\.%%%%
+c0 @(@"homer" @"married-to" @"marge" )
+            %%%%"
+            "events" = [
+                            "bd" "v 0"
+                                "edge" "rid homer" "rid married-to" "rid marge"
+                            "ed"
+                        ]
+            "from"   = ["t"]
+            "to"     = ["e"]
+        }
+
+        // ====================================================================
+
     ]
 }
