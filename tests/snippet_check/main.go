@@ -82,7 +82,7 @@ func addHeaderIfNeeded(data []byte) []byte {
 func inspectFile(path string) {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Printf("Could not read file [%v]: %w\n", path, err)
+		fmt.Printf("Could not read file [%v]: %v\n", path, err)
 	}
 
 	fmt.Printf("Inspecting [%v]...\n", path)
