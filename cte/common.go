@@ -20,8 +20,13 @@
 
 package cte
 
+import (
+	"github.com/kstenerud/go-compact-float"
+)
+
 const charNumericWhitespace = '_'
 
 var byteStringNan = []byte("nan")
 var byteStringSnan = []byte("snan")
 var byteStringInf = []byte("inf")
+var negativeZero = compact_float.NegativeZero()

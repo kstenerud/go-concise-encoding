@@ -152,7 +152,7 @@ func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 
 	// 0
 	if len(token) == 1 {
-		ctx.EventReceiver.OnNegativeInt(0)
+		ctx.EventReceiver.OnDecimalFloat(negativeZero)
 		return
 	}
 
