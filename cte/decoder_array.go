@@ -555,9 +555,9 @@ func tryDecodeCommentInArray(ctx *DecoderContext) bool {
 		elemCount := uint64(len(ctx.Scratch) / ctx.ArrayBytesPerElement)
 		ctx.EventReceiver.OnArrayChunk(elemCount, true)
 		ctx.EventReceiver.OnArrayData(ctx.Scratch)
-		ctx.ArrayContainsComments = true
 		ctx.Scratch = ctx.Scratch[:0]
 	}
+	ctx.ArrayContainsComments = true
 
 	b := ctx.Stream.ReadByteNoEOF()
 	switch b {

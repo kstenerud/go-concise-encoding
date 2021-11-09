@@ -37,3 +37,7 @@ func TestWebsiteExamples(t *testing.T) {
 func TestCESpecificationExamples(t *testing.T) {
 	test_runner.RunCEUnitTests(t, "ce-specification-examples.cte")
 }
+
+func TestGithubIssues(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "github-issues.cte")
+}
