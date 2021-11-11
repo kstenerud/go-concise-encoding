@@ -23,14 +23,10 @@ package test_runner
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"strings"
-	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
-	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -39,142 +35,17 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
-// API
-
-// Run a CE test suite, described by the CTE document at testDescriptorFile
-func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
-	runTestSuite(t, loadTestSuite(testDescriptorFile))
-}
-
-func runTestSuite(t *testing.T, testSuite *CETestSuite) {
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("While running test suite %v: %w", testSuite, v))
-			default:
-				panic(v)
-			}
-		}
-	}()
-
-	debug.DebugOptions.PassThroughPanics = true
-	testSuite.run(t)
-	debug.DebugOptions.PassThroughPanics = false
-}
-
-func loadTestSuite(testDescriptorFile string) *CETestSuite {
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("While loading test suite %v: %w", testDescriptorFile, v))
-			default:
-				panic(v)
-			}
-		}
-	}()
-
-	file, err := os.Open(testDescriptorFile)
-	if err != nil {
-		panic(fmt.Errorf("Unexpected error opening test suite file: %v", err))
-	}
-	var testSuite *CETestSuite
-
-	testSuiteIntf, err := ce.UnmarshalCTE(file, testSuite, nil)
-	if err != nil {
-		panic(fmt.Errorf("Malformed unit test: Unexpected CTE decode error in test suite file: %w", err))
-	}
-	testSuite = testSuiteIntf.(*CETestSuite)
-	testSuite.TestFile = testDescriptorFile
-	testSuite.postDecodeInit()
-
-	return testSuite
-}
-
-// Test Suite
-
-type CETestSuite struct {
-	TestFile string
-	Tests    []*CETestRunner
-}
-
-func (_this *CETestSuite) String() string {
-	return _this.TestFile
-}
-
-func (_this *CETestSuite) postDecodeInit() {
-	index := 0
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("Malformed unit test \"%v\": %w", _this.Tests[index].Name, v))
-			default:
-				panic(v)
-			}
-		}
-	}()
-
-	var unitTest *CETestRunner
-	for index, unitTest = range _this.Tests {
-		unitTest.TestIndex = index
-		unitTest.postDecodeInit()
-	}
-}
-
-func (_this *CETestSuite) validate() {
-	index := 0
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("Malformed unit test \"%v\": %w", _this.Tests[index].Name, v))
-			default:
-				panic(v)
-			}
-		}
-	}()
-
-	var unitTest *CETestRunner
-	for index, unitTest = range _this.Tests {
-		unitTest.validate()
-	}
-}
-
-func (_this *CETestSuite) run(t *testing.T) {
-	index := 0
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("Unit test failed: %v: %w", _this.Tests[index], v))
-			default:
-				panic(v)
-			}
-		}
-	}()
-
-	var unitTest *CETestRunner
-	for index, unitTest = range _this.Tests {
-		unitTest.run(t)
-	}
-}
-
-// Unit Test
-
 type CETestRunner struct {
-	Name      string
-	TestIndex int
-	Events    []string
-	Cte       string
-	Cbe       []byte
-	From      []string
-	To        []string
-	Fail      bool
-	Debug     bool
-	Trace     bool
-	Skip      bool
+	Name   string
+	Events []string
+	Cte    string
+	Cbe    []byte
+	From   []string
+	To     []string
+	Fail   bool
+	Debug  bool
+	Trace  bool
+	Skip   bool
 
 	events             []*test.TEvent
 	srcEventTypes      map[string]bool
@@ -185,9 +56,9 @@ type CETestRunner struct {
 
 func (_this *CETestRunner) String() string {
 	if len(_this.context) > 0 {
-		return fmt.Sprintf("\"%v\" (index %v: %v)", _this.Name, _this.TestIndex, _this.context)
+		return fmt.Sprintf("%v (%v)", _this.Name, _this.context)
 	}
-	return fmt.Sprintf("\"%v\" (index %v)", _this.Name, _this.TestIndex)
+	return _this.Name
 }
 
 func (_this *CETestRunner) postDecodeInit() {
@@ -200,7 +71,6 @@ func (_this *CETestRunner) postDecodeInit() {
 	_this.srcEventTypes = toMembershipSet(_this.From)
 	_this.dstEventTypes = toMembershipSet(_this.To)
 	_this.requiredEventTypes = toMembershipSet(_this.From, _this.To)
-	_this.validate()
 }
 
 func (_this *CETestRunner) validate() {
@@ -208,22 +78,11 @@ func (_this *CETestRunner) validate() {
 		return
 	}
 
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				panic(fmt.Errorf("%v: %w", _this, v))
-			default:
-				panic(v)
-			}
-		}
-	}()
-
 	if len(_this.Name) == 0 {
-		panic(fmt.Errorf("Missing name"))
+		panic(fmt.Errorf("missing name"))
 	}
 	if len(_this.From) == 0 {
-		panic(fmt.Errorf("Must have at least 1 \"from\" entry"))
+		panic(fmt.Errorf("must have at least 1 \"from\" entry"))
 	}
 
 	for index, value := range _this.From {
@@ -239,17 +98,17 @@ func (_this *CETestRunner) validate() {
 	}
 
 	if _this.requiredEventTypes["e"] && len(_this.Events) == 0 {
-		panic(fmt.Errorf("Test calls for events as src or dst but does not provide any"))
+		panic(fmt.Errorf("test calls for events as src or dst but does not provide any"))
 	}
 	if _this.requiredEventTypes["b"] && len(_this.Cbe) == 0 {
-		panic(fmt.Errorf("Test calls for CBE as src or dst but does not provide any"))
+		panic(fmt.Errorf("test calls for CBE as src or dst but does not provide any"))
 	}
 	if _this.requiredEventTypes["t"] && len(_this.Cte) == 0 {
-		panic(fmt.Errorf("Test calls for CTE as src or dst but does not provide any"))
+		panic(fmt.Errorf("test calls for CTE as src or dst but does not provide any"))
 	}
 }
 
-func (_this *CETestRunner) run(t *testing.T) {
+func (_this *CETestRunner) run() {
 	if _this.Skip {
 		if _this.Debug {
 			fmt.Printf("Skipping CE Test %v\n", _this)
@@ -260,18 +119,6 @@ func (_this *CETestRunner) run(t *testing.T) {
 	if _this.Debug {
 		fmt.Printf("Running CE Test %v:\n", _this)
 	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			if !_this.Fail {
-				if _this.Trace {
-					panic(fmt.Errorf("%v: %w", _this, r))
-				} else {
-					t.Errorf("%v: %v", _this, r)
-				}
-			}
-		}
-	}()
 
 	if _this.srcEventTypes["e"] {
 		if len(_this.dstEventTypes) == 0 {
@@ -319,22 +166,6 @@ func (_this *CETestRunner) run(t *testing.T) {
 	}
 }
 
-func (_this *CETestRunner) capturePanic(operation func()) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			switch v := r.(type) {
-			case error:
-				err = v
-			default:
-				err = fmt.Errorf("%v", r)
-			}
-		}
-	}()
-
-	operation()
-	return
-}
-
 func (_this *CETestRunner) testFailed(format string, args ...interface{}) {
 	panic(fmt.Errorf(format, args...))
 }
@@ -355,7 +186,7 @@ func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 	eventStore := test.NewTEventStore(receiver)
 	receiver = eventStore
 
-	err := _this.capturePanic(func() {
+	err := capturePanic(func() {
 		operation(receiver)
 	})
 
@@ -472,7 +303,7 @@ func (_this *CETestRunner) runEventToCTE() {
 		})
 
 	expectedDocument := _this.Cte
-	actualDocument := string(buffer.Bytes())
+	actualDocument := buffer.String()
 	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
 		_this.testFailed("Expected events %v to produce CTE %v but got %v after events %v",
 			_this.events, desc(expectedDocument), desc(actualDocument), _this.events)
@@ -536,7 +367,7 @@ func (_this *CETestRunner) runCBEToCTE() {
 		})
 
 	expectedDocument := _this.Cte
-	actualDocument := string(buffer.Bytes())
+	actualDocument := buffer.String()
 	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
 		_this.testFailed("Expected CBE %v to produce CTE %v but got %v",
 			desc(_this.Cbe), desc(expectedDocument), desc(actualDocument))
@@ -600,40 +431,9 @@ func (_this *CETestRunner) runCTEToCTE() {
 		})
 
 	expectedDocument := _this.Cte
-	actualDocument := string(buffer.Bytes())
+	actualDocument := buffer.String()
 	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
 		_this.testFailed("Expected CTE %v to produce CTE %v but got %v",
 			desc(_this.Cte), desc(expectedDocument), desc(actualDocument))
-	}
-}
-
-func toMembershipSet(valueArrays ...[]string) map[string]bool {
-	set := make(map[string]bool)
-
-	for _, array := range valueArrays {
-		for _, value := range array {
-			set[value] = true
-		}
-	}
-	return set
-}
-
-func desc(v interface{}) string {
-	switch v.(type) {
-	case string:
-		return fmt.Sprintf("[%v]", v)
-	case []byte:
-		sb := strings.Builder{}
-		sb.WriteByte('[')
-		for i, b := range v.([]byte) {
-			sb.WriteString(fmt.Sprintf("%02x", b))
-			if i < len(v.([]byte))-1 {
-				sb.WriteByte(' ')
-			}
-		}
-		sb.WriteByte(']')
-		return sb.String()
-	default:
-		return fmt.Sprintf("%v", v)
 	}
 }

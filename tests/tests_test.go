@@ -30,6 +30,10 @@ func TestCE(t *testing.T) {
 	test_runner.RunCEUnitTests(t, "ce-basic.cte")
 }
 
+func TestCTE(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cte.cte")
+}
+
 func TestWebsiteExamples(t *testing.T) {
 	test_runner.RunCEUnitTests(t, "website-examples.cte")
 }
