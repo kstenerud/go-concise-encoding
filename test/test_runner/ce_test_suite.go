@@ -79,6 +79,8 @@ func (_this *CETestSuite) validate() {
 }
 
 func (_this *CETestSuite) run(t *testing.T) {
+	fmt.Printf("Running test suite: %v\n", _this.TestFile)
+
 	errorCount := 0
 
 	runCETest := func(test *CETestRunner, index int) (success bool) {

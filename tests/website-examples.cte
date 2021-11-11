@@ -2,7 +2,7 @@ c0
 // Examples from https://concise-encoding.org
 {
     "references" = []
-    "tests" = [
+    "ceTests" = [
 
         // ====================================================================
 
