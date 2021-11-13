@@ -32,7 +32,7 @@ c0
         {
             "name" = "Version specifier"
             "mustSucceed" = [
-                {"source" = |u8x 83 00 01| "events" = ["bd" "v 0" "i 1" "ed"]}
+                {"source"=|u8x 83 00 01|  "events"=["bd" "v 0" "i 1" "ed"]}
             ]
             "mustFail" = [
                 |u8x 00|
