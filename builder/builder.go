@@ -30,11 +30,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-describe"
 )
 
@@ -42,7 +41,7 @@ import (
 type Builder interface {
 
 	// External data and structure events
-	BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value
+	BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value
 	BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value
 	BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value
 	BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value

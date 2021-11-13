@@ -32,16 +32,15 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-concise-encoding/version"
-
-	"github.com/cockroachdb/apd/v2"
-	compact_float "github.com/kstenerud/go-compact-float"
-	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
 )
 

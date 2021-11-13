@@ -26,13 +26,12 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
-
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // BuilderEventReceiver adapts DataEventReceiver to ObjectBuilder, passing
@@ -106,7 +105,7 @@ func (_this *BuilderEventReceiver) OnPadding(_ int)        {}
 func (_this *BuilderEventReceiver) OnComment(bool, []byte) {}
 
 func (_this *BuilderEventReceiver) OnNil() {
-	_this.context.CurrentBuilder.BuildFromNil(&_this.context, _this.object)
+	_this.context.CurrentBuilder.BuildFromNull(&_this.context, _this.object)
 }
 func (_this *BuilderEventReceiver) OnBool(value bool) {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)

@@ -31,7 +31,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/event_parser"
-
 	"github.com/kstenerud/go-equivalence"
 )
 

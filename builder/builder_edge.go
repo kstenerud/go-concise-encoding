@@ -26,13 +26,12 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
 )
 
 type edgeBuilder struct {
@@ -66,8 +65,8 @@ func (_this *edgeBuilder) tryFinish(ctx *Context) {
 	}
 }
 
-func (_this *edgeBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
-	result := globalInterfaceBuilder.BuildFromNil(ctx, _this.components[_this.index])
+func (_this *edgeBuilder) BuildFromNull(ctx *Context, _ reflect.Value) reflect.Value {
+	result := globalInterfaceBuilder.BuildFromNull(ctx, _this.components[_this.index])
 	_this.tryFinish(ctx)
 	return result
 }

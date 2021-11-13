@@ -26,11 +26,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 const (
@@ -99,10 +98,10 @@ func (_this *mapBuilder) newElem() reflect.Value {
 	return reflect.New(_this.kvTypes[_this.builderIndex]).Elem()
 }
 
-func (_this *mapBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
+func (_this *mapBuilder) BuildFromNull(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	if _this.container.IsValid() {
-		_this.nextGenerator(ctx).BuildFromNil(ctx, object)
+		_this.nextGenerator(ctx).BuildFromNull(ctx, object)
 		_this.store(object)
 	}
 	return object

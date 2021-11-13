@@ -27,14 +27,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )

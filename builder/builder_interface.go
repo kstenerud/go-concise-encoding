@@ -26,14 +26,12 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/types"
-
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/types"
 )
 
 type interfaceBuilder struct{}
@@ -43,7 +41,7 @@ var globalInterfaceBuilder = &interfaceBuilder{}
 func generateInterfaceBuilder(ctx *Context) Builder { return globalInterfaceBuilder }
 func (_this *interfaceBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *interfaceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *interfaceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(common.TypeInterface))
 	return dst
 }

@@ -27,14 +27,13 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
-
-	"github.com/cockroachdb/apd/v2"
-	compact_float "github.com/kstenerud/go-compact-float"
-	compact_time "github.com/kstenerud/go-compact-time"
 )
 
 // Receives data events, constructing a CBE document from them.

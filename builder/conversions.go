@@ -26,12 +26,11 @@ import (
 	"net/url"
 	"reflect"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
-
-	"github.com/cockroachdb/apd/v2"
-	compact_float "github.com/kstenerud/go-compact-float"
 )
 
 // Int

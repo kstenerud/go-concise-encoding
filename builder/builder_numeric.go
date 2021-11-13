@@ -25,7 +25,7 @@ import (
 	"reflect"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
+	compact_float "github.com/kstenerud/go-compact-float"
 )
 
 // ============================================================================
@@ -265,7 +265,7 @@ var globalPBigDecimalFloatBuilder = &pBigDecimalFloatBuilder{}
 func generatePBigDecimalFloatBuilder(ctx *Context) Builder { return globalPBigDecimalFloatBuilder }
 func (_this *pBigDecimalFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *pBigDecimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *pBigDecimalFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*apd.Decimal)(nil)))
 	return dst
 }
@@ -307,7 +307,7 @@ var globalPBigFloatBuilder = &pBigFloatBuilder{}
 func generatePBigFloatBuilder(ctx *Context) Builder { return globalPBigFloatBuilder }
 func (_this *pBigFloatBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *pBigFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *pBigFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Float)(nil)))
 	return dst
 }
@@ -349,7 +349,7 @@ var globalPBigIntBuilder = &pBigIntBuilder{}
 func generatePBigIntBuilder(ctx *Context) Builder { return globalPBigIntBuilder }
 func (_this *pBigIntBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *pBigIntBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *pBigIntBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf((*big.Int)(nil)))
 	return dst
 }

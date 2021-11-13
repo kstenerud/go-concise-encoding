@@ -27,12 +27,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
 )
 
 type structBuilderField struct {
@@ -143,8 +142,8 @@ func (_this *structBuilder) swapKeyValue() {
 	_this.nextIsKey = !_this.nextIsKey
 }
 
-func (_this *structBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
-	_this.nextBuilderGenerator(ctx).BuildFromNil(ctx, _this.nextValue)
+func (_this *structBuilder) BuildFromNull(ctx *Context, _ reflect.Value) reflect.Value {
+	_this.nextBuilderGenerator(ctx).BuildFromNull(ctx, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object

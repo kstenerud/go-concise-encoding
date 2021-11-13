@@ -23,10 +23,9 @@ package cte
 import (
 	"math/big"
 
+	compact_float "github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-
-	compact_float "github.com/kstenerud/go-compact-float"
 )
 
 func decodeInvalidChar(ctx *DecoderContext) {

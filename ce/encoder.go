@@ -25,11 +25,10 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 // Encoder accepts events and encodes them to a byte stream.

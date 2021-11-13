@@ -26,12 +26,11 @@ import (
 	"math/big"
 	"unicode/utf8"
 
-	"github.com/kstenerud/go-concise-encoding/internal/chars"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/internal/chars"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
 type Token []byte

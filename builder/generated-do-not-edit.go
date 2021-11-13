@@ -46,8 +46,8 @@ func (_this *arrayBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *arrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
 }
-func (_this *bigDecimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *bigDecimalFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigDecimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -109,8 +109,8 @@ func (_this *bigDecimalFloatBuilder) BuildFromReference(ctx *Context, id []byte)
 func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *bigFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *bigFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -172,8 +172,8 @@ func (_this *bigFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *bigFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *bigIntBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *bigIntBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *bigIntBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -235,8 +235,8 @@ func (_this *bigIntBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *bigIntBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *boolBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *boolBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *boolBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
@@ -391,8 +391,8 @@ func (_this *compactTimeBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *compactTimeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *customBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *customBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *customBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -472,8 +472,8 @@ func (_this *customBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *customBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *decimalFloatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *decimalFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *decimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -535,8 +535,8 @@ func (_this *decimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *decimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *floatBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *floatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *floatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -598,8 +598,8 @@ func (_this *floatBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *floatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *float32ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *float32ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float32ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -751,8 +751,8 @@ func (_this *float32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *float32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *float64ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *float64ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *float64ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -940,8 +940,8 @@ func (_this *ignoreXTimesBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *ignoreXTimesBuilder) BuildEndContainer(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
 }
-func (_this *intBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *intBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *intBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -1003,8 +1003,8 @@ func (_this *intBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *intBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *int8ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *int8ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int8ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -1156,8 +1156,8 @@ func (_this *int8SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *int8SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *int16ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *int16ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int16ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -1309,8 +1309,8 @@ func (_this *int16SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *int16SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *int32ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *int32ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int32ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -1462,8 +1462,8 @@ func (_this *int32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *int32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *int64ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *int64ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *int64ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -1630,8 +1630,8 @@ func (_this *mapBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *mapBuilder) BuildBeginEdgeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
 }
-func (_this *markupBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *markupBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *markupBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -1708,8 +1708,8 @@ func (_this *markupBuilder) BuildEndContainer(ctx *Context) {
 func (_this *markupBuilder) BuildFromReference(ctx *Context, id []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
 }
-func (_this *markupContentsBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *markupContentsBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *markupContentsBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -2245,8 +2245,8 @@ func (_this *structBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *structBuilder) BuildBeginEdgeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
 }
-func (_this *timeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *timeBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *timeBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -2344,8 +2344,8 @@ func (_this *topLevelBuilder) BuildEndContainer(ctx *Context) {
 func (_this *topLevelBuilder) BuildFromReference(ctx *Context, id []byte) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
 }
-func (_this *uintBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *uintBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uintBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -2407,8 +2407,8 @@ func (_this *uintBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *uintBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *uint8ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint8ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint8ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -2560,8 +2560,8 @@ func (_this *uint8SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *uint8SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *uint16ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint16ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint16ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -2713,8 +2713,8 @@ func (_this *uint16SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *uint16SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *uint32ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint32ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint32ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -2866,8 +2866,8 @@ func (_this *uint32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *uint32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *uint64ArrayBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *uint64ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uint64ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -3019,8 +3019,8 @@ func (_this *uint64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *uint64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *ridBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *ridBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *ridBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -3097,8 +3097,8 @@ func (_this *ridBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *ridBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *uidBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *uidBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *uidBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
@@ -3178,8 +3178,8 @@ func (_this *uidBuilder) BuildFromReference(ctx *Context, id []byte) {
 func (_this *uidBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
 }
-func (_this *mediaBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNil", reflect.TypeOf(_this), dst.Type()))
+func (_this *mediaBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
 }
 func (_this *mediaBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))

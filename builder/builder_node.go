@@ -26,13 +26,12 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
 )
 
 type nodeBuilder struct {
@@ -59,8 +58,8 @@ func (_this *nodeBuilder) stackChildrenBuilder(ctx *Context) {
 	interfaceSliceBuilderGenerator(ctx).BuildBeginListContents(ctx)
 }
 
-func (_this *nodeBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
-	globalInterfaceBuilder.BuildFromNil(ctx, _this.value)
+func (_this *nodeBuilder) BuildFromNull(ctx *Context, _ reflect.Value) reflect.Value {
+	globalInterfaceBuilder.BuildFromNull(ctx, _this.value)
 	_this.stackChildrenBuilder(ctx)
 	return _this.value
 }

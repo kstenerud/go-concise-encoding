@@ -24,7 +24,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-compact-time"
+	compact_time "github.com/kstenerud/go-compact-time"
 )
 
 // Go Time
@@ -59,7 +59,7 @@ type compactTimeBuilder struct{}
 func generateCompactTimeBuilder(ctx *Context) Builder { return globalCompactTimeBuilder }
 func (_this *compactTimeBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *compactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *compactTimeBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(compact_time.Time{}))
 	return dst
 }
@@ -84,7 +84,7 @@ type pCompactTimeBuilder struct{}
 func generatePCompactTimeBuilder(ctx *Context) Builder { return &pCompactTimeBuilder{} }
 func (_this *pCompactTimeBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *pCompactTimeBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *pCompactTimeBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(compact_time.ZeroDate()))
 	return dst
 }

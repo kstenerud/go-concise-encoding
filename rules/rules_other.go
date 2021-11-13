@@ -26,10 +26,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
+	compact_float "github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 type BeginDocumentRule struct{}

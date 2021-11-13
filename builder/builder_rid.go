@@ -62,7 +62,7 @@ var globalPRidBuilder = &pRidBuilder{}
 func generatePRidBuilder(ctx *Context) Builder { return globalPRidBuilder }
 func (_this *pRidBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *pRidBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *pRidBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }

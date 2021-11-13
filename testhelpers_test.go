@@ -28,18 +28,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
+	"github.com/cockroachdb/apd/v2"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce"
-	ev "github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/version"
-
-	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -171,7 +168,7 @@ func ED() *test.TEvent                       { return test.ED() }
 var DebugPrintEvents = false
 
 func cbeDecode(opts *options.CBEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
-	var receiver ev.DataEventReceiver
+	var receiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver = ter
 	if DebugPrintEvents {
@@ -200,7 +197,7 @@ func cbeEncodeDecode(encodeOpts *options.CBEEncoderOptions,
 }
 
 func cteDecode(opts *options.CTEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
-	var receiver ev.DataEventReceiver
+	var receiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver = ter
 	if DebugPrintEvents {
@@ -317,7 +314,7 @@ func assertDecodeCBECTE(t *testing.T,
 	cbeExpectedDocument []byte,
 	expectedEvents ...*test.TEvent) {
 
-	var receiver ev.DataEventReceiver
+	var receiver events.DataEventReceiver
 	var actualEvents *test.TEventStore
 
 	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)

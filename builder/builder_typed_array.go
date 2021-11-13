@@ -37,7 +37,7 @@ var globalStringBuilder = &stringBuilder{}
 func generateStringBuilder(ctx *Context) Builder { return globalStringBuilder }
 func (_this *stringBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *stringBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *stringBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	// Go doesn't have the concept of a nil string.
 	dst.SetString("")
 	return dst
@@ -105,7 +105,7 @@ var globalUint8SliceBuilder = &uint8SliceBuilder{}
 func generateUint8SliceBuilder(ctx *Context) Builder { return globalUint8SliceBuilder }
 func (_this *uint8SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *uint8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *uint8SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -170,7 +170,7 @@ var globalUint16SliceBuilder = &uint16SliceBuilder{}
 func generateUint16SliceBuilder(ctx *Context) Builder { return globalUint16SliceBuilder }
 func (_this *uint16SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *uint16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *uint16SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -243,7 +243,7 @@ var globalUint32SliceBuilder = &uint32SliceBuilder{}
 func generateUint32SliceBuilder(ctx *Context) Builder { return globalUint32SliceBuilder }
 func (_this *uint32SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *uint32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *uint32SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -322,7 +322,7 @@ var globalUint64SliceBuilder = &uint64SliceBuilder{}
 func generateUint64SliceBuilder(ctx *Context) Builder { return globalUint64SliceBuilder }
 func (_this *uint64SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *uint64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *uint64SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -398,7 +398,7 @@ var globalInt8SliceBuilder = &int8SliceBuilder{}
 func generateInt8SliceBuilder(ctx *Context) Builder { return globalInt8SliceBuilder }
 func (_this *int8SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *int8SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *int8SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -468,7 +468,7 @@ var globalInt16SliceBuilder = &int16SliceBuilder{}
 func generateInt16SliceBuilder(ctx *Context) Builder { return globalInt16SliceBuilder }
 func (_this *int16SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *int16SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *int16SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -541,7 +541,7 @@ var globalInt32SliceBuilder = &int32SliceBuilder{}
 func generateInt32SliceBuilder(ctx *Context) Builder { return globalInt32SliceBuilder }
 func (_this *int32SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *int32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *int32SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -620,7 +620,7 @@ var globalInt64SliceBuilder = &int64SliceBuilder{}
 func generateInt64SliceBuilder(ctx *Context) Builder { return globalInt64SliceBuilder }
 func (_this *int64SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *int64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *int64SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -699,7 +699,7 @@ var globalFloat32SliceBuilder = &float32SliceBuilder{}
 func generateFloat32SliceBuilder(ctx *Context) Builder { return globalFloat32SliceBuilder }
 func (_this *float32SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *float32SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *float32SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }
@@ -779,7 +779,7 @@ var globalFloat64SliceBuilder = &float64SliceBuilder{}
 func generateFloat64SliceBuilder(ctx *Context) Builder { return globalFloat64SliceBuilder }
 func (_this *float64SliceBuilder) String() string      { return common.NameOf(_this) }
 
-func (_this *float64SliceBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *float64SliceBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(dst.Type()))
 	return dst
 }

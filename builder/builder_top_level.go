@@ -25,11 +25,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
@@ -48,8 +47,8 @@ func newTopLevelBuilder(builderGenerator BuilderGenerator, containerFinishedCall
 
 func (_this *topLevelBuilder) String() string { return reflect.TypeOf(_this).String() }
 
-func (_this *topLevelBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	_this.builderGenerator(ctx).BuildFromNil(ctx, dst)
+func (_this *topLevelBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromNull(ctx, dst)
 	return dst
 }
 

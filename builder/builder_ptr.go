@@ -26,11 +26,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 type ptrBuilder struct {
@@ -57,7 +56,7 @@ func (_this *ptrBuilder) newElem() reflect.Value {
 	return reflect.New(_this.dstType.Elem())
 }
 
-func (_this *ptrBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *ptrBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.Zero(_this.dstType))
 	return dst
 }

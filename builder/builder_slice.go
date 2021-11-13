@@ -26,11 +26,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 const defaultSliceCap = 4
@@ -69,9 +68,9 @@ func (_this *sliceBuilder) storeValue(value reflect.Value) {
 	**_this.ppContainer = reflect.Append(**_this.ppContainer, value)
 }
 
-func (_this *sliceBuilder) BuildFromNil(ctx *Context, _ reflect.Value) reflect.Value {
+func (_this *sliceBuilder) BuildFromNull(ctx *Context, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
-	_this.elemGenerator(ctx).BuildFromNil(ctx, object)
+	_this.elemGenerator(ctx).BuildFromNull(ctx, object)
 	if _this.ppContainer != nil {
 		_this.storeValue(object)
 	}

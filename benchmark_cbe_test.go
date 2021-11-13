@@ -35,7 +35,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
-
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )

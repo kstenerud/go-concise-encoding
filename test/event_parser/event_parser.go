@@ -29,10 +29,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/test"
-
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/test"
 )
 
 // API

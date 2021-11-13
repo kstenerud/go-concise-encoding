@@ -26,14 +26,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
-
-	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-equivalence"
 )
 

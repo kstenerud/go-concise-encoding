@@ -26,11 +26,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 type markerObjectBuilder struct {
@@ -58,8 +57,8 @@ func (_this *markerObjectBuilder) onObjectFinished(ctx *Context, dst reflect.Val
 	}
 }
 
-func (_this *markerObjectBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
-	object := _this.child.BuildFromNil(ctx, dst)
+func (_this *markerObjectBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromNull(ctx, dst)
 	_this.onObjectFinished(ctx, object)
 	return object
 }

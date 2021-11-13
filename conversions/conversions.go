@@ -27,10 +27,9 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/kstenerud/go-concise-encoding/internal/common"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
+	compact_float "github.com/kstenerud/go-compact-float"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
 // apd.Decimal to other

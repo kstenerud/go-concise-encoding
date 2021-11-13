@@ -26,11 +26,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/kstenerud/go-concise-encoding/events"
-
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 type ignoreBuilder struct{}
@@ -40,7 +39,7 @@ var globalIgnoreBuilder = &ignoreBuilder{}
 func generateIgnoreBuilder(ctx *Context) Builder { return globalIgnoreBuilder }
 func (_this *ignoreBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *ignoreBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *ignoreBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return dst
 
@@ -180,7 +179,7 @@ func (_this *ignoreXTimesBuilder) tryFinish(ctx *Context) {
 	}
 }
 
-func (_this *ignoreXTimesBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *ignoreXTimesBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	_this.tryFinish(ctx)
 	return dst
 }
@@ -293,7 +292,7 @@ var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
 func generateIgnoreContainerBuilder(ctx *Context) Builder { return globalIgnoreContainerBuilder }
 func (_this *ignoreContainerBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *ignoreContainerBuilder) BuildFromNil(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *ignoreContainerBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	return dst
 
 }
