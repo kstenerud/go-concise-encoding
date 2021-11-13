@@ -1,5 +1,5 @@
 c0
-// Basic CTE test cases
+// Basic CBE test cases
 {
     "options" = {
         "failFast" = false
@@ -11,31 +11,13 @@ c0
 
         {
             "name" = "something"
-            "cte" = "\.%%%%
-c0 |u8x /* foo */ 1 2 3|
-            %%%%"
+            "cbe" = |u8x 83 00 95 06 01 02 03|
             "events" = [
                             "bd" "v 0"
-                                "au8b" "com t  foo " "ac 3 f" "ad 1 2 3"
+                                "au8 1 2 3"
                             "ed"
                         ]
-            "from"   = ["t"]
-            "to"     = ["e"]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "something 2"
-            "cte" = "\.%%%%
-c0 |u8x /* foo */ 1 2 3|
-            %%%%"
-            "events" = [
-                            "bd" "v 0"
-                                "au8b" "com t  foo " "ac 3 f" "ad 1 2 3"
-                            "ed"
-                        ]
-            "from"   = ["t"]
+            "from"   = ["b"]
             "to"     = ["e"]
         }
 
@@ -46,15 +28,14 @@ c0 |u8x /* foo */ 1 2 3|
     // ========================================================================
     // ========================================================================
 
-    "cteTests" = [
+    "cbeTests" = [
         {
             "name" = "Version specifier"
             "mustSucceed" = [
-                {"source" = "c0 1"         "events" = ["bd" "v 0" "i 1" "ed"]}
+                {"source" = |u8x 83 00 01| "events" = ["bd" "v 0" "i 1" "ed"]}
             ]
             "mustFail" = [
-                "c0 xyz"
-                "c-1"
+                |u8x 00|
             ]
         }
 
