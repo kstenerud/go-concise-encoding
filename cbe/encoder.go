@@ -33,8 +33,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 )
 
 // Receives data events, constructing a CBE document from them.
@@ -146,6 +146,8 @@ func (_this *Encoder) OnPositiveInt(value uint64) {
 
 func (_this *Encoder) OnNegativeInt(value uint64) {
 	switch {
+	case value == 0:
+		_this.writer.WriteTyped8Bits(cbeTypeNegInt8, uint8(value))
 	case fitsInSmallint(value):
 		// Note: Must encode smallint using signed value
 		_this.writer.WriteType(cbeTypeField(-int64(value)))

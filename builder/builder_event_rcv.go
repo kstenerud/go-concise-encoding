@@ -31,8 +31,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 )
 
 // BuilderEventReceiver adapts DataEventReceiver to ObjectBuilder, passing
@@ -120,7 +120,15 @@ func (_this *BuilderEventReceiver) OnFalse() {
 func (_this *BuilderEventReceiver) OnPositiveInt(value uint64) {
 	_this.context.CurrentBuilder.BuildFromUint(&_this.context, value, _this.object)
 }
+
 func (_this *BuilderEventReceiver) OnNegativeInt(value uint64) {
+	if value == 0 {
+		// Yes, this stupidity around negative zero literals in go is intentional. Blame them.
+		const zero = float64(0)
+		const negZero = -zero
+		_this.OnFloat(negZero)
+		return
+	}
 	if value <= 0x7fffffffffffffff {
 		_this.OnInt(-int64(value))
 		return

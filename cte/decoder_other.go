@@ -26,7 +26,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 
-	"github.com/kstenerud/go-compact-float"
+	compact_float "github.com/kstenerud/go-compact-float"
 )
 
 func decodeInvalidChar(ctx *DecoderContext) {
@@ -152,7 +152,7 @@ func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 
 	// 0
 	if len(token) == 1 {
-		ctx.EventReceiver.OnDecimalFloat(negativeZero)
+		ctx.EventReceiver.OnNegativeInt(0)
 		return
 	}
 

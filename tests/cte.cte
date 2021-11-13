@@ -51,7 +51,7 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Version specifier"
             "mustSucceed" = [
-                {"source" = "c0 1"         "events" = ["bd" "v 0" "pi 1" "ed"]}
+                {"source" = "c0 1"         "events" = ["bd" "v 0" "i 1" "ed"]}
             ]
             "mustFail" = [
                 "c0 xyz"

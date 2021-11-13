@@ -28,13 +28,13 @@ import (
 	"testing"
 	"time"
 
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -120,6 +120,9 @@ func TestBuildUnknown(t *testing.T) {
 	}
 }
 
+var zero = float64(0)
+var negZero = -zero
+
 func TestBuilderBasicTypes(t *testing.T) {
 	pBigIntP := NewBigInt("12345678901234567890123456789", 10)
 	pBigIntN := NewBigInt("-999999999999999999999999999999", 10)
@@ -152,6 +155,7 @@ func TestBuilderBasicTypes(t *testing.T) {
 	assertBuild(t, pBigIntN, BI(pBigIntN))
 	assertBuild(t, *pBigIntN, BI(pBigIntN))
 	assertBuild(t, (*big.Int)(nil), N())
+	assertBuild(t, float32(negZero), F(negZero))
 	assertBuild(t, float32(-1.25), F(-1.25))
 	assertBuild(t, float64(-9.5e50), F(-9.5e50))
 	assertBuild(t, pBigFloat, BF(pBigFloat))
@@ -181,6 +185,8 @@ func TestBuilderBasicTypes(t *testing.T) {
 func TestBuilderConvertToBDF(t *testing.T) {
 	pv := NewBDF("1")
 	nv := NewBDF("-1")
+	nz := NewBDF("-0")
+
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
 	assertBuild(t, pv, BI(NewBigInt("1", 10)))
@@ -196,6 +202,11 @@ func TestBuilderConvertToBDF(t *testing.T) {
 	assertBuild(t, *pv, BF(NewBigFloat("1", 10, 1)))
 	assertBuild(t, *pv, DF(NewDFloat("1")))
 	assertBuild(t, *pv, BDF(NewBDF("1")))
+
+	assertBuild(t, nz, F(negZero))
+	assertBuild(t, nz, BF(NewBigFloat("-0", 10, 1)))
+	assertBuild(t, nz, DF(NewDFloat("-0")))
+	assertBuild(t, nz, BDF(NewBDF("-0")))
 }
 
 func TestBuilderConvertToBDFFail(t *testing.T) {
@@ -227,6 +238,8 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 func TestBuilderConvertToBF(t *testing.T) {
 	pv := NewBigFloat("1", 10, 1)
 	nv := NewBigFloat("-1", 10, 1)
+	nz := NewBigFloat("-0", 10, 1)
+
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
 	assertBuild(t, pv, BI(NewBigInt("1", 10)))
@@ -242,6 +255,11 @@ func TestBuilderConvertToBF(t *testing.T) {
 	assertBuild(t, *pv, BF(NewBigFloat("1", 10, 1)))
 	assertBuild(t, *pv, DF(NewDFloat("1")))
 	assertBuild(t, *pv, BDF(NewBDF("1")))
+
+	assertBuild(t, *nz, F(negZero))
+	assertBuild(t, *nz, BF(NewBigFloat("-0", 10, 1)))
+	assertBuild(t, *nz, DF(NewDFloat("-0")))
+	assertBuild(t, *nz, BDF(NewBDF("-0")))
 }
 
 func TestBuilderConvertToBFFail(t *testing.T) {
@@ -342,6 +360,8 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 func TestBuilderConvertToDecimalFloat(t *testing.T) {
 	pv := NewDFloat("1")
 	nv := NewDFloat("-1")
+	nz := NewDFloat("-0")
+
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
 	assertBuild(t, pv, BI(NewBigInt("1", 10)))
@@ -349,6 +369,10 @@ func TestBuilderConvertToDecimalFloat(t *testing.T) {
 	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
 	assertBuild(t, pv, DF(NewDFloat("1")))
 	assertBuild(t, pv, BDF(NewBDF("1")))
+	assertBuild(t, nz, F(negZero))
+	assertBuild(t, nz, BF(NewBigFloat("-0", 10, 1)))
+	assertBuild(t, nz, DF(NewDFloat("-0")))
+	assertBuild(t, nz, BDF(NewBDF("-0")))
 }
 
 func TestBuilderDecimalFloatFail(t *testing.T) {
@@ -369,6 +393,8 @@ func TestBuilderDecimalFloatFail(t *testing.T) {
 func TestBuilderConvertToFloat(t *testing.T) {
 	pv := 1.0
 	nv := -1.0
+	nz := negZero
+
 	assertBuild(t, pv, PI(1))
 	assertBuild(t, nv, NI(1))
 	assertBuild(t, pv, BI(NewBigInt("1", 10)))
@@ -376,6 +402,11 @@ func TestBuilderConvertToFloat(t *testing.T) {
 	assertBuild(t, pv, BF(NewBigFloat("1", 10, 1)))
 	assertBuild(t, pv, DF(NewDFloat("1")))
 	assertBuild(t, pv, BDF(NewBDF("1")))
+
+	assertBuild(t, nz, F(negZero))
+	assertBuild(t, nz, BF(NewBigFloat("-0", 10, 1)))
+	assertBuild(t, nz, DF(NewDFloat("-0")))
+	assertBuild(t, nz, BDF(NewBDF("-0")))
 }
 
 func TestBuilderConvertToFloatFail(t *testing.T) {

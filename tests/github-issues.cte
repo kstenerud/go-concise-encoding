@@ -85,9 +85,9 @@ c0 0:hello world
 c0
 -0
             %%%%"
-            "cbe" = |u8x 83 00 65 03|
+            "cbe" = |u8x 83 00 69 00|
             "events" = [
-                            "bd" "v 0" "df -0" "ed"
+                            "bd" "v 0" "ni 0" "ed"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
