@@ -1,7 +1,10 @@
 c0
 // Examples from https://concise-encoding.org
 {
-    "references" = []
+    "options" = {
+        "failFast" = false  // If true, halt tests on first error
+    }
+
     "ceTests" = [
 
         // ====================================================================

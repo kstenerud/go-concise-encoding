@@ -2,7 +2,7 @@ c0
 // Basic CTE test cases
 {
     "options" = {
-        "failFast" = false
+        "failFast" = false  // If true, halt tests on first error
     }
 
     "ceTests" = [
@@ -32,16 +32,17 @@ c0 |u8x /* foo */ 1 2 3|
             "mustSucceed" = [
                 {"source"="c0 1"           "events"=["v 0" "n 1"]}
                 {"source"="c0\n1"          "events"=["v 0" "n 1"]}
+                {"source"="c0\t1"          "events"=["v 0" "n 1"]}
+                {"source"="c0\r\n1"        "events"=["v 0" "n 1"]}
                 {"source"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
                 {"source"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
             ]
             "mustFail" = [
-                "c0{}" // Missing whitespace
-                "c000000000000000000000000000000000" // Too big
-                "c99 1" // Unsupported version number
+                "c0{}"  // Missing whitespace
+                "c2 1"  // Future version number
                 "c-1 1" // Bad version number
-                "ca 1" // Bad version number
-                "d0 1" // Bad first char
+                "ca 1"  // Bad version number
+                "d0 1"  // Bad first char
             ]
         }
 
@@ -85,24 +86,23 @@ c0 |u8x /* foo */ 1 2 3|
         // ====================================================================
 
         {
-            "name" = "Integer"
+            "name" = "Decimal Integer"
             "mustSucceed" = [
-                {"source"="c0 0"   "events"=["v 0" "n 0"]}
-                {"source"="c0 123"   "events"=["v 0" "n 123"]}
-                {"source"="c0 9412504234235366"   "events"=["v 0" "n 9412504234235366"]}
-                {"source"="c0 -49523"   "events"=["v 0" "n -49523"]}
-                {"source"="c0 10000000000000000000000000000"   "events"=["v 0" "n 10000000000000000000000000000"]}
-                {"source"="c0 -10000000000000000000000000000"   "events"=["v 0" "n -10000000000000000000000000000"]}
-                {"source"="c0 100_00_0_00000000000_00000000_000_0"   "events"=["v 0" "n 10000000000000000000000000000"]}
-                {"source"="c0 -4_9_5__2___3"   "events"=["v 0" "n -49523"]}
-                {"source"="c0\n100"   "events"=["v 0" "n 100"]}
-                {"source"="c0\n-100"   "events"=["v 0" "n -100"]}
+                {"source"="c0 0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 123"               "events"=["v 0" "n 123"]}
+                {"source"="c0 9412504234235366"  "events"=["v 0" "n 9412504234235366"]}
+                {"source"="c0 -49523"            "events"=["v 0" "n -49523"]}
+                {"source"="c0 10000000000000000000000000000"        "events"=["v 0" "n 10000000000000000000000000000"]}
+                {"source"="c0 -10000000000000000000000000000"       "events"=["v 0" "n -10000000000000000000000000000"]}
+                {"source"="c0 100_00_0_00000000000_00000000_000_0"  "events"=["v 0" "n 10000000000000000000000000000"]}
+                {"source"="c0 -4_9_5__2___3"     "events"=["v 0" "n -49523"]}
             ]
             "mustFail" = [
-                "c0 1f"
-                "c0 -1f"
-                "c0 -_1"
-                "c0 -1_"
+                "c0 1f"  // Non-decimal digit
+                "c0 -1f" // Non-decimal digit
+                "c0 -_1" // Whitespace is not between digits
+                "c0 -1_" // Whitespace is not between digits
             ]
         }
 

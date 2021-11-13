@@ -1,5 +1,10 @@
 c0
+// Examples from https://github.com/kstenerud/concise-encoding/blob/master/ce-structure.md
 {
+    "options" = {
+        "failFast" = false  // If true, halt tests on first error
+    }
+
     "ceTests" = [
 
         // ====================================================================

@@ -2,7 +2,7 @@ c0
 // Basic CBE test cases
 {
     "options" = {
-        "failFast" = false
+        "failFast" = false  // If true, halt tests on first error
     }
 
     "ceTests" = [

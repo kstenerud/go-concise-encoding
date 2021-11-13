@@ -1,5 +1,10 @@
 c0
+// Basic CE test cases
 {
+    "options" = {
+        "failFast" = false  // If true, halt tests on first error
+    }
+
     "ceTests" = [
 
         // ====================================================================
