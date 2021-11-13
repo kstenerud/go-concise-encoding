@@ -13,7 +13,7 @@ null
             "cbe"    = |u8x 83 00 7e|
             "events" = [
                             "bd" "v 0"
-                                "n"
+                                "null"
                             "ed"
                         ]
             "from"   = ["t" "b" "e"]
@@ -36,9 +36,9 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "l"
-                                    "i 1"
-                                    "i 2"
-                                    "i 3"
+                                    "n 1"
+                                    "n 2"
+                                    "n 3"
                                 "e"
                             "ed"
                         ]
@@ -85,8 +85,8 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "l"
-                                    "i 42"
-                                    "bi -1000000000000000000000000000000000000000000000000000"
+                                    "n 42"
+                                    "n -1000000000000000000000000000000000000000000000000000"
                                 "e"
                             "ed"
                         ]
@@ -109,8 +109,8 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "l"
-                                    "df -2.81"
-                                    "df 4.195342e-10000"
+                                    "n -2.81"
+                                    "n 4.195342e-10000"
                                 "e"
                             "ed"
                         ]
@@ -133,8 +133,8 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "l"
-                                    "f 0xa.3fb8p+42"
-                                    "f 0x1.0p0"
+                                    "n 0xa.3fb8p+42"
+                                    "n 0x1.0p0"
                                 "e"
                             "ed"
                         ]
@@ -324,7 +324,7 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "l"
-                                    "mb" "ac 16 false" "as application/x-sh" "ac 28 false" "as \.@@
+                                    "mb" "ac 16 false" "at application/x-sh" "ac 28 false" "at \.@@
 #!/bin/sh
 
 echo hello world
@@ -376,11 +376,11 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "l"
-                                    "i 1"
+                                    "n 1"
                                     "s two"
-                                    "df 3.1"
+                                    "n 3.1"
                                     "m" "e"
-                                    "n"
+                                    "null"
                                 "e"
                             "ed"
                         ]
@@ -408,11 +408,11 @@ c0
             "events" = [
                             "bd" "v 0"
                                 "m"
-                                    "i 1" "s alpha"
-                                    "i 2" "s beta"
+                                    "n 1" "s alpha"
+                                    "n 2" "s beta"
                                     "s a map" "m"
-                                        "s one" "i 1"
-                                        "s two" "i 2"
+                                        "s one" "n 1"
+                                        "s two" "n 2"
                                     "e"
                                     "t 2000-01-01" "s New millenium"
                                 "e"
@@ -630,18 +630,18 @@ c0
             "cbe"    = |u8x 83 00 77 02 77 07 02 01 77 06 05 08 7b 7b 77 05 77 09 04 7b 7b 7b|
             "events" = [
                             "bd" "v 0"
-                                "node" "i 2"
-                                    "node" "i 7"
-                                        "i 2"
-                                        "i 1"
-                                        "node" "i 6"
-                                            "i 5"
-                                            "i 8"
+                                "node" "n 2"
+                                    "node" "n 7"
+                                        "n 2"
+                                        "n 1"
+                                        "node" "n 6"
+                                            "n 5"
+                                            "n 8"
                                         "e"
                                     "e"
-                                    "node" "i 5"
-                                        "node" "i 9"
-                                            "i 4"
+                                    "node" "n 5"
+                                        "node" "n 9"
+                                            "n 4"
                                         "e"
                                     "e"
                                 "e"
@@ -695,7 +695,7 @@ c0
                                     "mup TextInput"
                                         "s id" "s name"
                                         "s style" "m"
-                                            "s height" "i 40"
+                                            "s height" "n 40"
                                             "s borderColor" "s gray"
                                         "e"
                                     "e"
@@ -729,7 +729,7 @@ c0
                                 "l"
                                     "mark remember_me" "s Remember this string"
                                     "mark 1" "m"
-                                        "s a" "i 1"
+                                        "s a" "n 1"
                                     "e"
                                 "e"
                             "ed"
@@ -783,14 +783,14 @@ c0
                                     "s some object" "m"
                                         "s some string" "mark my_string_ref" "s This is my string"
                                         "s some map" "mark my_map_ref" "m"
-                                            "s a" "i 1"
+                                            "s a" "n 1"
                                         "e"
                                     "e"
                                     "s forward reference" "ref later_obj_ref"
                                     "s reference to string" "ref my_string_ref"
                                     "s reference to map" "ref my_map_ref"
                                     "s a later object" "mark later_obj_ref" "m"
-                                        "s x" "i 2"
+                                        "s x" "n 2"
                                         "s recursive reference" "ref later_obj_ref"
                                     "e"
                                 "e"

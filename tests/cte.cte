@@ -34,9 +34,9 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Version specifier"
             "mustSucceed" = [
-                {"source"="c0 1"           "events"=["bd" "v 0" "i 1" "ed"]}
-                {"source"="\r\n\t  c0 1"   "events"=["bd" "v 0" "i 1" "ed"]}
-                {"source"="c0 \r\n\t   1"  "events"=["bd" "v 0" "i 1" "ed"]}
+                {"source"="c0 1"           "events"=["bd" "v 0" "n 1" "ed"]}
+                {"source"="\r\n\t  c0 1"   "events"=["bd" "v 0" "n 1" "ed"]}
+                {"source"="c0 \r\n\t   1"  "events"=["bd" "v 0" "n 1" "ed"]}
             ]
             "mustFail" = [
                 "c0{}" // Missing whitespace
@@ -53,9 +53,9 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Null"
             "mustSucceed" = [
-                {"source"="c0 null"  "events"=["bd" "v 0" "n" "ed"]}
-                {"source"="c0 Null"  "events"=["bd" "v 0" "n" "ed"]}
-                {"source"="c0 null"  "events"=["bd" "v 0" "n" "ed"]}
+                {"source"="c0 null"  "events"=["bd" "v 0" "null" "ed"]}
+                {"source"="c0 Null"  "events"=["bd" "v 0" "null" "ed"]}
+                {"source"="c0 null"  "events"=["bd" "v 0" "null" "ed"]}
             ]
             "mustFail" = [
                 "c0 nulled"

@@ -31,7 +31,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/types"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
+	compact_float "github.com/kstenerud/go-compact-float"
 )
 
 // Int
@@ -390,24 +390,42 @@ func setPBigFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
 
 // DecimalFloat
 
+var roundingError = compact_float.RoundingError()
+
 func setDecimalFloatFromInt(value int64, dst reflect.Value) {
 	dst.Set(reflect.ValueOf(compact_float.DFloatValue(0, value)))
 }
 
 func setDecimalFloatFromUint(value uint64, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(compact_float.DFloatFromUInt(value)))
+	v, err := compact_float.DFloatFromUInt(value)
+	if err != nil && err != roundingError {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(v))
 }
 
 func setDecimalFloatFromBigInt(value *big.Int, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigInt(value)))
+	v, err := compact_float.DFloatFromBigInt(value)
+	if err != nil && err != roundingError {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(v))
 }
 
 func setDecimalFloatFromFloat(value float64, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(compact_float.DFloatFromFloat64(value, 0)))
+	v, err := compact_float.DFloatFromFloat64(value, 0)
+	if err != nil && err != roundingError {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(v))
 }
 
 func setDecimalFloatFromBigFloat(value *big.Float, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(compact_float.DFloatFromBigFloat(value)))
+	v, err := compact_float.DFloatFromBigFloat(value)
+	if err != nil && err != roundingError {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(v))
 }
 
 func setDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Value) {
@@ -415,7 +433,11 @@ func setDecimalFloatFromDecimalFloat(value compact_float.DFloat, dst reflect.Val
 }
 
 func setDecimalFloatFromBigDecimalFloat(value *apd.Decimal, dst reflect.Value) {
-	dst.Set(reflect.ValueOf(compact_float.DFloatFromAPD(value)))
+	v, err := compact_float.DFloatFromAPD(value)
+	if err != nil && err != roundingError {
+		panic(err)
+	}
+	dst.Set(reflect.ValueOf(v))
 }
 
 // BigDecimalFloat

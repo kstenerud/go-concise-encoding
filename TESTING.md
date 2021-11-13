@@ -91,6 +91,7 @@ If present, this field contains string-encoded elements that are a kind of short
 | v     | int           |         | Version                        | `v 1`                                      |
 | tt    |               |         | True                           | `tt`                                       |
 | ff    |               |         | False                          | `ff`                                       |
+| n     | numeric       |         | Number (any type)              | `n -5.3`                                   |
 | i     | int           |         | Integer                        | `i -5`                                     |
 | f     | float         |         | Float                          | `f 1.5`                                    |
 | bf    | float         |         | Big Float                      | `bf 1.5e1000`                              |
@@ -141,8 +142,8 @@ If present, this field contains string-encoded elements that are a kind of short
 | aub   |               |         | Begin array (uid)              | `auub`                                     |
 | mb    |               |         | Begin Media                    | `mb`                                       |
 | ac    | uint          | bool    | Begin array chunk              | `ac 10`                                    |
-| ad    | bytes         |         | Array data                     | `ad f8 ee 41 9a 13`                        |
-| as    | string        |         | Array data (as string)         | `as some string data`                      |
+| ad    | bytes         |         | Array data (as binary)         | `ad f8 ee 41 9a 13`                        |
+| at    | string        |         | Array data (as text)           | `at some text data`                        |
 | l     |               |         | Begin list                     | `l`                                        |
 | m     |               |         | Begin map                      | `m`                                        |
 | mup   | string        |         | Begin markup                   | `mup some-name`                            |

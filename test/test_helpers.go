@@ -40,8 +40,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/version"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-equivalence"
 )
 
@@ -407,7 +407,7 @@ func binBytes(elemSize, length int) []byte {
 }
 
 func isEffectivelyNil(event *TEvent) bool {
-	return event.Type == TEventNil ||
+	return event.Type == TEventNull ||
 		event == EvBINil ||
 		event == EvBFNil ||
 		event == EvBDFNil
@@ -749,7 +749,7 @@ const (
 	TEventVersion
 	TEventPadding
 	TEventComment
-	TEventNil
+	TEventNull
 	TEventBool
 	TEventTrue
 	TEventFalse
@@ -822,7 +822,7 @@ var TEventNames = []string{
 	TEventVersion:           "V",
 	TEventPadding:           "PAD",
 	TEventComment:           "COM",
-	TEventNil:               "N",
+	TEventNull:              "N",
 	TEventBool:              "B",
 	TEventTrue:              "TT",
 	TEventFalse:             "FF",
@@ -1115,7 +1115,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnPadding(_this.V1.(int))
 	case TEventComment:
 		receiver.OnComment(_this.V1.(bool), []byte(_this.V2.(string)))
-	case TEventNil:
+	case TEventNull:
 		receiver.OnNil()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
@@ -1270,7 +1270,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 
 func EventOrNil(eventType TEventType, value interface{}) *TEvent {
 	if value == nil {
-		eventType = TEventNil
+		eventType = TEventNull
 	}
 	return NewTEvent(eventType, value, nil)
 }
@@ -1287,7 +1287,7 @@ func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return NewTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return NewTEvent(TEventVersion, v, nil) }
-func N() *TEvent                        { return NewTEvent(TEventNil, nil, nil) }
+func N() *TEvent                        { return NewTEvent(TEventNull, nil, nil) }
 func PAD(v int) *TEvent                 { return NewTEvent(TEventPadding, v, nil) }
 func COM(m bool, v string) *TEvent      { return NewTEvent(TEventComment, m, v) }
 func B(v bool) *TEvent                  { return NewTEvent(TEventBool, v, nil) }

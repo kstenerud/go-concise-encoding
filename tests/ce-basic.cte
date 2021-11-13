@@ -33,7 +33,7 @@ c0
 null
             %%%%"
             "cbe"    = |u8x 83 00 7e|
-            "events" = ["bd" "v 0" "n" "ed"]
+            "events" = ["bd" "v 0" "null" "ed"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
             "fail"   = false
@@ -51,7 +51,7 @@ c0
 null
             %%%%"
             "cbe"    = |u8x 83 00 7e|
-            "events" = ["bd" "v 0" "n" "ed"]
+            "events" = ["bd" "v 0" "null" "ed"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
         }
