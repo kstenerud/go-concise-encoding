@@ -40,7 +40,7 @@ c0
                             82 00 8c 6e 65 67 20 69 6e 66 69 6e 69 74 79 65
                             83 00 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s boolean"       "tt"
                                 "s binary int"    "ni 0b10001011"
                                 "s octal int"     "pi 0o644"
@@ -53,7 +53,7 @@ c0
                                 "s not-a-number"  "nan"
                                 "s infinity"      "df inf"
                                 "s neg infinity"  "df -inf"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -79,11 +79,11 @@ c0
                             85 65 6d 61 69 6c 91 2e 6d 61 69 6c 74 6f 3a 6d
                             65 40 73 6f 6d 65 77 68 65 72 65 2e 63 6f 6d 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s string" "s Strings support escape sequences: \n \t \51F415"
                                 "s url"    "rid https://example.com/"
                                 "s email"  "rid mailto:me@somewhere.com"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -114,7 +114,7 @@ c0
                             73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77
                             6f 72 6c 64 0a 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s uuid"      "uid f1ce4567-e89b-12d3-a456-426655440000"
                                 "s date"      "t 2019-07-01"
                                 "s time"      "t 18:04:00.948/E/Prague"
@@ -125,7 +125,7 @@ c0
                                     "at application/x-sh"
                                     "ac 28 false"
                                     "ad 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -155,14 +155,14 @@ c0
                          9c 8d 66 6c 6f 61 74 33 32 20 61 72 72 61 79 94 82
                          76 84 5f 50 ea 30 12 ad 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s list"          "l" "i 1" "df 2.5" "s a string" "e"
                                 "s map"           "m" "s one" "i 1" "i 2" "s two" "s today" "t 2020-09-10" "e"
                                 "s bytes"         "au8x 01 ff de ad be ef"
                                 "s int16 array"   "ai16 7374 17466 -9957"
                                 "s uint16 hex"    "au16x 91fe 443a 9c15"
                                 "s float32 array" "af32 1.5e10 -8.31e-12"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -212,7 +212,7 @@ c0
                             29 0a 20 20 20 20 20 20 20 20 20 20 20 20 7b 88
                             4e 61 6d 65 20 6d 65 21 7b 7b 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s main-view" "mup View"
                                 "e"
                                     "mup Image"
@@ -237,7 +237,7 @@ c0
                                         "s Name me!"
                                     "e"
                                 "e"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -267,14 +267,14 @@ c0
                             2f 2f 78 79 7a 2e 63 6f 6d 2f 64 6f 63 75 6d 65
                             6e 74 2e 63 74 65 23 73 6f 6d 65 5f 69 64 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s marked object" "mark id1" "m"
                                     "s recursive" "ref id1"
                                 "e"
                                 "s ref1" "ref id1"
                                 "s ref2" "ref id1"
                                 "s outside ref" "rref https://xyz.com/document.cte#some_id"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -316,7 +316,7 @@ c0
                             65 69 67 68 74 04 89 64 69 72 65 63 74 69 6f 6e
                             84 62 6f 74 68 7b 98 01 64 7b 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s vertices" "l"
                                     "mark a" "m" "e"
                                     "mark b" "m" "e"
@@ -360,7 +360,7 @@ c0
                                         "e"
                                         "ref d"
                                 "e"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -390,7 +390,7 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 77 02 77 07 02 01 77 06 05 08 7b 7b 77 05 77 09 04 7b 7b 7b|
             "events" = [
-                            "bd" "v 0"
+                            "v 0"
                                 "node" "i 2"
                                     "node" "i 7"
                                         "i 2"
@@ -406,7 +406,6 @@ c0
                                         "e"
                                     "e"
                                 "e"
-                            "ed"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -428,10 +427,10 @@ c0
                             75 73 74 6f 6d 20 62 69 6e 61 72 79 92 12 04 f6
                             28 3c 40 00 00 40 40 7b|
             "events" = [
-                            "bd" "v 0" "m"
+                            "v 0" "m"
                                 "s custom text" "ct cplx(2.94+3i)"
                                 "s custom binary" "cb 04 f6 28 3c 40 00 00 40 40"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]

@@ -11,11 +11,7 @@ c0
             "cte" = "\.%%%%
 c0 |u8x /* foo */ 1 2 3|
             %%%%"
-            "events" = [
-                            "bd" "v 0"
-                                "au8b" "com t  foo " "ac 3 f" "ad 1 2 3"
-                            "ed"
-                        ]
+            "events" = ["v 0" "au8b" "com t  foo " "ac 3 f" "ad 1 2 3"]
             "from"   = ["t"]
             "to"     = ["e"]
         }
@@ -28,11 +24,7 @@ c0 |u8x /* foo */ 1 2 3|
             "cte" = "\.%%%%
 c0 @(@"homer" @"married-to" @"marge" )
             %%%%"
-            "events" = [
-                            "bd" "v 0"
-                                "edge" "rid homer" "rid married-to" "rid marge"
-                            "ed"
-                        ]
+            "events" = ["v 0" "edge" "rid homer" "rid married-to" "rid marge"]
             "from"   = ["t"]
             "to"     = ["e"]
         }
@@ -53,12 +45,12 @@ c0
             %%%%"
             "cbe" = |u8x 83 00 7a 9a 19 d2 f8 6d f5 ac bc 9a a8 88 f4 9a 00 1e f0 9a 01 1e f0 6d f5 ac bc 7b|
             "events" = [
-                            "bd" "v 0" "l"
+                            "v 0" "l"
                                 "t 17:41:03/-13.54/-172.36"
                                 "t 9:04:21"
                                 "t 0:15:00"
                                 "t 0:15:00/-13.54/-172.36"
-                            "e" "ed"
+                            "e"
                         ]
             "from"   = ["t" "e"]
             "to"     = ["b" "e"]
@@ -86,9 +78,7 @@ c0
 -0
             %%%%"
             "cbe" = |u8x 83 00 69 00|
-            "events" = [
-                            "bd" "v 0" "ni 0" "ed"
-                        ]
+            "events" = ["v 0" "n -0"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
         }

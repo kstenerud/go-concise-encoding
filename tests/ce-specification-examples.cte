@@ -11,11 +11,7 @@ c0
 null
             %%%%"
             "cbe"    = |u8x 83 00 7e|
-            "events" = [
-                            "bd" "v 0"
-                                "null"
-                            "ed"
-                        ]
+            "events" = ["v 0" "null"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
         }
@@ -34,13 +30,12 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 01 02 03 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "n 1"
-                                    "n 2"
-                                    "n 3"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "n 1"
+                                "n 2"
+                                "n 3"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -59,12 +54,11 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 7d 7c 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "tt"
-                                    "ff"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "tt"
+                                "ff"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -83,12 +77,11 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 2a 67 16 00 00 00 00 00 00 e8 15 e9 11 34 a8 3b 4e 01 b8 bf db 4e 3a ac 02 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "n 42"
-                                    "n -1000000000000000000000000000000000000000000000000000"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "n 42"
+                                "n -1000000000000000000000000000000000000000000000000000"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -107,12 +100,11 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 65 0b 99 02 65 da b8 02 8e 88 80 02 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "n -2.81"
-                                    "n 4.195342e-10000"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "n -2.81"
+                                "n 4.195342e-10000"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -131,12 +123,11 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 71 80 fb 23 56 70 80 3f 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "n 0xa.3fb8p+42"
-                                    "n 0x1.0p0"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "n 0xa.3fb8p+42"
+                                "n 0x1.0p0"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -154,11 +145,10 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "uid 123e4567-e89b-12d3-a456-426655440000"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "uid 123e4567-e89b-12d3-a456-426655440000"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -178,13 +168,12 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 99 05 4d 00 99 7e 24 30 99 95 ef 23 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "t 2019-8-5"
-                                    "t 5081-03-30"
-                                    "t -300-12-21"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "t 2019-8-5"
+                                "t 5081-03-30"
+                                "t -300-12-21"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -208,15 +197,14 @@ c0
                             9a 01 00 f2 0e 53 2f 54 6f 6b 79 6f 9a 19 d2 f8
                             6d f5 ac bc 9a 01 80 f4 02 4c 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "t 23:59:59.999999999"
-                                    "t 12:05:50.102"
-                                    "t 04:00:00/Asia/Tokyo"
-                                    "t 17:41:03/-13.54/-172.36"
-                                    "t 09:00:00/Local"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "t 23:59:59.999999999"
+                                "t 12:05:50.102"
+                                "t 04:00:00/Asia/Tokyo"
+                                "t 17:41:03/-13.54/-172.36"
+                                "t 09:00:00/Local"
+                            "e"
                         ]
             "from"   = ["t" "e"]
             "to"     = ["t" "b" "e"]
@@ -238,13 +226,12 @@ c0
                             82 d6 0e 1a 4d 2f 4c 6f 73 5f 41 6e 67 65 6c 65
                             73 9b 01 80 11 16 9e 06 2d 26 ec 00 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "t 2019-01-23/14:08:51.941245"
-                                    "t 1985-10-26/01:20:01.105/America/Los_Angeles"
-                                    "t 5192-11-01/03:00:00/48.86/2.36"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "t 2019-01-23/14:08:51.941245"
+                                "t 1985-10-26/01:20:01.105/America/Los_Angeles"
+                                "t 5192-11-01/03:00:00/48.86/2.36"
+                            "e"
                         ]
             "from"   = ["t" "e"]
             "to"     = ["t" "b" "e"]
@@ -263,11 +250,10 @@ c0
             "cbe"    = |u8x 83 00 7a 91 1c 68 74 74 70 73 3a 2f 2f 78 2e 63
                             6f 6d 2f 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "rid https://x.com/"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "rid https://x.com/"
+                            "e"
                         ]
             "from"   = ["t" "e"]
             "to"     = ["t" "b" "e"]
@@ -293,15 +279,14 @@ c0
                             85 98 bc 15 6b 99 ea 3b 1d 4e 20 5c 5e a3 46 ea
                             92 a3 98 d9 d3 e6 33 2f 96 0a 0b 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "au8x 9f 47 cb 9a 3c"
-                                    "af32 1.5 0x4.f391p100 30 9.31e-30"
-                                    "ai16 0b1001010 0o744 1000 0x7fff"
-                                    "au 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f"
-                                    "ab 1 1 0 1 0"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "au8x 9f 47 cb 9a 3c"
+                                "af32 1.5 0x4.f391p100 30 9.31e-30"
+                                "ai16 0b1001010 0o744 1000 0x7fff"
+                                "au 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f"
+                                "ab 1 1 0 1 0"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -322,15 +307,14 @@ c0
                             0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72
                             6c 64 0a 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "mb" "ac 16 false" "at application/x-sh" "ac 28 false" "at \.@@
+                            "v 0"
+                            "l"
+                                "mb" "ac 16 false" "at application/x-sh" "ac 28 false" "at \.@@
 #!/bin/sh
 
 echo hello world
 @@"
-                                "e"
-                            "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -348,11 +332,10 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 93 1a 63 70 6c 78 28 32 2e 39 34 2b 33 69 29 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "ct cplx(2.94+3i)"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "ct cplx(2.94+3i)"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -374,15 +357,14 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 7a 01 83 74 77 6f 65 06 1f 79 7b 7e 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "n 1"
-                                    "s two"
-                                    "n 3.1"
-                                    "m" "e"
-                                    "null"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "n 1"
+                                "s two"
+                                "n 3.1"
+                                "m" "e"
+                                "null"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -406,17 +388,16 @@ c0
                             02 7b 99 21 00 00 8d 4e 65 77 20 6d 69 6c 6c 65
                             6e 69 75 6d 7b|
             "events" = [
-                            "bd" "v 0"
-                                "m"
-                                    "n 1" "s alpha"
-                                    "n 2" "s beta"
-                                    "s a map" "m"
-                                        "s one" "n 1"
-                                        "s two" "n 2"
-                                    "e"
-                                    "t 2000-01-01" "s New millenium"
+                            "v 0"
+                            "m"
+                                "n 1" "s alpha"
+                                "n 2" "s beta"
+                                "s a map" "m"
+                                    "s one" "n 1"
+                                    "s two" "n 2"
                                 "e"
-                            "ed"
+                                "t 2000-01-01" "s New millenium"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -458,18 +439,17 @@ c0
                             2f 65 6d 70 6c 6f 79 65 72 73 2f 6e 75 63 6c 65
                             61 72 5f 70 6f 77 65 72 5f 70 6c 61 6e 74 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "edge"
-                                        "rid https://springfield.gov/people#homer_simpson"
-                                        "rid https://example.org/wife"
-                                        "rid https://springfield.gov/people#marge_simpson"
-                                    "edge"
-                                        "rid https://springfield.gov/people#homer_simpson"
-                                        "rid https://example.org/employer"
-                                        "rid https://springfield.gov/employers/nuclear_power_plant"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "l"
+                                "edge"
+                                    "rid https://springfield.gov/people#homer_simpson"
+                                    "rid https://example.org/wife"
+                                    "rid https://springfield.gov/people#marge_simpson"
+                                "edge"
+                                    "rid https://springfield.gov/people#homer_simpson"
+                                    "rid https://example.org/employer"
+                                    "rid https://springfield.gov/employers/nuclear_power_plant"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -566,40 +546,39 @@ c0
                             67 2f 6d 61 72 69 74 61 6c 5f 73 74 72 69 66 65
                             7b 7b|
             "events" = [
-                            "bd" "v 0"
-                                "m"
-                                    "rid https://springfield.gov/people#homer_simpson" "m"
-                                        "rid https://mypredicates.org/wife" "rid https://springfield.gov/people#marge_simpson"
-                                        "rid https://mypredicates.org/regrets" "l"
+                            "v 0"
+                            "m"
+                                "rid https://springfield.gov/people#homer_simpson" "m"
+                                    "rid https://mypredicates.org/wife" "rid https://springfield.gov/people#marge_simpson"
+                                    "rid https://mypredicates.org/regrets" "l"
+                                        "ref firing"
+                                        "ref forgotten_birthday"
+                                    "e"
+                                    "rid https://mypredicates.org/troubles" "ref troubles"
+                                "e"
+                                "s graph edges" "l"
+                                    "mark marge_birthday" "edge"
+                                        "rid https://springfield.gov/people#marge_simpson"
+                                        "rid https://mypredicates.org/birthday"
+                                        "t 1956-10-01"
+                                    "mark forgotten_birthday" "edge"
+                                        "rid https://springfield.gov/people#homer_simpson"
+                                        "rid https://mypredicates.org/forgot"
+                                        "ref marge_birthday"
+                                    "mark firing" "edge"
+                                        "rid https://springfield.gov/people#montgomery_burns"
+                                        "rid https://mypredicates.org/fired"
+                                        "rid https://springfield.gov/people#homer_simpson"
+
+                                    "mark troubles" "edge"
+                                        "l"
                                             "ref firing"
                                             "ref forgotten_birthday"
                                         "e"
-                                        "rid https://mypredicates.org/troubles" "ref troubles"
-                                    "e"
-                                    "s graph edges" "l"
-                                        "mark marge_birthday" "edge"
-                                            "rid https://springfield.gov/people#marge_simpson"
-                                            "rid https://mypredicates.org/birthday"
-                                            "t 1956-10-01"
-                                        "mark forgotten_birthday" "edge"
-                                            "rid https://springfield.gov/people#homer_simpson"
-                                            "rid https://mypredicates.org/forgot"
-                                            "ref marge_birthday"
-                                        "mark firing" "edge"
-                                            "rid https://springfield.gov/people#montgomery_burns"
-                                            "rid https://mypredicates.org/fired"
-                                            "rid https://springfield.gov/people#homer_simpson"
-
-                                        "mark troubles" "edge"
-                                            "l"
-                                                "ref firing"
-                                                "ref forgotten_birthday"
-                                            "e"
-                                            "rid https://mypredicates.org/contribute"
-                                            "rid https://myobjects.org/marital_strife"
-                                    "e"
+                                        "rid https://mypredicates.org/contribute"
+                                        "rid https://myobjects.org/marital_strife"
                                 "e"
-                            "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["b" "e"]
@@ -629,23 +608,22 @@ c0
             %%%%"
             "cbe"    = |u8x 83 00 77 02 77 07 02 01 77 06 05 08 7b 7b 77 05 77 09 04 7b 7b 7b|
             "events" = [
-                            "bd" "v 0"
-                                "node" "n 2"
-                                    "node" "n 7"
-                                        "n 2"
-                                        "n 1"
-                                        "node" "n 6"
-                                            "n 5"
-                                            "n 8"
-                                        "e"
-                                    "e"
-                                    "node" "n 5"
-                                        "node" "n 9"
-                                            "n 4"
-                                        "e"
+                            "v 0"
+                            "node" "n 2"
+                                "node" "n 7"
+                                    "n 2"
+                                    "n 1"
+                                    "node" "n 6"
+                                        "n 5"
+                                        "n 8"
                                     "e"
                                 "e"
-                            "ed"
+                                "node" "n 5"
+                                    "node" "n 9"
+                                        "n 4"
+                                    "e"
+                                "e"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -681,28 +659,27 @@ c0
                             6c 6f 72 84 67 72 61 79 7b 7b 88 4e 61 6d 65 20
                             4d 65 21 7b 7b|
             "events" = [
-                            "bd" "v 0"
-                                "mup View"
+                            "v 0"
+                            "mup View"
+                            "e"
+                                "mup Image"
+                                    "s src" "rid images/avatar-image.jpg"
                                 "e"
-                                    "mup Image"
-                                        "s src" "rid images/avatar-image.jpg"
-                                    "e"
-                                    "e"
-                                    "mup Text"
-                                    "e"
-                                        "s Hello! Please choose a name!"
-                                    "e"
-                                    "mup TextInput"
-                                        "s id" "s name"
-                                        "s style" "m"
-                                            "s height" "n 40"
-                                            "s borderColor" "s gray"
-                                        "e"
-                                    "e"
-                                        "s Name Me!"
+                                "e"
+                                "mup Text"
+                                "e"
+                                    "s Hello! Please choose a name!"
+                                "e"
+                                "mup TextInput"
+                                    "s id" "s name"
+                                    "s style" "m"
+                                        "s height" "n 40"
+                                        "s borderColor" "s gray"
                                     "e"
                                 "e"
-                            "ed"
+                                    "s Name Me!"
+                                "e"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -725,14 +702,13 @@ c0
                             90 28 52 65 6d 65 6d 62 65 72 20 74 68 69 73 20
                             73 74 72 69 6e 67 97 01 31 79 81 61 01 7b 7b|
             "events" = [
-                            "bd" "v 0"
-                                "l"
-                                    "mark remember_me" "s Remember this string"
-                                    "mark 1" "m"
-                                        "s a" "n 1"
-                                    "e"
+                            "v 0"
+                            "l"
+                                "mark remember_me" "s Remember this string"
+                                "mark 1" "m"
+                                    "s a" "n 1"
                                 "e"
-                            "ed"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -778,23 +754,22 @@ c0
                             65 6e 63 65 98 0d 6c 61 74 65 72 5f 6f 62 6a 5f
                             72 65 66 7b 7b|
             "events" = [
-                            "bd" "v 0"
-                                "m"
-                                    "s some object" "m"
-                                        "s some string" "mark my_string_ref" "s This is my string"
-                                        "s some map" "mark my_map_ref" "m"
-                                            "s a" "n 1"
-                                        "e"
-                                    "e"
-                                    "s forward reference" "ref later_obj_ref"
-                                    "s reference to string" "ref my_string_ref"
-                                    "s reference to map" "ref my_map_ref"
-                                    "s a later object" "mark later_obj_ref" "m"
-                                        "s x" "n 2"
-                                        "s recursive reference" "ref later_obj_ref"
+                            "v 0"
+                            "m"
+                                "s some object" "m"
+                                    "s some string" "mark my_string_ref" "s This is my string"
+                                    "s some map" "mark my_map_ref" "m"
+                                        "s a" "n 1"
                                     "e"
                                 "e"
-                            "ed"
+                                "s forward reference" "ref later_obj_ref"
+                                "s reference to string" "ref my_string_ref"
+                                "s reference to map" "ref my_map_ref"
+                                "s a later object" "mark later_obj_ref" "m"
+                                    "s x" "n 2"
+                                    "s recursive reference" "ref later_obj_ref"
+                                "e"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -830,14 +805,13 @@ c0
                             6d 2f 6d 79 5f 64 6f 63 75 6d 65 6e 74 2e 63 62
                             65 23 77 69 64 67 65 74 73 7b|
             "events" = [
-                            "bd" "v 0"
-                                "m"
-                                    "s ref to doc on filesystem" "rref some_document.cbe"
-                                    "s ref to marked obj in local doc" "rref some_document.cbe#widgets"
-                                    "s ref to remote doc" "rref https://somewhere.com/my_document.cbe"
-                                    "s ref to marked obj in remote doc" "rref https://somewhere.com/my_document.cbe#widgets"
-                                "e"
-                            "ed"
+                            "v 0"
+                            "m"
+                                "s ref to doc on filesystem" "rref some_document.cbe"
+                                "s ref to marked obj in local doc" "rref some_document.cbe#widgets"
+                                "s ref to remote doc" "rref https://somewhere.com/my_document.cbe"
+                                "s ref to marked obj in remote doc" "rref https://somewhere.com/my_document.cbe#widgets"
+                            "e"
                         ]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -870,27 +844,26 @@ c0
 }
             %%%%"
             "events" = [
-                            "bd" "v 0"
-                                "com f  Comment before top level object"
-                                "m"
-                                    "com f  \.## Comment before the "name" object.##"
-                                    "com f  And another comment."
-                                    "s name" "s Joe Average" "com f  \.## Comment after the "Joe Average" object.##"
-                                    "s email" "com f  \.## Comment after the "email" key.##"
-                                    "com t  \.## Multiline comment with nested comment inside
+                            "v 0"
+                            "com f  Comment before top level object"
+                            "m"
+                                "com f  \.## Comment before the "name" object.##"
+                                "com f  And another comment."
+                                "s name" "s Joe Average" "com f  \.## Comment after the "Joe Average" object.##"
+                                "s email" "com f  \.## Comment after the "email" key.##"
+                                "com t  \.## Multiline comment with nested comment inside
       @"mailto:joe@average.org"
       /* Nested multiline
          comments are allowed */
     ##"
-                                    "rid mailto:someone@somewhere.com"
-                                    "s a" "s We're inside a string, so /* this is not a comment; it's part of the string! */"
-                                    "s data"
-                                    "com f  A comment before some binary data"
-                                    "au8b" "ac 3 t" "ad 01 02 03" "com f  A comment inside the binary array"
-                                    "ac 4 t" "ad 04 05 06 07" "com t  Another comment inside " "ac 3 f" "ad 08 09 0a"
-                                    "com f  Comment before the end of the top-level object (the map), but not after!"
-                                "e"
-                            "ed"
+                                "rid mailto:someone@somewhere.com"
+                                "s a" "s We're inside a string, so /* this is not a comment; it's part of the string! */"
+                                "s data"
+                                "com f  A comment before some binary data"
+                                "au8b" "ac 3 t" "ad 01 02 03" "com f  A comment inside the binary array"
+                                "ac 4 t" "ad 04 05 06 07" "com t  Another comment inside " "ac 3 f" "ad 08 09 0a"
+                                "com f  Comment before the end of the top-level object (the map), but not after!"
+                            "e"
                         ]
             "from"   = ["t" "e"]
             "to"     = ["e"]

@@ -12,11 +12,7 @@ c0
         {
             "name" = "something"
             "cbe" = |u8x 83 00 95 06 01 02 03|
-            "events" = [
-                            "bd" "v 0"
-                                "au8 1 2 3"
-                            "ed"
-                        ]
+            "events" = ["v 0" "au8 1 2 3"]
             "from"   = ["b"]
             "to"     = ["e"]
         }
@@ -32,7 +28,7 @@ c0
         {
             "name" = "Version specifier"
             "mustSucceed" = [
-                {"source"=|u8x 83 00 01|  "events"=["bd" "v 0" "n 1" "ed"]}
+                {"source"=|u8x 83 00 01|  "events"=["v 0" "n 1"]}
             ]
             "mustFail" = [
                 |u8x 00|

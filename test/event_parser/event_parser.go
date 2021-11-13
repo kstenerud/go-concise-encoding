@@ -67,11 +67,12 @@ func ParseEvents(eventStrings []string) []*test.TEvent {
 		}
 	}()
 
-	var events []*test.TEvent
-
+	events := []*test.TEvent{test.BD()}
 	for index, eventStr = range eventStrings {
 		events = append(events, ParseEvent(eventStr))
 	}
+	events = append(events, test.ED())
+
 	return events
 }
 
@@ -82,6 +83,10 @@ type parseEvent func(eventStr string) *test.TEvent
 func parseNumericEvent(eventStr string) *test.TEvent {
 	iparseNumeric := func(data []byte) (test.TEventType, interface{}) {
 		str := string(data)
+		if strings.TrimSpace(str) == "-0" {
+			return test.TEventNInt, uint64(0)
+		}
+
 		if value, err := strconv.ParseInt(str, 0, 64); err == nil {
 			return test.TEventInt, value
 		}
