@@ -30,8 +30,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 )
 
 type Token []byte
@@ -68,6 +68,16 @@ func (_this Token) unexpectedError(textPos *TextPositionCounter, err error, deco
 
 func (_this Token) expectCharAtOffset(textPos *TextPositionCounter, tokenOffset int, ch byte, decoding string) {
 	if _this[tokenOffset] != ch {
+		_this.UnexpectedChar(textPos, tokenOffset, decoding)
+	}
+}
+
+func (_this Token) hasCharPropertiesAtOffset(textPos *TextPositionCounter, tokenOffset int, properties chars.Properties) bool {
+	return chars.ByteHasProperty(_this[tokenOffset], properties)
+}
+
+func (_this Token) expectCharPropertiesAtOffset(textPos *TextPositionCounter, tokenOffset int, properties chars.Properties, decoding string) {
+	if !_this.hasCharPropertiesAtOffset(textPos, tokenOffset, properties) {
 		_this.UnexpectedChar(textPos, tokenOffset, decoding)
 	}
 }
@@ -211,15 +221,20 @@ func (_this Token) CompleteDecimalUint(textPos *TextPositionCounter, startValue 
 	// Note: Don't "assert at end" in this function because caller may be reading a potential float
 
 	pos := 0
+	lastWasWS := false
 
 	if bigStartValue == nil {
 		value = startValue
 		for ; pos < len(_this); pos++ {
 			b := _this[pos]
 			if b == charNumericWhitespace {
+				lastWasWS = true
 				continue
 			}
 			if !chars.ByteHasProperty(b, chars.DigitBase10) {
+				if lastWasWS {
+					_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+				}
 				decodedCount = pos
 				return
 			}
@@ -231,9 +246,13 @@ func (_this Token) CompleteDecimalUint(textPos *TextPositionCounter, startValue 
 			}
 			value = value*10 + uint64(nextDigitValue)
 			digitCount++
+			lastWasWS = false
 		}
 
 		if bigStartValue == nil {
+			if lastWasWS {
+				_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+			}
 			decodedCount = pos
 			return
 		}
@@ -243,6 +262,7 @@ func (_this Token) CompleteDecimalUint(textPos *TextPositionCounter, startValue 
 	for ; pos < len(_this); pos++ {
 		b := _this[pos]
 		if b == charNumericWhitespace {
+			lastWasWS = true
 			continue
 		}
 		if !chars.ByteHasProperty(b, chars.DigitBase10) {
@@ -253,14 +273,21 @@ func (_this Token) CompleteDecimalUint(textPos *TextPositionCounter, startValue 
 		bigValue = bigValue.Mul(bigValue, common.BigInt10)
 		bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
 		digitCount++
+		lastWasWS = false
 	}
 
+	if lastWasWS {
+		_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+	}
 	decodedCount = pos
 	return
 }
 
 func (_this Token) DecodeDecimalUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
 	_this.assertNotEnd(textPos, 0, "decimal uint")
+	if !_this.hasCharPropertiesAtOffset(textPos, 0, chars.DigitBase10) {
+		return
+	}
 	return _this.CompleteDecimalUint(textPos, 0, nil)
 }
 
@@ -277,6 +304,7 @@ func (_this Token) DecodeSmallDecimalInt(textPos *TextPositionCounter) (value in
 func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
 	const maxPreShiftHex = uint64(0x0fffffffffffffff)
 	pos := 0
+	lastWasWS := false
 
 	if bigStartValue == nil {
 		value = startValue
@@ -285,6 +313,7 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 			var nextNybble byte
 			switch {
 			case b == charNumericWhitespace:
+				lastWasWS = true
 				continue
 			case chars.ByteHasProperty(b, chars.DigitBase10):
 				nextNybble = b - '0'
@@ -293,6 +322,9 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 			case chars.ByteHasProperty(b, chars.UpperAF):
 				nextNybble = b - 'A' + 10
 			default:
+				if lastWasWS {
+					_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+				}
 				decodedCount = pos
 				return
 			}
@@ -303,10 +335,14 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 			}
 			value = value<<4 + uint64(nextNybble)
 			digitCount++
+			lastWasWS = false
 		}
 
 		if bigStartValue == nil {
 			_this.assertPosIsEnd(textPos, pos, "hexadecimal int")
+			if lastWasWS {
+				_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+			}
 			decodedCount = pos
 			return
 		}
@@ -318,6 +354,7 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 		var nextNybble byte
 		switch {
 		case b == charNumericWhitespace:
+			lastWasWS = true
 			continue
 		case chars.ByteHasProperty(b, chars.DigitBase10):
 			nextNybble = b - '0'
@@ -326,6 +363,9 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 		case chars.ByteHasProperty(b, chars.UpperAF):
 			nextNybble = b - 'A' + 10
 		default:
+			if lastWasWS {
+				_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+			}
 			decodedCount = pos
 			return
 		}
@@ -333,8 +373,12 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 		bigValue = bigValue.Mul(bigValue, common.BigInt16)
 		bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextNybble)))
 		digitCount++
+		lastWasWS = false
 	}
 
+	if lastWasWS {
+		_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+	}
 	decodedCount = pos
 	return
 }

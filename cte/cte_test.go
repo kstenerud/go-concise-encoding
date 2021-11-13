@@ -28,11 +28,10 @@ import (
 	"strings"
 	"testing"
 
+	compact_float "github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
-
-	"github.com/kstenerud/go-compact-float"
 )
 
 // TODO: Remove this when releasing V1
@@ -200,7 +199,7 @@ func TestCTEFloat(t *testing.T) {
 	assertDecode(t, nil, "c0 -1.50000000000000000000000001E10000", BD(), EvV, BDF(NewBDF("-1.50000000000000000000000001E10000")), ED())
 	assertDecode(t, nil, "c0 1.50000000000000000000000001E10000", BD(), EvV, BDF(NewBDF("1.50000000000000000000000001E10000")), ED())
 
-	assertDecode(t, nil, "c0 1_._1_2_5_e+1_0", BD(), EvV, DF(NewDFloat("1.125e+10")), ED())
+	assertDecode(t, nil, "c0 1.1_2_5e+1_0", BD(), EvV, DF(NewDFloat("1.125e+10")), ED())
 
 	assertDecode(t, nil, "c0 0.1500000000000000000000000000000000000000000000000001e+10000",
 		BD(), EvV, BDF(NewBDF("0.1500000000000000000000000000000000000000000000000001e+10000")), ED())
@@ -272,7 +271,7 @@ func TestCTEHexFloat(t *testing.T) {
 	bigExpected = bigExpected.Neg(bigExpected)
 	assertDecode(t, nil, "c0 0x1.8p100000", BD(), EvV, BF(bigExpected), ED())
 
-	assertDecode(t, nil, "c0 -0x_0_._1_p_1_0", BD(), EvV, F(-0x0.1p10), ED())
+	assertDecode(t, nil, "c0 -0x0.1_0p1_0", BD(), EvV, F(-0x0.1p10), ED())
 
 	bigExpected = NewBigFloat("8.000000000000001p100", 16, 16)
 	assertDecode(t, nil, "c0 0x8.000000000000001p100", BD(), EvV, BF(bigExpected), ED())
