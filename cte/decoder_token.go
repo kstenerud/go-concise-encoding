@@ -111,9 +111,11 @@ func (_this Token) DecodeNamedValue(textPos *TextPositionCounter) string {
 
 func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
 	_this.assertNotEnd(textPos, 0, "binary uint")
+	_this.expectCharPropertiesAtOffset(textPos, 0, chars.DigitBase2, "binary uint")
 
 	const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 	pos := 0
+	lastWasWS := false
 
 	for ; pos < len(_this); pos++ {
 		b := _this[pos]
@@ -125,12 +127,17 @@ func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64,
 			nextDigitValue := b - '0'
 			value = value<<1 + uint64(nextDigitValue)
 			digitCount++
+			lastWasWS = false
 		} else {
-			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary int")
+			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary uint")
+			lastWasWS = true
 		}
 	}
 
 	if bigValue == nil {
+		if lastWasWS {
+			_this.UnexpectedChar(textPos, pos-1, "binary uint")
+		}
 		decodedCount = pos
 		return
 	}
@@ -142,11 +149,16 @@ func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64,
 			bigValue = bigValue.Mul(bigValue, common.BigInt2)
 			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
 			digitCount++
+			lastWasWS = false
 		} else {
-			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary int")
+			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary uint")
+			lastWasWS = true
 		}
 	}
 
+	if lastWasWS {
+		_this.UnexpectedChar(textPos, pos-1, "binary uint")
+	}
 	decodedCount = pos
 	return
 }

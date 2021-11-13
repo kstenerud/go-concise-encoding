@@ -89,12 +89,13 @@ func (_this *CBETestRunner) run() {
 type CBEFailTest []byte
 
 func (_this CBEFailTest) run() {
-	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver := rules.NewRules(eventStore, nil)
 	err := capturePanic(func() {
 		cbe.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this)), receiver)
 	})
 	if err == nil {
-		panic(fmt.Errorf("expecbed CBE to fail: [%v]", _this))
+		panic(fmt.Errorf("expected CBE %v to fail, but generated events %v", desc(_this), eventStore.Events))
 	}
 }
 

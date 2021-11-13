@@ -89,12 +89,13 @@ func (_this *CTETestRunner) run() {
 type CTEFailTest string
 
 func (_this CTEFailTest) run() {
-	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver := rules.NewRules(eventStore, nil)
 	err := capturePanic(func() {
 		cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this)), receiver)
 	})
 	if err == nil {
-		panic(fmt.Errorf("expected CTE to fail: [%v]", _this))
+		panic(fmt.Errorf("expected CTE [%v] to fail, but generated events %v", _this, eventStore.Events))
 	}
 }
 
