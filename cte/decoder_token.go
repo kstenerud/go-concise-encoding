@@ -65,7 +65,7 @@ func (_this Token) unexpectedError(textPos *TextPositionCounter, err error, deco
 	_this.errorf(textPos, 0, "unexpected error [%v] while decoding %v from [%s]", err, decoding, string(_this))
 }
 
-func (_this Token) expectCharAtOffset(textPos *TextPositionCounter, tokenOffset int, ch byte, decoding string) {
+func (_this Token) assertCharAtOffset(textPos *TextPositionCounter, tokenOffset int, ch byte, decoding string) {
 	if _this[tokenOffset] != ch {
 		_this.UnexpectedChar(textPos, tokenOffset, decoding)
 	}
@@ -75,8 +75,8 @@ func (_this Token) hasCharPropertiesAtOffset(textPos *TextPositionCounter, token
 	return chars.ByteHasProperty(_this[tokenOffset], properties)
 }
 
-func (_this Token) expectCharPropertiesAtOffset(textPos *TextPositionCounter, tokenOffset int, properties chars.Properties, decoding string) {
-	if !_this.hasCharPropertiesAtOffset(textPos, tokenOffset, properties) {
+func (_this Token) assertCharPropertyAtOffset(textPos *TextPositionCounter, tokenOffset int, oneOfProperties chars.Properties, decoding string) {
+	if !_this.hasCharPropertiesAtOffset(textPos, tokenOffset, oneOfProperties) {
 		_this.UnexpectedChar(textPos, tokenOffset, decoding)
 	}
 }
@@ -111,7 +111,7 @@ func (_this Token) DecodeNamedValue(textPos *TextPositionCounter) string {
 
 func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
 	_this.assertNotEnd(textPos, 0, "binary uint")
-	_this.expectCharPropertiesAtOffset(textPos, 0, chars.DigitBase2, "binary uint")
+	_this.assertCharPropertyAtOffset(textPos, 0, chars.DigitBase2, "binary uint")
 
 	const maxPreShiftBinary = uint64(0x7fffffffffffffff)
 	pos := 0
@@ -129,7 +129,7 @@ func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64,
 			digitCount++
 			lastWasWS = false
 		} else {
-			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary uint")
+			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "binary uint")
 			lastWasWS = true
 		}
 	}
@@ -151,7 +151,7 @@ func (_this Token) DecodeBinaryUint(textPos *TextPositionCounter) (value uint64,
 			digitCount++
 			lastWasWS = false
 		} else {
-			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "binary uint")
+			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "binary uint")
 			lastWasWS = true
 		}
 	}
@@ -190,7 +190,7 @@ func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, 
 			value = value<<3 + uint64(nextDigitValue)
 			digitCount++
 		} else {
-			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
+			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
 		}
 	}
 
@@ -207,7 +207,7 @@ func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, 
 			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
 			digitCount++
 		} else {
-			_this.expectCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
+			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
 		}
 	}
 
@@ -792,7 +792,7 @@ func (_this Token) DecodeUID(textPos *TextPositionCounter) (uid []byte) {
 	}
 
 	expectDash := func(src Token, offset int) {
-		_this.expectCharAtOffset(textPos, offset, '-', "UID")
+		_this.assertCharAtOffset(textPos, offset, '-', "UID")
 	}
 
 	decodeSection(_this, _this, 4)
@@ -914,7 +914,7 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 	}
 	pos += digitCount
 	_this.assertNotEnd(textPos, pos, "date")
-	_this.expectCharAtOffset(textPos, pos, '-', "date")
+	_this.assertCharAtOffset(textPos, pos, '-', "date")
 	pos++
 
 	// Day
@@ -941,7 +941,7 @@ func (_this Token) CompleteDate(textPos *TextPositionCounter, year int) (t compa
 	}
 
 	// Timestamp
-	_this.expectCharAtOffset(textPos, pos, '/', "date")
+	_this.assertCharAtOffset(textPos, pos, '/', "date")
 	pos++
 	_this.assertNotEnd(textPos, pos, "date")
 
@@ -998,7 +998,7 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 	}
 	pos += digitCount
 	_this.assertNotEnd(textPos, pos, "time")
-	_this.expectCharAtOffset(textPos, pos, ':', "time")
+	_this.assertCharAtOffset(textPos, pos, ':', "time")
 	pos++
 
 	// Second
@@ -1056,7 +1056,7 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 					_this.errorf(textPos, pos, "Latitude %v is invalid", float64(latitude)/100)
 				}
 				pos += decodedCount
-				_this.expectCharAtOffset(textPos, pos, '/', "time zone")
+				_this.assertCharAtOffset(textPos, pos, '/', "time zone")
 				pos++
 				var longitude int
 				longitude, decodedCount = _this[pos:].DecodeLatOrLong(textPos)

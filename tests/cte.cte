@@ -29,7 +29,7 @@ c0 |u8x /* foo */ 1 2 3|
     "cteTests" = [
         {
             "name" = "Version specifier"
-            "mustSucceed" = [
+            "decodeMustSucceed" = [
                 {"source"="c0 1"           "events"=["v 0" "n 1"]}
                 {"source"="c0\n1"          "events"=["v 0" "n 1"]}
                 {"source"="c0\t1"          "events"=["v 0" "n 1"]}
@@ -37,7 +37,7 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
                 {"source"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
             ]
-            "mustFail" = [
+            "decodeMustFail" = [
                 "c0{}"  // Missing whitespace
                 "c2 1"  // Future version number
                 "c-1 1" // Bad version number
@@ -50,12 +50,12 @@ c0 |u8x /* foo */ 1 2 3|
 
         {
             "name" = "Null"
-            "mustSucceed" = [
+            "decodeMustSucceed" = [
                 {"source"="c0 null"  "events"=["v 0" "null"]}
                 {"source"="c0 Null"  "events"=["v 0" "null"]}
                 {"source"="c0 null"  "events"=["v 0" "null"]}
             ]
-            "mustFail" = [
+            "decodeMustFail" = [
                 "c0 nulled"
                 "c0 -null"
             ]
@@ -65,7 +65,7 @@ c0 |u8x /* foo */ 1 2 3|
 
         {
             "name" = "Boolean"
-            "mustSucceed" = [
+            "decodeMustSucceed" = [
                 {"source"="c0 true"   "events"=["v 0" "tt"]}
                 {"source"="c0 True"   "events"=["v 0" "tt"]}
                 {"source"="c0 TRUE"   "events"=["v 0" "tt"]}
@@ -73,7 +73,7 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="c0 False"  "events"=["v 0" "ff"]}
                 {"source"="c0 FALSE"  "events"=["v 0" "ff"]}
             ]
-            "mustFail" = [
+            "decodeMustFail" = [
                 "c0 t"
                 "c0 truer"
                 "c0 -true"
@@ -87,7 +87,7 @@ c0 |u8x /* foo */ 1 2 3|
 
         {
             "name" = "Decimal Integer"
-            "mustSucceed" = [
+            "decodeMustSucceed" = [
                 {"source"="c0 0"                 "events"=["v 0" "n 0"]}
                 {"source"="c0 -0"                "events"=["v 0" "n -0"]}
                 {"source"="c0 123"               "events"=["v 0" "n 123"]}
@@ -98,7 +98,7 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="c0 100_00_0_00000000000_00000000_000_0"  "events"=["v 0" "n 10000000000000000000000000000"]}
                 {"source"="c0 -4_9_5__2___3"     "events"=["v 0" "n -49523"]}
             ]
-            "mustFail" = [
+            "decodeMustFail" = [
                 "c0 1f"  // Non-decimal digit
                 "c0 -1f" // Non-decimal digit
                 "c0 _1"  // Whitespace is not between digits
@@ -112,7 +112,7 @@ c0 |u8x /* foo */ 1 2 3|
 
         {
             "name" = "Binary Integer"
-            "mustSucceed" = [
+            "decodeMustSucceed" = [
                 {"source"="c0 0b0"              "events"=["v 0" "n 0"]}
                 {"source"="c0 -0b0"             "events"=["v 0" "n -0"]}
                 {"source"="c0 0b1"              "events"=["v 0" "n 1"]}
@@ -137,7 +137,7 @@ c0 |u8x /* foo */ 1 2 3|
                     "events" = ["v 0" "n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
             ]
-            "mustFail" = [
+            "decodeMustFail" = [
                 "c0 0b12"  // Non-binary digit
                 "c0 -0b12" // Non-binary digit
                 "c0 _0b1"  // Bad whitespace placement

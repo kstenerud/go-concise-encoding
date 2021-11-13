@@ -32,12 +32,12 @@ import (
 )
 
 type CTETestRunner struct {
-	Name        string
-	MustSucceed []*CTESuccessTest
-	MustFail    []CTEFailTest
-	Skip        bool
-	Debug       bool
-	Trace       bool
+	Name              string
+	DecodeMustSucceed []*CTEDecodeSuccessTest
+	DecodeMustFail    []CTEDecodeFailTest
+	Skip              bool
+	Debug             bool
+	Trace             bool
 }
 
 func (_this *CTETestRunner) String() string {
@@ -45,7 +45,7 @@ func (_this *CTETestRunner) String() string {
 }
 
 func (_this *CTETestRunner) postDecodeInit() {
-	for _, t := range _this.MustSucceed {
+	for _, t := range _this.DecodeMustSucceed {
 		t.postDecodeInit()
 		t.debug = _this.Debug
 	}
@@ -60,7 +60,7 @@ func (_this *CTETestRunner) validate() {
 		panic(fmt.Errorf("missing name"))
 	}
 
-	for _, t := range _this.MustSucceed {
+	for _, t := range _this.DecodeMustSucceed {
 		t.validate()
 	}
 }
@@ -77,18 +77,18 @@ func (_this *CTETestRunner) run() {
 		fmt.Printf("Running CTE Test %v:\n", _this)
 	}
 
-	for _, test := range _this.MustSucceed {
+	for _, test := range _this.DecodeMustSucceed {
 		test.run()
 	}
 
-	for _, test := range _this.MustFail {
+	for _, test := range _this.DecodeMustFail {
 		test.run()
 	}
 }
 
-type CTEFailTest string
+type CTEDecodeFailTest string
 
-func (_this CTEFailTest) run() {
+func (_this CTEDecodeFailTest) run() {
 	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver := rules.NewRules(eventStore, nil)
 	err := capturePanic(func() {
@@ -99,25 +99,25 @@ func (_this CTEFailTest) run() {
 	}
 }
 
-type CTESuccessTest struct {
+type CTEDecodeSuccessTest struct {
 	Source string
 	Events []string
 	events []*test.TEvent
 	debug  bool
 }
 
-func (_this *CTESuccessTest) postDecodeInit() {
+func (_this *CTEDecodeSuccessTest) postDecodeInit() {
 	_this.events = event_parser.ParseEvents(_this.Events)
 }
 
-func (_this *CTESuccessTest) validate() {
+func (_this *CTEDecodeSuccessTest) validate() {
 }
 
-func (_this *CTESuccessTest) testFailed(format string, args ...interface{}) {
+func (_this *CTEDecodeSuccessTest) testFailed(format string, args ...interface{}) {
 	panic(fmt.Errorf(format, args...))
 }
 
-func (_this *CTESuccessTest) assertOperation(receiver events.DataEventReceiver,
+func (_this *CTEDecodeSuccessTest) assertOperation(receiver events.DataEventReceiver,
 	operation func(receiver events.DataEventReceiver),
 	describeSrc func() string) {
 
@@ -137,7 +137,7 @@ func (_this *CTESuccessTest) assertOperation(receiver events.DataEventReceiver,
 	}
 }
 
-func (_this *CTESuccessTest) run() {
+func (_this *CTEDecodeSuccessTest) run() {
 	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver := rules.NewRules(eventStore, nil)
 	_this.assertOperation(receiver,
