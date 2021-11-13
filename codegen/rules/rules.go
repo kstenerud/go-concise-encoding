@@ -66,7 +66,7 @@ func generateDataTypeType(writer io.Writer) {
 	}
 	gen.AddCustom(DataTypeInvalid, uint64(DataTypeInvalid))
 	gen.AddCustom("AllowAny", DataTypesAll)
-	gen.AddCustom("AllowNonNil", DataTypesNonNil)
+	gen.AddCustom("AllowNonNull", DataTypesNonNull)
 	gen.AddCustom("AllowKeyable", DataTypesKeyable)
 	gen.AddCustom("AllowMarkable", DataTypesMarkable)
 	gen.AddCustom("AllowString", DataTypeString)
@@ -129,7 +129,7 @@ func closeMethod(writer io.Writer) {
 type DataType uint64
 
 const (
-	DataTypeNil DataType = 1 << iota
+	DataTypeNull DataType = 1 << iota
 	DataTypeNan
 	DataTypeBool
 	DataTypeInt
@@ -170,7 +170,7 @@ const (
 	DataTypeInvalid  = DataType(0)
 	DataTypesNone    = DataType(0)
 	DataTypesAll     = ^DataTypesNone
-	DataTypesNonNil  = ^DataTypeNil
+	DataTypesNonNull = ^DataTypeNull
 	DataTypesKeyable = DataTypeBool |
 		DataTypeInt |
 		DataTypeFloat |
@@ -215,7 +215,7 @@ func (_this DataType) String() string {
 
 var dataTypeNames = map[interface{}]string{
 	DataTypeInvalid:      "DataTypeInvalid",
-	DataTypeNil:          "DataTypeNil",
+	DataTypeNull:         "DataTypeNull",
 	DataTypeNan:          "DataTypeNan",
 	DataTypeBool:         "DataTypeBool",
 	DataTypeInt:          "DataTypeInt",
@@ -305,11 +305,11 @@ var (
 		Signature:       "OnComment(ctx *Context)",
 		AssociatedTypes: DataTypeComment,
 	}
-	Nil = &Method{
-		Name:            "Nil",
+	Null = &Method{
+		Name:            "Null",
 		MethodType:      MethodTypeOther,
-		Signature:       "OnNil(ctx *Context)",
-		AssociatedTypes: DataTypeNil,
+		Signature:       "OnNull(ctx *Context)",
+		AssociatedTypes: DataTypeNull,
 	}
 	Key = &Method{
 		Name:            "KEYABLE",
@@ -409,7 +409,7 @@ var (
 		AssociatedTypes: 0,
 	}
 
-	allMethods = []*Method{BDoc, EDoc, Child, Ver, Pad, Comment, Nil, Key,
+	allMethods = []*Method{BDoc, EDoc, Child, Ver, Pad, Comment, Null, Key,
 		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, Const,
 		Array, Stringlike, ABegin, AChunk, AData}
 )
@@ -575,7 +575,7 @@ var allRules = []Rule{
 	{
 		Name:         "EdgeSourceRule",
 		FriendlyName: "edge source",
-		AllowedTypes: DataTypesNonNil,
+		AllowedTypes: DataTypesNonNull,
 	},
 	{
 		Name:         "EdgeDescriptionRule",
@@ -585,7 +585,7 @@ var allRules = []Rule{
 	{
 		Name:         "EdgeDestinationRule",
 		FriendlyName: "edge destination",
-		AllowedTypes: DataTypesNonNil,
+		AllowedTypes: DataTypesNonNull,
 	},
 	{
 		Name:         "NodeRule",

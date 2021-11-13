@@ -144,7 +144,7 @@ type DataEventReceiver interface {
 	OnVersion(version uint64)
 	OnPadding(count int)
 	OnComment(isMultiline bool, contents []byte)
-	OnNil()
+	OnNull()
 	OnBool(value bool)
 	OnTrue()
 	OnFalse()
@@ -188,7 +188,7 @@ func (_this *NullEventReceiver) OnBeginDocument()                    {}
 func (_this *NullEventReceiver) OnVersion(uint64)                    {}
 func (_this *NullEventReceiver) OnComment(bool, []byte)              {}
 func (_this *NullEventReceiver) OnPadding(int)                       {}
-func (_this *NullEventReceiver) OnNil()                              {}
+func (_this *NullEventReceiver) OnNull()                             {}
 func (_this *NullEventReceiver) OnBool(bool)                         {}
 func (_this *NullEventReceiver) OnTrue()                             {}
 func (_this *NullEventReceiver) OnFalse()                            {}

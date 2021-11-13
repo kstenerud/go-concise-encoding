@@ -32,7 +32,7 @@ import (
 type DataType uint64
 
 const (
-	DataTypeNil DataType = 1 << iota
+	DataTypeNull DataType = 1 << iota
 	DataTypeNan
 	DataTypeBool
 	DataTypeInt
@@ -69,10 +69,10 @@ const (
 	DataTypeComment
 	DataTypePadding
 	DataTypeInvalid = 0x0
-	AllowAny = DataTypeNil | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
-	AllowNonNil = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
+	AllowAny = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
+	AllowNonNull = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeConstant | DataTypeComment | DataTypePadding
 	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeConstant | DataTypeComment | DataTypePadding
-	AllowMarkable = DataTypeNil | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
+	AllowMarkable = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
 	AllowString = DataTypeString
 	AllowResourceID = DataTypeResourceID
 )
@@ -104,7 +104,7 @@ func (_this DataType) String() string {
 
 var datatypeNames = map[DataType]string{
 
-	DataTypeNil: "DataTypeNil",
+	DataTypeNull: "DataTypeNull",
 	DataTypeNan: "DataTypeNan",
 	DataTypeBool: "DataTypeBool",
 	DataTypeInt: "DataTypeInt",
@@ -156,8 +156,8 @@ func (_this *BeginDocumentRule) OnPadding(ctx *Context) {
 func (_this *BeginDocumentRule) OnComment(ctx *Context) {
 	wrongType("begin document", "comment")
 }
-func (_this *BeginDocumentRule) OnNil(ctx *Context) {
-	wrongType("begin document", "Nil")
+func (_this *BeginDocumentRule) OnNull(ctx *Context) {
+	wrongType("begin document", "Null")
 }
 func (_this *BeginDocumentRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("begin document", objType)
@@ -222,8 +222,8 @@ func (_this *EndDocumentRule) OnPadding(ctx *Context) {
 func (_this *EndDocumentRule) OnComment(ctx *Context) {
 	wrongType("end document", "comment")
 }
-func (_this *EndDocumentRule) OnNil(ctx *Context) {
-	wrongType("end document", "Nil")
+func (_this *EndDocumentRule) OnNull(ctx *Context) {
+	wrongType("end document", "Null")
 }
 func (_this *EndDocumentRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("end document", objType)
@@ -291,8 +291,8 @@ func (_this *TerminalRule) OnPadding(ctx *Context) {
 func (_this *TerminalRule) OnComment(ctx *Context) {
 	wrongType("terminal", "comment")
 }
-func (_this *TerminalRule) OnNil(ctx *Context) {
-	wrongType("terminal", "Nil")
+func (_this *TerminalRule) OnNull(ctx *Context) {
+	wrongType("terminal", "Null")
 }
 func (_this *TerminalRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("terminal", objType)
@@ -357,8 +357,8 @@ func (_this *VersionRule) OnPadding(ctx *Context) {
 func (_this *VersionRule) OnComment(ctx *Context) {
 	wrongType("version", "comment")
 }
-func (_this *VersionRule) OnNil(ctx *Context) {
-	wrongType("version", "Nil")
+func (_this *VersionRule) OnNull(ctx *Context) {
+	wrongType("version", "Null")
 }
 func (_this *VersionRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("version", objType)
@@ -453,8 +453,8 @@ func (_this *MapKeyRule) OnEndDocument(ctx *Context) {
 func (_this *MapKeyRule) OnVersion(ctx *Context, version uint64) {
 	wrongType("map key", "version")
 }
-func (_this *MapKeyRule) OnNil(ctx *Context) {
-	wrongType("map key", "Nil")
+func (_this *MapKeyRule) OnNull(ctx *Context) {
+	wrongType("map key", "Null")
 }
 func (_this *MapKeyRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	wrongType("map key", objType)
@@ -507,8 +507,8 @@ func (_this *MarkupKeyRule) OnEndDocument(ctx *Context) {
 func (_this *MarkupKeyRule) OnVersion(ctx *Context, version uint64) {
 	wrongType("markup key", "version")
 }
-func (_this *MarkupKeyRule) OnNil(ctx *Context) {
-	wrongType("markup key", "Nil")
+func (_this *MarkupKeyRule) OnNull(ctx *Context) {
+	wrongType("markup key", "Null")
 }
 func (_this *MarkupKeyRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	wrongType("markup key", objType)
@@ -561,8 +561,8 @@ func (_this *MarkupContentsRule) OnEndDocument(ctx *Context) {
 func (_this *MarkupContentsRule) OnVersion(ctx *Context, version uint64) {
 	wrongType("markup contents", "version")
 }
-func (_this *MarkupContentsRule) OnNil(ctx *Context) {
-	wrongType("markup contents", "Nil")
+func (_this *MarkupContentsRule) OnNull(ctx *Context) {
+	wrongType("markup contents", "Null")
 }
 func (_this *MarkupContentsRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("markup contents", objType)
@@ -612,8 +612,8 @@ func (_this *ArrayRule) OnVersion(ctx *Context, version uint64) {
 func (_this *ArrayRule) OnPadding(ctx *Context) {
 	wrongType("array", "padding")
 }
-func (_this *ArrayRule) OnNil(ctx *Context) {
-	wrongType("array", "Nil")
+func (_this *ArrayRule) OnNull(ctx *Context) {
+	wrongType("array", "Null")
 }
 func (_this *ArrayRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("array", objType)
@@ -678,8 +678,8 @@ func (_this *ArrayChunkRule) OnPadding(ctx *Context) {
 func (_this *ArrayChunkRule) OnComment(ctx *Context) {
 	wrongType("array chunk", "comment")
 }
-func (_this *ArrayChunkRule) OnNil(ctx *Context) {
-	wrongType("array chunk", "Nil")
+func (_this *ArrayChunkRule) OnNull(ctx *Context) {
+	wrongType("array chunk", "Null")
 }
 func (_this *ArrayChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("array chunk", objType)
@@ -744,8 +744,8 @@ func (_this *StringRule) OnPadding(ctx *Context) {
 func (_this *StringRule) OnComment(ctx *Context) {
 	wrongType("string", "comment")
 }
-func (_this *StringRule) OnNil(ctx *Context) {
-	wrongType("string", "Nil")
+func (_this *StringRule) OnNull(ctx *Context) {
+	wrongType("string", "Null")
 }
 func (_this *StringRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("string", objType)
@@ -810,8 +810,8 @@ func (_this *StringChunkRule) OnPadding(ctx *Context) {
 func (_this *StringChunkRule) OnComment(ctx *Context) {
 	wrongType("string chunk", "comment")
 }
-func (_this *StringChunkRule) OnNil(ctx *Context) {
-	wrongType("string chunk", "Nil")
+func (_this *StringChunkRule) OnNull(ctx *Context) {
+	wrongType("string chunk", "Null")
 }
 func (_this *StringChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("string chunk", objType)
@@ -876,8 +876,8 @@ func (_this *StringBuilderRule) OnPadding(ctx *Context) {
 func (_this *StringBuilderRule) OnComment(ctx *Context) {
 	wrongType("string", "comment")
 }
-func (_this *StringBuilderRule) OnNil(ctx *Context) {
-	wrongType("string", "Nil")
+func (_this *StringBuilderRule) OnNull(ctx *Context) {
+	wrongType("string", "Null")
 }
 func (_this *StringBuilderRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("string", objType)
@@ -942,8 +942,8 @@ func (_this *StringBuilderChunkRule) OnPadding(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
 	wrongType("string chunk", "comment")
 }
-func (_this *StringBuilderChunkRule) OnNil(ctx *Context) {
-	wrongType("string chunk", "Nil")
+func (_this *StringBuilderChunkRule) OnNull(ctx *Context) {
+	wrongType("string chunk", "Null")
 }
 func (_this *StringBuilderChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("string chunk", objType)
@@ -1005,8 +1005,8 @@ func (_this *MediaTypeRule) OnVersion(ctx *Context, version uint64) {
 func (_this *MediaTypeRule) OnPadding(ctx *Context) {
 	wrongType("media type", "padding")
 }
-func (_this *MediaTypeRule) OnNil(ctx *Context) {
-	wrongType("media type", "Nil")
+func (_this *MediaTypeRule) OnNull(ctx *Context) {
+	wrongType("media type", "Null")
 }
 func (_this *MediaTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("media type", objType)
@@ -1071,8 +1071,8 @@ func (_this *MediaTypeChunkRule) OnPadding(ctx *Context) {
 func (_this *MediaTypeChunkRule) OnComment(ctx *Context) {
 	wrongType("media type chunk", "comment")
 }
-func (_this *MediaTypeChunkRule) OnNil(ctx *Context) {
-	wrongType("media type chunk", "Nil")
+func (_this *MediaTypeChunkRule) OnNull(ctx *Context) {
+	wrongType("media type chunk", "Null")
 }
 func (_this *MediaTypeChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
 	wrongType("media type chunk", objType)
@@ -1131,8 +1131,8 @@ func (_this *MarkedObjectKeyableRule) OnVersion(ctx *Context, version uint64) {
 func (_this *MarkedObjectKeyableRule) OnComment(ctx *Context) {
 	wrongType("marked object", "comment")
 }
-func (_this *MarkedObjectKeyableRule) OnNil(ctx *Context) {
-	wrongType("marked object", "Nil")
+func (_this *MarkedObjectKeyableRule) OnNull(ctx *Context) {
+	wrongType("marked object", "Null")
 }
 func (_this *MarkedObjectKeyableRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	wrongType("marked object", objType)
@@ -1209,8 +1209,8 @@ func (_this *ConstantKeyableRule) OnEndDocument(ctx *Context) {
 func (_this *ConstantKeyableRule) OnVersion(ctx *Context, version uint64) {
 	wrongType("constant", "version")
 }
-func (_this *ConstantKeyableRule) OnNil(ctx *Context) {
-	wrongType("constant", "Nil")
+func (_this *ConstantKeyableRule) OnNull(ctx *Context) {
+	wrongType("constant", "Null")
 }
 func (_this *ConstantKeyableRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	wrongType("constant", objType)
@@ -1266,8 +1266,8 @@ func (_this *EdgeSourceRule) OnEndDocument(ctx *Context) {
 func (_this *EdgeSourceRule) OnVersion(ctx *Context, version uint64) {
 	wrongType("edge source", "version")
 }
-func (_this *EdgeSourceRule) OnNil(ctx *Context) {
-	wrongType("edge source", "Nil")
+func (_this *EdgeSourceRule) OnNull(ctx *Context) {
+	wrongType("edge source", "Null")
 }
 func (_this *EdgeSourceRule) OnEnd(ctx *Context) {
 	wrongType("edge source", "end container")
@@ -1305,8 +1305,8 @@ func (_this *EdgeDestinationRule) OnEndDocument(ctx *Context) {
 func (_this *EdgeDestinationRule) OnVersion(ctx *Context, version uint64) {
 	wrongType("edge destination", "version")
 }
-func (_this *EdgeDestinationRule) OnNil(ctx *Context) {
-	wrongType("edge destination", "Nil")
+func (_this *EdgeDestinationRule) OnNull(ctx *Context) {
+	wrongType("edge destination", "Null")
 }
 func (_this *EdgeDestinationRule) OnEnd(ctx *Context) {
 	wrongType("edge destination", "end container")

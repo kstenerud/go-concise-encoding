@@ -82,9 +82,9 @@ func (_this *EncoderEventReceiver) OnComment(isMultiline bool, contents []byte) 
 	_this.context.AfterComment(isMultiline)
 }
 
-func (_this *EncoderEventReceiver) OnNil() {
+func (_this *EncoderEventReceiver) OnNull() {
 	_this.context.BeforeValue()
-	_this.context.Stream.WriteNil()
+	_this.context.Stream.WriteNull()
 	_this.context.AfterValue()
 }
 

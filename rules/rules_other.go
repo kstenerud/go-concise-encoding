@@ -74,7 +74,7 @@ func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 }
 func (_this *TopLevelRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
 func (_this *TopLevelRule) OnComment(ctx *Context)                    { /* Nothing to do */ }
-func (_this *TopLevelRule) OnNil(ctx *Context)                        { _this.switchEndDocument(ctx) }
+func (_this *TopLevelRule) OnNull(ctx *Context)                       { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnInt(ctx *Context, value int64)           { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnPositiveInt(ctx *Context, value uint64)  { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnBigInt(ctx *Context, value *big.Int)     { _this.switchEndDocument(ctx) }
@@ -118,7 +118,7 @@ func (_this *NARule) OnKeyableObject(ctx *Context, _ DataType)                { 
 func (_this *NARule) OnNonKeyableObject(ctx *Context, _ DataType)             { ctx.EndContainer() }
 func (_this *NARule) OnChildContainerEnded(ctx *Context, _ DataType)          { ctx.EndContainer() }
 func (_this *NARule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
-func (_this *NARule) OnNil(ctx *Context)                                      { ctx.EndContainer() }
+func (_this *NARule) OnNull(ctx *Context)                                     { ctx.EndContainer() }
 func (_this *NARule) OnInt(ctx *Context, value int64)                         { ctx.EndContainer() }
 func (_this *NARule) OnPositiveInt(ctx *Context, value uint64)                { ctx.EndContainer() }
 func (_this *NARule) OnBigInt(ctx *Context, value *big.Int)                   { ctx.EndContainer() }
@@ -184,9 +184,9 @@ func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataT
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
 }
-func (_this *ConstantAnyTypeRule) OnNil(ctx *Context) {
+func (_this *ConstantAnyTypeRule) OnNull(ctx *Context) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnNil(ctx)
+	ctx.CurrentEntry.Rule.OnNull(ctx)
 }
 func (_this *ConstantAnyTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()

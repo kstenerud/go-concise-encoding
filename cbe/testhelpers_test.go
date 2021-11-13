@@ -70,7 +70,7 @@ const (
 	typeEndContainer = 0x7b
 	typeFalse        = 0x7c
 	typeTrue         = 0x7d
-	typeNil          = 0x7e
+	typeNull         = 0x7e
 	typePadding      = 0x7f
 	typeString0      = 0x80
 	typeString1      = 0x81

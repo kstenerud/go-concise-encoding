@@ -63,10 +63,10 @@ type MarkedObjectAnyTypeRule struct{}
 
 func (_this *MarkedObjectAnyTypeRule) String() string         { return "Marked Object Rule" }
 func (_this *MarkedObjectAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *MarkedObjectAnyTypeRule) OnNil(ctx *Context) {
+func (_this *MarkedObjectAnyTypeRule) OnNull(ctx *Context) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnNil(ctx)
-	ctx.MarkObject(DataTypeNil)
+	ctx.CurrentEntry.Rule.OnNull(ctx)
+	ctx.MarkObject(DataTypeNull)
 }
 func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()

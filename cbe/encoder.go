@@ -98,7 +98,7 @@ func (_this *Encoder) OnVersion(version uint64) {
 	_this.writer.WriteULEB(version)
 }
 
-func (_this *Encoder) OnNil() {
+func (_this *Encoder) OnNull() {
 	_this.writer.WriteType(cbeTypeNull)
 }
 

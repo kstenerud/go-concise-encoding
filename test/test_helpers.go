@@ -301,84 +301,84 @@ func CloneBytes(bytes []byte) []byte {
 // ----------------------------------------------------------------------------
 
 var (
-	EvBD     = BD()
-	EvED     = ED()
-	EvV      = V(version.ConciseEncodingVersion)
-	EvPAD    = PAD(1)
-	EvCOM    = COM(false, "a")
-	EvN      = N()
-	EvB      = B(true)
-	EvTT     = TT()
-	EvFF     = FF()
-	EvPI     = PI(1)
-	EvNI     = NI(1)
-	EvI      = I(0)
-	EvBI     = BI(NewBigInt("1", 10))
-	EvBINil  = BI(nil)
-	EvF      = F(0.1)
-	EvFNAN   = F(math.NaN())
-	EvBF     = BF(NewBigFloat("0.1", 10, 1))
-	EvBFNil  = BF(nil)
-	EvDF     = DF(NewDFloat("0.1"))
-	EvDFNAN  = DF(NewDFloat("nan"))
-	EvBDF    = BDF(NewBDF("0.1"))
-	EvBDFNil = BDF(nil)
-	EvBDFNAN = BDF(NewBDF("nan"))
-	EvNAN    = NAN()
-	EvUID    = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-	EvGT     = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
-	EvCT     = CT(NewDate(2020, 1, 1))
-	EvL      = L()
-	EvM      = M()
-	EvMUP    = MUP("a")
-	EvNODE   = NODE()
-	EvEDGE   = EDGE()
-	EvE      = E()
-	EvMARK   = MARK("a")
-	EvREF    = REF("a")
-	EvRREF   = RREF("a")
-	EvAC     = AC(1, false)
-	EvAD     = AD([]byte{1})
-	EvS      = S("a")
-	EvSB     = SB()
-	EvRID    = RID("http://z.com")
-	EvRB     = RB()
-	EvCUB    = CUB([]byte{1})
-	EvCBB    = CBB()
-	EvCUT    = CUT("a")
-	EvCTB    = CTB()
-	EvAB     = AB(1, []byte{1})
-	EvABB    = ABB()
-	EvAU8    = AU8([]uint8{1})
-	EvAU8B   = AU8B()
-	EvAU16   = AU16([]uint16{1})
-	EvAU16B  = AU16B()
-	EvAU32   = AU32([]uint32{1})
-	EvAU32B  = AU32B()
-	EvAU64   = AU64([]uint64{1})
-	EvAU64B  = AU64B()
-	EvAI8    = AI8([]int8{1})
-	EvAI8B   = AI8B()
-	EvAI16   = AI16([]int16{1})
-	EvAI16B  = AI16B()
-	EvAI32   = AI32([]int32{1})
-	EvAI32B  = AI32B()
-	EvAI64   = AI64([]int64{1})
-	EvAI64B  = AI64B()
-	EvAF16   = AF16([]byte{1, 2})
-	EvAF16B  = AF16B()
-	EvAF32   = AF32([]float32{1})
-	EvAF32B  = AF32B()
-	EvAF64   = AF64([]float64{1})
-	EvAF64B  = AF64B()
-	EvAUU    = AUU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
-	EvAUUB   = AUUB()
-	EvMB     = MB()
+	EvBD      = BD()
+	EvED      = ED()
+	EvV       = V(version.ConciseEncodingVersion)
+	EvPAD     = PAD(1)
+	EvCOM     = COM(false, "a")
+	EvN       = N()
+	EvB       = B(true)
+	EvTT      = TT()
+	EvFF      = FF()
+	EvPI      = PI(1)
+	EvNI      = NI(1)
+	EvI       = I(0)
+	EvBI      = BI(NewBigInt("1", 10))
+	EvBINull  = BI(nil)
+	EvF       = F(0.1)
+	EvFNAN    = F(math.NaN())
+	EvBF      = BF(NewBigFloat("0.1", 10, 1))
+	EvBFNull  = BF(nil)
+	EvDF      = DF(NewDFloat("0.1"))
+	EvDFNAN   = DF(NewDFloat("nan"))
+	EvBDF     = BDF(NewBDF("0.1"))
+	EvBDFNull = BDF(nil)
+	EvBDFNAN  = BDF(NewBDF("nan"))
+	EvNAN     = NAN()
+	EvUID     = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	EvGT      = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
+	EvCT      = CT(NewDate(2020, 1, 1))
+	EvL       = L()
+	EvM       = M()
+	EvMUP     = MUP("a")
+	EvNODE    = NODE()
+	EvEDGE    = EDGE()
+	EvE       = E()
+	EvMARK    = MARK("a")
+	EvREF     = REF("a")
+	EvRREF    = RREF("a")
+	EvAC      = AC(1, false)
+	EvAD      = AD([]byte{1})
+	EvS       = S("a")
+	EvSB      = SB()
+	EvRID     = RID("http://z.com")
+	EvRB      = RB()
+	EvCUB     = CUB([]byte{1})
+	EvCBB     = CBB()
+	EvCUT     = CUT("a")
+	EvCTB     = CTB()
+	EvAB      = AB(1, []byte{1})
+	EvABB     = ABB()
+	EvAU8     = AU8([]uint8{1})
+	EvAU8B    = AU8B()
+	EvAU16    = AU16([]uint16{1})
+	EvAU16B   = AU16B()
+	EvAU32    = AU32([]uint32{1})
+	EvAU32B   = AU32B()
+	EvAU64    = AU64([]uint64{1})
+	EvAU64B   = AU64B()
+	EvAI8     = AI8([]int8{1})
+	EvAI8B    = AI8B()
+	EvAI16    = AI16([]int16{1})
+	EvAI16B   = AI16B()
+	EvAI32    = AI32([]int32{1})
+	EvAI32B   = AI32B()
+	EvAI64    = AI64([]int64{1})
+	EvAI64B   = AI64B()
+	EvAF16    = AF16([]byte{1, 2})
+	EvAF16B   = AF16B()
+	EvAF32    = AF32([]float32{1})
+	EvAF32B   = AF32B()
+	EvAF64    = AF64([]float64{1})
+	EvAF64B   = AF64B()
+	EvAUU     = AUU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
+	EvAUUB    = AUUB()
+	EvMB      = MB()
 )
 
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvCOM, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
-	EvBI, EvBINil, EvF, EvFNAN, EvBF, EvBFNil, EvDF, EvDFNAN, EvBDF, EvBDFNil,
+	EvBI, EvBINull, EvF, EvFNAN, EvBF, EvBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
 	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvNODE, EvEDGE, EvE,
 	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
@@ -405,11 +405,11 @@ func binBytes(elemSize, length int) []byte {
 	return result
 }
 
-func isEffectivelyNil(event *TEvent) bool {
+func isEffectivelyNull(event *TEvent) bool {
 	return event.Type == TEventNull ||
-		event == EvBINil ||
-		event == EvBFNil ||
-		event == EvBDFNil
+		event == EvBINull ||
+		event == EvBFNull ||
+		event == EvBDFNull
 }
 
 func FilterAllEvents(events []*TEvent, filter func(*TEvent) []*TEvent) []*TEvent {
@@ -547,7 +547,7 @@ var (
 	CommentsPaddingMarkerRefEnd = []*TEvent{EvPAD, EvCOM, EvMARK, EvREF, EvE}
 
 	ValidEdgeSources   = ComplementaryEvents(InvalidEdgeSources)
-	InvalidEdgeSources = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvN, EvBDFNil, EvBFNil, EvBINil}
+	InvalidEdgeSources = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvN, EvBDFNull, EvBFNull, EvBINull}
 
 	ValidEdgeDescriptions   = ValidListValues
 	InvalidEdgeDescriptions = InvalidListValues
@@ -1082,7 +1082,7 @@ func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
 		return a.IsEquivalentTo(b)
 	}
 
-	if isEffectivelyNil(_this) && isEffectivelyNil(that) {
+	if isEffectivelyNull(_this) && isEffectivelyNull(that) {
 		return true
 	}
 
@@ -1115,7 +1115,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	case TEventComment:
 		receiver.OnComment(_this.V1.(bool), []byte(_this.V2.(string)))
 	case TEventNull:
-		receiver.OnNil()
+		receiver.OnNull()
 	case TEventBool:
 		receiver.OnBool(_this.V1.(bool))
 	case TEventTrue:
@@ -1267,7 +1267,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 	}
 }
 
-func EventOrNil(eventType TEventType, value interface{}) *TEvent {
+func EventOrNull(eventType TEventType, value interface{}) *TEvent {
 	if value == nil {
 		eventType = TEventNull
 	}
@@ -1282,9 +1282,9 @@ func TT() *TEvent                       { return NewTEvent(TEventTrue, nil, nil)
 func FF() *TEvent                       { return NewTEvent(TEventFalse, nil, nil) }
 func I(v int64) *TEvent                 { return NewTEvent(TEventInt, v, nil) }
 func F(v float64) *TEvent               { return NewTEvent(TEventFloat, v, nil) }
-func BF(v *big.Float) *TEvent           { return EventOrNil(TEventBigFloat, v) }
+func BF(v *big.Float) *TEvent           { return EventOrNull(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return NewTEvent(TEventDecimalFloat, v, nil) }
-func BDF(v *apd.Decimal) *TEvent        { return EventOrNil(TEventBigDecimalFloat, v) }
+func BDF(v *apd.Decimal) *TEvent        { return EventOrNull(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return NewTEvent(TEventVersion, v, nil) }
 func N() *TEvent                        { return NewTEvent(TEventNull, nil, nil) }
 func PAD(v int) *TEvent                 { return NewTEvent(TEventPadding, v, nil) }
@@ -1292,12 +1292,12 @@ func COM(m bool, v string) *TEvent      { return NewTEvent(TEventComment, m, v) 
 func B(v bool) *TEvent                  { return NewTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return NewTEvent(TEventPInt, v, nil) }
 func NI(v uint64) *TEvent               { return NewTEvent(TEventNInt, v, nil) }
-func BI(v *big.Int) *TEvent             { return EventOrNil(TEventBigInt, v) }
+func BI(v *big.Int) *TEvent             { return EventOrNull(TEventBigInt, v) }
 func NAN() *TEvent                      { return NewTEvent(TEventNan, nil, nil) }
 func SNAN() *TEvent                     { return NewTEvent(TEventSNan, nil, nil) }
 func UID(v []byte) *TEvent              { return NewTEvent(TEventUID, v, nil) }
 func GT(v time.Time) *TEvent            { return NewTEvent(TEventTime, v, nil) }
-func CT(v compact_time.Time) *TEvent    { return EventOrNil(TEventCompactTime, v) }
+func CT(v compact_time.Time) *TEvent    { return EventOrNull(TEventCompactTime, v) }
 func S(v string) *TEvent                { return NewTEvent(TEventString, v, nil) }
 func RID(v string) *TEvent              { return NewTEvent(TEventResourceID, v, nil) }
 func RREF(v string) *TEvent             { return NewTEvent(TEventRemoteRef, v, nil) }
@@ -1454,9 +1454,9 @@ func (h *TEventPrinter) OnComment(isMultiline bool, contents []byte) {
 	h.Print(COM(isMultiline, string(contents)))
 	h.Next.OnComment(isMultiline, contents)
 }
-func (h *TEventPrinter) OnNil() {
+func (h *TEventPrinter) OnNull() {
 	h.Print(N())
-	h.Next.OnNil()
+	h.Next.OnNull()
 }
 func (h *TEventPrinter) OnBool(value bool) {
 	h.Print(B(value))
@@ -1729,9 +1729,9 @@ func (h *TEventStore) OnComment(isMultiline bool, contents []byte) {
 	h.add(COM(isMultiline, string(contents)))
 	h.receiver.OnComment(isMultiline, contents)
 }
-func (h *TEventStore) OnNil() {
+func (h *TEventStore) OnNull() {
 	h.add(N())
-	h.receiver.OnNil()
+	h.receiver.OnNull()
 }
 func (h *TEventStore) OnBool(value bool) {
 	h.add(B(value))

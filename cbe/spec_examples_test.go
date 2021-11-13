@@ -246,7 +246,7 @@ func TestSpecExamplesMarkerReference(t *testing.T) {
 }
 
 func TestSpecExamplesOtherPseudo(t *testing.T) {
-	// Nil is encoded as `[7e]`.
+	// Null is encoded as `[7e]`.
 	assertCodecEvents(t, []byte{0x7e}, N())
 
 	// [7f 7f 7f 6c 00 00 00 8f] = 0x8f000000, padded such that the 32-bit integer begins on a 4-byte boundary.

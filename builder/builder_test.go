@@ -1174,14 +1174,14 @@ func TestBuilderListOfStruct(t *testing.T) {
 		E())
 }
 
-type NilContainers struct {
+type NullContainers struct {
 	Bytes []byte
 	Slice []interface{}
 	Map   map[interface{}]interface{}
 }
 
-func TestBuilderNilContainers(t *testing.T) {
-	v := NilContainers{}
+func TestBuilderNullContainers(t *testing.T) {
+	v := NullContainers{}
 
 	assertBuild(t, v,
 		M(),
@@ -1208,7 +1208,7 @@ func TestBuilderPURLContainer(t *testing.T) {
 		E())
 }
 
-func TestBuilderNilPURLContainer(t *testing.T) {
+func TestBuilderNullPURLContainer(t *testing.T) {
 	v := PURLContainer{}
 
 	assertBuild(t, v,

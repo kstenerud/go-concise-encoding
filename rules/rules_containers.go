@@ -36,7 +36,7 @@ func (_this *ListRule) String() string                                 { return 
 func (_this *ListRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
 func (_this *ListRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *ListRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
-func (_this *ListRule) OnNil(ctx *Context)                             { /* Nothing to do */ }
+func (_this *ListRule) OnNull(ctx *Context)                            { /* Nothing to do */ }
 func (_this *ListRule) OnKeyableObject(ctx *Context, _ DataType)       { /* Nothing to do */ }
 func (_this *ListRule) OnNonKeyableObject(ctx *Context, _ DataType)    { /* Nothing to do */ }
 func (_this *ListRule) OnList(ctx *Context)                            { ctx.BeginList() }
@@ -106,7 +106,7 @@ func (_this *MapValueRule) switchMapKey(ctx *Context)                      { ctx
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
 func (_this *MapValueRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MapValueRule) OnNil(ctx *Context)                             { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnNull(ctx *Context)                            { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnList(ctx *Context)                            { ctx.BeginList() }
@@ -182,7 +182,7 @@ func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 }
 func (_this *MarkupValueRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
 func (_this *MarkupValueRule) OnComment(ctx *Context)                   { /* Nothing to do */ }
-func (_this *MarkupValueRule) OnNil(ctx *Context)                       { _this.switchMarkupKey(ctx) }
+func (_this *MarkupValueRule) OnNull(ctx *Context)                      { _this.switchMarkupKey(ctx) }
 func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupKey(ctx) }
 func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ DataType) {
 	_this.switchMarkupKey(ctx)
@@ -268,7 +268,7 @@ func (_this *EdgeSourceRule) OnMarkup(ctx *Context, identifier []byte) { ctx.Beg
 func (_this *EdgeSourceRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
 func (_this *EdgeSourceRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
 func (_this *EdgeSourceRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowNonNil)
+	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
 func (_this *EdgeSourceRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
@@ -278,17 +278,17 @@ func (_this *EdgeSourceRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
 func (_this *EdgeSourceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.AssertArrayType("edge source", arrayType, AllowNonNil)
+	ctx.AssertArrayType("edge source", arrayType, AllowNonNull)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.moveToNextRule(ctx)
 }
 func (_this *EdgeSourceRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.AssertArrayType("edge source", arrayType, AllowNonNil)
+	ctx.AssertArrayType("edge source", arrayType, AllowNonNull)
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.moveToNextRule(ctx)
 }
 func (_this *EdgeSourceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.AssertArrayType("edge source", arrayType, AllowNonNil)
+	ctx.AssertArrayType("edge source", arrayType, AllowNonNull)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -311,7 +311,7 @@ func (_this *EdgeDescriptionRule) OnChildContainerEnded(ctx *Context, _ DataType
 }
 func (_this *EdgeDescriptionRule) OnPadding(ctx *Context)          { /* Nothing to do */ }
 func (_this *EdgeDescriptionRule) OnComment(ctx *Context)          { /* Nothing to do */ }
-func (_this *EdgeDescriptionRule) OnNil(ctx *Context)              { _this.moveToNextRule(ctx) }
+func (_this *EdgeDescriptionRule) OnNull(ctx *Context)             { _this.moveToNextRule(ctx) }
 func (_this *EdgeDescriptionRule) OnInt(ctx *Context, value int64) { _this.moveToNextRule(ctx) }
 func (_this *EdgeDescriptionRule) OnPositiveInt(ctx *Context, value uint64) {
 	_this.moveToNextRule(ctx)
@@ -335,7 +335,7 @@ func (_this *EdgeDescriptionRule) OnMarkup(ctx *Context, identifier []byte) {
 func (_this *EdgeDescriptionRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *EdgeDescriptionRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *EdgeDescriptionRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowNonNil)
+	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
 func (_this *EdgeDescriptionRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
@@ -388,17 +388,17 @@ func (_this *EdgeDestinationRule) OnConstant(ctx *Context, name []byte) {
 	ctx.BeginConstantAnyType(name)
 }
 func (_this *EdgeDestinationRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.AssertArrayType("edge destination", arrayType, AllowNonNil)
+	ctx.AssertArrayType("edge destination", arrayType, AllowNonNull)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.end(ctx)
 }
 func (_this *EdgeDestinationRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.AssertArrayType("edge destination", arrayType, AllowNonNil)
+	ctx.AssertArrayType("edge destination", arrayType, AllowNonNull)
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.end(ctx)
 }
 func (_this *EdgeDestinationRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.AssertArrayType("edge destination", arrayType, AllowNonNil)
+	ctx.AssertArrayType("edge destination", arrayType, AllowNonNull)
 	ctx.BeginArrayAnyType(arrayType)
 }
 
@@ -421,7 +421,7 @@ func (_this *NodeRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 }
 func (_this *NodeRule) OnPadding(ctx *Context)          { /* Nothing to do */ }
 func (_this *NodeRule) OnComment(ctx *Context)          { /* Nothing to do */ }
-func (_this *NodeRule) OnNil(ctx *Context)              { _this.moveToNextRule(ctx) }
+func (_this *NodeRule) OnNull(ctx *Context)             { _this.moveToNextRule(ctx) }
 func (_this *NodeRule) OnInt(ctx *Context, value int64) { _this.moveToNextRule(ctx) }
 func (_this *NodeRule) OnPositiveInt(ctx *Context, value uint64) {
 	_this.moveToNextRule(ctx)
@@ -445,7 +445,7 @@ func (_this *NodeRule) OnMarkup(ctx *Context, identifier []byte) {
 func (_this *NodeRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *NodeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *NodeRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowNonNil)
+	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
 func (_this *NodeRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)

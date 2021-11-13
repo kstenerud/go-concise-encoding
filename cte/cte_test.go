@@ -72,7 +72,7 @@ func TestCTEVersion(t *testing.T) {
 	}
 }
 
-func TestCTENil(t *testing.T) {
+func TestCTENull(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, N(), ED())
 }
 

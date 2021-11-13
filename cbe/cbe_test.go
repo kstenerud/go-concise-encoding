@@ -42,8 +42,8 @@ func TestCBEPadding(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typePadding, typePadding, typePadding, 1}, BD(), EvV, PAD(1), PAD(1), PAD(1), I(1), ED())
 }
 
-func TestCBENil(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeNil}, BD(), EvV, N(), ED())
+func TestCBENull(t *testing.T) {
+	assertDecodeEncode(t, []byte{header, ceVer, typeNull}, BD(), EvV, N(), ED())
 }
 
 func TestCBEBool(t *testing.T) {
@@ -100,7 +100,7 @@ func TestCBEPositiveInt(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typePosInt, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, BD(), EvV, BI(NewBigInt("4722366482869645213696", 10)), ED())
 	assertEncode(t, nil, []byte{header, ceVer, typePosInt64, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, BD(), EvV, BI(NewBigInt("18446744073709551615", 10)), ED())
 
-	assertEncode(t, nil, []byte{header, ceVer, typeNil}, BD(), EvV, BI(nil), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNull}, BD(), EvV, BI(nil), ED())
 }
 
 func TestCBENegativeInt(t *testing.T) {
@@ -164,12 +164,12 @@ func TestCBEBigFloat(t *testing.T) {
 		0xe1, 0xf3, 0xdf, 0xfc, 0xee, 0xac, 0xe5, 0xfe, 0xe1, 0x8f, 0xe2, 0x43},
 		BD(), EvV, BDF(NewBDF("-9.4452837206285466345998345667683453466347345e-5000")), ED())
 
-	assertEncode(t, nil, []byte{header, ceVer, typeNil}, BD(), EvV, BF(nil), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNull}, BD(), EvV, BF(nil), ED())
 }
 
 func TestCBEBigDecimalFloat(t *testing.T) {
 	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), EvV, BDF(NewBDF("9.445283e+5000")), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeNil}, BD(), EvV, BDF(nil), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNull}, BD(), EvV, BDF(nil), ED())
 }
 
 func TestCBEUIDEOF(t *testing.T) {
@@ -571,8 +571,8 @@ func TestEdge(t *testing.T) {
 func TestNode(t *testing.T) {
 	assertDecodeEncode(t,
 		[]byte{header, ceVer,
-			typeNode, typeNil, typeString1, 'a', typeRID, 0x02, 'b',
-			typeNode, typeNil, typeEndContainer, typeEndContainer},
+			typeNode, typeNull, typeString1, 'a', typeRID, 0x02, 'b',
+			typeNode, typeNull, typeEndContainer, typeEndContainer},
 		BD(), EvV, NODE(), N(), S("a"), RID("b"), NODE(), N(), E(), E(), ED())
 }
 

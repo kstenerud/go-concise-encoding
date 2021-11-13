@@ -152,7 +152,7 @@ EOF:
 		case cbeTypeTrue:
 			eventReceiver.OnTrue()
 		case cbeTypeNull:
-			eventReceiver.OnNil()
+			eventReceiver.OnNull()
 		case cbeTypePadding:
 			eventReceiver.OnPadding(1)
 		case cbeTypeString0:

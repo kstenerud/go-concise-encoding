@@ -47,7 +47,7 @@ func (_this *Writer) WriteConcat() {
 	_this.WriteByte(':')
 }
 
-func (_this *Writer) WriteNil() {
+func (_this *Writer) WriteNull() {
 	_this.WriteString("null")
 }
 
@@ -117,7 +117,7 @@ func (_this *Writer) WriteNegativeInt(value uint64) {
 
 func (_this *Writer) WriteBigInt(value *big.Int) {
 	if value == nil {
-		_this.WriteNil()
+		_this.WriteNull()
 		return
 	}
 
@@ -225,7 +225,7 @@ func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
 
 func (_this *Writer) WriteBigFloat(value *big.Float) {
 	if value == nil {
-		_this.WriteNil()
+		_this.WriteNull()
 		return
 	}
 	if value.IsInf() {
@@ -265,7 +265,7 @@ func (_this *Writer) WriteDecimalFloat(value compact_float.DFloat) {
 
 func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
-		_this.WriteNil()
+		_this.WriteNull()
 		return
 	}
 	switch value.Form {
@@ -319,7 +319,7 @@ func (_this *Writer) WriteTime(value time.Time) {
 
 func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 	if value.IsZeroValue() {
-		_this.WriteNil()
+		_this.WriteNull()
 		return
 	}
 

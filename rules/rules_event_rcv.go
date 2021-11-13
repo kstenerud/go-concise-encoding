@@ -101,10 +101,10 @@ func (_this *RulesEventReceiver) OnComment(isMultiline bool, contents []byte) {
 	_this.receiver.OnComment(isMultiline, contents)
 }
 
-func (_this *RulesEventReceiver) OnNil() {
+func (_this *RulesEventReceiver) OnNull() {
 	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnNil(&_this.context)
-	_this.receiver.OnNil()
+	_this.context.CurrentEntry.Rule.OnNull(&_this.context)
+	_this.receiver.OnNull()
 }
 
 func (_this *RulesEventReceiver) OnBool(value bool) {
@@ -145,7 +145,7 @@ func (_this *RulesEventReceiver) OnInt(value int64) {
 
 func (_this *RulesEventReceiver) OnBigInt(value *big.Int) {
 	if value == nil {
-		_this.OnNil()
+		_this.OnNull()
 		return
 	}
 
@@ -167,7 +167,7 @@ func (_this *RulesEventReceiver) OnFloat(value float64) {
 
 func (_this *RulesEventReceiver) OnBigFloat(value *big.Float) {
 	if value == nil {
-		_this.OnNil()
+		_this.OnNull()
 		return
 	}
 
@@ -189,7 +189,7 @@ func (_this *RulesEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
 
 func (_this *RulesEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 	if value == nil {
-		_this.OnNil()
+		_this.OnNull()
 		return
 	}
 	if value.Form == apd.NaNSignaling {

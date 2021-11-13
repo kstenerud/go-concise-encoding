@@ -50,7 +50,7 @@ func TestRulesVersion(t *testing.T) {
 	assertEventsFail(t, rules, EvV)
 }
 
-func TestRulesNil(t *testing.T) {
+func TestRulesNull(t *testing.T) {
 	assertEventsMaxDepth(t, 1, N(), ED())
 }
 

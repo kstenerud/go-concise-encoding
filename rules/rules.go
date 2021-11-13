@@ -40,7 +40,7 @@ type EventRule interface {
 	OnComment(ctx *Context)
 	OnKeyableObject(ctx *Context, objType DataType)
 	OnNonKeyableObject(ctx *Context, objType DataType)
-	OnNil(ctx *Context)
+	OnNull(ctx *Context)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
 	OnEdge(ctx *Context)

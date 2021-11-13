@@ -104,7 +104,7 @@ func (_this *BuilderEventReceiver) OnVersion(_ uint64)     {}
 func (_this *BuilderEventReceiver) OnPadding(_ int)        {}
 func (_this *BuilderEventReceiver) OnComment(bool, []byte) {}
 
-func (_this *BuilderEventReceiver) OnNil() {
+func (_this *BuilderEventReceiver) OnNull() {
 	_this.context.CurrentBuilder.BuildFromNull(&_this.context, _this.object)
 }
 func (_this *BuilderEventReceiver) OnBool(value bool) {
