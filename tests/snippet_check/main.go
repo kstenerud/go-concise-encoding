@@ -24,20 +24,27 @@
 package main
 
 import (
+	"bytes"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-describe"
 )
 
 func main() {
-	args := os.Args
+	quiet := flag.Bool("q", false, "quiet")
+	verbose := flag.Bool("v", false, "verbose")
+	flag.Parse()
 
-	if len(args) < 2 {
-		fmt.Printf("Inspects files for inline CTE snippets (anything between [```cte] and [```]) and tries to parse them.\n")
-		fmt.Printf("Usage: %v <files>\n", args[0])
+	args := flag.Args()
+	verbosityLevel := getVerbosityLevel(*quiet, *verbose)
+
+	if len(args) < 1 {
+		printUsage()
 		return
 	}
 
@@ -49,11 +56,35 @@ func main() {
 			return
 		}
 		if fi.Mode().IsRegular() {
-			inspectFile(path)
+			inspectFile(path, verbosityLevel)
 		} else {
-			fmt.Printf("Skipping [%v] because it is not a file.\n", path)
+			fmt.Printf("Skipping %v because it is not a file.\n", path)
 		}
 	}
+}
+
+func printUsage() {
+	fmt.Printf("Inspects files for inline CTE snippets (anything between [```cte] and [```]) and tries to parse them.\n")
+	fmt.Printf("Usage: %v [opts] <files>\n", os.Args[0])
+	flag.PrintDefaults()
+}
+
+type verbosity int
+
+const (
+	verbosityQuiet verbosity = iota
+	verbosityNormal
+	verbosityVerbose
+)
+
+func getVerbosityLevel(quiet bool, verbose bool) verbosity {
+	if quiet {
+		return verbosityQuiet
+	}
+	if verbose {
+		return verbosityVerbose
+	}
+	return verbosityNormal
 }
 
 func isWhitespace(ch byte) bool {
@@ -79,26 +110,50 @@ func addHeaderIfNeeded(data []byte) []byte {
 	return append([]byte{'c', '0', '\n'}, data...)
 }
 
-func inspectFile(path string) {
+func reportError(snippet []byte, err error) {
+	fmt.Printf("======================================================================\n")
+	fmt.Printf("📜 Snippet:\n%v\n", string(snippet))
+	fmt.Printf("----------------------------------------------------------------------\n")
+	fmt.Printf("❌ Failed: %v\n", err)
+	fmt.Printf("======================================================================\n")
+}
+
+func reportSuccess(snippet []byte, unmarshaled interface{}) {
+	fmt.Printf("======================================================================\n")
+	fmt.Printf("📜 Snippet:\n%v\n", string(snippet))
+	fmt.Printf("----------------------------------------------------------------------\n")
+	if unmarshaled != nil {
+		fmt.Printf("✅ Unmarshaled to:\n%v\n", describe.Describe(unmarshaled, 4))
+	} else {
+		fmt.Printf("✅ Success\n")
+	}
+	fmt.Printf("======================================================================\n")
+}
+
+func inspectFile(path string, verbosityLevel verbosity) {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Could not read file [%v]: %v\n", path, err)
 	}
 
-	fmt.Printf("Inspecting [%v]...\n", path)
+	if verbosityLevel >= verbosityNormal {
+		fmt.Printf("Inspecting %v\n", path)
+	}
+
 	for _, snippet := range getSnippets(contents) {
 		snippet = addHeaderIfNeeded(snippet)
-		decoder := ce.NewCTEDecoder(nil)
-		if err = decoder.DecodeDocument(snippet, ce.NewRules(nil, nil)); err != nil {
+		unmarshaled, err := ce.UnmarshalCTE(bytes.NewBuffer(snippet), nil, nil)
+		if err != nil {
+			decoder := ce.NewCTEDecoder(nil)
+			if err = decoder.DecodeDocument(snippet, ce.NewRules(nil, nil)); err != nil {
+				reportError(snippet, err)
+				continue
+			}
 
-			// _, err := ce.UnmarshalCTE(bytes.NewBuffer(snippet), template, nil)
-			// if err != nil {
-			fmt.Printf("Snippet failed in %v:\n%v\n", path, err)
-			fmt.Printf("----------------------------------------------------------------------\n")
-			fmt.Printf("%v\n", string(snippet))
-			fmt.Printf("======================================================================\n\n")
-		} else {
-			// fmt.Printf("%v\n----------------------------------------\n%v", string(snippet), describe.D(unmarshaled))
+		}
+
+		if verbosityLevel >= verbosityVerbose {
+			reportSuccess(snippet, unmarshaled)
 		}
 	}
 }
