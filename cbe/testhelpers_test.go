@@ -242,7 +242,7 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
 
 var DebugPrintEvents = false
 
-func decodeToEvents(opts *options.CBEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
+func decodeToEvents(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var topLevelReceiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	topLevelReceiver = rules.NewRules(ter, nil)
@@ -263,7 +263,7 @@ func encodeEvents(opts *options.CBEEncoderOptions, events ...*test.TEvent) []byt
 	return buffer.Bytes()
 }
 
-func assertDecode(t *testing.T, opts *options.CBEDecoderOptions, document []byte, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
+func assertDecode(t *testing.T, opts *options.CEDecoderOptions, document []byte, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
 	actualEvents, err := decodeToEvents(opts, document)
 	if err != nil {
 		t.Errorf("Error [%v] while decoding %v", err, describe.D(document))

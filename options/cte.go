@@ -46,36 +46,6 @@ const (
 )
 
 // ============================================================================
-// CTE Decoder
-
-type CTEDecoderOptions struct {
-	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	ConciseEncodingVersion uint64
-}
-
-func DefaultCTEDecoderOptions() *CTEDecoderOptions {
-	return &CTEDecoderOptions{
-		ConciseEncodingVersion: version.ConciseEncodingVersion,
-	}
-}
-
-func (_this *CTEDecoderOptions) WithDefaultsApplied() *CTEDecoderOptions {
-	if _this == nil {
-		return DefaultCTEDecoderOptions()
-	}
-
-	if _this.ConciseEncodingVersion == 0 {
-		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
-	}
-
-	return _this
-}
-
-func (_this *CTEDecoderOptions) Validate() error {
-	return nil
-}
-
-// ============================================================================
 // CTE Encoder
 
 type CTEEncoderOptions struct {
@@ -292,55 +262,6 @@ func (_this *CTEMarshalerOptions) Validate() error {
 		return err
 	}
 	if err := _this.Iterator.Validate(); err != nil {
-		return err
-	}
-	return _this.Session.Validate()
-}
-
-// ============================================================================
-// CTE Unmarshaler
-
-type CTEUnmarshalerOptions struct {
-	Decoder CTEDecoderOptions
-	Builder BuilderOptions
-	Session BuilderSessionOptions
-	Rules   RuleOptions
-
-	// If false, do not wrap a Rules object around the builder, disabling all rule checks.
-	EnforceRules bool
-}
-
-func DefaultCTEUnmarshalerOptions() *CTEUnmarshalerOptions {
-	return &CTEUnmarshalerOptions{
-		Decoder:      *DefaultCTEDecoderOptions(),
-		Builder:      *DefaultBuilderOptions(),
-		Session:      *DefaultBuilderSessionOptions(),
-		Rules:        *DefaultRuleOptions(),
-		EnforceRules: true,
-	}
-}
-
-func (_this *CTEUnmarshalerOptions) WithDefaultsApplied() *CTEUnmarshalerOptions {
-	if _this == nil {
-		return DefaultCTEUnmarshalerOptions()
-	}
-
-	_this.Decoder.WithDefaultsApplied()
-	_this.Builder.WithDefaultsApplied()
-	_this.Session.WithDefaultsApplied()
-	_this.Rules.WithDefaultsApplied()
-
-	return _this
-}
-
-func (_this *CTEUnmarshalerOptions) Validate() error {
-	if err := _this.Builder.Validate(); err != nil {
-		return err
-	}
-	if err := _this.Decoder.Validate(); err != nil {
-		return err
-	}
-	if err := _this.Rules.Validate(); err != nil {
 		return err
 	}
 	return _this.Session.Validate()

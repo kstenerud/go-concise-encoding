@@ -21,9 +21,14 @@
 package ce
 
 import (
+	"bufio"
+	"fmt"
 	"io"
 
+	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // Decoder decodes a byte stream, converting it to events.
@@ -34,4 +39,42 @@ type Decoder interface {
 
 	// Decode from the specified document, sending all events to eventReceiver.
 	DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error)
+}
+
+type UniversalDecoder struct {
+	opts *options.CEDecoderOptions
+}
+
+func (_this *UniversalDecoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) error {
+	bufReader := bufio.NewReader(reader)
+	firstByte, err := bufReader.Peek(1)
+	if err != nil {
+		return err
+	}
+
+	if decoder, err := chooseDecoder(firstByte[0], _this.opts); err == nil {
+		return decoder.Decode(bufReader, eventReceiver)
+	} else {
+		return err
+	}
+}
+
+func (_this *UniversalDecoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) error {
+	if decoder, err := chooseDecoder(document[0], _this.opts); err == nil {
+		return decoder.DecodeDocument(document, eventReceiver)
+	} else {
+		return err
+	}
+}
+
+func chooseDecoder(identifier byte, opts *options.CEDecoderOptions) (decoder Decoder, err error) {
+	switch identifier {
+	case 'c':
+		decoder = cte.NewDecoder(opts)
+	case 0x83:
+		decoder = cbe.NewDecoder(opts)
+	default:
+		err = fmt.Errorf("%02d: Unknown CE identifier", identifier)
+	}
+	return
 }

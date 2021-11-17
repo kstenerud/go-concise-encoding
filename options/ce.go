@@ -25,22 +25,22 @@ import (
 )
 
 // ============================================================================
-// CBE Encoder
+// CE Decoder
 
-type CBEEncoderOptions struct {
+type CEDecoderOptions struct {
 	// Concise encoding spec version to adhere to. Uses latest if set to 0.
 	ConciseEncodingVersion uint64
 }
 
-func DefaultCBEEncoderOptions() *CBEEncoderOptions {
-	return &CBEEncoderOptions{
+func DefaultCEDecoderOptions() *CEDecoderOptions {
+	return &CEDecoderOptions{
 		ConciseEncodingVersion: version.ConciseEncodingVersion,
 	}
 }
 
-func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
+func (_this *CEDecoderOptions) WithDefaultsApplied() *CEDecoderOptions {
 	if _this == nil {
-		return DefaultCBEEncoderOptions()
+		return DefaultCEDecoderOptions()
 	}
 
 	if _this.ConciseEncodingVersion == 0 {
@@ -50,44 +50,54 @@ func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
 	return _this
 }
 
-func (_this *CBEEncoderOptions) Validate() error {
+func (_this *CEDecoderOptions) Validate() error {
 	return nil
 }
 
 // ============================================================================
-// CBE Marshaler
+// CE Unmarshaler
 
-type CBEMarshalerOptions struct {
-	Encoder  CBEEncoderOptions
-	Iterator IteratorOptions
-	Session  IteratorSessionOptions
+type CEUnmarshalerOptions struct {
+	Decoder CEDecoderOptions
+	Builder BuilderOptions
+	Session BuilderSessionOptions
+	Rules   RuleOptions
+
+	// If false, do not wrap a Rules object around the builder, disabling all rule checks.
+	EnforceRules bool
 }
 
-func DefaultCBEMarshalerOptions() *CBEMarshalerOptions {
-	return &CBEMarshalerOptions{
-		Encoder:  *DefaultCBEEncoderOptions(),
-		Iterator: *DefaultIteratorOptions(),
-		Session:  *DefaultIteratorSessionOptions(),
+func DefaultCEUnmarshalerOptions() *CEUnmarshalerOptions {
+	return &CEUnmarshalerOptions{
+		Decoder:      *DefaultCEDecoderOptions(),
+		Builder:      *DefaultBuilderOptions(),
+		Session:      *DefaultBuilderSessionOptions(),
+		Rules:        *DefaultRuleOptions(),
+		EnforceRules: true,
 	}
 }
 
-func (_this *CBEMarshalerOptions) WithDefaultsApplied() *CBEMarshalerOptions {
+func (_this *CEUnmarshalerOptions) WithDefaultsApplied() *CEUnmarshalerOptions {
 	if _this == nil {
-		return DefaultCBEMarshalerOptions()
+		return DefaultCEUnmarshalerOptions()
 	}
 
-	_this.Encoder.WithDefaultsApplied()
-	_this.Iterator.WithDefaultsApplied()
+	_this.Decoder.WithDefaultsApplied()
+	_this.Builder.WithDefaultsApplied()
 	_this.Session.WithDefaultsApplied()
+	_this.Rules.WithDefaultsApplied()
 
 	return _this
 }
 
-func (_this *CBEMarshalerOptions) Validate() error {
-	if err := _this.Encoder.Validate(); err != nil {
+func (_this *CEUnmarshalerOptions) Validate() error {
+	if err := _this.Builder.Validate(); err != nil {
 		return err
 	}
-	if err := _this.Iterator.Validate(); err != nil {
+	if err := _this.Decoder.Validate(); err != nil {
+		return err
+	}
+	if err := _this.Rules.Validate(); err != nil {
 		return err
 	}
 	return _this.Session.Validate()

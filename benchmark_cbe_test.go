@@ -193,7 +193,7 @@ func BenchmarkCTEUnmarshalRules(b *testing.B) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
 	marshaler := ce.NewCTEMarshaler(marshalOpts)
-	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
@@ -202,7 +202,7 @@ func BenchmarkCTEUnmarshalNoRules(b *testing.B) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
 	marshaler := ce.NewCTEMarshaler(marshalOpts)
-	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.EnforceRules = false
 	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
@@ -212,7 +212,7 @@ func BenchmarkCBEUnmarshalRules(b *testing.B) {
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
 	marshaler := ce.NewCBEMarshaler(marshalOpts)
-	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
@@ -221,7 +221,7 @@ func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
 	marshaler := ce.NewCBEMarshaler(marshalOpts)
-	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.EnforceRules = false
 	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)

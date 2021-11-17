@@ -47,6 +47,8 @@
 package ce
 
 import (
+	"bufio"
+	"fmt"
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
@@ -55,6 +57,41 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 )
+
+// ============================================================================
+// One-shot universal unmarshal API
+
+// Unmarshal a CE document from a reader, creating an object of the same type as the template.
+// If template is nil, an interface type will be returned.
+// If opts is nil, default options will be used.
+func UnmarshalCE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
+	bufReader := bufio.NewReader(reader)
+	firstByte, err := bufReader.Peek(1)
+	if err != nil {
+		return
+	}
+
+	unmarshaler, err := chooseUnmarshaler(firstByte[0], opts)
+	if err != nil {
+		return
+	}
+	return unmarshaler.Unmarshal(bufReader, template)
+}
+
+// Unmarshal a CE document from a byte slice, creating an object of the same type as the template.
+// If template is nil, an interface type will be returned.
+// If opts is nil, default options will be used.
+func UnmarshalFromCEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
+	if len(document) == 0 {
+		err = fmt.Errorf("no data")
+		return
+	}
+	unmarshaler, err := chooseUnmarshaler(document[0], opts)
+	if err != nil {
+		return
+	}
+	return unmarshaler.UnmarshalFromDocument(document, template)
+}
 
 // ============================================================================
 // One-shot marshal/unmarshal API (binary format)
@@ -74,14 +111,14 @@ func MarshalToCBEDocument(object interface{}, opts *options.CBEMarshalerOptions)
 // Unmarshal a CBE document from a reader, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 // If opts is nil, default options will be used.
-func UnmarshalCBE(reader io.Reader, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
+func UnmarshalCBE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).Unmarshal(reader, template)
 }
 
 // Unmarshal a CBE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 // If opts is nil, default options will be used.
-func UnmarshalFromCBEDocument(document []byte, template interface{}, opts *options.CBEUnmarshalerOptions) (decoded interface{}, err error) {
+func UnmarshalFromCBEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).UnmarshalFromDocument(document, template)
 }
 
@@ -104,14 +141,14 @@ func MarshalToCTEDocument(object interface{}, opts *options.CTEMarshalerOptions)
 // Unmarshal a CTE document, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 // If opts is nil, default options will be used.
-func UnmarshalCTE(reader io.Reader, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
+func UnmarshalCTE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).Unmarshal(reader, template)
 }
 
 // Unmarshal a CTE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, an interface type will be returned.
 // If opts is nil, default options will be used.
-func UnmarshalFromCTEDocument(document []byte, template interface{}, opts *options.CTEUnmarshalerOptions) (decoded interface{}, err error) {
+func UnmarshalFromCTEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).UnmarshalFromDocument(document, template)
 }
 
@@ -122,7 +159,7 @@ func NewCBEMarshaler(opts *options.CBEMarshalerOptions) Marshaler {
 	return cbe.NewMarshaler(opts)
 }
 
-func NewCBEUnmarshaler(opts *options.CBEUnmarshalerOptions) Unmarshaler {
+func NewCBEUnmarshaler(opts *options.CEUnmarshalerOptions) Unmarshaler {
 	return cbe.NewUnmarshaler(opts)
 }
 
@@ -130,18 +167,23 @@ func NewCTEMarshaler(opts *options.CTEMarshalerOptions) Marshaler {
 	return cte.NewMarshaler(opts)
 }
 
-func NewCTEUnmarshaler(opts *options.CTEUnmarshalerOptions) Unmarshaler {
+func NewCTEUnmarshaler(opts *options.CEUnmarshalerOptions) Unmarshaler {
 	return cte.NewUnmarshaler(opts)
 }
 
 // ============================================================================
 // Encoders/Decoders API
 
+// Create a new universal CE decoder
+func NewCEDecoder(opts *options.CEDecoderOptions) Decoder {
+	return &UniversalDecoder{opts: opts}
+}
+
 func NewCBEEncoder(opts *options.CBEEncoderOptions) Encoder {
 	return cbe.NewEncoder(opts)
 }
 
-func NewCBEDecoder(opts *options.CBEDecoderOptions) Decoder {
+func NewCBEDecoder(opts *options.CEDecoderOptions) Decoder {
 	return cbe.NewDecoder(opts)
 }
 
@@ -149,7 +191,7 @@ func NewCTEEncoder(opts *options.CTEEncoderOptions) Encoder {
 	return cte.NewEncoder(opts)
 }
 
-func NewCTEDecoder(opts *options.CTEDecoderOptions) Decoder {
+func NewCTEDecoder(opts *options.CEDecoderOptions) Decoder {
 	return cte.NewDecoder(opts)
 }
 

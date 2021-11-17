@@ -34,12 +34,12 @@ import (
 type DecoderOp func(*DecoderContext)
 
 type Decoder struct {
-	opts options.CTEDecoderOptions
+	opts options.CEDecoderOptions
 }
 
 // Create a new CTE decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
-func NewDecoder(opts *options.CTEDecoderOptions) *Decoder {
+func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(opts)
 	return _this
@@ -47,7 +47,7 @@ func NewDecoder(opts *options.CTEDecoderOptions) *Decoder {
 
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
-func (_this *Decoder) Init(opts *options.CTEDecoderOptions) {
+func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 }

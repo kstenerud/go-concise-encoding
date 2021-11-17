@@ -22,7 +22,6 @@ package cte
 
 import (
 	"bytes"
-	// "bytes"
 	"fmt"
 	"math"
 	"strings"
@@ -39,128 +38,28 @@ func TestCTEVersion1(t *testing.T) {
 	assertDecode(t, nil, "c1 1", BD(), EvV, PI(1), ED())
 }
 
-func TestCTEVersion(t *testing.T) {
-	// Valid
-	assertDecodeEncode(t, nil, nil, "c0\n1", BD(), EvV, PI(1), ED())
-	assertDecode(t, nil, "\r\n\t c0 1", BD(), EvV, PI(1), ED())
-	assertDecode(t, nil, "c0     \r\n\t\t\t1", BD(), EvV, PI(1), ED())
-
-	// Missing whitespace
-	assertDecodeFails(t, "c0{}")
-
-	// Too big
-	assertDecodeFails(t, "c000000000000000000000000000000000 ")
-
-	// Not numeric
-	for i := 0; i < 0x100; i++ {
-		if i >= '0' && i <= '9' {
-			continue
-		}
-		document := string([]byte{'c', byte(i)})
-		assertDecodeFails(t, document)
-	}
-
+func TestCTEDocumentBegin(t *testing.T) {
 	// Disallowed version numbers
 	for i := 0; i < 0x100; i++ {
 		switch i {
 		case 'c', 'C', ' ', '\n', '\r', '\t':
 			continue
 		default:
-			document := string([]byte{byte(i)})
+			document := string([]byte{byte(i), '1', ' ', '1'})
 			assertDecodeFails(t, document)
 		}
 	}
 }
 
-func TestCTENull(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, N(), ED())
-}
-
-func TestCTEBool(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\ntrue", BD(), EvV, TT(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\nfalse", BD(), EvV, FF(), ED())
-
-	assertEncode(t, nil, "c0\nfalse", BD(), EvV, B(false), ED())
-	assertEncode(t, nil, "c0\ntrue", BD(), EvV, B(true), ED())
-
-	assertDecodeFails(t, "c0 truer")
-	assertDecodeFails(t, "c0 falser")
-	assertDecodeFails(t, "c0 -true")
-	assertDecodeFails(t, "c0 -false")
-}
-
-func TestCTEDecimalInt(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n0", BD(), EvV, PI(0), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n123", BD(), EvV, PI(123), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n9412504234235366", BD(), EvV, PI(9412504234235366), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n-49523", BD(), EvV, NI(49523), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n10000000000000000000000000000", BD(), EvV, BI(NewBigInt("10000000000000000000000000000", 10)), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n-10000000000000000000000000000", BD(), EvV, BI(NewBigInt("-10000000000000000000000000000", 10)), ED())
-	assertDecode(t, nil, "c0 100_00_0_00000000000_00000000_000_0", BD(), EvV, BI(NewBigInt("10000000000000000000000000000", 10)), ED())
-	assertDecode(t, nil, "c0 -4_9_5__2___3", BD(), EvV, NI(49523), ED())
-	assertEncode(t, nil, "c0\n100", BD(), EvV, I(100), ED())
-	assertEncode(t, nil, "c0\n-100", BD(), EvV, I(-100), ED())
-	assertDecode(t, nil, "c0 100", BD(), EvV, PI(100), ED())
-	assertDecode(t, nil, "c0 -100", BD(), EvV, NI(100), ED())
-
-	assertDecodeFails(t, "c0 1f")
-	assertDecodeFails(t, "c0 -1f")
-}
-
-func TestCTEBinaryInt(t *testing.T) {
-	assertDecode(t, nil, "c0 0b0", BD(), EvV, PI(0), ED())
-	assertDecode(t, nil, "c0 0b1", BD(), EvV, PI(1), ED())
-	assertDecode(t, nil, "c0 0b101", BD(), EvV, PI(5), ED())
-	assertDecode(t, nil, "c0 0b0010100", BD(), EvV, PI(20), ED())
-	assertDecode(t, nil, "c0 -0b100", BD(), EvV, NI(4), ED())
-	assertDecode(t, nil, "c0 -0b1_0_0", BD(), EvV, NI(4), ED())
-
-	assertDecode(t, nil, "c0 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-		BD(), EvV, BI(NewBigInt("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 2)), ED())
-	assertDecode(t, nil, "c0 -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-		BD(), EvV, BI(NewBigInt("-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 2)), ED())
-	assertDecode(t, nil, "c0 0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0",
-		BD(), EvV, BI(NewBigInt("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 2)), ED())
-
-	assertDecodeFails(t, "c0 0b2")
-}
-
-func TestCTEOctalInt(t *testing.T) {
-	assertDecode(t, nil, "c0 0o0", BD(), EvV, PI(0), ED())
-	assertDecode(t, nil, "c0 0o1", BD(), EvV, PI(1), ED())
-	assertDecode(t, nil, "c0 0o7", BD(), EvV, PI(7), ED())
-	assertDecode(t, nil, "c0 0o71", BD(), EvV, PI(57), ED())
-	assertDecode(t, nil, "c0 0o644", BD(), EvV, PI(420), ED())
-	assertDecode(t, nil, "c0 -0o777", BD(), EvV, NI(511), ED())
-	assertDecode(t, nil, "c0 -0o_7__7___7", BD(), EvV, NI(511), ED())
-
-	assertDecode(t, nil, "c0 0o1000000000000000000000000000000000000000000000",
-		BD(), EvV, BI(NewBigInt("1000000000000000000000000000000000000000000000", 8)), ED())
-	assertDecode(t, nil, "c0 -0o1000000000000000000000000000000000000000000000",
-		BD(), EvV, BI(NewBigInt("-1000000000000000000000000000000000000000000000", 8)), ED())
-	assertDecode(t, nil, "c0 0o1_0000000000000_0000000000000_000000000000000000_0",
-		BD(), EvV, BI(NewBigInt("1000000000000000000000000000000000000000000000", 8)), ED())
-
-	assertDecodeFails(t, "c0 0o9")
-}
-
-func TestCTEHexInt(t *testing.T) {
-	assertDecode(t, nil, "c0 0x0", BD(), EvV, PI(0), ED())
-	assertDecode(t, nil, "c0 0x1", BD(), EvV, PI(1), ED())
-	assertDecode(t, nil, "c0 0xf", BD(), EvV, PI(0xf), ED())
-	assertDecode(t, nil, "c0 0xfedcba9876543210", BD(), EvV, PI(0xfedcba9876543210), ED())
-	assertDecode(t, nil, "c0 0xFEDCBA9876543210", BD(), EvV, PI(0xfedcba9876543210), ED())
-	assertDecode(t, nil, "c0 -0x88", BD(), EvV, NI(0x88), ED())
-	assertDecode(t, nil, "c0 -0x_8_8__5_a_f__d", BD(), EvV, NI(0x885afd), ED())
-
-	assertDecode(t, nil, "c0 0x1000000000000000000000000000000000000000000000",
-		BD(), EvV, BI(NewBigInt("1000000000000000000000000000000000000000000000", 16)), ED())
-	assertDecode(t, nil, "c0 -0x1000000000000000000000000000000000000000000000",
-		BD(), EvV, BI(NewBigInt("-1000000000000000000000000000000000000000000000", 16)), ED())
-	assertDecode(t, nil, "c0 0x1_00000000000_00000000000_0000000000000000000000_0",
-		BD(), EvV, BI(NewBigInt("1000000000000000000000000000000000000000000000", 16)), ED())
-
-	assertDecodeFails(t, "c0 0xg")
+func TestCTEVersion(t *testing.T) {
+	// Not numeric
+	for i := 0; i < 0x100; i++ {
+		if i >= '0' && i <= '9' {
+			continue
+		}
+		document := string([]byte{'c', byte(i), ' ', '1'})
+		assertDecodeFails(t, document)
+	}
 }
 
 func TestCTEFloat(t *testing.T) {

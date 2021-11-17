@@ -175,9 +175,11 @@ func (_this Token) DecodeSmallBinaryInt(textPos *TextPositionCounter) (value int
 
 func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
 	_this.assertNotEnd(textPos, 0, "octal uint")
+	_this.assertCharPropertyAtOffset(textPos, 0, chars.DigitBase8, "octal uint")
 
 	const maxPreShiftOctal = uint64(0x1fffffffffffffff)
 	pos := 0
+	lastWasWS := false
 
 	for ; pos < len(_this); pos++ {
 		b := _this[pos]
@@ -189,12 +191,17 @@ func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, 
 			nextDigitValue := b - '0'
 			value = value<<3 + uint64(nextDigitValue)
 			digitCount++
+			lastWasWS = false
 		} else {
-			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
+			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "octal uint")
+			lastWasWS = true
 		}
 	}
 
 	if bigValue == nil {
+		if lastWasWS {
+			_this.UnexpectedChar(textPos, pos-1, "octal uint")
+		}
 		decodedCount = pos
 		return
 	}
@@ -206,11 +213,16 @@ func (_this Token) DecodeOctalUint(textPos *TextPositionCounter) (value uint64, 
 			bigValue = bigValue.Mul(bigValue, common.BigInt8)
 			bigValue = bigValue.Add(bigValue, big.NewInt(int64(nextDigitValue)))
 			digitCount++
+			lastWasWS = false
 		} else {
-			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "octal int")
+			_this.assertCharAtOffset(textPos, pos, charNumericWhitespace, "octal uint")
+			lastWasWS = true
 		}
 	}
 
+	if lastWasWS {
+		_this.UnexpectedChar(textPos, pos-1, "octal uint")
+	}
 	decodedCount = pos
 	return
 }
@@ -314,6 +326,8 @@ func (_this Token) DecodeSmallDecimalInt(textPos *TextPositionCounter) (value in
 
 func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint64, bigStartValue *big.Int) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
 	const maxPreShiftHex = uint64(0x0fffffffffffffff)
+	_this.assertCharPropertyAtOffset(textPos, 0, chars.DigitBase10|chars.LowerAF|chars.UpperAF, "hexadecimal uint")
+
 	pos := 0
 	lastWasWS := false
 
@@ -334,7 +348,7 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 				nextNybble = b - 'A' + 10
 			default:
 				if lastWasWS {
-					_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+					_this.UnexpectedChar(textPos, pos-1, "hexadecimal uint")
 				}
 				decodedCount = pos
 				return
@@ -350,9 +364,9 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 		}
 
 		if bigStartValue == nil {
-			_this.assertPosIsEnd(textPos, pos, "hexadecimal int")
+			_this.assertPosIsEnd(textPos, pos, "hexadecimal uint")
 			if lastWasWS {
-				_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+				_this.UnexpectedChar(textPos, pos-1, "hexadecimal uint")
 			}
 			decodedCount = pos
 			return
@@ -375,7 +389,7 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 			nextNybble = b - 'A' + 10
 		default:
 			if lastWasWS {
-				_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+				_this.UnexpectedChar(textPos, pos-1, "hexadecimal uint")
 			}
 			decodedCount = pos
 			return
@@ -388,14 +402,14 @@ func (_this Token) CompleteHexUint(textPos *TextPositionCounter, startValue uint
 	}
 
 	if lastWasWS {
-		_this.UnexpectedChar(textPos, pos-1, "decimal uint")
+		_this.UnexpectedChar(textPos, pos-1, "hexadecimal uint")
 	}
 	decodedCount = pos
 	return
 }
 
 func (_this Token) DecodeHexUint(textPos *TextPositionCounter) (value uint64, bigValue *big.Int, digitCount int, decodedCount int) {
-	_this.assertNotEnd(textPos, 0, "hex uint")
+	_this.assertNotEnd(textPos, 0, "hexadecimal uint")
 	return _this.CompleteHexUint(textPos, 0, nil)
 }
 
@@ -673,30 +687,28 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 	if _this[pos] == '-' {
 		sign = -1
 		pos++
+		_this.assertNotEnd(textPos, pos, "hex float")
 	}
 
 	// Note: The "0x" is implied, and not actually present in the text.
 
+	switch {
+	case bytes.Equal(_this, byteStringNan):
+		value = common.QuietNan
+		decodedCount = pos + 3
+		return
+	case bytes.Equal(_this, byteStringSnan):
+		value = common.SignalingNan
+		decodedCount = pos + 4
+		return
+	case bytes.Equal(_this[pos:], byteStringInf):
+		value = math.Inf(int(sign))
+		decodedCount = pos + 3
+		return
+	}
+
 	coefficient, bigCoefficient, coefficientDigitCount, bytesDecoded := _this[pos:].DecodeHexUint(textPos)
 	pos += bytesDecoded
-	if bytesDecoded == 0 {
-		common.ASCIIBytesToLower(_this)
-		switch {
-		case bytes.Equal(_this, byteStringNan):
-			value = common.QuietNan
-			decodedCount = pos + 3
-			return
-		case bytes.Equal(_this, byteStringSnan):
-			value = common.SignalingNan
-			decodedCount = pos + 4
-			return
-		case bytes.Equal(_this[pos:], byteStringInf):
-			value = math.Inf(int(sign))
-			decodedCount = pos + 3
-			return
-		}
-		_this.UnexpectedChar(textPos, pos, "hex float")
-	}
 
 	if _this.IsAtEnd(pos) {
 		if bigCoefficient != nil {

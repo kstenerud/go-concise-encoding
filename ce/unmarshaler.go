@@ -21,7 +21,12 @@
 package ce
 
 import (
+	"fmt"
 	"io"
+
+	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // Unmarshaler decodes bytes from an input source, then creates, fills out, and
@@ -32,4 +37,16 @@ type Unmarshaler interface {
 
 	// Unmarshal an object from the given document, in a type compatible with template.
 	UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error)
+}
+
+func chooseUnmarshaler(identifier byte, opts *options.CEUnmarshalerOptions) (unmarshaler Unmarshaler, err error) {
+	switch identifier {
+	case 'c':
+		unmarshaler = cte.NewUnmarshaler(opts)
+	case 0x83:
+		unmarshaler = cbe.NewUnmarshaler(opts)
+	default:
+		err = fmt.Errorf("%02d: Unknown CE identifier", identifier)
+	}
+	return
 }

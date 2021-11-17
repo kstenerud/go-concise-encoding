@@ -157,7 +157,7 @@ func ED() *test.TEvent                       { return test.ED() }
 
 var DebugPrintEvents = false
 
-func decodeToEvents(opts *options.CTEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
+func decodeToEvents(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var receiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver = ter
@@ -179,7 +179,7 @@ func encodeEvents(opts *options.CTEEncoderOptions, events ...*test.TEvent) []byt
 	return buffer.Bytes()
 }
 
-func assertDecode(t *testing.T, opts *options.CTEDecoderOptions, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
+func assertDecode(t *testing.T, opts *options.CEDecoderOptions, document string, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
 	actualEvents, err := decodeToEvents(opts, []byte(document))
 	if err != nil {
 		t.Errorf("Error [%v] while decoding document [%v]", err, document)
@@ -220,7 +220,7 @@ func assertEncodeFails(t *testing.T, opts *options.CTEEncoderOptions, events ...
 	})
 }
 
-func assertDecodeEncode(t *testing.T, decodeOpts *options.CTEDecoderOptions,
+func assertDecodeEncode(t *testing.T, decodeOpts *options.CEDecoderOptions,
 	encodeOpts *options.CTEEncoderOptions, document string,
 	expectedEvents ...*test.TEvent) (successful bool) {
 	successful, actualEvents := assertDecode(t, decodeOpts, document, expectedEvents...)

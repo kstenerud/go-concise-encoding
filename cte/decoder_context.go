@@ -55,7 +55,7 @@ type DecoderStackEntry struct {
 }
 
 type DecoderContext struct {
-	opts                 options.CTEDecoderOptions
+	opts                 options.CEDecoderOptions
 	Stream               Reader
 	TextPos              *TextPositionCounter
 	EventReceiver        events.DataEventReceiver
@@ -65,7 +65,7 @@ type DecoderContext struct {
 
 	ArrayContainsComments bool
 	ArrayType             events.ArrayType
-	ArrayBytesPerElement     int
+	ArrayBytesPerElement  int
 	ArrayDigitType        string
 	Scratch               []byte
 }
@@ -78,7 +78,7 @@ func (_this *DecoderContext) BeginArray(digitType string, arrayType events.Array
 	_this.ArrayContainsComments = false
 }
 
-func (_this *DecoderContext) Init(opts *options.CTEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
+func (_this *DecoderContext) Init(opts *options.CEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
 	_this.opts = *opts
 	_this.Stream.Init(reader)
 	_this.TextPos = &_this.Stream.TextPos

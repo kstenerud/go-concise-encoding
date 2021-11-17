@@ -101,13 +101,13 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 type Unmarshaler struct {
 	session builder.Session
 	decoder Decoder
-	opts    options.CTEUnmarshalerOptions
+	opts    options.CEUnmarshalerOptions
 	rules   rules.RulesEventReceiver
 }
 
 // Create a new unmarshaler with the specified options.
 // If opts is nil, default options will be used.
-func NewUnmarshaler(opts *options.CTEUnmarshalerOptions) *Unmarshaler {
+func NewUnmarshaler(opts *options.CEUnmarshalerOptions) *Unmarshaler {
 	_this := &Unmarshaler{}
 	_this.Init(opts)
 	return _this
@@ -115,7 +115,7 @@ func NewUnmarshaler(opts *options.CTEUnmarshalerOptions) *Unmarshaler {
 
 // Init an unmarshaler with the specified options.
 // If opts is nil, default options will be used.
-func (_this *Unmarshaler) Init(opts *options.CTEUnmarshalerOptions) {
+func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 	_this.session.Init(nil, &_this.opts.Session)

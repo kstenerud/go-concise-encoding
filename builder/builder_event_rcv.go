@@ -65,6 +65,9 @@ func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, 
 		session.opts.CustomTextBuildFunction,
 		session.GetBuilderGeneratorForType)
 
+	if dstType == nil {
+		dstType = common.TypeInterface
+	}
 	_this.object = reflect.New(dstType).Elem()
 	generator := session.GetBuilderGeneratorForType(dstType)
 	_this.context.StackBuilder(newTopLevelBuilder(generator, func(value reflect.Value) {

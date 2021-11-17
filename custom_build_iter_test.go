@@ -136,7 +136,7 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
-	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
@@ -164,7 +164,7 @@ func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
 	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
-	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
@@ -216,7 +216,7 @@ func assertCBEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
-	unmarshalOpts := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
@@ -244,7 +244,7 @@ func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
-	unmarshalOpts := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 

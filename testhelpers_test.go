@@ -167,7 +167,7 @@ func ED() *test.TEvent                       { return test.ED() }
 
 var DebugPrintEvents = false
 
-func cbeDecode(opts *options.CBEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
+func cbeDecode(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var receiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver = ter
@@ -190,13 +190,13 @@ func cbeEncode(encodeOpts *options.CBEEncoderOptions, evts ...*test.TEvent) []by
 }
 
 func cbeEncodeDecode(encodeOpts *options.CBEEncoderOptions,
-	decodeOpts *options.CBEDecoderOptions,
+	decodeOpts *options.CEDecoderOptions,
 	expected ...*test.TEvent) (events []*test.TEvent, err error) {
 
 	return cbeDecode(decodeOpts, cbeEncode(encodeOpts, expected...))
 }
 
-func cteDecode(opts *options.CTEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
+func cteDecode(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var receiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver = ter
@@ -219,7 +219,7 @@ func cteEncode(encodeOpts *options.CTEEncoderOptions, events ...*test.TEvent) []
 }
 
 func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
-	decodeOpts *options.CTEDecoderOptions,
+	decodeOpts *options.CEDecoderOptions,
 	events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
 
 	events = test.FilterEventsForCTE(events)
@@ -232,7 +232,7 @@ func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
 
 func assertEncodeDecodeCBEOpts(t *testing.T,
 	encodeOpts *options.CBEEncoderOptions,
-	decodeOpts *options.CBEDecoderOptions,
+	decodeOpts *options.CEDecoderOptions,
 	expectedEvents ...*test.TEvent) {
 
 	var document []byte
@@ -262,7 +262,7 @@ func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
 
 func assertEncodeDecodeCTEOpts(t *testing.T,
 	encodeOpts *options.CTEEncoderOptions,
-	decodeOpts *options.CTEDecoderOptions,
+	decodeOpts *options.CEDecoderOptions,
 	expectedEvents ...*test.TEvent) {
 
 	var document []byte
@@ -292,9 +292,9 @@ func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
 
 func assertEncodeDecodeOpts(t *testing.T,
 	cbeEncodeOpts *options.CBEEncoderOptions,
-	cbeDecodeOpts *options.CBEDecoderOptions,
+	cbeDecodeOpts *options.CEDecoderOptions,
 	cteEncodeOpts *options.CTEEncoderOptions,
-	cteDecodeOpts *options.CTEDecoderOptions,
+	cteDecodeOpts *options.CEDecoderOptions,
 	expected ...*test.TEvent) {
 
 	assertEncodeDecodeCBEOpts(t, cbeEncodeOpts, cbeDecodeOpts, expected...)
@@ -307,9 +307,9 @@ func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 
 func assertDecodeCBECTE(t *testing.T,
 	cteEncodeOpts *options.CTEEncoderOptions,
-	cteDecodeOpts *options.CTEDecoderOptions,
+	cteDecodeOpts *options.CEDecoderOptions,
 	cbeEncodeOpts *options.CBEEncoderOptions,
-	cbeDecodeOpts *options.CBEDecoderOptions,
+	cbeDecodeOpts *options.CEDecoderOptions,
 	cteExpectedDocument string,
 	cbeExpectedDocument []byte,
 	expectedEvents ...*test.TEvent) {
@@ -378,9 +378,9 @@ func assertDecodeCBECTE(t *testing.T,
 
 func assertDecodeEncode(t *testing.T,
 	cteEncodeOpts *options.CTEEncoderOptions,
-	cteDecodeOpts *options.CTEDecoderOptions,
+	cteDecodeOpts *options.CEDecoderOptions,
 	cbeEncodeOpts *options.CBEEncoderOptions,
-	cbeDecodeOpts *options.CBEDecoderOptions,
+	cbeDecodeOpts *options.CEDecoderOptions,
 	cteExpectedDocument string,
 	cbeExpectedDocument []byte,
 	expectedEvents ...*test.TEvent) {
@@ -442,7 +442,7 @@ func assertDecodeEncode(t *testing.T,
 
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	marshalOptions := options.DefaultCBEMarshalerOptions()
-	unmarshalOptions := options.DefaultCBEUnmarshalerOptions()
+	unmarshalOptions := options.DefaultCEUnmarshalerOptions()
 	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 	// marshalOptions.Iterator.RecursionSupport = true
 	// assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
@@ -450,7 +450,7 @@ func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 
 func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
 	marshalOptions *options.CBEMarshalerOptions,
-	unmarshalOptions *options.CBEUnmarshalerOptions,
+	unmarshalOptions *options.CEUnmarshalerOptions,
 	expected interface{}) {
 
 	buffer := &bytes.Buffer{}
@@ -475,7 +475,7 @@ func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
 
 func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	marshalOptions := options.DefaultCTEMarshalerOptions()
-	unmarshalOptions := options.DefaultCTEUnmarshalerOptions()
+	unmarshalOptions := options.DefaultCEUnmarshalerOptions()
 	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 	marshalOptions.Iterator.RecursionSupport = true
 	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
@@ -483,7 +483,7 @@ func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
 
 func assertCTEMarshalUnmarshalWithOptions(t *testing.T,
 	marshalOptions *options.CTEMarshalerOptions,
-	unmarshalOptions *options.CTEUnmarshalerOptions,
+	unmarshalOptions *options.CEUnmarshalerOptions,
 	expected interface{}) {
 
 	buffer := &bytes.Buffer{}

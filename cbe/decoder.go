@@ -34,12 +34,12 @@ import (
 // Decodes CBE documents.
 type Decoder struct {
 	reader Reader
-	opts   options.CBEDecoderOptions
+	opts   options.CEDecoderOptions
 }
 
 // Create a new CBE decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
-func NewDecoder(opts *options.CBEDecoderOptions) *Decoder {
+func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(opts)
 	return _this
@@ -47,7 +47,7 @@ func NewDecoder(opts *options.CBEDecoderOptions) *Decoder {
 
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
-func (_this *Decoder) Init(opts *options.CBEDecoderOptions) {
+func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 	_this.reader.Init()

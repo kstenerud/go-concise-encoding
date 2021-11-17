@@ -61,7 +61,7 @@ func (_this *Reader) Init(reader io.Reader) {
 
 func (_this *Reader) readNext() {
 	// Can't create local [1]byte here because it mallocs? WTF???
-	if _, err := _this.reader.Read(_this.byteBuff[:]); err == nil {
+	if n, err := _this.reader.Read(_this.byteBuff[0:1]); n > 0 {
 		_this.lastByte = chars.ByteWithEOF(_this.byteBuff[0])
 	} else {
 		if err == io.EOF {

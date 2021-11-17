@@ -118,7 +118,7 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="c0 0b1"              "events"=["v 0" "n 1"]}
                 {"source"="c0 -0b101"           "events"=["v 0" "n -5"]}
                 {"source"="c0 0b0010100"        "events"=["v 0" "n 20"]}
-                {"source"="c0 -0b1_0_0"        "events"=["v 0" "n -4"]}
+                {"source"="c0 -0b1_0_0"         "events"=["v 0" "n -4"]}
                 {"source"="c0 0b0_0_1__010__1"  "events"=["v 0" "n 21"]}
                 {
                     "source" = "c0 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
@@ -148,6 +148,68 @@ c0 |u8x /* foo */ 1 2 3|
                 "c0 0b1_"  // Whitespace is not between digits
                 "c0 -0b_1" // Whitespace is not between digits
                 "c0 -0b1_" // Whitespace is not between digits
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Octal Integer"
+            "decodeMustSucceed" = [
+                {"source"="c0 0o0"         "events"=["v 0" "n 0"]}
+                {"source"="c0 -0o0"        "events"=["v 0" "n -0"]}
+                {"source"="c0 0o1"         "events"=["v 0" "n 1"]}
+                {"source"="c0 0o7"         "events"=["v 0" "n 7"]}
+                {"source"="c0 -0o51"       "events"=["v 0" "n -0o51"]}
+                {"source"="c0 0o644"       "events"=["v 0" "n 0o644"]}
+                {"source"="c0 -0o777"      "events"=["v 0" "n -0o777"]}
+                {"source"="c0 0o1000000000000000000000000000000000000000000000"  "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
+                {"source"="c0 -0o1000000000000000000000000000000000000000000000"  "events"=["v 0" "n -0o1000000000000000000000000000000000000000000000"]}
+                {"source"="c0 0o1000000_0000000000_00000000000_000000000000_000000"  "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
+                {"source"="c0 0o7__7___7"  "events"=["v 0" "n 0o777"]}
+            ]
+            "decodeMustFail" = [
+                "c0 0o19"  // Non-octal digit
+                "c0 -0o19" // Non-octal digit
+                "c0 _0o1"  // Bad whitespace placement
+                "c0 -_0o1" // Bad whitespace placement
+                "c0 0_o1"  // Bad whitespace placement
+                "c0 -0_o1" // Bad whitespace placement
+                "c0 0o_1"  // Whitespace is not between digits
+                "c0 0o1_"  // Whitespace is not between digits
+                "c0 -0o_1" // Whitespace is not between digits
+                "c0 -0o1_" // Whitespace is not between digits
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Hexadecimal Integer"
+            "decodeMustSucceed" = [
+                {"source"="c0 0x0"                  "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0"                 "events"=["v 0" "n -0"]}
+                {"source"="c0 0x1"                  "events"=["v 0" "n 1"]}
+                {"source"="c0 0xf"                  "events"=["v 0" "n 15"]}
+                {"source"="c0 -0xd4"                "events"=["v 0" "n -0xd4"]}
+                {"source"="c0 0xfedcba9876543210"   "events"=["v 0" "n 0xfedcba9876543210"]}
+                {"source"="c0 -0xFEDCBA9876543210"  "events"=["v 0" "n -0xfedcba9876543210"]}
+                {"source"="c0 0x1000000000000000000000000000000000000000000000"  "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
+                {"source"="c0 -0x1000000000000000000000000000000000000000000000"  "events"=["v 0" "n -0x1000000000000000000000000000000000000000000000"]}
+                {"source"="c0 0x100000000_000000_00000_000__000_0000000000000_0000000"  "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
+                {"source"="c0 0x8_8__5_a_f__d"  "events"=["v 0" "n 0x885afd"]}
+            ]
+            "decodeMustFail" = [
+                "c0 0x1g"  // Non-hex digit
+                "c0 -0x1g" // Non-hex digit
+                "c0 _0x1"  // Bad whitespace placement
+                "c0 -_0x1" // Bad whitespace placement
+                "c0 0_x1"  // Bad whitespace placement
+                "c0 -0_x1" // Bad whitespace placement
+                "c0 0x_1"  // Whitespace is not between digits
+                "c0 0x1_"  // Whitespace is not between digits
+                "c0 -0x_1" // Whitespace is not between digits
+                "c0 -0x1_" // Whitespace is not between digits
             ]
         }
 
