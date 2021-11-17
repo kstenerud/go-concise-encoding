@@ -3,11 +3,27 @@ Concise Encoding Go Library
 
 This is the official reference implementation of [concise encoding](https://github.com/kstenerud/concise-encoding).
 
-Concise Encoding is the friendly data format for human and machine. Ad-hoc, secure, with 1:1 compatible twin binary and text formats and rich type support.
+Concise Encoding is the secure data format for a modern world, solving these problems:
 
- * **Edit text, transmit binary.** Humans love text. Machines love binary. With Concise Encoding, conversion is 1:1 and seamless.
- * **Secure By Design.** Precise decoding behavior means no poisoned data, no privilege escalations, and no DOSing!
- * **Rich type support.** Boolean, integer, float, string, bytes, time, URI, UUID, list, map, markup, and more!
+### Security
+
+State actors, criminal organizations and mercenaries are now actively hacking governments, companies and individuals to steal secrets, plant malware, and hold your data hostage.
+
+The existing ad-hoc data formats are [too loosely defined to be secure](ce-structure.md#attack-vectors), and can't be fixed because they're not versioned.
+
+**Concise Encoding is designed for security, and is versioned so that it can be updated to handle new threats**.
+
+### Efficiency AND ease-of-use
+
+We send so much data now that efficiency is critical, but switching to binary means giving up the ease of text formats.
+
+**Concise Encoding gives you ease and efficiency with its 1:1 compatible [text](cte-specification.md) and [binary](cbe-specification.md) formats. `Edit text. Transmit binary.`**
+
+### Types
+
+Lack of types forces everyone to add extra encoding steps to send their data, which is buggy, reduces compatibility, and opens new security holes.
+
+**Concise Encoding supports all of the common types natively**.
 
 
 

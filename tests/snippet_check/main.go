@@ -18,9 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// Package build generates code for other parts of the library. The lack of
-// generics and inheritance makes a number of things tedious and error prone,
-// which these generators attempt to deal with.
+// Snippet check looks through documents for CTE snippets (```cte ... ```)
+// and attempts to parse it in order to verify that it is valid.
 package main
 
 import (
