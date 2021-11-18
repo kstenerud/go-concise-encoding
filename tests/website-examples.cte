@@ -178,15 +178,15 @@ c0
             "cte" = "\.%%%%
 c0
 {
-    "main-view" = <View,
+    "main-view" = <View;
         <Image "src"=@"img/avatar-image.jpg">
-        <Text "id"="HelloText",
+        <Text "id"="HelloText";
             Hello! Please choose a name!
         >
         <TextInput "id"="NameInput" "style"={"height"=40 "color"="gray"} "OnChange"="\.@@
             NameInput.Parent.InsertRawAfter(NameInput, '<Image "src"=@"img/check.svg">')
             HelloText.SetText("Hello, " + NameInput.Text + "!")
-            @@",
+            @@";
             Name me!
         >
     >

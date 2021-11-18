@@ -345,7 +345,7 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 	_this.WriteDecimalUintDigits(uint64(value.Second), 2)
 
 	if value.Nanosecond != 0 {
-		_this.WriteByte('.')
+		_this.WriteByte('.') // TODO: Optional radix ','
 		_this.WriteDecimalUintLeftLoaded(uint64(value.Nanosecond), 9)
 	}
 
@@ -588,7 +588,7 @@ func (_this *Writer) WriteMarkupValueSeparator() {
 }
 
 func (_this *Writer) WriteMarkupContentsBegin() {
-	_this.WriteByte(',')
+	_this.WriteByte(';')
 }
 
 func (_this *Writer) WriteMarkupEnd() {

@@ -19,7 +19,7 @@ c0
  * - Paste the contents of bugreport.cte into your bug report.
  */
 {
-    "tests" = [
+    "ceTests" = [
         {
             "name" = "Document is wrongfully rejected"
             "from"   = ["b"]

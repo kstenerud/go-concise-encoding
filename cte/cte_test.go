@@ -118,7 +118,6 @@ func TestCTEFloat(t *testing.T) {
 	assertDecodeFails(t, "c0 [0,5.4]")
 	assertDecodeFails(t, "c0 [-blah]")
 	assertDecodeFails(t, "c0 [1.1.1]")
-	assertDecodeFails(t, "c0 [1,1]")
 	assertDecodeFails(t, "c0 [1.1e4e5]")
 	assertDecodeFails(t, "c0 [0.a]")
 	assertDecodeFails(t, "c0 [0.5et]")
@@ -1298,97 +1297,97 @@ func TestCTEMarkup(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 <a 1=2 3=4>`, BD(), EvV, MUP("a"), PI(1), PI(2), PI(3), PI(4), E(), E(), ED())
 	assertDecode(t, nil, `c0
-<a,>`, BD(), EvV, MUP("a"), E(), E(), ED())
+<a;>`, BD(), EvV, MUP("a"), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     a
 >`, BD(), EvV, MUP("a"), E(), S("a"), E(), ED())
-	assertDecode(t, nil, `c0 <a,a string >`, BD(), EvV, MUP("a"), E(), S("a string"), E(), ED())
+	assertDecode(t, nil, `c0 <a;a string >`, BD(), EvV, MUP("a"), E(), S("a string"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     <a>
 >`, BD(), EvV, MUP("a"), E(), MUP("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     <a>
 >`, BD(), EvV, MUP("a"), E(), MUP("a"), E(), E(), E(), ED())
-	assertDecode(t, nil, `c0 <a 1=2 ,>`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), E(), ED())
+	assertDecode(t, nil, `c0 <a 1=2 ;>`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a 1=2,
+<a 1=2;
     a
 >`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), S("a"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a 1=2,
+<a 1=2;
     <a>
 >`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), MUP("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a 1=2,
+<a 1=2;
     a 
     <a>
 >`, BD(), EvV, MUP("a"), PI(1), PI(2), E(), S("a "), MUP("a"), E(), E(), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     ***
 >`, BD(), EvV, MUP("a"), E(), S("***"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     /x
 >`, BD(), EvV, MUP("a"), E(), S("/x"), E(), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     \\
 >`, BD(), EvV, MUP("a"), E(), S("\\"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     \210
 >`, BD(), EvV, MUP("a"), E(), S("\u0010"), E(), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     \\
 >`, BD(), EvV, MUP("a"), E(), S("\\"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     \<
 >`, BD(), EvV, MUP("a"), E(), S("<"), E(), ED())
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     \>
 >`, BD(), EvV, MUP("a"), E(), S(">"), E(), ED())
-	assertDecode(t, nil, `c0 <a,\*>`, BD(), EvV, MUP("a"), E(), S("*"), E(), ED())
-	assertDecode(t, nil, `c0 <a,\/>`, BD(), EvV, MUP("a"), E(), S("/"), E(), ED())
+	assertDecode(t, nil, `c0 <a;\*>`, BD(), EvV, MUP("a"), E(), S("*"), E(), ED())
+	assertDecode(t, nil, `c0 <a;\/>`, BD(), EvV, MUP("a"), E(), S("/"), E(), ED())
 
-	assertDecodeFails(t, `c0 <a,\y>`)
+	assertDecodeFails(t, `c0 <a;\y>`)
 }
 
 func TestCTEMarkupVerbatimString(t *testing.T) {
-	assertDecode(t, nil, `c0 <s, \.## <d></d>##>`)
-	assertDecode(t, nil, `c0 <s, \.## /d##>`)
+	assertDecode(t, nil, `c0 <s; \.## <d></d>##>`)
+	assertDecode(t, nil, `c0 <s; \.## /d##>`)
 }
 
 func TestCTEMarkupMarkup(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     <a>
 >`, BD(), EvV, MUP("a"), E(), MUP("a"), E(), E(), E(), ED())
 }
 
 func TestCTEMarkupComment(t *testing.T) {
-	assertDecode(t, nil, "c0 <a,//blah\n>", BD(), EvV, MUP("a"), E(), COM(false, "blah"), E(), ED())
-	assertDecode(t, nil, "c0 <a,//blah\n a>", BD(), EvV, MUP("a"), E(), COM(false, "blah"), S("a"), E(), ED())
-	assertDecode(t, nil, "c0 <a,a//blah\n a>", BD(), EvV, MUP("a"), E(), S("a"), COM(false, "blah"), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a;//blah\n>", BD(), EvV, MUP("a"), E(), COM(false, "blah"), E(), ED())
+	assertDecode(t, nil, "c0 <a;//blah\n a>", BD(), EvV, MUP("a"), E(), COM(false, "blah"), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a;a//blah\n a>", BD(), EvV, MUP("a"), E(), S("a"), COM(false, "blah"), S("a"), E(), ED())
 
-	assertDecode(t, nil, "c0 <a,/*blah*/>", BD(), EvV, MUP("a"), E(), COM(true, "blah"), E(), ED())
-	assertDecode(t, nil, "c0 <a,a/*blah*/>", BD(), EvV, MUP("a"), E(), S("a"), COM(true, "blah"), E(), ED())
-	assertDecode(t, nil, "c0 <a,/*blah*/a>", BD(), EvV, MUP("a"), E(), COM(true, "blah"), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a;/*blah*/>", BD(), EvV, MUP("a"), E(), COM(true, "blah"), E(), ED())
+	assertDecode(t, nil, "c0 <a;a/*blah*/>", BD(), EvV, MUP("a"), E(), S("a"), COM(true, "blah"), E(), ED())
+	assertDecode(t, nil, "c0 <a;/*blah*/a>", BD(), EvV, MUP("a"), E(), COM(true, "blah"), S("a"), E(), ED())
 
-	assertDecode(t, nil, "c0 <a,/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), COM(true, "/*blah*/"), E(), ED())
-	assertDecode(t, nil, "c0 <a,a/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), S("a"), COM(true, "/*blah*/"), E(), ED())
-	assertDecode(t, nil, "c0 <a,/*/*blah*/*/a>", BD(), EvV, MUP("a"), E(), COM(true, "/*blah*/"), S("a"), E(), ED())
+	assertDecode(t, nil, "c0 <a;/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), COM(true, "/*blah*/"), E(), ED())
+	assertDecode(t, nil, "c0 <a;a/*/*blah*/*/>", BD(), EvV, MUP("a"), E(), S("a"), COM(true, "/*blah*/"), E(), ED())
+	assertDecode(t, nil, "c0 <a;/*/*blah*/*/a>", BD(), EvV, MUP("a"), E(), COM(true, "/*blah*/"), S("a"), E(), ED())
 
 	// TODO: Should it be picking up the extra space between the x and comment?
-	assertDecode(t, nil, "c0 <a,x /*blah*/ x>", BD(), EvV, MUP("a"), E(), S("x "), COM(true, "blah"), S("x"), E(), ED())
+	assertDecode(t, nil, "c0 <a;x /*blah*/ x>", BD(), EvV, MUP("a"), E(), S("x "), COM(true, "blah"), S("x"), E(), ED())
 }
 
 func TestCTENamed(t *testing.T) {
@@ -1504,7 +1503,7 @@ func TestCTECommentAfterValue(t *testing.T) {
 func TestCTEComplexComment(t *testing.T) {
 	document := []byte(`c0
 /**/ { /**/ "a"= /**/ "b" /**/ "c"= /**/
-<a,
+<a;
     /**/
     <b>
 >}`)
@@ -1517,7 +1516,7 @@ func TestCTEComplexComment(t *testing.T) {
     "b"
     /**/
     "c" = /**/
-    <a,
+    <a;
         /**/
         <b>
     >
@@ -1606,19 +1605,19 @@ func TestCTEMarkupPretty(t *testing.T) {
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
-<a,
+<a;
     aaa
 >`, BD(), EvV, MUP("a"), E(), S("aaa"), E(), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
-<a "x"="y",
+<a "x"="y";
     aaa
 >`, BD(), EvV, MUP("a"), S("x"), S("y"), E(), S("aaa"), E(), ED())
 
 	opts.Indent = "    "
 	assertDecodeEncode(t, nil, opts, `c0
-<a "x"="y" "z"=1,
+<a "x"="y" "z"=1;
     aaa
 >`, BD(), EvV, MUP("a"), S("x"), S("y"), S("z"), PI(1), E(), S("aaa"), E(), ED())
 }
@@ -1728,16 +1727,16 @@ func TestCTEArrayPretty(t *testing.T) {
 }
 
 func TestCTEMarkupVerbatimPretty(t *testing.T) {
-	assertDecode(t, nil, `c0 <blah, \.# aaa #>`,
+	assertDecode(t, nil, `c0 <blah; \.# aaa #>`,
 		BD(), EvV, MUP("blah"), E(), S("aaa"), E(), ED())
 }
 
 func TestCTEBufferEdge(t *testing.T) {
 	assertDecode(t, nil, `c0
 {
-     1  = <a,
-            <b,
-               <c, `+"`"+`##                       ##>
+     1  = <a;
+            <b;
+               <c; `+"`"+`##                       ##>
                          >
                        >
 }
@@ -1747,9 +1746,9 @@ func TestCTEBufferEdge(t *testing.T) {
 func TestCTEBufferEdge2(t *testing.T) {
 	assertDecode(t, nil, `c0
 {
-    "x"  = <a,
-                     <b,
-                             <c, `+"`"+`##                     ##>
+    "x"  = <a;
+                     <b;
+                             <c; `+"`"+`##                     ##>
                            >
                        >
 }
@@ -1794,10 +1793,10 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "ref2" = $tag1
     "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
-        <body,
+    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en";
+        <body;
             Please choose from the following widgets:
-            <div "id"="parent" "style"="normal" "ref-id"=1,
+            <div "id"="parent" "style"="normal" "ref-id"=1;
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
             >
@@ -1842,10 +1841,10 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
     "ref2" = $tag1
     "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
     // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en",
-        <body,
+    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en";
+        <body;
             Please choose from the following widgets: 
-            <div "id"="parent" "style"="normal" "ref-id"=1,
+            <div "id"="parent" "style"="normal" "ref-id"=1;
                 /* Here we use a backtick to induce verbatim processing.
                  * In this case, "#" is chosen as the ending sequence */
             >
@@ -1894,13 +1893,13 @@ func TestNestedComment(t *testing.T) {
 
 func TestMarkupComment(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     /* comment */
     1
 >`, BD(), EvV, MUP("a"), E(), COM(true, " comment "), S("1"), E(), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
-<a,
+<a;
     /* comment */
 >`, BD(), EvV, MUP("a"), E(), COM(true, " comment "), E(), ED())
 }
@@ -1997,15 +1996,15 @@ func TestMismatchedContainerEnd(t *testing.T) {
 	assertDecodeFails(t, `c0 <a 1=2]`)
 	assertDecodeFails(t, `c0 <a 1=2)`)
 
-	assertDecode(t, nil, `c0 <a,a>`, BD(), EvV, MUP("a"), E(), S("a"), E(), ED())
-	assertDecodeFails(t, `c0 <a,a}`)
-	assertDecodeFails(t, `c0 <a,a]`)
-	assertDecodeFails(t, `c0 <a,a)`)
+	assertDecode(t, nil, `c0 <a;a>`, BD(), EvV, MUP("a"), E(), S("a"), E(), ED())
+	assertDecodeFails(t, `c0 <a;a}`)
+	assertDecodeFails(t, `c0 <a;a]`)
+	assertDecodeFails(t, `c0 <a;a)`)
 
-	assertDecode(t, nil, `c0 <a 1=2,a>`, BD(), EvV, MUP("a"), I(1), I(2), E(), S("a"), E(), ED())
-	assertDecodeFails(t, `c0 <a 1=2,a}`)
-	assertDecodeFails(t, `c0 <a 1=2,a]`)
-	assertDecodeFails(t, `c0 <a 1=2,a)`)
+	assertDecode(t, nil, `c0 <a 1=2;a>`, BD(), EvV, MUP("a"), I(1), I(2), E(), S("a"), E(), ED())
+	assertDecodeFails(t, `c0 <a 1=2;a}`)
+	assertDecodeFails(t, `c0 <a 1=2;a]`)
+	assertDecodeFails(t, `c0 <a 1=2;a)`)
 
 	assertDecode(t, nil, `c0 @(@"a" @"a" 1)`, BD(), EvV, EDGE(), RID("a"), RID("a"), I(1), ED())
 	assertDecodeFails(t, `c0 @(@"a" @"a" 1]`)
@@ -2027,7 +2026,7 @@ func TestSingleLineCommentAndObject(t *testing.T) {
 }`, BD(), EvV, M(), COM(false, " a comment"), PI(1), PI(2), E(), ED())
 
 	assertDecodeEncode(t, nil, nil, `c0
-<x,
+<x;
     // a comment
     blah
 >`, BD(), EvV, MUP("x"), E(), COM(false, " a comment"), S("blah"), E(), ED())

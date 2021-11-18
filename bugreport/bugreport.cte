@@ -20,7 +20,7 @@ c0
  * Note: There are unit test templates in the "templates" dir for common classes of bugs.
  */
 {
-    "tests" = [
+    "ceTests" = [
         {
             "name" = "My Bug Report"
             "cte" = "\.%%%%

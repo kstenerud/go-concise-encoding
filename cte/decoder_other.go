@@ -113,7 +113,7 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	}
 
 	switch token[decodedCount] {
-	case '.':
+	case '.', ',':
 		// 1.23
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
 	case '-':
@@ -179,7 +179,7 @@ func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 	}
 
 	switch token[decodedCount] {
-	case '.':
+	case '.', ',':
 		// 0.123
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
 		return
@@ -223,7 +223,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	}
 
 	switch token[decodedCount] {
-	case '.':
+	case '.', ',':
 		// 1.23
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
 	case '-':
@@ -287,7 +287,7 @@ func decode0Based(ctx *DecoderContext) {
 	}
 
 	switch token[decodedCount] {
-	case '.':
+	case '.', ',':
 		// 0.123
 		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
 	case ':':
@@ -479,7 +479,7 @@ func decodeTokenAsHexNumber(ctx *DecoderContext, token Token, sign int) {
 		return
 	}
 
-	if token[0] != '.' {
+	if token[0] != '.' && token[0] != ',' {
 		token.UnexpectedChar(ctx.TextPos, 0, "hexadecimal int")
 	}
 

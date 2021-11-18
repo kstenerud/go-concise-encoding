@@ -108,7 +108,7 @@ func parseNumericEvent(eventStr string) *test.TEvent {
 
 		}
 
-		return test.TEventBigDecimalFloat, test.NewBDF(str)
+		return test.TEventBigDecimalFloat, test.NewBDF(strings.Replace(str, ",", ".", 1))
 	}
 
 	eventType, v := iparseNumeric(get1ParamArg(eventStr))

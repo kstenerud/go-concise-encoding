@@ -640,15 +640,15 @@ c0
             "name" = "Markup"
             "cte" = "\.%%%%
 c0
-<View,
+<View;
     <Image "src"=@"images/avatar-image.jpg">
-    <Text,
+    <Text;
         Hello! Please choose a name!
     >
     <TextInput "id"="name" "style"={
             "height" = 40
             "borderColor" = "gray"
-        },
+        };
         Name Me!
     >
 >

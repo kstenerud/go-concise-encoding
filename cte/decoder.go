@@ -123,7 +123,7 @@ func init() {
 	decoderOpsByFirstChar['['] = advanceAndDecodeListBegin
 	decoderOpsByFirstChar[']'] = advanceAndDecodeListEnd
 	decoderOpsByFirstChar['<'] = advanceAndDecodeMarkupBegin
-	decoderOpsByFirstChar[','] = advanceAndDecodeMarkupContentBegin
+	decoderOpsByFirstChar[';'] = advanceAndDecodeMarkupContentBegin
 	decoderOpsByFirstChar['>'] = advanceAndDecodeMarkupEnd
 	decoderOpsByFirstChar['|'] = advanceAndDecodeTypedArrayBegin
 	decoderOpsByFirstChar['('] = advanceAndDecodeNodeBegin
