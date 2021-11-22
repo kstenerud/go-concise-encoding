@@ -232,6 +232,12 @@ func (_this *Encoder) OnBigFloat(value *big.Float) {
 		return
 	}
 
+	if f64, acc := value.Float64(); acc == big.Exact {
+		_this.OnFloat(f64)
+		return
+	}
+
+	// TODO: Big float rounding needs a configuration policy
 	v, err := conversions.BigFloatToPBigDecimalFloat(value)
 	if err != nil {
 		_this.errorf("could not convert %v to apd.Decimal", value)

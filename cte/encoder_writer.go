@@ -238,7 +238,7 @@ func (_this *Writer) WriteBigFloat(value *big.Float) {
 	}
 
 	var buff [64]byte
-	used := value.Append(buff[:0], 'g', common.BitsToDecimalDigits(int(value.Prec())))
+	used := value.Append(buff[:0], 'x', -1)
 	_this.WriteBytes(used)
 }
 

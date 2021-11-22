@@ -259,7 +259,7 @@ func (_this *CETestRunner) runEventToEvent() {
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		_this.testFailed("Expected events %v to produce events %v but got %v",
 			_this.events, expectedEvents, actualEvents)
 	}
@@ -323,7 +323,7 @@ func (_this *CETestRunner) runCBEToEvent() {
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		_this.testFailed("Expected CBE %v to produce events %v but got %v",
 			desc(_this.Cbe), expectedEvents, actualEvents)
 	}
@@ -387,7 +387,7 @@ func (_this *CETestRunner) runCTEToEvent() {
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		_this.testFailed("Expected CTE %v to produce events %v but got %v",
 			desc(_this.Cte), expectedEvents, actualEvents)
 	}

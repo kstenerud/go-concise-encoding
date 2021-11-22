@@ -149,7 +149,7 @@ func (_this *CBEDecodeSuccessTest) run() {
 
 	expecbedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEqual(expecbedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expecbedEvents, actualEvents) {
 		_this.testFailed("Expecbed CBE %v to produce events %v but got %v",
 			desc(_this.Source), expecbedEvents, actualEvents)
 	}

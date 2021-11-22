@@ -38,12 +38,12 @@ import (
 
 var EvV = test.EvV
 
-func NewBigInt(str string, base int) *big.Int {
-	return test.NewBigInt(str, base)
+func NewBigInt(str string) *big.Int {
+	return test.NewBigInt(str)
 }
 
-func NewBigFloat(str string, base int, significantDigits int) *big.Float {
-	return test.NewBigFloat(str, base, significantDigits)
+func NewBigFloat(str string) *big.Float {
+	return test.NewBigFloat(str)
 }
 
 func NewDFloat(str string) compact_float.DFloat {

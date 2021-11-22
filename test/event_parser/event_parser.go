@@ -99,13 +99,20 @@ func parseNumericEvent(eventStr string) *test.TEvent {
 			return test.TEventDecimalFloat, value
 		}
 
-		if strings.HasPrefix(str, "0x") {
-			if v, err := strconv.ParseFloat(str, 64); err == nil {
-				return test.TEventFloat, v
+		if strings.Contains(str, "0x") {
+			digitCount := len(strings.Split(str, "x")[1])
+			bf := &big.Float{}
+			bf.SetPrec(uint(digitCount) * 4)
+			if _, success := bf.SetString(str); success {
+				f64, accuracy := bf.Float64()
+				if accuracy == big.Exact {
+					return test.TEventFloat, f64
+				} else {
+					return test.TEventBigFloat, bf
+				}
 			} else {
-				panic(err)
+				panic(fmt.Errorf("could not convert %v to float", str))
 			}
-
 		}
 
 		return test.TEventBigDecimalFloat, test.NewBDF(strings.Replace(str, ",", ".", 1))
@@ -256,7 +263,7 @@ func parseIntHex(bytes []byte) interface{} {
 }
 
 func parseBigInt(bytes []byte) interface{} {
-	return test.NewBigInt(string(bytes), getBase(bytes))
+	return test.NewBigInt(string(bytes))
 }
 
 func parseFloat(bytes []byte) interface{} {
@@ -268,19 +275,7 @@ func parseFloat(bytes []byte) interface{} {
 }
 
 func parseBigFloat(bytes []byte) interface{} {
-	sigDigits := 0
-	for _, b := range bytes {
-		if b >= '0' && b <= '9' {
-			sigDigits++
-		}
-	}
-	base := 10
-	if len(bytes) > 1 && bytes[0] == '0' && (bytes[1] == 'x' || bytes[1] == 'X') {
-		base = 16
-		sigDigits--
-	}
-
-	return test.NewBigFloat(string(bytes), base, sigDigits)
+	return test.NewBigFloat(string(bytes))
 }
 
 func parseDecimalFloat(bytes []byte) interface{} {
@@ -352,7 +347,7 @@ func tryParseDate(bytes []byte) (date compact_time.Time, remainingBytes []byte) 
 	return
 }
 
-var utcOffsetMatcher = regexp.MustCompile(`^([+-]\d\d):(\d\d)$`)
+var utcOffsetMatcher = regexp.MustCompile(`^[+-](\d\d)(\d\d)$`)
 
 func parseTZUTCOffset(data []byte) compact_time.Timezone {
 	components := utcOffsetMatcher.FindSubmatch(data)

@@ -215,10 +215,8 @@ c0 |u8x /* foo */ 1 2 3|
 
         // ====================================================================
 
-        // ====================================================================
-
         {
-            "name" = "Float"
+            "name" = "Decimal Float"
             "decodeMustSucceed" = [
                 {"source"="c0 0.0"                  "events"=["v 0" "n 0"]}
                 {"source"="c0 -0.0"                 "events"=["v 0" "n -0"]}
@@ -258,17 +256,274 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="c0 -0,1500000000000000000000000000000000000000000000000001e-10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
             ]
             "decodeMustFail" = [
-                "c0 1."    // Missing right digit
-                "c0 1,"    // Missing right digit
-                "c0 .1"    // Missing left digit
-                "c0 ,1"    // Missing left digit
-                "c0 _1.1"  // Bad whitespace placement
-                "c0 1_.1"  // Bad whitespace placement
-                "c0 1._1"  // Bad whitespace placement
-                "c0 1.1_"  // Bad whitespace placement
+                "c0 1."      // Missing right digit
+                "c0 1,"      // Missing right digit
+                "c0 .1"      // Missing left digit
+                "c0 ,1"      // Missing left digit
+                "c0 _1.1"    // Bad whitespace placement
+                "c0 1_.1"    // Bad whitespace placement
+                "c0 1._1"    // Bad whitespace placement
+                "c0 1.1_"    // Bad whitespace placement
+                "c0 _1,1"    // Bad whitespace placement
+                "c0 1_,1"    // Bad whitespace placement
+                "c0 1,_1"    // Bad whitespace placement
+                "c0 1,1_"    // Bad whitespace placement
+                "c0 1.1.1"   // Too many radices
+                "c0 1,1.1"   // Too many radices
+                "c0 1.1,1"   // Too many radices
+                "c0 1,1,1"   // Too many radices
+                "c0 1.1e1e2" // Too many exponent markers
+                "c0 1,1e1e2" // Too many exponent markers
+                "c0 1.a"     // Not a digit
+                "c0 1,a"     // Not a digit
             ]
         }
 
+        // ====================================================================
+
+        {
+            "name" = "Hexadecimal Float"
+            "decodeMustSucceed" = [
+                {"source"="c0 0x0.0"                  "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0.0"                 "events"=["v 0" "n -0"]}
+                {"source"="c0 0x0,0"                  "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0,0"                 "events"=["v 0" "n -0"]}
+                {"source"="c0 0x1,1"                  "events"=["v 0" "n 0x1.1p0"]}
+                {"source"="c0 0x0.1"                  "events"=["v 0" "n 0x0.1p0"]}
+                {"source"="c0 0x0,1"                  "events"=["v 0" "n 0x0.1p0"]}
+                {"source"="c0 0x4.7f3cc34"            "events"=["v 0" "n 0x4.7f3cc34p0"]}
+                {"source"="c0 -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"  "events"=["v 0" "n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
+                {"source"="c0 -0xf,65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"  "events"=["v 0" "n -0xf.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
+
+                {"source"="c0 0x0.0p0"                  "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0.0p0"                 "events"=["v 0" "n -0"]}
+                {"source"="c0 0x0.0p+0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0.0p+0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 0x0.0p-0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0.0p-0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 0xf.1p10"                 "events"=["v 0" "n 0xf.1p10"]}
+                {"source"="c0 -0xf.1p10"                "events"=["v 0" "n -0xf.1p10"]}
+                {"source"="c0 0xf.1p+10"                "events"=["v 0" "n 0xf.1p10"]}
+                {"source"="c0 -0xf.1p+10"               "events"=["v 0" "n -0xf.1p10"]}
+                {"source"="c0 0xf.1p-10"                "events"=["v 0" "n 0xf.1p-10"]}
+                {"source"="c0 -0xf.1p-10"               "events"=["v 0" "n -0xf.1p-10"]}
+
+                {"source"="c0 0xc.4_45__3p8"            "events"=["v 0" "n 0xc.4453p8"]}
+
+                // Coefficient too big for float64
+                {"source"="c0 0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap100"]}
+                {"source"="c0 -0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap100"]}
+                {"source"="c0 0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-100"]}
+                {"source"="c0 -0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-100"]}
+
+                // Exponent too big for float64
+                {"source"="c0 0x1.8p10000"             "events"=["v 0" "n 0x1.8p10000"]}
+                {"source"="c0 -0x1.8p10000"            "events"=["v 0" "n -0x1.8p10000"]}
+                {"source"="c0 0x1.8p-10000"            "events"=["v 0" "n 0x1.8p-10000"]}
+                {"source"="c0 -0x1.8p-10000"           "events"=["v 0" "n -0x1.8p-10000"]}
+
+                // Everything too big for float64
+                {"source"="c0 0x1.54fffe2ac00592375b427ap10000"    "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap10000"]}
+                {"source"="c0 -0x1.54fffe2ac00592375b427ap10000"   "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap10000"]}
+                {"source"="c0 0x1.54fffe2ac00592375b427ap-10000"   "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-10000"]}
+                {"source"="c0 -0x1.54fffe2ac00592375b427ap-10000"  "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-10000"]}
+            ]
+            "decodeMustFail" = [
+                "c0 0x1."      // Missing right digit
+                "c0 0x1,"      // Missing right digit
+                "c0 0x.1"      // Missing left digit
+                "c0 0x,1"      // Missing left digit
+                "c0 _0x1.1"    // Bad whitespace placement
+                "c0 0x1_.1"    // Bad whitespace placement
+                "c0 0x1._1"    // Bad whitespace placement
+                "c0 0x1.1_"    // Bad whitespace placement
+                "c0 _0x1,1"    // Bad whitespace placement
+                "c0 0x1_,1"    // Bad whitespace placement
+                "c0 0x1,_1"    // Bad whitespace placement
+                "c0 0x1,1_"    // Bad whitespace placement
+                "c0 0x_1.1"    // Bad whitespace placement
+                "c0 0_x1.1"    // Bad whitespace placement
+                "c0 0x1.1.1"   // Too many radices
+                "c0 0x1,1.1"   // Too many radices
+                "c0 0x1.1,1"   // Too many radices
+                "c0 0x1,1,1"   // Too many radices
+                "c0 0x1.1p1p2" // Too many exponent markers
+                "c0 0x1,1p1p2" // Too many exponent markers
+                "c0 0x1.l"     // Not a digit
+                "c0 0x1,l"     // Not a digit
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "UID"
+            "decodeMustSucceed" = [
+                {"source"="c0 00000000-0000-0000-0000-000000000000"  "events"=["v 0" "uid 00000000-0000-0000-0000-000000000000"]}
+                {"source"="c0 123456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 123456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 223456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 223456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 323456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 323456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 423456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 423456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 523456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 523456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 623456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 623456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 723456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 723456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 823456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 823456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 923456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 923456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 a23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 b23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 c23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 d23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 e23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 f23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 A23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 B23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 C23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 D23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 E23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 F23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
+                {"source"="c0 fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"  "events"=["v 0" "uid fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]}
+            ]
+            "decodeMustFail" = [
+                "fbdcba98-7654-3210-aaaa-bbbbbbbbbbb"    // Too short
+                "fbdcba98-7654-3210-aaaa-bbbbbbbbbbbbb"  // Too long
+                "fbdcba987654-3210-aaaa-bbbbbbbbbbbb"    // Malformed
+                "fbdcba98-76543210-aaaa-bbbbbbbbbbbb"    // Malformed
+                "fbdcba98-7654-3210aaaa-bbbbbbbbbbbb"    // Malformed
+                "fbdcba98-7654-3210-aaaabbbbbbbbbbbb"    // Malformed
+                "fbdcba9876543210aaaabbbbbbbbbbbb"       // Malformed
+                "fbdcba98-7654-3210-aaaa-bbbbbbbbgbbb"   // Bad chars
+                "-fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"  // Negative UID is not a thing
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Date"
+            "decodeMustSucceed" = [
+                {"source"="c0 2000-01-01"      "events"=["v 0" "t 2000-01-01"]}
+                {"source"="c0 -2000-01-01"     "events"=["v 0" "t -2000-01-01"]}
+                {"source"="c0 2000-1-1"        "events"=["v 0" "t 2000-01-01"]}
+                {"source"="c0 9412351-12-31"   "events"=["v 0" "t 9412351-12-31"]}
+                {"source"="c0 -9412351-12-31"  "events"=["v 0" "t -9412351-12-31"]}
+                {"source"="c0 1-01-01"         "events"=["v 0" "t 1-01-01"]}
+                {"source"="c0 -1-01-01"        "events"=["v 0" "t -1-01-01"]}
+            ]
+            "decodeMustFail" = [
+                "c0 0-01-01"     // Year 0 is invalid
+                "c0 -0-01-01"    // Year -0 is invalid
+                "c0 2000-0-01"   // Month 0 is invalid
+                "c0 2000-13-01"  // Month 13 is invalid
+                "c0 2000-01-0"   // Day 0 is invalid
+                "c0 2000-01-32"  // Day 32 is invalid
+                "c0 2000-001-01" // Too many digits
+                "c0 2000-01-001" // Too many digits
+                "c0 2000-01-0a"  // Bad digits
+                "c0 2000-0b-01"  // Bad digits
+                "c0 2000-01-"    // Incomplete
+                "c0 2000-01"     // Incomplete
+            ]
+        }
+
+
+        // ====================================================================
+
+        {
+            "name" = "Time"
+            "decodeMustSucceed" = [
+                {"source"="c0 0:00:00"                          "events"=["v 0" "t 0:00:00"]}
+                {"source"="c0 00:00:00"                         "events"=["v 0" "t 0:00:00"]}
+                {"source"="c0 1:45:00"                          "events"=["v 0" "t 1:45:00"]}
+                {"source"="c0 01:45:00"                         "events"=["v 0" "t 1:45:00"]}
+                {"source"="c0 23:59:59"                         "events"=["v 0" "t 23:59:59"]}
+                {"source"="c0 23:59:60"                         "events"=["v 0" "t 23:59:60"]}
+
+                {"source"="c0 0:00:00.000000000"                "events"=["v 0" "t 0:00:00"]}
+                {"source"="c0 0:00:00.000000001"                "events"=["v 0" "t 0:00:00.000000001"]}
+                {"source"="c0 0:00:00.00000001"                 "events"=["v 0" "t 0:00:00.00000001"]}
+                {"source"="c0 0:00:00.0000001"                  "events"=["v 0" "t 0:00:00.0000001"]}
+                {"source"="c0 0:00:00.000001"                   "events"=["v 0" "t 0:00:00.000001"]}
+                {"source"="c0 0:00:00.00001"                    "events"=["v 0" "t 0:00:00.00001"]}
+                {"source"="c0 0:00:00.0001"                     "events"=["v 0" "t 0:00:00.0001"]}
+                {"source"="c0 0:00:00.001"                      "events"=["v 0" "t 0:00:00.001"]}
+                {"source"="c0 0:00:00.01"                       "events"=["v 0" "t 0:00:00.01"]}
+                {"source"="c0 0:00:00.1"                        "events"=["v 0" "t 0:00:00.1"]}
+                {"source"="c0 0:00:00.100000000"                "events"=["v 0" "t 0:00:00.1"]}
+                {"source"="c0 23:59:60.000000000"               "events"=["v 0" "t 23:59:60"]}
+                {"source"="c0 23:59:60,000000000"               "events"=["v 0" "t 23:59:60"]}
+                {"source"="c0 23:59:60.999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
+                {"source"="c0 23:59:60,999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
+
+                {"source"="c0 23:59:59.101"                     "events"=["v 0" "t 23:59:59.101"]}
+
+                {"source"="c0 10:00:01.93/America/Los_Angeles"  "events"=["v 0" "t 10:00:01.93/America/Los_Angeles"]}
+                {
+                    "source" = "c0 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
+                    "events" = ["v 0" "t 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
+                }
+
+                {"source"="c0 10:00:01.93/89.92/1.10"           "events"=["v 0" "t 10:00:01.93/89.92/1.10"]}
+                {"source"="c0 10:00:01.93/89,90/1.1"            "events"=["v 0" "t 10:00:01.93/89.90/1.1"]}
+                {"source"="c0 10:00:01.93/89.9/1,10"            "events"=["v 0" "t 10:00:01.93/89.9/1.10"]}
+                {"source"="c0 10:00:01.93/0/0"                  "events"=["v 0" "t 10:00:01.93/0/0"]}
+                {"source"="c0 10:00:01.93/00/00.00"             "events"=["v 0" "t 10:00:01.93/0/0"]}
+                {"source"="c0 10:00:01.93/1/1"                  "events"=["v 0" "t 10:00:01.93/1/1"]}
+                {"source"="c0 10:00:01.93/90/-180"              "events"=["v 0" "t 10:00:01.93/90/-180"]}
+                {"source"="c0 10:00:01.93/-90/180"              "events"=["v 0" "t 10:00:01.93/-90/180"]}
+                {"source"="c0 10:00:01.93+0000"                 "events"=["v 0" "t 10:00:01.93"]}
+                {"source"="c0 10:00:01.93+0001"                 "events"=["v 0" "t 10:00:01.93+0001"]}
+                {"source"="c0 10:00:01.93-0030"                 "events"=["v 0" "t 10:00:01.93-0030"]}
+                {"source"="c0 10:00:01.93-1259"                 "events"=["v 0" "t 10:00:01.93-1259"]}
+                {"source"="c0 10:00:01.93-2359"                 "events"=["v 0" "t 10:00:01.93-2359"]}
+                {"source"="c0 10:00:01.93+2359"                 "events"=["v 0" "t 10:00:01.93+2359"]}
+            ]
+            "decodeMustFail" = [
+                "c0 012:00:00"           // Too many hour digits
+                "c0 12:000:00"           // Too many minute digits
+                "c0 12:00:000"           // Too many second digits
+                "c0 12:00:00.0000000000" // Too many subsecond digits
+                "c0 12:00:00,0000000000" // Too many subsecond digits
+
+                "c0 24:00:00"            // Hour too high
+                "c0 23:60:00"            // Minute too high
+                "c0 23:00:61"            // Second too high
+
+                "c0 2a:00:00"            // Invalid hour digit
+                "c0 20:0a:00"            // Invalid minute digit
+                "c0 20:00:0a"            // Invalid second digit
+                "c0 20:00:00.00a"        // Invalid subsecond digit
+                "c0 20:00:00,00a"        // Invalid subsecond digit
+
+                "c0 20:00:00/"           // Missing timezone after marker
+
+                "c0 20:00:00/Etc/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234" // Max area/location length is 127
+
+                "c0 20:00:00/0/"         // Missing longitude
+                "c0 20:00:00/90.01/0"    // Latitude max is 90
+                "c0 20:00:00/-90.01/0"   // Latitude min is -90
+                "c0 20:00:00/0/180.01"   // Longitude max is 180
+                "c0 20:00:00/0/-180.01"  // Longitude min is -180
+                "c0 20:00:00/0/0.011"    // Too much precision
+                "c0 20:00:00/0.011/0"    // Too much precision
+                "c0 20:00:00/0a/0"       // Invalid character
+                "c0 20:00:00/0/0a"       // Invalid character
+
+                "c0 20:00:00+0"          // Not enough digits
+                "c0 20:00:00-0"          // Not enough digits
+                "c0 20:00:00+00"         // Not enough digits
+                "c0 20:00:00-00"         // Not enough digits
+                "c0 20:00:00+000"        // Not enough digits
+                "c0 20:00:00-000"        // Not enough digits
+                "c0 20:00:00+00000"      // Too many digits
+                "c0 20:00:00-00000"      // Too many digits
+                "c0 20:00:00+2400"       // Too high
+                "c0 20:00:00-2400"       // Too low
+                "c0 20:00:00+230a"       // Invalid digits
+                "c0 20:00:00-230a"       // Invalid digits
+            ]
+        }
+
+        // ====================================================================
 
     ]
 }

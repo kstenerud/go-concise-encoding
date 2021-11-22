@@ -27,6 +27,7 @@ import (
 	"math/big"
 	"net/url"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -37,11 +38,9 @@ import (
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-concise-encoding/version"
-	"github.com/kstenerud/go-equivalence"
 )
 
 // ----------------------------------------------------------------------------
@@ -65,26 +64,53 @@ func PassThroughPanics(shouldPassThrough bool) func() {
 // Constructors for common data types
 // ----------------------------------------------------------------------------
 
-func NewBigInt(str string, base int) *big.Int {
+func NewBigInt(str string) *big.Int {
 	bi := new(big.Int)
-	_, success := bi.SetString(str, base)
+	_, success := bi.SetString(str, 0)
 	if !success {
 		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to big.Int", str))
 	}
 	return bi
 }
 
-func NewBigFloat(str string, base int, significantDigits int) *big.Float {
-	bits := uint(0)
-	switch base {
-	case 10:
-		bits = uint(common.DecimalDigitsToBits(significantDigits))
-	case 16:
-		bits = uint(common.HexDigitsToBits(significantDigits))
-	default:
-		panic(fmt.Errorf("Malformed unit test: %v: Unhandled base", base))
+func countDecimalSigDigits(str string) int {
+	for len(str) > 1 && str[0] == '0' {
+		str = str[1:]
 	}
-	f, _, err := big.ParseFloat(str, base, bits, big.ToNearestEven)
+	sigDigits := 0
+	for _, b := range str {
+		switch {
+		case b >= '0' && b <= '9':
+			sigDigits++
+		case b == '.':
+			// Ignore
+		default:
+			break
+		}
+	}
+	return sigDigits
+}
+
+var bfHexMatcher = regexp.MustCompile(`0[xX]([0-9a-fA-F]+)(\.[0-9a-fA-F]+)?[pP]?.*`)
+
+func NewBigFloat(str string) *big.Float {
+	match := bfHexMatcher.FindStringSubmatch(str)
+	if len(match) > 1 {
+		sigDigits := len(match[1])
+		if len(match) > 2 {
+			sigDigits += len(match[2]) - 1
+		}
+		bf := &big.Float{}
+		bf.SetPrec(uint(common.HexDigitsToBits(sigDigits)))
+		if _, success := bf.SetString(str); success {
+			return bf
+		} else {
+			panic(fmt.Errorf("could not convert [%v] to big float", str))
+		}
+	}
+
+	sigDigits := countDecimalSigDigits(str)
+	f, _, err := big.ParseFloat(str, 10, uint(common.DecimalDigitsToBits(sigDigits)), big.ToNearestEven)
 	if err != nil {
 		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to big.Float: %w", str, err))
 	}
@@ -284,6 +310,16 @@ func GenerateBytes(length int, startIndex int) []byte {
 	return []byte(GenerateString(length, startIndex))
 }
 
+func GenerateArrayElements(elemSize, length int) []byte {
+	var result []byte
+	for i := 0; i < length; i++ {
+		for e := 0; e < elemSize; e++ {
+			result = append(result, 1)
+		}
+	}
+	return result
+}
+
 func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
 	for _, event := range events {
 		event.Invoke(receiver)
@@ -313,11 +349,11 @@ var (
 	EvPI      = PI(1)
 	EvNI      = NI(1)
 	EvI       = I(0)
-	EvBI      = BI(NewBigInt("1", 10))
+	EvBI      = BI(NewBigInt("1"))
 	EvBINull  = BI(nil)
-	EvF       = F(0.1)
+	EvF       = F(0x1.0p-1)
 	EvFNAN    = F(math.NaN())
-	EvBF      = BF(NewBigFloat("0.1", 10, 1))
+	EvBF      = BF(NewBigFloat("0x0.1"))
 	EvBFNull  = BF(nil)
 	EvDF      = DF(NewDFloat("0.1"))
 	EvDFNAN   = DF(NewDFloat("nan"))
@@ -385,31 +421,6 @@ var allEvents = []*TEvent{
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
 	EvAI32, EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
 	EvAF64B, EvAUU, EvAUUB, EvMB,
-}
-
-func charBytes(length int) []byte {
-	var result []byte
-	for i := 0; i < length; i++ {
-		result = append(result, 'a')
-	}
-	return result
-}
-
-func binBytes(elemSize, length int) []byte {
-	var result []byte
-	for i := 0; i < length; i++ {
-		for e := 0; e < elemSize; e++ {
-			result = append(result, 1)
-		}
-	}
-	return result
-}
-
-func isEffectivelyNull(event *TEvent) bool {
-	return event.Type == TEventNull ||
-		event == EvBINull ||
-		event == EvBFNull ||
-		event == EvBDFNull
 }
 
 func FilterAllEvents(events []*TEvent, filter func(*TEvent) []*TEvent) []*TEvent {
@@ -577,24 +588,6 @@ func RemoveEvents(srcEvents []*TEvent, disallowedEvents []*TEvent) (events []*TE
 	return
 }
 
-func filterAllowableFollowups(baseEvent *TEvent, possibleFollowups []*TEvent) []*TEvent {
-	switch baseEvent.Type {
-	case TEventMarker:
-		return RemoveEvents(possibleFollowups, InvalidMarkerValues)
-	default:
-		return possibleFollowups
-	}
-}
-
-func requiresFollowup(event *TEvent) bool {
-	switch event.Type {
-	case TEventMarker:
-		return true
-	default:
-		return false
-	}
-}
-
 func copyEvents(events []*TEvent) []*TEvent {
 	newEvents := make([]*TEvent, len(events))
 	copy(newEvents, events)
@@ -602,30 +595,30 @@ func copyEvents(events []*TEvent) []*TEvent {
 }
 
 var basicCompletions = map[TEventType][]*TEvent{
-	TEventList:              []*TEvent{E()},
-	TEventMap:               []*TEvent{E()},
-	TEventMarkup:            []*TEvent{E(), E()},
-	TEventNode:              []*TEvent{I(1), E()},
-	TEventEdge:              []*TEvent{RID("a"), RID("b"), I(1)},
-	TEventStringBegin:       []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventResourceIDBegin:   []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventRemoteRefBegin:    []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventCustomBinaryBegin: []*TEvent{AC(1, false), AD([]byte{1})},
-	TEventCustomTextBegin:   []*TEvent{AC(1, false), AD([]byte{'a'})},
-	TEventArrayBooleanBegin: []*TEvent{AC(1, false), AD([]byte{1})},
-	TEventArrayUint8Begin:   []*TEvent{AC(1, false), AD(binBytes(1, 1))},
-	TEventArrayUint16Begin:  []*TEvent{AC(1, false), AD(binBytes(2, 1))},
-	TEventArrayUint32Begin:  []*TEvent{AC(1, false), AD(binBytes(4, 1))},
-	TEventArrayUint64Begin:  []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayInt8Begin:    []*TEvent{AC(1, false), AD(binBytes(1, 1))},
-	TEventArrayInt16Begin:   []*TEvent{AC(1, false), AD(binBytes(2, 1))},
-	TEventArrayInt32Begin:   []*TEvent{AC(1, false), AD(binBytes(4, 1))},
-	TEventArrayInt64Begin:   []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayFloat16Begin: []*TEvent{AC(1, false), AD(binBytes(2, 1))},
-	TEventArrayFloat32Begin: []*TEvent{AC(1, false), AD(binBytes(4, 1))},
-	TEventArrayFloat64Begin: []*TEvent{AC(1, false), AD(binBytes(8, 1))},
-	TEventArrayUIDBegin:     []*TEvent{AC(1, false), AD(binBytes(16, 1))},
-	TEventMediaBegin:        []*TEvent{AC(1, false), AD([]byte{'a'}), AC(0, false)},
+	TEventList:              {E()},
+	TEventMap:               {E()},
+	TEventMarkup:            {E(), E()},
+	TEventNode:              {I(1), E()},
+	TEventEdge:              {RID("a"), RID("b"), I(1)},
+	TEventStringBegin:       {AC(1, false), AD([]byte{'a'})},
+	TEventResourceIDBegin:   {AC(1, false), AD([]byte{'a'})},
+	TEventRemoteRefBegin:    {AC(1, false), AD([]byte{'a'})},
+	TEventCustomBinaryBegin: {AC(1, false), AD([]byte{1})},
+	TEventCustomTextBegin:   {AC(1, false), AD([]byte{'a'})},
+	TEventArrayBooleanBegin: {AC(1, false), AD([]byte{1})},
+	TEventArrayUint8Begin:   {AC(1, false), AD(GenerateArrayElements(1, 1))},
+	TEventArrayUint16Begin:  {AC(1, false), AD(GenerateArrayElements(2, 1))},
+	TEventArrayUint32Begin:  {AC(1, false), AD(GenerateArrayElements(4, 1))},
+	TEventArrayUint64Begin:  {AC(1, false), AD(GenerateArrayElements(8, 1))},
+	TEventArrayInt8Begin:    {AC(1, false), AD(GenerateArrayElements(1, 1))},
+	TEventArrayInt16Begin:   {AC(1, false), AD(GenerateArrayElements(2, 1))},
+	TEventArrayInt32Begin:   {AC(1, false), AD(GenerateArrayElements(4, 1))},
+	TEventArrayInt64Begin:   {AC(1, false), AD(GenerateArrayElements(8, 1))},
+	TEventArrayFloat16Begin: {AC(1, false), AD(GenerateArrayElements(2, 1))},
+	TEventArrayFloat32Begin: {AC(1, false), AD(GenerateArrayElements(4, 1))},
+	TEventArrayFloat64Begin: {AC(1, false), AD(GenerateArrayElements(8, 1))},
+	TEventArrayUIDBegin:     {AC(1, false), AD(GenerateArrayElements(16, 1))},
+	TEventMediaBegin:        {AC(1, false), AD([]byte{'a'}), AC(0, false)},
 }
 
 func getBasicCompletion(stream []*TEvent) []*TEvent {
@@ -729,542 +722,6 @@ func GenerateAllVariants(
 	}
 
 	return
-}
-
-var (
-	ListDocBegin = []*TEvent{BD(), V(version.ConciseEncodingVersion), L()}
-	ListDocEnd   = []*TEvent{E(), ED()}
-	NoEvents     = []*TEvent{}
-)
-
-// ----------------------------------------------------------------------------
-// Event types and pretty-print names
-// ----------------------------------------------------------------------------
-
-type TEventType int
-
-const (
-	TEventBeginDocument TEventType = iota
-	TEventVersion
-	TEventPadding
-	TEventComment
-	TEventNull
-	TEventBool
-	TEventTrue
-	TEventFalse
-	TEventPInt
-	TEventNInt
-	TEventInt
-	TEventBigInt
-	TEventFloat
-	TEventBigFloat
-	TEventDecimalFloat
-	TEventBigDecimalFloat
-	TEventNan
-	TEventSNan
-	TEventUID
-	TEventTime
-	TEventCompactTime
-	TEventString
-	TEventResourceID
-	TEventRemoteRef
-	TEventCustomBinary
-	TEventCustomText
-	TEventArrayBoolean
-	TEventArrayInt8
-	TEventArrayInt16
-	TEventArrayInt32
-	TEventArrayInt64
-	TEventArrayUint8
-	TEventArrayUint16
-	TEventArrayUint32
-	TEventArrayUint64
-	TEventArrayFloat16
-	TEventArrayFloat32
-	TEventArrayFloat64
-	TEventArrayUID
-	TEventStringBegin
-	TEventResourceIDBegin
-	TEventRemoteRefBegin
-	TEventCustomBinaryBegin
-	TEventCustomTextBegin
-	TEventArrayBooleanBegin
-	TEventArrayInt8Begin
-	TEventArrayInt16Begin
-	TEventArrayInt32Begin
-	TEventArrayInt64Begin
-	TEventArrayUint8Begin
-	TEventArrayUint16Begin
-	TEventArrayUint32Begin
-	TEventArrayUint64Begin
-	TEventArrayFloat16Begin
-	TEventArrayFloat32Begin
-	TEventArrayFloat64Begin
-	TEventArrayUIDBegin
-	TEventMediaBegin
-	TEventArrayChunk
-	TEventArrayData
-	TEventList
-	TEventMap
-	TEventMarkup
-	TEventEnd
-	TEventNode
-	TEventEdge
-	TEventMarker
-	TEventReference
-	TEventConstant
-	TEventEndDocument
-)
-
-var TEventNames = []string{
-	TEventBeginDocument:     "BD",
-	TEventVersion:           "V",
-	TEventPadding:           "PAD",
-	TEventComment:           "COM",
-	TEventNull:              "N",
-	TEventBool:              "B",
-	TEventTrue:              "TT",
-	TEventFalse:             "FF",
-	TEventPInt:              "PI",
-	TEventNInt:              "NI",
-	TEventInt:               "I",
-	TEventBigInt:            "BI",
-	TEventFloat:             "F",
-	TEventBigFloat:          "BF",
-	TEventDecimalFloat:      "DF",
-	TEventBigDecimalFloat:   "BDF",
-	TEventNan:               "NAN",
-	TEventSNan:              "SNAN",
-	TEventUID:               "UID",
-	TEventTime:              "GT",
-	TEventCompactTime:       "CT",
-	TEventString:            "S",
-	TEventResourceID:        "RID",
-	TEventRemoteRef:         "RREF",
-	TEventCustomBinary:      "CUB",
-	TEventCustomText:        "CUT",
-	TEventArrayBoolean:      "AB",
-	TEventArrayInt8:         "AI8",
-	TEventArrayInt16:        "AI16",
-	TEventArrayInt32:        "AI32",
-	TEventArrayInt64:        "AI64",
-	TEventArrayUint8:        "AU8",
-	TEventArrayUint16:       "AU16",
-	TEventArrayUint32:       "AU32",
-	TEventArrayUint64:       "AU64",
-	TEventArrayFloat16:      "AF16",
-	TEventArrayFloat32:      "AF32",
-	TEventArrayFloat64:      "AF64",
-	TEventArrayUID:          "AUU",
-	TEventStringBegin:       "SB",
-	TEventResourceIDBegin:   "RB",
-	TEventRemoteRefBegin:    "RRB",
-	TEventCustomBinaryBegin: "CBB",
-	TEventCustomTextBegin:   "CTB",
-	TEventArrayBooleanBegin: "ABB",
-	TEventArrayInt8Begin:    "AI8B",
-	TEventArrayInt16Begin:   "AI16B",
-	TEventArrayInt32Begin:   "AI32B",
-	TEventArrayInt64Begin:   "AI64B",
-	TEventArrayUint8Begin:   "AU8B",
-	TEventArrayUint16Begin:  "AU16B",
-	TEventArrayUint32Begin:  "AU32B",
-	TEventArrayUint64Begin:  "AU64B",
-	TEventArrayFloat16Begin: "AF16B",
-	TEventArrayFloat32Begin: "AF32B",
-	TEventArrayFloat64Begin: "AF64B",
-	TEventArrayUIDBegin:     "AUUB",
-	TEventMediaBegin:        "MB",
-	TEventArrayChunk:        "AC",
-	TEventArrayData:         "AD",
-	TEventList:              "L",
-	TEventMap:               "M",
-	TEventMarkup:            "MUP",
-	TEventNode:              "NODE",
-	TEventEdge:              "EDGE",
-	TEventEnd:               "E",
-	TEventMarker:            "MARK",
-	TEventReference:         "REF",
-	TEventConstant:          "CONST",
-	TEventEndDocument:       "ED",
-}
-
-func (_this TEventType) String() string {
-	return TEventNames[_this]
-}
-
-func (_this TEventType) IsBoolean() bool {
-	switch _this {
-	case TEventTrue, TEventFalse, TEventBool:
-		return true
-	default:
-		return false
-	}
-}
-
-func (_this TEventType) IsNumeric() bool {
-	switch _this {
-	case TEventPInt, TEventNInt, TEventInt, TEventBigInt, TEventFloat,
-		TEventBigFloat, TEventDecimalFloat, TEventBigDecimalFloat, TEventNan,
-		TEventSNan:
-		return true
-	default:
-		return false
-	}
-}
-
-// ----------------------------------------------------------------------------
-// Stored events
-// ----------------------------------------------------------------------------
-
-type TEvent struct {
-	Type TEventType
-	V1   interface{}
-	V2   interface{}
-}
-
-func NewTEvent(eventType TEventType, v1 interface{}, v2 interface{}) *TEvent {
-	return &TEvent{
-		Type: eventType,
-		V1:   v1,
-		V2:   v2,
-	}
-}
-
-func hexChar(v byte) byte {
-	if v < 10 {
-		return '0' + v
-	}
-	return 'a' + v - 10
-}
-
-func stringify(value interface{}) string {
-	switch v := value.(type) {
-	case []byte:
-		var builder strings.Builder
-		builder.WriteByte('[')
-		for i, b := range v {
-			builder.WriteByte(hexChar(b >> 4))
-			builder.WriteByte(hexChar(b & 15))
-			if i < len(v) {
-				builder.WriteByte(' ')
-			}
-		}
-		builder.WriteByte(']')
-		return builder.String()
-	case string:
-		return fmt.Sprintf("\"%v\"", value)
-	default:
-		return fmt.Sprintf("%v", value)
-	}
-}
-
-func (_this *TEvent) String() string {
-	if _this.V1 != nil {
-		if _this.V2 != nil {
-			return fmt.Sprintf("%v(%v,%v)", _this.Type.String(), stringify(_this.V1), stringify(_this.V2))
-		}
-		return fmt.Sprintf("%v(%v)", _this.Type.String(), stringify(_this.V1))
-	}
-	return _this.Type.String()
-}
-
-func (_this *TEvent) isNan() bool {
-	switch _this.Type {
-	case TEventNan:
-		return true
-	case TEventFloat:
-		f64 := _this.V1.(float64)
-		return math.IsNaN(f64) && !common.IsSignalingNan(f64)
-	case TEventDecimalFloat:
-		return _this.V1.(compact_float.DFloat).IsNan()
-	case TEventBigDecimalFloat:
-		return _this.V1.(*apd.Decimal).Form == apd.NaN
-	default:
-		return false
-	}
-}
-
-func (_this *TEvent) isSignalingNan() bool {
-	switch _this.Type {
-	case TEventSNan:
-		return true
-	case TEventFloat:
-		f64 := _this.V1.(float64)
-		return math.IsNaN(f64) && common.IsSignalingNan(f64)
-	case TEventDecimalFloat:
-		return _this.V1.(compact_float.DFloat).IsSignalingNan()
-	case TEventBigDecimalFloat:
-		return _this.V1.(*apd.Decimal).Form == apd.NaNSignaling
-	default:
-		return false
-	}
-}
-
-func isZeroTZ(tz string) bool {
-	switch tz {
-	case "", "Z", "Zero", "Etc/GMT", "Etc/GMT+0", "Etc/GMT-0", "Etc/GMT0", "Etc/Greenwich",
-		"Etc/UCT", "Etc/Universal", "Etc/UTC", "Etc/Zulu", "Factory", "GMT",
-		"GMT+0", "GMT-0", "GMT0", "Greenwich", "UCT", "Universal", "UTC", "Zulu":
-		return true
-	default:
-		return false
-	}
-}
-
-func (_this *TEvent) isEquivalentTo(that *TEvent) bool {
-	if equivalence.IsEquivalent(_this, that) {
-		return true
-	}
-
-	if _this.Type.IsNumeric() && that.Type.IsNumeric() {
-		if _this.isNan() && that.isNan() {
-			return true
-		}
-		if _this.isSignalingNan() && that.isSignalingNan() {
-			return true
-		}
-
-		var a string
-		if _this.Type == TEventNInt {
-			a = fmt.Sprintf("-%v", _this.V1)
-		} else {
-			a = fmt.Sprintf("%v", _this.V1)
-		}
-
-		var b string
-		if that.Type == TEventNInt {
-			b = fmt.Sprintf("-%v", that.V1)
-		} else {
-			b = fmt.Sprintf("%v", that.V1)
-		}
-
-		return a == b
-	}
-
-	if _this.Type.IsBoolean() && that.Type.IsBoolean() {
-		a := fmt.Sprintf("%v", _this.V1)
-		b := fmt.Sprintf("%v", that.V1)
-		return a == b ||
-			a == "true" && that.Type == TEventTrue ||
-			b == "true" && _this.Type == TEventTrue ||
-			a == "false" && that.Type == TEventFalse ||
-			b == "false" && _this.Type == TEventFalse
-	}
-
-	if _this.Type == TEventTime || _this.Type == TEventCompactTime {
-		var err error
-		var a compact_time.Time
-		var b compact_time.Time
-
-		switch _this.Type {
-		case TEventCompactTime:
-			a = _this.V1.(compact_time.Time)
-		default:
-			a = compact_time.AsCompactTime(_this.V1.(time.Time))
-			if err = a.Validate(); err != nil {
-				panic(err)
-			}
-		}
-
-		switch that.Type {
-		case TEventCompactTime:
-			b = that.V1.(compact_time.Time)
-		case TEventTime:
-			b = compact_time.AsCompactTime(that.V1.(time.Time))
-			if err = b.Validate(); err != nil {
-				panic(err)
-			}
-		default:
-			return false
-		}
-
-		return a.IsEquivalentTo(b)
-	}
-
-	if isEffectivelyNull(_this) && isEffectivelyNull(that) {
-		return true
-	}
-
-	return false
-}
-
-func AreAllEventsEqual(a []*TEvent, b []*TEvent) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i, ev := range a {
-		if !ev.isEquivalentTo(b[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-// Invoking a stored event generates the appropriate data event message to
-// the receiver.
-func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
-	switch _this.Type {
-	case TEventBeginDocument:
-		receiver.OnBeginDocument()
-	case TEventVersion:
-		receiver.OnVersion(_this.V1.(uint64))
-	case TEventPadding:
-		receiver.OnPadding(_this.V1.(int))
-	case TEventComment:
-		receiver.OnComment(_this.V1.(bool), []byte(_this.V2.(string)))
-	case TEventNull:
-		receiver.OnNull()
-	case TEventBool:
-		receiver.OnBool(_this.V1.(bool))
-	case TEventTrue:
-		receiver.OnTrue()
-	case TEventFalse:
-		receiver.OnFalse()
-	case TEventPInt:
-		receiver.OnPositiveInt(_this.V1.(uint64))
-	case TEventNInt:
-		receiver.OnNegativeInt(_this.V1.(uint64))
-	case TEventInt:
-		receiver.OnInt(_this.V1.(int64))
-	case TEventBigInt:
-		receiver.OnBigInt(_this.V1.(*big.Int))
-	case TEventFloat:
-		receiver.OnFloat(_this.V1.(float64))
-	case TEventBigFloat:
-		receiver.OnBigFloat(_this.V1.(*big.Float))
-	case TEventDecimalFloat:
-		receiver.OnDecimalFloat(_this.V1.(compact_float.DFloat))
-	case TEventBigDecimalFloat:
-		receiver.OnBigDecimalFloat(_this.V1.(*apd.Decimal))
-	case TEventNan:
-		receiver.OnNan(false)
-	case TEventSNan:
-		receiver.OnNan(true)
-	case TEventUID:
-		receiver.OnUID(_this.V1.([]byte))
-	case TEventTime:
-		receiver.OnTime(_this.V1.(time.Time))
-	case TEventCompactTime:
-		receiver.OnCompactTime(_this.V1.(compact_time.Time))
-	case TEventString:
-		receiver.OnStringlikeArray(events.ArrayTypeString, _this.V1.(string))
-	case TEventResourceID:
-		receiver.OnStringlikeArray(events.ArrayTypeResourceID, _this.V1.(string))
-	case TEventRemoteRef:
-		receiver.OnStringlikeArray(events.ArrayTypeRemoteRef, _this.V1.(string))
-	case TEventCustomBinary:
-		bytes := _this.V1.([]byte)
-		receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(bytes)), bytes)
-	case TEventCustomText:
-		receiver.OnStringlikeArray(events.ArrayTypeCustomText, _this.V1.(string))
-	case TEventArrayBoolean:
-		bitCount := _this.V1.(uint64)
-		bytes := _this.V2.([]byte)
-		receiver.OnArray(events.ArrayTypeBit, bitCount, bytes)
-	case TEventArrayInt8:
-		bytes := arrays.Int8SliceAsBytes(_this.V1.([]int8))
-		receiver.OnArray(events.ArrayTypeInt8, uint64(len(bytes)), bytes)
-	case TEventArrayInt16:
-		bytes := arrays.Int16SliceAsBytes(_this.V1.([]int16))
-		receiver.OnArray(events.ArrayTypeInt16, uint64(len(bytes)/2), bytes)
-	case TEventArrayInt32:
-		bytes := arrays.Int32SliceAsBytes(_this.V1.([]int32))
-		receiver.OnArray(events.ArrayTypeInt32, uint64(len(bytes)/4), bytes)
-	case TEventArrayInt64:
-		bytes := arrays.Int64SliceAsBytes(_this.V1.([]int64))
-		receiver.OnArray(events.ArrayTypeInt64, uint64(len(bytes)/8), bytes)
-	case TEventArrayUint8:
-		bytes := _this.V1.([]byte)
-		receiver.OnArray(events.ArrayTypeUint8, uint64(len(bytes)), bytes)
-	case TEventArrayUint16:
-		bytes := arrays.Uint16SliceAsBytes(_this.V1.([]uint16))
-		receiver.OnArray(events.ArrayTypeUint16, uint64(len(bytes)/2), bytes)
-	case TEventArrayUint32:
-		bytes := arrays.Uint32SliceAsBytes(_this.V1.([]uint32))
-		receiver.OnArray(events.ArrayTypeUint32, uint64(len(bytes)/4), bytes)
-	case TEventArrayUint64:
-		bytes := arrays.Uint64SliceAsBytes(_this.V1.([]uint64))
-		receiver.OnArray(events.ArrayTypeUint64, uint64(len(bytes)/8), bytes)
-	case TEventArrayFloat16:
-		// TODO: How to handle float16 in go code?
-		bytes := _this.V1.([]byte)
-		receiver.OnArray(events.ArrayTypeFloat16, uint64(len(bytes)/2), bytes)
-	case TEventArrayFloat32:
-		bytes := arrays.Float32SliceAsBytes(_this.V1.([]float32))
-		receiver.OnArray(events.ArrayTypeFloat32, uint64(len(bytes)/4), bytes)
-	case TEventArrayFloat64:
-		bytes := arrays.Float64SliceAsBytes(_this.V1.([]float64))
-		receiver.OnArray(events.ArrayTypeFloat64, uint64(len(bytes)/8), bytes)
-	case TEventArrayUID:
-		bytes := arrays.UUIDSliceAsBytes(_this.V1.([][]byte))
-		receiver.OnArray(events.ArrayTypeUID, uint64(len(bytes)/16), bytes)
-	case TEventStringBegin:
-		receiver.OnArrayBegin(events.ArrayTypeString)
-	case TEventResourceIDBegin:
-		receiver.OnArrayBegin(events.ArrayTypeResourceID)
-	case TEventRemoteRefBegin:
-		receiver.OnArrayBegin(events.ArrayTypeRemoteRef)
-	case TEventCustomBinaryBegin:
-		receiver.OnArrayBegin(events.ArrayTypeCustomBinary)
-	case TEventCustomTextBegin:
-		receiver.OnArrayBegin(events.ArrayTypeCustomText)
-	case TEventArrayBooleanBegin:
-		receiver.OnArrayBegin(events.ArrayTypeBit)
-	case TEventArrayInt8Begin:
-		receiver.OnArrayBegin(events.ArrayTypeInt8)
-	case TEventArrayInt16Begin:
-		receiver.OnArrayBegin(events.ArrayTypeInt16)
-	case TEventArrayInt32Begin:
-		receiver.OnArrayBegin(events.ArrayTypeInt32)
-	case TEventArrayInt64Begin:
-		receiver.OnArrayBegin(events.ArrayTypeInt64)
-	case TEventArrayUint8Begin:
-		receiver.OnArrayBegin(events.ArrayTypeUint8)
-	case TEventArrayUint16Begin:
-		receiver.OnArrayBegin(events.ArrayTypeUint16)
-	case TEventArrayUint32Begin:
-		receiver.OnArrayBegin(events.ArrayTypeUint32)
-	case TEventArrayUint64Begin:
-		receiver.OnArrayBegin(events.ArrayTypeUint64)
-	case TEventArrayFloat16Begin:
-		receiver.OnArrayBegin(events.ArrayTypeFloat16)
-	case TEventArrayFloat32Begin:
-		receiver.OnArrayBegin(events.ArrayTypeFloat32)
-	case TEventArrayFloat64Begin:
-		receiver.OnArrayBegin(events.ArrayTypeFloat64)
-	case TEventArrayUIDBegin:
-		receiver.OnArrayBegin(events.ArrayTypeUID)
-	case TEventMediaBegin:
-		receiver.OnArrayBegin(events.ArrayTypeMedia)
-	case TEventArrayChunk:
-		receiver.OnArrayChunk(_this.V1.(uint64), _this.V2.(bool))
-	case TEventArrayData:
-		receiver.OnArrayData(_this.V1.([]byte))
-	case TEventList:
-		receiver.OnList()
-	case TEventMap:
-		receiver.OnMap()
-	case TEventMarkup:
-		receiver.OnMarkup([]byte(_this.V1.(string)))
-	case TEventEnd:
-		receiver.OnEnd()
-	case TEventNode:
-		receiver.OnNode()
-	case TEventEdge:
-		receiver.OnEdge()
-	case TEventMarker:
-		receiver.OnMarker([]byte(_this.V1.(string)))
-	case TEventReference:
-		receiver.OnReference([]byte(_this.V1.(string)))
-	case TEventConstant:
-		receiver.OnConstant([]byte(_this.V1.(string)))
-	case TEventEndDocument:
-		receiver.OnEndDocument()
-	default:
-		panic(fmt.Errorf("%v: Unhandled event type", _this.Type))
-	}
 }
 
 func EventOrNull(eventType TEventType, value interface{}) *TEvent {
@@ -1417,541 +874,6 @@ func EventForValue(value interface{}) *TEvent {
 		}
 	}
 	panic(fmt.Errorf("TEST CODE BUG: Unhandled kind: %v", rv.Kind()))
-}
-
-// ----------------------------------------------------------------------------
-// Event printer
-// ----------------------------------------------------------------------------
-
-type TEventPrinter struct {
-	Next  events.DataEventReceiver
-	Print func(event *TEvent)
-}
-
-// Create an event receiver that prints the event to stdout.
-func NewStdoutTEventPrinter(next events.DataEventReceiver) *TEventPrinter {
-	return &TEventPrinter{
-		Next: next,
-		Print: func(event *TEvent) {
-			fmt.Printf("EVENT %v\n", event)
-		},
-	}
-}
-
-func (h *TEventPrinter) OnBeginDocument() {
-	h.Print(BD())
-	h.Next.OnBeginDocument()
-}
-func (h *TEventPrinter) OnVersion(version uint64) {
-	h.Print(V(version))
-	h.Next.OnVersion(version)
-}
-func (h *TEventPrinter) OnPadding(count int) {
-	h.Print(PAD(count))
-	h.Next.OnPadding(count)
-}
-func (h *TEventPrinter) OnComment(isMultiline bool, contents []byte) {
-	h.Print(COM(isMultiline, string(contents)))
-	h.Next.OnComment(isMultiline, contents)
-}
-func (h *TEventPrinter) OnNull() {
-	h.Print(N())
-	h.Next.OnNull()
-}
-func (h *TEventPrinter) OnBool(value bool) {
-	h.Print(B(value))
-	h.Next.OnBool(value)
-}
-func (h *TEventPrinter) OnTrue() {
-	h.Print(TT())
-	h.Next.OnTrue()
-}
-func (h *TEventPrinter) OnFalse() {
-	h.Print(FF())
-	h.Next.OnFalse()
-}
-func (h *TEventPrinter) OnPositiveInt(value uint64) {
-	h.Print(PI(value))
-	h.Next.OnPositiveInt(value)
-}
-func (h *TEventPrinter) OnNegativeInt(value uint64) {
-	h.Print(NI(value))
-	h.Next.OnNegativeInt(value)
-}
-func (h *TEventPrinter) OnInt(value int64) {
-	h.Print(I(value))
-	h.Next.OnInt(value)
-}
-func (h *TEventPrinter) OnBigInt(value *big.Int) {
-	h.Print(BI(value))
-	h.Next.OnBigInt(value)
-}
-func (h *TEventPrinter) OnFloat(value float64) {
-	if math.IsNaN(value) {
-		if common.IsSignalingNan(value) {
-			h.Print(SNAN())
-		} else {
-			h.Print(NAN())
-		}
-	} else {
-		h.Print(F(value))
-	}
-	h.Next.OnFloat(value)
-}
-func (h *TEventPrinter) OnBigFloat(value *big.Float) {
-	h.Print(NewTEvent(TEventBigFloat, value, nil))
-	h.Next.OnBigFloat(value)
-}
-func (h *TEventPrinter) OnDecimalFloat(value compact_float.DFloat) {
-	if value.IsNan() {
-		if value.IsSignalingNan() {
-			h.Print(SNAN())
-		} else {
-			h.Print(NAN())
-		}
-	} else {
-		h.Print(DF(value))
-	}
-	h.Next.OnDecimalFloat(value)
-}
-func (h *TEventPrinter) OnBigDecimalFloat(value *apd.Decimal) {
-	switch value.Form {
-	case apd.NaN:
-		h.Print(NAN())
-	case apd.NaNSignaling:
-		h.Print(SNAN())
-	default:
-		h.Print(BDF(value))
-	}
-	h.Next.OnBigDecimalFloat(value)
-}
-func (h *TEventPrinter) OnUID(value []byte) {
-	h.Print(UID(value))
-	h.Next.OnUID(value)
-}
-func (h *TEventPrinter) OnTime(value time.Time) {
-	h.Print(GT(value))
-	h.Next.OnTime(value)
-}
-func (h *TEventPrinter) OnCompactTime(value compact_time.Time) {
-	h.Print(CT(value))
-	h.Next.OnCompactTime(value)
-}
-func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		h.Print(S(string(value)))
-	case events.ArrayTypeResourceID:
-		h.Print(RID(string(value)))
-	case events.ArrayTypeRemoteRef:
-		h.Print(RREF(string(value)))
-	case events.ArrayTypeCustomBinary:
-		h.Print(CUB(value))
-	case events.ArrayTypeCustomText:
-		h.Print(CUT(string(value)))
-	case events.ArrayTypeBit:
-		h.Print(AB(elementCount, value))
-	case events.ArrayTypeInt8:
-		h.Print(AI8(arrays.BytesToInt8Slice(value)))
-	case events.ArrayTypeInt16:
-		h.Print(AI16(arrays.BytesToInt16Slice(value)))
-	case events.ArrayTypeInt32:
-		h.Print(AI32(arrays.BytesToInt32Slice(value)))
-	case events.ArrayTypeInt64:
-		h.Print(AI64(arrays.BytesToInt64Slice(value)))
-	case events.ArrayTypeUint8:
-		h.Print(AU8(value))
-	case events.ArrayTypeUint16:
-		h.Print(AU16(arrays.BytesToUint16Slice(value)))
-	case events.ArrayTypeUint32:
-		h.Print(AU32(arrays.BytesToUint32Slice(value)))
-	case events.ArrayTypeUint64:
-		h.Print(AU64(arrays.BytesToUint64Slice(value)))
-	case events.ArrayTypeFloat16:
-		h.Print(AF16(value))
-	case events.ArrayTypeFloat32:
-		h.Print(AF32(arrays.BytesToFloat32Slice(value)))
-	case events.ArrayTypeFloat64:
-		h.Print(AF64(arrays.BytesToFloat64Slice(value)))
-	case events.ArrayTypeUID:
-		h.Print(AUU(arrays.BytesToUUIDSlice(value)))
-	default:
-		panic(fmt.Errorf("TODO: TEventPrinter.OnArray: Typed array support for %v", arrayType))
-	}
-	h.Next.OnArray(arrayType, elementCount, value)
-}
-func (h *TEventPrinter) OnStringlikeArray(arrayType events.ArrayType, value string) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		h.Print(S(value))
-	case events.ArrayTypeResourceID:
-		h.Print(RID(value))
-	case events.ArrayTypeRemoteRef:
-		h.Print(RREF(value))
-	case events.ArrayTypeCustomText:
-		h.Print(CUT(value))
-	default:
-		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
-	}
-	h.Next.OnStringlikeArray(arrayType, value)
-}
-func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		h.Print(SB())
-	case events.ArrayTypeResourceID:
-		h.Print(RB())
-	case events.ArrayTypeRemoteRef:
-		h.Print(RRB())
-	case events.ArrayTypeCustomBinary:
-		h.Print(CBB())
-	case events.ArrayTypeCustomText:
-		h.Print(CTB())
-	case events.ArrayTypeBit:
-		h.Print(ABB())
-	case events.ArrayTypeInt8:
-		h.Print(AI8B())
-	case events.ArrayTypeInt16:
-		h.Print(AI16B())
-	case events.ArrayTypeInt32:
-		h.Print(AI32B())
-	case events.ArrayTypeInt64:
-		h.Print(AI64B())
-	case events.ArrayTypeUint8:
-		h.Print(AU8B())
-	case events.ArrayTypeUint16:
-		h.Print(AU16B())
-	case events.ArrayTypeUint32:
-		h.Print(AU32B())
-	case events.ArrayTypeUint64:
-		h.Print(AU64B())
-	case events.ArrayTypeFloat16:
-		h.Print(AF16B())
-	case events.ArrayTypeFloat32:
-		h.Print(AF32B())
-	case events.ArrayTypeFloat64:
-		h.Print(AF64B())
-	case events.ArrayTypeUID:
-		h.Print(AUUB())
-	case events.ArrayTypeMedia:
-		h.Print(MB())
-	default:
-		panic(fmt.Errorf("TODO: TEventPrinter.OnArrayBegin: Typed array support for %v", arrayType))
-	}
-	h.Next.OnArrayBegin(arrayType)
-}
-func (h *TEventPrinter) OnArrayChunk(l uint64, moreChunksFollow bool) {
-	h.Print(AC(l, moreChunksFollow))
-	h.Next.OnArrayChunk(l, moreChunksFollow)
-}
-func (h *TEventPrinter) OnArrayData(data []byte) {
-	h.Print(AD(data))
-	h.Next.OnArrayData(data)
-}
-func (h *TEventPrinter) OnList() {
-	h.Print(L())
-	h.Next.OnList()
-}
-func (h *TEventPrinter) OnMap() {
-	h.Print(M())
-	h.Next.OnMap()
-}
-func (h *TEventPrinter) OnMarkup(id []byte) {
-	h.Print(MUP(string(id)))
-	h.Next.OnMarkup(id)
-}
-func (h *TEventPrinter) OnEnd() {
-	h.Print(E())
-	h.Next.OnEnd()
-}
-func (h *TEventPrinter) OnNode() {
-	h.Print(NODE())
-	h.Next.OnNode()
-}
-func (h *TEventPrinter) OnEdge() {
-	h.Print(EDGE())
-	h.Next.OnEdge()
-}
-func (h *TEventPrinter) OnMarker(id []byte) {
-	h.Print(MARK(string(id)))
-	h.Next.OnMarker(id)
-}
-func (h *TEventPrinter) OnReference(id []byte) {
-	h.Print(REF(string(id)))
-	h.Next.OnReference(id)
-}
-func (h *TEventPrinter) OnConstant(name []byte) {
-	h.Print(CONST(string(name)))
-	h.Next.OnConstant(name)
-}
-func (h *TEventPrinter) OnEndDocument() {
-	h.Print(ED())
-	h.Next.OnEndDocument()
-}
-func (h *TEventPrinter) OnNan(signaling bool) {
-	if signaling {
-		h.Print(SNAN())
-	} else {
-		h.Print(NAN())
-	}
-	h.Next.OnNan(signaling)
-}
-
-// ----------------------------------------------------------------------------
-// Event receiver
-// ----------------------------------------------------------------------------
-
-// Event receiver receives data events and stores them to an array which can be
-// inspected, printed, or played back.
-type TEventStore struct {
-	Events   []*TEvent
-	receiver events.DataEventReceiver
-}
-
-func NewTEventStore(receiver events.DataEventReceiver) *TEventStore {
-	return &TEventStore{
-		Events:   make([]*TEvent, 0, 1024),
-		receiver: receiver,
-	}
-}
-func (h *TEventStore) add(event *TEvent) {
-	h.Events = append(h.Events, event)
-}
-func (h *TEventStore) OnVersion(version uint64) {
-	h.add(V(version))
-	h.receiver.OnVersion(version)
-}
-func (h *TEventStore) OnPadding(count int) {
-	h.add(PAD(count))
-	h.receiver.OnPadding(count)
-}
-func (h *TEventStore) OnComment(isMultiline bool, contents []byte) {
-	h.add(COM(isMultiline, string(contents)))
-	h.receiver.OnComment(isMultiline, contents)
-}
-func (h *TEventStore) OnNull() {
-	h.add(N())
-	h.receiver.OnNull()
-}
-func (h *TEventStore) OnBool(value bool) {
-	h.add(B(value))
-	h.receiver.OnBool(value)
-}
-func (h *TEventStore) OnTrue() {
-	h.add(TT())
-	h.receiver.OnTrue()
-}
-func (h *TEventStore) OnFalse() {
-	h.add(FF())
-	h.receiver.OnFalse()
-}
-func (h *TEventStore) OnPositiveInt(value uint64) {
-	h.add(PI(value))
-	h.receiver.OnPositiveInt(value)
-}
-func (h *TEventStore) OnNegativeInt(value uint64) {
-	h.add(NI(value))
-	h.receiver.OnNegativeInt(value)
-}
-func (h *TEventStore) OnInt(value int64) {
-	h.add(I(value))
-	h.receiver.OnInt(value)
-}
-func (h *TEventStore) OnBigInt(value *big.Int) {
-	h.add(BI(value))
-	h.receiver.OnBigInt(value)
-}
-func (h *TEventStore) OnFloat(value float64) {
-	h.add(F(value))
-	h.receiver.OnFloat(value)
-}
-func (h *TEventStore) OnBigFloat(value *big.Float) {
-	h.add(NewTEvent(TEventBigFloat, value, nil))
-	h.receiver.OnBigFloat(value)
-}
-func (h *TEventStore) OnDecimalFloat(value compact_float.DFloat) {
-	h.add(DF(value))
-	h.receiver.OnDecimalFloat(value)
-}
-func (h *TEventStore) OnBigDecimalFloat(value *apd.Decimal) {
-	h.add(BDF(value))
-	h.receiver.OnBigDecimalFloat(value)
-}
-func (h *TEventStore) OnUID(value []byte) {
-	h.add(UID(CloneBytes(value)))
-	h.receiver.OnUID(value)
-}
-func (h *TEventStore) OnTime(value time.Time) {
-	h.add(GT(value))
-	h.receiver.OnTime(value)
-}
-func (h *TEventStore) OnCompactTime(value compact_time.Time) {
-	h.add(CT(value))
-	h.receiver.OnCompactTime(value)
-}
-func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		h.add(S(string(value)))
-	case events.ArrayTypeResourceID:
-		h.add(RID(string(value)))
-	case events.ArrayTypeRemoteRef:
-		h.add(RREF(string(value)))
-	case events.ArrayTypeCustomBinary:
-		h.add(CUB(CloneBytes(value)))
-	case events.ArrayTypeCustomText:
-		h.add(CUT(string(value)))
-	case events.ArrayTypeBit:
-		h.add(AB(elementCount, CloneBytes(value)))
-	case events.ArrayTypeInt8:
-		h.add(AI8(arrays.BytesToInt8Slice(value)))
-	case events.ArrayTypeInt16:
-		h.add(AI16(arrays.BytesToInt16Slice(value)))
-	case events.ArrayTypeInt32:
-		h.add(AI32(arrays.BytesToInt32Slice(value)))
-	case events.ArrayTypeInt64:
-		h.add(AI64(arrays.BytesToInt64Slice(value)))
-	case events.ArrayTypeUint8:
-		h.add(AU8(CloneBytes(value)))
-	case events.ArrayTypeUint16:
-		h.add(AU16(arrays.BytesToUint16Slice(value)))
-	case events.ArrayTypeUint32:
-		h.add(AU32(arrays.BytesToUint32Slice(value)))
-	case events.ArrayTypeUint64:
-		h.add(AU64(arrays.BytesToUint64Slice(value)))
-	case events.ArrayTypeFloat16:
-		h.add(AF16(CloneBytes(value)))
-	case events.ArrayTypeFloat32:
-		h.add(AF32(arrays.BytesToFloat32Slice(value)))
-	case events.ArrayTypeFloat64:
-		h.add(AF64(arrays.BytesToFloat64Slice(value)))
-	case events.ArrayTypeUID:
-		h.add(AUU(arrays.BytesToUUIDSlice(CloneBytes(value))))
-	default:
-		panic(fmt.Errorf("TODO: TEventStore.OnArray: Typed array support for %v", arrayType))
-	}
-	h.receiver.OnArray(arrayType, elementCount, value)
-}
-func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		h.add(S(value))
-	case events.ArrayTypeResourceID:
-		h.add(RID(value))
-	case events.ArrayTypeRemoteRef:
-		h.add(RREF(value))
-	case events.ArrayTypeCustomText:
-		h.add(CUT(value))
-	default:
-		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
-	}
-	h.receiver.OnStringlikeArray(arrayType, value)
-}
-func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
-	switch arrayType {
-	case events.ArrayTypeString:
-		h.add(SB())
-	case events.ArrayTypeResourceID:
-		h.add(RB())
-	case events.ArrayTypeRemoteRef:
-		h.add(RRB())
-	case events.ArrayTypeCustomBinary:
-		h.add(CBB())
-	case events.ArrayTypeCustomText:
-		h.add(CTB())
-	case events.ArrayTypeBit:
-		h.add(ABB())
-	case events.ArrayTypeInt8:
-		h.add(AI8B())
-	case events.ArrayTypeInt16:
-		h.add(AI16B())
-	case events.ArrayTypeInt32:
-		h.add(AI32B())
-	case events.ArrayTypeInt64:
-		h.add(AI64B())
-	case events.ArrayTypeUint8:
-		h.add(AU8B())
-	case events.ArrayTypeUint16:
-		h.add(AU16B())
-	case events.ArrayTypeUint32:
-		h.add(AU32B())
-	case events.ArrayTypeUint64:
-		h.add(AU64B())
-	case events.ArrayTypeFloat16:
-		h.add(AF16B())
-	case events.ArrayTypeFloat32:
-		h.add(AF32B())
-	case events.ArrayTypeFloat64:
-		h.add(AF64B())
-	case events.ArrayTypeUID:
-		h.add(AUUB())
-	case events.ArrayTypeMedia:
-		h.add(MB())
-	default:
-		panic(fmt.Errorf("TODO: TEventStore.OnArrayBegin: Typed array support for %v", arrayType))
-	}
-	h.receiver.OnArrayBegin(arrayType)
-}
-func (h *TEventStore) OnArrayChunk(length uint64, moreChunks bool) {
-	h.add(AC(length, moreChunks))
-	h.receiver.OnArrayChunk(length, moreChunks)
-}
-func (h *TEventStore) OnArrayData(data []byte) {
-	h.add(AD(CloneBytes(data)))
-	h.receiver.OnArrayData(data)
-}
-func (h *TEventStore) OnList() {
-	h.add(L())
-	h.receiver.OnList()
-}
-func (h *TEventStore) OnMap() {
-	h.add(M())
-	h.receiver.OnMap()
-}
-func (h *TEventStore) OnMarkup(id []byte) {
-	h.add(MUP(string(id)))
-	h.receiver.OnMarkup(id)
-}
-func (h *TEventStore) OnEnd() {
-	h.add(E())
-	h.receiver.OnEnd()
-}
-func (h *TEventStore) OnNode() {
-	h.add(NODE())
-	h.receiver.OnNode()
-}
-func (h *TEventStore) OnEdge() {
-	h.add(EDGE())
-	h.receiver.OnEdge()
-}
-func (h *TEventStore) OnMarker(id []byte) {
-	h.add(MARK(string(id)))
-	h.receiver.OnMarker(id)
-}
-func (h *TEventStore) OnReference(id []byte) {
-	h.add(REF(string(id)))
-	h.receiver.OnReference(id)
-}
-func (h *TEventStore) OnConstant(n []byte) {
-	h.add(CONST(string(n)))
-	h.receiver.OnConstant(n)
-}
-func (h *TEventStore) OnBeginDocument() {
-	h.Events = h.Events[:0]
-	h.add(BD())
-	h.receiver.OnBeginDocument()
-}
-func (h *TEventStore) OnEndDocument() {
-	h.add(ED())
-	h.receiver.OnEndDocument()
-}
-func (h *TEventStore) OnNan(signaling bool) {
-	if signaling {
-		h.add(SNAN())
-	} else {
-		h.add(NAN())
-	}
-	h.receiver.OnNan(signaling)
 }
 
 // ----------------------------------------------------------------------------
@@ -2109,11 +1031,11 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F3", I(1))
 		ane("F4", I(-1))
 		ane("F5", F(1.1))
-		ane("F6", BF(NewBigFloat("1.1", 10, 2)))
+		ane("F6", BF(NewBigFloat("1.1")))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
 		ane("F9", N())
-		ane("F10", BI(NewBigInt("1000", 10)))
+		ane("F10", BI(NewBigInt("1000")))
 		ane("F12", NAN())
 		ane("F13", SNAN())
 		ane("F14", UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
@@ -2131,11 +1053,11 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			I(1),
 			I(-1),
 			F(1.1),
-			BF(NewBigFloat("1.1", 10, 2)),
+			BF(NewBigFloat("1.1")),
 			DF(NewDFloat("1.1")),
 			BDF(NewBDF("1.1")),
 			N(),
-			BI(NewBigInt("1000", 10)),
+			BI(NewBigInt("1000")),
 			NAN(),
 			SNAN(),
 			UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
@@ -2191,13 +1113,13 @@ func (_this *TestingOuterStruct) Init(baseValue int) {
 	_this.PU32 = &_this.U32
 	_this.U64 = uint64(1000000000000) + uint64(baseValue+int(unsafe.Offsetof(_this.U64)))
 	_this.PU64 = &_this.U64
-	_this.PBI = NewBigInt(fmt.Sprintf("-10000000000000000000000000000000000000%v", unsafe.Offsetof(_this.PBI)), 10)
+	_this.PBI = NewBigInt(fmt.Sprintf("-10000000000000000000000000000000000000%v", unsafe.Offsetof(_this.PBI)))
 	_this.BI = *_this.PBI
 	_this.F32 = float32(1000000+baseValue+int(unsafe.Offsetof(_this.F32))) + 0.5
 	_this.PF32 = &_this.F32
 	_this.F64 = float64(1000000000000) + float64(baseValue+int(unsafe.Offsetof(_this.F64))) + 0.5
 	_this.PF64 = &_this.F64
-	_this.PBF = NewBigFloat("12345678901234567890123.1234567", 10, 30)
+	_this.PBF = NewBigFloat("12345678901234567890123.1234567")
 	_this.BF = *_this.PBF
 	_this.DF = NewDFloat(fmt.Sprintf("-100000000000000%ve-1000000", unsafe.Offsetof(_this.DF)))
 	_this.PBDF = NewBDF("-1.234567890123456789777777777777777777771234e-10000")

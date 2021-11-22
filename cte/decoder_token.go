@@ -458,49 +458,41 @@ func (_this Token) DecodeSmallInt(textPos *TextPositionCounter) (value int64, di
 
 // ----------------------------------------------------------------------------
 
-func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter, sign int64, coefficient uint64, bigCoefficient *big.Int, wholePortionDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal, decodedCount int) {
-	// Assumption: First byte is '.' or ','
-
-	_this.assertCharPropertyAtOffset(textPos, 1, chars.DigitBase10, "decimal float")
-
-	pos := 1
-	var exponent int32
-	var fractionalDigitCount int
-	coefficient, bigCoefficient, fractionalDigitCount, decodedCount = _this[pos:].CompleteDecimalUint(textPos, coefficient, bigCoefficient)
-	if fractionalDigitCount == 0 {
-		_this.UnexpectedChar(textPos, pos, "decimal float fractional")
-	}
-	pos += decodedCount
-
-	if !_this.IsAtEnd(pos) && (_this[pos] == 'e' || _this[pos] == 'E') {
+func (_this Token) decodeExponent(textPos *TextPositionCounter) (exponent int, bytesDecoded int) {
+	pos := 0
+	_this.assertNotEnd(textPos, pos, "exponent")
+	exponentSign := 1
+	switch _this[pos] {
+	case '+':
 		pos++
-		_this.assertNotEnd(textPos, pos, "decimal float")
-		exponentSign := int32(1)
-		switch _this[pos] {
-		case '+':
-			pos++
-			_this.assertNotEnd(textPos, pos, "decimal float")
-		case '-':
-			exponentSign = -1
-			pos++
-			_this.assertNotEnd(textPos, pos, "decimal float")
-		}
-		exp, bigExp, expDigitCount, expDecodedCount := _this[pos:].DecodeDecimalUint(textPos)
-		if expDigitCount == 0 {
-			_this.UnexpectedChar(textPos, pos, "decimal float exponent")
-		}
-		if bigExp != nil {
-			_this.errorf(textPos, pos, "Exponent %v is too big", bigExp)
-		}
-		if exp > 0x7fffffff {
-			_this.errorf(textPos, pos, "Exponent %v is too big", exp)
-		}
-		exponent = int32(exp) * exponentSign
-		pos += expDecodedCount
+		_this.assertNotEnd(textPos, pos, "exponent")
+	case '-':
+		exponentSign = -1
+		pos++
+		_this.assertNotEnd(textPos, pos, "exponent")
 	}
+	exp, bigExp, expDigitCount, expDecodedCount := _this[pos:].DecodeDecimalUint(textPos)
+	if expDigitCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "exponent")
+	}
+	if bigExp != nil {
+		_this.errorf(textPos, pos, "exponent %v is too big", bigExp)
+	}
+	if exp > 0x7fffffff {
+		_this.errorf(textPos, pos, "exponent %v is too big", exp)
+	}
+	exponent = int(exp) * exponentSign
+	bytesDecoded = pos + expDecodedCount
+	return
+}
 
-	decodedCount = pos
-	exponent -= int32(fractionalDigitCount)
+func (_this Token) calculateDecimalFloat(sign int64,
+	coefficient uint64,
+	bigCoefficient *big.Int,
+	fractionalDigitCount int,
+	exponent int) (value compact_float.DFloat, bigValue *apd.Decimal) {
+
+	exponent -= fractionalDigitCount
 
 	if coefficient == 0 && bigCoefficient == nil {
 		if sign < 0 {
@@ -510,7 +502,7 @@ func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter, sign int64
 	}
 
 	if bigCoefficient != nil {
-		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		bigValue = apd.NewWithBigInt(bigCoefficient, int32(exponent))
 		if sign < 0 {
 			bigValue.Negative = true
 		}
@@ -518,55 +510,67 @@ func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter, sign int64
 	}
 	if coefficient > 0x7fffffffffffffff {
 		bigCoefficient = new(big.Int).SetUint64(coefficient)
-		bigValue = apd.NewWithBigInt(bigCoefficient, exponent)
+		bigValue = apd.NewWithBigInt(bigCoefficient, int32(exponent))
 		if sign < 0 {
 			bigValue.Negative = true
 		}
 		return
 	}
 
-	value = compact_float.DFloatValue(exponent, int64(coefficient)*sign)
+	value = compact_float.DFloatValue(int32(exponent), int64(coefficient)*sign)
 	return
 }
 
-func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, coefficient uint64, bigCoefficient *big.Int, coefficientDigitCount int) (value float64, bigValue *big.Float, decodedCount int) {
+func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter,
+	sign int64,
+	coefficient uint64,
+	bigCoefficient *big.Int) (value compact_float.DFloat, bigValue *apd.Decimal, decodedCount int) {
 	// Assumption: First byte is '.' or ','
+
+	_this.assertCharPropertyAtOffset(textPos, 1, chars.DigitBase10, "decimal float")
 
 	pos := 1
 	var exponent int
 	var fractionalDigitCount int
-	coefficient, bigCoefficient, fractionalDigitCount, decodedCount = _this[pos:].CompleteHexUint(textPos, coefficient, bigCoefficient)
+	coefficient, bigCoefficient, fractionalDigitCount, decodedCount = _this[pos:].CompleteDecimalUint(textPos, coefficient, bigCoefficient)
 	if fractionalDigitCount == 0 {
-		_this.UnexpectedChar(textPos, pos, "float fractional")
+		_this.UnexpectedChar(textPos, pos, "decimal float fractional")
 	}
 	pos += decodedCount
 
-	if !_this.IsAtEnd(pos) && (_this[pos] == 'p' || _this[pos] == 'P') {
+	if !_this.IsAtEnd(pos) && (_this[pos] == 'e' || _this[pos] == 'E') {
 		pos++
-		_this.assertNotEnd(textPos, pos, "hex float")
-		exponentSign := 1
-		switch _this[pos] {
-		case '+':
-			pos++
-			_this.assertNotEnd(textPos, pos, "decimal float")
-		case '-':
-			exponentSign = -1
-			pos++
-			_this.assertNotEnd(textPos, pos, "decimal float")
-		}
-		exp, bigExp, expDigitCount, expDecodedCount := _this[pos:].DecodeDecimalUint(textPos)
-		if expDigitCount == 0 {
-			_this.UnexpectedChar(textPos, pos, "hex float exponent")
-		}
-		if bigExp != nil {
-			_this.errorf(textPos, pos, "Exponent %v is too big", bigExp)
-		}
-		// TODO: What is max exponent size?
-		exponent = int(exp) * exponentSign
-		pos += expDecodedCount
+		exponent, decodedCount = _this[pos:].decodeExponent(textPos)
+		pos += decodedCount
 	}
 
 	decodedCount = pos
+	value, bigValue = _this.calculateDecimalFloat(sign, coefficient, bigCoefficient, fractionalDigitCount, exponent)
+	return
+}
+
+func (_this Token) CompleteDecimalExponent(textPos *TextPositionCounter,
+	sign int64,
+	coefficient uint64,
+	bigCoefficient *big.Int,
+	fractionalDigitCount int) (value compact_float.DFloat, bigValue *apd.Decimal, decodedCount int) {
+	// Assumption: First byte is 'e' or 'E'
+
+	pos := 1
+	exponent := 0
+	exponent, decodedCount = _this[pos:].decodeExponent(textPos)
+	decodedCount += pos
+
+	value, bigValue = _this.calculateDecimalFloat(sign, coefficient, bigCoefficient, fractionalDigitCount, exponent)
+	return
+}
+
+func (_this Token) calculateHexFloat(sign int64,
+	coefficient uint64,
+	bigCoefficient *big.Int,
+	coefficientDigitCount int,
+	fractionalDigitCount int,
+	exponent int) (value float64, bigValue *big.Float) {
 
 	adjustedExponent := exponent - fractionalDigitCount*4
 
@@ -607,6 +611,49 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter, sign int64, co
 	return
 }
 
+func (_this Token) CompleteHexFloat(textPos *TextPositionCounter,
+	sign int64,
+	coefficient uint64,
+	bigCoefficient *big.Int,
+	coefficientDigitCount int) (value float64, bigValue *big.Float, decodedCount int) {
+	// Assumption: First byte is '.' or ','
+
+	pos := 1
+	var exponent int
+	var fractionalDigitCount int
+	coefficient, bigCoefficient, fractionalDigitCount, decodedCount = _this[pos:].CompleteHexUint(textPos, coefficient, bigCoefficient)
+	if fractionalDigitCount == 0 {
+		_this.UnexpectedChar(textPos, pos, "hex float fractional")
+	}
+	pos += decodedCount
+
+	if !_this.IsAtEnd(pos) && (_this[pos] == 'p' || _this[pos] == 'P') {
+		pos++
+		exponent, decodedCount = _this[pos:].decodeExponent(textPos)
+		pos += decodedCount
+	}
+	decodedCount = pos
+
+	value, bigValue = _this.calculateHexFloat(sign, coefficient, bigCoefficient, coefficientDigitCount, fractionalDigitCount, exponent)
+	return
+}
+
+func (_this Token) CompleteHexExponent(textPos *TextPositionCounter,
+	sign int64,
+	coefficient uint64,
+	bigCoefficient *big.Int,
+	coefficientDigitCount int) (value float64, bigValue *big.Float, decodedCount int) {
+	// Assumption: First byte is 'p' or 'P'
+
+	pos := 1
+	var exponent int
+	exponent, decodedCount = _this[pos:].decodeExponent(textPos)
+	decodedCount += pos
+
+	value, bigValue = _this.calculateHexFloat(sign, coefficient, bigCoefficient, coefficientDigitCount, 0, exponent)
+	return
+}
+
 func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64, decodedCount int) {
 	_this.AssertNotEmpty(textPos, "float")
 
@@ -627,7 +674,7 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 		return
 	}
 
-	coefficient, bigCoefficient, coefficientDigitCount, bydesDecoded := _this[pos:].DecodeUint(textPos)
+	coefficient, bigCoefficient, _, bydesDecoded := _this[pos:].DecodeUint(textPos)
 	pos += bydesDecoded
 	if bydesDecoded == 0 {
 		common.ASCIIBytesToLower(_this)
@@ -665,7 +712,7 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 	// Note: Do not advance past the radix point because CompleteDecimalFloat expects it
 	var dfloatValue compact_float.DFloat
 	var bigValue *apd.Decimal
-	dfloatValue, bigValue, bydesDecoded = _this[pos:].CompleteDecimalFloat(textPos, sign, coefficient, bigCoefficient, coefficientDigitCount)
+	dfloatValue, bigValue, bydesDecoded = _this[pos:].CompleteDecimalFloat(textPos, sign, coefficient, bigCoefficient)
 	pos += bydesDecoded
 	if bydesDecoded == 0 {
 		_this.UnexpectedChar(textPos, pos, "float")

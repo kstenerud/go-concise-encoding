@@ -40,12 +40,12 @@ import (
 
 var EvV = test.EvV
 
-func NewBigInt(str string, base int) *big.Int {
-	return test.NewBigInt(str, base)
+func NewBigInt(str string) *big.Int {
+	return test.NewBigInt(str)
 }
 
-func NewBigFloat(str string, base int, significantDigits int) *big.Float {
-	return test.NewBigFloat(str, base, significantDigits)
+func NewBigFloat(str string) *big.Float {
+	return test.NewBigFloat(str)
 }
 
 func NewDFloat(str string) compact_float.DFloat {
@@ -187,7 +187,7 @@ func assertDecode(t *testing.T, opts *options.CEDecoderOptions, document string,
 	}
 
 	if len(expectedEvents) > 0 {
-		if !test.AreAllEventsEqual(actualEvents, expectedEvents) {
+		if !test.AreAllEventsEquivalent(actualEvents, expectedEvents) {
 			t.Errorf("Expected document [%v] to decode to events %v but got %v", document, expectedEvents, actualEvents)
 			return
 		}

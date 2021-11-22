@@ -80,10 +80,10 @@ func TestRulesNegativeInt(t *testing.T) {
 }
 
 func TestRulesBigInt(t *testing.T) {
-	assertEventsMaxDepth(t, 1, BI(NewBigInt("1", 10)), ED())
-	assertEventsMaxDepth(t, 1, BI(NewBigInt("-1", 10)), ED())
-	assertEventsMaxDepth(t, 1, BI(NewBigInt("10000000000000000000000000000000000000000000", 10)), ED())
-	assertEventsMaxDepth(t, 1, BI(NewBigInt("-10000000000000000000000000000000000000000000", 10)), ED())
+	assertEventsMaxDepth(t, 1, BI(NewBigInt("1")), ED())
+	assertEventsMaxDepth(t, 1, BI(NewBigInt("-1")), ED())
+	assertEventsMaxDepth(t, 1, BI(NewBigInt("10000000000000000000000000000000000000000000")), ED())
+	assertEventsMaxDepth(t, 1, BI(NewBigInt("-10000000000000000000000000000000000000000000")), ED())
 }
 
 func TestRulesFloat(t *testing.T) {
@@ -92,7 +92,7 @@ func TestRulesFloat(t *testing.T) {
 }
 
 func TestRulesBigFloat(t *testing.T) {
-	assertEventsMaxDepth(t, 1, BF(NewBigFloat("1.1", 10, 2)), ED())
+	assertEventsMaxDepth(t, 1, BF(NewBigFloat("1.1")), ED())
 }
 
 func TestRulesDecimalFloat(t *testing.T) {

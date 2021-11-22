@@ -36,9 +36,9 @@ import (
 )
 
 func TestIterateBasic(t *testing.T) {
-	pBigIntP := NewBigInt("12345678901234567890123456789", 10)
-	pBigIntN := NewBigInt("-999999999999999999999999999999", 10)
-	pBigFloat := NewBigFloat("5.377345e-10000", 10, 7)
+	pBigIntP := NewBigInt("12345678901234567890123456789")
+	pBigIntN := NewBigInt("-999999999999999999999999999999")
+	pBigFloat := NewBigFloat("5.377345e-10000")
 	dfloat := NewDFloat("1.23456e1000")
 	pBigDFloat := NewBDF("4.509e10000")
 	gTimeNow := time.Now()

@@ -149,7 +149,7 @@ func (_this *CTEDecodeSuccessTest) run() {
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		_this.testFailed("Expected CTE %v to produce events %v but got %v",
 			desc(_this.Source), expectedEvents, actualEvents)
 	}

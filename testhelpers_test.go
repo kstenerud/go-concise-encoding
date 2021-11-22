@@ -47,12 +47,12 @@ const (
 	ceVer = version.ConciseEncodingVersion
 )
 
-func NewBigInt(str string, base int) *big.Int {
-	return test.NewBigInt(str, base)
+func NewBigInt(str string) *big.Int {
+	return test.NewBigInt(str)
 }
 
-func NewBigFloat(str string, base int, significantDigits int) *big.Float {
-	return test.NewBigFloat(str, base, significantDigits)
+func NewBigFloat(str string) *big.Float {
+	return test.NewBigFloat(str)
 }
 
 func NewDFloat(str string) compact_float.DFloat {
@@ -251,7 +251,7 @@ func assertEncodeDecodeCBEOpts(t *testing.T,
 		return
 	}
 
-	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		t.Errorf("CBE: Expected %v but got %v while decoding %v", expectedEvents, actualEvents, describe.D(document))
 	}
 }
@@ -272,6 +272,7 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 	test.AssertNoPanic(t, fmt.Sprintf("CTE Encode %v", expectedEvents), func() {
 		document = cteEncode(encodeOpts, expectedEvents...)
 	})
+	fmt.Printf("### EVENTS %v PRODUCE %v\n", expectedEvents, string(document))
 
 	test.AssertNoPanic(t, fmt.Sprintf("CTE Decode %v", string(document)), func() {
 		actualEvents, err = cteDecode(decodeOpts, document)
@@ -281,7 +282,7 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 		return
 	}
 
-	if !test.AreAllEventsEqual(expectedEvents, actualEvents) {
+	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		t.Errorf("CTE: Expected %v but got %v while decoding %v", expectedEvents, actualEvents, string(document))
 	}
 }

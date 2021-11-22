@@ -102,12 +102,12 @@ func decodeNumericPositive(ctx *DecoderContext) {
 		return
 	}
 
-	value, bigValue, digitCount, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
+	value, bigValue, _, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
 	sign := 1
 
 	// 123
 	if token.IsAtEnd(decodedCount) {
-		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
 		ctx.RequireStructuralWS()
 		return
 	}
@@ -115,15 +115,18 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	switch token[decodedCount] {
 	case '.', ',':
 		// 1.23
-		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
+		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
+	case 'e', 'E':
+		// 1e+10
+		continueDecodingAsDecimalExponent(ctx, token, decodedCount, value, bigValue, sign)
 	case '-':
 		// 2000-01-01
 		// TODO: Check for overflow
-		decodeTokenAsDate(ctx, token, decodedCount, int(value))
+		continueDecodingAsDate(ctx, token, decodedCount, int(value))
 	case ':':
 		// 10:23:45
 		// TODO: Check for overflow
-		decodeTokenAsTime(ctx, token, decodedCount, int(value))
+		continueDecodingAsTime(ctx, token, decodedCount, int(value))
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "numeric")
 	}
@@ -158,31 +161,34 @@ func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 	switch token[1] {
 	case 'b', 'B':
 		// 0b1010
-		decodeTokenAsBinaryInt(ctx, token, sign)
+		continueDecodingAsBinaryInt(ctx, token, sign)
 		return
 	case 'o', 'O':
 		// 0o1234
-		decodeTokenAsOctalInt(ctx, token, sign)
+		continueDecodingAsOctalInt(ctx, token, sign)
 		return
 	case 'x', 'X':
 		// 0x1234
-		decodeTokenAsHexNumber(ctx, token, sign)
+		continueDecodingAsHexNumber(ctx, token, sign)
 		return
 	}
 
-	value, bigValue, digitCount, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
+	value, bigValue, _, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
 
 	// 0123
 	if token.IsAtEnd(decodedCount) {
-		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
 		return
 	}
 
 	switch token[decodedCount] {
 	case '.', ',':
 		// 0.123
-		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
+		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
 		return
+	case 'e', 'E':
+		// 1e+10
+		continueDecodingAsDecimalExponent(ctx, token, decodedCount, value, bigValue, sign)
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "negative 0-based numeric")
 		return
@@ -213,11 +219,11 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 		return
 	}
 
-	value, bigValue, digitCount, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
+	value, bigValue, _, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
 
 	// 123
 	if token.IsAtEnd(decodedCount) {
-		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
 		ctx.RequireStructuralWS()
 		return
 	}
@@ -225,11 +231,14 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	switch token[decodedCount] {
 	case '.', ',':
 		// 1.23
-		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
+		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
+	case 'e', 'E':
+		// 1e+10
+		continueDecodingAsDecimalExponent(ctx, token, decodedCount, value, bigValue, sign)
 	case '-':
 		// 2000-01-01
 		// TODO: Check for overflow
-		decodeTokenAsDate(ctx, token, decodedCount, int(value)*sign)
+		continueDecodingAsDate(ctx, token, decodedCount, int(value)*sign)
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "numeric")
 	}
@@ -262,26 +271,26 @@ func decode0Based(ctx *DecoderContext) {
 	switch token[1] {
 	case 'b', 'B':
 		// 0b1010
-		decodeTokenAsBinaryInt(ctx, token, sign)
+		continueDecodingAsBinaryInt(ctx, token, sign)
 		ctx.RequireStructuralWS()
 		return
 	case 'o', 'O':
 		// 0o1234
-		decodeTokenAsOctalInt(ctx, token, sign)
+		continueDecodingAsOctalInt(ctx, token, sign)
 		ctx.RequireStructuralWS()
 		return
 	case 'x', 'X':
 		// 0x1234
-		decodeTokenAsHexNumber(ctx, token, sign)
+		continueDecodingAsHexNumber(ctx, token, sign)
 		ctx.RequireStructuralWS()
 		return
 	}
 
-	value, bigValue, digitCount, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
+	value, bigValue, _, decodedCount := token.DecodeDecimalUint(ctx.TextPos)
 
 	// 0123
 	if token.IsAtEnd(decodedCount) {
-		decodeTokenAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
+		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
 		ctx.RequireStructuralWS()
 		return
 	}
@@ -289,10 +298,13 @@ func decode0Based(ctx *DecoderContext) {
 	switch token[decodedCount] {
 	case '.', ',':
 		// 0.123
-		decodeTokenAsDecimalFloat(ctx, token, decodedCount, digitCount, value, bigValue, sign)
+		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
+	case 'e', 'E':
+		// 1e+10
+		continueDecodingAsDecimalExponent(ctx, token, decodedCount, value, bigValue, sign)
 	case ':':
 		// 01:23:45
-		decodeTokenAsTime(ctx, token, decodedCount, int(value))
+		continueDecodingAsTime(ctx, token, decodedCount, int(value))
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "0-based numeric")
 	}
@@ -420,7 +432,9 @@ func advanceAndDecodeEdgeOrResourceID(ctx *DecoderContext) {
 
 // ===========================================================================
 
-func decodeTokenAsBinaryInt(ctx *DecoderContext, token Token, sign int) {
+func continueDecodingAsBinaryInt(ctx *DecoderContext, token Token, sign int) {
+	// Assumption: First two chars are 0b
+
 	token = token[2:]
 	value, bigValue, _, decodedCount := token.DecodeBinaryUint(ctx.TextPos)
 	token = token[decodedCount:]
@@ -439,7 +453,9 @@ func decodeTokenAsBinaryInt(ctx *DecoderContext, token Token, sign int) {
 	token.AssertAtEnd(ctx.TextPos, "binary integer")
 }
 
-func decodeTokenAsOctalInt(ctx *DecoderContext, token Token, sign int) {
+func continueDecodingAsOctalInt(ctx *DecoderContext, token Token, sign int) {
+	// Assumption: First two chars are 0o
+
 	token = token[2:]
 	value, bigValue, _, decodedCount := token.DecodeOctalUint(ctx.TextPos)
 	token = token[decodedCount:]
@@ -458,12 +474,17 @@ func decodeTokenAsOctalInt(ctx *DecoderContext, token Token, sign int) {
 	token.AssertAtEnd(ctx.TextPos, "octal integer")
 }
 
-func decodeTokenAsHexNumber(ctx *DecoderContext, token Token, sign int) {
-	token = token[2:]
-	value, bigValue, digitCount, decodedCount := token.DecodeHexUint(ctx.TextPos)
-	token = token[decodedCount:]
+func continueDecodingAsHexNumber(ctx *DecoderContext, token Token, sign int) {
+	// Assumption: First two chars are 0x
 
-	if token.IsAtEnd(0) {
+	pos := 2
+	value, bigValue, digitCount, decodedCount := token[pos:].DecodeHexUint(ctx.TextPos)
+	if decodedCount == 0 {
+		token.UnexpectedChar(ctx.TextPos, pos, "hexadecimal")
+	}
+	pos += decodedCount
+
+	if token.IsAtEnd(pos) {
 		if bigValue != nil {
 			if sign < 0 {
 				bigValue = bigValue.Neg(bigValue)
@@ -479,24 +500,33 @@ func decodeTokenAsHexNumber(ctx *DecoderContext, token Token, sign int) {
 		return
 	}
 
-	if token[0] != '.' && token[0] != ',' {
-		token.UnexpectedChar(ctx.TextPos, 0, "hexadecimal int")
-	}
-
-	var fvalue float64
-	var bigFValue *big.Float
-	fvalue, bigFValue, decodedCount = token.CompleteHexFloat(ctx.TextPos, int64(sign), value, bigValue, digitCount)
-	token = token[decodedCount:]
-	if bigFValue != nil {
-		ctx.EventReceiver.OnBigFloat(bigFValue)
-	} else {
-		ctx.EventReceiver.OnFloat(fvalue)
+	switch token[pos] {
+	case '.', ',':
+		// 0x3.1f
+		fvalue, bigFValue, decodedCount := token[pos:].CompleteHexFloat(ctx.TextPos, int64(sign), value, bigValue, digitCount)
+		token = token[decodedCount+pos:]
+		if bigFValue != nil {
+			ctx.EventReceiver.OnBigFloat(bigFValue)
+		} else {
+			ctx.EventReceiver.OnFloat(fvalue)
+		}
+	case 'p', 'P':
+		// 1p+10
+		fvalue, bigFValue, decodedCount := token[pos:].CompleteHexExponent(ctx.TextPos, int64(sign), value, bigValue, digitCount)
+		token = token[decodedCount+pos:]
+		if bigFValue != nil {
+			ctx.EventReceiver.OnBigFloat(bigFValue)
+		} else {
+			ctx.EventReceiver.OnFloat(fvalue)
+		}
+	default:
+		token.UnexpectedChar(ctx.TextPos, pos, "numeric")
 	}
 
 	token.AssertAtEnd(ctx.TextPos, "hexadecimal number")
 }
 
-func decodeTokenAsDecimalInt(ctx *DecoderContext, token Token, decodedCount int, value uint64, bigValue *big.Int, sign int) {
+func continueDecodingAsDecimalInt(ctx *DecoderContext, token Token, decodedCount int, value uint64, bigValue *big.Int, sign int) {
 	token = token[decodedCount:]
 	if bigValue != nil {
 		if sign < 0 {
@@ -513,9 +543,9 @@ func decodeTokenAsDecimalInt(ctx *DecoderContext, token Token, decodedCount int,
 	token.AssertAtEnd(ctx.TextPos, "decimal integer")
 }
 
-func decodeTokenAsDecimalFloat(ctx *DecoderContext, token Token, decodedCount int, digitCount int, value uint64, bigValue *big.Int, sign int) {
+func continueDecodingAsDecimalFloat(ctx *DecoderContext, token Token, decodedCount int, value uint64, bigValue *big.Int, sign int) {
 	token = token[decodedCount:]
-	fvalue, bigFValue, decodedCount := token.CompleteDecimalFloat(ctx.TextPos, int64(sign), value, bigValue, digitCount)
+	fvalue, bigFValue, decodedCount := token.CompleteDecimalFloat(ctx.TextPos, int64(sign), value, bigValue)
 	token = token[decodedCount:]
 	if bigFValue != nil {
 		ctx.EventReceiver.OnBigDecimalFloat(bigFValue)
@@ -525,7 +555,19 @@ func decodeTokenAsDecimalFloat(ctx *DecoderContext, token Token, decodedCount in
 	token.AssertAtEnd(ctx.TextPos, "decimal float")
 }
 
-func decodeTokenAsDate(ctx *DecoderContext, token Token, decodedCount int, year int) {
+func continueDecodingAsDecimalExponent(ctx *DecoderContext, token Token, decodedCount int, value uint64, bigValue *big.Int, sign int) {
+	token = token[decodedCount:]
+	fvalue, bigFValue, decodedCount := token.CompleteDecimalExponent(ctx.TextPos, int64(sign), value, bigValue, 0)
+	token = token[decodedCount:]
+	if bigFValue != nil {
+		ctx.EventReceiver.OnBigDecimalFloat(bigFValue)
+	} else {
+		ctx.EventReceiver.OnDecimalFloat(fvalue)
+	}
+	token.AssertAtEnd(ctx.TextPos, "decimal float")
+}
+
+func continueDecodingAsDate(ctx *DecoderContext, token Token, decodedCount int, year int) {
 	token = token[decodedCount:]
 	tvalue, decodedCount := token.CompleteDate(ctx.TextPos, year)
 	token = token[decodedCount:]
@@ -533,7 +575,7 @@ func decodeTokenAsDate(ctx *DecoderContext, token Token, decodedCount int, year 
 	token.AssertAtEnd(ctx.TextPos, "date")
 }
 
-func decodeTokenAsTime(ctx *DecoderContext, token Token, decodedCount int, hour int) {
+func continueDecodingAsTime(ctx *DecoderContext, token Token, decodedCount int, hour int) {
 	if decodedCount < 1 || decodedCount > 2 {
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "time")
 	}
