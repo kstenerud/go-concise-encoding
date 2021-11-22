@@ -249,6 +249,19 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="c0 -1.53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
                 {"source"="c0 -1,53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
 
+                {"source"="c0 1e80"           "events"=["v 0" "n 1e80"]}
+                {"source"="c0 1E80"           "events"=["v 0" "n 1E80"]}
+                {"source"="c0 -1e80"          "events"=["v 0" "n -1e80"]}
+                {"source"="c0 -1E80"          "events"=["v 0" "n -1E80"]}
+                {"source"="c0 1e+80"           "events"=["v 0" "n 1e80"]}
+                {"source"="c0 1E+80"           "events"=["v 0" "n 1E80"]}
+                {"source"="c0 -1e+80"           "events"=["v 0" "n -1e80"]}
+                {"source"="c0 -1E+80"           "events"=["v 0" "n -1E80"]}
+                {"source"="c0 1e-80"           "events"=["v 0" "n 1e-80"]}
+                {"source"="c0 1E-80"           "events"=["v 0" "n 1E-80"]}
+                {"source"="c0 -1e-80"           "events"=["v 0" "n -1e-80"]}
+                {"source"="c0 -1E-80"           "events"=["v 0" "n -1E-80"]}
+
                 {"source"="c0 0.1500000000000000000000000000000000000000000000000001e+10000"   "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e+10000"]}
                 {"source"="c0 0.1500000000000000000000000000000000000000000000000001e-10000"   "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e-10000"]}
                 {"source"="c0 -0.1500000000000000000000000000000000000000000000000001e+10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e+10000"]}
@@ -307,6 +320,32 @@ c0 |u8x /* foo */ 1 2 3|
                 {"source"="c0 -0xf.1p+10"               "events"=["v 0" "n -0xf.1p10"]}
                 {"source"="c0 0xf.1p-10"                "events"=["v 0" "n 0xf.1p-10"]}
                 {"source"="c0 -0xf.1p-10"               "events"=["v 0" "n -0xf.1p-10"]}
+
+                {"source"="c0 0x0p0"                  "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0p0"                 "events"=["v 0" "n -0"]}
+                {"source"="c0 0x0p+0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0p+0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 0x0p-0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0x0p-0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 0xfp10"                 "events"=["v 0" "n 0xfp10"]}
+                {"source"="c0 -0xfp10"                "events"=["v 0" "n -0xfp10"]}
+                {"source"="c0 0xfp+10"                "events"=["v 0" "n 0xfp10"]}
+                {"source"="c0 -0xfp+10"               "events"=["v 0" "n -0xfp10"]}
+                {"source"="c0 0xfp-10"                "events"=["v 0" "n 0xfp-10"]}
+                {"source"="c0 -0xfp-10"               "events"=["v 0" "n -0xfp-10"]}
+
+                {"source"="c0 0X0P0"                  "events"=["v 0" "n 0"]}
+                {"source"="c0 -0X0P0"                 "events"=["v 0" "n -0"]}
+                {"source"="c0 0X0P+0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0X0P+0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 0X0P-0"                 "events"=["v 0" "n 0"]}
+                {"source"="c0 -0X0P-0"                "events"=["v 0" "n -0"]}
+                {"source"="c0 0XFP10"                 "events"=["v 0" "n 0xfp10"]}
+                {"source"="c0 -0XFP10"                "events"=["v 0" "n -0xfp10"]}
+                {"source"="c0 0XFP+10"                "events"=["v 0" "n 0xfp10"]}
+                {"source"="c0 -0XFP+10"               "events"=["v 0" "n -0xfp10"]}
+                {"source"="c0 0XFP-10"                "events"=["v 0" "n 0xfp-10"]}
+                {"source"="c0 -0XFP-10"               "events"=["v 0" "n -0xfp-10"]}
 
                 {"source"="c0 0xc.4_45__3p8"            "events"=["v 0" "n 0xc.4453p8"]}
 
