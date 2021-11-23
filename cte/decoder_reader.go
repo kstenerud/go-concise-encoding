@@ -289,6 +289,9 @@ func (_this *Reader) TokenReadVerbatimSequence() {
 Outer:
 	for {
 		_this.TokenReadByteNoEOF()
+		if len(_this.token) < sentinelLength {
+			continue
+		}
 		for i := 1; i <= sentinelLength; i++ {
 			if _this.token[len(_this.token)-i] != _this.verbatimSentinel[sentinelLength-i] {
 				continue Outer

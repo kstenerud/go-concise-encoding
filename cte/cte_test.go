@@ -61,29 +61,9 @@ func TestCTEVersion(t *testing.T) {
 	}
 }
 
-func TestCTEString(t *testing.T) {
+func TestCTEStringWithNul(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 "test\0string"`, BD(), EvV, S("test\u0000string"), ED())
-}
-
-func TestCTECustomBinary(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n|cb 12 34 56 78|", BD(), EvV, CUB([]byte{0x12, 0x34, 0x56, 0x78}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n|cb ab cd|", BD(), EvV, CUB([]byte{0xab, 0xcd}), ED())
-	assertDecode(t, nil, "c0 |cb AB CD|", BD(), EvV, CUB([]byte{0xab, 0xcd}), ED())
-	assertDecodeFails(t, "c0 |cb qwer|")
-}
-
-func TestCTEVerbatimString(t *testing.T) {
-	assertDecodeFails(t, `c0 "\."`)
-	assertDecodeFails(t, `c0 "\.A"`)
-	assertDecodeFails(t, `c0 "\.A "`)
-	assertDecodeFails(t, `c0 "\.A xyz"`)
-	assertDecode(t, nil, `c0 "\.A \n\n\n\n\n\n\n\n\n\nA"`, BD(), EvV, S(`\n\n\n\n\n\n\n\n\n\n`), ED())
-	assertDecode(t, nil, `c0 "\.A aA"`, BD(), EvV, S("a"), ED())
-	assertDecode(t, nil, "c0 \"\\.A\taA\"", BD(), EvV, S("a"), ED())
-	assertDecode(t, nil, "c0 \"\\.A\naA\"", BD(), EvV, S("a"), ED())
-	assertDecode(t, nil, "c0 \"\\.A\r\naA\"", BD(), EvV, S("a"), ED())
-	assertDecode(t, nil, `c0 "\.#ENDOFSTRING a test\nwith \.stuff#ENDOFSTRING"`, BD(), EvV, S(`a test\nwith \.stuff`), ED())
 }
 
 func TestCTEArrayBoolean(t *testing.T) {

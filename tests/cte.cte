@@ -737,7 +737,7 @@ test"~"  "events"=["v 0" "rid testtest"]}  // Continuation
                 {"source"="\.~ c0 |ct test\ntest|~"           "events"=["v 0" "ct \.~ test
 test~"]}  // Escaped newline
                 {"source"="\.~ c0 |ct test\
-test|~"  "events"=["v 0" "ct testtest"]}  // Continuation
+                                          test|~"             "events"=["v 0" "ct testtest"]}  // Continuation
             ]
             "decodeMustFail" = [
                 "\.~ c0 |ct test\1gtest|~"    // Invalid codepoint digit
@@ -754,6 +754,45 @@ test|~"  "events"=["v 0" "ct testtest"]}  // Continuation
                 "\.~ c0 |ct test\7000001|~"   // Unterminated codepoint
                 "\.~ c0 |ct test\80000001|~"  // Unterminated codepoint
                 "\.~ c0 |ct test\900000001|~" // Unterminated codepoint
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Custom Binary"
+            "decodeMustSucceed" = [
+                {"source"="c0 |cb 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
+                {"source"="c0 |cb 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
+                {"source"="c0 |cb |"             "events"=["v 0" "cb "]}
+            ]
+            "decodeMustFail" = [
+                "c0 |cb 00"  // Not terminated
+                "c0 |cb gg|" // Non-hex characters
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Verbatim sequence"
+            "decodeMustSucceed" = [
+                {"source"="\.~ c0 "\.## ##"~"          "events"=["v 0" "s "]}
+                {"source"="\.~ c0 "\.##
+##"~"          "events"=["v 0" "s "]}
+                {"source"="\.~ c0 "\.## a##"~"         "events"=["v 0" "s a"]}
+                {"source"="\.~ c0 "\.@@
+a@@"~"         "events"=["v 0" "s a"]}
+                {"source"="c0 \"\\.^^^\r\na^^^\""        "events"=["v 0" "s a"]}
+                {"source"="\.~ c0 "\.XXX blah blah
+blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
+                {"source"="\.~ c0 "\.A \n\r\t\_\-A"~"  "events"=["v 0" "s \\n\\r\\t\\_\\-"]}
+            ]
+            "decodeMustFail" = [
+                "\.~ c0 "\."~"        // No sentinel definition
+                "\.~ c0 "\.X"~"       // Unterminated sentinel
+                "\.~ c0 "\.XblahX"~"  // Missing WS between sentinel and contents
+                "\.~ c0 "\.X blah"~"  // Missing end sentinel
             ]
         }
 
