@@ -711,6 +711,7 @@ test"~"  "events"=["v 0" "rid testtest"]}  // Continuation
             "name" = "Custom Text"
             "decodeMustSucceed" = [
                 {"source"="\.~ c0 |ct something(123)|~"       "events"=["v 0" "ct something(123)"]}
+                {"source"="\.~ c0 |ct|~"                      "events"=["v 0" "ct "]}               // Empty string
                 {"source"="\.~ c0 |ct |~"                     "events"=["v 0" "ct "]}               // Empty string
                 {"source"="\.~ c0 |ct test/*test|~"           "events"=["v 0" "ct test/*test"]}     // Comment initiator inside a string
                 {"source"="\.~ c0 |ct test*/test|~"           "events"=["v 0" "ct test*/test"]}     // Comment terminator inside a string
@@ -765,6 +766,7 @@ test~"]}  // Escaped newline
                 {"source"="c0 |cb 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
                 {"source"="c0 |cb 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
                 {"source"="c0 |cb |"             "events"=["v 0" "cb "]}
+                {"source"="c0 |cb|"              "events"=["v 0" "cb "]}
             ]
             "decodeMustFail" = [
                 "c0 |cb 00"  // Not terminated
@@ -793,6 +795,28 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
                 "\.~ c0 "\.X"~"       // Unterminated sentinel
                 "\.~ c0 "\.XblahX"~"  // Missing WS between sentinel and contents
                 "\.~ c0 "\.X blah"~"  // Missing end sentinel
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Bit array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |b|"                "events"=["v 0" "ab "]}
+                {"source"="c0 |b 0|"              "events"=["v 0" "ab 0"]}
+                {"source"="c0 |b 1|"              "events"=["v 0" "ab 1"]}
+                {"source"="c0 |b 1 0 1 1 0 1|"    "events"=["v 0" "ab 101101"]}
+                {"source"="c0 |b 101101 |"        "events"=["v 0" "ab 101101"]}
+                {"source"="c0 |b 10110111|"       "events"=["v 0" "ab 10110111"]}
+                {"source"="c0 |b 1  0 110 1 11|"  "events"=["v 0" "ab 10110111"]}
+                {"source"="c0 |b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
+                 "events"=["v 0" "ab 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |b 2|"        // Non-binary digit
+                "c0 |b nan|"      // Non-binary digit
+                "c0 |b 0x1|"      // Non-binary digit
             ]
         }
 

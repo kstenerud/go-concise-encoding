@@ -469,16 +469,17 @@ func parseTextAsBytes(data []byte) interface{} {
 	return data
 }
 
-var boolArrayMatcher = regexp.MustCompile(`(\s*[01])+`)
+var bitArrayMatcher = regexp.MustCompile(`(\s*[01])+`)
 
-func parseBooleanEvent(eventStr string) *test.TEvent {
+func parseBitArrayEvent(eventStr string) *test.TEvent {
 	var array []byte
 	asBytes := []byte(eventStr[3:])
 
 	iBytes := 0
 	generator := func() (next byte, bitCount int) {
-		for ; iBytes < len(asBytes); iBytes++ {
+		for iBytes < len(asBytes) {
 			b := asBytes[iBytes]
+			iBytes++
 			switch b {
 			case '1':
 				next |= byte(1 << bitCount)
@@ -586,7 +587,7 @@ func init() {
 	eventParsersByName["rid"] = newParser(test.TEventResourceID, parseString).ParseEvent
 	eventParsersByName["cb"] = newParser(test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
 	eventParsersByName["ct"] = newParser(test.TEventCustomText, parseString).ParseEvent
-	eventParsersByName["ab"] = parseBooleanEvent
+	eventParsersByName["ab"] = parseBitArrayEvent
 	eventParsersByName["ai8"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt)).ParseEvent
 	eventParsersByName["ai8x"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseIntHex)).ParseEvent
 	eventParsersByName["ai16"] = newParser(test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt)).ParseEvent
