@@ -189,6 +189,10 @@ func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 	case 'e', 'E':
 		// 1e+10
 		continueDecodingAsDecimalExponent(ctx, token, decodedCount, value, bigValue, sign)
+	case '-':
+		// -2000-01-01
+		// TODO: Check for overflow
+		continueDecodingAsDate(ctx, token, decodedCount, int(value)*sign)
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "negative 0-based numeric")
 		return
@@ -302,6 +306,10 @@ func decode0Based(ctx *DecoderContext) {
 	case 'e', 'E':
 		// 1e+10
 		continueDecodingAsDecimalExponent(ctx, token, decodedCount, value, bigValue, sign)
+	case '-':
+		// 2000-01-01
+		// TODO: Check for overflow
+		continueDecodingAsDate(ctx, token, decodedCount, int(value)*sign)
 	case ':':
 		// 01:23:45
 		continueDecodingAsTime(ctx, token, decodedCount, int(value))
