@@ -61,29 +61,9 @@ func TestCTEVersion(t *testing.T) {
 	}
 }
 
-func TestCTEQuotedString(t *testing.T) {
+func TestCTEString(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-"test string"`, BD(), EvV, S("test string"), ED())
-	assertDecode(t, nil, `c0 "test\nstring"`, BD(), EvV, S("test\nstring"), ED())
-	assertDecode(t, nil, `c0 "test\rstring"`, BD(), EvV, S("test\rstring"), ED())
-	assertDecode(t, nil, `c0 "test\tstring"`, BD(), EvV, S("test\tstring"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-"test\"string"`, BD(), EvV, S("test\"string"), ED())
-	assertDecode(t, nil, `c0 "test\*string"`, BD(), EvV, S("test*string"), ED())
-	assertDecode(t, nil, `c0 "test\/string"`, BD(), EvV, S("test/string"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-"test\\string"`, BD(), EvV, S("test\\string"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-"test\11string"`, BD(), EvV, S("test\u0001string"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-"test\29fstring"`, BD(), EvV, S("test\u009fstring"), ED())
-	assertDecode(t, nil, `c0 "test\4206Dstring"`, BD(), EvV, S("test\u206dstring"), ED())
-	assertDecode(t, nil, `c0 "test\
-string"`, BD(), EvV, S("teststring"), ED())
-	assertDecode(t, nil, "c0 \"test\\\r\nstring\"", BD(), EvV, S("teststring"), ED())
-
-	assertDecodeFails(t, `c0 "test\x"`)
-	assertDecodeFails(t, `c0 "\1g"`)
+"test\0string"`, BD(), EvV, S("test\u0000string"), ED())
 }
 
 func TestCTECustomBinary(t *testing.T) {
@@ -91,18 +71,6 @@ func TestCTECustomBinary(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\n|cb ab cd|", BD(), EvV, CUB([]byte{0xab, 0xcd}), ED())
 	assertDecode(t, nil, "c0 |cb AB CD|", BD(), EvV, CUB([]byte{0xab, 0xcd}), ED())
 	assertDecodeFails(t, "c0 |cb qwer|")
-}
-
-func TestCTECustomText(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n|ct something(123)|", BD(), EvV, CUT("something(123)"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-|ct some\\thing("123")|`, BD(), EvV, CUT("some\\thing(\"123\")"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-|ct some\nthing\11(123)|`, BD(), EvV, CUT("some\nthing\u0001(123)"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-|ct something('123\r\n\t')|`, BD(), EvV, CUT("something('123\r\n\t')"), ED())
-
-	assertDecodeFails(t, `c0 |ct something('123\r\n\t\x')|`)
 }
 
 func TestCTEVerbatimString(t *testing.T) {
@@ -116,13 +84,6 @@ func TestCTEVerbatimString(t *testing.T) {
 	assertDecode(t, nil, "c0 \"\\.A\naA\"", BD(), EvV, S("a"), ED())
 	assertDecode(t, nil, "c0 \"\\.A\r\naA\"", BD(), EvV, S("a"), ED())
 	assertDecode(t, nil, `c0 "\.#ENDOFSTRING a test\nwith \.stuff#ENDOFSTRING"`, BD(), EvV, S(`a test\nwith \.stuff`), ED())
-}
-
-func TestCTERID(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-@"http://example.com"`, BD(), EvV, RID("http://example.com"), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-@"http://x.com/\""`, BD(), EvV, RID(`http://x.com/"`), ED())
 }
 
 func TestCTEArrayBoolean(t *testing.T) {

@@ -300,8 +300,8 @@ Outer:
 	}
 }
 
-var nbspBytes = []byte{0xc0, 0xa0}
-var shyBytes = []byte{0xc0, 0xad}
+var nbspBytes = []byte("\u00a0")
+var shyBytes = []byte("\u00ad")
 
 func (_this *Reader) TokenReadEscape() {
 	escape := _this.ReadByteNoEOF()

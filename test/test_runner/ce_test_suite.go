@@ -115,7 +115,10 @@ func (_this *CETestSuite) run(t *testing.T) {
 	}
 
 	runCTETest := func(test *CTETestRunner, index int) (success bool) {
-		defer func() { success = !reportAnyError(recover(), test.Trace, "❌ CTE test index %v - %v", index, test) }()
+		success = true
+		if !test.Trace {
+			defer func() { success = !reportAnyError(recover(), test.Trace, "❌ CTE test index %v - %v", index, test) }()
+		}
 		test.run()
 		return
 	}

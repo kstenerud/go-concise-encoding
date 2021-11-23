@@ -48,6 +48,7 @@ func (_this *CTETestRunner) postDecodeInit() {
 	for _, t := range _this.DecodeMustSucceed {
 		t.postDecodeInit()
 		t.debug = _this.Debug
+		t.trace = _this.Trace
 	}
 }
 
@@ -104,6 +105,7 @@ type CTEDecodeSuccessTest struct {
 	Events []string
 	events []*test.TEvent
 	debug  bool
+	trace  bool
 }
 
 func (_this *CTEDecodeSuccessTest) postDecodeInit() {
@@ -127,13 +129,28 @@ func (_this *CTEDecodeSuccessTest) assertOperation(receiver events.DataEventRece
 
 	eventStore := test.NewTEventStore(receiver)
 	receiver = eventStore
-
-	err := capturePanic(func() {
+	op := func() {
 		operation(receiver)
-	})
+	}
 
-	if err != nil {
-		_this.testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
+	if _this.trace {
+		defer func() {
+			if r := recover(); r != nil {
+				message := fmt.Sprintf("%v unexpectedly failed after producing events %v", describeSrc(), eventStore.Events)
+
+				switch e := r.(type) {
+				case error:
+					panic(fmt.Errorf("%v: %w", message, e))
+				default:
+					panic(fmt.Errorf("%v: %v", message, r))
+				}
+			}
+		}()
+		operation(receiver)
+	} else {
+		if err := capturePanic(op); err != nil {
+			_this.testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
+		}
 	}
 }
 
