@@ -179,7 +179,7 @@ func (_this *arrayEncoderEngine) addBooleanArrayData(data []byte) {
 				_this.stream.WriteByte('0')
 			}
 		}
-		data = data[:len(data)-1]
+		data = data[1:]
 		_this.remainingChunkElements -= 8
 	}
 	if _this.remainingChunkElements > 0 && len(data) > 0 {

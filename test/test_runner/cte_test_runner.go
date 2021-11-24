@@ -154,20 +154,41 @@ func (_this *CTEDecodeSuccessTest) assertOperation(receiver events.DataEventRece
 	}
 }
 
-func (_this *CTEDecodeSuccessTest) run() {
+func (_this *CTEDecodeSuccessTest) decode(document string) []*test.TEvent {
 	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver := rules.NewRules(eventStore, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Source)), recv)
+			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(document)), recv)
 		}, func() string {
-			return fmt.Sprintf("CTE %v", desc(_this.Source))
+			return fmt.Sprintf("CTE %v", desc(document))
 		})
+	return eventStore.Events
+}
 
+func (_this *CTEDecodeSuccessTest) encode(events []*test.TEvent) string {
+	buffer := &bytes.Buffer{}
+	encoder := cte.NewEncoder(nil)
+	encoder.PrepareToEncode(buffer)
+	rules := rules.NewRules(encoder, nil)
+	for _, event := range events {
+		event.Invoke(rules)
+	}
+	return buffer.String()
+}
+
+func (_this *CTEDecodeSuccessTest) run() {
 	expectedEvents := _this.events
-	actualEvents := eventStore.Events
+	actualEvents := _this.decode(_this.Source)
 	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
 		_this.testFailed("Expected CTE %v to produce events %v but got %v",
 			desc(_this.Source), expectedEvents, actualEvents)
+	}
+
+	encodedDocument := _this.encode(actualEvents)
+	secondRunEvents := _this.decode(encodedDocument)
+	if !test.AreAllEventsEquivalent(expectedEvents, secondRunEvents) {
+		_this.testFailed("Expected CTE %v re-encoded to %v to produce events %v but got %v",
+			desc(_this.Source), desc(encodedDocument), expectedEvents, secondRunEvents)
 	}
 }
