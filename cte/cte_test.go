@@ -66,34 +66,6 @@ func TestCTEStringWithNul(t *testing.T) {
 "test\0string"`, BD(), EvV, S("test\u0000string"), ED())
 }
 
-func TestCTEArrayBoolean(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\n|b|", BD(), EvV, AB(0, []byte{}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n|b 0|", BD(), EvV, AB(1, []byte{0x00}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n|b 1|", BD(), EvV, AB(1, []byte{0x01}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n|b 1011001|", BD(), EvV, AB(7, []byte{0b1001101}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n|b 10110011|", BD(), EvV, AB(8, []byte{0b11001101}), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n|b 101100111|", BD(), EvV, AB(9, []byte{0b11001101, 0b1}), ED())
-
-	assertEncode(t, nil, "c0\n|b|", BD(), EvV, ABB(), AC(0, false), ED())
-	assertEncode(t, nil, "c0\n|b 0|", BD(), EvV, ABB(), AC(1, false), AD([]byte{0x00}), ED())
-	assertEncode(t, nil, "c0\n|b 1|", BD(), EvV, ABB(), AC(1, false), AD([]byte{0x01}), ED())
-	assertEncode(t, nil, "c0\n|b 1011001|", BD(), EvV, ABB(), AC(7, false), AD([]byte{0b1001101}), ED())
-	assertEncode(t, nil, "c0\n|b 10110011|", BD(), EvV, ABB(), AC(8, false), AD([]byte{0b11001101}), ED())
-	assertEncode(t, nil, "c0\n|b 101100111|", BD(), EvV, ABB(), AC(9, false), AD([]byte{0b11001101, 0b1}), ED())
-
-	assertDecode(t, nil, "c0\n|b |", BD(), EvV, AB(0, []byte{}), ED())
-	assertDecode(t, nil, "c0\n|b 0 |", BD(), EvV, AB(1, []byte{0x00}), ED())
-	assertDecode(t, nil, "c0\n|b 1 |", BD(), EvV, AB(1, []byte{0x01}), ED())
-	assertDecode(t, nil, "c0\n|b 1 01 1 001 |", BD(), EvV, AB(7, []byte{0b1001101}), ED())
-	assertDecode(t, nil, "c0\n|b 1 0 1 1 0 0 1 1 |", BD(), EvV, AB(8, []byte{0b11001101}), ED())
-	assertDecode(t, nil, "c0\n|b  10  110 0 1 1   1    |", BD(), EvV, AB(9, []byte{0b11001101, 0b1}), ED())
-
-	assertDecodeFails(t, "c0\n|b nan|")
-	assertDecodeFails(t, "c0\n|b snan|")
-	assertDecodeFails(t, "c0\n|b inf|")
-	assertDecodeFails(t, "c0\n|b -inf|")
-}
-
 func TestCTEArrayUintX(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, "c0\n|u8x|", BD(), EvV, AU8([]byte{}), ED())
 	assertDecodeEncode(t, nil, nil, "c0\n|u8x f1 93|", BD(), EvV, AU8([]byte{0xf1, 0x93}), ED())

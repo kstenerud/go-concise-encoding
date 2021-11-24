@@ -815,8 +815,46 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
             ]
             "decodeMustFail" = [
                 "c0 |b 2|"        // Non-binary digit
+                "c0 |b -1|"       // Non-binary digit
                 "c0 |b nan|"      // Non-binary digit
                 "c0 |b 0x1|"      // Non-binary digit
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int8 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |i8|"   "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8 |"  "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai8 0 1 127 -128 5 -5 63 -63 27 -27"]}
+                {"source"="c0 |i8b|"   "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8b 0 1 1011 -1001101 1111111 -10000000|"  "events"=["v 0" "ai8 0 1 11 -77 127 -128"]}
+                {"source"="c0 |i8o|"   "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8o 111 -22 76|"   "events"=["v 0" "ai8 73 -18 62"]}
+                {"source"="c0 |i8x|"   "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8x 7f -80 1c -29|"   "events"=["v 0" "ai8 127 -128 28 -41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |i8b 2|"          // Non-binary digit
+                "c0 |i8b 10000000|"   // Element too big
+                "c0 |i8b -10000001|"  // Element too big
+                "c0 |i8o 9|"          // Non-binary digit
+                "c0 |i8o 178|"        // Element too big
+                "c0 |i8o -179|"       // Element too big
+                "c0 |i8x g|"          // Non-binary digit
+                "c0 |i8x 80|"         // Element too big
+                "c0 |i8x -81|"        // Element too big
+                "c0 |i8 a|"           // Non-binary digit
+                "c0 |i8 128|"         // Element too big
+                "c0 |i8 -129|"        // Element too big
+                "c0 |i8 0b10000000|"  // Element too big
+                "c0 |i8 -0b10000001|" // Element too big
+                "c0 |i8 0o178|"       // Element too big
+                "c0 |i8 -0o179|"      // Element too big
+                "c0 |i8 0x80|"        // Element too big
+                "c0 |i8 -0x81|"       // Element too big
             ]
         }
 
