@@ -826,27 +826,31 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int8 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i8|"   "events"=["v 0" "ai8 "]}
-                {"source"="c0 |i8 |"  "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8|"                 "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8 |"                "events"=["v 0" "ai8 "]}
                 {"source"="c0 |i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai8 0 1 127 -128 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i8b|"   "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8b|"                "events"=["v 0" "ai8 "]}
                 {"source"="c0 |i8b 0 1 1011 -1001101 1111111 -10000000|"  "events"=["v 0" "ai8 0 1 11 -77 127 -128"]}
-                {"source"="c0 |i8o|"   "events"=["v 0" "ai8 "]}
-                {"source"="c0 |i8o 111 -22 76|"   "events"=["v 0" "ai8 73 -18 62"]}
-                {"source"="c0 |i8x|"   "events"=["v 0" "ai8 "]}
-                {"source"="c0 |i8x 7f -80 1c -29|"   "events"=["v 0" "ai8 127 -128 28 -41"]}
+                {"source"="c0 |i8o|"                "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8o 177 -200 76|"    "events"=["v 0" "ai8 127 -128 62"]}
+                {"source"="c0 |i8x|"                "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8x 7f -80 1c -29|"  "events"=["v 0" "ai8 127 -128 28 -41"]}
             ]
             "decodeMustFail" = [
+                "c0 |i8 nan|"         // Non-int digit
+                "c0 |i8 snan|"        // Non-int digit
+                "c0 |i8 inf|"         // Non-int digit
+                "c0 |i8 -inf|"        // Non-int digit
                 "c0 |i8b 2|"          // Non-binary digit
                 "c0 |i8b 10000000|"   // Element too big
                 "c0 |i8b -10000001|"  // Element too big
-                "c0 |i8o 9|"          // Non-binary digit
+                "c0 |i8o 9|"          // Non-octal digit
                 "c0 |i8o 178|"        // Element too big
                 "c0 |i8o -179|"       // Element too big
-                "c0 |i8x g|"          // Non-binary digit
+                "c0 |i8x g|"          // Non-hex digit
                 "c0 |i8x 80|"         // Element too big
                 "c0 |i8x -81|"        // Element too big
-                "c0 |i8 a|"           // Non-binary digit
+                "c0 |i8 a|"           // Non-int digit
                 "c0 |i8 128|"         // Element too big
                 "c0 |i8 -129|"        // Element too big
                 "c0 |i8 0b10000000|"  // Element too big
@@ -855,6 +859,272 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
                 "c0 |i8 -0o179|"      // Element too big
                 "c0 |i8 0x80|"        // Element too big
                 "c0 |i8 -0x81|"       // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int16 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |i16|"                     "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16 |"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai16 0 1 32767 -32768 5 -5 63 -63 27 -27"]}
+                {"source"="c0 |i16b|"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"  "events"=["v 0" "ai16 0 1 11 -77 32767 -32768"]}
+                {"source"="c0 |i16o|"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16o 77777 -100000 76|"   "events"=["v 0" "ai16 32767 -32768 62"]}
+                {"source"="c0 |i16x|"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16x 7fff -8000 1c -29|"  "events"=["v 0" "ai16 32767 -32768 28 -41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |i16 nan|"                 // Non-int digit
+                "c0 |i16 snan|"                // Non-int digit
+                "c0 |i16 inf|"                 // Non-int digit
+                "c0 |i16 -inf|"                // Non-int digit
+                "c0 |i16b 2|"                  // Non-binary digit
+                "c0 |i16b 1000000000000000|"   // Element too big
+                "c0 |i16b -1000000000000001|"  // Element too big
+                "c0 |i16o 9|"                  // Non-octal digit
+                "c0 |i16o 100000|"             // Element too big
+                "c0 |i16o -100001|"            // Element too big
+                "c0 |i16x g|"                  // Non-hex digit
+                "c0 |i16x 8000|"               // Element too big
+                "c0 |i16x -8001|"              // Element too big
+                "c0 |i16 a|"                   // Non-int digit
+                "c0 |i16 32768|"               // Element too big
+                "c0 |i16 -32769|"              // Element too big
+                "c0 |i16 0b1000000000000000|"  // Element too big
+                "c0 |i16 -0b1000000000000001|" // Element too big
+                "c0 |i16 0o100000|"            // Element too big
+                "c0 |i16 -0o100001|"           // Element too big
+                "c0 |i16 0x8000|"              // Element too big
+                "c0 |i16 -0x8001|"             // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int32 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |i32|"                     "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32 |"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                 "events"=["v 0" "ai32 0 1 2147483647 -2147483648 5 -5 63 -63 27 -27"]}
+                {"source"="c0 |i32b|"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
+                 "events"=["v 0" "ai32 0 1 11 -77 2147483647 -2147483648"]}
+                {"source"="c0 |i32o|"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32o 17777777777 -20000000000 76|"         "events"=["v 0" "ai32 2147483647 -2147483648 62"]}
+                {"source"="c0 |i32x|"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32x 7fffffff -80000000 1c -29|"  "events"=["v 0" "ai32 2147483647 -2147483648 28 -41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |i32 nan|"                                 // Non-int digit
+                "c0 |i32 snan|"                                // Non-int digit
+                "c0 |i32 inf|"                                 // Non-int digit
+                "c0 |i32 -inf|"                                // Non-int digit
+                "c0 |i32b 2|"                                  // Non-binary digit
+                "c0 |i32b 10000000000000000000000000000000|"   // Element too big
+                "c0 |i32b -10000000000000000000000000000001|"  // Element too big
+                "c0 |i32o 9|"                                  // Non-octal digit
+                "c0 |i32o 20000000000|"                        // Element too big
+                "c0 |i32o -20000000001|"                       // Element too big
+                "c0 |i32x g|"                                  // Non-hex digit
+                "c0 |i32x 80000000|"                           // Element too big
+                "c0 |i32x -80000001|"                          // Element too big
+                "c0 |i32 a|"                                   // Non-int digit
+                "c0 |i32 2147483648|"                          // Element too big
+                "c0 |i32 -2147483649|"                         // Element too big
+                "c0 |i32 0b10000000000000000000000000000000|"  // Element too big
+                "c0 |i32 -0b10000000000000000000000000000001|" // Element too big
+                "c0 |i32 0o20000000000|"                       // Element too big
+                "c0 |i32 -0o20000000001|"                      // Element too big
+                "c0 |i32 0x80000000|"                          // Element too big
+                "c0 |i32 -0x80000001|"                         // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int64 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |i64|"                                "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64 |"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                 "events"=["v 0" "ai64 0 1 9223372036854775807 -9223372036854775808 5 -5 63 -63 27 -27"]}
+                {"source"="c0 |i64b|"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111 -1000000000000000000000000000000000000000000000000000000000000000|"
+                 "events"=["v 0" "ai64 0 1 11 -77 9223372036854775807 -9223372036854775808"]}
+                {"source"="c0 |i64o|"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64o 777777777777777777777 -1000000000000000000000 76|"  "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 62"]}
+                {"source"="c0 |i64x|"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64x 7fffffffffffffff -8000000000000000 1c -29|"
+                 "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 28 -41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |i64 nan|"                                 // Non-binary digit
+                "c0 |i64 snan|"                                // Non-binary digit
+                "c0 |i64 inf|"                                 // Non-binary digit
+                "c0 |i64 -inf|"                                // Non-binary digit
+                "c0 |i64b 2|"                                  // Non-binary digit
+                "c0 |i64b 1000000000000000000000000000000000000000000000000000000000000000|"   // Element too big
+                "c0 |i64b -1000000000000000000000000000000000000000000000000000000000000001|"  // Element too big
+                "c0 |i64o 9|"                                  // Non-binary digit
+                "c0 |i64o 1000000000000000000000|"             // Element too big
+                "c0 |i64o -1000000000000000000001|"            // Element too big
+                "c0 |i64x g|"                                  // Non-binary digit
+                "c0 |i64x 8000000000000000|"                   // Element too big
+                "c0 |i64x -8000000000000001|"                  // Element too big
+                "c0 |i64 a|"                                   // Non-binary digit
+                "c0 |i64 9223372036854775808|"                 // Element too big
+                "c0 |i64 -9223372036854775809|"                // Element too big
+                "c0 |i64 0b1000000000000000000000000000000000000000000000000000000000000000|"  // Element too big
+                "c0 |i64 -0b1000000000000000000000000000000000000000000000000000000000000001|" // Element too big
+                "c0 |i64 0o1000000000000000000000|"            // Element too big
+                "c0 |i64 -0o1000000000000000000001|"           // Element too big
+                "c0 |i64 0x8000000000000000|"                  // Element too big
+                "c0 |i64 -0x8000000000000001|"                 // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Uint8 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |u8|"                 "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8 |"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["v 0" "au8 0 1 255 128 5 63 27"]}
+                {"source"="c0 |u8b|"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["v 0" "au8 0 1 11 77 255 128"]}
+                {"source"="c0 |u8o|"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8o 377 22 76|"      "events"=["v 0" "au8 255 18 62"]}
+                {"source"="c0 |u8x|"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8x ff 80 1c 29|"    "events"=["v 0" "au8 255 128 28 41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |u8 nan|"         // Non-uint digit
+                "c0 |u8 snan|"        // Non-uint digit
+                "c0 |u8 inf|"         // Non-uint digit
+                "c0 |u8 -inf|"        // Non-uint digit
+                "c0 |u8b 2|"          // Non-binary digit
+                "c0 |u8b 100000000|"  // Element too big
+                "c0 |u8o 9|"          // Non-octal digit
+                "c0 |u8o 400|"        // Element too big
+                "c0 |u8x g|"          // Non-hex digit
+                "c0 |u8x 100|"        // Element too big
+                "c0 |u8 a|"           // Non-uint digit
+                "c0 |u8 256|"         // Element too big
+                "c0 |u8 0b100000000|" // Element too big
+                "c0 |u8 0o400|"       // Element too big
+                "c0 |u8 0x100|"       // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Uint16 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |u16|"                 "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16 |"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["v 0" "au16 0 1 65535 128 5 63 27"]}
+                {"source"="c0 |u16b|"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["v 0" "au16 0 1 11 77 65535 128"]}
+                {"source"="c0 |u16o|"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16o 177777 22 76|"   "events"=["v 0" "au16 65535 18 62"]}
+                {"source"="c0 |u16x|"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16x ffff 80 1c 29|"  "events"=["v 0" "au16 65535 128 28 41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |u16 nan|"                 // Non-uint digit
+                "c0 |u16 snan|"                // Non-uint digit
+                "c0 |u16 inf|"                 // Non-uint digit
+                "c0 |u16 -inf|"                // Non-uint digit
+                "c0 |u16b 2|"                  // Non-binary digit
+                "c0 |u16b 10000000000000000|"  // Element too big
+                "c0 |u16o 9|"                  // Non-octal digit
+                "c0 |u16o 200000|"             // Element too big
+                "c0 |u16x g|"                  // Non-hex digit
+                "c0 |u16x 10000|"              // Element too big
+                "c0 |u16 a|"                   // Non-uint digit
+                "c0 |u16 65536|"               // Element too big
+                "c0 |u16 0b10000000000000000|" // Element too big
+                "c0 |u16 0o200000|"            // Element too big
+                "c0 |u16 0x10000|"             // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Uint32 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |u32|"                     "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32 |"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32 0 1 4294967295 128 0b101 0o77 0x1b|"  "events"=["v 0" "au32 0 1 4294967295 128 5 63 27"]}
+                {"source"="c0 |u32b|"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"  "events"=["v 0" "au32 0 1 11 77 4294967295 128"]}
+                {"source"="c0 |u32o|"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32o 37777777777 22 76|"  "events"=["v 0" "au32 4294967295 18 62"]}
+                {"source"="c0 |u32x|"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32x ffffffff 80 1c 29|"  "events"=["v 0" "au32 4294967295 128 28 41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |u32 nan|"                 // Non-uint digit
+                "c0 |u32 snan|"                // Non-uint digit
+                "c0 |u32 inf|"                 // Non-uint digit
+                "c0 |u32 -inf|"                // Non-uint digit
+                "c0 |u32b 2|"                  // Non-binary digit
+                "c0 |u32b 100000000000000000000000000000000|" // Element too big
+                "c0 |u32o 9|"                  // Non-octal digit
+                "c0 |u32o 40000000000|"        // Element too big
+                "c0 |u32x g|"                  // Non-hex digit
+                "c0 |u32x 100000000|"          // Element too big
+                "c0 |u32 a|"                   // Non-uint digit
+                "c0 |u32 4294967296|"          // Element too big
+                "c0 |u32 0b100000000000000000000000000000000|" // Element too big
+                "c0 |u32 0o40000000000|"       // Element too big
+                "c0 |u32 0x100000000|"         // Element too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Uint64 array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |u64|"                                "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64 |"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
+                 "events"=["v 0" "au64 0 1 18446744073709551615 128 5 63 27"]}
+                {"source"="c0 |u64b|"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
+                 "events"=["v 0" "au64 0 1 11 77 18446744073709551615 128"]}
+                {"source"="c0 |u64o|"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64o 1777777777777777777777 22 76|"  "events"=["v 0" "au64 18446744073709551615 18 62"]}
+                {"source"="c0 |u64x|"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64x ffffffffffffffff 80 1c 29|"     "events"=["v 0" "au64 18446744073709551615 128 28 41"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |u64 nan|"                      // Non-uint digit
+                "c0 |u64 snan|"                     // Non-uint digit
+                "c0 |u64 inf|"                      // Non-uint digit
+                "c0 |u64 -inf|"                     // Non-uint digit
+                "c0 |u64b 2|"                       // Non-binary digit
+                "c0 |u64b 10000000000000000000000000000000000000000000000000000000000000000|" // Element too big
+                "c0 |u64o 9|"                       // Non-octal digit
+                "c0 |u64o 2000000000000000000000|"  // Element too big
+                "c0 |u64x g|"                       // Non-hex digit
+                "c0 |u64x 10000000000000000|"       // Element too big
+                "c0 |u64 a|"                        // Non-uint digit
+                "c0 |u64 18446744073709551616|"     // Element too big
+                "c0 |u64 0b10000000000000000000000000000000000000000000000000000000000000000|" // Element too big
+                "c0 |u64 0o2000000000000000000000|" // Element too big
+                "c0 |u64 0x10000000000000000|"      // Element too big
             ]
         }
 
