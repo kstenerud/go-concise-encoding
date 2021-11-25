@@ -562,6 +562,7 @@ func init() {
 	eventParsersByName["df"] = newParser(test.TEventDecimalFloat, parseDecimalFloat).ParseEvent
 	eventParsersByName["bdf"] = newParser(test.TEventBigDecimalFloat, parseBigDecimalFloat).ParseEvent
 	eventParsersByName["null"] = newParser(test.TEventNull).ParseEvent
+	eventParsersByName["pad"] = newParser(test.TEventPadding, parseInt).ParseEvent
 	eventParsersByName["com"] = newParser(test.TEventComment, parseBool, parseString).ParseEvent
 	eventParsersByName["b"] = newParser(test.TEventBool, parseBool).ParseEvent
 	eventParsersByName["pi"] = newParser(test.TEventPInt, parseUint).ParseEvent
