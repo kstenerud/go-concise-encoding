@@ -118,19 +118,21 @@ func parseNumericEvent(eventStr string) *test.TEvent {
 		return test.TEventBigDecimalFloat, test.NewBDF(strings.Replace(str, ",", ".", 1))
 	}
 
-	eventType, v := iparseNumeric(get1ParamArg(eventStr))
+	eventType, v := iparseNumeric(get1ParamArg(eventStr, false))
 	return test.NewTEvent(eventType, v, nil)
 }
 
 type generalEventParser struct {
-	eventType    test.TEventType
-	paramParsers []eventParamParser
+	eventType         test.TEventType
+	paramParsers      []eventParamParser
+	paramsAreOptional bool
 }
 
-func newParser(eventType test.TEventType, paramParsers ...eventParamParser) *generalEventParser {
+func newParser(paramsAreOptional bool, eventType test.TEventType, paramParsers ...eventParamParser) *generalEventParser {
 	return &generalEventParser{
-		eventType:    eventType,
-		paramParsers: paramParsers,
+		eventType:         eventType,
+		paramParsers:      paramParsers,
+		paramsAreOptional: paramsAreOptional,
 	}
 }
 
@@ -139,7 +141,7 @@ func (_this *generalEventParser) ParseEvent(eventStr string) *test.TEvent {
 	case 0:
 		return test.NewTEvent(_this.eventType, nil, nil)
 	case 1:
-		param := get1ParamArg(eventStr)
+		param := get1ParamArg(eventStr, _this.paramsAreOptional)
 		return test.NewTEvent(_this.eventType,
 			_this.paramParsers[0](param),
 			nil)
@@ -153,10 +155,13 @@ func (_this *generalEventParser) ParseEvent(eventStr string) *test.TEvent {
 	}
 }
 
-func get1ParamArg(eventStr string) []byte {
+func get1ParamArg(eventStr string, optional bool) []byte {
 	asBytes := []byte(eventStr)
 	indices := eventNameAndWSMatcher.FindSubmatchIndex(asBytes)
 	if len(indices) != 2 {
+		if optional {
+			return asBytes[:0]
+		}
 		panic(fmt.Errorf("event [%v] requires 1 parameter", eventStr))
 	}
 	return asBytes[indices[1]:]
@@ -457,6 +462,9 @@ func parseTextAsBytes(data []byte) interface{} {
 
 func parseBitArrayEvent(eventStr string) *test.TEvent {
 	var array []byte
+	if len(eventStr) < 3 {
+		return test.NewTEvent(test.TEventArrayBoolean, 0, array)
+	}
 	asBytes := []byte(eventStr[3:])
 
 	iBytes := 0
@@ -550,80 +558,80 @@ var firstParamAndWSMatcher = regexp.MustCompile(`^\w+\s+(\w+)\s`)
 var eventParsersByName = make(map[string]parseEvent)
 
 func init() {
-	eventParsersByName["bd"] = newParser(test.TEventBeginDocument).ParseEvent
-	eventParsersByName["ed"] = newParser(test.TEventEndDocument).ParseEvent
-	eventParsersByName["v"] = newParser(test.TEventVersion, parseUint).ParseEvent
-	eventParsersByName["tt"] = newParser(test.TEventTrue).ParseEvent
-	eventParsersByName["ff"] = newParser(test.TEventFalse).ParseEvent
+	eventParsersByName["bd"] = newParser(false, test.TEventBeginDocument).ParseEvent
+	eventParsersByName["ed"] = newParser(false, test.TEventEndDocument).ParseEvent
+	eventParsersByName["v"] = newParser(false, test.TEventVersion, parseUint).ParseEvent
+	eventParsersByName["tt"] = newParser(false, test.TEventTrue).ParseEvent
+	eventParsersByName["ff"] = newParser(false, test.TEventFalse).ParseEvent
 	eventParsersByName["n"] = parseNumericEvent
-	eventParsersByName["i"] = newParser(test.TEventInt, parseInt).ParseEvent
-	eventParsersByName["f"] = newParser(test.TEventFloat, parseFloat).ParseEvent
-	eventParsersByName["bf"] = newParser(test.TEventBigFloat, parseBigFloat).ParseEvent
-	eventParsersByName["df"] = newParser(test.TEventDecimalFloat, parseDecimalFloat).ParseEvent
-	eventParsersByName["bdf"] = newParser(test.TEventBigDecimalFloat, parseBigDecimalFloat).ParseEvent
-	eventParsersByName["null"] = newParser(test.TEventNull).ParseEvent
-	eventParsersByName["pad"] = newParser(test.TEventPadding, parseInt).ParseEvent
-	eventParsersByName["com"] = newParser(test.TEventComment, parseBool, parseString).ParseEvent
-	eventParsersByName["b"] = newParser(test.TEventBool, parseBool).ParseEvent
-	eventParsersByName["pi"] = newParser(test.TEventPInt, parseUint).ParseEvent
-	eventParsersByName["ni"] = newParser(test.TEventNInt, parseUint).ParseEvent
-	eventParsersByName["bi"] = newParser(test.TEventBigInt, parseBigInt).ParseEvent
-	eventParsersByName["nan"] = newParser(test.TEventNan).ParseEvent
-	eventParsersByName["snan"] = newParser(test.TEventSNan).ParseEvent
-	eventParsersByName["uid"] = newParser(test.TEventUID, parseUUID).ParseEvent
-	eventParsersByName["t"] = newParser(test.TEventCompactTime, parseTemporal).ParseEvent
-	eventParsersByName["s"] = newParser(test.TEventString, parseString).ParseEvent
-	eventParsersByName["rid"] = newParser(test.TEventResourceID, parseString).ParseEvent
-	eventParsersByName["cb"] = newParser(test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
-	eventParsersByName["ct"] = newParser(test.TEventCustomText, parseString).ParseEvent
+	eventParsersByName["i"] = newParser(false, test.TEventInt, parseInt).ParseEvent
+	eventParsersByName["f"] = newParser(false, test.TEventFloat, parseFloat).ParseEvent
+	eventParsersByName["bf"] = newParser(false, test.TEventBigFloat, parseBigFloat).ParseEvent
+	eventParsersByName["df"] = newParser(false, test.TEventDecimalFloat, parseDecimalFloat).ParseEvent
+	eventParsersByName["bdf"] = newParser(false, test.TEventBigDecimalFloat, parseBigDecimalFloat).ParseEvent
+	eventParsersByName["null"] = newParser(false, test.TEventNull).ParseEvent
+	eventParsersByName["pad"] = newParser(true, test.TEventPadding, parseInt).ParseEvent
+	eventParsersByName["com"] = newParser(false, test.TEventComment, parseBool, parseString).ParseEvent
+	eventParsersByName["b"] = newParser(false, test.TEventBool, parseBool).ParseEvent
+	eventParsersByName["pi"] = newParser(false, test.TEventPInt, parseUint).ParseEvent
+	eventParsersByName["ni"] = newParser(false, test.TEventNInt, parseUint).ParseEvent
+	eventParsersByName["bi"] = newParser(false, test.TEventBigInt, parseBigInt).ParseEvent
+	eventParsersByName["nan"] = newParser(false, test.TEventNan).ParseEvent
+	eventParsersByName["snan"] = newParser(false, test.TEventSNan).ParseEvent
+	eventParsersByName["uid"] = newParser(false, test.TEventUID, parseUUID).ParseEvent
+	eventParsersByName["t"] = newParser(false, test.TEventCompactTime, parseTemporal).ParseEvent
+	eventParsersByName["s"] = newParser(false, test.TEventString, parseString).ParseEvent
+	eventParsersByName["rid"] = newParser(false, test.TEventResourceID, parseString).ParseEvent
+	eventParsersByName["cb"] = newParser(false, test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
+	eventParsersByName["ct"] = newParser(false, test.TEventCustomText, parseString).ParseEvent
 	eventParsersByName["ab"] = parseBitArrayEvent
-	eventParsersByName["ai8"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt)).ParseEvent
-	eventParsersByName["ai8x"] = newParser(test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseIntHex)).ParseEvent
-	eventParsersByName["ai16"] = newParser(test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt)).ParseEvent
-	eventParsersByName["ai16x"] = newParser(test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseIntHex)).ParseEvent
-	eventParsersByName["ai32"] = newParser(test.TEventArrayInt32, newArrayParser(reflect.TypeOf(int32(0)), parseInt)).ParseEvent
-	eventParsersByName["ai32x"] = newParser(test.TEventArrayInt32, newArrayParser(reflect.TypeOf(int32(0)), parseIntHex)).ParseEvent
-	eventParsersByName["ai64"] = newParser(test.TEventArrayInt64, newArrayParser(reflect.TypeOf(int64(0)), parseInt)).ParseEvent
-	eventParsersByName["ai64x"] = newParser(test.TEventArrayInt64, newArrayParser(reflect.TypeOf(int64(0)), parseIntHex)).ParseEvent
-	eventParsersByName["au8"] = newParser(test.TEventArrayUint8, newArrayParser(reflect.TypeOf(uint8(0)), parseUint)).ParseEvent
-	eventParsersByName["au8x"] = newParser(test.TEventArrayUint8, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
-	eventParsersByName["au16"] = newParser(test.TEventArrayUint16, newArrayParser(reflect.TypeOf(uint16(0)), parseUint)).ParseEvent
-	eventParsersByName["au16x"] = newParser(test.TEventArrayUint16, newArrayParser(reflect.TypeOf(uint16(0)), parseUintHex)).ParseEvent
-	eventParsersByName["au32"] = newParser(test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUint)).ParseEvent
-	eventParsersByName["au32x"] = newParser(test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUintHex)).ParseEvent
-	eventParsersByName["au64"] = newParser(test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUint)).ParseEvent
-	eventParsersByName["au64x"] = newParser(test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUintHex)).ParseEvent
+	eventParsersByName["ai8"] = newParser(true, test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt)).ParseEvent
+	eventParsersByName["ai8x"] = newParser(true, test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseIntHex)).ParseEvent
+	eventParsersByName["ai16"] = newParser(true, test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt)).ParseEvent
+	eventParsersByName["ai16x"] = newParser(true, test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseIntHex)).ParseEvent
+	eventParsersByName["ai32"] = newParser(true, test.TEventArrayInt32, newArrayParser(reflect.TypeOf(int32(0)), parseInt)).ParseEvent
+	eventParsersByName["ai32x"] = newParser(true, test.TEventArrayInt32, newArrayParser(reflect.TypeOf(int32(0)), parseIntHex)).ParseEvent
+	eventParsersByName["ai64"] = newParser(true, test.TEventArrayInt64, newArrayParser(reflect.TypeOf(int64(0)), parseInt)).ParseEvent
+	eventParsersByName["ai64x"] = newParser(true, test.TEventArrayInt64, newArrayParser(reflect.TypeOf(int64(0)), parseIntHex)).ParseEvent
+	eventParsersByName["au8"] = newParser(true, test.TEventArrayUint8, newArrayParser(reflect.TypeOf(uint8(0)), parseUint)).ParseEvent
+	eventParsersByName["au8x"] = newParser(true, test.TEventArrayUint8, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
+	eventParsersByName["au16"] = newParser(true, test.TEventArrayUint16, newArrayParser(reflect.TypeOf(uint16(0)), parseUint)).ParseEvent
+	eventParsersByName["au16x"] = newParser(true, test.TEventArrayUint16, newArrayParser(reflect.TypeOf(uint16(0)), parseUintHex)).ParseEvent
+	eventParsersByName["au32"] = newParser(true, test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUint)).ParseEvent
+	eventParsersByName["au32x"] = newParser(true, test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUintHex)).ParseEvent
+	eventParsersByName["au64"] = newParser(true, test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUint)).ParseEvent
+	eventParsersByName["au64x"] = newParser(true, test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUintHex)).ParseEvent
 	eventParsersByName["af16"] = parseFloat16ArrayEvent
-	eventParsersByName["af32"] = newParser(test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat)).ParseEvent
-	eventParsersByName["af64"] = newParser(test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat)).ParseEvent
-	eventParsersByName["au"] = newParser(test.TEventArrayUID, newArrayParser(reflect.TypeOf([]byte{}), parseUUID)).ParseEvent
-	eventParsersByName["sb"] = newParser(test.TEventStringBegin).ParseEvent
-	eventParsersByName["rb"] = newParser(test.TEventResourceIDBegin).ParseEvent
-	eventParsersByName["rrb"] = newParser(test.TEventRemoteRefBegin).ParseEvent
-	eventParsersByName["cbb"] = newParser(test.TEventCustomBinaryBegin).ParseEvent
-	eventParsersByName["ctb"] = newParser(test.TEventCustomTextBegin).ParseEvent
-	eventParsersByName["abb"] = newParser(test.TEventArrayBooleanBegin).ParseEvent
-	eventParsersByName["ai8b"] = newParser(test.TEventArrayInt8Begin).ParseEvent
-	eventParsersByName["ai16b"] = newParser(test.TEventArrayInt16Begin).ParseEvent
-	eventParsersByName["ai32b"] = newParser(test.TEventArrayInt32Begin).ParseEvent
-	eventParsersByName["ai64b"] = newParser(test.TEventArrayInt64Begin).ParseEvent
-	eventParsersByName["au8b"] = newParser(test.TEventArrayUint8Begin).ParseEvent
-	eventParsersByName["au16b"] = newParser(test.TEventArrayUint16Begin).ParseEvent
-	eventParsersByName["au32b"] = newParser(test.TEventArrayUint32Begin).ParseEvent
-	eventParsersByName["au64b"] = newParser(test.TEventArrayUint64Begin).ParseEvent
-	eventParsersByName["aub"] = newParser(test.TEventArrayUIDBegin).ParseEvent
-	eventParsersByName["mb"] = newParser(test.TEventMediaBegin).ParseEvent
-	eventParsersByName["ac"] = newParser(test.TEventArrayChunk, parseUint, parseBool).ParseEvent
-	eventParsersByName["ad"] = newParser(test.TEventArrayData, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
-	eventParsersByName["at"] = newParser(test.TEventArrayData, parseTextAsBytes).ParseEvent
-	eventParsersByName["l"] = newParser(test.TEventList).ParseEvent
-	eventParsersByName["m"] = newParser(test.TEventMap).ParseEvent
-	eventParsersByName["mup"] = newParser(test.TEventMarkup, parseString).ParseEvent
-	eventParsersByName["node"] = newParser(test.TEventNode).ParseEvent
-	eventParsersByName["edge"] = newParser(test.TEventEdge).ParseEvent
-	eventParsersByName["e"] = newParser(test.TEventEnd).ParseEvent
-	eventParsersByName["mark"] = newParser(test.TEventMarker, parseString).ParseEvent
-	eventParsersByName["ref"] = newParser(test.TEventReference, parseString).ParseEvent
-	eventParsersByName["rref"] = newParser(test.TEventRemoteRef, parseString).ParseEvent
-	eventParsersByName["const"] = newParser(test.TEventConstant, parseString).ParseEvent
+	eventParsersByName["af32"] = newParser(true, test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat)).ParseEvent
+	eventParsersByName["af64"] = newParser(true, test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat)).ParseEvent
+	eventParsersByName["au"] = newParser(true, test.TEventArrayUID, newArrayParser(reflect.TypeOf([]byte{}), parseUUID)).ParseEvent
+	eventParsersByName["sb"] = newParser(false, test.TEventStringBegin).ParseEvent
+	eventParsersByName["rb"] = newParser(false, test.TEventResourceIDBegin).ParseEvent
+	eventParsersByName["rrb"] = newParser(false, test.TEventRemoteRefBegin).ParseEvent
+	eventParsersByName["cbb"] = newParser(false, test.TEventCustomBinaryBegin).ParseEvent
+	eventParsersByName["ctb"] = newParser(false, test.TEventCustomTextBegin).ParseEvent
+	eventParsersByName["abb"] = newParser(false, test.TEventArrayBooleanBegin).ParseEvent
+	eventParsersByName["ai8b"] = newParser(false, test.TEventArrayInt8Begin).ParseEvent
+	eventParsersByName["ai16b"] = newParser(false, test.TEventArrayInt16Begin).ParseEvent
+	eventParsersByName["ai32b"] = newParser(false, test.TEventArrayInt32Begin).ParseEvent
+	eventParsersByName["ai64b"] = newParser(false, test.TEventArrayInt64Begin).ParseEvent
+	eventParsersByName["au8b"] = newParser(false, test.TEventArrayUint8Begin).ParseEvent
+	eventParsersByName["au16b"] = newParser(false, test.TEventArrayUint16Begin).ParseEvent
+	eventParsersByName["au32b"] = newParser(false, test.TEventArrayUint32Begin).ParseEvent
+	eventParsersByName["au64b"] = newParser(false, test.TEventArrayUint64Begin).ParseEvent
+	eventParsersByName["aub"] = newParser(false, test.TEventArrayUIDBegin).ParseEvent
+	eventParsersByName["mb"] = newParser(false, test.TEventMediaBegin).ParseEvent
+	eventParsersByName["ac"] = newParser(false, test.TEventArrayChunk, parseUint, parseBool).ParseEvent
+	eventParsersByName["ad"] = newParser(false, test.TEventArrayData, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
+	eventParsersByName["at"] = newParser(false, test.TEventArrayData, parseTextAsBytes).ParseEvent
+	eventParsersByName["l"] = newParser(false, test.TEventList).ParseEvent
+	eventParsersByName["m"] = newParser(false, test.TEventMap).ParseEvent
+	eventParsersByName["mup"] = newParser(false, test.TEventMarkup, parseString).ParseEvent
+	eventParsersByName["node"] = newParser(false, test.TEventNode).ParseEvent
+	eventParsersByName["edge"] = newParser(false, test.TEventEdge).ParseEvent
+	eventParsersByName["e"] = newParser(false, test.TEventEnd).ParseEvent
+	eventParsersByName["mark"] = newParser(false, test.TEventMarker, parseString).ParseEvent
+	eventParsersByName["ref"] = newParser(false, test.TEventReference, parseString).ParseEvent
+	eventParsersByName["rref"] = newParser(false, test.TEventRemoteRef, parseString).ParseEvent
+	eventParsersByName["const"] = newParser(false, test.TEventConstant, parseString).ParseEvent
 }

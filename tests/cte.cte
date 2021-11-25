@@ -803,7 +803,7 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Bit array"
             "decodeMustSucceed" = [
-                {"source"="c0 |b|"                "events"=["v 0" "ab "]}
+                {"source"="c0 |b|"                "events"=["v 0" "ab"]}
                 {"source"="c0 |b 0|"              "events"=["v 0" "ab 0"]}
                 {"source"="c0 |b 1|"              "events"=["v 0" "ab 1"]}
                 {"source"="c0 |b 1 0 1 1 0 1|"    "events"=["v 0" "ab 101101"]}
@@ -826,14 +826,14 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int8 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i8|"                 "events"=["v 0" "ai8 "]}
-                {"source"="c0 |i8 |"                "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8|"                 "events"=["v 0" "ai8"]}
+                {"source"="c0 |i8 |"                "events"=["v 0" "ai8"]}
                 {"source"="c0 |i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai8 0 1 127 -128 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i8b|"                "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8b|"                "events"=["v 0" "ai8"]}
                 {"source"="c0 |i8b 0 1 1011 -1001101 1111111 -10000000|"  "events"=["v 0" "ai8 0 1 11 -77 127 -128"]}
-                {"source"="c0 |i8o|"                "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8o|"                "events"=["v 0" "ai8"]}
                 {"source"="c0 |i8o 177 -200 76|"    "events"=["v 0" "ai8 127 -128 62"]}
-                {"source"="c0 |i8x|"                "events"=["v 0" "ai8 "]}
+                {"source"="c0 |i8x|"                "events"=["v 0" "ai8"]}
                 {"source"="c0 |i8x 7f -80 1c -29|"  "events"=["v 0" "ai8 127 -128 28 -41"]}
             ]
             "decodeMustFail" = [
@@ -867,14 +867,14 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int16 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i16|"                     "events"=["v 0" "ai16 "]}
-                {"source"="c0 |i16 |"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16|"                     "events"=["v 0" "ai16"]}
+                {"source"="c0 |i16 |"                    "events"=["v 0" "ai16"]}
                 {"source"="c0 |i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai16 0 1 32767 -32768 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i16b|"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16b|"                    "events"=["v 0" "ai16"]}
                 {"source"="c0 |i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"  "events"=["v 0" "ai16 0 1 11 -77 32767 -32768"]}
-                {"source"="c0 |i16o|"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16o|"                    "events"=["v 0" "ai16"]}
                 {"source"="c0 |i16o 77777 -100000 76|"   "events"=["v 0" "ai16 32767 -32768 62"]}
-                {"source"="c0 |i16x|"                    "events"=["v 0" "ai16 "]}
+                {"source"="c0 |i16x|"                    "events"=["v 0" "ai16"]}
                 {"source"="c0 |i16x 7fff -8000 1c -29|"  "events"=["v 0" "ai16 32767 -32768 28 -41"]}
             ]
             "decodeMustFail" = [
@@ -908,16 +908,16 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int32 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i32|"                     "events"=["v 0" "ai32 "]}
-                {"source"="c0 |i32 |"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32|"                     "events"=["v 0" "ai32"]}
+                {"source"="c0 |i32 |"                    "events"=["v 0" "ai32"]}
                 {"source"="c0 |i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                  "events"=["v 0" "ai32 0 1 2147483647 -2147483648 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i32b|"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32b|"                    "events"=["v 0" "ai32"]}
                 {"source"="c0 |i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
                  "events"=["v 0" "ai32 0 1 11 -77 2147483647 -2147483648"]}
-                {"source"="c0 |i32o|"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32o|"                    "events"=["v 0" "ai32"]}
                 {"source"="c0 |i32o 17777777777 -20000000000 76|"         "events"=["v 0" "ai32 2147483647 -2147483648 62"]}
-                {"source"="c0 |i32x|"                    "events"=["v 0" "ai32 "]}
+                {"source"="c0 |i32x|"                    "events"=["v 0" "ai32"]}
                 {"source"="c0 |i32x 7fffffff -80000000 1c -29|"  "events"=["v 0" "ai32 2147483647 -2147483648 28 -41"]}
             ]
             "decodeMustFail" = [
@@ -951,16 +951,16 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int64 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i64|"                                "events"=["v 0" "ai64 "]}
-                {"source"="c0 |i64 |"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64|"                                "events"=["v 0" "ai64"]}
+                {"source"="c0 |i64 |"                               "events"=["v 0" "ai64"]}
                 {"source"="c0 |i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                  "events"=["v 0" "ai64 0 1 9223372036854775807 -9223372036854775808 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i64b|"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64b|"                               "events"=["v 0" "ai64"]}
                 {"source"="c0 |i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111 -1000000000000000000000000000000000000000000000000000000000000000|"
                  "events"=["v 0" "ai64 0 1 11 -77 9223372036854775807 -9223372036854775808"]}
-                {"source"="c0 |i64o|"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64o|"                               "events"=["v 0" "ai64"]}
                 {"source"="c0 |i64o 777777777777777777777 -1000000000000000000000 76|"  "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 62"]}
-                {"source"="c0 |i64x|"                               "events"=["v 0" "ai64 "]}
+                {"source"="c0 |i64x|"                               "events"=["v 0" "ai64"]}
                 {"source"="c0 |i64x 7fffffffffffffff -8000000000000000 1c -29|"
                  "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 28 -41"]}
             ]
@@ -995,14 +995,14 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint8 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u8|"                 "events"=["v 0" "au8 "]}
-                {"source"="c0 |u8 |"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8|"                 "events"=["v 0" "au8"]}
+                {"source"="c0 |u8 |"                "events"=["v 0" "au8"]}
                 {"source"="c0 |u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["v 0" "au8 0 1 255 128 5 63 27"]}
-                {"source"="c0 |u8b|"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8b|"                "events"=["v 0" "au8"]}
                 {"source"="c0 |u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["v 0" "au8 0 1 11 77 255 128"]}
-                {"source"="c0 |u8o|"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8o|"                "events"=["v 0" "au8"]}
                 {"source"="c0 |u8o 377 22 76|"      "events"=["v 0" "au8 255 18 62"]}
-                {"source"="c0 |u8x|"                "events"=["v 0" "au8 "]}
+                {"source"="c0 |u8x|"                "events"=["v 0" "au8"]}
                 {"source"="c0 |u8x ff 80 1c 29|"    "events"=["v 0" "au8 255 128 28 41"]}
             ]
             "decodeMustFail" = [
@@ -1029,14 +1029,14 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint16 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u16|"                 "events"=["v 0" "au16 "]}
-                {"source"="c0 |u16 |"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16|"                 "events"=["v 0" "au16"]}
+                {"source"="c0 |u16 |"                "events"=["v 0" "au16"]}
                 {"source"="c0 |u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["v 0" "au16 0 1 65535 128 5 63 27"]}
-                {"source"="c0 |u16b|"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16b|"                "events"=["v 0" "au16"]}
                 {"source"="c0 |u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["v 0" "au16 0 1 11 77 65535 128"]}
-                {"source"="c0 |u16o|"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16o|"                "events"=["v 0" "au16"]}
                 {"source"="c0 |u16o 177777 22 76|"   "events"=["v 0" "au16 65535 18 62"]}
-                {"source"="c0 |u16x|"                "events"=["v 0" "au16 "]}
+                {"source"="c0 |u16x|"                "events"=["v 0" "au16"]}
                 {"source"="c0 |u16x ffff 80 1c 29|"  "events"=["v 0" "au16 65535 128 28 41"]}
             ]
             "decodeMustFail" = [
@@ -1063,14 +1063,14 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint32 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u32|"                     "events"=["v 0" "au32 "]}
-                {"source"="c0 |u32 |"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32|"                     "events"=["v 0" "au32"]}
+                {"source"="c0 |u32 |"                    "events"=["v 0" "au32"]}
                 {"source"="c0 |u32 0 1 4294967295 128 0b101 0o77 0x1b|"  "events"=["v 0" "au32 0 1 4294967295 128 5 63 27"]}
-                {"source"="c0 |u32b|"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32b|"                    "events"=["v 0" "au32"]}
                 {"source"="c0 |u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"  "events"=["v 0" "au32 0 1 11 77 4294967295 128"]}
-                {"source"="c0 |u32o|"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32o|"                    "events"=["v 0" "au32"]}
                 {"source"="c0 |u32o 37777777777 22 76|"  "events"=["v 0" "au32 4294967295 18 62"]}
-                {"source"="c0 |u32x|"                    "events"=["v 0" "au32 "]}
+                {"source"="c0 |u32x|"                    "events"=["v 0" "au32"]}
                 {"source"="c0 |u32x ffffffff 80 1c 29|"  "events"=["v 0" "au32 4294967295 128 28 41"]}
             ]
             "decodeMustFail" = [
@@ -1097,16 +1097,16 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint64 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u64|"                                "events"=["v 0" "au64 "]}
-                {"source"="c0 |u64 |"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64|"                                "events"=["v 0" "au64"]}
+                {"source"="c0 |u64 |"                               "events"=["v 0" "au64"]}
                 {"source"="c0 |u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
                  "events"=["v 0" "au64 0 1 18446744073709551615 128 5 63 27"]}
-                {"source"="c0 |u64b|"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64b|"                               "events"=["v 0" "au64"]}
                 {"source"="c0 |u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
                  "events"=["v 0" "au64 0 1 11 77 18446744073709551615 128"]}
-                {"source"="c0 |u64o|"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64o|"                               "events"=["v 0" "au64"]}
                 {"source"="c0 |u64o 1777777777777777777777 22 76|"  "events"=["v 0" "au64 18446744073709551615 18 62"]}
-                {"source"="c0 |u64x|"                               "events"=["v 0" "au64 "]}
+                {"source"="c0 |u64x|"                               "events"=["v 0" "au64"]}
                 {"source"="c0 |u64x ffffffffffffffff 80 1c 29|"     "events"=["v 0" "au64 18446744073709551615 128 28 41"]}
             ]
             "decodeMustFail" = [
@@ -1126,6 +1126,18 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
                 "c0 |u64 0o2000000000000000000000|" // Element too big
                 "c0 |u64 0x10000000000000000|"      // Element too big
             ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Float16 array"
+            "decodeMustSucceed" = [
+            ]
+            "decodeMustFail" = [
+            ]
+            // TODO: Float16 array
+            "skip" = true
         }
 
         // ====================================================================
