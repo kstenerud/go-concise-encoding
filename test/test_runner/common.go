@@ -42,22 +42,6 @@ func capturePanic(operation func()) (err error) {
 	return
 }
 
-func runAndWrapPanic(operation func(), format string, args ...interface{}) {
-	defer func() {
-		if r := recover(); r != nil {
-			message := fmt.Sprintf(format, args...)
-			switch e := r.(type) {
-			case error:
-				panic(fmt.Errorf("%v: %w", message, e))
-			default:
-				panic(fmt.Errorf("%v: %v", message, r))
-			}
-		}
-	}()
-
-	operation()
-}
-
 func wrapPanic(format string, args ...interface{}) {
 	if r := recover(); r != nil {
 		message := fmt.Sprintf(format, args...)

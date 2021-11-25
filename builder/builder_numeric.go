@@ -385,8 +385,6 @@ func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.D
 // ============================================================================
 
 type uintBuilder struct {
-	// Template Data
-	dstType reflect.Type
 }
 
 var globalUintBuilder = &uintBuilder{}
@@ -426,8 +424,6 @@ func (_this *uintBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Deci
 // ============================================================================
 
 type uidBuilder struct {
-	// Template Data
-	dstType reflect.Type
 }
 
 var globalUIDBuilder = &uidBuilder{}

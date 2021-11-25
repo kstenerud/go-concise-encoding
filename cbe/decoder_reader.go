@@ -45,7 +45,7 @@ func NewReader() *Reader {
 }
 
 func (_this *Reader) Init() {
-	_this.buffer = make([]byte, decoderStartBufferSize, decoderStartBufferSize)
+	_this.buffer = make([]byte, decoderStartBufferSize)
 }
 
 func (_this *Reader) SetReader(reader io.Reader) {
@@ -108,7 +108,7 @@ func (_this *Reader) ReadUint() (asUint uint64, asBig *big.Int) {
 	if len(bytes)%bytesPerWord != 0 {
 		wordCount++
 	}
-	words := make([]big.Word, wordCount, wordCount)
+	words := make([]big.Word, wordCount)
 	iWord := 0
 	for iByte := 0; iByte < len(bytes); {
 		word := big.Word(0)
@@ -187,10 +187,10 @@ func (_this *Reader) ReadIdentifier() []byte {
 	_this.readIntoBuffer(1)
 	length := int(_this.buffer[0])
 	if length > 127 {
-		panic(fmt.Errorf("Identifier is too long (%v)", length))
+		panic(fmt.Errorf("identifier is too long (%v)", length))
 	}
 	if length == 0 {
-		panic(fmt.Errorf("Identifier cannot be empty"))
+		panic(fmt.Errorf("identifier cannot be empty"))
 	}
 	return _this.ReadBytes(length)
 }
@@ -229,17 +229,12 @@ func (_this *Reader) readIntoBuffer(count int) {
 			dst = dst[bytesRead:]
 		}
 	}
-	return
 }
 
 func (_this *Reader) expandBuffer(size int) {
 	if len(_this.buffer) < size {
 		_this.buffer = make([]byte, size*2)
 	}
-}
-
-func (_this *Reader) unexpectedEOF() {
-	_this.errorf("Unexpected end of document")
 }
 
 func (_this *Reader) unexpectedError(err error) {

@@ -93,7 +93,8 @@ func (_this CTEDecodeFailTest) run() {
 	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
 	receiver := rules.NewRules(eventStore, nil)
 	err := capturePanic(func() {
-		cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this)), receiver)
+		// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+		_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this)), receiver)
 	})
 	if err == nil {
 		panic(fmt.Errorf("expected CTE [%v] to fail, but generated events %v", _this, eventStore.Events))
@@ -159,7 +160,8 @@ func (_this *CTEDecodeSuccessTest) decode(document string) []*test.TEvent {
 	receiver := rules.NewRules(eventStore, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(document)), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(document)), recv)
 		}, func() string {
 			return fmt.Sprintf("CTE %v", desc(document))
 		})

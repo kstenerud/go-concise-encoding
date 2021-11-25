@@ -42,7 +42,7 @@ func NewWriter() *Writer {
 }
 
 func (_this *Writer) Init() {
-	_this.Buffer = make([]byte, writerStartBufferSize, writerStartBufferSize)
+	_this.Buffer = make([]byte, writerStartBufferSize)
 	_this.adapter.Init(_this)
 }
 

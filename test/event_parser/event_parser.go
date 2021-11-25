@@ -40,7 +40,7 @@ import (
 func ParseEvent(eventStr string) *test.TEvent {
 	components := eventNameMatcher.FindSubmatch([]byte(eventStr))
 	if len(components) == 0 {
-		panic(fmt.Errorf("Could not extract event name from [%v]", eventStr))
+		panic(fmt.Errorf("could not extract event name from [%v]", eventStr))
 	}
 	name := string(components[0])
 	parser := eventParsersByName[name]
@@ -59,7 +59,7 @@ func ParseEvents(eventStrings []string) []*test.TEvent {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("Event index %v [%v]: %w", index, eventStr, v))
+				panic(fmt.Errorf("event index %v [%v]: %w", index, eventStr, v))
 			default:
 				panic(v)
 			}
@@ -157,7 +157,7 @@ func get1ParamArg(eventStr string) []byte {
 	asBytes := []byte(eventStr)
 	indices := eventNameAndWSMatcher.FindSubmatchIndex(asBytes)
 	if len(indices) != 2 {
-		panic(fmt.Errorf("Event [%v] requires 1 parameter", eventStr))
+		panic(fmt.Errorf("event [%v] requires 1 parameter", eventStr))
 	}
 	return asBytes[indices[1]:]
 }
@@ -166,7 +166,7 @@ func get2ParamArg(eventStr string) ([]byte, []byte) {
 	asBytes := []byte(eventStr)
 	indices := firstParamAndWSMatcher.FindSubmatchIndex(asBytes)
 	if len(indices) != 4 {
-		panic(fmt.Errorf("Event [%v] requires 2 parameters", eventStr))
+		panic(fmt.Errorf("event [%v] requires 2 parameters", eventStr))
 	}
 	param1 := asBytes[indices[2]:indices[3]]
 	param2 := asBytes[indices[3]:]
@@ -190,27 +190,13 @@ func parseBool(bytes []byte) interface{} {
 	if asString == "false" || asString == "f" {
 		return false
 	}
-	panic(fmt.Errorf("Error parsing bool [%v]", string(bytes)))
-}
-
-func getBase(bytes []byte) int {
-	if len(bytes) > 1 && bytes[0] == '0' {
-		switch bytes[1] {
-		case 'b', 'B':
-			return 2
-		case 'o', 'O':
-			return 8
-		case 'x', 'X':
-			return 16
-		}
-	}
-	return 10
+	panic(fmt.Errorf("error parsing bool [%v]", string(bytes)))
 }
 
 func parseInt(bytes []byte) interface{} {
 	value, err := strconv.ParseInt(string(bytes), 0, 64)
 	if err != nil {
-		panic(fmt.Errorf("Error parsing int [%v]: %w", string(bytes), err))
+		panic(fmt.Errorf("error parsing int [%v]: %w", string(bytes), err))
 	}
 	return value
 }
@@ -218,7 +204,7 @@ func parseInt(bytes []byte) interface{} {
 func parseUint(bytes []byte) interface{} {
 	value, err := strconv.ParseUint(string(bytes), 0, 64)
 	if err != nil {
-		panic(fmt.Errorf("Error parsing uint [%v]: %w", string(bytes), err))
+		panic(fmt.Errorf("error parsing uint [%v]: %w", string(bytes), err))
 	}
 	return value
 }
@@ -233,7 +219,7 @@ func parseHex(bytes []byte) (result uint64) {
 		case 'A', 'B', 'C', 'D', 'E', 'F':
 			result = (result << 4) | uint64(b-'A'+10)
 		default:
-			panic(fmt.Errorf("Error parsing hexadecimal: Invalid char [%c] in [%v]", b, string(bytes)))
+			panic(fmt.Errorf("error parsing hexadecimal: Invalid char [%c] in [%v]", b, string(bytes)))
 		}
 	}
 	return
@@ -241,14 +227,14 @@ func parseHex(bytes []byte) (result uint64) {
 
 func parseUintHex(bytes []byte) interface{} {
 	if len(bytes) == 0 {
-		panic(fmt.Errorf("Error parsing hexadecimal: no data"))
+		panic(fmt.Errorf("error parsing hexadecimal: no data"))
 	}
 	return parseHex(bytes)
 }
 
 func parseIntHex(bytes []byte) interface{} {
 	if len(bytes) == 0 {
-		panic(fmt.Errorf("Error parsing hexadecimal: no data"))
+		panic(fmt.Errorf("error parsing hexadecimal: no data"))
 	}
 	sign := int64(0)
 	if bytes[0] == '-' {
@@ -257,7 +243,7 @@ func parseIntHex(bytes []byte) interface{} {
 	}
 	value := parseHex(bytes)
 	if value&0x8000000000000000 != 0 {
-		panic(fmt.Errorf("Overflow parsing [%v]", string(bytes)))
+		panic(fmt.Errorf("overflow parsing [%v]", string(bytes)))
 	}
 	return sign * int64(value)
 }
@@ -269,7 +255,7 @@ func parseBigInt(bytes []byte) interface{} {
 func parseFloat(bytes []byte) interface{} {
 	value, err := strconv.ParseFloat(string(bytes), 64)
 	if err != nil {
-		panic(fmt.Errorf("Error parsing float [%v]: %w", string(bytes), err))
+		panic(fmt.Errorf("error parsing float [%v]: %w", string(bytes), err))
 	}
 	return value
 }
@@ -291,7 +277,7 @@ var uuidMatcher = regexp.MustCompile(`^([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-
 func parseUUID(data []byte) interface{} {
 	components := uuidMatcher.FindSubmatch(data)
 	if len(components) == 0 {
-		panic(fmt.Errorf("Error parsing UUID [%v]: not a UUID", string(data)))
+		panic(fmt.Errorf("error parsing UUID [%v]: not a UUID", string(data)))
 	}
 	buff := bytes.Buffer{}
 	for iComponent := 1; iComponent < len(components); iComponent++ {
@@ -305,7 +291,7 @@ func parseUUID(data []byte) interface{} {
 
 func bytesToInt(bytes []byte) int {
 	if len(bytes) == 0 {
-		panic(fmt.Errorf("Tried to parse empty byte array as int"))
+		panic(fmt.Errorf("tried to parse empty byte array as int"))
 	}
 	sign := 1
 	if bytes[0] == '-' {
@@ -342,7 +328,7 @@ func tryParseDate(bytes []byte) (date compact_time.Time, remainingBytes []byte) 
 	}
 	date = compact_time.NewDate(year, month, day)
 	if err := date.Validate(); err != nil {
-		panic(fmt.Errorf("Error parsing date from [%v]: %w", string(bytes), err))
+		panic(fmt.Errorf("error parsing date from [%v]: %w", string(bytes), err))
 	}
 	return
 }
@@ -352,7 +338,7 @@ var utcOffsetMatcher = regexp.MustCompile(`^[+-](\d\d)(\d\d)$`)
 func parseTZUTCOffset(data []byte) compact_time.Timezone {
 	components := utcOffsetMatcher.FindSubmatch(data)
 	if len(components) == 0 {
-		panic(fmt.Errorf("Could not parse UTC offset from [%v]", string(data)))
+		panic(fmt.Errorf("could not parse UTC offset from [%v]", string(data)))
 	}
 	sign := 1
 	if data[0] == '-' {
@@ -368,15 +354,15 @@ var latLongMatcher = regexp.MustCompile(`^(-?\d+(\.\d+)?)/(-?\d+(\.\d+)?)$`)
 func parseTZLatLong(data []byte) compact_time.Timezone {
 	components := latLongMatcher.FindSubmatch(data)
 	if len(components) == 0 {
-		panic(fmt.Errorf("Could not parse lat/long from [%v]", string(data)))
+		panic(fmt.Errorf("could not parse lat/long from [%v]", string(data)))
 	}
 	lat, err := strconv.ParseFloat(string(components[1]), 64)
 	if err != nil {
-		panic(fmt.Errorf("Error parsing latitude from [%v]: %w", string(components[1]), err))
+		panic(fmt.Errorf("error parsing latitude from [%v]: %w", string(components[1]), err))
 	}
 	long, err := strconv.ParseFloat(string(components[3]), 64)
 	if err != nil {
-		panic(fmt.Errorf("Error parsing longitude from [%v]: %w", string(components[3]), err))
+		panic(fmt.Errorf("error parsing longitude from [%v]: %w", string(components[3]), err))
 	}
 	return compact_time.TZAtLatLong(int(lat*100), int(long*100))
 }
@@ -444,12 +430,12 @@ func parseTemporal(data []byte) interface{} {
 	timePart := parseTime(data)
 
 	if datePart.IsZeroValue() && timePart.IsZeroValue() {
-		panic(fmt.Errorf("Could not parse date [%v]: no date data found", string(originalBytes)))
+		panic(fmt.Errorf("could not parse date [%v]: no date data found", string(originalBytes)))
 	}
 
 	if !datePart.IsZeroValue() {
 		if err := datePart.Validate(); err != nil {
-			panic(fmt.Errorf("Error parsing date [%v]: %w", string(originalBytes), err))
+			panic(fmt.Errorf("error parsing date [%v]: %w", string(originalBytes), err))
 		}
 		if timePart.IsZeroValue() {
 			return datePart
@@ -460,7 +446,7 @@ func parseTemporal(data []byte) interface{} {
 		timePart.Type = compact_time.TimeTypeTimestamp
 	}
 	if err := timePart.Validate(); err != nil {
-		panic(fmt.Errorf("Error parsing time value [%v]: %w", string(originalBytes), err))
+		panic(fmt.Errorf("error parsing time value [%v]: %w", string(originalBytes), err))
 	}
 	return timePart
 }
@@ -468,8 +454,6 @@ func parseTemporal(data []byte) interface{} {
 func parseTextAsBytes(data []byte) interface{} {
 	return data
 }
-
-var bitArrayMatcher = regexp.MustCompile(`(\s*[01])+`)
 
 func parseBitArrayEvent(eventStr string) *test.TEvent {
 	var array []byte
@@ -514,6 +498,10 @@ func parseBitArrayEvent(eventStr string) *test.TEvent {
 		array)
 }
 
+func parseFloat16ArrayEvent(eventStr string) *test.TEvent {
+	panic("TODO: parseFloat16ArrayEvent")
+}
+
 func newArrayParser(elemType reflect.Type, elementParser eventParamParser) eventParamParser {
 	var typeAppropriate func(src interface{}) reflect.Value
 	switch elemType.Kind() {
@@ -542,7 +530,7 @@ func newArrayParser(elemType reflect.Type, elementParser eventParamParser) event
 			return value
 		}
 	default:
-		panic(fmt.Errorf("No parser defined for array type %v", elemType))
+		panic(fmt.Errorf("no parser defined for array type %v", elemType))
 	}
 	return func(data []byte) interface{} {
 		fields := strings.Fields(string(data))
@@ -604,7 +592,7 @@ func init() {
 	eventParsersByName["au32x"] = newParser(test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUintHex)).ParseEvent
 	eventParsersByName["au64"] = newParser(test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUint)).ParseEvent
 	eventParsersByName["au64x"] = newParser(test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUintHex)).ParseEvent
-	// TODO: eventParsersByName["af16"] = newParser(test.TEventArrayFloat16, newArrayParser(reflect.TypeOf(float32(0)), parseFloat)).ParseEvent
+	eventParsersByName["af16"] = parseFloat16ArrayEvent
 	eventParsersByName["af32"] = newParser(test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat)).ParseEvent
 	eventParsersByName["af64"] = newParser(test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat)).ParseEvent
 	eventParsersByName["au"] = newParser(test.TEventArrayUID, newArrayParser(reflect.TypeOf([]byte{}), parseUUID)).ParseEvent

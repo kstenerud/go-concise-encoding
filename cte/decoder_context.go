@@ -141,21 +141,21 @@ func (_this *DecoderContext) SetContainerType(containerType ContainerType) {
 func (_this *DecoderContext) AssertIsInMap() {
 	containerType := _this.stack[len(_this.stack)-1].ContainerType
 	if containerType != ContainerTypeMap {
-		panic(fmt.Errorf("Cannot end a map using %v end", containerType))
+		panic(fmt.Errorf("cannot end a map using %v end", containerType))
 	}
 }
 
 func (_this *DecoderContext) AssertIsInList() {
 	containerType := _this.stack[len(_this.stack)-1].ContainerType
 	if containerType != ContainerTypeList {
-		panic(fmt.Errorf("Cannot end a list using %v end", containerType))
+		panic(fmt.Errorf("cannot end a list using %v end", containerType))
 	}
 }
 
 func (_this *DecoderContext) AssertIsInNode() {
 	containerType := _this.stack[len(_this.stack)-1].ContainerType
 	if containerType != ContainerTypeNode {
-		panic(fmt.Errorf("Cannot end a node using %v end", containerType))
+		panic(fmt.Errorf("cannot end a node using %v end", containerType))
 	}
 }
 

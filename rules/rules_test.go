@@ -51,7 +51,7 @@ func TestRulesVersion(t *testing.T) {
 }
 
 func TestRulesNull(t *testing.T) {
-	assertEventsMaxDepth(t, 1, N(), ED())
+	assertEventsMaxDepth(t, 1, NULL(), ED())
 }
 
 func TestRulesNan(t *testing.T) {
@@ -387,7 +387,7 @@ func TestRulesMarkupEmpty(t *testing.T) {
 }
 
 func TestRulesNodeEmpty(t *testing.T) {
-	assertEventsMaxDepth(t, 1, NODE(), N(), E(), ED())
+	assertEventsMaxDepth(t, 1, NODE(), NULL(), E(), ED())
 }
 
 // =======================
@@ -399,7 +399,7 @@ func TestRulesListSingleItem(t *testing.T) {
 }
 
 func TestRulesMapPair(t *testing.T) {
-	assertEventsMaxDepth(t, 1, M(), B(true), N(), E(), ED())
+	assertEventsMaxDepth(t, 1, M(), B(true), NULL(), E(), ED())
 }
 
 func TestRulesMarkupSingleItem(t *testing.T) {
@@ -408,7 +408,7 @@ func TestRulesMarkupSingleItem(t *testing.T) {
 
 func TestRulesNodeSingleItem(t *testing.T) {
 	assertEventsMaxDepth(t, 1, NODE(), B(true), E(), ED())
-	assertEventsMaxDepth(t, 1, NODE(), N(), B(true), E(), ED())
+	assertEventsMaxDepth(t, 1, NODE(), NULL(), B(true), E(), ED())
 }
 
 // ==================
@@ -416,12 +416,12 @@ func TestRulesNodeSingleItem(t *testing.T) {
 // ==================
 
 func TestRulesListFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, L(), N(), NAN(), B(true), F(0.1), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, L(), NULL(), NAN(), B(true), F(0.1), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
 func TestRulesMapFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, M(), B(true), N(), F(0.1), NAN(), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, M(), B(true), NULL(), F(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
@@ -455,8 +455,8 @@ func TestRulesMarkerReference(t *testing.T) {
 }
 
 func TestRulesNodeFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, NODE(), N(), NAN(), B(true), F(0.1), I(1), I(-1),
-		GT(time.Now()), AU8(NewBytes(1, 0)), NODE(), N(), E(), E(), ED())
+	assertEventsMaxDepth(t, 2, NODE(), NULL(), NAN(), B(true), F(0.1), I(1), I(-1),
+		GT(time.Now()), AU8(NewBytes(1, 0)), NODE(), NULL(), E(), E(), ED())
 }
 
 // ================
@@ -477,7 +477,7 @@ func TestRulesErrorOnEndTooManyTimes(t *testing.T) {
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, NODE(), N(), E())
+	assertEventsSucceed(t, rules, NODE(), NULL(), E())
 	assertEventsFail(t, rules, E())
 }
 
@@ -503,7 +503,7 @@ func TestRulesErrorUnendedContainer(t *testing.T) {
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, NODE(), N())
+	assertEventsSucceed(t, rules, NODE(), NULL())
 	assertEventsFail(t, rules, ED())
 }
 

@@ -707,7 +707,7 @@ func setFromUID(value []byte, dst reflect.Value) {
 	switch dst.Kind() {
 	case reflect.Array:
 		if dst.Len() != uidLength {
-			panic(fmt.Errorf("Cannot store UID in array of length %v", dst.Len()))
+			panic(fmt.Errorf("cannot store UID in array of length %v", dst.Len()))
 		}
 
 		for i, v := range value {

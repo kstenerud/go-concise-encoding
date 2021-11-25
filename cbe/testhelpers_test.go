@@ -60,8 +60,6 @@ const (
 	typeFloat32      = 0x71
 	typeFloat64      = 0x72
 	typeUID          = 0x73
-	typeReserved74   = 0x74
-	typeReserved75   = 0x75
 	typeEdge         = 0x76
 	typeNode         = 0x77
 	typeMarkup       = 0x78
@@ -175,7 +173,7 @@ func F(v float64) *test.TEvent               { return test.F(v) }
 func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func N() *test.TEvent                        { return test.N() }
+func NULL() *test.TEvent                     { return test.NULL() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
@@ -295,13 +293,6 @@ func assertEncode(t *testing.T, opts *options.CBEEncoderOptions, expectedDocumen
 		return
 	}
 	successful = true
-	return
-}
-
-func assertEncodeFails(t *testing.T, opts *options.CBEEncoderOptions, events ...*test.TEvent) (successful bool) {
-	successful = test.AssertPanics(t, "encode", func() {
-		encodeEvents(opts, events...)
-	})
 	return
 }
 

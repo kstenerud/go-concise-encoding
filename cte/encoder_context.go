@@ -181,12 +181,3 @@ func (_this *EncoderContext) WriteMarkupContentString(data string) {
 func (_this *EncoderContext) WriteMarkupContentStringData(data []uint8) {
 	_this.Stream.WritePotentiallyEscapedMarkupContentsBytes(data)
 }
-
-// ============================================================================
-
-var (
-	emptyPrefix                = []byte{}
-	mapValuePrefix             = []byte{' ', '=', ' '}
-	markupAttributeKeyPrefix   = []byte{' '}
-	markupAttributeValuePrefix = []byte{'='}
-)

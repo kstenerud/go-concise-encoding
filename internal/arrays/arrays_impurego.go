@@ -18,6 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+//go:build !purego
 // +build !purego
 
 package arrays
@@ -39,7 +40,7 @@ func init() {
 }
 
 func clonedBytesPtr(bytes []byte) unsafe.Pointer {
-	dst := make([]byte, len(bytes), len(bytes))
+	dst := make([]byte, len(bytes))
 	copy(dst, bytes)
 	return unsafe.Pointer(&dst[0])
 }

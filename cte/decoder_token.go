@@ -94,10 +94,6 @@ func (_this Token) assertPosIsEnd(textPos *TextPositionCounter, tokenOffset int,
 	}
 }
 
-func (_this Token) isEmpty() bool {
-	return len(_this) == 0
-}
-
 // ----------------------------------------------------------------------------
 
 func (_this Token) DecodeNamedValue(textPos *TextPositionCounter) string {

@@ -29,22 +29,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type arrayEncoder struct{}
-
-var globalArrayEncoder arrayEncoder
-
-func (_this *arrayEncoder) String() string { return "arrayEncoder" }
-
-func (_this *arrayEncoder) BeginArrayChunk(ctx *EncoderContext, elementCount uint64, moreChunksFollow bool) {
-	ctx.ArrayEngine.BeginChunk(elementCount, moreChunksFollow)
-}
-
-func (_this *arrayEncoder) EncodeArrayData(ctx *EncoderContext, data []byte) {
-	ctx.ArrayEngine.AddArrayData(data)
-}
-
-// =============================================================================
-
 type arrayEncoderEngine struct {
 	stream                 *Writer
 	addElementsFunc        func(b []byte)
@@ -260,15 +244,6 @@ func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
 	_this.onComplete = func() {
 		_this.stream.WriteQuotedStringBytes(_this.stringBuffer)
-		onComplete()
-	}
-}
-
-func (_this *arrayEncoderEngine) beginArrayIdentifier(onComplete func()) {
-	_this.setElementByteWidth(1)
-	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
-	_this.onComplete = func() {
-		_this.stream.WriteBytes(_this.stringBuffer)
 		onComplete()
 	}
 }

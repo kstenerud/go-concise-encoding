@@ -117,7 +117,7 @@ func TestEncodeDecodeList(t *testing.T) {
 func TestEncodeDecodeMap(t *testing.T) {
 	assertEncodeDecode(t, BD(), EvV, M(), E(), ED())
 	assertEncodeDecode(t, BD(), EvV, M(), S("a"), NI(1000), E(), ED())
-	assertEncodeDecode(t, BD(), EvV, M(), S("some NA"), N(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
+	assertEncodeDecode(t, BD(), EvV, M(), S("some NA"), NULL(), DF(test.NewDFloat("1.1")), S("somefloat"), E(), ED())
 }
 
 func TestEncodeDecodeAllValidTLO(t *testing.T) {

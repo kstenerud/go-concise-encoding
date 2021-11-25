@@ -133,15 +133,6 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-func reinterpretDecAsHex(v uint64) uint64 {
-	var result uint64
-	for position := 0; v != 0; position += 4 {
-		result |= (v % 10) << position
-		v /= 10
-	}
-	return result
-}
-
 func decodeUID(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
@@ -433,7 +424,7 @@ func advanceAndDecodeEdgeOrResourceID(ctx *DecoderContext) {
 	case '(':
 		decodeEdgeBegin(ctx)
 	default:
-		ctx.Stream.UnreadByte()
+		ctx.Stream.UnreadLastByte()
 		ctx.UnexpectedChar("edge or resource ID")
 	}
 }

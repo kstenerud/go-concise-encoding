@@ -73,7 +73,7 @@ func (_this *Reader) readNext() {
 	}
 }
 
-func (_this *Reader) UnreadByte() {
+func (_this *Reader) UnreadLastByte() {
 	if _this.hasUnread {
 		panic("Cannot unread twice")
 	}
@@ -123,7 +123,7 @@ func (_this *Reader) AdvanceByte() {
 func (_this *Reader) SkipWhileProperty(property chars.Properties) {
 	for _this.ReadByteAllowEOF().HasProperty(property) {
 	}
-	_this.UnreadByte()
+	_this.UnreadLastByte()
 }
 
 // Tokens
@@ -193,7 +193,7 @@ func (_this *Reader) TokenReadUntilPropertyNoEOF(property chars.Properties) {
 	for {
 		b := _this.ReadByteNoEOF()
 		if chars.ByteHasProperty(b, property) {
-			_this.UnreadByte()
+			_this.UnreadLastByte()
 			break
 		}
 		_this.TokenAppendByte(b)
@@ -204,7 +204,7 @@ func (_this *Reader) TokenReadUntilPropertyAllowEOF(property chars.Properties) {
 	for {
 		b := _this.ReadByteAllowEOF()
 		if b.HasProperty(property) {
-			_this.UnreadByte()
+			_this.UnreadLastByte()
 			break
 		}
 		_this.TokenAppendByte(byte(b))
@@ -215,7 +215,7 @@ func (_this *Reader) TokenReadWhilePropertyAllowEOF(property chars.Properties) {
 	for {
 		b := _this.ReadByteAllowEOF()
 		if !b.HasProperty(property) {
-			_this.UnreadByte()
+			_this.UnreadLastByte()
 			break
 		}
 		_this.TokenAppendByte(byte(b))
@@ -236,10 +236,6 @@ func (_this *Reader) errorf(format string, args ...interface{}) {
 
 func (_this *Reader) unexpectedEOF() {
 	_this.errorf("unexpected end of document")
-}
-
-func (_this *Reader) unexpectedError(err error, decoding string) {
-	_this.errorf("unexpected error [%v] while decoding %v", err, decoding)
 }
 
 func (_this *Reader) unexpectedChar(decoding string) {
@@ -374,7 +370,7 @@ func (_this *Reader) ReadIdentifier() []byte {
 		b := _this.ReadByteAllowEOF()
 		// Only do a per-byte check here. The rules will do a per-rune check.
 		if b == chars.EOFMarker || (b < 0x80 && !chars.IsRuneValidIdentifier(rune(b))) {
-			_this.UnreadByte()
+			_this.UnreadLastByte()
 			break
 		}
 		_this.TokenAppendByte(byte(b))
@@ -388,7 +384,7 @@ func (_this *Reader) ReadMarkerIdentifier() []byte {
 		b := _this.ReadByteAllowEOF()
 		// Only do a per-byte check here. The rules will do a per-rune check.
 		if b == chars.EOFMarker || (b < 0x80 && !chars.IsRuneValidMarkerID(rune(b))) {
-			_this.UnreadByte()
+			_this.UnreadLastByte()
 			break
 		}
 		_this.TokenAppendByte(byte(b))

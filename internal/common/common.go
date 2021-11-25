@@ -107,7 +107,7 @@ func NameOf(x interface{}) string {
 // Utility
 
 func CloneBytes(bytes []byte) []byte {
-	bytesCopy := make([]byte, len(bytes), len(bytes))
+	bytesCopy := make([]byte, len(bytes))
 	copy(bytesCopy, bytes)
 	return bytesCopy
 }

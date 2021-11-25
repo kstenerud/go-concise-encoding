@@ -68,7 +68,7 @@ func NewBigInt(str string) *big.Int {
 	bi := new(big.Int)
 	_, success := bi.SetString(str, 0)
 	if !success {
-		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to big.Int", str))
+		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to big.Int", str))
 	}
 	return bi
 }
@@ -85,7 +85,7 @@ func countDecimalSigDigits(str string) int {
 		case b == '.':
 			// Ignore
 		default:
-			break
+			return sigDigits
 		}
 	}
 	return sigDigits
@@ -112,7 +112,7 @@ func NewBigFloat(str string) *big.Float {
 	sigDigits := countDecimalSigDigits(str)
 	f, _, err := big.ParseFloat(str, 10, uint(common.DecimalDigitsToBits(sigDigits)), big.ToNearestEven)
 	if err != nil {
-		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to big.Float: %w", str, err))
+		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to big.Float: %w", str, err))
 	}
 	return f
 }
@@ -120,7 +120,7 @@ func NewBigFloat(str string) *big.Float {
 func NewDFloat(str string) compact_float.DFloat {
 	df, err := compact_float.DFloatFromString(str)
 	if err != nil {
-		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to compact_float.DFloat: %w", str, err))
+		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to compact_float.DFloat: %w", str, err))
 	}
 	return df
 }
@@ -128,7 +128,7 @@ func NewDFloat(str string) compact_float.DFloat {
 func NewBDF(str string) *apd.Decimal {
 	v, _, err := apd.NewFromString(str)
 	if err != nil {
-		panic(fmt.Errorf("Malformed unit test: Cannot convert [%v] to apd.Decimal: %w", str, err))
+		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to apd.Decimal: %w", str, err))
 	}
 	return v
 }
@@ -136,7 +136,7 @@ func NewBDF(str string) *apd.Decimal {
 func NewRID(RIDString string) *url.URL {
 	rid, err := url.Parse(RIDString)
 	if err != nil {
-		panic(fmt.Errorf("Malformed unit test: Bad URL (%v): %w", RIDString, err))
+		panic(fmt.Errorf("malformed unit test: Bad URL (%v): %w", RIDString, err))
 	}
 	return rid
 }
@@ -327,7 +327,7 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
 }
 
 func CloneBytes(bytes []byte) []byte {
-	bytesCopy := make([]byte, len(bytes), len(bytes))
+	bytesCopy := make([]byte, len(bytes))
 	copy(bytesCopy, bytes)
 	return bytesCopy
 }
@@ -342,7 +342,7 @@ var (
 	EvV       = V(version.ConciseEncodingVersion)
 	EvPAD     = PAD(1)
 	EvCOM     = COM(false, "a")
-	EvN       = N()
+	EvN       = NULL()
 	EvB       = B(true)
 	EvTT      = TT()
 	EvFF      = FF()
@@ -743,7 +743,7 @@ func BF(v *big.Float) *TEvent           { return EventOrNull(TEventBigFloat, v) 
 func DF(v compact_float.DFloat) *TEvent { return NewTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNull(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return NewTEvent(TEventVersion, v, nil) }
-func N() *TEvent                        { return NewTEvent(TEventNull, nil, nil) }
+func NULL() *TEvent                     { return NewTEvent(TEventNull, nil, nil) }
 func PAD(v int) *TEvent                 { return NewTEvent(TEventPadding, v, nil) }
 func COM(m bool, v string) *TEvent      { return NewTEvent(TEventComment, m, v) }
 func B(v bool) *TEvent                  { return NewTEvent(TEventBool, v, nil) }
@@ -810,7 +810,7 @@ func ED() *TEvent                       { return NewTEvent(TEventEndDocument, ni
 func EventForValue(value interface{}) *TEvent {
 	rv := reflect.ValueOf(value)
 	if !rv.IsValid() {
-		return N()
+		return NULL()
 	}
 	switch rv.Kind() {
 	case reflect.Bool:
@@ -830,7 +830,7 @@ func EventForValue(value interface{}) *TEvent {
 		}
 	case reflect.Ptr:
 		if rv.IsNil() {
-			return N()
+			return NULL()
 		}
 		switch rv.Type() {
 		case common.TypePBigDecimalFloat:
@@ -1034,7 +1034,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F6", BF(NewBigFloat("1.1")))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
-		ane("F9", N())
+		ane("F9", NULL())
 		ane("F10", BI(NewBigInt("1000")))
 		ane("F12", NAN())
 		ane("F13", SNAN())
@@ -1056,7 +1056,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			BF(NewBigFloat("1.1")),
 			DF(NewDFloat("1.1")),
 			BDF(NewBDF("1.1")),
-			N(),
+			NULL(),
 			BI(NewBigInt("1000")),
 			NAN(),
 			SNAN(),

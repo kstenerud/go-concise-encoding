@@ -115,14 +115,14 @@ func (_this *Context) ParentRule() EventRule {
 func (_this *Context) NotifyNewObject() {
 	_this.objectCount++
 	if _this.objectCount > _this.opts.MaxObjectCount {
-		panic(fmt.Errorf("Exceeded max object count of %d", _this.opts.MaxObjectCount))
+		panic(fmt.Errorf("exceeded max object count of %d", _this.opts.MaxObjectCount))
 	}
 }
 
 func (_this *Context) beginContainer(rule EventRule, dataType DataType) {
 	_this.containerDepth++
 	if _this.containerDepth > _this.opts.MaxContainerDepth {
-		panic(fmt.Errorf("Exceeded max container depth of %d", _this.opts.MaxContainerDepth))
+		panic(fmt.Errorf("exceeded max container depth of %d", _this.opts.MaxContainerDepth))
 	}
 	_this.stackRule(rule, dataType)
 }
@@ -205,19 +205,19 @@ func (_this *Context) EndDocument() {
 func (_this *Context) MarkObject(dataType DataType) {
 	newReferenceCount := _this.referenceCount + 1
 	if newReferenceCount > _this.opts.MaxReferenceCount {
-		panic(fmt.Errorf("Too many marked objects (%d). Max is %d", newReferenceCount, _this.opts.MaxReferenceCount))
+		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newReferenceCount, _this.opts.MaxReferenceCount))
 	}
 
 	id := _this.markerID
 	if _, exists := _this.markedObjects[id]; exists {
-		panic(fmt.Errorf("Marker ID [%v] already exists", id))
+		panic(fmt.Errorf("marker ID [%v] already exists", id))
 	}
 	_this.referenceCount++
 	_this.markedObjects[id] = dataType
 	if allowedDataTypes, exists := _this.forwardReferences[id]; exists {
 		delete(_this.forwardReferences, id)
 		if allowedDataTypes&dataType == 0 {
-			panic(fmt.Errorf("Forward reference to marker ID [%v] cannot accept type %v", id, dataType))
+			panic(fmt.Errorf("forward reference to marker ID [%v] cannot accept type %v", id, dataType))
 		}
 	}
 }
@@ -226,7 +226,7 @@ func (_this *Context) ReferenceObject(id []byte, allowedDataTypes DataType) {
 	idAsString := string(id)
 	if dataType, exists := _this.markedObjects[idAsString]; exists {
 		if dataType&allowedDataTypes == 0 {
-			panic(fmt.Errorf("Marked object id [%v] of type %v is not a valid type to be referenced here", idAsString, dataType))
+			panic(fmt.Errorf("marked object id [%v] of type %v is not a valid type to be referenced here", idAsString, dataType))
 		}
 		return
 	}

@@ -37,7 +37,7 @@ func BytesToInt32Slice(data []byte) []int32 { return arrays.BytesToInt32Slice(da
 
 func BytesToFloat32Slice(data []byte) []float32 { return arrays.BytesToFloat32Slice(data) }
 
-func BytesToUint64Slice(data []byte) []uint64 { return BytesToUint64Slice(data) }
+func BytesToUint64Slice(data []byte) []uint64 { return arrays.BytesToUint64Slice(data) }
 
 func BytesToInt64Slice(data []byte) []int64 { return arrays.BytesToInt64Slice(data) }
 

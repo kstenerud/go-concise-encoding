@@ -43,7 +43,7 @@ func TestCBEPadding(t *testing.T) {
 }
 
 func TestCBENull(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeNull}, BD(), EvV, N(), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeNull}, BD(), EvV, NULL(), ED())
 }
 
 func TestCBEBool(t *testing.T) {
@@ -573,7 +573,7 @@ func TestNode(t *testing.T) {
 		[]byte{header, ceVer,
 			typeNode, typeNull, typeString1, 'a', typeRID, 0x02, 'b',
 			typeNode, typeNull, typeEndContainer, typeEndContainer},
-		BD(), EvV, NODE(), N(), S("a"), RID("b"), NODE(), N(), E(), E(), ED())
+		BD(), EvV, NODE(), NULL(), S("a"), RID("b"), NODE(), NULL(), E(), E(), ED())
 }
 
 func TestMedia(t *testing.T) {

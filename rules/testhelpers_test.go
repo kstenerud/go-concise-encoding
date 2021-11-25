@@ -23,7 +23,6 @@ package rules
 import (
 	"math/big"
 	"net/url"
-	"reflect"
 	"testing"
 	"time"
 
@@ -173,7 +172,7 @@ func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
-func N() *test.TEvent                        { return test.N() }
+func NULL() *test.TEvent                     { return test.NULL() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
@@ -247,10 +246,6 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
 
 // ============================================================================
 
-const rulesCodecVersion = 1
-
-var uint8Type = reflect.TypeOf(uint8(0))
-
 func assertEvents(t *testing.T, allEvents ...*test.TEvent) {
 	assertEventsSucceed(t, NewRules(events.NewNullEventReceiver(), nil), allEvents...)
 }
@@ -279,12 +274,6 @@ func assertEventStreamsFail(t *testing.T, eventStreams [][]*test.TEvent) {
 	}
 }
 
-func assertEachEventSucceeds(t *testing.T, prefix func() events.DataEventReceiver, events ...*test.TEvent) {
-	for _, event := range events {
-		assertEventsSucceed(t, prefix(), event)
-	}
-}
-
 func assertEventsFail(t *testing.T, receiver events.DataEventReceiver, events ...*test.TEvent) {
 	test.AssertPanics(t, events, func() {
 		InvokeEvents(receiver, events...)
@@ -300,51 +289,6 @@ func assertEachEventFails(t *testing.T, prefix func() events.DataEventReceiver, 
 func assertEventsMaxDepth(t *testing.T, maxDepth int, events ...*test.TEvent) {
 	rules := newRulesWithMaxDepth(maxDepth)
 	assertEventsSucceed(t, rules, events...)
-}
-
-func assertRulesOnString(t *testing.T, rules *RulesEventReceiver, value string) {
-	length := len(value)
-	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeString) })
-	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, value, func() { rules.OnArrayData([]byte(value)) })
-	}
-}
-
-func assertRulesAddBytes(t *testing.T, rules *RulesEventReceiver, value []byte) {
-	length := len(value)
-	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeUint8) })
-	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, value, func() { rules.OnArrayData(value) })
-	}
-}
-
-func assertRulesAddRID(t *testing.T, rules *RulesEventReceiver, ResourceID string) {
-	length := len(ResourceID)
-	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayBegin(events.ArrayTypeResourceID) })
-	test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, ResourceID, func() { rules.OnArrayData([]byte(ResourceID)) })
-	}
-}
-
-func assertRulesAddCustomBinary(t *testing.T, rules *RulesEventReceiver, value []byte) {
-	length := len(value)
-	test.AssertNoPanic(t, value, func() { rules.OnArrayBegin(events.ArrayTypeCustomBinary) })
-	test.AssertNoPanic(t, value, func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, value, func() { rules.OnArrayData(value) })
-	}
-}
-
-func assertRulesAddCustomText(t *testing.T, rules *RulesEventReceiver, value []byte) {
-	length := len(value)
-	test.AssertNoPanic(t, string(value), func() { rules.OnArrayBegin(events.ArrayTypeCustomText) })
-	test.AssertNoPanic(t, string(value), func() { rules.OnArrayChunk(uint64(length), false) })
-	if length > 0 {
-		test.AssertNoPanic(t, value, func() { rules.OnArrayData(value) })
-	}
 }
 
 func newRulesAfterVersion(opts *options.RuleOptions) *RulesEventReceiver {

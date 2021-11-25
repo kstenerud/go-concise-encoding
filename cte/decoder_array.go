@@ -52,7 +52,7 @@ func decodeArrayType(ctx *DecoderContext) []byte {
 	arrayType := ctx.Stream.ReadToken()
 	if len(arrayType) > 0 && arrayType[len(arrayType)-1] == '|' {
 		arrayType = arrayType[:len(arrayType)-1]
-		ctx.Stream.UnreadByte()
+		ctx.Stream.UnreadLastByte()
 	}
 	common.ASCIIBytesToLower(arrayType)
 	return arrayType
@@ -78,21 +78,6 @@ func finishTypedArray(ctx *DecoderContext) {
 type uintTokenDecoder func(Token, *TextPositionCounter) (v uint64, digitCount int, decodedCount int)
 type intTokenDecoder func(Token, *TextPositionCounter) (v int64, digitCount int, decodedCount int)
 type floatTokenDecoder func(Token, *TextPositionCounter) (v float64, decodedCount int)
-
-func decodeElementIntAnyType(ctx *DecoderContext) (v int64, success bool) {
-	token := ctx.Stream.ReadToken()
-	// TODO: This needs to check for other bases
-	value, digitCount, decodedCount := token.DecodeSmallDecimalInt(ctx.TextPos)
-	token[decodedCount:].AssertAtEnd(ctx.TextPos, "integer")
-	return value, digitCount > 0
-}
-
-func decodeElementIntOctal(ctx *DecoderContext) (v int64, success bool) {
-	token := ctx.Stream.ReadToken()
-	value, digitCount, decodedCount := token.DecodeSmallOctalInt(ctx.TextPos)
-	token[decodedCount:].AssertAtEnd(ctx.TextPos, "integer")
-	return value, digitCount > 0
-}
 
 func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()

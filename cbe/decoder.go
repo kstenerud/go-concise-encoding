@@ -70,7 +70,6 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	}()
 
 	_this.reader.SetReader(reader)
-	eventReceiver = eventReceiver
 
 	eventReceiver.OnBeginDocument()
 

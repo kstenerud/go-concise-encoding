@@ -67,7 +67,7 @@ func (_this *Context) markUpcomingChunkByteCount(byteCount uint64) {
 func (_this *Context) MarkCompletedChunkByteCount(byteCount uint64) {
 	_this.chunkActualByteCount += byteCount
 	if _this.chunkActualByteCount > _this.chunkExpectedByteCount {
-		panic(fmt.Errorf("Expected array chunk to have %d bytes, but got %d bytes", _this.chunkExpectedByteCount, _this.chunkActualByteCount))
+		panic(fmt.Errorf("expected array chunk to have %d bytes, but got %d bytes", _this.chunkExpectedByteCount, _this.chunkActualByteCount))
 	}
 }
 
@@ -197,7 +197,7 @@ func (_this *Context) BeginChunkString(elemCount uint64, moreChunksFollow bool) 
 
 func (_this *Context) EndChunkString() {
 	if len(_this.utf8RemainderBuffer) > 0 {
-		panic(fmt.Errorf("Incomplete UTF-8 data in chunk"))
+		panic(fmt.Errorf("incomplete UTF-8 data in chunk"))
 	}
 	if !_this.tryEndArray(_this.moreChunksFollow, nil) {
 		_this.ChangeRule(&stringRule)
@@ -218,7 +218,7 @@ func (_this *Context) BeginChunkMediaType(elemCount uint64, moreChunksFollow boo
 
 func (_this *Context) EndChunkMediaType() {
 	if len(_this.utf8RemainderBuffer) > 0 {
-		panic(fmt.Errorf("Incomplete UTF-8 data in chunk"))
+		panic(fmt.Errorf("incomplete UTF-8 data in chunk"))
 	}
 
 	if !_this.moreChunksFollow {
@@ -254,25 +254,25 @@ func (_this *Context) EndChunkStringBuilder() {
 
 func (_this *Context) ValidateIdentifier(data []uint8) {
 	if len(data) == 0 {
-		panic(fmt.Errorf("Identifier cannot be empty"))
+		panic(fmt.Errorf("identifier cannot be empty"))
 	}
 	if len(data) > 127 {
-		panic(fmt.Errorf("Identifier is too long (%v bytes)", len(data)))
+		panic(fmt.Errorf("identifier is too long (%v bytes)", len(data)))
 	}
 	if !chars.IsIdentifierSafe(data) {
-		panic(fmt.Errorf("Identifier contains invalid characters"))
+		panic(fmt.Errorf("identifier contains invalid characters"))
 	}
 }
 
 func (_this *Context) ValidateMarkerID(data []uint8) {
 	if len(data) == 0 {
-		panic(fmt.Errorf("Identifier cannot be empty"))
+		panic(fmt.Errorf("identifier cannot be empty"))
 	}
 	if len(data) > 127 {
-		panic(fmt.Errorf("Identifier is too long (%v bytes)", len(data)))
+		panic(fmt.Errorf("identifier is too long (%v bytes)", len(data)))
 	}
 	if !chars.IsMarkerIDSafe(data) {
-		panic(fmt.Errorf("Identifier contains invalid characters"))
+		panic(fmt.Errorf("identifier contains invalid characters"))
 	}
 }
 
@@ -370,7 +370,7 @@ func (_this *Context) ValidateFullArrayMarkerIDString(arrayType events.ArrayType
 
 func (_this *Context) ValidateByteCount1BPE(elementCount uint64, byteCount uint64) {
 	if byteCount != elementCount {
-		panic(fmt.Errorf("Expected string length of %d bytes but got %d bytes",
+		panic(fmt.Errorf("expected string length of %d bytes but got %d bytes",
 			elementCount, byteCount))
 	}
 }
@@ -378,51 +378,51 @@ func (_this *Context) ValidateByteCount1BPE(elementCount uint64, byteCount uint6
 func (_this *Context) ValidateByteCountForType(arrayType events.ArrayType, elementCount uint64, byteCount uint64) {
 	expectedByteCount := common.ElementCountToByteCount(arrayType.ElementSize(), elementCount)
 	if byteCount != expectedByteCount {
-		panic(fmt.Errorf("Expected %d bytes (%d elements of %d bits) but got %d bytes",
+		panic(fmt.Errorf("expected %d bytes (%d elements of %d bits) but got %d bytes",
 			expectedByteCount, elementCount, arrayType.ElementSize(), byteCount))
 	}
 }
 
 func (_this *Context) AssertArrayType(contextDesc string, arrayType events.ArrayType, allowedTypes DataType) {
 	if arrayTypeToDataType[arrayType]&allowedTypes == 0 {
-		panic(fmt.Errorf("Array type %v is not allowed while processing %v", arrayType, contextDesc))
+		panic(fmt.Errorf("array type %v is not allowed while processing %v", arrayType, contextDesc))
 
 	}
 }
 
 func (_this *Context) ValidateLengthAnyType(length uint64) {
 	if length > _this.opts.MaxArrayByteLength && _this.opts.MaxArrayByteLength > 0 {
-		panic(fmt.Errorf("Array byte length %d is greater than the maximum of %d", length, _this.opts.MaxArrayByteLength))
+		panic(fmt.Errorf("array byte length %d is greater than the maximum of %d", length, _this.opts.MaxArrayByteLength))
 	}
 }
 
 func (_this *Context) ValidateLengthString(length uint64) {
 	if length > _this.opts.MaxStringByteLength && _this.opts.MaxStringByteLength > 0 {
-		panic(fmt.Errorf("String byte length %d is greater than the maximum of %d", length, _this.opts.MaxStringByteLength))
+		panic(fmt.Errorf("string byte length %d is greater than the maximum of %d", length, _this.opts.MaxStringByteLength))
 	}
 }
 
 func (_this *Context) ValidateLengthRID(length uint64) {
 	if length > _this.opts.MaxResourceIDByteLength && _this.opts.MaxResourceIDByteLength > 0 {
-		panic(fmt.Errorf("Resource ID byte length %d is greater than the maximum of %d", length, _this.opts.MaxResourceIDByteLength))
+		panic(fmt.Errorf("resource ID byte length %d is greater than the maximum of %d", length, _this.opts.MaxResourceIDByteLength))
 	}
 }
 
 func (_this *Context) ValidateLengthMarkerID(length uint64) {
 	if length > maxMarkerIDByteCount {
-		panic(fmt.Errorf("Marker ID byte length %d is greater than the maximum of %d", length, maxMarkerIDByteCount))
+		panic(fmt.Errorf("marker ID byte length %d is greater than the maximum of %d", length, maxMarkerIDByteCount))
 	}
 }
 
 func (_this *Context) ValidateContentsString(contents []byte) {
 	if !utf8.Valid(contents) {
-		panic(fmt.Errorf("String is not valid UTF-8: %v", string(contents)))
+		panic(fmt.Errorf("string is not valid UTF-8: %v", string(contents)))
 	}
 }
 
 func (_this *Context) ValidateContentsStringlike(contents string) {
 	if !utf8.ValidString(contents) {
-		panic(fmt.Errorf("String is not valid UTF-8: %v", string(contents)))
+		panic(fmt.Errorf("string is not valid UTF-8: %v", string(contents)))
 	}
 }
 
@@ -456,7 +456,7 @@ func (_this *Context) ValidateContentsMarkerID(contents []byte) {
 
 func (_this *Context) ValidateContentsMarkerIDString(contents string) {
 	if len(contents) == 0 {
-		panic(fmt.Errorf("Marker ID string cannot be empty"))
+		panic(fmt.Errorf("marker ID string cannot be empty"))
 	}
 
 	runeCount := 0
@@ -467,7 +467,7 @@ func (_this *Context) ValidateContentsMarkerIDString(contents string) {
 		}
 	}
 	if runeCount > maxMarkerIDRuneCount {
-		panic(fmt.Errorf("Marker ID character length %d is greater than the maximum of %d", runeCount, maxMarkerIDRuneCount))
+		panic(fmt.Errorf("marker ID character length %d is greater than the maximum of %d", runeCount, maxMarkerIDRuneCount))
 	}
 }
 

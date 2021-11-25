@@ -40,7 +40,7 @@ func demonstrateCTEMarshal() {
 		fmt.Printf("Error marshaling: %v", err)
 		return
 	}
-	fmt.Printf("Marshaled CTE: %v\n", string(buffer.Bytes()))
+	fmt.Printf("Marshaled CTE: %v\n", buffer.String())
 	// Prints: Marshaled CTE: c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}
 }
 

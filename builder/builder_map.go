@@ -34,7 +34,7 @@ import (
 
 const (
 	kvBuilderKey   = 0
-	kvBuilderValue = 1
+	kvBuilderValue = 1 //nolint
 )
 
 type mapBuilder struct {

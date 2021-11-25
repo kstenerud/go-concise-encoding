@@ -81,24 +81,6 @@ func needsEscapesMarkupBytes(str []byte) bool {
 	return false
 }
 
-func containsEscapes(str string) bool {
-	for _, b := range str {
-		if b == '\\' {
-			return true
-		}
-	}
-	return false
-}
-
-func containsEscapesBytes(str []byte) bool {
-	for _, b := range str {
-		if b == '\\' {
-			return true
-		}
-	}
-	return false
-}
-
 // ============================================================================
 
 func escapeCharQuoted(ch rune) []byte {
@@ -128,23 +110,6 @@ func unicodeEscape(ch rune) []byte {
 	hex := fmt.Sprintf("%x", ch)
 	return []byte(fmt.Sprintf("\\%d%s", len(hex), hex))
 }
-
-func escapeCharStringArray(ch rune) []byte {
-	switch ch {
-	case '|':
-		return []byte(`\|`)
-	case '\\':
-		return []byte(`\\`)
-	case '\t':
-		return []byte(`\t`)
-	case '\r':
-		return []byte(`\r`)
-	case '\n':
-		return []byte(`\n`)
-	}
-	return unicodeEscape(ch)
-}
-
 func escapeCharMarkup(ch rune) []byte {
 	switch ch {
 	case '*':

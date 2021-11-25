@@ -151,7 +151,7 @@ func iterateUID(context *Context, v reflect.Value) {
 func iterateMedia(context *Context, v reflect.Value) {
 	vCopy := v.Interface().(types.Media)
 	if len(vCopy.MediaType) == 0 {
-		panic(fmt.Errorf("Media cannot have an empty media type"))
+		panic(fmt.Errorf("media cannot have an empty media type"))
 	}
 
 	context.EventReceiver.OnArrayBegin(events.ArrayTypeMedia)
@@ -389,7 +389,7 @@ func iterateArrayUint8(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayUint16(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*2, elementCount*2)
+	data := make([]uint8, elementCount*2)
 	for i := 0; i < elementCount; i++ {
 		elem := v.Index(i).Uint()
 		data[i*2] = uint8(elem)
@@ -400,7 +400,7 @@ func iterateSliceOrArrayUint16(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayUint32(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*4, elementCount*4)
+	data := make([]uint8, elementCount*4)
 	for i := 0; i < elementCount; i++ {
 		elem := v.Index(i).Uint()
 		data[i*4] = uint8(elem)
@@ -413,7 +413,7 @@ func iterateSliceOrArrayUint32(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayUint64(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*8, elementCount*8)
+	data := make([]uint8, elementCount*8)
 	for i := 0; i < elementCount; i++ {
 		elem := v.Index(i).Uint()
 		data[i*8] = uint8(elem)
@@ -438,7 +438,7 @@ func iterateSliceOrArrayUint(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayInt8(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount, elementCount)
+	data := make([]uint8, elementCount)
 	for i := 0; i < elementCount; i++ {
 		data[i] = uint8(v.Index(i).Int())
 	}
@@ -447,7 +447,7 @@ func iterateSliceOrArrayInt8(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayInt16(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*2, elementCount*2)
+	data := make([]uint8, elementCount*2)
 	for i := 0; i < elementCount; i++ {
 		elem := v.Index(i).Int()
 		data[i*2] = uint8(elem)
@@ -458,7 +458,7 @@ func iterateSliceOrArrayInt16(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayInt32(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*4, elementCount*4)
+	data := make([]uint8, elementCount*4)
 	for i := 0; i < elementCount; i++ {
 		elem := v.Index(i).Int()
 		data[i*4] = uint8(elem)
@@ -471,7 +471,7 @@ func iterateSliceOrArrayInt32(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayInt64(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*8, elementCount*8)
+	data := make([]uint8, elementCount*8)
 	for i := 0; i < elementCount; i++ {
 		elem := v.Index(i).Int()
 		data[i*8] = uint8(elem)
@@ -496,7 +496,7 @@ func iterateSliceOrArrayInt(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayFloat32(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*4, elementCount*4)
+	data := make([]uint8, elementCount*4)
 	for i := 0; i < elementCount; i++ {
 		elem := math.Float32bits(float32(v.Index(i).Float()))
 		data[i*4] = uint8(elem)
@@ -509,7 +509,7 @@ func iterateSliceOrArrayFloat32(context *Context, v reflect.Value) {
 
 func iterateSliceOrArrayFloat64(context *Context, v reflect.Value) {
 	elementCount := v.Len()
-	data := make([]uint8, elementCount*8, elementCount*8)
+	data := make([]uint8, elementCount*8)
 	for i := 0; i < elementCount; i++ {
 		elem := math.Float64bits(v.Index(i).Float())
 		data[i*8] = uint8(elem)
@@ -527,7 +527,7 @@ func iterateSliceOrArrayFloat64(context *Context, v reflect.Value) {
 func iterateSliceOrArrayBool(context *Context, v reflect.Value) {
 	elementCount := v.Len()
 	byteCount := common.ElementCountToByteCount(1, uint64(elementCount))
-	data := make([]uint8, byteCount, byteCount)
+	data := make([]uint8, byteCount)
 	if elementCount == 0 {
 		context.EventReceiver.OnArray(events.ArrayTypeBit, uint64(elementCount), data)
 		return

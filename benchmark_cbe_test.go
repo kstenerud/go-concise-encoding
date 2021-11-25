@@ -125,7 +125,7 @@ func BenchmarkJSONMarshal(b *testing.B) {
 func benchmarkUnmarshal(b *testing.B, marshaler ce.Marshaler, unmarshaler ce.Unmarshaler) {
 	b.Helper()
 	expectedObjs := generate()
-	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
+	actualObjs := make([]*A, len(expectedObjs))
 	documents := make([][]byte, 0, len(expectedObjs))
 	for _, obj := range expectedObjs {
 		bytes, err := marshaler.MarshalToDocument(obj)
@@ -230,7 +230,7 @@ func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
 func BenchmarkJSONUnmarshal(b *testing.B) {
 	b.Helper()
 	expectedObjs := generate()
-	actualObjs := make([]*A, len(expectedObjs), len(expectedObjs))
+	actualObjs := make([]*A, len(expectedObjs))
 	documents := make([][]byte, 0, len(expectedObjs))
 	for _, obj := range expectedObjs {
 		bytes, err := json.Marshal(obj)

@@ -36,8 +36,7 @@ type ignoreBuilder struct{}
 
 var globalIgnoreBuilder = &ignoreBuilder{}
 
-func generateIgnoreBuilder(ctx *Context) Builder { return globalIgnoreBuilder }
-func (_this *ignoreBuilder) String() string      { return reflect.TypeOf(_this).String() }
+func (_this *ignoreBuilder) String() string { return reflect.TypeOf(_this).String() }
 
 func (_this *ignoreBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
@@ -166,10 +165,6 @@ func (_this *ignoreXTimesBuilder) String() string {
 	return fmt.Sprintf("%v(%v)", reflect.TypeOf(_this), _this.maxIndex)
 }
 
-func (_this *ignoreXTimesBuilder) reset() {
-	_this.index = 0
-}
-
 func (_this *ignoreXTimesBuilder) tryFinish(ctx *Context) {
 	_this.index++
 	if _this.index >= _this.maxIndex {
@@ -289,8 +284,7 @@ type ignoreContainerBuilder struct{}
 
 var globalIgnoreContainerBuilder = &ignoreContainerBuilder{}
 
-func generateIgnoreContainerBuilder(ctx *Context) Builder { return globalIgnoreContainerBuilder }
-func (_this *ignoreContainerBuilder) String() string      { return reflect.TypeOf(_this).String() }
+func (_this *ignoreContainerBuilder) String() string { return reflect.TypeOf(_this).String() }
 
 func (_this *ignoreContainerBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	return dst

@@ -637,7 +637,3 @@ func (_this *Writer) WriteCommentEnd(isMultiline bool) {
 	}
 	// Don't write the single-line comment terminator because the decorator will do it.
 }
-
-func (_this *Writer) unexpectedError(err error, encoding interface{}) {
-	panic(fmt.Errorf("unexpected error [%v] while encoding %v", err, encoding))
-}

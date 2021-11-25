@@ -67,7 +67,7 @@ func (h *TEventPrinter) OnComment(isMultiline bool, contents []byte) {
 	h.Next.OnComment(isMultiline, contents)
 }
 func (h *TEventPrinter) OnNull() {
-	h.Print(N())
+	h.Print(NULL())
 	h.Next.OnNull()
 }
 func (h *TEventPrinter) OnBool(value bool) {

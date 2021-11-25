@@ -227,7 +227,8 @@ func (_this *CETestRunner) runCBEToNothing() {
 	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
 		}, func() string {
 			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
 		})
@@ -239,7 +240,8 @@ func (_this *CETestRunner) runCTEToNothing() {
 	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
 		}, func() string {
 			return fmt.Sprintf("CTE %v", desc(_this.Cte))
 		})
@@ -316,7 +318,8 @@ func (_this *CETestRunner) runCBEToEvent() {
 	receiver := rules.NewRules(eventStore, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
 		}, func() string {
 			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
 		})
@@ -338,7 +341,8 @@ func (_this *CETestRunner) runCBEToCBE() {
 	receiver := rules.NewRules(encoder, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
 		}, func() string {
 			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
 		})
@@ -360,7 +364,8 @@ func (_this *CETestRunner) runCBEToCTE() {
 	receiver := rules.NewRules(encoder, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cbe.NewDecoder(nil).Decode(bytes.NewBuffer(_this.Cbe), recv)
 		}, func() string {
 			return fmt.Sprintf("CBE %v", desc(_this.Cbe))
 		})
@@ -380,7 +385,8 @@ func (_this *CETestRunner) runCTEToEvent() {
 	receiver := rules.NewRules(eventStore, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
 		}, func() string {
 			return fmt.Sprintf("CTE %v", desc(_this.Cte))
 		})
@@ -402,7 +408,8 @@ func (_this *CETestRunner) runCTEToCBE() {
 	receiver := rules.NewRules(encoder, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
 		}, func() string {
 			return fmt.Sprintf("CTE %v", desc(_this.Cte))
 		})
@@ -424,7 +431,8 @@ func (_this *CETestRunner) runCTEToCTE() {
 	receiver := rules.NewRules(encoder, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this.Cte)), recv)
 		}, func() string {
 			return fmt.Sprintf("CTE %v", desc(_this.Cte))
 		})

@@ -103,7 +103,7 @@ func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
-func N() *test.TEvent                        { return test.N() }
+func NULL() *test.TEvent                     { return test.NULL() }
 func PAD(v int) *test.TEvent                 { return test.PAD(v) }
 func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
 func B(v bool) *test.TEvent                  { return test.B(v) }
@@ -189,13 +189,6 @@ func cbeEncode(encodeOpts *options.CBEEncoderOptions, evts ...*test.TEvent) []by
 	return buffer.Bytes()
 }
 
-func cbeEncodeDecode(encodeOpts *options.CBEEncoderOptions,
-	decodeOpts *options.CEDecoderOptions,
-	expected ...*test.TEvent) (events []*test.TEvent, err error) {
-
-	return cbeDecode(decodeOpts, cbeEncode(encodeOpts, expected...))
-}
-
 func cteDecode(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
 	var receiver events.DataEventReceiver
 	ter := test.NewTEventStore(events.NewNullEventReceiver())
@@ -216,15 +209,6 @@ func cteEncode(encodeOpts *options.CTEEncoderOptions, events ...*test.TEvent) []
 	encoder.PrepareToEncode(buffer)
 	test.InvokeEvents(r, events...)
 	return buffer.Bytes()
-}
-
-func cteEncodeDecode(encodeOpts *options.CTEEncoderOptions,
-	decodeOpts *options.CEDecoderOptions,
-	events ...*test.TEvent) (decodedEvents []*test.TEvent, err error) {
-
-	events = test.FilterEventsForCTE(events)
-	document := cteEncode(encodeOpts, events...)
-	return cteDecode(decodeOpts, document)
 }
 
 // ============================================================================
@@ -306,77 +290,6 @@ func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
 	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
 }
 
-func assertDecodeCBECTE(t *testing.T,
-	cteEncodeOpts *options.CTEEncoderOptions,
-	cteDecodeOpts *options.CEDecoderOptions,
-	cbeEncodeOpts *options.CBEEncoderOptions,
-	cbeDecodeOpts *options.CEDecoderOptions,
-	cteExpectedDocument string,
-	cbeExpectedDocument []byte,
-	expectedEvents ...*test.TEvent) {
-
-	var receiver events.DataEventReceiver
-	var actualEvents *test.TEventStore
-
-	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
-	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
-	textRules := ce.NewRules(textEncoder, nil)
-	var cteActualDocument *bytes.Buffer
-
-	binDecoder := ce.NewCBEDecoder(cbeDecodeOpts)
-	binEncoder := ce.NewCBEEncoder(cbeEncodeOpts)
-	var cbeActualDocument *bytes.Buffer
-
-	cbeActualDocument = &bytes.Buffer{}
-	binEncoder.PrepareToEncode(cbeActualDocument)
-	receiver = binEncoder
-	receiver = ce.NewRules(receiver, nil)
-	if DebugPrintEvents {
-		fmt.Printf("--- First Decode ---\n")
-		receiver = test.NewStdoutTEventPrinter(receiver)
-	}
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), receiver); err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(cbeExpectedDocument, cbeActualDocument.Bytes()) {
-		t.Errorf("Expected %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
-	}
-
-	actualEvents = test.NewTEventStore(events.NewNullEventReceiver())
-	receiver = actualEvents
-	receiver = ce.NewRules(receiver, nil)
-	if DebugPrintEvents {
-		fmt.Printf("--- Second Decode ---\n")
-		receiver = test.NewStdoutTEventPrinter(receiver)
-	}
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), receiver); err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
-		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
-	}
-
-	cteActualDocument = &bytes.Buffer{}
-	textEncoder.PrepareToEncode(cteActualDocument)
-	if err := binDecoder.DecodeDocument(cbeExpectedDocument, textRules); err != nil {
-		t.Error(err)
-		return
-	}
-	// Don't check the text document for equality since it won't be exactly the same.
-
-	actualEvents = test.NewTEventStore(events.NewNullEventReceiver())
-	binEncoder.PrepareToEncode(cbeActualDocument)
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
-		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
-	}
-}
-
 func assertDecodeEncode(t *testing.T,
 	cteEncodeOpts *options.CTEEncoderOptions,
 	cteDecodeOpts *options.CEDecoderOptions,
@@ -396,9 +309,8 @@ func assertDecodeEncode(t *testing.T,
 	binDecoder := ce.NewCBEDecoder(cbeDecodeOpts)
 	binEncoder := ce.NewCBEEncoder(cbeEncodeOpts)
 	binRules := ce.NewRules(binEncoder, nil)
-	var cbeActualDocument *bytes.Buffer
 
-	cbeActualDocument = &bytes.Buffer{}
+	cbeActualDocument := &bytes.Buffer{}
 	binEncoder.PrepareToEncode(cbeActualDocument)
 	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), binRules); err != nil {
 		t.Error(err)
@@ -423,8 +335,8 @@ func assertDecodeEncode(t *testing.T,
 		t.Error(err)
 		return
 	}
-	if !equivalence.IsEquivalent(cteExpectedDocument, string(cteActualDocument.Bytes())) {
-		t.Errorf("Expected [%v] but got [%v]", cteExpectedDocument, string(cteActualDocument.Bytes()))
+	if !equivalence.IsEquivalent(cteExpectedDocument, cteActualDocument.String()) {
+		t.Errorf("Expected [%v] but got [%v]", cteExpectedDocument, cteActualDocument.String())
 	}
 
 	actualEvents = test.NewTEventStore(events.NewNullEventReceiver())
@@ -471,38 +383,6 @@ func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
 
 	if !equivalence.IsEquivalent(expected, actual) {
 		t.Errorf("CBE Unmarshal: Expected %v but got %v", describe.D(expected), describe.D(actual))
-	}
-}
-
-func assertCTEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	marshalOptions := options.DefaultCTEMarshalerOptions()
-	unmarshalOptions := options.DefaultCEUnmarshalerOptions()
-	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
-	marshalOptions.Iterator.RecursionSupport = true
-	assertCTEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
-}
-
-func assertCTEMarshalUnmarshalWithOptions(t *testing.T,
-	marshalOptions *options.CTEMarshalerOptions,
-	unmarshalOptions *options.CEUnmarshalerOptions,
-	expected interface{}) {
-
-	buffer := &bytes.Buffer{}
-	err := ce.MarshalCTE(expected, buffer, marshalOptions)
-	if err != nil {
-		t.Errorf("CTE Marshal error: %v", err)
-		return
-	}
-
-	var actual interface{}
-	actual, err = ce.UnmarshalCTE(buffer, expected, unmarshalOptions)
-	if err != nil {
-		t.Errorf("CTE Unmarshal error: %v\n- While unmarshaling %v", err, string(buffer.Bytes()))
-		return
-	}
-
-	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("CTE Unmarshal: Expected %v but got %v\n- While unmarshaling %v", describe.D(expected), describe.D(actual), string(buffer.Bytes()))
 	}
 }
 

@@ -179,7 +179,7 @@ func (_this *uint16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 	switch arrayType {
 	case events.ArrayTypeUint16:
 		elemCount := len(value) / 2
-		slice := make([]uint16, elemCount, elemCount)
+		slice := make([]uint16, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = uint16(value[i*2]) |
 				(uint16(value[i*2+1]) << 8)
@@ -252,7 +252,7 @@ func (_this *uint32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 	switch arrayType {
 	case events.ArrayTypeUint32:
 		elemCount := len(value) / 4
-		slice := make([]uint32, elemCount, elemCount)
+		slice := make([]uint32, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = uint32(value[i*4]) |
 				(uint32(value[i*4+1]) << 8) |
@@ -331,7 +331,7 @@ func (_this *uint64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 	switch arrayType {
 	case events.ArrayTypeUint64:
 		elemCount := len(value) / 8
-		slice := make([]uint64, elemCount, elemCount)
+		slice := make([]uint64, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = uint64(value[i*8]) |
 				(uint64(value[i*8+1]) << 8) |
@@ -407,7 +407,7 @@ func (_this *int8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 	switch arrayType {
 	case events.ArrayTypeInt8:
 		elemCount := len(value)
-		slice := make([]int8, elemCount, elemCount)
+		slice := make([]int8, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = int8(value[i])
 		}
@@ -477,7 +477,7 @@ func (_this *int16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 	switch arrayType {
 	case events.ArrayTypeInt16:
 		elemCount := len(value) / 2
-		slice := make([]int16, elemCount, elemCount)
+		slice := make([]int16, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = int16(value[i*2]) |
 				(int16(value[i*2+1]) << 8)
@@ -550,7 +550,7 @@ func (_this *int32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 	switch arrayType {
 	case events.ArrayTypeInt32:
 		elemCount := len(value) / 4
-		slice := make([]int32, elemCount, elemCount)
+		slice := make([]int32, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = int32(value[i*4]) |
 				(int32(value[i*4+1]) << 8) |
@@ -629,7 +629,7 @@ func (_this *int64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 	switch arrayType {
 	case events.ArrayTypeInt64:
 		elemCount := len(value) / 8
-		slice := make([]int64, elemCount, elemCount)
+		slice := make([]int64, elemCount)
 		for i := 0; i < elemCount; i++ {
 			slice[i] = int64(value[i*8]) |
 				(int64(value[i*8+1]) << 8) |
@@ -708,7 +708,7 @@ func (_this *float32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.
 	switch arrayType {
 	case events.ArrayTypeFloat32:
 		elemCount := len(value) / 4
-		slice := make([]float32, elemCount, elemCount)
+		slice := make([]float32, elemCount)
 		for i := 0; i < elemCount; i++ {
 			elemValue := uint32(value[i*4]) |
 				(uint32(value[i*4+1]) << 8) |
@@ -788,7 +788,7 @@ func (_this *float64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.
 	switch arrayType {
 	case events.ArrayTypeFloat64:
 		elemCount := len(value) / 8
-		slice := make([]float64, elemCount, elemCount)
+		slice := make([]float64, elemCount)
 		for i := 0; i < elemCount; i++ {
 			elemValue := uint64(value[i*8]) |
 				(uint64(value[i*8+1]) << 8) |

@@ -471,7 +471,7 @@ func TestCTEMarkupComment(t *testing.T) {
 }
 
 func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, N(), ED())
+	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, NULL(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nnan", BD(), EvV, NAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\nsnan", BD(), EvV, SNAN(), ED())
 	assertDecodeEncode(t, nil, nil, "c0\ninf", BD(), EvV, DF(compact_float.Infinity()), ED())
@@ -532,7 +532,6 @@ func TestCTEMarkerReference2(t *testing.T) {
 }
 
 func TestCTEComment(t *testing.T) {
-	defer test.PassThroughPanics(true)()
 	// TODO: Better comment formatting
 	assertDecodeEncode(t, nil, nil, `c0
 {
@@ -614,7 +613,7 @@ func TestCTEComplexComment(t *testing.T) {
 		return
 	}
 
-	actual := string(encoded.Bytes())
+	actual := encoded.String()
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
@@ -944,7 +943,7 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 		return
 	}
 
-	actual := string(encoded.Bytes())
+	actual := encoded.String()
 	if actual != expected {
 		t.Errorf("Expected %v but got %v", expected, actual)
 	}
@@ -960,7 +959,7 @@ func TestMapValueComment(t *testing.T) {
 
 func TestEmptyDocument(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
-null`, BD(), EvV, N(), ED())
+null`, BD(), EvV, NULL(), ED())
 }
 
 func TestNestedComment(t *testing.T) {
@@ -1027,7 +1026,7 @@ func testDecodeCasePermutations(t *testing.T, name string, events ...*test.TEven
 }
 
 func TestMixedCase(t *testing.T) {
-	testDecodeCasePermutations(t, "null", N())
+	testDecodeCasePermutations(t, "null", NULL())
 	testDecodeCasePermutations(t, "nan", NAN())
 	testDecodeCasePermutations(t, "snan", SNAN())
 	testDecodeCasePermutations(t, "inf", DF(compact_float.Infinity()))
@@ -1128,7 +1127,7 @@ func TestNode(t *testing.T) {
         4
         5
     )
-)`, BD(), EvV, NODE(), N(),
+)`, BD(), EvV, NODE(), NULL(),
 		PI(1),
 		NODE(), PI(2), E(),
 		NODE(), PI(3),

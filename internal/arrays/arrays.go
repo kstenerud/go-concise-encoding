@@ -26,7 +26,7 @@ import (
 
 func bytesToInt8Slice(data []byte) []int8 {
 	length := len(data)
-	result := make([]int8, length, length)
+	result := make([]int8, length)
 	for i, v := range data {
 		result[i] = int8(v)
 	}
@@ -35,7 +35,7 @@ func bytesToInt8Slice(data []byte) []int8 {
 
 func bytesToUint16Slice(data []byte) []uint16 {
 	length := len(data) / 2
-	result := make([]uint16, length, length)
+	result := make([]uint16, length)
 	for i := 0; i < length; i++ {
 		result[i] = uint16(data[i*2]) |
 			uint16(data[i*2+1])<<8
@@ -45,7 +45,7 @@ func bytesToUint16Slice(data []byte) []uint16 {
 
 func bytesToInt16Slice(data []byte) []int16 {
 	length := len(data) / 2
-	result := make([]int16, length, length)
+	result := make([]int16, length)
 	for i := 0; i < length; i++ {
 		result[i] = int16(data[i*2]) |
 			int16(data[i*2+1])<<8
@@ -55,7 +55,7 @@ func bytesToInt16Slice(data []byte) []int16 {
 
 func bytesToUint32Slice(data []byte) []uint32 {
 	length := len(data) / 4
-	result := make([]uint32, length, length)
+	result := make([]uint32, length)
 	for i := 0; i < length; i++ {
 		result[i] = uint32(data[i*4]) |
 			uint32(data[i*4+1])<<8 |
@@ -67,7 +67,7 @@ func bytesToUint32Slice(data []byte) []uint32 {
 
 func bytesToInt32Slice(data []byte) []int32 {
 	length := len(data) / 4
-	result := make([]int32, length, length)
+	result := make([]int32, length)
 	for i := 0; i < length; i++ {
 		result[i] = int32(data[i*4]) |
 			int32(data[i*4+1])<<8 |
@@ -79,7 +79,7 @@ func bytesToInt32Slice(data []byte) []int32 {
 
 func bytesToFloat32Slice(data []byte) []float32 {
 	length := len(data) / 4
-	result := make([]float32, length, length)
+	result := make([]float32, length)
 	for i := 0; i < length; i++ {
 		result[i] = math.Float32frombits(uint32(data[i*4]) |
 			uint32(data[i*4+1])<<8 |
@@ -91,7 +91,7 @@ func bytesToFloat32Slice(data []byte) []float32 {
 
 func bytesToUint64Slice(data []byte) []uint64 {
 	length := len(data) / 8
-	result := make([]uint64, length, length)
+	result := make([]uint64, length)
 	for i := 0; i < length; i++ {
 		result[i] = uint64(data[i*8]) |
 			uint64(data[i*8+1])<<8 |
@@ -107,7 +107,7 @@ func bytesToUint64Slice(data []byte) []uint64 {
 
 func bytesToInt64Slice(data []byte) []int64 {
 	length := len(data) / 8
-	result := make([]int64, length, length)
+	result := make([]int64, length)
 	for i := 0; i < length; i++ {
 		result[i] = int64(data[i*8]) |
 			int64(data[i*8+1])<<8 |
@@ -123,7 +123,7 @@ func bytesToInt64Slice(data []byte) []int64 {
 
 func bytesToFloat64Slice(data []byte) []float64 {
 	length := len(data) / 8
-	result := make([]float64, length, length)
+	result := make([]float64, length)
 	for i := 0; i < length; i++ {
 		result[i] = math.Float64frombits(uint64(data[i*8]) |
 			uint64(data[i*8+1])<<8 |
@@ -139,7 +139,7 @@ func bytesToFloat64Slice(data []byte) []float64 {
 
 func int8SliceToBytes(data []int8) []byte {
 	length := len(data)
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i] = byte(v)
 	}
@@ -148,7 +148,7 @@ func int8SliceToBytes(data []int8) []byte {
 
 func uint16SliceToBytes(data []uint16) []byte {
 	length := len(data) * 2
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i*2] = byte(v)
 		result[i*2+1] = byte(v >> 8)
@@ -158,7 +158,7 @@ func uint16SliceToBytes(data []uint16) []byte {
 
 func int16SliceToBytes(data []int16) []byte {
 	length := len(data) * 2
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i*2] = byte(v)
 		result[i*2+1] = byte(v >> 8)
@@ -168,7 +168,7 @@ func int16SliceToBytes(data []int16) []byte {
 
 func uint32SliceToBytes(data []uint32) []byte {
 	length := len(data) * 4
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i*4] = byte(v)
 		result[i*4+1] = byte(v >> 8)
@@ -180,7 +180,7 @@ func uint32SliceToBytes(data []uint32) []byte {
 
 func int32SliceToBytes(data []int32) []byte {
 	length := len(data) * 4
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i*4] = byte(v)
 		result[i*4+1] = byte(v >> 8)
@@ -192,7 +192,7 @@ func int32SliceToBytes(data []int32) []byte {
 
 func float32SliceToBytes(data []float32) []byte {
 	length := len(data) * 4
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		f := math.Float32bits(v)
 		result[i*4] = byte(f)
@@ -205,7 +205,7 @@ func float32SliceToBytes(data []float32) []byte {
 
 func uint64SliceToBytes(data []uint64) []byte {
 	length := len(data) * 8
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i*8] = byte(v)
 		result[i*8+1] = byte(v >> 8)
@@ -221,7 +221,7 @@ func uint64SliceToBytes(data []uint64) []byte {
 
 func int64SliceToBytes(data []int64) []byte {
 	length := len(data) * 8
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		result[i*8] = byte(v)
 		result[i*8+1] = byte(v >> 8)
@@ -237,7 +237,7 @@ func int64SliceToBytes(data []int64) []byte {
 
 func float64SliceToBytes(data []float64) []byte {
 	length := len(data) * 8
-	result := make([]byte, length, length)
+	result := make([]byte, length)
 	for i, v := range data {
 		f := math.Float64bits(v)
 		result[i*8] = byte(f)

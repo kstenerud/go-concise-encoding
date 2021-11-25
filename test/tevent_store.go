@@ -62,7 +62,7 @@ func (h *TEventStore) OnComment(isMultiline bool, contents []byte) {
 	h.receiver.OnComment(isMultiline, contents)
 }
 func (h *TEventStore) OnNull() {
-	h.add(N())
+	h.add(NULL())
 	h.receiver.OnNull()
 }
 func (h *TEventStore) OnBool(value bool) {

@@ -137,7 +137,7 @@ func (_this *RemoteReferenceRule) OnArray(ctx *Context, arrayType events.ArrayTy
 		ctx.UnstackRule()
 		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, dataType)
 	default:
-		panic(fmt.Errorf("Remote reference cannot be type %v", arrayType))
+		panic(fmt.Errorf("remote reference cannot be type %v", arrayType))
 	}
 }
 func (_this *RemoteReferenceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {

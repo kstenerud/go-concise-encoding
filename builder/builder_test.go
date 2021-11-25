@@ -153,17 +153,17 @@ func TestBuilderBasicTypes(t *testing.T) {
 	assertBuild(t, *pBigIntP, BI(pBigIntP))
 	assertBuild(t, pBigIntN, BI(pBigIntN))
 	assertBuild(t, *pBigIntN, BI(pBigIntN))
-	assertBuild(t, (*big.Int)(nil), N())
+	assertBuild(t, (*big.Int)(nil), NULL())
 	assertBuild(t, float32(negZero), F(negZero))
 	assertBuild(t, float32(-1.25), F(-1.25))
 	assertBuild(t, float64(-9.5e50), F(-9.5e50))
 	assertBuild(t, pBigFloat, BF(pBigFloat))
 	assertBuild(t, *pBigFloat, BF(pBigFloat))
-	assertBuild(t, (*big.Float)(nil), N())
+	assertBuild(t, (*big.Float)(nil), NULL())
 	assertBuild(t, dfloat, DF(dfloat))
 	assertBuild(t, pBigDFloat, BDF(pBigDFloat))
 	assertBuild(t, *pBigDFloat, BDF(pBigDFloat))
-	assertBuild(t, (*apd.Decimal)(nil), N())
+	assertBuild(t, (*apd.Decimal)(nil), NULL())
 	assertBuild(t, common.SignalingNan, SNAN())
 	assertBuild(t, common.QuietNan, NAN())
 	assertBuild(t, gTimeNow, GT(gTimeNow))
@@ -173,7 +173,7 @@ func TestBuilderBasicTypes(t *testing.T) {
 	assertBuild(t, "test", S("test"))
 	assertBuild(t, pURL, RID("http://x.com"))
 	assertBuild(t, *pURL, RID("http://x.com"))
-	assertBuild(t, (*url.URL)(nil), N())
+	assertBuild(t, (*url.URL)(nil), NULL())
 	assertBuild(t, interface{}(1234), I(1234))
 	assertBuild(t, pNode, NODE(), S("test"), S("a"), E())
 	assertBuild(t, *pNode, NODE(), S("test"), S("a"), E())
@@ -221,7 +221,7 @@ func TestBuilderConvertToBDFFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, N())
+	assertBuildPanics(t, *v, NULL())
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
@@ -274,7 +274,7 @@ func TestBuilderConvertToBFFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, N())
+	assertBuildPanics(t, *v, NULL())
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, S("1"))
 	assertBuildPanics(t, *v, AU8([]byte{1}))
@@ -332,7 +332,7 @@ func TestBuilderConvertToBIFail(t *testing.T) {
 	assertBuildPanics(t, v, M())
 	assertBuildPanics(t, v, E())
 
-	assertBuildPanics(t, *v, N())
+	assertBuildPanics(t, *v, NULL())
 	assertBuildPanics(t, *v, F(1.1))
 	assertBuildPanics(t, *v, B(true))
 	assertBuildPanics(t, *v, BF(NewBigFloat("1.1")))
@@ -376,7 +376,7 @@ func TestBuilderConvertToDecimalFloat(t *testing.T) {
 
 func TestBuilderDecimalFloatFail(t *testing.T) {
 	v := NewDFloat("1")
-	assertBuildPanics(t, v, N())
+	assertBuildPanics(t, v, NULL())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, S("1"))
 	assertBuildPanics(t, v, AU8([]byte{1}))
@@ -411,7 +411,7 @@ func TestBuilderConvertToFloat(t *testing.T) {
 func TestBuilderConvertToFloatFail(t *testing.T) {
 	// TODO: How to define required conversion accuracy?
 	v := 1.0
-	assertBuildPanics(t, v, N())
+	assertBuildPanics(t, v, NULL())
 	assertBuildPanics(t, v, B(true))
 	assertBuildPanics(t, v, PI(0xffffffffffffffff))
 	assertBuildPanics(t, v, I(-0x7fffffffffffffff))
@@ -441,7 +441,7 @@ func TestBuilderConvertToInt(t *testing.T) {
 }
 
 func TestBuilderConvertToIntFail(t *testing.T) {
-	assertBuildPanics(t, int(1), N())
+	assertBuildPanics(t, int(1), NULL())
 	assertBuildPanics(t, int(1), B(true))
 	assertBuildPanics(t, int(1), PI(0x8000000000000000))
 	assertBuildPanics(t, int(1), F(1.1))
@@ -505,7 +505,7 @@ func TestBuilderConvertToUint(t *testing.T) {
 }
 
 func TestBuilderConvertToUintFail(t *testing.T) {
-	assertBuildPanics(t, uint(1), N())
+	assertBuildPanics(t, uint(1), NULL())
 	assertBuildPanics(t, uint(1), B(true))
 	assertBuildPanics(t, uint(1), NI(1))
 	assertBuildPanics(t, uint(1), F(1.1))
@@ -552,7 +552,7 @@ func TestBuilderConvertToUintFail(t *testing.T) {
 }
 
 func TestBuilderString(t *testing.T) {
-	assertBuild(t, "", N())
+	assertBuild(t, "", NULL())
 	assertBuild(t, "test", S("test"))
 }
 
@@ -647,7 +647,7 @@ func TestBuilderGoTime(t *testing.T) {
 func TestBuilderGoTimeFail(t *testing.T) {
 	gtime := time.Time{}
 	ctime := test.NewTimeLL(1, 1, 1, 1, 100, 0)
-	assertBuildPanics(t, gtime, N())
+	assertBuildPanics(t, gtime, NULL())
 	assertBuildPanics(t, gtime, B(true))
 	assertBuildPanics(t, gtime, PI(1))
 	assertBuildPanics(t, gtime, NI(1))
@@ -715,18 +715,18 @@ func TestBuilderSlice(t *testing.T) {
 	assertBuild(t, []int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
 		BI(NewBigInt("4")), BF(NewBigFloat("5")), DF(NewDFloat("6")),
 		BDF(NewBDF("7")), E())
-	assertBuild(t, []*int{nil}, L(), N(), E())
+	assertBuild(t, []*int{nil}, L(), NULL(), E())
 	assertBuild(t, []string{"test"}, L(), S("test"), E())
-	assertBuild(t, [][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
+	assertBuild(t, [][]byte{{1}}, L(), AU8([]byte{1}), E())
 	assertBuild(t, []*url.URL{NewRID("http://example.com")}, L(), RID("http://example.com"), E())
 	assertBuild(t, []time.Time{gtime}, L(), GT(gtime), E())
 	assertBuild(t, []compact_time.Time{ctime}, L(), CT(ctime), E())
-	assertBuild(t, [][]int{[]int{1}}, L(), L(), I(1), E(), E())
-	assertBuild(t, []map[int]int{map[int]int{1: 2}}, L(), M(), I(1), I(2), E(), E())
+	assertBuild(t, [][]int{{1}}, L(), L(), I(1), E(), E())
+	assertBuild(t, []map[int]int{{1: 2}}, L(), M(), I(1), I(2), E(), E())
 }
 
 func TestBuilderSliceFail(t *testing.T) {
-	assertBuildPanics(t, []int{}, N())
+	assertBuildPanics(t, []int{}, NULL())
 	assertBuildPanics(t, []int{}, M())
 	assertBuildPanics(t, [][]int{}, L(), M())
 }
@@ -743,18 +743,18 @@ func TestBuilderArray(t *testing.T) {
 	assertBuild(t, [7]int8{-1, 2, 3, 4, 5, 6, 7}, L(), I(-1), PI(2), F(3),
 		BI(NewBigInt("4")), BF(NewBigFloat("5")), DF(NewDFloat("6")),
 		BDF(NewBDF("7")), E())
-	assertBuild(t, [1]*int{nil}, L(), N(), E())
+	assertBuild(t, [1]*int{nil}, L(), NULL(), E())
 	assertBuild(t, [1]string{"test"}, L(), S("test"), E())
-	assertBuild(t, [1][]byte{[]byte{1}}, L(), AU8([]byte{1}), E())
+	assertBuild(t, [1][]byte{{1}}, L(), AU8([]byte{1}), E())
 	assertBuild(t, [1]*url.URL{NewRID("http://example.com")}, L(), RID("http://example.com"), E())
 	assertBuild(t, [1]time.Time{gtime}, L(), GT(gtime), E())
 	assertBuild(t, [1]compact_time.Time{ctime}, L(), CT(ctime), E())
-	assertBuild(t, [1][]int{[]int{1}}, L(), L(), I(1), E(), E())
-	assertBuild(t, [1]map[int]int{map[int]int{1: 2}}, L(), M(), I(1), I(2), E(), E())
+	assertBuild(t, [1][]int{{1}}, L(), L(), I(1), E(), E())
+	assertBuild(t, [1]map[int]int{{1: 2}}, L(), M(), I(1), I(2), E(), E())
 }
 
 func TestBuilderArrayFail(t *testing.T) {
-	assertBuildPanics(t, [1]int{}, N())
+	assertBuildPanics(t, [1]int{}, NULL())
 	assertBuildPanics(t, [1]int{}, M())
 	assertBuildPanics(t, [1][]int{}, L(), M())
 }
@@ -764,7 +764,7 @@ func TestBuilderByteArray(t *testing.T) {
 }
 
 func TestBuilderByteArrayFail(t *testing.T) {
-	assertBuildPanics(t, [1]byte{}, N())
+	assertBuildPanics(t, [1]byte{}, NULL())
 	assertBuildPanics(t, [1]byte{}, B(false))
 	assertBuildPanics(t, [1]byte{}, PI(1))
 	assertBuildPanics(t, [1]byte{}, NI(1))
@@ -813,7 +813,7 @@ func TestBuilderMap(t *testing.T) {
 		17: []byte{1},
 	},
 		M(),
-		I(1), N(),
+		I(1), NULL(),
 		I(2), B(true),
 		I(3), PI(1),
 		I(4), NI(1),
@@ -914,7 +914,7 @@ func TestBuilderInterfaceMap(t *testing.T) {
 		17: []byte{1},
 	},
 		M(),
-		I(1), N(),
+		I(1), NULL(),
 		I(2), B(true),
 		I(3), PI(1),
 		I(4), NI(1),
@@ -937,7 +937,7 @@ func TestBuilderInterfaceMap(t *testing.T) {
 // // Older tests
 
 type BuilderTestStruct struct {
-	internal string
+	internal string //nolint
 	ABool    bool
 	AString  string
 	AnInt    int
@@ -974,7 +974,7 @@ func TestBuilderStructIgnored(t *testing.T) {
 func TestBuilderListStruct(t *testing.T) {
 	assertBuild(t,
 		[]BuilderTestStruct{
-			BuilderTestStruct{
+			{
 				AString: "test",
 				AnInt:   1,
 				ABool:   true,
@@ -996,7 +996,7 @@ func TestBuilderListStruct(t *testing.T) {
 func TestBuilderMapStruct(t *testing.T) {
 	assertBuild(t,
 		map[string]BuilderTestStruct{
-			"struct": BuilderTestStruct{
+			"struct": {
 				AString: "test",
 				AnInt:   1,
 				ABool:   true,
@@ -1039,7 +1039,7 @@ func TestBuilderMultipleComplexBuilds(t *testing.T) {
 }
 
 type BuilderPtrTestStruct struct {
-	internal    string
+	internal    string //nolint
 	ABool       *bool
 	AnInt       *int
 	AnInt8      *int8
@@ -1072,8 +1072,7 @@ func TestBuilderPtr(t *testing.T) {
 	aFloat32 := float32(11.5)
 	aFloat64 := float64(12.5)
 	aString := "test"
-	var anInterface interface{}
-	anInterface = 100
+	var anInterface interface{} = 100
 	v := BuilderPtrTestStruct{
 		ABool:       &aBool,
 		AnInt:       &anInt,
@@ -1113,7 +1112,7 @@ func TestBuilderPtr(t *testing.T) {
 }
 
 type BuilderSliceTestStruct struct {
-	internal    []string
+	internal    []string //nolint
 	ABool       []bool
 	AnInt       []int
 	AnInt8      []int8
@@ -1133,10 +1132,10 @@ type BuilderSliceTestStruct struct {
 
 func TestBuilderSliceOfStructs(t *testing.T) {
 	v := []BuilderSliceTestStruct{
-		BuilderSliceTestStruct{
+		{
 			AnInt: []int{1},
 		},
-		BuilderSliceTestStruct{
+		{
 			AnInt: []int{1},
 		},
 	}
@@ -1159,7 +1158,7 @@ type SimpleTestStruct struct {
 
 func TestBuilderListOfStruct(t *testing.T) {
 	v := []*SimpleTestStruct{
-		&SimpleTestStruct{
+		{
 			IValue: 5,
 		},
 	}
@@ -1186,11 +1185,11 @@ func TestBuilderNullContainers(t *testing.T) {
 	assertBuild(t, v,
 		M(),
 		S("Bytes"),
-		N(),
+		NULL(),
 		S("Slice"),
-		N(),
+		NULL(),
 		S("Map"),
-		N(),
+		NULL(),
 		E())
 }
 
@@ -1214,7 +1213,7 @@ func TestBuilderNullPURLContainer(t *testing.T) {
 	assertBuild(t, v,
 		M(),
 		S("URL"),
-		N(),
+		NULL(),
 		E())
 }
 
@@ -1228,19 +1227,19 @@ func TestBuilderMarkerSlice(t *testing.T) {
 	assertBuild(t, []int{100, 100}, L(), MARK("1"), PI(100), REF("1"), E())
 	assertBuild(t, []int{100, 100}, L(), REF("1"), MARK("1"), PI(100), E())
 	assertBuild(t, []string{"abcdef", "abcdef"}, L(), MARK("1"), S("abcdef"), REF("1"), E())
-	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), MARK("1"), L(), PI(100), E(), REF("1"), E())
-	assertBuild(t, [][]int{[]int{100}, []int{100}}, L(), REF("1"), MARK("1"), L(), PI(100), E(), E())
-	assertBuild(t, [][]int{[]int{100, 100}, []int{100, 100}}, L(), REF("1"), MARK("1"), L(), PI(100), PI(100), E(), E())
+	assertBuild(t, [][]int{{100}, {100}}, L(), MARK("1"), L(), PI(100), E(), REF("1"), E())
+	assertBuild(t, [][]int{{100}, {100}}, L(), REF("1"), MARK("1"), L(), PI(100), E(), E())
+	assertBuild(t, [][]int{{100, 100}, {100, 100}}, L(), REF("1"), MARK("1"), L(), PI(100), PI(100), E(), E())
 
 	// Reference in different container
-	assertBuild(t, [][]int{[]int{100, 100}, []int{100}}, L(), L(), REF("1"), REF("1"), E(), L(), MARK("1"), PI(100), E(), E())
+	assertBuild(t, [][]int{{100, 100}, {100}}, L(), L(), REF("1"), REF("1"), E(), L(), MARK("1"), PI(100), E(), E())
 
 	// Referenced containers
-	assertBuild(t, [][]int{[]int{}, []int{}}, L(), MARK("1"), L(), E(), REF("1"), E())
-	assertBuild(t, [][]int{[]int{}, []int{}}, L(), REF("1"), MARK("1"), L(), E(), E())
-	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+	assertBuild(t, [][]int{{}, {}}, L(), MARK("1"), L(), E(), REF("1"), E())
+	assertBuild(t, [][]int{{}, {}}, L(), REF("1"), MARK("1"), L(), E(), E())
+	assertBuild(t, []map[int]int{{100: 100}, {100: 100}},
 		L(), REF("1"), MARK("1"), M(), PI(100), PI(100), E(), E())
-	assertBuild(t, []map[int]int{map[int]int{100: 100}, map[int]int{100: 100}},
+	assertBuild(t, []map[int]int{{100: 100}, {100: 100}},
 		L(), MARK("1"), M(), PI(100), PI(100), E(), REF("1"), E())
 
 	// Interface

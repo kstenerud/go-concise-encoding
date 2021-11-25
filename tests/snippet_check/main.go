@@ -51,7 +51,7 @@ func main() {
 		path := args[i]
 		fi, err := os.Stat(path)
 		if err != nil {
-			fmt.Errorf("Could not open %v: %v\n", path, err)
+			fmt.Printf("Could not open %v: %v\n", path, err)
 			return
 		}
 		if fi.Mode().IsRegular() {

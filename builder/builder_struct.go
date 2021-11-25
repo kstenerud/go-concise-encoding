@@ -219,9 +219,8 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 			if ctx.Options.CaseInsensitiveStructFieldNames {
 				common.ASCIIBytesToLower(value)
 			}
-			name := string(value)
 
-			if generatorDesc, ok := _this.generatorDescs[name]; ok {
+			if generatorDesc, ok := _this.generatorDescs[string(value)]; ok {
 				_this.nextBuilderGenerator = generatorDesc.builderGenerator
 				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
 			} else {
