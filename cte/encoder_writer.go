@@ -145,7 +145,7 @@ func (_this *Writer) WriteFloat(value float64) {
 	}
 
 	_this.ExpandBuffer(floatStringMaxByteCount)
-	used := strconv.AppendFloat(_this.Buffer[:0], value, 'g', -1, 64)
+	used := strconv.AppendFloat(_this.Buffer[:0], value, 'x', -1, 64)
 	_this.FlushBuffer(len(used))
 }
 

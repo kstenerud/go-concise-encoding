@@ -30,8 +30,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
@@ -80,47 +82,121 @@ func ParseEvents(eventStrings []string) []*test.TEvent {
 
 type parseEvent func(eventStr string) *test.TEvent
 
-func parseNumericEvent(eventStr string) *test.TEvent {
-	iparseNumeric := func(data []byte) (test.TEventType, interface{}) {
-		str := string(data)
-		if strings.TrimSpace(str) == "-0" {
-			return test.TEventNInt, uint64(0)
-		}
-
-		if value, err := strconv.ParseInt(str, 0, 64); err == nil {
-			return test.TEventInt, value
-		}
-
-		bi := &big.Int{}
-		if _, success := bi.SetString(str, 0); success {
-			return test.TEventBigInt, bi
-		}
-
-		if value, err := compact_float.DFloatFromString(str); err == nil {
-			return test.TEventDecimalFloat, value
-		}
-
-		if strings.Contains(str, "0x") {
-			digitCount := len(strings.Split(str, "x")[1])
-			bf := &big.Float{}
-			bf.SetPrec(uint(digitCount) * 4)
-			if _, success := bf.SetString(str); success {
-				f64, accuracy := bf.Float64()
-				if accuracy == big.Exact {
-					return test.TEventFloat, f64
-				} else {
-					return test.TEventBigFloat, bf
-				}
-			} else {
-				panic(fmt.Errorf("could not convert %v to float", str))
-			}
-		}
-
-		return test.TEventBigDecimalFloat, test.NewBDF(strings.Replace(str, ",", ".", 1))
+func tryParseIntegerEvent(data []byte) *test.TEvent {
+	str := string(data)
+	if strings.TrimSpace(str) == "-0" {
+		return test.NewTEvent(test.TEventNInt, uint64(0), nil)
 	}
 
-	eventType, v := iparseNumeric(get1ParamArg(eventStr, false))
-	return test.NewTEvent(eventType, v, nil)
+	if v, err := strconv.ParseInt(str, 0, 64); err == nil {
+		return test.NewTEvent(test.TEventInt, v, nil)
+	}
+
+	bi := &big.Int{}
+	if _, success := bi.SetString(str, 0); success {
+		return test.NewTEvent(test.TEventBigInt, bi, nil)
+	}
+
+	return nil
+}
+
+func tryParseDecimalFloatEvent(data []byte) *test.TEvent {
+	str := strings.Replace(string(data), ",", ".", 1)
+	if v, err := compact_float.DFloatFromString(str); err == nil {
+		return test.NewTEvent(test.TEventDecimalFloat, v, nil)
+	}
+
+	if v, _, err := apd.NewFromString(str); err == nil {
+		return test.NewTEvent(test.TEventBigDecimalFloat, v, nil)
+	}
+
+	return nil
+}
+
+func tryParseBinaryFloatEvent(data []byte) *test.TEvent {
+	str := strings.Replace(string(data), ",", ".", 1)
+
+	if strings.Contains(str, "0x") {
+		digitCount := len(strings.Split(str, "x")[1])
+		bf := &big.Float{}
+		bf.SetPrec(uint(digitCount) * 4)
+		if _, success := bf.SetString(str); success {
+			f64, accuracy := bf.Float64()
+			if accuracy == big.Exact {
+				return test.NewTEvent(test.TEventFloat, f64, nil)
+			} else {
+				return test.NewTEvent(test.TEventBigFloat, bf, nil)
+			}
+		} else {
+			return nil
+		}
+	}
+
+	digitCount := len(str)
+	bf := &big.Float{}
+	bf.SetPrec(uint(common.DecimalDigitsToBits(digitCount)))
+	if _, success := bf.SetString(str); success {
+		f64, accuracy := bf.Float64()
+		if accuracy == big.Exact {
+			return test.NewTEvent(test.TEventFloat, f64, nil)
+		} else {
+			return test.NewTEvent(test.TEventBigFloat, bf, nil)
+		}
+	}
+
+	return nil
+}
+
+func parseNumericEvent(eventStr string) *test.TEvent {
+	param := get1ParamArg(eventStr, false)
+
+	if event := tryParseIntegerEvent(param); event != nil {
+		return event
+	}
+
+	if strings.Contains(string(param), "0x") {
+		if event := tryParseBinaryFloatEvent(param); event != nil {
+			return event
+		} else {
+			panic(fmt.Errorf("could not convert %v to binary float", string(param)))
+		}
+	}
+
+	if event := tryParseDecimalFloatEvent(param); event != nil {
+		return event
+	} else {
+		panic(fmt.Errorf("could not convert %v to decimal float", string(param)))
+	}
+}
+
+func parseIntegerEvent(eventStr string) *test.TEvent {
+	param := get1ParamArg(eventStr, false)
+
+	if event := tryParseIntegerEvent(param); event != nil {
+		return event
+	} else {
+		panic(fmt.Errorf("could not convert %v to integer", string(param)))
+	}
+}
+
+func parseBinaryFloatEvent(eventStr string) *test.TEvent {
+	param := get1ParamArg(eventStr, false)
+
+	if event := tryParseBinaryFloatEvent(param); event != nil {
+		return event
+	} else {
+		panic(fmt.Errorf("could not convert %v to binary float", string(param)))
+	}
+}
+
+func parseDecimalFloatEvent(eventStr string) *test.TEvent {
+	param := get1ParamArg(eventStr, false)
+
+	if event := tryParseDecimalFloatEvent(param); event != nil {
+		return event
+	} else {
+		panic(fmt.Errorf("could not convert %v to decimal float", string(param)))
+	}
 }
 
 type generalEventParser struct {
@@ -266,10 +342,6 @@ func parseFloat(bytes []byte) interface{} {
 		panic(fmt.Errorf("error parsing float [%v]: %w", string(bytes), err))
 	}
 	return value
-}
-
-func parseDecimalFloat(bytes []byte) interface{} {
-	return test.NewDFloat(string(bytes))
 }
 
 var uuidMatcher = regexp.MustCompile(`^([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})`)
@@ -571,9 +643,9 @@ func init() {
 	eventParsersByName["null"] = newParser(false, test.TEventNull).ParseEvent
 	eventParsersByName["b"] = newParser(false, test.TEventBool, parseBool).ParseEvent
 	eventParsersByName["n"] = parseNumericEvent
-	eventParsersByName["i"] = newParser(false, test.TEventInt, parseInt).ParseEvent
-	eventParsersByName["bf"] = newParser(false, test.TEventFloat, parseFloat).ParseEvent
-	eventParsersByName["df"] = newParser(false, test.TEventDecimalFloat, parseDecimalFloat).ParseEvent
+	eventParsersByName["i"] = parseIntegerEvent
+	eventParsersByName["bf"] = parseBinaryFloatEvent
+	eventParsersByName["df"] = parseDecimalFloatEvent
 	eventParsersByName["uid"] = newParser(false, test.TEventUID, parseUUID).ParseEvent
 	eventParsersByName["t"] = newParser(false, test.TEventCompactTime, parseTemporal).ParseEvent
 	eventParsersByName["s"] = newParser(false, test.TEventString, parseString).ParseEvent
