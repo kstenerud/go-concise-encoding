@@ -99,14 +99,6 @@ func TestCTEArrayFloat16(t *testing.T) {
 	assertDecodeFails(t, "c0 |f16 -0x1.fffffffffffffffffffffffff|")
 }
 
-func TestCTEArrayUID(t *testing.T) {
-	// TODO: TestCTEArrayUID
-}
-
-func TestCTEArrayBool(t *testing.T) {
-	// TODO: TestCTEArrayBool
-}
-
 func TestCTEChunked(t *testing.T) {
 	assertChunkedStringlike := func(encoded string, startEvent *test.TEvent) {
 		assertEncode(t, nil, encoded, BD(), EvV, startEvent, AC(8, false), AD([]byte("abcdefgh")), ED())

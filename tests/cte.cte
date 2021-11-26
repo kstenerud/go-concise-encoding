@@ -1196,5 +1196,22 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
 
         // ====================================================================
 
+        {
+            "name" = "UID array"
+            "decodeMustSucceed" = [
+                {"source"="c0 |u|"                                "events"=["v 0" "au"]}
+                {"source"="c0 |u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
+                 "events"=["v 0" "au 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |u -ffffffff-ffff-ffff-ffff-ffffffffffff|" // UIDs cannot be negative
+                "c0 |u ffffffff-ffff-ffff-ffff-fffffffffff|"   // Incomplete
+                "c0 |u ffffffffffffffffffffffffffffffff|"      // Malformed
+                "c0 |u fffffff-fffff-ffff-ffff-fffffffffff|"   // Malformed
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
