@@ -94,7 +94,7 @@ func (h *TEventStore) OnBigInt(value *big.Int) {
 	h.receiver.OnBigInt(value)
 }
 func (h *TEventStore) OnFloat(value float64) {
-	h.add(F(value))
+	h.add(BF(value))
 	h.receiver.OnFloat(value)
 }
 func (h *TEventStore) OnBigFloat(value *big.Float) {
@@ -118,7 +118,7 @@ func (h *TEventStore) OnTime(value time.Time) {
 	h.receiver.OnTime(value)
 }
 func (h *TEventStore) OnCompactTime(value compact_time.Time) {
-	h.add(CT(value))
+	h.add(T(value))
 	h.receiver.OnCompactTime(value)
 }
 func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
@@ -130,9 +130,9 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeRemoteRef:
 		h.add(RREF(string(value)))
 	case events.ArrayTypeCustomBinary:
-		h.add(CUB(CloneBytes(value)))
+		h.add(CB(CloneBytes(value)))
 	case events.ArrayTypeCustomText:
-		h.add(CUT(string(value)))
+		h.add(CT(string(value)))
 	case events.ArrayTypeBit:
 		h.add(AB(elementCount, CloneBytes(value)))
 	case events.ArrayTypeInt8:
@@ -158,7 +158,7 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeFloat64:
 		h.add(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUID:
-		h.add(AUU(arrays.BytesToUUIDSlice(CloneBytes(value))))
+		h.add(AU(arrays.BytesToUUIDSlice(CloneBytes(value))))
 	default:
 		panic(fmt.Errorf("TODO: TEventStore.OnArray: Typed array support for %v", arrayType))
 	}
@@ -173,7 +173,7 @@ func (h *TEventStore) OnStringlikeArray(arrayType events.ArrayType, value string
 	case events.ArrayTypeRemoteRef:
 		h.add(RREF(value))
 	case events.ArrayTypeCustomText:
-		h.add(CUT(value))
+		h.add(CT(value))
 	default:
 		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
 	}
@@ -216,7 +216,7 @@ func (h *TEventStore) OnArrayBegin(arrayType events.ArrayType) {
 	case events.ArrayTypeFloat64:
 		h.add(AF64B())
 	case events.ArrayTypeUID:
-		h.add(AUUB())
+		h.add(AUB())
 	case events.ArrayTypeMedia:
 		h.add(MB())
 	default:
@@ -241,7 +241,7 @@ func (h *TEventStore) OnMap() {
 	h.receiver.OnMap()
 }
 func (h *TEventStore) OnMarkup(id []byte) {
-	h.add(MUP(string(id)))
+	h.add(MU(string(id)))
 	h.receiver.OnMarkup(id)
 }
 func (h *TEventStore) OnEnd() {

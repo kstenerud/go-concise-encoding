@@ -30,7 +30,7 @@ A test suite is a CTE document containing a series of unit tests to run.
 ```cte
 c0
 {
-    "tests" = [
+    "ceTests" = [
 
         // First unit test
         {
@@ -44,7 +44,7 @@ c0
             "cbe"    = |u8x 83 00 79 81 61 7d 7b|
             "events" = [
                             "bd" "v 0" "m"
-                                "s a" "tt"
+                                "s a" "b true"
                             "e" "ed"
                        ]
             "from"   = ["t" "b" "e"]
@@ -84,75 +84,65 @@ When used for output verification, the document will have leading and trailing w
 
 If present, this field contains string-encoded elements that are a kind of shorthand for the internal events that this library generates. They're specific to this library but in general map pretty closely to the CBE data types and payloads. They're used for catching unlikely cases where both the CTE and CBE codecs cause the same erroneous condition and would therefore agree with each other and wrongfully pass the test.
 
-| Code  | Param 1       | Param 2 | Meaning                        | Example                                    |
-| ----- | ------------- | ------- | ------------------------------ | ------------------------------------------ |
-| bd    |               |         | Begin Document                 | `bd`                                       |
-| ed    |               |         | End Document                   | `ed`                                       |
-| v     | int           |         | Version                        | `v 1`                                      |
-| tt    |               |         | True                           | `tt`                                       |
-| ff    |               |         | False                          | `ff`                                       |
-| n     | numeric       |         | Number (any type)              | `n -5.3`                                   |
-| i     | int           |         | Integer                        | `i -5`                                     |
-| f     | float         |         | Float                          | `f 1.5`                                    |
-| bf    | float         |         | Big Float                      | `bf 1.5e1000`                              |
-| df    | decimal float |         | Decimal Float                  | `df 1.5`                                   |
-| bdf   | decimal float |         | Big Decimal Float              | `bdf 1.5e1000`                             |
-| n     |               |         | Null                           | `n`                                        |
-| com   | bool          | string  | Comment                        | `com false this is a single line comment`  |
-| b     | bool          |         | Boolean                        | `b false`                                  |
-| pi    | uint          |         | Positive Integer               | `pi 100`                                   |
-| ni    | uint          |         | Negative Integer               | `ni 100`                                   |
-| bi    | uint          |         | Big Integer                    | `bi 99999999999999999999`                  |
-| nan   |               |         | NaN (quiet)                    | `nan`                                      |
-| snan  |               |         | NaN (signaling)                | `snan`                                     |
-| uid   | uuid          |         | Universal ID                   | `uid f1ce4567-e89b-12d3-a456-426655440000` |
-| ct    | time          |         | Time                           | `ct 2010-07-15/13:28:15.241588124/E/Oslo`  |
-| s     | string        |         | String                         | `s this is a string`                       |
-| rid   | url           |         | Resource ID                    | `rid https://www.example.com`              |
-| rref  | url           |         | Remote Reference               | `rref https://www.example.com`             |
-| cb    | bytes         |         | Custom Binary                  | `cb 00 9f 1a bb 54`                        |
-| ct    | string        |         | Custom Text                    | `ct cplx(5.0, 2)`                          |
-| ab    | bits          |         | Array (binary)                 | `ab 1101001011101011100`                   |
-| ai8   | int8s         |         | Array (int8)                   | `ai8 -4 59 100 -36`                        |
-| ai16  | int16s        |         | Array (int16)                  | `ai16 1000 2000 -3000`                     |
-| ai32  | int32s        |         | Array (int32)                  | `ai32 999999 -3455234`                     |
-| ai64  | int64s        |         | Array (int64)                  | `ai64 99999999999999 34534634730456`       |
-| au8   | uint8s        |         | Array (uint8)                  | `au8 100 54 12 0 6`                        |
-| au16  | uint16s       |         | Array (uint16)                 | `au16 1000 4000 1234`                      |
-| au32  | uint32s       |         | Array (uint32)                 | `au32 56872348 34693939 223444`            |
-| au64  | uint64s       |         | Array (uint64)                 | `au64 87993485978345987 34958345729835`    |
-| af16  | float16s      |         | Array (float16)                | `af16 1.5 2.923`                           |
-| af32  | float32s      |         | Array (float32)                | `af32 6.41239 4.42e9`                      |
-| af64  | float64s      |         | Array (float64)                | `af64 4.2944923e-40 2.4e70`                |
-| au    | uuids         |         | Array (uid)                    | `auu f1ce4567-e89b-12d3-a456-426655440000 a1424567-e544-1223-a4f6-4266c5440a00` |
-| sb    |               |         | Begin string                   | `sb`                                       |
-| rb    |               |         | Begin resource ID              | `rb`                                       |
-| rrb   |               |         | Begin remote ref               | `rrb`                                      |
-| cbb   |               |         | Begin custom binary            | `cbb`                                      |
-| ctb   |               |         | Begin custom text              | `ctb`                                      |
-| abb   |               |         | Begin array (bit)              | `abb`                                      |
-| ai8b  |               |         | Begin array (int8)             | `ai8b`                                     |
-| ai16b |               |         | Begin array (int16)            | `ai16b`                                    |
-| ai32b |               |         | Begin array (int32)            | `ai32b`                                    |
-| ai64b |               |         | Begin array (int64)            | `ai64b`                                    |
-| au8b  |               |         | Begin array (uint8)            | `au8b`                                     |
-| au16b |               |         | Begin array (uint16)           | `au16b`                                    |
-| au32b |               |         | Begin array (uint32)           | `au32b`                                    |
-| au64b |               |         | Begin array (uint64)           | `au64b`                                    |
-| aub   |               |         | Begin array (uid)              | `auub`                                     |
-| mb    |               |         | Begin Media                    | `mb`                                       |
-| ac    | uint          | bool    | Begin array chunk              | `ac 10`                                    |
-| ad    | bytes         |         | Array data (as binary)         | `ad f8 ee 41 9a 13`                        |
-| at    | string        |         | Array data (as text)           | `at some text data`                        |
-| l     |               |         | Begin list                     | `l`                                        |
-| m     |               |         | Begin map                      | `m`                                        |
-| mup   | string        |         | Begin markup                   | `mup some-name`                            |
-| node  |               |         | Begin node                     | `node`                                     |
-| edge  |               |         | Begin edge                     | `edge`                                     |
-| e     |               |         | End container                  | `e`                                        |
-| mark  | string        |         | Marker                         | `mark some-id`                             |
-| ref   | string        |         | Reference                      | `ref some-id`                              |
-| const | string        |         | Constant                       | `const some-name`                          |
+| Code  | Param 1       | Param 2 | Meaning                         | Example                                    |
+| ----- | ------------- | ------- | ------------------------------- | ------------------------------------------ |
+| v     | int           |         | Version                         | `v 1`                                      |
+| pad   | int           |         | Padding (byte count)            | `pad 3`                                    |
+| com   | bool          | string  | Comment (multiline?, contents)  | `com false this is a single line comment`  |
+| null  |               |         | Null                            | `null`                                     |
+| b     | bool          |         | Boolean                         | `b false`                                  |
+| n     | int or float  |         | Number: auto-detect             | i: `n 1`, df: `n -5.3`, bf: `n 0x1.f`      |
+| i     | int           |         | Integer                         | `i -5`                                     |
+| bf    | binary float  |         | Binary Float                    | `bf 1.5`                                   |
+| df    | decimal float |         | Decimal Float                   | `df 1.5`                                   |
+| uid   | uuid          |         | Universal ID                    | `uid f1ce4567-e89b-12d3-a456-426655440000` |
+| t     | time          |         | Time                            | `t 2010-07-15/13:28:15.241588124/E/Oslo`   |
+| s     | string        |         | String                          | `s this is a string`                       |
+| rid   | url           |         | Resource ID                     | `rid https://www.example.com`              |
+| cb    | bytes         |         | Custom Binary                   | `cb 00 9f 1a bb 54`                        |
+| ct    | string        |         | Custom Text                     | `ct cplx(5.0, 2)`                          |
+| ab    | bits          |         | Array: binary                   | `ab 1101001011101011100`                   |
+| ai8   | int8 elems    |         | Array: int8                     | `ai8 -4 59 100 -36`                        |
+| ai16  | int16 elems   |         | Array: int16                    | `ai16 1000 2000 -3000`                     |
+| ai32  | int32 elems   |         | Array: int32                    | `ai32 999999 -3455234`                     |
+| ai64  | int64 elems   |         | Array: int64                    | `ai64 99999999999999 34534634730456`       |
+| au8   | uint8 elems   |         | Array: uint8                    | `au8 100 54 12 0 6`                        |
+| au16  | uint16 elems  |         | Array: uint16                   | `au16 1000 4000 1234`                      |
+| au32  | uint32 elems  |         | Array: uint32                   | `au32 56872348 34693939 223444`            |
+| au64  | uint64 elems  |         | Array: uint64                   | `au64 87993485978345987 34958345729835`    |
+| af16  | float16 elems |         | Array: float16                  | `af16 1.5 2.923`                           |
+| af32  | float32 elems |         | Array: float32                  | `af32 6.41239 4.42e9`                      |
+| af64  | float64 elems |         | Array: float64                  | `af64 4.2944923e-40 2.4e70`                |
+| au    | uuid elems    |         | Array: uid                      | `au f1ce4567-e89b-12d3-a456-426655440000 a1424567-e544-1223-a4f6-4266c5440a00` |
+| sb    |               |         | Begin string                    | `sb`                                       |
+| rb    |               |         | Begin resource ID               | `rb`                                       |
+| rrb   |               |         | Begin remote ref                | `rrb`                                      |
+| cbb   |               |         | Begin custom binary             | `cbb`                                      |
+| ctb   |               |         | Begin custom text               | `ctb`                                      |
+| abb   |               |         | Begin array: bit                | `abb`                                      |
+| ai8b  |               |         | Begin array: int8               | `ai8b`                                     |
+| ai16b |               |         | Begin array: int16              | `ai16b`                                    |
+| ai32b |               |         | Begin array: int32              | `ai32b`                                    |
+| ai64b |               |         | Begin array: int64              | `ai64b`                                    |
+| au8b  |               |         | Begin array: uint8              | `au8b`                                     |
+| au16b |               |         | Begin array: uint16             | `au16b`                                    |
+| au32b |               |         | Begin array: uint32             | `au32b`                                    |
+| au64b |               |         | Begin array: uint64             | `au64b`                                    |
+| aub   |               |         | Begin array: uid                | `aub`                                      |
+| mb    |               |         | Begin Media                     | `mb`                                       |
+| ac    | uint          | bool    | Array chunk (elem count, more?) | `ac 10 false`                              |
+| ad    | bytes         |         | Array data as binary            | `ad f8 ee 41 9a 13`                        |
+| at    | string        |         | Array data as text              | `at some text data`                        |
+| l     |               |         | Begin list                      | `l`                                        |
+| m     |               |         | Begin map                       | `m`                                        |
+| mu    | string        |         | Begin markup                    | `mup some-name`                            |
+| node  |               |         | Begin node                      | `node`                                     |
+| edge  |               |         | Begin edge                      | `edge`                                     |
+| e     |               |         | End container                   | `e`                                        |
+| mark  | string        |         | Marker                          | `mark some-id`                             |
+| ref   | string        |         | Reference                       | `ref some-id`                              |
+| rref  | url           |         | Remote Reference                | `rref https://www.example.com`             |
+| const | string        |         | Constant                        | `const some-name`                          |
 
 **Notes**:
  * Integer and float values can be written using other bases (base 2, 8, 10, 16 for decimal, 10 and 16 for float).

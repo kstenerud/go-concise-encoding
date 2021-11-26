@@ -1,41 +1,115 @@
 c0
-// Basic CTE test cases
+// CTE test cases
+
+/* Event types & arguments (see TESTING.md for more info)
+ * ---------------------------------------------------------------------------
+ * v <positive integer>            Version specifier
+ * pad <count>                     Padding
+ * com <is multiline?> <contents>  Comment
+ * null                            Null
+ * b <value>                       Boolean
+ * n <int or float>                Number (auto-detect)
+ * i <value>                       Integer
+ * bf <value>                      Binary float
+ * df <value>                      Decimal float
+ * uid <value>                     UID
+ * t <value>                       Time
+ * s <string contents>             String
+ * rid <string contents>           Resource ID
+ * cb <hex bytes>                  Custom binary
+ * ct <string contents>            Custom text
+ * ab <bit elements>               Bit array
+ * ai8 <int elements>              Int8 array
+ * ai8x <hex elements>             Int8 array
+ * ai16 <int elements>             Int16 array
+ * ai16x <hex elements>            Int16 array
+ * ai32 <int elements>             Int32 array
+ * ai32x <hex elements>            Int32 array
+ * ai64 <int elements>             Int64 array
+ * ai64x <hex elements>            Int64 array
+ * au8 <uint elements>             Uint8 array
+ * au8x <hex elements>             Uint8 array
+ * au16 <uint elements>            Uint16 array
+ * au16x <hex elements>            Uint16 array
+ * au32 <uint elements>            Uint32 array
+ * au32x <hex elements>            Uint32 array
+ * au64 <uint elements>            Uint64 array
+ * au64x <hex elements>            Uint64 array
+ * af16 <float elements>           Float16 array
+ * af32 <float elements>           Float32 array
+ * af64 <float elements>           Float64 array
+ * au <UID elements>               UID array
+ * sb                              Begin string
+ * rb                              Begin resource ID
+ * rrb                             Begin remote reference
+ * cbb                             Begin custom binary
+ * ctb                             Begin custom text
+ * abb                             Begin bit array
+ * ai8b                            Begin int8 array
+ * ai16b                           Begin int16 array
+ * ai32b                           Begin int32 array
+ * ai64b                           Begin int64 array
+ * au8b                            Begin uint8 array
+ * au16b                           Begin uint16 array
+ * au32b                           Begin uint32 array
+ * au64b                           Begin uint64 array
+ * aub                             Begin UID array
+ * mb                              Begin media
+ * ac <element count> <has more?>  Begin array chunk
+ * ad <hex bytes>                  Array data (as bytes)
+ * at <string contents>            Array data (as text)
+ * l                               Begin list
+ * m                               Begin map
+ * mu <identifier>                 Begin markup
+ * node                            Begin node
+ * edge                            Begin edge
+ * e                               End container
+ * mark <identifier>               Begin marker
+ * ref <identifier>                Reference
+ * rref <resource ID contents>     Remote reference
+ * const <identifier>              Constant
+ */
+
 {
     "options" = {
         "failFast" = false  // If true, halt tests on first error
     }
-
-    "ceTests" = [
-
-        // ====================================================================
-
-        {
-            "name" = "something"
-            "cte" = "\.%%%%
-c0 |u8x /* foo */ 1 2 3|
-            %%%%"
-            "events" = ["v 0" "au8b" "com t  foo " "ac 3 f" "ad 1 2 3"]
-            "from"   = ["t"]
-            "to"     = ["e"]
-        }
-
-        // ====================================================================
-
-    ]
 
     // ========================================================================
     // ========================================================================
 
     "cteTests" = [
         {
-            "name" = "Version specifier"
+            "name" = "Template"
+            "encode" = [
+                {"events"=["v 0" "n 1"]  "document"="c0\n1"}
+            ]
             "decodeMustSucceed" = [
-                {"source"="c0 1"           "events"=["v 0" "n 1"]}
-                {"source"="c0\n1"          "events"=["v 0" "n 1"]}
-                {"source"="c0\t1"          "events"=["v 0" "n 1"]}
-                {"source"="c0\r\n1"        "events"=["v 0" "n 1"]}
-                {"source"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
-                {"source"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
+                {"document"="c0 1"       "events"=["v 0" "n 1"]}
+            ]
+            "decodeMustFail" = [
+                "c0{}"  // Missing whitespace
+            ]
+            // Optional fields:
+            "debug" = false  // If true, print out the events as they happen
+            "trace" = false  // If true, print a stack trace when an error occurs
+            "skip" = false   // If true, skip this test
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Version specifier"
+            "encode" = [
+                {"events"=["v 0" "n 1"]  "document"="c0\n1"}
+            ]
+            "decodeMustSucceed" = [
+                {"document"="c0 1"           "events"=["v 0" "n 1"]}
+                {"document"="c0\n1"          "events"=["v 0" "n 1"]}
+                {"document"="c0\t1"          "events"=["v 0" "n 1"]}
+                {"document"="c0\r\n1"        "events"=["v 0" "n 1"]}
+                {"document"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
+                {"document"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
             ]
             "decodeMustFail" = [
                 "c0{}"  // Missing whitespace
@@ -50,10 +124,13 @@ c0 |u8x /* foo */ 1 2 3|
 
         {
             "name" = "Null"
+            "encode" = [
+                {"events"=["v 0" "null"]  "document"="c0\nnull"}
+            ]
             "decodeMustSucceed" = [
-                {"source"="c0 null"  "events"=["v 0" "null"]}
-                {"source"="c0 Null"  "events"=["v 0" "null"]}
-                {"source"="c0 null"  "events"=["v 0" "null"]}
+                {"document"="c0 null"  "events"=["v 0" "null"]}
+                {"document"="c0 Null"  "events"=["v 0" "null"]}
+                {"document"="c0 null"  "events"=["v 0" "null"]}
             ]
             "decodeMustFail" = [
                 "c0 nulled"
@@ -65,13 +142,17 @@ c0 |u8x /* foo */ 1 2 3|
 
         {
             "name" = "Boolean"
+            "encode" = [
+                {"events"=["v 0" "b true"]   "document"="c0\ntrue"}
+                {"events"=["v 0" "b false"]  "document"="c0\nfalse"}
+            ]
             "decodeMustSucceed" = [
-                {"source"="c0 true"   "events"=["v 0" "tt"]}
-                {"source"="c0 True"   "events"=["v 0" "tt"]}
-                {"source"="c0 TRUE"   "events"=["v 0" "tt"]}
-                {"source"="c0 false"  "events"=["v 0" "ff"]}
-                {"source"="c0 False"  "events"=["v 0" "ff"]}
-                {"source"="c0 FALSE"  "events"=["v 0" "ff"]}
+                {"document"="c0 true"   "events"=["v 0" "b true"]}
+                {"document"="c0 True"   "events"=["v 0" "b true"]}
+                {"document"="c0 TRUE"   "events"=["v 0" "b true"]}
+                {"document"="c0 false"  "events"=["v 0" "b false"]}
+                {"document"="c0 False"  "events"=["v 0" "b false"]}
+                {"document"="c0 FALSE"  "events"=["v 0" "b false"]}
             ]
             "decodeMustFail" = [
                 "c0 t"
@@ -88,15 +169,15 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Decimal Integer"
             "decodeMustSucceed" = [
-                {"source"="c0 0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 123"               "events"=["v 0" "n 123"]}
-                {"source"="c0 9412504234235366"  "events"=["v 0" "n 9412504234235366"]}
-                {"source"="c0 -49523"            "events"=["v 0" "n -49523"]}
-                {"source"="c0 10000000000000000000000000000"        "events"=["v 0" "n 10000000000000000000000000000"]}
-                {"source"="c0 -10000000000000000000000000000"       "events"=["v 0" "n -10000000000000000000000000000"]}
-                {"source"="c0 100_00_0_00000000000_00000000_000_0"  "events"=["v 0" "n 10000000000000000000000000000"]}
-                {"source"="c0 -4_9_5__2___3"     "events"=["v 0" "n -49523"]}
+                {"document"="c0 0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 123"               "events"=["v 0" "n 123"]}
+                {"document"="c0 9412504234235366"  "events"=["v 0" "n 9412504234235366"]}
+                {"document"="c0 -49523"            "events"=["v 0" "n -49523"]}
+                {"document"="c0 10000000000000000000000000000"        "events"=["v 0" "n 10000000000000000000000000000"]}
+                {"document"="c0 -10000000000000000000000000000"       "events"=["v 0" "n -10000000000000000000000000000"]}
+                {"document"="c0 100_00_0_00000000000_00000000_000_0"  "events"=["v 0" "n 10000000000000000000000000000"]}
+                {"document"="c0 -4_9_5__2___3"     "events"=["v 0" "n -49523"]}
             ]
             "decodeMustFail" = [
                 "c0 1f"  // Non-decimal digit
@@ -113,27 +194,27 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Binary Integer"
             "decodeMustSucceed" = [
-                {"source"="c0 0b0"              "events"=["v 0" "n 0"]}
-                {"source"="c0 -0b0"             "events"=["v 0" "n -0"]}
-                {"source"="c0 0b1"              "events"=["v 0" "n 1"]}
-                {"source"="c0 -0b101"           "events"=["v 0" "n -5"]}
-                {"source"="c0 0b0010100"        "events"=["v 0" "n 20"]}
-                {"source"="c0 -0b1_0_0"         "events"=["v 0" "n -4"]}
-                {"source"="c0 0b0_0_1__010__1"  "events"=["v 0" "n 21"]}
+                {"document"="c0 0b0"              "events"=["v 0" "n 0"]}
+                {"document"="c0 -0b0"             "events"=["v 0" "n -0"]}
+                {"document"="c0 0b1"              "events"=["v 0" "n 1"]}
+                {"document"="c0 -0b101"           "events"=["v 0" "n -5"]}
+                {"document"="c0 0b0010100"        "events"=["v 0" "n 20"]}
+                {"document"="c0 -0b1_0_0"         "events"=["v 0" "n -4"]}
+                {"document"="c0 0b0_0_1__010__1"  "events"=["v 0" "n 21"]}
                 {
-                    "source" = "c0 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    "document" = "c0 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                     "events" = ["v 0" "n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "source" = "c0 -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    "document" = "c0 -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                     "events" = ["v 0" "n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "source" = "c0 0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
+                    "document" = "c0 0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
                     "events" = ["v 0" "n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "source" = "c0 -0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
+                    "document" = "c0 -0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
                     "events" = ["v 0" "n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
             ]
@@ -156,17 +237,17 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Octal Integer"
             "decodeMustSucceed" = [
-                {"source"="c0 0o0"         "events"=["v 0" "n 0"]}
-                {"source"="c0 -0o0"        "events"=["v 0" "n -0"]}
-                {"source"="c0 0o1"         "events"=["v 0" "n 1"]}
-                {"source"="c0 0o7"         "events"=["v 0" "n 7"]}
-                {"source"="c0 -0o51"       "events"=["v 0" "n -0o51"]}
-                {"source"="c0 0o644"       "events"=["v 0" "n 0o644"]}
-                {"source"="c0 -0o777"      "events"=["v 0" "n -0o777"]}
-                {"source"="c0 0o1000000000000000000000000000000000000000000000"  "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
-                {"source"="c0 -0o1000000000000000000000000000000000000000000000"  "events"=["v 0" "n -0o1000000000000000000000000000000000000000000000"]}
-                {"source"="c0 0o1000000_0000000000_00000000000_000000000000_000000"  "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
-                {"source"="c0 0o7__7___7"  "events"=["v 0" "n 0o777"]}
+                {"document"="c0 0o0"         "events"=["v 0" "n 0"]}
+                {"document"="c0 -0o0"        "events"=["v 0" "n -0"]}
+                {"document"="c0 0o1"         "events"=["v 0" "n 1"]}
+                {"document"="c0 0o7"         "events"=["v 0" "n 7"]}
+                {"document"="c0 -0o51"       "events"=["v 0" "n -0o51"]}
+                {"document"="c0 0o644"       "events"=["v 0" "n 0o644"]}
+                {"document"="c0 -0o777"      "events"=["v 0" "n -0o777"]}
+                {"document"="c0 0o1000000000000000000000000000000000000000000000"  "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
+                {"document"="c0 -0o1000000000000000000000000000000000000000000000"  "events"=["v 0" "n -0o1000000000000000000000000000000000000000000000"]}
+                {"document"="c0 0o1000000_0000000000_00000000000_000000000000_000000"  "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
+                {"document"="c0 0o7__7___7"  "events"=["v 0" "n 0o777"]}
             ]
             "decodeMustFail" = [
                 "c0 0o19"  // Non-octal digit
@@ -187,17 +268,17 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Hexadecimal Integer"
             "decodeMustSucceed" = [
-                {"source"="c0 0x0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0x1"                  "events"=["v 0" "n 1"]}
-                {"source"="c0 0xf"                  "events"=["v 0" "n 15"]}
-                {"source"="c0 -0xd4"                "events"=["v 0" "n -0xd4"]}
-                {"source"="c0 0xfedcba9876543210"   "events"=["v 0" "n 0xfedcba9876543210"]}
-                {"source"="c0 -0xFEDCBA9876543210"  "events"=["v 0" "n -0xfedcba9876543210"]}
-                {"source"="c0 0x1000000000000000000000000000000000000000000000"  "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
-                {"source"="c0 -0x1000000000000000000000000000000000000000000000"  "events"=["v 0" "n -0x1000000000000000000000000000000000000000000000"]}
-                {"source"="c0 0x100000000_000000_00000_000__000_0000000000000_0000000"  "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
-                {"source"="c0 0x8_8__5_a_f__d"  "events"=["v 0" "n 0x885afd"]}
+                {"document"="c0 0x0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0x1"                  "events"=["v 0" "n 1"]}
+                {"document"="c0 0xf"                  "events"=["v 0" "n 15"]}
+                {"document"="c0 -0xd4"                "events"=["v 0" "n -0xd4"]}
+                {"document"="c0 0xfedcba9876543210"   "events"=["v 0" "n 0xfedcba9876543210"]}
+                {"document"="c0 -0xFEDCBA9876543210"  "events"=["v 0" "n -0xfedcba9876543210"]}
+                {"document"="c0 0x1000000000000000000000000000000000000000000000"  "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
+                {"document"="c0 -0x1000000000000000000000000000000000000000000000"  "events"=["v 0" "n -0x1000000000000000000000000000000000000000000000"]}
+                {"document"="c0 0x100000000_000000_00000_000__000_0000000000000_0000000"  "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
+                {"document"="c0 0x8_8__5_a_f__d"  "events"=["v 0" "n 0x885afd"]}
             ]
             "decodeMustFail" = [
                 "c0 0x1g"  // Non-hex digit
@@ -218,55 +299,55 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Decimal Float"
             "decodeMustSucceed" = [
-                {"source"="c0 0.0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0.0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0,0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0,0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 1,1"                  "events"=["v 0" "n 1.1"]}
-                {"source"="c0 0.1"                  "events"=["v 0" "n 0.1"]}
-                {"source"="c0 0,1"                  "events"=["v 0" "n 0.1"]}
-                {"source"="c0 4.7234634"            "events"=["v 0" "n 4.7234634"]}
-                {"source"="c0 -9.6534634727167134523472782456223624582452671345134745694657786776"  "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
-                {"source"="c0 -9,6534634727167134523472782456223624582452671345134745694657786776"  "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
+                {"document"="c0 0.0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0.0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0,0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0,0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 1,1"                  "events"=["v 0" "n 1.1"]}
+                {"document"="c0 0.1"                  "events"=["v 0" "n 0.1"]}
+                {"document"="c0 0,1"                  "events"=["v 0" "n 0.1"]}
+                {"document"="c0 4.7234634"            "events"=["v 0" "n 4.7234634"]}
+                {"document"="c0 -9.6534634727167134523472782456223624582452671345134745694657786776"  "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
+                {"document"="c0 -9,6534634727167134523472782456223624582452671345134745694657786776"  "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
 
-                {"source"="c0 inf"                  "events"=["v 0" "n inf"]}
-                {"source"="c0 -inf"                 "events"=["v 0" "n -inf"]}
-                {"source"="c0 nan"                  "events"=["v 0" "n nan"]}
-                {"source"="c0 snan"                 "events"=["v 0" "n snan"]}
+                {"document"="c0 inf"                  "events"=["v 0" "n inf"]}
+                {"document"="c0 -inf"                 "events"=["v 0" "n -inf"]}
+                {"document"="c0 nan"                  "events"=["v 0" "n nan"]}
+                {"document"="c0 snan"                 "events"=["v 0" "n snan"]}
 
-                {"source"="c0 1.53476e80"           "events"=["v 0" "n 1.53476e80"]}
-                {"source"="c0 1.53476e93983456"     "events"=["v 0" "n 1.53476e93983456"]}
-                {"source"="c0 1.53476e+93983456"    "events"=["v 0" "n 1.53476e93983456"]}
-                {"source"="c0 1.53476e-93983456"    "events"=["v 0" "n 1.53476e-93983456"]}
-                {"source"="c0 1.53476E93983456"     "events"=["v 0" "n 1.53476e93983456"]}
-                {"source"="c0 1.53476E+93983456"    "events"=["v 0" "n 1.53476e93983456"]}
-                {"source"="c0 1.53476E-93983456"    "events"=["v 0" "n 1.53476e-93983456"]}
-                {"source"="c0 -1.53476e93983456"    "events"=["v 0" "n -1.53476e93983456"]}
-                {"source"="c0 -1.53476e+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
-                {"source"="c0 -1.53476e-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
-                {"source"="c0 -1.53476E93983456"    "events"=["v 0" "n -1.53476e93983456"]}
-                {"source"="c0 -1.53476E+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
-                {"source"="c0 -1.53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
-                {"source"="c0 -1,53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
+                {"document"="c0 1.53476e80"           "events"=["v 0" "n 1.53476e80"]}
+                {"document"="c0 1.53476e93983456"     "events"=["v 0" "n 1.53476e93983456"]}
+                {"document"="c0 1.53476e+93983456"    "events"=["v 0" "n 1.53476e93983456"]}
+                {"document"="c0 1.53476e-93983456"    "events"=["v 0" "n 1.53476e-93983456"]}
+                {"document"="c0 1.53476E93983456"     "events"=["v 0" "n 1.53476e93983456"]}
+                {"document"="c0 1.53476E+93983456"    "events"=["v 0" "n 1.53476e93983456"]}
+                {"document"="c0 1.53476E-93983456"    "events"=["v 0" "n 1.53476e-93983456"]}
+                {"document"="c0 -1.53476e93983456"    "events"=["v 0" "n -1.53476e93983456"]}
+                {"document"="c0 -1.53476e+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
+                {"document"="c0 -1.53476e-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
+                {"document"="c0 -1.53476E93983456"    "events"=["v 0" "n -1.53476e93983456"]}
+                {"document"="c0 -1.53476E+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
+                {"document"="c0 -1.53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
+                {"document"="c0 -1,53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
 
-                {"source"="c0 1e80"           "events"=["v 0" "n 1e80"]}
-                {"source"="c0 1E80"           "events"=["v 0" "n 1E80"]}
-                {"source"="c0 -1e80"          "events"=["v 0" "n -1e80"]}
-                {"source"="c0 -1E80"          "events"=["v 0" "n -1E80"]}
-                {"source"="c0 1e+80"           "events"=["v 0" "n 1e80"]}
-                {"source"="c0 1E+80"           "events"=["v 0" "n 1E80"]}
-                {"source"="c0 -1e+80"           "events"=["v 0" "n -1e80"]}
-                {"source"="c0 -1E+80"           "events"=["v 0" "n -1E80"]}
-                {"source"="c0 1e-80"           "events"=["v 0" "n 1e-80"]}
-                {"source"="c0 1E-80"           "events"=["v 0" "n 1E-80"]}
-                {"source"="c0 -1e-80"           "events"=["v 0" "n -1e-80"]}
-                {"source"="c0 -1E-80"           "events"=["v 0" "n -1E-80"]}
+                {"document"="c0 1e80"           "events"=["v 0" "n 1e80"]}
+                {"document"="c0 1E80"           "events"=["v 0" "n 1E80"]}
+                {"document"="c0 -1e80"          "events"=["v 0" "n -1e80"]}
+                {"document"="c0 -1E80"          "events"=["v 0" "n -1E80"]}
+                {"document"="c0 1e+80"           "events"=["v 0" "n 1e80"]}
+                {"document"="c0 1E+80"           "events"=["v 0" "n 1E80"]}
+                {"document"="c0 -1e+80"           "events"=["v 0" "n -1e80"]}
+                {"document"="c0 -1E+80"           "events"=["v 0" "n -1E80"]}
+                {"document"="c0 1e-80"           "events"=["v 0" "n 1e-80"]}
+                {"document"="c0 1E-80"           "events"=["v 0" "n 1E-80"]}
+                {"document"="c0 -1e-80"           "events"=["v 0" "n -1e-80"]}
+                {"document"="c0 -1E-80"           "events"=["v 0" "n -1E-80"]}
 
-                {"source"="c0 0.1500000000000000000000000000000000000000000000000001e+10000"   "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e+10000"]}
-                {"source"="c0 0.1500000000000000000000000000000000000000000000000001e-10000"   "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e-10000"]}
-                {"source"="c0 -0.1500000000000000000000000000000000000000000000000001e+10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e+10000"]}
-                {"source"="c0 -0.1500000000000000000000000000000000000000000000000001e-10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
-                {"source"="c0 -0,1500000000000000000000000000000000000000000000000001e-10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
+                {"document"="c0 0.1500000000000000000000000000000000000000000000000001e+10000"   "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e+10000"]}
+                {"document"="c0 0.1500000000000000000000000000000000000000000000000001e-10000"   "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e-10000"]}
+                {"document"="c0 -0.1500000000000000000000000000000000000000000000000001e+10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e+10000"]}
+                {"document"="c0 -0.1500000000000000000000000000000000000000000000000001e-10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
+                {"document"="c0 -0,1500000000000000000000000000000000000000000000000001e-10000"  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
             ]
             "decodeMustFail" = [
                 "c0 1."      // Missing right digit
@@ -297,75 +378,75 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Hexadecimal Float"
             "decodeMustSucceed" = [
-                {"source"="c0 0x0.0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0.0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0x0,0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0,0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0x1,1"                  "events"=["v 0" "n 0x1.1p0"]}
-                {"source"="c0 0x0.1"                  "events"=["v 0" "n 0x0.1p0"]}
-                {"source"="c0 0x0,1"                  "events"=["v 0" "n 0x0.1p0"]}
-                {"source"="c0 0x4.7f3cc34"            "events"=["v 0" "n 0x4.7f3cc34p0"]}
-                {"source"="c0 -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"  "events"=["v 0" "n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
-                {"source"="c0 -0xf,65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"  "events"=["v 0" "n -0xf.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
+                {"document"="c0 0x0.0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0.0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0x0,0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0,0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0x1,1"                  "events"=["v 0" "n 0x1.1p0"]}
+                {"document"="c0 0x0.1"                  "events"=["v 0" "n 0x0.1p0"]}
+                {"document"="c0 0x0,1"                  "events"=["v 0" "n 0x0.1p0"]}
+                {"document"="c0 0x4.7f3cc34"            "events"=["v 0" "n 0x4.7f3cc34p0"]}
+                {"document"="c0 -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"  "events"=["v 0" "n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
+                {"document"="c0 -0xf,65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"  "events"=["v 0" "n -0xf.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
 
-                {"source"="c0 0x0.0p0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0.0p0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0x0.0p+0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0.0p+0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 0x0.0p-0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0.0p-0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 0xf.1p10"                 "events"=["v 0" "n 0xf.1p10"]}
-                {"source"="c0 -0xf.1p10"                "events"=["v 0" "n -0xf.1p10"]}
-                {"source"="c0 0xf.1p+10"                "events"=["v 0" "n 0xf.1p10"]}
-                {"source"="c0 -0xf.1p+10"               "events"=["v 0" "n -0xf.1p10"]}
-                {"source"="c0 0xf.1p-10"                "events"=["v 0" "n 0xf.1p-10"]}
-                {"source"="c0 -0xf.1p-10"               "events"=["v 0" "n -0xf.1p-10"]}
+                {"document"="c0 0x0.0p0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0.0p0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0x0.0p+0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0.0p+0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 0x0.0p-0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0.0p-0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 0xf.1p10"                 "events"=["v 0" "n 0xf.1p10"]}
+                {"document"="c0 -0xf.1p10"                "events"=["v 0" "n -0xf.1p10"]}
+                {"document"="c0 0xf.1p+10"                "events"=["v 0" "n 0xf.1p10"]}
+                {"document"="c0 -0xf.1p+10"               "events"=["v 0" "n -0xf.1p10"]}
+                {"document"="c0 0xf.1p-10"                "events"=["v 0" "n 0xf.1p-10"]}
+                {"document"="c0 -0xf.1p-10"               "events"=["v 0" "n -0xf.1p-10"]}
 
-                {"source"="c0 0x0p0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0p0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0x0p+0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0p+0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 0x0p-0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0x0p-0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 0xfp10"                 "events"=["v 0" "n 0xfp10"]}
-                {"source"="c0 -0xfp10"                "events"=["v 0" "n -0xfp10"]}
-                {"source"="c0 0xfp+10"                "events"=["v 0" "n 0xfp10"]}
-                {"source"="c0 -0xfp+10"               "events"=["v 0" "n -0xfp10"]}
-                {"source"="c0 0xfp-10"                "events"=["v 0" "n 0xfp-10"]}
-                {"source"="c0 -0xfp-10"               "events"=["v 0" "n -0xfp-10"]}
+                {"document"="c0 0x0p0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0p0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0x0p+0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0p+0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 0x0p-0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0x0p-0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 0xfp10"                 "events"=["v 0" "n 0xfp10"]}
+                {"document"="c0 -0xfp10"                "events"=["v 0" "n -0xfp10"]}
+                {"document"="c0 0xfp+10"                "events"=["v 0" "n 0xfp10"]}
+                {"document"="c0 -0xfp+10"               "events"=["v 0" "n -0xfp10"]}
+                {"document"="c0 0xfp-10"                "events"=["v 0" "n 0xfp-10"]}
+                {"document"="c0 -0xfp-10"               "events"=["v 0" "n -0xfp-10"]}
 
-                {"source"="c0 0X0P0"                  "events"=["v 0" "n 0"]}
-                {"source"="c0 -0X0P0"                 "events"=["v 0" "n -0"]}
-                {"source"="c0 0X0P+0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0X0P+0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 0X0P-0"                 "events"=["v 0" "n 0"]}
-                {"source"="c0 -0X0P-0"                "events"=["v 0" "n -0"]}
-                {"source"="c0 0XFP10"                 "events"=["v 0" "n 0xfp10"]}
-                {"source"="c0 -0XFP10"                "events"=["v 0" "n -0xfp10"]}
-                {"source"="c0 0XFP+10"                "events"=["v 0" "n 0xfp10"]}
-                {"source"="c0 -0XFP+10"               "events"=["v 0" "n -0xfp10"]}
-                {"source"="c0 0XFP-10"                "events"=["v 0" "n 0xfp-10"]}
-                {"source"="c0 -0XFP-10"               "events"=["v 0" "n -0xfp-10"]}
+                {"document"="c0 0X0P0"                  "events"=["v 0" "n 0"]}
+                {"document"="c0 -0X0P0"                 "events"=["v 0" "n -0"]}
+                {"document"="c0 0X0P+0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0X0P+0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 0X0P-0"                 "events"=["v 0" "n 0"]}
+                {"document"="c0 -0X0P-0"                "events"=["v 0" "n -0"]}
+                {"document"="c0 0XFP10"                 "events"=["v 0" "n 0xfp10"]}
+                {"document"="c0 -0XFP10"                "events"=["v 0" "n -0xfp10"]}
+                {"document"="c0 0XFP+10"                "events"=["v 0" "n 0xfp10"]}
+                {"document"="c0 -0XFP+10"               "events"=["v 0" "n -0xfp10"]}
+                {"document"="c0 0XFP-10"                "events"=["v 0" "n 0xfp-10"]}
+                {"document"="c0 -0XFP-10"               "events"=["v 0" "n -0xfp-10"]}
 
-                {"source"="c0 0xc.4_45__3p8"            "events"=["v 0" "n 0xc.4453p8"]}
+                {"document"="c0 0xc.4_45__3p8"            "events"=["v 0" "n 0xc.4453p8"]}
 
                 // Coefficient too big for float64
-                {"source"="c0 0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap100"]}
-                {"source"="c0 -0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap100"]}
-                {"source"="c0 0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-100"]}
-                {"source"="c0 -0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-100"]}
+                {"document"="c0 0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap100"]}
+                {"document"="c0 -0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap100"]}
+                {"document"="c0 0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-100"]}
+                {"document"="c0 -0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-100"]}
 
                 // Exponent too big for float64
-                {"source"="c0 0x1.8p10000"             "events"=["v 0" "n 0x1.8p10000"]}
-                {"source"="c0 -0x1.8p10000"            "events"=["v 0" "n -0x1.8p10000"]}
-                {"source"="c0 0x1.8p-10000"            "events"=["v 0" "n 0x1.8p-10000"]}
-                {"source"="c0 -0x1.8p-10000"           "events"=["v 0" "n -0x1.8p-10000"]}
+                {"document"="c0 0x1.8p10000"             "events"=["v 0" "n 0x1.8p10000"]}
+                {"document"="c0 -0x1.8p10000"            "events"=["v 0" "n -0x1.8p10000"]}
+                {"document"="c0 0x1.8p-10000"            "events"=["v 0" "n 0x1.8p-10000"]}
+                {"document"="c0 -0x1.8p-10000"           "events"=["v 0" "n -0x1.8p-10000"]}
 
                 // Everything too big for float64
-                {"source"="c0 0x1.54fffe2ac00592375b427ap10000"    "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap10000"]}
-                {"source"="c0 -0x1.54fffe2ac00592375b427ap10000"   "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap10000"]}
-                {"source"="c0 0x1.54fffe2ac00592375b427ap-10000"   "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-10000"]}
-                {"source"="c0 -0x1.54fffe2ac00592375b427ap-10000"  "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-10000"]}
+                {"document"="c0 0x1.54fffe2ac00592375b427ap10000"    "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap10000"]}
+                {"document"="c0 -0x1.54fffe2ac00592375b427ap10000"   "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap10000"]}
+                {"document"="c0 0x1.54fffe2ac00592375b427ap-10000"   "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-10000"]}
+                {"document"="c0 -0x1.54fffe2ac00592375b427ap-10000"  "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-10000"]}
             ]
             "decodeMustFail" = [
                 "c0 0x1."      // Missing right digit
@@ -398,29 +479,29 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "UID"
             "decodeMustSucceed" = [
-                {"source"="c0 00000000-0000-0000-0000-000000000000"  "events"=["v 0" "uid 00000000-0000-0000-0000-000000000000"]}
-                {"source"="c0 123456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 123456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 223456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 223456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 323456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 323456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 423456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 423456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 523456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 523456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 623456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 623456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 723456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 723456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 823456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 823456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 923456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 923456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 a23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 b23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 c23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 d23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 e23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 f23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 A23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 B23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 C23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 D23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 E23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 F23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
-                {"source"="c0 fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"  "events"=["v 0" "uid fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]}
+                {"document"="c0 00000000-0000-0000-0000-000000000000"  "events"=["v 0" "uid 00000000-0000-0000-0000-000000000000"]}
+                {"document"="c0 123456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 123456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 223456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 223456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 323456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 323456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 423456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 423456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 523456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 523456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 623456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 623456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 723456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 723456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 823456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 823456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 923456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid 923456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 a23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 b23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 c23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 d23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 e23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 f23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 A23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 B23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 C23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 D23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 E23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 F23456af-0000-0000-0000-000000000000"  "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
+                {"document"="c0 fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"  "events"=["v 0" "uid fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]}
             ]
             "decodeMustFail" = [
                 "fbdcba98-7654-3210-aaaa-bbbbbbbbbbb"    // Too short
@@ -440,13 +521,13 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Date"
             "decodeMustSucceed" = [
-                {"source"="c0 2000-01-01"      "events"=["v 0" "t 2000-01-01"]}
-                {"source"="c0 -2000-01-01"     "events"=["v 0" "t -2000-01-01"]}
-                {"source"="c0 2000-1-1"        "events"=["v 0" "t 2000-01-01"]}
-                {"source"="c0 9412351-12-31"   "events"=["v 0" "t 9412351-12-31"]}
-                {"source"="c0 -9412351-12-31"  "events"=["v 0" "t -9412351-12-31"]}
-                {"source"="c0 1-01-01"         "events"=["v 0" "t 1-01-01"]}
-                {"source"="c0 -1-01-01"        "events"=["v 0" "t -1-01-01"]}
+                {"document"="c0 2000-01-01"      "events"=["v 0" "t 2000-01-01"]}
+                {"document"="c0 -2000-01-01"     "events"=["v 0" "t -2000-01-01"]}
+                {"document"="c0 2000-1-1"        "events"=["v 0" "t 2000-01-01"]}
+                {"document"="c0 9412351-12-31"   "events"=["v 0" "t 9412351-12-31"]}
+                {"document"="c0 -9412351-12-31"  "events"=["v 0" "t -9412351-12-31"]}
+                {"document"="c0 1-01-01"         "events"=["v 0" "t 1-01-01"]}
+                {"document"="c0 -1-01-01"        "events"=["v 0" "t -1-01-01"]}
             ]
             "decodeMustFail" = [
                 "c0 0-01-01"     // Year 0 is invalid
@@ -469,51 +550,51 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Time"
             "decodeMustSucceed" = [
-                {"source"="c0 0:00:00"                          "events"=["v 0" "t 0:00:00"]}
-                {"source"="c0 00:00:00"                         "events"=["v 0" "t 0:00:00"]}
-                {"source"="c0 1:45:00"                          "events"=["v 0" "t 1:45:00"]}
-                {"source"="c0 01:45:00"                         "events"=["v 0" "t 1:45:00"]}
-                {"source"="c0 23:59:59"                         "events"=["v 0" "t 23:59:59"]}
-                {"source"="c0 23:59:60"                         "events"=["v 0" "t 23:59:60"]}
+                {"document"="c0 0:00:00"                          "events"=["v 0" "t 0:00:00"]}
+                {"document"="c0 00:00:00"                         "events"=["v 0" "t 0:00:00"]}
+                {"document"="c0 1:45:00"                          "events"=["v 0" "t 1:45:00"]}
+                {"document"="c0 01:45:00"                         "events"=["v 0" "t 1:45:00"]}
+                {"document"="c0 23:59:59"                         "events"=["v 0" "t 23:59:59"]}
+                {"document"="c0 23:59:60"                         "events"=["v 0" "t 23:59:60"]}
 
-                {"source"="c0 0:00:00.000000000"                "events"=["v 0" "t 0:00:00"]}
-                {"source"="c0 0:00:00.000000001"                "events"=["v 0" "t 0:00:00.000000001"]}
-                {"source"="c0 0:00:00.00000001"                 "events"=["v 0" "t 0:00:00.00000001"]}
-                {"source"="c0 0:00:00.0000001"                  "events"=["v 0" "t 0:00:00.0000001"]}
-                {"source"="c0 0:00:00.000001"                   "events"=["v 0" "t 0:00:00.000001"]}
-                {"source"="c0 0:00:00.00001"                    "events"=["v 0" "t 0:00:00.00001"]}
-                {"source"="c0 0:00:00.0001"                     "events"=["v 0" "t 0:00:00.0001"]}
-                {"source"="c0 0:00:00.001"                      "events"=["v 0" "t 0:00:00.001"]}
-                {"source"="c0 0:00:00.01"                       "events"=["v 0" "t 0:00:00.01"]}
-                {"source"="c0 0:00:00.1"                        "events"=["v 0" "t 0:00:00.1"]}
-                {"source"="c0 0:00:00.100000000"                "events"=["v 0" "t 0:00:00.1"]}
-                {"source"="c0 23:59:60.000000000"               "events"=["v 0" "t 23:59:60"]}
-                {"source"="c0 23:59:60,000000000"               "events"=["v 0" "t 23:59:60"]}
-                {"source"="c0 23:59:60.999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
-                {"source"="c0 23:59:60,999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
+                {"document"="c0 0:00:00.000000000"                "events"=["v 0" "t 0:00:00"]}
+                {"document"="c0 0:00:00.000000001"                "events"=["v 0" "t 0:00:00.000000001"]}
+                {"document"="c0 0:00:00.00000001"                 "events"=["v 0" "t 0:00:00.00000001"]}
+                {"document"="c0 0:00:00.0000001"                  "events"=["v 0" "t 0:00:00.0000001"]}
+                {"document"="c0 0:00:00.000001"                   "events"=["v 0" "t 0:00:00.000001"]}
+                {"document"="c0 0:00:00.00001"                    "events"=["v 0" "t 0:00:00.00001"]}
+                {"document"="c0 0:00:00.0001"                     "events"=["v 0" "t 0:00:00.0001"]}
+                {"document"="c0 0:00:00.001"                      "events"=["v 0" "t 0:00:00.001"]}
+                {"document"="c0 0:00:00.01"                       "events"=["v 0" "t 0:00:00.01"]}
+                {"document"="c0 0:00:00.1"                        "events"=["v 0" "t 0:00:00.1"]}
+                {"document"="c0 0:00:00.100000000"                "events"=["v 0" "t 0:00:00.1"]}
+                {"document"="c0 23:59:60.000000000"               "events"=["v 0" "t 23:59:60"]}
+                {"document"="c0 23:59:60,000000000"               "events"=["v 0" "t 23:59:60"]}
+                {"document"="c0 23:59:60.999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
+                {"document"="c0 23:59:60,999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
 
-                {"source"="c0 23:59:59.101"                     "events"=["v 0" "t 23:59:59.101"]}
+                {"document"="c0 23:59:59.101"                     "events"=["v 0" "t 23:59:59.101"]}
 
-                {"source"="c0 10:00:01.93/America/Los_Angeles"  "events"=["v 0" "t 10:00:01.93/America/Los_Angeles"]}
+                {"document"="c0 10:00:01.93/America/Los_Angeles"  "events"=["v 0" "t 10:00:01.93/America/Los_Angeles"]}
                 {
-                    "source" = "c0 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
+                    "document" = "c0 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
                     "events" = ["v 0" "t 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
                 }
 
-                {"source"="c0 10:00:01.93/89.92/1.10"           "events"=["v 0" "t 10:00:01.93/89.92/1.10"]}
-                {"source"="c0 10:00:01.93/89,90/1.1"            "events"=["v 0" "t 10:00:01.93/89.90/1.1"]}
-                {"source"="c0 10:00:01.93/89.9/1,10"            "events"=["v 0" "t 10:00:01.93/89.9/1.10"]}
-                {"source"="c0 10:00:01.93/0/0"                  "events"=["v 0" "t 10:00:01.93/0/0"]}
-                {"source"="c0 10:00:01.93/00/00.00"             "events"=["v 0" "t 10:00:01.93/0/0"]}
-                {"source"="c0 10:00:01.93/1/1"                  "events"=["v 0" "t 10:00:01.93/1/1"]}
-                {"source"="c0 10:00:01.93/90/-180"              "events"=["v 0" "t 10:00:01.93/90/-180"]}
-                {"source"="c0 10:00:01.93/-90/180"              "events"=["v 0" "t 10:00:01.93/-90/180"]}
-                {"source"="c0 10:00:01.93+0000"                 "events"=["v 0" "t 10:00:01.93"]}
-                {"source"="c0 10:00:01.93+0001"                 "events"=["v 0" "t 10:00:01.93+0001"]}
-                {"source"="c0 10:00:01.93-0030"                 "events"=["v 0" "t 10:00:01.93-0030"]}
-                {"source"="c0 10:00:01.93-1259"                 "events"=["v 0" "t 10:00:01.93-1259"]}
-                {"source"="c0 10:00:01.93-2359"                 "events"=["v 0" "t 10:00:01.93-2359"]}
-                {"source"="c0 10:00:01.93+2359"                 "events"=["v 0" "t 10:00:01.93+2359"]}
+                {"document"="c0 10:00:01.93/89.92/1.10"           "events"=["v 0" "t 10:00:01.93/89.92/1.10"]}
+                {"document"="c0 10:00:01.93/89,90/1.1"            "events"=["v 0" "t 10:00:01.93/89.90/1.1"]}
+                {"document"="c0 10:00:01.93/89.9/1,10"            "events"=["v 0" "t 10:00:01.93/89.9/1.10"]}
+                {"document"="c0 10:00:01.93/0/0"                  "events"=["v 0" "t 10:00:01.93/0/0"]}
+                {"document"="c0 10:00:01.93/00/00.00"             "events"=["v 0" "t 10:00:01.93/0/0"]}
+                {"document"="c0 10:00:01.93/1/1"                  "events"=["v 0" "t 10:00:01.93/1/1"]}
+                {"document"="c0 10:00:01.93/90/-180"              "events"=["v 0" "t 10:00:01.93/90/-180"]}
+                {"document"="c0 10:00:01.93/-90/180"              "events"=["v 0" "t 10:00:01.93/-90/180"]}
+                {"document"="c0 10:00:01.93+0000"                 "events"=["v 0" "t 10:00:01.93"]}
+                {"document"="c0 10:00:01.93+0001"                 "events"=["v 0" "t 10:00:01.93+0001"]}
+                {"document"="c0 10:00:01.93-0030"                 "events"=["v 0" "t 10:00:01.93-0030"]}
+                {"document"="c0 10:00:01.93-1259"                 "events"=["v 0" "t 10:00:01.93-1259"]}
+                {"document"="c0 10:00:01.93-2359"                 "events"=["v 0" "t 10:00:01.93-2359"]}
+                {"document"="c0 10:00:01.93+2359"                 "events"=["v 0" "t 10:00:01.93+2359"]}
             ]
             "decodeMustFail" = [
                 "c0 012:00:00"           // Too many hour digits
@@ -567,16 +648,16 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Timestamp"
             "decodeMustSucceed" = [
-                {"source"="c0 2000-01-01/9:31:44.901554/Z"                 "events"=["v 0" "t 2000-01-01/9:31:44.901554/Z"]}
-                {"source"="c0 02000-01-01/9:31:44.901554/Z"                "events"=["v 0" "t 2000-01-01/9:31:44.901554/Z"]}
-                {"source"="c0 -02000-01-01/9:31:44.901554/Z"               "events"=["v 0" "t -2000-01-01/9:31:44.901554/Z"]}
-                {"source"="c0 2020-01-15/13:41:00.000599"                  "events"=["v 0" "t 2020-01-15/13:41:00.000599"]}
-                {"source"="c0 2020-01-15/10:00:01.93/89.92/1.10"           "events"=["v 0" "t 2020-01-15/10:00:01.93/89.92/1.10"]}
-                {"source"="c0 2020-01-15/10:00:01.93/89.92/-1.10"          "events"=["v 0" "t 2020-01-15/10:00:01.93/89.92/-1.10"]}
-                {"source"="c0 2020-01-15/10:00:01.93/-89.92/1.10"          "events"=["v 0" "t 2020-01-15/10:00:01.93/-89.92/1.10"]}
-                {"source"="c0 2020-01-15/10:00:01.93/-89.92/-1.10"         "events"=["v 0" "t 2020-01-15/10:00:01.93/-89.92/-1.10"]}
-                {"source"="c0 2000-01-01/9:31:44.901554212/Europe/Prague"  "events"=["v 0" "t 2000-01-01/9:31:44.901554212/Europe/Prague"]}
-                {"source"="c0 2000-01-01/9:31:44.9+0100"                   "events"=["v 0" "t 2000-01-01/9:31:44.9+0100"]}
+                {"document"="c0 2000-01-01/9:31:44.901554/Z"                 "events"=["v 0" "t 2000-01-01/9:31:44.901554/Z"]}
+                {"document"="c0 02000-01-01/9:31:44.901554/Z"                "events"=["v 0" "t 2000-01-01/9:31:44.901554/Z"]}
+                {"document"="c0 -02000-01-01/9:31:44.901554/Z"               "events"=["v 0" "t -2000-01-01/9:31:44.901554/Z"]}
+                {"document"="c0 2020-01-15/13:41:00.000599"                  "events"=["v 0" "t 2020-01-15/13:41:00.000599"]}
+                {"document"="c0 2020-01-15/10:00:01.93/89.92/1.10"           "events"=["v 0" "t 2020-01-15/10:00:01.93/89.92/1.10"]}
+                {"document"="c0 2020-01-15/10:00:01.93/89.92/-1.10"          "events"=["v 0" "t 2020-01-15/10:00:01.93/89.92/-1.10"]}
+                {"document"="c0 2020-01-15/10:00:01.93/-89.92/1.10"          "events"=["v 0" "t 2020-01-15/10:00:01.93/-89.92/1.10"]}
+                {"document"="c0 2020-01-15/10:00:01.93/-89.92/-1.10"         "events"=["v 0" "t 2020-01-15/10:00:01.93/-89.92/-1.10"]}
+                {"document"="c0 2000-01-01/9:31:44.901554212/Europe/Prague"  "events"=["v 0" "t 2000-01-01/9:31:44.901554212/Europe/Prague"]}
+                {"document"="c0 2000-01-01/9:31:44.9+0100"                   "events"=["v 0" "t 2000-01-01/9:31:44.9+0100"]}
             ]
             "decodeMustFail" = [
                 "c0 0-01-01/9:31:44.901554"            // Year 0 is invalid
@@ -604,33 +685,33 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "String"
             "decodeMustSucceed" = [
-                {"source"="\.~ c0 "test test"~"            "events"=["v 0" "s test test"]}
-                {"source"="\.~ c0 ""~"                     "events"=["v 0" "s "]}               // Empty string
-                {"source"="\.~ c0 "test/*test"~"           "events"=["v 0" "s test/*test"]}     // Comment initiator inside a string
-                {"source"="\.~ c0 "test*/test"~"           "events"=["v 0" "s test*/test"]}     // Comment terminator inside a string
-                {"source"="\.~ c0 "test\ttest"~"           "events"=["v 0" "s test\19test"]}    // Escaped tab
-                {"source"="\.~ c0 "test\rtest"~"           "events"=["v 0" "s test\1dtest"]}    // Escaped CR
-                {"source"="\.~ c0 "test\"test"~"           "events"=["v 0" "s \.~ test"test~"]} // Escaped quote
-                {"source"="\.~ c0 "test\\test"~"           "events"=["v 0" "s \.~ test\test~"]} // Escaped backslash
-                {"source"="\.~ c0 "test\/test"~"           "events"=["v 0" "s \.~ test/test~"]} // Escaped slash
-                {"source"="\.~ c0 "test\*test"~"           "events"=["v 0" "s \.~ test*test~"]} // Escaped star
-                {"source"="\.~ c0 "test\<test"~"           "events"=["v 0" "s \.~ test<test~"]} // Escaped lt
-                {"source"="\.~ c0 "test\>test"~"           "events"=["v 0" "s \.~ test>test~"]} // Escaped gt
-                {"source"="\.~ c0 "test\|test"~"           "events"=["v 0" "s \.~ test|test~"]} // Escaped pipe
-                {"source"="\.~ c0 "test\_test"~"           "events"=["v 0" "s test\2a0test"]}   // Escaped non-breaking space
-                {"source"="\.~ c0 "test\-test"~"           "events"=["v 0" "s test\2adtest"]}   // Escaped soft hyphen
-                {"source"="\.~ c0 "test\1atest"~"          "events"=["v 0" "s test\ntest"]}     // Escaped 1-digit codepoint
-                {"source"="\.~ c0 "test\2f7test"~"         "events"=["v 0" "s test÷test"]}      // Escaped 2-digit codepoint
-                {"source"="\.~ c0 "test\317dtest"~"        "events"=["v 0" "s testŽtest"]}      // Escaped 3-digit codepoint
-                {"source"="\.~ c0 "test\42021test"~"       "events"=["v 0" "s test‡test"]}      // Escaped 4-digit codepoint
-                {"source"="\.~ c0 "test\51f43atest"~"      "events"=["v 0" "s test🐺test"]}     // Escaped 5-digit codepoint
-                {"source"="\.~ c0 "test\6000020test"~"     "events"=["v 0" "s test test"]}      // Escaped 6-digit codepoint
-                {"source"="\.~ c0 "test\70000020test"~"    "events"=["v 0" "s test test"]}      // Escaped 7-digit codepoint
-                {"source"="\.~ c0 "test\800000020test"~"   "events"=["v 0" "s test test"]}      // Escaped 8-digit codepoint
-                {"source"="\.~ c0 "test\9000000020test"~"  "events"=["v 0" "s test test"]}      // Escaped 9-digit codepoint
-                {"source"="\.~ c0 "test\ntest"~"           "events"=["v 0" "s \.~ test
+                {"document"="\.~ c0 "test test"~"            "events"=["v 0" "s test test"]}
+                {"document"="\.~ c0 ""~"                     "events"=["v 0" "s "]}               // Empty string
+                {"document"="\.~ c0 "test/*test"~"           "events"=["v 0" "s test/*test"]}     // Comment initiator inside a string
+                {"document"="\.~ c0 "test*/test"~"           "events"=["v 0" "s test*/test"]}     // Comment terminator inside a string
+                {"document"="\.~ c0 "test\ttest"~"           "events"=["v 0" "s test\19test"]}    // Escaped tab
+                {"document"="\.~ c0 "test\rtest"~"           "events"=["v 0" "s test\1dtest"]}    // Escaped CR
+                {"document"="\.~ c0 "test\"test"~"           "events"=["v 0" "s \.~ test"test~"]} // Escaped quote
+                {"document"="\.~ c0 "test\\test"~"           "events"=["v 0" "s \.~ test\test~"]} // Escaped backslash
+                {"document"="\.~ c0 "test\/test"~"           "events"=["v 0" "s \.~ test/test~"]} // Escaped slash
+                {"document"="\.~ c0 "test\*test"~"           "events"=["v 0" "s \.~ test*test~"]} // Escaped star
+                {"document"="\.~ c0 "test\<test"~"           "events"=["v 0" "s \.~ test<test~"]} // Escaped lt
+                {"document"="\.~ c0 "test\>test"~"           "events"=["v 0" "s \.~ test>test~"]} // Escaped gt
+                {"document"="\.~ c0 "test\|test"~"           "events"=["v 0" "s \.~ test|test~"]} // Escaped pipe
+                {"document"="\.~ c0 "test\_test"~"           "events"=["v 0" "s test\2a0test"]}   // Escaped non-breaking space
+                {"document"="\.~ c0 "test\-test"~"           "events"=["v 0" "s test\2adtest"]}   // Escaped soft hyphen
+                {"document"="\.~ c0 "test\1atest"~"          "events"=["v 0" "s test\ntest"]}     // Escaped 1-digit codepoint
+                {"document"="\.~ c0 "test\2f7test"~"         "events"=["v 0" "s test÷test"]}      // Escaped 2-digit codepoint
+                {"document"="\.~ c0 "test\317dtest"~"        "events"=["v 0" "s testŽtest"]}      // Escaped 3-digit codepoint
+                {"document"="\.~ c0 "test\42021test"~"       "events"=["v 0" "s test‡test"]}      // Escaped 4-digit codepoint
+                {"document"="\.~ c0 "test\51f43atest"~"      "events"=["v 0" "s test🐺test"]}     // Escaped 5-digit codepoint
+                {"document"="\.~ c0 "test\6000020test"~"     "events"=["v 0" "s test test"]}      // Escaped 6-digit codepoint
+                {"document"="\.~ c0 "test\70000020test"~"    "events"=["v 0" "s test test"]}      // Escaped 7-digit codepoint
+                {"document"="\.~ c0 "test\800000020test"~"   "events"=["v 0" "s test test"]}      // Escaped 8-digit codepoint
+                {"document"="\.~ c0 "test\9000000020test"~"  "events"=["v 0" "s test test"]}      // Escaped 9-digit codepoint
+                {"document"="\.~ c0 "test\ntest"~"           "events"=["v 0" "s \.~ test
 test~"]}  // Escaped newline
-                {"source"="\.~ c0 "test\
+                {"document"="\.~ c0 "test\
 test"~"  "events"=["v 0" "s testtest"]}  // Continuation
             ]
             "decodeMustFail" = [
@@ -657,33 +738,33 @@ test"~"  "events"=["v 0" "s testtest"]}  // Continuation
             // Resource IDs have the same capabilities and restrictions as strings.
             "name" = "Resource ID"
             "decodeMustSucceed" = [
-                {"source"="\.~ c0 @"http://x.com/a/b#1"~"   "events"=["v 0" "rid http://x.com/a/b#1"]}
-                {"source"="\.~ c0 @""~"                     "events"=["v 0" "rid "]}               // Empty string
-                {"source"="\.~ c0 @"test/*test"~"           "events"=["v 0" "rid test/*test"]}     // Comment initiator inside a string
-                {"source"="\.~ c0 @"test*/test"~"           "events"=["v 0" "rid test*/test"]}     // Comment terminator inside a string
-                {"source"="\.~ c0 @"test\ttest"~"           "events"=["v 0" "rid test\19test"]}    // Escaped tab
-                {"source"="\.~ c0 @"test\rtest"~"           "events"=["v 0" "rid test\1dtest"]}    // Escaped CR
-                {"source"="\.~ c0 @"test\"test"~"           "events"=["v 0" "rid \.~ test"test~"]} // Escaped quote
-                {"source"="\.~ c0 @"test\\test"~"           "events"=["v 0" "rid \.~ test\test~"]} // Escaped backslash
-                {"source"="\.~ c0 @"test\/test"~"           "events"=["v 0" "rid \.~ test/test~"]} // Escaped slash
-                {"source"="\.~ c0 @"test\*test"~"           "events"=["v 0" "rid \.~ test*test~"]} // Escaped star
-                {"source"="\.~ c0 @"test\<test"~"           "events"=["v 0" "rid \.~ test<test~"]} // Escaped lt
-                {"source"="\.~ c0 @"test\>test"~"           "events"=["v 0" "rid \.~ test>test~"]} // Escaped gt
-                {"source"="\.~ c0 @"test\|test"~"           "events"=["v 0" "rid \.~ test|test~"]} // Escaped pipe
-                {"source"="\.~ c0 @"test\_test"~"           "events"=["v 0" "rid test\2a0test"]}   // Escaped non-breaking space
-                {"source"="\.~ c0 @"test\-test"~"           "events"=["v 0" "rid test\2adtest"]}   // Escaped soft hyphen
-                {"source"="\.~ c0 @"test\1atest"~"          "events"=["v 0" "rid test\ntest"]}     // Escaped 1-digit codepoint
-                {"source"="\.~ c0 @"test\2f7test"~"         "events"=["v 0" "rid test÷test"]}      // Escaped 2-digit codepoint
-                {"source"="\.~ c0 @"test\317dtest"~"        "events"=["v 0" "rid testŽtest"]}      // Escaped 3-digit codepoint
-                {"source"="\.~ c0 @"test\42021test"~"       "events"=["v 0" "rid test‡test"]}      // Escaped 4-digit codepoint
-                {"source"="\.~ c0 @"test\51f43atest"~"      "events"=["v 0" "rid test🐺test"]}     // Escaped 5-digit codepoint
-                {"source"="\.~ c0 @"test\6000020test"~"     "events"=["v 0" "rid test test"]}      // Escaped 6-digit codepoint
-                {"source"="\.~ c0 @"test\70000020test"~"    "events"=["v 0" "rid test test"]}      // Escaped 7-digit codepoint
-                {"source"="\.~ c0 @"test\800000020test"~"   "events"=["v 0" "rid test test"]}      // Escaped 8-digit codepoint
-                {"source"="\.~ c0 @"test\9000000020test"~"  "events"=["v 0" "rid test test"]}      // Escaped 9-digit codepoint
-                {"source"="\.~ c0 @"test\ntest"~"           "events"=["v 0" "rid \.~ test
+                {"document"="\.~ c0 @"http://x.com/a/b#1"~"   "events"=["v 0" "rid http://x.com/a/b#1"]}
+                {"document"="\.~ c0 @""~"                     "events"=["v 0" "rid "]}               // Empty string
+                {"document"="\.~ c0 @"test/*test"~"           "events"=["v 0" "rid test/*test"]}     // Comment initiator inside a string
+                {"document"="\.~ c0 @"test*/test"~"           "events"=["v 0" "rid test*/test"]}     // Comment terminator inside a string
+                {"document"="\.~ c0 @"test\ttest"~"           "events"=["v 0" "rid test\19test"]}    // Escaped tab
+                {"document"="\.~ c0 @"test\rtest"~"           "events"=["v 0" "rid test\1dtest"]}    // Escaped CR
+                {"document"="\.~ c0 @"test\"test"~"           "events"=["v 0" "rid \.~ test"test~"]} // Escaped quote
+                {"document"="\.~ c0 @"test\\test"~"           "events"=["v 0" "rid \.~ test\test~"]} // Escaped backslash
+                {"document"="\.~ c0 @"test\/test"~"           "events"=["v 0" "rid \.~ test/test~"]} // Escaped slash
+                {"document"="\.~ c0 @"test\*test"~"           "events"=["v 0" "rid \.~ test*test~"]} // Escaped star
+                {"document"="\.~ c0 @"test\<test"~"           "events"=["v 0" "rid \.~ test<test~"]} // Escaped lt
+                {"document"="\.~ c0 @"test\>test"~"           "events"=["v 0" "rid \.~ test>test~"]} // Escaped gt
+                {"document"="\.~ c0 @"test\|test"~"           "events"=["v 0" "rid \.~ test|test~"]} // Escaped pipe
+                {"document"="\.~ c0 @"test\_test"~"           "events"=["v 0" "rid test\2a0test"]}   // Escaped non-breaking space
+                {"document"="\.~ c0 @"test\-test"~"           "events"=["v 0" "rid test\2adtest"]}   // Escaped soft hyphen
+                {"document"="\.~ c0 @"test\1atest"~"          "events"=["v 0" "rid test\ntest"]}     // Escaped 1-digit codepoint
+                {"document"="\.~ c0 @"test\2f7test"~"         "events"=["v 0" "rid test÷test"]}      // Escaped 2-digit codepoint
+                {"document"="\.~ c0 @"test\317dtest"~"        "events"=["v 0" "rid testŽtest"]}      // Escaped 3-digit codepoint
+                {"document"="\.~ c0 @"test\42021test"~"       "events"=["v 0" "rid test‡test"]}      // Escaped 4-digit codepoint
+                {"document"="\.~ c0 @"test\51f43atest"~"      "events"=["v 0" "rid test🐺test"]}     // Escaped 5-digit codepoint
+                {"document"="\.~ c0 @"test\6000020test"~"     "events"=["v 0" "rid test test"]}      // Escaped 6-digit codepoint
+                {"document"="\.~ c0 @"test\70000020test"~"    "events"=["v 0" "rid test test"]}      // Escaped 7-digit codepoint
+                {"document"="\.~ c0 @"test\800000020test"~"   "events"=["v 0" "rid test test"]}      // Escaped 8-digit codepoint
+                {"document"="\.~ c0 @"test\9000000020test"~"  "events"=["v 0" "rid test test"]}      // Escaped 9-digit codepoint
+                {"document"="\.~ c0 @"test\ntest"~"           "events"=["v 0" "rid \.~ test
 test~"]}  // Escaped newline
-                {"source"="\.~ c0 @"test\
+                {"document"="\.~ c0 @"test\
 test"~"  "events"=["v 0" "rid testtest"]}  // Continuation
             ]
             "decodeMustFail" = [
@@ -710,34 +791,34 @@ test"~"  "events"=["v 0" "rid testtest"]}  // Continuation
             // Custom text has the same capabilities and restrictions as strings.
             "name" = "Custom Text"
             "decodeMustSucceed" = [
-                {"source"="\.~ c0 |ct something(123)|~"       "events"=["v 0" "ct something(123)"]}
-                {"source"="\.~ c0 |ct|~"                      "events"=["v 0" "ct "]}               // Empty string
-                {"source"="\.~ c0 |ct |~"                     "events"=["v 0" "ct "]}               // Empty string
-                {"source"="\.~ c0 |ct test/*test|~"           "events"=["v 0" "ct test/*test"]}     // Comment initiator inside a string
-                {"source"="\.~ c0 |ct test*/test|~"           "events"=["v 0" "ct test*/test"]}     // Comment terminator inside a string
-                {"source"="\.~ c0 |ct test\ttest|~"           "events"=["v 0" "ct test\19test"]}    // Escaped tab
-                {"source"="\.~ c0 |ct test\rtest|~"           "events"=["v 0" "ct test\1dtest"]}    // Escaped CR
-                {"source"="\.~ c0 |ct test\"test|~"           "events"=["v 0" "ct \.~ test"test~"]} // Escaped quote
-                {"source"="\.~ c0 |ct test\\test|~"           "events"=["v 0" "ct \.~ test\test~"]} // Escaped backslash
-                {"source"="\.~ c0 |ct test\/test|~"           "events"=["v 0" "ct \.~ test/test~"]} // Escaped slash
-                {"source"="\.~ c0 |ct test\*test|~"           "events"=["v 0" "ct \.~ test*test~"]} // Escaped star
-                {"source"="\.~ c0 |ct test\<test|~"           "events"=["v 0" "ct \.~ test<test~"]} // Escaped lt
-                {"source"="\.~ c0 |ct test\>test|~"           "events"=["v 0" "ct \.~ test>test~"]} // Escaped gt
-                {"source"="\.~ c0 |ct test\|test|~"           "events"=["v 0" "ct \.~ test|test~"]} // Escaped pipe
-                {"source"="\.~ c0 |ct test\_test|~"           "events"=["v 0" "ct test\2a0test"]}   // Escaped non-breaking space
-                {"source"="\.~ c0 |ct test\-test|~"           "events"=["v 0" "ct test\2adtest"]}   // Escaped soft hyphen
-                {"source"="\.~ c0 |ct test\1atest|~"          "events"=["v 0" "ct test\ntest"]}     // Escaped 1-digit codepoint
-                {"source"="\.~ c0 |ct test\2f7test|~"         "events"=["v 0" "ct test÷test"]}      // Escaped 2-digit codepoint
-                {"source"="\.~ c0 |ct test\317dtest|~"        "events"=["v 0" "ct testŽtest"]}      // Escaped 3-digit codepoint
-                {"source"="\.~ c0 |ct test\42021test|~"       "events"=["v 0" "ct test‡test"]}      // Escaped 4-digit codepoint
-                {"source"="\.~ c0 |ct test\51f43atest|~"      "events"=["v 0" "ct test🐺test"]}     // Escaped 5-digit codepoint
-                {"source"="\.~ c0 |ct test\6000020test|~"     "events"=["v 0" "ct test test"]}      // Escaped 6-digit codepoint
-                {"source"="\.~ c0 |ct test\70000020test|~"    "events"=["v 0" "ct test test"]}      // Escaped 7-digit codepoint
-                {"source"="\.~ c0 |ct test\800000020test|~"   "events"=["v 0" "ct test test"]}      // Escaped 8-digit codepoint
-                {"source"="\.~ c0 |ct test\9000000020test|~"  "events"=["v 0" "ct test test"]}      // Escaped 9-digit codepoint
-                {"source"="\.~ c0 |ct test\ntest|~"           "events"=["v 0" "ct \.~ test
+                {"document"="\.~ c0 |ct something(123)|~"       "events"=["v 0" "ct something(123)"]}
+                {"document"="\.~ c0 |ct|~"                      "events"=["v 0" "ct "]}               // Empty string
+                {"document"="\.~ c0 |ct |~"                     "events"=["v 0" "ct "]}               // Empty string
+                {"document"="\.~ c0 |ct test/*test|~"           "events"=["v 0" "ct test/*test"]}     // Comment initiator inside a string
+                {"document"="\.~ c0 |ct test*/test|~"           "events"=["v 0" "ct test*/test"]}     // Comment terminator inside a string
+                {"document"="\.~ c0 |ct test\ttest|~"           "events"=["v 0" "ct test\19test"]}    // Escaped tab
+                {"document"="\.~ c0 |ct test\rtest|~"           "events"=["v 0" "ct test\1dtest"]}    // Escaped CR
+                {"document"="\.~ c0 |ct test\"test|~"           "events"=["v 0" "ct \.~ test"test~"]} // Escaped quote
+                {"document"="\.~ c0 |ct test\\test|~"           "events"=["v 0" "ct \.~ test\test~"]} // Escaped backslash
+                {"document"="\.~ c0 |ct test\/test|~"           "events"=["v 0" "ct \.~ test/test~"]} // Escaped slash
+                {"document"="\.~ c0 |ct test\*test|~"           "events"=["v 0" "ct \.~ test*test~"]} // Escaped star
+                {"document"="\.~ c0 |ct test\<test|~"           "events"=["v 0" "ct \.~ test<test~"]} // Escaped lt
+                {"document"="\.~ c0 |ct test\>test|~"           "events"=["v 0" "ct \.~ test>test~"]} // Escaped gt
+                {"document"="\.~ c0 |ct test\|test|~"           "events"=["v 0" "ct \.~ test|test~"]} // Escaped pipe
+                {"document"="\.~ c0 |ct test\_test|~"           "events"=["v 0" "ct test\2a0test"]}   // Escaped non-breaking space
+                {"document"="\.~ c0 |ct test\-test|~"           "events"=["v 0" "ct test\2adtest"]}   // Escaped soft hyphen
+                {"document"="\.~ c0 |ct test\1atest|~"          "events"=["v 0" "ct test\ntest"]}     // Escaped 1-digit codepoint
+                {"document"="\.~ c0 |ct test\2f7test|~"         "events"=["v 0" "ct test÷test"]}      // Escaped 2-digit codepoint
+                {"document"="\.~ c0 |ct test\317dtest|~"        "events"=["v 0" "ct testŽtest"]}      // Escaped 3-digit codepoint
+                {"document"="\.~ c0 |ct test\42021test|~"       "events"=["v 0" "ct test‡test"]}      // Escaped 4-digit codepoint
+                {"document"="\.~ c0 |ct test\51f43atest|~"      "events"=["v 0" "ct test🐺test"]}     // Escaped 5-digit codepoint
+                {"document"="\.~ c0 |ct test\6000020test|~"     "events"=["v 0" "ct test test"]}      // Escaped 6-digit codepoint
+                {"document"="\.~ c0 |ct test\70000020test|~"    "events"=["v 0" "ct test test"]}      // Escaped 7-digit codepoint
+                {"document"="\.~ c0 |ct test\800000020test|~"   "events"=["v 0" "ct test test"]}      // Escaped 8-digit codepoint
+                {"document"="\.~ c0 |ct test\9000000020test|~"  "events"=["v 0" "ct test test"]}      // Escaped 9-digit codepoint
+                {"document"="\.~ c0 |ct test\ntest|~"           "events"=["v 0" "ct \.~ test
 test~"]}  // Escaped newline
-                {"source"="\.~ c0 |ct test\
+                {"document"="\.~ c0 |ct test\
                                           test|~"             "events"=["v 0" "ct testtest"]}  // Continuation
             ]
             "decodeMustFail" = [
@@ -763,10 +844,10 @@ test~"]}  // Escaped newline
         {
             "name" = "Custom Binary"
             "decodeMustSucceed" = [
-                {"source"="c0 |cb 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
-                {"source"="c0 |cb 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
-                {"source"="c0 |cb |"             "events"=["v 0" "cb "]}
-                {"source"="c0 |cb|"              "events"=["v 0" "cb "]}
+                {"document"="c0 |cb 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
+                {"document"="c0 |cb 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
+                {"document"="c0 |cb |"             "events"=["v 0" "cb "]}
+                {"document"="c0 |cb|"              "events"=["v 0" "cb "]}
             ]
             "decodeMustFail" = [
                 "c0 |cb 00"  // Not terminated
@@ -779,16 +860,16 @@ test~"]}  // Escaped newline
         {
             "name" = "Verbatim sequence"
             "decodeMustSucceed" = [
-                {"source"="\.~ c0 "\.## ##"~"          "events"=["v 0" "s "]}
-                {"source"="\.~ c0 "\.##
+                {"document"="\.~ c0 "\.## ##"~"          "events"=["v 0" "s "]}
+                {"document"="\.~ c0 "\.##
 ##"~"          "events"=["v 0" "s "]}
-                {"source"="\.~ c0 "\.## a##"~"         "events"=["v 0" "s a"]}
-                {"source"="\.~ c0 "\.@@
+                {"document"="\.~ c0 "\.## a##"~"         "events"=["v 0" "s a"]}
+                {"document"="\.~ c0 "\.@@
 a@@"~"         "events"=["v 0" "s a"]}
-                {"source"="c0 \"\\.^^^\r\na^^^\""        "events"=["v 0" "s a"]}
-                {"source"="\.~ c0 "\.XXX blah blah
+                {"document"="c0 \"\\.^^^\r\na^^^\""        "events"=["v 0" "s a"]}
+                {"document"="\.~ c0 "\.XXX blah blah
 blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
-                {"source"="\.~ c0 "\.A \n\r\t\_\-A"~"  "events"=["v 0" "s \\n\\r\\t\\_\\-"]}
+                {"document"="\.~ c0 "\.A \n\r\t\_\-A"~"  "events"=["v 0" "s \\n\\r\\t\\_\\-"]}
             ]
             "decodeMustFail" = [
                 "\.~ c0 "\."~"        // No sentinel definition
@@ -803,14 +884,14 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Bit array"
             "decodeMustSucceed" = [
-                {"source"="c0 |b|"                "events"=["v 0" "ab"]}
-                {"source"="c0 |b 0|"              "events"=["v 0" "ab 0"]}
-                {"source"="c0 |b 1|"              "events"=["v 0" "ab 1"]}
-                {"source"="c0 |b 1 0 1 1 0 1|"    "events"=["v 0" "ab 101101"]}
-                {"source"="c0 |b 101101 |"        "events"=["v 0" "ab 101101"]}
-                {"source"="c0 |b 10110111|"       "events"=["v 0" "ab 10110111"]}
-                {"source"="c0 |b 1  0 110 1 11|"  "events"=["v 0" "ab 10110111"]}
-                {"source"="c0 |b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
+                {"document"="c0 |b|"                "events"=["v 0" "ab"]}
+                {"document"="c0 |b 0|"              "events"=["v 0" "ab 0"]}
+                {"document"="c0 |b 1|"              "events"=["v 0" "ab 1"]}
+                {"document"="c0 |b 1 0 1 1 0 1|"    "events"=["v 0" "ab 101101"]}
+                {"document"="c0 |b 101101 |"        "events"=["v 0" "ab 101101"]}
+                {"document"="c0 |b 10110111|"       "events"=["v 0" "ab 10110111"]}
+                {"document"="c0 |b 1  0 110 1 11|"  "events"=["v 0" "ab 10110111"]}
+                {"document"="c0 |b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
                  "events"=["v 0" "ab 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011"]}
             ]
             "decodeMustFail" = [
@@ -826,15 +907,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int8 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i8|"                 "events"=["v 0" "ai8"]}
-                {"source"="c0 |i8 |"                "events"=["v 0" "ai8"]}
-                {"source"="c0 |i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai8 0 1 127 -128 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i8b|"                "events"=["v 0" "ai8"]}
-                {"source"="c0 |i8b 0 1 1011 -1001101 1111111 -10000000|"  "events"=["v 0" "ai8 0 1 11 -77 127 -128"]}
-                {"source"="c0 |i8o|"                "events"=["v 0" "ai8"]}
-                {"source"="c0 |i8o 177 -200 76|"    "events"=["v 0" "ai8 127 -128 62"]}
-                {"source"="c0 |i8x|"                "events"=["v 0" "ai8"]}
-                {"source"="c0 |i8x 7f -80 1c -29|"  "events"=["v 0" "ai8 127 -128 28 -41"]}
+                {"document"="c0 |i8|"                 "events"=["v 0" "ai8"]}
+                {"document"="c0 |i8 |"                "events"=["v 0" "ai8"]}
+                {"document"="c0 |i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai8 0 1 127 -128 5 -5 63 -63 27 -27"]}
+                {"document"="c0 |i8b|"                "events"=["v 0" "ai8"]}
+                {"document"="c0 |i8b 0 1 1011 -1001101 1111111 -10000000|"  "events"=["v 0" "ai8 0 1 11 -77 127 -128"]}
+                {"document"="c0 |i8o|"                "events"=["v 0" "ai8"]}
+                {"document"="c0 |i8o 177 -200 76|"    "events"=["v 0" "ai8 127 -128 62"]}
+                {"document"="c0 |i8x|"                "events"=["v 0" "ai8"]}
+                {"document"="c0 |i8x 7f -80 1c -29|"  "events"=["v 0" "ai8 127 -128 28 -41"]}
             ]
             "decodeMustFail" = [
                 "c0 |i8 nan|"         // Non-int digit
@@ -867,15 +948,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int16 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i16|"                     "events"=["v 0" "ai16"]}
-                {"source"="c0 |i16 |"                    "events"=["v 0" "ai16"]}
-                {"source"="c0 |i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai16 0 1 32767 -32768 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i16b|"                    "events"=["v 0" "ai16"]}
-                {"source"="c0 |i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"  "events"=["v 0" "ai16 0 1 11 -77 32767 -32768"]}
-                {"source"="c0 |i16o|"                    "events"=["v 0" "ai16"]}
-                {"source"="c0 |i16o 77777 -100000 76|"   "events"=["v 0" "ai16 32767 -32768 62"]}
-                {"source"="c0 |i16x|"                    "events"=["v 0" "ai16"]}
-                {"source"="c0 |i16x 7fff -8000 1c -29|"  "events"=["v 0" "ai16 32767 -32768 28 -41"]}
+                {"document"="c0 |i16|"                     "events"=["v 0" "ai16"]}
+                {"document"="c0 |i16 |"                    "events"=["v 0" "ai16"]}
+                {"document"="c0 |i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"  "events"=["v 0" "ai16 0 1 32767 -32768 5 -5 63 -63 27 -27"]}
+                {"document"="c0 |i16b|"                    "events"=["v 0" "ai16"]}
+                {"document"="c0 |i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"  "events"=["v 0" "ai16 0 1 11 -77 32767 -32768"]}
+                {"document"="c0 |i16o|"                    "events"=["v 0" "ai16"]}
+                {"document"="c0 |i16o 77777 -100000 76|"   "events"=["v 0" "ai16 32767 -32768 62"]}
+                {"document"="c0 |i16x|"                    "events"=["v 0" "ai16"]}
+                {"document"="c0 |i16x 7fff -8000 1c -29|"  "events"=["v 0" "ai16 32767 -32768 28 -41"]}
             ]
             "decodeMustFail" = [
                 "c0 |i16 nan|"                 // Non-int digit
@@ -908,17 +989,17 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int32 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i32|"                     "events"=["v 0" "ai32"]}
-                {"source"="c0 |i32 |"                    "events"=["v 0" "ai32"]}
-                {"source"="c0 |i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                {"document"="c0 |i32|"                     "events"=["v 0" "ai32"]}
+                {"document"="c0 |i32 |"                    "events"=["v 0" "ai32"]}
+                {"document"="c0 |i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                  "events"=["v 0" "ai32 0 1 2147483647 -2147483648 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i32b|"                    "events"=["v 0" "ai32"]}
-                {"source"="c0 |i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
+                {"document"="c0 |i32b|"                    "events"=["v 0" "ai32"]}
+                {"document"="c0 |i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
                  "events"=["v 0" "ai32 0 1 11 -77 2147483647 -2147483648"]}
-                {"source"="c0 |i32o|"                    "events"=["v 0" "ai32"]}
-                {"source"="c0 |i32o 17777777777 -20000000000 76|"         "events"=["v 0" "ai32 2147483647 -2147483648 62"]}
-                {"source"="c0 |i32x|"                    "events"=["v 0" "ai32"]}
-                {"source"="c0 |i32x 7fffffff -80000000 1c -29|"  "events"=["v 0" "ai32 2147483647 -2147483648 28 -41"]}
+                {"document"="c0 |i32o|"                    "events"=["v 0" "ai32"]}
+                {"document"="c0 |i32o 17777777777 -20000000000 76|"         "events"=["v 0" "ai32 2147483647 -2147483648 62"]}
+                {"document"="c0 |i32x|"                    "events"=["v 0" "ai32"]}
+                {"document"="c0 |i32x 7fffffff -80000000 1c -29|"  "events"=["v 0" "ai32 2147483647 -2147483648 28 -41"]}
             ]
             "decodeMustFail" = [
                 "c0 |i32 nan|"                                 // Non-int digit
@@ -951,17 +1032,17 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Int64 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |i64|"                                "events"=["v 0" "ai64"]}
-                {"source"="c0 |i64 |"                               "events"=["v 0" "ai64"]}
-                {"source"="c0 |i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                {"document"="c0 |i64|"                                "events"=["v 0" "ai64"]}
+                {"document"="c0 |i64 |"                               "events"=["v 0" "ai64"]}
+                {"document"="c0 |i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                  "events"=["v 0" "ai64 0 1 9223372036854775807 -9223372036854775808 5 -5 63 -63 27 -27"]}
-                {"source"="c0 |i64b|"                               "events"=["v 0" "ai64"]}
-                {"source"="c0 |i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111 -1000000000000000000000000000000000000000000000000000000000000000|"
+                {"document"="c0 |i64b|"                               "events"=["v 0" "ai64"]}
+                {"document"="c0 |i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111 -1000000000000000000000000000000000000000000000000000000000000000|"
                  "events"=["v 0" "ai64 0 1 11 -77 9223372036854775807 -9223372036854775808"]}
-                {"source"="c0 |i64o|"                               "events"=["v 0" "ai64"]}
-                {"source"="c0 |i64o 777777777777777777777 -1000000000000000000000 76|"  "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 62"]}
-                {"source"="c0 |i64x|"                               "events"=["v 0" "ai64"]}
-                {"source"="c0 |i64x 7fffffffffffffff -8000000000000000 1c -29|"
+                {"document"="c0 |i64o|"                               "events"=["v 0" "ai64"]}
+                {"document"="c0 |i64o 777777777777777777777 -1000000000000000000000 76|"  "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 62"]}
+                {"document"="c0 |i64x|"                               "events"=["v 0" "ai64"]}
+                {"document"="c0 |i64x 7fffffffffffffff -8000000000000000 1c -29|"
                  "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 28 -41"]}
             ]
             "decodeMustFail" = [
@@ -995,15 +1076,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint8 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u8|"                 "events"=["v 0" "au8"]}
-                {"source"="c0 |u8 |"                "events"=["v 0" "au8"]}
-                {"source"="c0 |u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["v 0" "au8 0 1 255 128 5 63 27"]}
-                {"source"="c0 |u8b|"                "events"=["v 0" "au8"]}
-                {"source"="c0 |u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["v 0" "au8 0 1 11 77 255 128"]}
-                {"source"="c0 |u8o|"                "events"=["v 0" "au8"]}
-                {"source"="c0 |u8o 377 22 76|"      "events"=["v 0" "au8 255 18 62"]}
-                {"source"="c0 |u8x|"                "events"=["v 0" "au8"]}
-                {"source"="c0 |u8x ff 80 1c 29|"    "events"=["v 0" "au8 255 128 28 41"]}
+                {"document"="c0 |u8|"                 "events"=["v 0" "au8"]}
+                {"document"="c0 |u8 |"                "events"=["v 0" "au8"]}
+                {"document"="c0 |u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["v 0" "au8 0 1 255 128 5 63 27"]}
+                {"document"="c0 |u8b|"                "events"=["v 0" "au8"]}
+                {"document"="c0 |u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["v 0" "au8 0 1 11 77 255 128"]}
+                {"document"="c0 |u8o|"                "events"=["v 0" "au8"]}
+                {"document"="c0 |u8o 377 22 76|"      "events"=["v 0" "au8 255 18 62"]}
+                {"document"="c0 |u8x|"                "events"=["v 0" "au8"]}
+                {"document"="c0 |u8x ff 80 1c 29|"    "events"=["v 0" "au8 255 128 28 41"]}
             ]
             "decodeMustFail" = [
                 "c0 |u8 nan|"         // Non-uint digit
@@ -1029,15 +1110,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint16 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u16|"                 "events"=["v 0" "au16"]}
-                {"source"="c0 |u16 |"                "events"=["v 0" "au16"]}
-                {"source"="c0 |u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["v 0" "au16 0 1 65535 128 5 63 27"]}
-                {"source"="c0 |u16b|"                "events"=["v 0" "au16"]}
-                {"source"="c0 |u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["v 0" "au16 0 1 11 77 65535 128"]}
-                {"source"="c0 |u16o|"                "events"=["v 0" "au16"]}
-                {"source"="c0 |u16o 177777 22 76|"   "events"=["v 0" "au16 65535 18 62"]}
-                {"source"="c0 |u16x|"                "events"=["v 0" "au16"]}
-                {"source"="c0 |u16x ffff 80 1c 29|"  "events"=["v 0" "au16 65535 128 28 41"]}
+                {"document"="c0 |u16|"                 "events"=["v 0" "au16"]}
+                {"document"="c0 |u16 |"                "events"=["v 0" "au16"]}
+                {"document"="c0 |u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["v 0" "au16 0 1 65535 128 5 63 27"]}
+                {"document"="c0 |u16b|"                "events"=["v 0" "au16"]}
+                {"document"="c0 |u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["v 0" "au16 0 1 11 77 65535 128"]}
+                {"document"="c0 |u16o|"                "events"=["v 0" "au16"]}
+                {"document"="c0 |u16o 177777 22 76|"   "events"=["v 0" "au16 65535 18 62"]}
+                {"document"="c0 |u16x|"                "events"=["v 0" "au16"]}
+                {"document"="c0 |u16x ffff 80 1c 29|"  "events"=["v 0" "au16 65535 128 28 41"]}
             ]
             "decodeMustFail" = [
                 "c0 |u16 nan|"                 // Non-uint digit
@@ -1063,15 +1144,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint32 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u32|"                     "events"=["v 0" "au32"]}
-                {"source"="c0 |u32 |"                    "events"=["v 0" "au32"]}
-                {"source"="c0 |u32 0 1 4294967295 128 0b101 0o77 0x1b|"  "events"=["v 0" "au32 0 1 4294967295 128 5 63 27"]}
-                {"source"="c0 |u32b|"                    "events"=["v 0" "au32"]}
-                {"source"="c0 |u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"  "events"=["v 0" "au32 0 1 11 77 4294967295 128"]}
-                {"source"="c0 |u32o|"                    "events"=["v 0" "au32"]}
-                {"source"="c0 |u32o 37777777777 22 76|"  "events"=["v 0" "au32 4294967295 18 62"]}
-                {"source"="c0 |u32x|"                    "events"=["v 0" "au32"]}
-                {"source"="c0 |u32x ffffffff 80 1c 29|"  "events"=["v 0" "au32 4294967295 128 28 41"]}
+                {"document"="c0 |u32|"                     "events"=["v 0" "au32"]}
+                {"document"="c0 |u32 |"                    "events"=["v 0" "au32"]}
+                {"document"="c0 |u32 0 1 4294967295 128 0b101 0o77 0x1b|"  "events"=["v 0" "au32 0 1 4294967295 128 5 63 27"]}
+                {"document"="c0 |u32b|"                    "events"=["v 0" "au32"]}
+                {"document"="c0 |u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"  "events"=["v 0" "au32 0 1 11 77 4294967295 128"]}
+                {"document"="c0 |u32o|"                    "events"=["v 0" "au32"]}
+                {"document"="c0 |u32o 37777777777 22 76|"  "events"=["v 0" "au32 4294967295 18 62"]}
+                {"document"="c0 |u32x|"                    "events"=["v 0" "au32"]}
+                {"document"="c0 |u32x ffffffff 80 1c 29|"  "events"=["v 0" "au32 4294967295 128 28 41"]}
             ]
             "decodeMustFail" = [
                 "c0 |u32 nan|"                 // Non-uint digit
@@ -1097,17 +1178,17 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "Uint64 array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u64|"                                "events"=["v 0" "au64"]}
-                {"source"="c0 |u64 |"                               "events"=["v 0" "au64"]}
-                {"source"="c0 |u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
+                {"document"="c0 |u64|"                                "events"=["v 0" "au64"]}
+                {"document"="c0 |u64 |"                               "events"=["v 0" "au64"]}
+                {"document"="c0 |u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
                  "events"=["v 0" "au64 0 1 18446744073709551615 128 5 63 27"]}
-                {"source"="c0 |u64b|"                               "events"=["v 0" "au64"]}
-                {"source"="c0 |u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
+                {"document"="c0 |u64b|"                               "events"=["v 0" "au64"]}
+                {"document"="c0 |u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
                  "events"=["v 0" "au64 0 1 11 77 18446744073709551615 128"]}
-                {"source"="c0 |u64o|"                               "events"=["v 0" "au64"]}
-                {"source"="c0 |u64o 1777777777777777777777 22 76|"  "events"=["v 0" "au64 18446744073709551615 18 62"]}
-                {"source"="c0 |u64x|"                               "events"=["v 0" "au64"]}
-                {"source"="c0 |u64x ffffffffffffffff 80 1c 29|"     "events"=["v 0" "au64 18446744073709551615 128 28 41"]}
+                {"document"="c0 |u64o|"                               "events"=["v 0" "au64"]}
+                {"document"="c0 |u64o 1777777777777777777777 22 76|"  "events"=["v 0" "au64 18446744073709551615 18 62"]}
+                {"document"="c0 |u64x|"                               "events"=["v 0" "au64"]}
+                {"document"="c0 |u64x ffffffffffffffff 80 1c 29|"     "events"=["v 0" "au64 18446744073709551615 128 28 41"]}
             ]
             "decodeMustFail" = [
                 "c0 |u64 nan|"                      // Non-uint digit
@@ -1146,15 +1227,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
             "name" = "Float32 array"
             // 24 sig bits, 8 exp bits
             "decodeMustSucceed" = [
-                {"source"="c0 |f32|"                                "events"=["v 0" "af32"]}
-                {"source"="c0 |f32x|"                               "events"=["v 0" "af32"]}
-                {"source"="c0 |f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af32 1.4512e+20 9.41e-15 944523.55"]}
-                {"source"="c0 |f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"  "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
-                {"source"="c0 |f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"  "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
-                {"source"="c0 |f32 nan snan inf -inf|"              "events"=["v 0" "af32 nan snan inf -inf"]}
-                {"source"="c0 |f32 NAN SNAN INF -INF|"              "events"=["v 0" "af32 nan snan inf -inf"]}
-                {"source"="c0 |f32x nan snan inf -inf|"             "events"=["v 0" "af32 nan snan inf -inf"]}
-                {"source"="c0 |f32x NAN SNAN INF -INF|"             "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"document"="c0 |f32|"                                "events"=["v 0" "af32"]}
+                {"document"="c0 |f32x|"                               "events"=["v 0" "af32"]}
+                {"document"="c0 |f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af32 1.4512e+20 9.41e-15 944523.55"]}
+                {"document"="c0 |f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"  "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
+                {"document"="c0 |f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"  "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
+                {"document"="c0 |f32 nan snan inf -inf|"              "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"document"="c0 |f32 NAN SNAN INF -INF|"              "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"document"="c0 |f32x nan snan inf -inf|"             "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"document"="c0 |f32x NAN SNAN INF -INF|"             "events"=["v 0" "af32 nan snan inf -inf"]}
             ]
             "decodeMustFail" = [
                 "c0 |f32 -|"                              // Incomplete value
@@ -1173,15 +1254,15 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
             "name" = "Float64 array"
             // 53 sig bits, 11 exp bits
             "decodeMustSucceed" = [
-                {"source"="c0 |f64|"                                "events"=["v 0" "af64"]}
-                {"source"="c0 |f64x|"                               "events"=["v 0" "af64"]}
-                {"source"="c0 |f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af64 1.4512e+20 9.41e-15 944523.55"]}
-                {"source"="c0 |f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"  "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
-                {"source"="c0 |f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"  "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
-                {"source"="c0 |f64 nan snan inf -inf|"              "events"=["v 0" "af64 nan snan inf -inf"]}
-                {"source"="c0 |f64 NAN SNAN INF -INF|"              "events"=["v 0" "af64 nan snan inf -inf"]}
-                {"source"="c0 |f64x nan snan inf -inf|"             "events"=["v 0" "af64 nan snan inf -inf"]}
-                {"source"="c0 |f64x NAN SNAN INF -INF|"             "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"document"="c0 |f64|"                                "events"=["v 0" "af64"]}
+                {"document"="c0 |f64x|"                               "events"=["v 0" "af64"]}
+                {"document"="c0 |f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af64 1.4512e+20 9.41e-15 944523.55"]}
+                {"document"="c0 |f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"  "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
+                {"document"="c0 |f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"  "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
+                {"document"="c0 |f64 nan snan inf -inf|"              "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"document"="c0 |f64 NAN SNAN INF -INF|"              "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"document"="c0 |f64x nan snan inf -inf|"             "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"document"="c0 |f64x NAN SNAN INF -INF|"             "events"=["v 0" "af64 nan snan inf -inf"]}
             ]
             "decodeMustFail" = [
                 "c0 |f64 -|"                              // Incomplete value
@@ -1199,8 +1280,8 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
         {
             "name" = "UID array"
             "decodeMustSucceed" = [
-                {"source"="c0 |u|"                                "events"=["v 0" "au"]}
-                {"source"="c0 |u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
+                {"document"="c0 |u|"                                "events"=["v 0" "au"]}
+                {"document"="c0 |u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
                  "events"=["v 0" "au 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595"]}
             ]
             "decodeMustFail" = [

@@ -254,10 +254,6 @@ func parseIntHex(bytes []byte) interface{} {
 	return sign * int64(value)
 }
 
-func parseBigInt(bytes []byte) interface{} {
-	return test.NewBigInt(string(bytes))
-}
-
 func parseFloat(bytes []byte) interface{} {
 	nanBits := math.Float64bits(math.NaN())
 	signalingNan := math.Float64frombits(nanBits & ^uint64(1<<50))
@@ -272,16 +268,8 @@ func parseFloat(bytes []byte) interface{} {
 	return value
 }
 
-func parseBigFloat(bytes []byte) interface{} {
-	return test.NewBigFloat(string(bytes))
-}
-
 func parseDecimalFloat(bytes []byte) interface{} {
 	return test.NewDFloat(string(bytes))
-}
-
-func parseBigDecimalFloat(bytes []byte) interface{} {
-	return test.NewBDF(string(bytes))
 }
 
 var uuidMatcher = regexp.MustCompile(`^([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})`)
@@ -558,6 +546,18 @@ func newArrayParser(elemType reflect.Type, elementParser eventParamParser) event
 	}
 }
 
+// func parseBigInt(bytes []byte) interface{} {
+// 	return test.NewBigInt(string(bytes))
+// }
+
+// func parseBigFloat(bytes []byte) interface{} {
+// 	return test.NewBigFloat(string(bytes))
+// }
+
+// func parseBigDecimalFloat(bytes []byte) interface{} {
+// 	return test.NewBDF(string(bytes))
+// }
+
 var eventNameMatcher = regexp.MustCompile(`^(\w+)`)
 var eventNameAndWSMatcher = regexp.MustCompile(`^\w+\s`)
 var firstParamAndWSMatcher = regexp.MustCompile(`^\w+\s+(\w+)\s`)
@@ -565,26 +565,15 @@ var firstParamAndWSMatcher = regexp.MustCompile(`^\w+\s+(\w+)\s`)
 var eventParsersByName = make(map[string]parseEvent)
 
 func init() {
-	eventParsersByName["bd"] = newParser(false, test.TEventBeginDocument).ParseEvent
-	eventParsersByName["ed"] = newParser(false, test.TEventEndDocument).ParseEvent
 	eventParsersByName["v"] = newParser(false, test.TEventVersion, parseUint).ParseEvent
-	eventParsersByName["tt"] = newParser(false, test.TEventTrue).ParseEvent
-	eventParsersByName["ff"] = newParser(false, test.TEventFalse).ParseEvent
-	eventParsersByName["n"] = parseNumericEvent
-	eventParsersByName["i"] = newParser(false, test.TEventInt, parseInt).ParseEvent
-	eventParsersByName["f"] = newParser(false, test.TEventFloat, parseFloat).ParseEvent
-	eventParsersByName["bf"] = newParser(false, test.TEventBigFloat, parseBigFloat).ParseEvent
-	eventParsersByName["df"] = newParser(false, test.TEventDecimalFloat, parseDecimalFloat).ParseEvent
-	eventParsersByName["bdf"] = newParser(false, test.TEventBigDecimalFloat, parseBigDecimalFloat).ParseEvent
-	eventParsersByName["null"] = newParser(false, test.TEventNull).ParseEvent
 	eventParsersByName["pad"] = newParser(true, test.TEventPadding, parseInt).ParseEvent
 	eventParsersByName["com"] = newParser(false, test.TEventComment, parseBool, parseString).ParseEvent
+	eventParsersByName["null"] = newParser(false, test.TEventNull).ParseEvent
 	eventParsersByName["b"] = newParser(false, test.TEventBool, parseBool).ParseEvent
-	eventParsersByName["pi"] = newParser(false, test.TEventPInt, parseUint).ParseEvent
-	eventParsersByName["ni"] = newParser(false, test.TEventNInt, parseUint).ParseEvent
-	eventParsersByName["bi"] = newParser(false, test.TEventBigInt, parseBigInt).ParseEvent
-	eventParsersByName["nan"] = newParser(false, test.TEventNan).ParseEvent
-	eventParsersByName["snan"] = newParser(false, test.TEventSNan).ParseEvent
+	eventParsersByName["n"] = parseNumericEvent
+	eventParsersByName["i"] = newParser(false, test.TEventInt, parseInt).ParseEvent
+	eventParsersByName["bf"] = newParser(false, test.TEventFloat, parseFloat).ParseEvent
+	eventParsersByName["df"] = newParser(false, test.TEventDecimalFloat, parseDecimalFloat).ParseEvent
 	eventParsersByName["uid"] = newParser(false, test.TEventUID, parseUUID).ParseEvent
 	eventParsersByName["t"] = newParser(false, test.TEventCompactTime, parseTemporal).ParseEvent
 	eventParsersByName["s"] = newParser(false, test.TEventString, parseString).ParseEvent
@@ -633,7 +622,7 @@ func init() {
 	eventParsersByName["at"] = newParser(false, test.TEventArrayData, parseTextAsBytes).ParseEvent
 	eventParsersByName["l"] = newParser(false, test.TEventList).ParseEvent
 	eventParsersByName["m"] = newParser(false, test.TEventMap).ParseEvent
-	eventParsersByName["mup"] = newParser(false, test.TEventMarkup, parseString).ParseEvent
+	eventParsersByName["mu"] = newParser(false, test.TEventMarkup, parseString).ParseEvent
 	eventParsersByName["node"] = newParser(false, test.TEventNode).ParseEvent
 	eventParsersByName["edge"] = newParser(false, test.TEventEdge).ParseEvent
 	eventParsersByName["e"] = newParser(false, test.TEventEnd).ParseEvent
@@ -641,4 +630,13 @@ func init() {
 	eventParsersByName["ref"] = newParser(false, test.TEventReference, parseString).ParseEvent
 	eventParsersByName["rref"] = newParser(false, test.TEventRemoteRef, parseString).ParseEvent
 	eventParsersByName["const"] = newParser(false, test.TEventConstant, parseString).ParseEvent
+	// eventParsersByName["tt"] = newParser(false, test.TEventTrue).ParseEvent
+	// eventParsersByName["ff"] = newParser(false, test.TEventFalse).ParseEvent
+	// eventParsersByName["bbf"] = newParser(false, test.TEventBigFloat, parseBigFloat).ParseEvent
+	// eventParsersByName["bdf"] = newParser(false, test.TEventBigDecimalFloat, parseBigDecimalFloat).ParseEvent
+	// eventParsersByName["pi"] = newParser(false, test.TEventPInt, parseUint).ParseEvent
+	// eventParsersByName["ni"] = newParser(false, test.TEventNInt, parseUint).ParseEvent
+	// eventParsersByName["bi"] = newParser(false, test.TEventBigInt, parseBigInt).ParseEvent
+	// eventParsersByName["nan"] = newParser(false, test.TEventNan).ParseEvent
+	// eventParsersByName["snan"] = newParser(false, test.TEventSNan).ParseEvent
 }

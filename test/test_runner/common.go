@@ -21,10 +21,21 @@
 package test_runner
 
 import (
+	"bytes"
 	"fmt"
 	"runtime/debug"
 	"strings"
+
+	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/rules"
+	"github.com/kstenerud/go-concise-encoding/test"
 )
+
+func testFailed(format string, args ...interface{}) {
+	panic(fmt.Errorf(format, args...))
+}
 
 func capturePanic(operation func()) (err error) {
 	defer func() {
@@ -97,4 +108,101 @@ func toMembershipSet(valueArrays ...[]string) map[string]bool {
 		}
 	}
 	return set
+}
+
+func assertEventProducingOperation(trace bool, debug bool, receiver events.DataEventReceiver,
+	operation func(receiver events.DataEventReceiver),
+	describeSrc func() string) {
+
+	if debug {
+		receiver = test.NewStdoutTEventPrinter(receiver)
+	}
+
+	eventStore := test.NewTEventStore(receiver)
+	receiver = eventStore
+	op := func() {
+		operation(receiver)
+	}
+
+	if trace {
+		defer func() {
+			if r := recover(); r != nil {
+				message := fmt.Sprintf("%v unexpectedly failed after producing events %v", describeSrc(), eventStore.Events)
+
+				switch e := r.(type) {
+				case error:
+					panic(fmt.Errorf("%v: %w", message, e))
+				default:
+					panic(fmt.Errorf("%v: %v", message, r))
+				}
+			}
+		}()
+		operation(receiver)
+	} else {
+		if err := capturePanic(op); err != nil {
+			testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
+		}
+	}
+}
+
+func decodeCTE(trace bool, debug bool, document string) []*test.TEvent {
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	rules := rules.NewRules(eventStore, nil)
+	assertEventProducingOperation(trace, debug, rules,
+		func(recv events.DataEventReceiver) {
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(document)), recv)
+		}, func() string {
+			return fmt.Sprintf("CTE %v", desc(document))
+		})
+	return eventStore.Events
+}
+
+func encodeCTE(trace bool, debug bool, evts []*test.TEvent) string {
+	buffer := &bytes.Buffer{}
+	encoder := cte.NewEncoder(nil)
+	encoder.PrepareToEncode(buffer)
+	rules := rules.NewRules(encoder, nil)
+
+	assertEventProducingOperation(trace, debug, rules,
+		func(recv events.DataEventReceiver) {
+			for _, event := range evts {
+				event.Invoke(recv)
+			}
+		}, func() string {
+			return fmt.Sprintf("Events %v", desc(evts))
+		})
+
+	return buffer.String()
+}
+
+func decodeCBE(trace bool, debug bool, document []byte) []*test.TEvent {
+	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
+	rules := rules.NewRules(eventStore, nil)
+	assertEventProducingOperation(trace, debug, rules,
+		func(recv events.DataEventReceiver) {
+			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
+			_ = cbe.NewDecoder(nil).Decode(bytes.NewBuffer(document), recv)
+		}, func() string {
+			return fmt.Sprintf("CBE %v", desc(document))
+		})
+	return eventStore.Events
+}
+
+func encodeCBE(trace bool, debug bool, evts []*test.TEvent) []byte {
+	buffer := &bytes.Buffer{}
+	encoder := cbe.NewEncoder(nil)
+	encoder.PrepareToEncode(buffer)
+	rules := rules.NewRules(encoder, nil)
+
+	assertEventProducingOperation(trace, debug, rules,
+		func(recv events.DataEventReceiver) {
+			for _, event := range evts {
+				event.Invoke(recv)
+			}
+		}, func() string {
+			return fmt.Sprintf("Events %v", desc(evts))
+		})
+
+	return buffer.Bytes()
 }

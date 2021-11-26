@@ -351,10 +351,10 @@ var (
 	EvI       = I(0)
 	EvBI      = BI(NewBigInt("1"))
 	EvBINull  = BI(nil)
-	EvF       = F(0x1.0p-1)
-	EvFNAN    = F(math.NaN())
-	EvBF      = BF(NewBigFloat("0x0.1"))
-	EvBFNull  = BF(nil)
+	EvF       = BF(0x1.0p-1)
+	EvFNAN    = BF(math.NaN())
+	EvBF      = BBF(NewBigFloat("0x0.1"))
+	EvBFNull  = BBF(nil)
 	EvDF      = DF(NewDFloat("0.1"))
 	EvDFNAN   = DF(NewDFloat("nan"))
 	EvBDF     = BDF(NewBDF("0.1"))
@@ -363,10 +363,10 @@ var (
 	EvNAN     = NAN()
 	EvUID     = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvGT      = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
-	EvCT      = CT(NewDate(2020, 1, 1))
+	EvCT      = T(NewDate(2020, 1, 1))
 	EvL       = L()
 	EvM       = M()
-	EvMUP     = MUP("a")
+	EvMUP     = MU("a")
 	EvNODE    = NODE()
 	EvEDGE    = EDGE()
 	EvE       = E()
@@ -379,9 +379,9 @@ var (
 	EvSB      = SB()
 	EvRID     = RID("http://z.com")
 	EvRB      = RB()
-	EvCUB     = CUB([]byte{1})
+	EvCUB     = CB([]byte{1})
 	EvCBB     = CBB()
-	EvCUT     = CUT("a")
+	EvCUT     = CT("a")
 	EvCTB     = CTB()
 	EvAB      = AB(1, []byte{1})
 	EvABB     = ABB()
@@ -407,8 +407,8 @@ var (
 	EvAF32B   = AF32B()
 	EvAF64    = AF64([]float64{1})
 	EvAF64B   = AF64B()
-	EvAUU     = AUU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
-	EvAUUB    = AUUB()
+	EvAUU     = AU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
+	EvAUUB    = AUB()
 	EvMB      = MB()
 )
 
@@ -738,8 +738,8 @@ func EventOrNull(eventType TEventType, value interface{}) *TEvent {
 func TT() *TEvent                       { return NewTEvent(TEventTrue, nil, nil) }
 func FF() *TEvent                       { return NewTEvent(TEventFalse, nil, nil) }
 func I(v int64) *TEvent                 { return NewTEvent(TEventInt, v, nil) }
-func F(v float64) *TEvent               { return NewTEvent(TEventFloat, v, nil) }
-func BF(v *big.Float) *TEvent           { return EventOrNull(TEventBigFloat, v) }
+func BF(v float64) *TEvent              { return NewTEvent(TEventFloat, v, nil) }
+func BBF(v *big.Float) *TEvent          { return EventOrNull(TEventBigFloat, v) }
 func DF(v compact_float.DFloat) *TEvent { return NewTEvent(TEventDecimalFloat, v, nil) }
 func BDF(v *apd.Decimal) *TEvent        { return EventOrNull(TEventBigDecimalFloat, v) }
 func V(v uint64) *TEvent                { return NewTEvent(TEventVersion, v, nil) }
@@ -754,12 +754,12 @@ func NAN() *TEvent                      { return NewTEvent(TEventNan, nil, nil) 
 func SNAN() *TEvent                     { return NewTEvent(TEventSNan, nil, nil) }
 func UID(v []byte) *TEvent              { return NewTEvent(TEventUID, v, nil) }
 func GT(v time.Time) *TEvent            { return NewTEvent(TEventTime, v, nil) }
-func CT(v compact_time.Time) *TEvent    { return EventOrNull(TEventCompactTime, v) }
+func T(v compact_time.Time) *TEvent     { return EventOrNull(TEventCompactTime, v) }
 func S(v string) *TEvent                { return NewTEvent(TEventString, v, nil) }
 func RID(v string) *TEvent              { return NewTEvent(TEventResourceID, v, nil) }
 func RREF(v string) *TEvent             { return NewTEvent(TEventRemoteRef, v, nil) }
-func CUB(v []byte) *TEvent              { return NewTEvent(TEventCustomBinary, v, nil) }
-func CUT(v string) *TEvent              { return NewTEvent(TEventCustomText, v, nil) }
+func CB(v []byte) *TEvent               { return NewTEvent(TEventCustomBinary, v, nil) }
+func CT(v string) *TEvent               { return NewTEvent(TEventCustomText, v, nil) }
 func AB(l uint64, v []byte) *TEvent     { return NewTEvent(TEventArrayBoolean, l, v) }
 func AI8(v []int8) *TEvent              { return NewTEvent(TEventArrayInt8, v, nil) }
 func AI16(v []int16) *TEvent            { return NewTEvent(TEventArrayInt16, v, nil) }
@@ -772,7 +772,7 @@ func AU64(v []uint64) *TEvent           { return NewTEvent(TEventArrayUint64, v,
 func AF16(v []byte) *TEvent             { return NewTEvent(TEventArrayFloat16, v, nil) }
 func AF32(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat32, v, nil) }
 func AF64(v []float64) *TEvent          { return NewTEvent(TEventArrayFloat64, v, nil) }
-func AUU(v [][]byte) *TEvent            { return NewTEvent(TEventArrayUID, v, nil) }
+func AU(v [][]byte) *TEvent             { return NewTEvent(TEventArrayUID, v, nil) }
 func SB() *TEvent                       { return NewTEvent(TEventStringBegin, nil, nil) }
 func RB() *TEvent                       { return NewTEvent(TEventResourceIDBegin, nil, nil) }
 func RRB() *TEvent                      { return NewTEvent(TEventRemoteRefBegin, nil, nil) }
@@ -790,13 +790,13 @@ func AU64B() *TEvent                    { return NewTEvent(TEventArrayUint64Begi
 func AF16B() *TEvent                    { return NewTEvent(TEventArrayFloat16Begin, nil, nil) }
 func AF32B() *TEvent                    { return NewTEvent(TEventArrayFloat32Begin, nil, nil) }
 func AF64B() *TEvent                    { return NewTEvent(TEventArrayFloat64Begin, nil, nil) }
-func AUUB() *TEvent                     { return NewTEvent(TEventArrayUIDBegin, nil, nil) }
+func AUB() *TEvent                      { return NewTEvent(TEventArrayUIDBegin, nil, nil) }
 func MB() *TEvent                       { return NewTEvent(TEventMediaBegin, nil, nil) }
 func AC(l uint64, more bool) *TEvent    { return NewTEvent(TEventArrayChunk, l, more) }
 func AD(v []byte) *TEvent               { return NewTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return NewTEvent(TEventList, nil, nil) }
 func M() *TEvent                        { return NewTEvent(TEventMap, nil, nil) }
-func MUP(id string) *TEvent             { return NewTEvent(TEventMarkup, id, nil) }
+func MU(id string) *TEvent              { return NewTEvent(TEventMarkup, id, nil) }
 func NODE() *TEvent                     { return NewTEvent(TEventNode, nil, nil) }
 func EDGE() *TEvent                     { return NewTEvent(TEventEdge, nil, nil) }
 func E() *TEvent                        { return NewTEvent(TEventEnd, nil, nil) }
@@ -820,7 +820,7 @@ func EventForValue(value interface{}) *TEvent {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return PI(rv.Uint())
 	case reflect.Float32, reflect.Float64:
-		return F(rv.Float())
+		return BF(rv.Float())
 	case reflect.String:
 		return S(rv.String())
 	case reflect.Slice:
@@ -836,7 +836,7 @@ func EventForValue(value interface{}) *TEvent {
 		case common.TypePBigDecimalFloat:
 			return BDF(rv.Interface().(*apd.Decimal))
 		case common.TypePBigFloat:
-			return BF(rv.Interface().(*big.Float))
+			return BBF(rv.Interface().(*big.Float))
 		case common.TypePBigInt:
 			return BI(rv.Interface().(*big.Int))
 		case common.TypePURL:
@@ -850,13 +850,13 @@ func EventForValue(value interface{}) *TEvent {
 			return BDF(&v)
 		case common.TypeBigFloat:
 			v := rv.Interface().(big.Float)
-			return BF(&v)
+			return BBF(&v)
 		case common.TypeBigInt:
 			v := rv.Interface().(big.Int)
 			return BI(&v)
 		case common.TypeCompactTime:
 			v := rv.Interface().(compact_time.Time)
-			return CT(v)
+			return T(v)
 		case common.TypeDFloat:
 			v := rv.Interface().(compact_float.DFloat)
 			return DF(v)
@@ -1030,8 +1030,8 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F2", B(false))
 		ane("F3", I(1))
 		ane("F4", I(-1))
-		ane("F5", F(1.1))
-		ane("F6", BF(NewBigFloat("1.1")))
+		ane("F5", BF(1.1))
+		ane("F6", BBF(NewBigFloat("1.1")))
 		ane("F7", DF(NewDFloat("1.1")))
 		ane("F8", BDF(NewBDF("1.1")))
 		ane("F9", NULL())
@@ -1040,7 +1040,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F13", SNAN())
 		ane("F14", UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 		ane("F15", GT(_this.Time))
-		ane("F16", CT(_this.CTime))
+		ane("F16", T(_this.CTime))
 		ane("F17", AU8([]byte{1}))
 		ane("F18", S("xyz"))
 		ane("F19", RID("http://example.com"))
@@ -1052,8 +1052,8 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			B(false),
 			I(1),
 			I(-1),
-			F(1.1),
-			BF(NewBigFloat("1.1")),
+			BF(1.1),
+			BBF(NewBigFloat("1.1")),
 			DF(NewDFloat("1.1")),
 			BDF(NewBDF("1.1")),
 			NULL(),
@@ -1062,7 +1062,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			SNAN(),
 			UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 			GT(_this.Time),
-			CT(_this.CTime),
+			T(_this.CTime),
 			AU8([]byte{1}),
 			S("xyz"),
 			RID("http://example.com"),

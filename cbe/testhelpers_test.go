@@ -169,8 +169,8 @@ func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundred
 func TT() *test.TEvent                       { return test.TT() }
 func FF() *test.TEvent                       { return test.FF() }
 func I(v int64) *test.TEvent                 { return test.I(v) }
-func F(v float64) *test.TEvent               { return test.F(v) }
-func BF(v *big.Float) *test.TEvent           { return test.BF(v) }
+func F(v float64) *test.TEvent               { return test.BF(v) }
+func BF(v *big.Float) *test.TEvent           { return test.BBF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func NULL() *test.TEvent                     { return test.NULL() }
@@ -183,11 +183,11 @@ func NAN() *test.TEvent                      { return test.NAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UID(v []byte) *test.TEvent              { return test.UID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v compact_time.Time) *test.TEvent    { return test.CT(v) }
+func CT(v compact_time.Time) *test.TEvent    { return test.T(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
-func CUB(v []byte) *test.TEvent              { return test.CUB(v) }
-func CUT(v string) *test.TEvent              { return test.CUT(v) }
+func CUB(v []byte) *test.TEvent              { return test.CB(v) }
+func CUT(v string) *test.TEvent              { return test.CT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
 func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
 func AU16(v []uint16) *test.TEvent           { return test.AU16(v) }
@@ -216,13 +216,13 @@ func AI64B() *test.TEvent                    { return test.AI64B() }
 func AF16B() *test.TEvent                    { return test.AF16B() }
 func AF32B() *test.TEvent                    { return test.AF32B() }
 func AF64B() *test.TEvent                    { return test.AF64B() }
-func AUUB() *test.TEvent                     { return test.AUUB() }
+func AUUB() *test.TEvent                     { return test.AUB() }
 func MB() *test.TEvent                       { return test.MB() }
 func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
-func MUP(id string) *test.TEvent             { return test.MUP(id) }
+func MUP(id string) *test.TEvent             { return test.MU(id) }
 func NODE() *test.TEvent                     { return test.NODE() }
 func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }

@@ -106,7 +106,7 @@ func (h *TEventPrinter) OnFloat(value float64) {
 			h.Print(NAN())
 		}
 	} else {
-		h.Print(F(value))
+		h.Print(BF(value))
 	}
 	h.Next.OnFloat(value)
 }
@@ -146,7 +146,7 @@ func (h *TEventPrinter) OnTime(value time.Time) {
 	h.Next.OnTime(value)
 }
 func (h *TEventPrinter) OnCompactTime(value compact_time.Time) {
-	h.Print(CT(value))
+	h.Print(T(value))
 	h.Next.OnCompactTime(value)
 }
 func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
@@ -158,9 +158,9 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	case events.ArrayTypeRemoteRef:
 		h.Print(RREF(string(value)))
 	case events.ArrayTypeCustomBinary:
-		h.Print(CUB(value))
+		h.Print(CB(value))
 	case events.ArrayTypeCustomText:
-		h.Print(CUT(string(value)))
+		h.Print(CT(string(value)))
 	case events.ArrayTypeBit:
 		h.Print(AB(elementCount, value))
 	case events.ArrayTypeInt8:
@@ -186,7 +186,7 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	case events.ArrayTypeFloat64:
 		h.Print(AF64(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeUID:
-		h.Print(AUU(arrays.BytesToUUIDSlice(value)))
+		h.Print(AU(arrays.BytesToUUIDSlice(value)))
 	default:
 		panic(fmt.Errorf("TODO: TEventPrinter.OnArray: Typed array support for %v", arrayType))
 	}
@@ -201,7 +201,7 @@ func (h *TEventPrinter) OnStringlikeArray(arrayType events.ArrayType, value stri
 	case events.ArrayTypeRemoteRef:
 		h.Print(RREF(value))
 	case events.ArrayTypeCustomText:
-		h.Print(CUT(value))
+		h.Print(CT(value))
 	default:
 		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
 	}
@@ -244,7 +244,7 @@ func (h *TEventPrinter) OnArrayBegin(arrayType events.ArrayType) {
 	case events.ArrayTypeFloat64:
 		h.Print(AF64B())
 	case events.ArrayTypeUID:
-		h.Print(AUUB())
+		h.Print(AUB())
 	case events.ArrayTypeMedia:
 		h.Print(MB())
 	default:
@@ -269,7 +269,7 @@ func (h *TEventPrinter) OnMap() {
 	h.Next.OnMap()
 }
 func (h *TEventPrinter) OnMarkup(id []byte) {
-	h.Print(MUP(string(id)))
+	h.Print(MU(string(id)))
 	h.Next.OnMarkup(id)
 }
 func (h *TEventPrinter) OnEnd() {

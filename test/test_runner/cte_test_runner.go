@@ -33,6 +33,7 @@ import (
 
 type CTETestRunner struct {
 	Name              string
+	Encode            []*CTEEncodeTest
 	DecodeMustSucceed []*CTEDecodeSuccessTest
 	DecodeMustFail    []CTEDecodeFailTest
 	Skip              bool
@@ -45,6 +46,12 @@ func (_this *CTETestRunner) String() string {
 }
 
 func (_this *CTETestRunner) postDecodeInit() {
+	for _, t := range _this.Encode {
+		t.postDecodeInit()
+		t.debug = _this.Debug
+		t.trace = _this.Trace
+	}
+
 	for _, t := range _this.DecodeMustSucceed {
 		t.postDecodeInit()
 		t.debug = _this.Debug
@@ -59,6 +66,10 @@ func (_this *CTETestRunner) validate() {
 
 	if len(_this.Name) == 0 {
 		panic(fmt.Errorf("missing name"))
+	}
+
+	for _, t := range _this.Encode {
+		t.validate()
 	}
 
 	for _, t := range _this.DecodeMustSucceed {
@@ -76,6 +87,10 @@ func (_this *CTETestRunner) run() {
 
 	if _this.Debug {
 		fmt.Printf("Running CTE Test %v:\n", _this)
+	}
+
+	for _, test := range _this.Encode {
+		test.run()
 	}
 
 	for _, test := range _this.DecodeMustSucceed {
@@ -102,11 +117,11 @@ func (_this CTEDecodeFailTest) run() {
 }
 
 type CTEDecodeSuccessTest struct {
-	Source string
-	Events []string
-	events []*test.TEvent
-	debug  bool
-	trace  bool
+	Document string
+	Events   []string
+	events   []*test.TEvent
+	debug    bool
+	trace    bool
 }
 
 func (_this *CTEDecodeSuccessTest) postDecodeInit() {
@@ -116,81 +131,42 @@ func (_this *CTEDecodeSuccessTest) postDecodeInit() {
 func (_this *CTEDecodeSuccessTest) validate() {
 }
 
-func (_this *CTEDecodeSuccessTest) testFailed(format string, args ...interface{}) {
-	panic(fmt.Errorf(format, args...))
-}
-
-func (_this *CTEDecodeSuccessTest) assertOperation(receiver events.DataEventReceiver,
-	operation func(receiver events.DataEventReceiver),
-	describeSrc func() string) {
-
-	if _this.debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
-	}
-
-	eventStore := test.NewTEventStore(receiver)
-	receiver = eventStore
-	op := func() {
-		operation(receiver)
-	}
-
-	if _this.trace {
-		defer func() {
-			if r := recover(); r != nil {
-				message := fmt.Sprintf("%v unexpectedly failed after producing events %v", describeSrc(), eventStore.Events)
-
-				switch e := r.(type) {
-				case error:
-					panic(fmt.Errorf("%v: %w", message, e))
-				default:
-					panic(fmt.Errorf("%v: %v", message, r))
-				}
-			}
-		}()
-		operation(receiver)
-	} else {
-		if err := capturePanic(op); err != nil {
-			_this.testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
-		}
-	}
-}
-
-func (_this *CTEDecodeSuccessTest) decode(document string) []*test.TEvent {
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver := rules.NewRules(eventStore, nil)
-	_this.assertOperation(receiver,
-		func(recv events.DataEventReceiver) {
-			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
-			_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(document)), recv)
-		}, func() string {
-			return fmt.Sprintf("CTE %v", desc(document))
-		})
-	return eventStore.Events
-}
-
-func (_this *CTEDecodeSuccessTest) encode(events []*test.TEvent) string {
-	buffer := &bytes.Buffer{}
-	encoder := cte.NewEncoder(nil)
-	encoder.PrepareToEncode(buffer)
-	rules := rules.NewRules(encoder, nil)
-	for _, event := range events {
-		event.Invoke(rules)
-	}
-	return buffer.String()
-}
-
 func (_this *CTEDecodeSuccessTest) run() {
 	expectedEvents := _this.events
-	actualEvents := _this.decode(_this.Source)
+	actualEvents := decodeCTE(_this.trace, _this.debug, _this.Document)
 	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		_this.testFailed("Expected CTE %v to produce events %v but got %v",
-			desc(_this.Source), expectedEvents, actualEvents)
+		testFailed("Expected document %v to produce events %v but got %v",
+			desc(_this.Document), expectedEvents, actualEvents)
 	}
 
-	encodedDocument := _this.encode(actualEvents)
-	secondRunEvents := _this.decode(encodedDocument)
+	encodedDocument := encodeCTE(_this.trace, _this.debug, actualEvents)
+	secondRunEvents := decodeCTE(_this.trace, _this.debug, encodedDocument)
 	if !test.AreAllEventsEquivalent(expectedEvents, secondRunEvents) {
-		_this.testFailed("Expected CTE %v re-encoded to %v to produce events %v but got %v",
-			desc(_this.Source), desc(encodedDocument), expectedEvents, secondRunEvents)
+		testFailed("Expected document %v re-encoded to %v to produce events %v but got %v",
+			desc(_this.Document), desc(encodedDocument), expectedEvents, secondRunEvents)
+	}
+}
+
+type CTEEncodeTest struct {
+	Document string
+	Events   []string
+	events   []*test.TEvent
+	debug    bool
+	trace    bool
+}
+
+func (_this *CTEEncodeTest) postDecodeInit() {
+	_this.events = event_parser.ParseEvents(_this.Events)
+}
+
+func (_this *CTEEncodeTest) validate() {
+}
+
+func (_this *CTEEncodeTest) run() {
+	expectedDocument := _this.Document
+	actualDocument := encodeCTE(_this.trace, _this.debug, _this.events)
+	if expectedDocument != actualDocument {
+		testFailed("Expected events %v to encode to document %v but got %v",
+			desc(_this.events), desc(expectedDocument), desc(actualDocument))
 	}
 }

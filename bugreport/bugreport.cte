@@ -33,7 +33,7 @@ c0
             "events" = [
                             "v 0"
                             "m"
-                                "s a" "tt"
+                                "s a" "b true"
                             "e"
                        ]
             "from"   = ["t" "b" "e"]

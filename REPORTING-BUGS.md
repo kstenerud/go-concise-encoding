@@ -24,7 +24,7 @@ Here's a quick example of what a unit test looks like:
 ```cte
 c0
 {
-    "tests" = [
+    "ceTests" = [
         {
             "name" = "My Bug Report"
             "cte" = "\.%%%%
@@ -41,7 +41,7 @@ c0
 }
 ```
 
-This unit test attempts to decode a CTE document (in this case `c0 {"a"=true}`), validates that it is a properly formed document, converts it to CBE, and compares it to the expected [`83 00 79 81 61 7d 7b`].
+This unit test attempts to decode a CTE document (in this case `c0 {"a"=true}`), validates that it is a properly formed document, converts it to CBE, and compares it to the expected CBE document [`83 00 79 81 61 7d 7b`].
 
 ### Fields:
 
@@ -61,20 +61,20 @@ This unit test attempts to decode a CTE document (in this case `c0 {"a"=true}`),
 Templates
 ---------
 
-Although the [unit test documentation](TESTING.md) describes fully how these unit tests work, the impatient can get by just using a template.
+Although the [unit test documentation](TESTING.md) describes fully how these unit tests work, the impatient can usually get the job done with a template.
 
 The [templates](bugreport/templates) directory contains templates for the kinds of bugs most likely to be encountered:
 
-| Situation                     | "from" field | "to" field | Notes                                                                  |
-| ----------------------------- | ------------ | ---------- | ---------------------------------------------------------------------- |
-| CBE is output incorrectly     | "t" or "e"   | "b"        | "cbe" contains what the output should look like                        |
-| CTE is output incorrectly     | "t" or "e"   | "t"        | "cte" contains what the output should look like                        |
-| CBE is parsed incorrectly     | "b"          | "t" or "e" | "cte" or "events" contains what should be generated from the CBE data  |
-| CTE is parsed incorrectly     | "t"          | "t" or "e" | "cbe" or "events" contains what should be generated from the CTE data  |
-| Document wrongfully rejected  | "t" or "b"   | nothing    | "cbe" or "cte" contains the document that is being wrongfully rejected |
-| Document wrongfully allowed   | "t" or "b"   | nothing    | "cbe" or "cte" contains the document that is being wrongfully allowed  |
+| Situation                     | Template | Notes                                                                  |
+| ----------------------------- | -------- | ---------------------------------------------------------------------- |
+| CBE is output incorrectly     | [here](bugreport/templates/cbe_output_incorrect.cte)    | "cbe" contains what the output should look like                |
+| CTE is output incorrectly     | [here](bugreport/templates/cte_output_incorrect.cte)    | "cte" contains what the output should look like                |
+| CBE is decoded incorrectly    | [here](bugreport/templates/cbe_decoded_incorrectly.cte) | "cte" or "events" contains what should be generated from the CBE data   |
+| CTE is decoded incorrectly    | [here](bugreport/templates/cte_decoded_incorrectly.cte) | "cbe" or "events" contains what should be generated from the CTE data   |
+| Document wrongfully rejected  | [here](bugreport/templates/doc_wrongfully_rejected.cte) | "cbe" or "cte" contains the document that is being wrongfully rejected |
+| Document wrongfully allowed   | [here](bugreport/templates/doc_wrongfully_allowed.cte)  | "cbe" or "cte" contains the document that is being wrongfully allowed  |
 
-Simply copy a template and overwrite [bugreport.cte](bugreport/bugreport.cte), then fill in your CTE and CBE data (and possibly events).
+For common issues, overwrite [bugreport.cte](bugreport/bugreport.cte) with one of the [templates](bugreport/templates), fill in your CTE and CBE data (and possibly events), and run the bugreport test to verify failure.
 
 
 

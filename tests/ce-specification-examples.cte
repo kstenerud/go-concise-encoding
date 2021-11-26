@@ -61,8 +61,8 @@ c0
             "events" = [
                             "v 0"
                             "l"
-                                "tt"
-                                "ff"
+                                "b true"
+                                "b false"
                             "e"
                         ]
             "from"   = ["t" "b" "e"]
@@ -665,17 +665,17 @@ c0
                             4d 65 21 7b 7b|
             "events" = [
                             "v 0"
-                            "mup View"
+                            "mu View"
                             "e"
-                                "mup Image"
+                                "mu Image"
                                     "s src" "rid images/avatar-image.jpg"
                                 "e"
                                 "e"
-                                "mup Text"
+                                "mu Text"
                                 "e"
                                     "s Hello! Please choose a name!"
                                 "e"
-                                "mup TextInput"
+                                "mu TextInput"
                                     "s id" "s name"
                                     "s style" "m"
                                         "s height" "n 40"

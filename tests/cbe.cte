@@ -28,7 +28,7 @@ c0
         {
             "name" = "Version specifier"
             "decodeMustSucceed" = [
-                {"source"=|u8x 83 00 01|  "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 01|  "events"=["v 0" "n 1"]}
             ]
             "decodeMustFail" = [
                 |u8x 00|
