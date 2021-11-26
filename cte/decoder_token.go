@@ -737,19 +737,22 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 
 	// Note: The "0x" is implied, and not actually present in the text.
 
-	switch {
-	case bytes.Equal(_this, byteStringNan):
-		value = common.QuietNan
-		decodedCount = pos + 3
-		return
-	case bytes.Equal(_this, byteStringSnan):
-		value = common.SignalingNan
-		decodedCount = pos + 4
-		return
-	case bytes.Equal(_this[pos:], byteStringInf):
-		value = math.Inf(int(sign))
-		decodedCount = pos + 3
-		return
+	if !_this.hasCharPropertiesAtOffset(textPos, pos, chars.DigitBase10|chars.LowerAF|chars.UpperAF) {
+		lower := bytes.ToLower(_this)
+		switch {
+		case bytes.Equal(lower, byteStringNan):
+			value = common.QuietNan
+			decodedCount = pos + 3
+			return
+		case bytes.Equal(lower, byteStringSnan):
+			value = common.SignalingNan
+			decodedCount = pos + 4
+			return
+		case bytes.Equal(lower[pos:], byteStringInf):
+			value = math.Inf(int(sign))
+			decodedCount = pos + 3
+			return
+		}
 	}
 
 	coefficient, bigCoefficient, coefficientDigitCount, bytesDecoded := _this[pos:].DecodeHexUint(textPos)

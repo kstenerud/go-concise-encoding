@@ -23,6 +23,7 @@ package event_parser
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"math/big"
 	"reflect"
 	"regexp"
@@ -258,6 +259,12 @@ func parseBigInt(bytes []byte) interface{} {
 }
 
 func parseFloat(bytes []byte) interface{} {
+	nanBits := math.Float64bits(math.NaN())
+	signalingNan := math.Float64frombits(nanBits & ^uint64(1<<50))
+	if string(bytes) == "snan" {
+		return signalingNan
+	}
+
 	value, err := strconv.ParseFloat(string(bytes), 64)
 	if err != nil {
 		panic(fmt.Errorf("error parsing float [%v]: %w", string(bytes), err))

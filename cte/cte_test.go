@@ -23,11 +23,9 @@ package cte
 import (
 	"bytes"
 	"fmt"
-	"math"
 	"testing"
 
 	compact_float "github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 )
@@ -99,81 +97,6 @@ func TestCTEArrayFloat16(t *testing.T) {
 	assertDecodeFails(t, "c0 |f16 0x1.fep-127|")
 	assertDecodeFails(t, "c0 |f16 0x1.fffffffffffffffffffffffff|")
 	assertDecodeFails(t, "c0 |f16 -0x1.fffffffffffffffffffffffff|")
-}
-
-func TestCTEArrayFloat32(t *testing.T) {
-	// 24 sig bits, 8 exp bits
-	eOpts := options.DefaultCTEEncoderOptions()
-
-	eOpts.DefaultFormats.Array.Float32 = options.CTEEncodingFormatHexadecimal
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|",
-		BD(), EvV, AF32([]float32{0x1.fep+10, -0x1.3p-40, 0x1.111112p+127, 0x1.111112p-126}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x|", BD(), EvV, AF32([]float32{}), ED())
-	assertDecodeFails(t, "c0\n|f32x -|")
-
-	eOpts.DefaultFormats.Array.Float32 = options.CTEEncodingFormatUnset
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 1.5e+10 -5.9012e-30|",
-		BD(), EvV, AF32([]float32{1.5e+10, -5.9012e-30}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32|", BD(), EvV, AF32([]float32{}), ED())
-	assertDecodeFails(t, "c0\n|f32 -|")
-
-	assertDecode(t, nil, "c0 |f32 5.5e+10 -0xe.89p+50|",
-		BD(), EvV, AF32([]float32{5.5e+10, -0xe.89p+50}), ED())
-
-	eOpts.DefaultFormats.Array.Float32 = options.CTEEncodingFormatHexadecimal
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x nan|", BD(), EvV, AF32([]float32{float32(math.NaN())}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x snan|", BD(), EvV, AF32([]float32{float32(common.SignalingNan)}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x inf|", BD(), EvV, AF32([]float32{float32(math.Inf(1))}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32x -inf|", BD(), EvV, AF32([]float32{float32(math.Inf(-1))}), ED())
-	eOpts.DefaultFormats.Array.Float32 = options.CTEEncodingFormatUnset
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 nan|", BD(), EvV, AF32([]float32{float32(math.NaN())}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 snan|", BD(), EvV, AF32([]float32{float32(common.SignalingNan)}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 inf|", BD(), EvV, AF32([]float32{float32(math.Inf(1))}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f32 -inf|", BD(), EvV, AF32([]float32{float32(math.Inf(-1))}), ED())
-
-	assertDecodeFails(t, "c0 |f32 0x1.fep+128|")
-	assertDecodeFails(t, "c0 |f32 0x1.fep-127|")
-	assertDecodeFails(t, "c0 |f32 0x1.fffffffffffffffffffffffff|")
-	assertDecodeFails(t, "c0 |f32 -0x1.fffffffffffffffffffffffff|")
-}
-
-func TestCTEArrayFloat64(t *testing.T) {
-	// 53 sig bits, 11 exp bits
-	eOpts := options.DefaultCTEEncoderOptions()
-
-	eOpts.DefaultFormats.Array.Float64 = options.CTEEncodingFormatHexadecimal
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|",
-		BD(), EvV, AF64([]float64{0x1.fep+10, -0x1.3p-40, 0x1.111112p+1023, 0x1.111112p-1022}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x|", BD(), EvV, AF64([]float64{}), ED())
-	assertDecodeFails(t, "c0\n|f64x -|")
-
-	eOpts.DefaultFormats.Array.Float64 = options.CTEEncodingFormatUnset
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 1.5e+308 1.5e-308|",
-		BD(), EvV, AF64([]float64{1.5e+308, 1.5e-308}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64|", BD(), EvV, AF64([]float64{}), ED())
-	assertDecodeFails(t, "c0\n|f64 -|")
-
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 1.5e+10 -5.9012e-30|",
-		BD(), EvV, AF64([]float64{1.5e+10, -5.9012e-30}), ED())
-
-	assertDecode(t, nil, "c0 |f64 5.5e+10 -0xe.89p+50|",
-		BD(), EvV, AF64([]float64{5.5e+10, -0xe.89p+50}), ED())
-
-	eOpts.DefaultFormats.Array.Float64 = options.CTEEncodingFormatHexadecimal
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x nan|", BD(), EvV, AF64([]float64{math.NaN()}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x snan|", BD(), EvV, AF64([]float64{common.SignalingNan}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x inf|", BD(), EvV, AF64([]float64{math.Inf(1)}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64x -inf|", BD(), EvV, AF64([]float64{math.Inf(-1)}), ED())
-	eOpts.DefaultFormats.Array.Float64 = options.CTEEncodingFormatUnset
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 nan|", BD(), EvV, AF64([]float64{math.NaN()}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 snan|", BD(), EvV, AF64([]float64{common.SignalingNan}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 inf|", BD(), EvV, AF64([]float64{math.Inf(1)}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f64 -inf|", BD(), EvV, AF64([]float64{math.Inf(-1)}), ED())
-
-	assertDecodeFails(t, "c0 |f64 0x1.fep+1024|")
-	assertDecodeFails(t, "c0 |f64 0x1.fep-1023|")
-	assertDecodeFails(t, "c0 |f64 0x1.fffffffffffffffffffffffff|")
-	assertDecodeFails(t, "c0 |f64 -0x1.fffffffffffffffffffffffff|")
 }
 
 func TestCTEArrayUID(t *testing.T) {

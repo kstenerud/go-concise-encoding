@@ -1142,5 +1142,59 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
 
         // ====================================================================
 
+        {
+            "name" = "Float32 array"
+            // 24 sig bits, 8 exp bits
+            "decodeMustSucceed" = [
+                {"source"="c0 |f32|"                                "events"=["v 0" "af32"]}
+                {"source"="c0 |f32x|"                               "events"=["v 0" "af32"]}
+                {"source"="c0 |f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af32 1.4512e+20 9.41e-15 944523.55"]}
+                {"source"="c0 |f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"  "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
+                {"source"="c0 |f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"  "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
+                {"source"="c0 |f32 nan snan inf -inf|"              "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"source"="c0 |f32 NAN SNAN INF -INF|"              "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"source"="c0 |f32x nan snan inf -inf|"             "events"=["v 0" "af32 nan snan inf -inf"]}
+                {"source"="c0 |f32x NAN SNAN INF -INF|"             "events"=["v 0" "af32 nan snan inf -inf"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |f32 -|"                              // Incomplete value
+                "c0 |f32 -nan|"                           // NaN does not have a negative form
+                "c0 |f32 -snan|"                          // NaN does not have a negative form
+                "c0 |f32 0x1.fep+128|"                    // Exponent too big
+                "c0 |f32 0x1.fep-127|"                    // Exponent too small
+                "c0 |f32 0x1.fffffffffffffffffffffffff|"  // Coefficient too big
+                "c0 |f32 -0x1.fffffffffffffffffffffffff|" // Coefficient too big
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Float64 array"
+            // 53 sig bits, 11 exp bits
+            "decodeMustSucceed" = [
+                {"source"="c0 |f64|"                                "events"=["v 0" "af64"]}
+                {"source"="c0 |f64x|"                               "events"=["v 0" "af64"]}
+                {"source"="c0 |f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af64 1.4512e+20 9.41e-15 944523.55"]}
+                {"source"="c0 |f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"  "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
+                {"source"="c0 |f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"  "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
+                {"source"="c0 |f64 nan snan inf -inf|"              "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"source"="c0 |f64 NAN SNAN INF -INF|"              "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"source"="c0 |f64x nan snan inf -inf|"             "events"=["v 0" "af64 nan snan inf -inf"]}
+                {"source"="c0 |f64x NAN SNAN INF -INF|"             "events"=["v 0" "af64 nan snan inf -inf"]}
+            ]
+            "decodeMustFail" = [
+                "c0 |f64 -|"                              // Incomplete value
+                "c0 |f64 -nan|"                           // NaN does not have a negative form
+                "c0 |f64 -snan|"                          // NaN does not have a negative form
+                "c0 |f64 0x1.fep+1024|"                   // Exponent too big
+                "c0 |f64 0x1.fep-1023|"                   // Exponent too small
+                "c0 |f64 0x1.fffffffffffffffffffffffff|"  // Coefficient too big
+                "c0 |f64 -0x1.fffffffffffffffffffffffff|" // Coefficient too big
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
