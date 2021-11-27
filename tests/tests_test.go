@@ -27,8 +27,20 @@ import (
 )
 
 func TestTemplates(t *testing.T) {
-	// Make sure the template file is valid
+
+	// Make sure the general test template is valid
 	test_runner.RunCEUnitTests(t, "template.cte")
+
+	// Make sure the bug report templates are valid
+	test_runner.RunCEUnitTests(t, "../bugreport/templates/cbe_decoded_incorrectly.cte")
+	test_runner.RunCEUnitTests(t, "../bugreport/templates/cbe_output_incorrect.cte")
+	test_runner.RunCEUnitTests(t, "../bugreport/templates/cte_decoded_incorrectly.cte")
+	test_runner.RunCEUnitTests(t, "../bugreport/templates/cte_output_incorrect.cte")
+	test_runner.RunCEUnitTests(t, "../bugreport/templates/doc_wrongfully_allowed.cte")
+	test_runner.RunCEUnitTests(t, "../bugreport/templates/doc_wrongfully_rejected.cte")
+
+	// Make sure the default bug report test is valid
+	test_runner.RunCEUnitTests(t, "../bugreport/bugreport.cte")
 }
 
 func TestCE(t *testing.T) {

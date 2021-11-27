@@ -35,16 +35,16 @@ import (
 )
 
 type CETestRunner struct {
-	Name   string
-	Events []string
-	Cte    string
-	Cbe    []byte
-	From   []string
-	To     []string
-	Fail   bool
-	Debug  bool
-	Trace  bool
-	Skip   bool
+	Name     string
+	Events   []string
+	Cte      string
+	Cbe      []byte
+	From     []string
+	To       []string
+	MustFail bool
+	Debug    bool
+	Trace    bool
+	Skip     bool
 
 	events             []*test.TEvent
 	srcEventTypes      map[string]bool
@@ -177,7 +177,7 @@ func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 		receiver = test.NewStdoutTEventPrinter(receiver)
 	}
 
-	if !_this.Fail && _this.Trace {
+	if !_this.MustFail && _this.Trace {
 		operation(receiver)
 		return
 	}
@@ -189,9 +189,9 @@ func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 		operation(receiver)
 	})
 
-	if !_this.Fail && err != nil {
+	if !_this.MustFail && err != nil {
 		_this.testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
-	} else if _this.Fail && err == nil {
+	} else if _this.MustFail && err == nil {
 		_this.testFailed("%v unexpectedly succeeded and produced events %v", describeSrc(), eventStore.Events)
 	}
 }

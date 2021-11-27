@@ -21,11 +21,11 @@ c0
 {
     "ceTests" = [
         {
-            "name" = "Document is wrongfully allowed"
-            "fail"   = true
-            "from"   = ["b"]
-            "cbe"    = |u8x 83 00 79 81 61 7d 7b|
-            "cte" = "\.%%%%
+            "name"     = "Document is wrongfully allowed"
+            "mustFail" = true
+            "from"     = ["b"]
+            "cbe"      = |u8x 83 00 74 81 61 7d 7b|
+            "cte"      = "\.%%%%
 c0
 {
     "a" = true

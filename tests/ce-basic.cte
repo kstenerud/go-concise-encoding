@@ -6,49 +6,6 @@ c0
     }
 
     "ceTests" = [
-
-        // ====================================================================
-
-        /* Test case template
-         *
-         * Fields (see test/test_runner/test_runner.go):
-         * - name:   Name of this test (required)
-         * - cte:    Encoded CTE data (required if "t" specified in TO or FROM)
-         * - cbe:    Encoded CBE data (required if "b" specified in TO or FROM)
-         * - events: CE codec events (required if "e" specified in TO or FROM)
-         * - to:     Test converting to CTE ("t"), CBE ("b"), events ("e")
-         * - from:   Test converting from CTE ("t"), CBE ("b"), events ("e")
-         * - fail:   Expect failure? (default false)
-         * - trace:  Trace the code path on failure?? (default false)
-         * - debug:  Print debug information while testing? (default false)
-         * - skip:   Skip this test? (default false)
-         *
-         * Notes:
-         * - Events are shorthand representations of events associated with CE data
-         *   (see test/event_parser/event_parser.go).
-         * - If TO is empty, the data will simply run through the rules engine.
-         * - CTE data is string compared (after trimming leading and trailing whitespace),
-         *   so unexpected indentation will cause the comparison to fail.
-         */
-
-        {
-            "name" = "Template"
-            "cte" = "\.%%%%
-c0
-null
-            %%%%"
-            "cbe"    = |u8x 83 00 7e|
-            "events" = ["v 0" "null"]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
-            "fail"   = false
-            "trace"  = false
-            "debug"  = false
-            "skip"   = false
-        }
-
-        // ====================================================================
-
         {
             "name" = "Empty document"
             "cte" = "\.%%%%

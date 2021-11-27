@@ -47,12 +47,12 @@ c0
                                 "s a" "b true"
                             "e" "ed"
                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
-            "fail"   = false
-            "trace"  = false
-            "debug"  = false
-            "skip"   = false
+            "from"     = ["t" "b" "e"]
+            "to"       = ["t" "b" "e"]
+            "mustFail" = false
+            "trace"    = false
+            "debug"    = false
+            "skip"     = false
         }
 
         // Add more unit tests here

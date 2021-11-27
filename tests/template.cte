@@ -108,14 +108,16 @@ c0
 c0
 null
             %%%%"
-            "cbe"    = |u8x 83 00 7e|
-            "events" = ["v 0" "null"]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
-            "fail"   = false
-            "trace"  = false
-            "debug"  = false
-            "skip"   = false
+            "cbe"      = |u8x 83 00 7e|
+            "events"   = ["v 0" "null"]
+            "from"     = ["t" "b" "e"]
+            "to"       = ["t" "b" "e"]
+
+            // Optional fields:
+            "mustFail" = false
+            "trace"    = false
+            "debug"    = false
+            "skip"     = false
         }
     ]
 
