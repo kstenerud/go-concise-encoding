@@ -159,9 +159,9 @@ func (_this *BuilderEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 }
 func (_this *BuilderEventReceiver) OnNan(signaling bool) {
 	if signaling {
-		_this.OnFloat(common.SignalingNan)
+		_this.OnFloat(common.Float64SignalingNan)
 	} else {
-		_this.OnFloat(common.QuietNan)
+		_this.OnFloat(common.Float64QuietNan)
 	}
 }
 func (_this *BuilderEventReceiver) OnUID(value []byte) {

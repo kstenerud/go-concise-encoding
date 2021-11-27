@@ -281,7 +281,7 @@ func (h *TEventStore) OnNan(signaling bool) {
 	if signaling {
 		h.add(SNAN())
 	} else {
-		h.add(NAN())
+		h.add(QNAN())
 	}
 	h.receiver.OnNan(signaling)
 }

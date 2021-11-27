@@ -128,10 +128,10 @@ func (_this *Writer) WriteBigInt(value *big.Int) {
 
 func (_this *Writer) WriteFloat(value float64) {
 	if math.IsNaN(value) {
-		if common.IsSignalingNan(value) {
-			_this.WriteSignalingNan()
-		} else {
+		if common.HasQuietNanBitSet64(value) {
 			_this.WriteQuietNan()
+		} else {
+			_this.WriteSignalingNan()
 		}
 		return
 	}
@@ -152,10 +152,10 @@ func (_this *Writer) WriteFloat(value float64) {
 func (_this *Writer) WriteFloat32UsingFormat(value float32, format string) {
 	f64 := float64(value)
 	if math.IsNaN(f64) {
-		if common.IsSignalingNan(f64) {
-			_this.WriteSignalingNan()
-		} else {
+		if common.HasQuietNanBitSet64(f64) {
 			_this.WriteQuietNan()
+		} else {
+			_this.WriteSignalingNan()
 		}
 		return
 	}
@@ -173,10 +173,10 @@ func (_this *Writer) WriteFloat32UsingFormat(value float32, format string) {
 
 func (_this *Writer) WriteFloatUsingFormat(value float64, format string) {
 	if math.IsNaN(value) {
-		if common.IsSignalingNan(value) {
-			_this.WriteSignalingNan()
-		} else {
+		if common.HasQuietNanBitSet64(value) {
 			_this.WriteQuietNan()
+		} else {
+			_this.WriteSignalingNan()
 		}
 		return
 	}
@@ -195,10 +195,10 @@ func (_this *Writer) WriteFloatUsingFormat(value float64, format string) {
 func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
 	_this.ExpandBuffer(floatStringMaxByteCount)
 	if math.IsNaN(value) {
-		if common.IsSignalingNan(value) {
-			_this.WriteSignalingNan()
-		} else {
+		if common.HasQuietNanBitSet64(value) {
 			_this.WriteQuietNan()
+		} else {
+			_this.WriteSignalingNan()
 		}
 		return
 	}

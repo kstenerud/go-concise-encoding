@@ -676,11 +676,11 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 		common.ASCIIBytesToLower(_this)
 		switch {
 		case bytes.Equal(_this, byteStringNan):
-			value = common.QuietNan
+			value = common.Float64QuietNan
 			decodedCount = pos + 3
 			return
 		case bytes.Equal(_this, byteStringSnan):
-			value = common.SignalingNan
+			value = common.Float64SignalingNan
 			decodedCount = pos + 4
 			return
 		case bytes.Equal(_this[pos:], byteStringInf):
@@ -741,11 +741,11 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 		lower := bytes.ToLower(_this)
 		switch {
 		case bytes.Equal(lower, byteStringNan):
-			value = common.QuietNan
+			value = common.Float64QuietNan
 			decodedCount = pos + 3
 			return
 		case bytes.Equal(lower, byteStringSnan):
-			value = common.SignalingNan
+			value = common.Float64SignalingNan
 			decodedCount = pos + 4
 			return
 		case bytes.Equal(lower[pos:], byteStringInf):

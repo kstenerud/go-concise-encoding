@@ -156,7 +156,7 @@ func (_this *RulesEventReceiver) OnBigInt(value *big.Int) {
 
 func (_this *RulesEventReceiver) OnFloat(value float64) {
 	if math.IsNaN(value) {
-		_this.OnNan(common.IsSignalingNan(value))
+		_this.OnNan(!common.HasQuietNanBitSet64(value))
 		return
 	}
 

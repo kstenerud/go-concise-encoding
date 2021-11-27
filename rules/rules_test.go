@@ -60,7 +60,7 @@ func TestRulesNan(t *testing.T) {
 }
 
 func TestRulesNan2(t *testing.T) {
-	assertEventsMaxDepth(t, 1, F(math.NaN()), ED())
+	assertEventsMaxDepth(t, 1, BF(math.NaN()), ED())
 }
 
 func TestRulesBool(t *testing.T) {
@@ -87,12 +87,12 @@ func TestRulesBigInt(t *testing.T) {
 }
 
 func TestRulesFloat(t *testing.T) {
-	assertEventsMaxDepth(t, 1, F(0.1), ED())
-	assertEventsMaxDepth(t, 1, F(math.NaN()), ED())
+	assertEventsMaxDepth(t, 1, BF(0.1), ED())
+	assertEventsMaxDepth(t, 1, BF(math.NaN()), ED())
 }
 
 func TestRulesBigFloat(t *testing.T) {
-	assertEventsMaxDepth(t, 1, BF(NewBigFloat("1.1")), ED())
+	assertEventsMaxDepth(t, 1, BBF(NewBigFloat("1.1")), ED())
 }
 
 func TestRulesDecimalFloat(t *testing.T) {
@@ -116,7 +116,7 @@ func TestRulesTime(t *testing.T) {
 }
 
 func TestRulesCompactTime(t *testing.T) {
-	assertEventsMaxDepth(t, 1, CT(NewDate(1, 1, 1)), ED())
+	assertEventsMaxDepth(t, 1, T(NewDate(1, 1, 1)), ED())
 }
 
 func TestRulesArrayOneshot(t *testing.T) {
@@ -130,18 +130,18 @@ func TestRulesResourceIDOneshot(t *testing.T) {
 }
 
 func TestRulesCustomOneshot(t *testing.T) {
-	assertEventsMaxDepth(t, 1, CUB([]byte{1, 2, 3, 4}), ED())
-	assertEventsMaxDepth(t, 1, CUT("test"), ED())
+	assertEventsMaxDepth(t, 1, CB([]byte{1, 2, 3, 4}), ED())
+	assertEventsMaxDepth(t, 1, CT("test"), ED())
 }
 
 func TestRulesMarker(t *testing.T) {
-	assertEventsMaxDepth(t, 10, L(), MARK("a"), F(0.1), MARK("blah"), GT(time.Now()), E(), ED())
+	assertEventsMaxDepth(t, 10, L(), MARK("a"), BF(0.1), MARK("blah"), GT(time.Now()), E(), ED())
 }
 
 func TestRulesReference(t *testing.T) {
 	rules := newRulesWithMaxDepth(10)
 
-	assertEventsSucceed(t, rules, L(), MARK("a"), F(0.1), REF("a"), E())
+	assertEventsSucceed(t, rules, L(), MARK("a"), BF(0.1), REF("a"), E())
 
 	rules = newRulesWithMaxDepth(10)
 
@@ -149,7 +149,7 @@ func TestRulesReference(t *testing.T) {
 
 	rules = newRulesWithMaxDepth(10)
 
-	assertEventsSucceed(t, rules, L(), MARK("a"), F(0.1), MARK("blah"), GT(time.Now()),
+	assertEventsSucceed(t, rules, L(), MARK("a"), BF(0.1), MARK("blah"), GT(time.Now()),
 		REF("a"),
 		RREF("http://example.com"),
 		REF("blah"),
@@ -159,7 +159,7 @@ func TestRulesReference(t *testing.T) {
 	rules = newRulesWithMaxDepth(10)
 
 	assertEventsSucceed(t, rules, L(),
-		MARK("a"), F(0.1),
+		MARK("a"), BF(0.1),
 		MARK("blah"), GT(time.Now()),
 		REF("a"), RRB(), AC(18, false), AD([]byte("http://example.com")),
 		REF("blah"),
@@ -383,7 +383,7 @@ func TestRulesMapEmpty(t *testing.T) {
 }
 
 func TestRulesMarkupEmpty(t *testing.T) {
-	assertEventsMaxDepth(t, 2, MUP("a"), E(), E(), ED())
+	assertEventsMaxDepth(t, 2, MU("a"), E(), E(), ED())
 }
 
 func TestRulesNodeEmpty(t *testing.T) {
@@ -403,7 +403,7 @@ func TestRulesMapPair(t *testing.T) {
 }
 
 func TestRulesMarkupSingleItem(t *testing.T) {
-	assertEventsMaxDepth(t, 2, MUP("abcdef"), I(-1), B(true), E(), S("a"), E(), ED())
+	assertEventsMaxDepth(t, 2, MU("abcdef"), I(-1), B(true), E(), S("a"), E(), ED())
 }
 
 func TestRulesNodeSingleItem(t *testing.T) {
@@ -416,12 +416,12 @@ func TestRulesNodeSingleItem(t *testing.T) {
 // ==================
 
 func TestRulesListFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, L(), NULL(), NAN(), B(true), F(0.1), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, L(), NULL(), NAN(), B(true), BF(0.1), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
 func TestRulesMapFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, M(), B(true), NULL(), F(0.1), NAN(), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, M(), B(true), NULL(), BF(0.1), NAN(), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), E(), ED())
 }
 
@@ -439,7 +439,7 @@ func TestRulesDeepContainer(t *testing.T) {
 }
 
 func TestRulesMarkup(t *testing.T) {
-	assertEventsMaxDepth(t, 2, MUP("a"), I(1), I(-1), E(), S("a"), E(), ED())
+	assertEventsMaxDepth(t, 2, MU("a"), I(1), I(-1), E(), S("a"), E(), ED())
 }
 
 func TestRulesMarkerReference(t *testing.T) {
@@ -455,7 +455,7 @@ func TestRulesMarkerReference(t *testing.T) {
 }
 
 func TestRulesNodeFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, NODE(), NULL(), NAN(), B(true), F(0.1), I(1), I(-1),
+	assertEventsMaxDepth(t, 2, NODE(), NULL(), NAN(), B(true), BF(0.1), I(1), I(-1),
 		GT(time.Now()), AU8(NewBytes(1, 0)), NODE(), NULL(), E(), E(), ED())
 }
 
@@ -473,7 +473,7 @@ func TestRulesErrorOnEndTooManyTimes(t *testing.T) {
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP("a"), E(), E())
+	assertEventsSucceed(t, rules, MU("a"), E(), E())
 	assertEventsFail(t, rules, E())
 
 	rules = newRulesWithMaxDepth(10)
@@ -491,11 +491,11 @@ func TestRulesErrorUnendedContainer(t *testing.T) {
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP("a"))
+	assertEventsSucceed(t, rules, MU("a"))
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
-	assertEventsSucceed(t, rules, MUP("a"), E())
+	assertEventsSucceed(t, rules, MU("a"), E())
 	assertEventsFail(t, rules, ED())
 
 	rules = newRulesWithMaxDepth(10)
@@ -526,7 +526,7 @@ func TestRulesErrorArrayTooFewBytes(t *testing.T) {
 
 func TestRulesErrorMarkupNameLength0(t *testing.T) {
 	rules := newRulesWithMaxDepth(2)
-	assertEventsFail(t, rules, MUP(""))
+	assertEventsFail(t, rules, MU(""))
 }
 
 func TestRulesErrorMarkerIDLength0(t *testing.T) {
@@ -730,9 +730,9 @@ func TestRulesIdentifier(t *testing.T) {
 	rules = newRulesAfterVersion(nil)
 	assertEventsSucceed(t, rules, MARK("a\u0300"), I(1))
 	rules = newRulesAfterVersion(nil)
-	assertEventsSucceed(t, rules, MUP("a:b"))
+	assertEventsSucceed(t, rules, MU("a:b"))
 	rules = newRulesAfterVersion(nil)
-	assertEventsSucceed(t, rules, MUP("a:b:c:d:e:f"))
+	assertEventsSucceed(t, rules, MU("a:b:c:d:e:f"))
 }
 
 func TestRulesMultichunk(t *testing.T) {
@@ -828,7 +828,7 @@ func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("a")},
+			[]*test.TEvent{MU("a")},
 			[]*test.TEvent{I(1), E(), E()},
 			[]*test.TEvent{ED()},
 			test.ValidMapKeys))
@@ -836,7 +836,7 @@ func TestRulesAllowedTypesMarkupAttributeKey(t *testing.T) {
 	assertEventStreamsFail(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("a")},
+			[]*test.TEvent{MU("a")},
 			[]*test.TEvent{I(1), E(), E()},
 			[]*test.TEvent{ED()},
 			test.InvalidMapKeys))
@@ -846,7 +846,7 @@ func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("a"), TT()},
+			[]*test.TEvent{MU("a"), TT()},
 			[]*test.TEvent{E(), E()},
 			[]*test.TEvent{ED()},
 			test.ValidMapValues))
@@ -854,7 +854,7 @@ func TestRulesAllowedTypesMarkupAttributeValue(t *testing.T) {
 	assertEventStreamsFail(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("a"), TT()},
+			[]*test.TEvent{MU("a"), TT()},
 			[]*test.TEvent{E(), E()},
 			[]*test.TEvent{ED()},
 			test.InvalidMapValues))
@@ -864,7 +864,7 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 	assertEventStreamsSucceed(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("a"), E()},
+			[]*test.TEvent{MU("a"), E()},
 			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
 			test.ValidMarkupContents))
@@ -872,7 +872,7 @@ func TestRulesAllowedTypesMarkupContents(t *testing.T) {
 	assertEventStreamsFail(t,
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("a"), E()},
+			[]*test.TEvent{MU("a"), E()},
 			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
 			test.InvalidMarkupContents))
@@ -1093,14 +1093,14 @@ func TestComment(t *testing.T) {
 	assertEvents(t, BD(), V(ceVer), M(), S("b"), COM(true, "a"), S("b"), E(), ED())
 	assertEvents(t, BD(), V(ceVer), M(), COM(true, "a"), S("b"), S("b"), E(), ED())
 
-	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), S("b"), S("b"), COM(true, "a"), E(), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), S("b"), COM(true, "a"), S("b"), E(), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), S("b"), S("b"), E(), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), COM(false, "x"), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), S("a"), E(), ED())
-	assertEvents(t, BD(), V(ceVer), MUP("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), COM(false, "x"), S("a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), COM(true, "a"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), S("b"), S("b"), COM(true, "a"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), S("b"), COM(true, "a"), S("b"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), COM(true, "a"), S("b"), S("b"), E(), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), COM(true, "a"), E(), COM(false, "x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), S("a"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), MU("a"), COM(true, "a"), E(), S("a"), COM(false, "x"), COM(false, "x"), S("a"), E(), ED())
 
 	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), E(), ED())
 	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), COM(true, "a"), E(), ED())

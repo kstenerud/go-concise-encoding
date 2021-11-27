@@ -55,23 +55,37 @@ const (
 	Float64DecimalExponentMax = 308
 	Float64CoefficientMax     = (uint64(1) << 54) - 1
 
-	QuietNanBit = uint64(1 << 50)
+	Bfloat16SignMask         = uint16(0x8000)
+	Bfloat16SpecialMask      = uint16(0x7f80)
+	Bfloat16FractionMask     = uint16(0x007f)
+	Bfloat16QuietNanBit      = uint16(0x0040)
+	Bfloat16QuietNanBits     = uint16(0x7fc1)
+	Bfloat16SignalingNanBits = uint16(0x7f81)
+
+	Float32SignMask         = uint32(0x80000000)
+	Float32SpecialMask      = uint32(0x7f800000)
+	Float32FractionMask     = uint32(0x007fffff)
+	Float32QuietNanBit      = uint32(0x00400000)
+	Float32QuietNanBits     = uint32(0x7fc00001)
+	Float32SignalingNanBits = uint32(0x7f800001)
+
+	Float64SignMask         = uint64(0x8000000000000000)
+	Float64SpecialMask      = uint64(0x7ff0000000000000)
+	Float64FractionMask     = uint64(0x000fffffffffffff)
+	Float64QuietNanBit      = uint64(0x0008000000000000)
+	Float64QuietNanBits     = uint64(0x7ff8000000000001)
+	Float64SignalingNanBits = uint64(0x7ff0000000000001)
 )
 
 var (
-	SignalingNan = math.Float64frombits(math.Float64bits(math.NaN()) & ^QuietNanBit)
-	QuietNan     = math.Float64frombits(math.Float64bits(math.NaN()) | QuietNanBit)
+	Bfloat16SignalingNanBytes = []byte{0x81, 0x7f}
+	Bfloat16QuietNanBytes     = []byte{0xc1, 0x7f}
 
-	Bfloat16SignalingNanBytes = []byte{0x81, 0xff}
-	Bfloat16QuietNanBytes     = []byte{0xc1, 0xff}
-	Bfloat16SignalingNanBits  = uint16(0xff81)
-	Bfloat16QuietNanBits      = uint16(0xffc1)
+	Float32SignalingNan = math.Float32frombits(Float32SignalingNanBits)
+	Float32QuietNan     = math.Float32frombits(Float32QuietNanBits)
 
-	Float32SignalingNanBits = math.Float32bits(float32(SignalingNan))
-	Float32QuietNanBits     = math.Float32bits(float32(math.NaN()))
-
-	Float64SignalingNanBits = math.Float64bits(SignalingNan)
-	Float64QuietNanBits     = math.Float64bits(math.NaN())
+	Float64SignalingNan = math.Float64frombits(Float64SignalingNanBits)
+	Float64QuietNan     = math.Float64frombits(Float64QuietNanBits)
 
 	BigInt0  = big.NewInt(0)
 	BigInt2  = big.NewInt(2)

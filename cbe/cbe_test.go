@@ -130,22 +130,23 @@ func TestCBEBinaryFloatEOF(t *testing.T) {
 
 func TestCBEBinaryFloat(t *testing.T) {
 	nanBits := math.Float64bits(math.NaN())
-	quietNan := math.Float64frombits(nanBits | uint64(1<<50))
-	signalingNan := math.Float64frombits(nanBits & ^uint64(1<<50))
+	quietBit := uint64(0x8000000000000)
+	quietNan := math.Float64frombits(nanBits | quietBit)
+	signalingNan := math.Float64frombits(nanBits & ^quietBit)
 	zero := float64(0)
 	negZero := -zero
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x80, 0x00}, BD(), EvV, F(quietNan), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x81, 0x00}, BD(), EvV, F(signalingNan), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x82, 0x00}, BD(), EvV, F(math.Inf(1)), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x83, 0x00}, BD(), EvV, F(math.Inf(-1)), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x02}, BD(), EvV, F(zero), ED())
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x03}, BD(), EvV, F(negZero), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x80, 0x00}, BD(), EvV, BF(quietNan), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x81, 0x00}, BD(), EvV, BF(signalingNan), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x82, 0x00}, BD(), EvV, BF(math.Inf(1)), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x83, 0x00}, BD(), EvV, BF(math.Inf(-1)), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x02}, BD(), EvV, BF(zero), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x03}, BD(), EvV, BF(negZero), ED())
 	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x80, 0x00}, BD(), EvV, NAN(), ED())
 	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x81, 0x00}, BD(), EvV, SNAN(), ED())
 
-	assertDecodeEncode(t, []byte{header, ceVer, typeFloat16, 0xd1, 0x17}, BD(), EvV, F(0x1.a2p-80), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeFloat32, 0x80, 0xf4, 0xa7, 0x71}, BD(), EvV, F(0x1.4fe9p100), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeFloat64, 0x00, 0x00, 0xc2, 0x99, 0x91, 0xfe, 0xb4, 0x20}, BD(), EvV, F(0x1.4fe9199c2p-500), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeFloat16, 0xd1, 0x17}, BD(), EvV, BF(0x1.a2p-80), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeFloat32, 0x80, 0xf4, 0xa7, 0x71}, BD(), EvV, BF(0x1.4fe9p100), ED())
+	assertDecodeEncode(t, []byte{header, ceVer, typeFloat64, 0x00, 0x00, 0xc2, 0x99, 0x91, 0xfe, 0xb4, 0x20}, BD(), EvV, BF(0x1.4fe9199c2p-500), ED())
 }
 
 func TestCBEDecimalFloatEOF(t *testing.T) {
@@ -157,14 +158,14 @@ func TestCBEDecimalFloat(t *testing.T) {
 }
 
 func TestCBEBigFloat(t *testing.T) {
-	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), EvV, BF(NewBigFloat("9.445283e+5000")), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeDecimal, 0x88, 0x9c, 0x01, 0xa3, 0xbf, 0xc0, 0x04}, BD(), EvV, BBF(NewBigFloat("9.445283e+5000")), ED())
 
 	assertDecodeEncode(t, []byte{header, ceVer, typeDecimal,
 		0xcf, 0x9d, 0x01, 0xd1, 0x8e, 0xa2, 0xe6, 0x83, 0x8a, 0xbf, 0xc1, 0xbb,
 		0xe1, 0xf3, 0xdf, 0xfc, 0xee, 0xac, 0xe5, 0xfe, 0xe1, 0x8f, 0xe2, 0x43},
 		BD(), EvV, BDF(NewBDF("-9.4452837206285466345998345667683453466347345e-5000")), ED())
 
-	assertEncode(t, nil, []byte{header, ceVer, typeNull}, BD(), EvV, BF(nil), ED())
+	assertEncode(t, nil, []byte{header, ceVer, typeNull}, BD(), EvV, BBF(nil), ED())
 }
 
 func TestCBEBigDecimalFloat(t *testing.T) {

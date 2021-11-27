@@ -100,10 +100,10 @@ func (h *TEventPrinter) OnBigInt(value *big.Int) {
 }
 func (h *TEventPrinter) OnFloat(value float64) {
 	if math.IsNaN(value) {
-		if common.IsSignalingNan(value) {
-			h.Print(SNAN())
+		if common.HasQuietNanBitSet64(value) {
+			h.Print(QNAN())
 		} else {
-			h.Print(NAN())
+			h.Print(SNAN())
 		}
 	} else {
 		h.Print(BF(value))
@@ -119,7 +119,7 @@ func (h *TEventPrinter) OnDecimalFloat(value compact_float.DFloat) {
 		if value.IsSignalingNan() {
 			h.Print(SNAN())
 		} else {
-			h.Print(NAN())
+			h.Print(QNAN())
 		}
 	} else {
 		h.Print(DF(value))
@@ -129,7 +129,7 @@ func (h *TEventPrinter) OnDecimalFloat(value compact_float.DFloat) {
 func (h *TEventPrinter) OnBigDecimalFloat(value *apd.Decimal) {
 	switch value.Form {
 	case apd.NaN:
-		h.Print(NAN())
+		h.Print(QNAN())
 	case apd.NaNSignaling:
 		h.Print(SNAN())
 	default:
@@ -304,7 +304,7 @@ func (h *TEventPrinter) OnNan(signaling bool) {
 	if signaling {
 		h.Print(SNAN())
 	} else {
-		h.Print(NAN())
+		h.Print(QNAN())
 	}
 	h.Next.OnNan(signaling)
 }

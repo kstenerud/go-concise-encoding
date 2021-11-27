@@ -452,10 +452,10 @@ func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement floatTo
 		exp := common.Float64GetExponent(v)
 		if exp < common.Float32ExponentMin || exp > common.Float32ExponentMax {
 			if math.IsNaN(v) {
-				if common.IsSignalingNan(v) {
-					bits = uint32(common.Bfloat16SignalingNanBits)
-				} else {
+				if common.HasQuietNanBitSet64(v) {
 					bits = uint32(common.Bfloat16QuietNanBits)
+				} else {
+					bits = uint32(common.Bfloat16SignalingNanBits)
 				}
 			} else if !math.IsInf(v, 0) {
 				ctx.Errorf("Exponent too big for float32 type")

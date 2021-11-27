@@ -110,7 +110,7 @@ func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func NAN() *test.TEvent                      { return test.NAN() }
+func NAN() *test.TEvent                      { return test.QNAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UID(v []byte) *test.TEvent              { return test.UID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }

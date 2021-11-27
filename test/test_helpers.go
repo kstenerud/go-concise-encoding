@@ -351,16 +351,16 @@ var (
 	EvI       = I(0)
 	EvBI      = BI(NewBigInt("1"))
 	EvBINull  = BI(nil)
-	EvF       = BF(0x1.0p-1)
+	EvBF      = BF(0x1.0p-1)
 	EvFNAN    = BF(math.NaN())
-	EvBF      = BBF(NewBigFloat("0x0.1"))
-	EvBFNull  = BBF(nil)
+	EvBBF     = BBF(NewBigFloat("0x0.1"))
+	EvBBFNull = BBF(nil)
 	EvDF      = DF(NewDFloat("0.1"))
 	EvDFNAN   = DF(NewDFloat("nan"))
 	EvBDF     = BDF(NewBDF("0.1"))
 	EvBDFNull = BDF(nil)
 	EvBDFNAN  = BDF(NewBDF("nan"))
-	EvNAN     = NAN()
+	EvNAN     = QNAN()
 	EvUID     = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvGT      = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
 	EvCT      = T(NewDate(2020, 1, 1))
@@ -414,7 +414,7 @@ var (
 
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvCOM, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
-	EvBI, EvBINull, EvF, EvFNAN, EvBF, EvBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
+	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
 	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvNODE, EvEDGE, EvE,
 	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
@@ -526,7 +526,7 @@ var (
 	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvREF}
 
 	ValidMapKeys = []*TEvent{
-		EvPAD, EvCOM, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvF, EvBF, EvDF,
+		EvPAD, EvCOM, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
 		EvBDF, EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB,
 		EvREF, EvE,
 	}
@@ -558,7 +558,7 @@ var (
 	CommentsPaddingMarkerRefEnd = []*TEvent{EvPAD, EvCOM, EvMARK, EvREF, EvE}
 
 	ValidEdgeSources   = ComplementaryEvents(InvalidEdgeSources)
-	InvalidEdgeSources = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvN, EvBDFNull, EvBFNull, EvBINull}
+	InvalidEdgeSources = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvN, EvBDFNull, EvBBFNull, EvBINull}
 
 	ValidEdgeDescriptions   = ValidListValues
 	InvalidEdgeDescriptions = InvalidListValues
@@ -750,7 +750,7 @@ func B(v bool) *TEvent                  { return NewTEvent(TEventBool, v, nil) }
 func PI(v uint64) *TEvent               { return NewTEvent(TEventPInt, v, nil) }
 func NI(v uint64) *TEvent               { return NewTEvent(TEventNInt, v, nil) }
 func BI(v *big.Int) *TEvent             { return EventOrNull(TEventBigInt, v) }
-func NAN() *TEvent                      { return NewTEvent(TEventNan, nil, nil) }
+func QNAN() *TEvent                     { return NewTEvent(TEventQNan, nil, nil) }
 func SNAN() *TEvent                     { return NewTEvent(TEventSNan, nil, nil) }
 func UID(v []byte) *TEvent              { return NewTEvent(TEventUID, v, nil) }
 func GT(v time.Time) *TEvent            { return NewTEvent(TEventTime, v, nil) }
@@ -1036,7 +1036,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("F8", BDF(NewBDF("1.1")))
 		ane("F9", NULL())
 		ane("F10", BI(NewBigInt("1000")))
-		ane("F12", NAN())
+		ane("F12", QNAN())
 		ane("F13", SNAN())
 		ane("F14", UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
 		ane("F15", GT(_this.Time))
@@ -1058,7 +1058,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 			BDF(NewBDF("1.1")),
 			NULL(),
 			BI(NewBigInt("1000")),
-			NAN(),
+			QNAN(),
 			SNAN(),
 			UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
 			GT(_this.Time),

@@ -197,13 +197,13 @@ func (_this *Encoder) OnFloat(value float64) {
 	}
 
 	if math.IsNaN(value) {
-		_this.writer.WriteNaN(common.IsSignalingNan(value))
+		_this.writer.WriteNaN(!common.HasQuietNanBitSet64(value))
 		return
 	}
 
 	if value == 0 {
 		sign := 1
-		if math.Float64bits(value) == 0x8000000000000000 {
+		if common.IsNegativeFloat(value) {
 			sign = -1
 		}
 		_this.writer.WriteZero(sign)

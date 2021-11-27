@@ -61,7 +61,7 @@ const (
 	TEventBigFloat
 	TEventDecimalFloat
 	TEventBigDecimalFloat
-	TEventNan
+	TEventQNan
 	TEventSNan
 	TEventUID
 	TEventTime
@@ -134,7 +134,7 @@ var TEventNames = []string{
 	TEventBigFloat:          "BBF",
 	TEventDecimalFloat:      "DF",
 	TEventBigDecimalFloat:   "BDF",
-	TEventNan:               "NAN",
+	TEventQNan:              "QNAN",
 	TEventSNan:              "SNAN",
 	TEventUID:               "UID",
 	TEventTime:              "GT",
@@ -206,7 +206,7 @@ func (_this TEventType) IsBoolean() bool {
 func (_this TEventType) IsNumeric() bool {
 	switch _this {
 	case TEventPInt, TEventNInt, TEventInt, TEventBigInt, TEventFloat,
-		TEventBigFloat, TEventDecimalFloat, TEventBigDecimalFloat, TEventNan,
+		TEventBigFloat, TEventDecimalFloat, TEventBigDecimalFloat, TEventQNan,
 		TEventSNan:
 		return true
 	default:
@@ -271,8 +271,22 @@ func (_this *TEvent) stringify(value interface{}) string {
 	case *big.Float:
 		return v.Text('x', -1)
 	case float64:
+		if math.IsNaN(v) {
+			if common.HasQuietNanBitSet64(v) {
+				return "qnan"
+			} else {
+				return "snan"
+			}
+		}
 		return strconv.FormatFloat(v, 'x', -1, 64)
 	case float32:
+		if math.IsNaN(float64(v)) {
+			if common.HasQuietNanBitSet32(v) {
+				return "qnan"
+			} else {
+				return "snan"
+			}
+		}
 		return strconv.FormatFloat(float64(v), 'x', -1, 64)
 	case uint, uint64, uint32, uint16, uint8:
 		if _this.Type == TEventNInt {
@@ -306,15 +320,16 @@ func (_this *TEvent) IsTrue() bool {
 	}
 }
 
-func (_this *TEvent) IsNan() bool {
+func (_this *TEvent) IsQuietNan() bool {
 	switch _this.Type {
-	case TEventNan:
+	case TEventQNan:
 		return true
 	case TEventFloat:
 		f64 := _this.V1.(float64)
-		return math.IsNaN(f64) && !common.IsSignalingNan(f64)
+		return math.IsNaN(f64) && common.HasQuietNanBitSet64(f64)
 	case TEventDecimalFloat:
-		return _this.V1.(compact_float.DFloat).IsNan()
+		cf := _this.V1.(compact_float.DFloat)
+		return cf.IsNan() && !cf.IsSignalingNan()
 	case TEventBigDecimalFloat:
 		return _this.V1.(*apd.Decimal).Form == apd.NaN
 	default:
@@ -328,7 +343,7 @@ func (_this *TEvent) IsSignalingNan() bool {
 		return true
 	case TEventFloat:
 		f64 := _this.V1.(float64)
-		return math.IsNaN(f64) && common.IsSignalingNan(f64)
+		return math.IsNaN(f64) && !common.HasQuietNanBitSet64(f64)
 	case TEventDecimalFloat:
 		return _this.V1.(compact_float.DFloat).IsSignalingNan()
 	case TEventBigDecimalFloat:
@@ -341,7 +356,7 @@ func (_this *TEvent) IsSignalingNan() bool {
 func (_this *TEvent) IsEffectivelyNull() bool {
 	return _this.Type == TEventNull ||
 		_this == EvBINull ||
-		_this == EvBFNull ||
+		_this == EvBBFNull ||
 		_this == EvBDFNull
 }
 
@@ -359,7 +374,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 	}
 
 	if _this.Type.IsNumeric() && that.Type.IsNumeric() {
-		if _this.IsNan() && that.IsNan() {
+		if _this.IsQuietNan() && that.IsQuietNan() {
 			return true
 		}
 		if _this.IsSignalingNan() && that.IsSignalingNan() {
@@ -589,7 +604,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnDecimalFloat(_this.V1.(compact_float.DFloat))
 	case TEventBigDecimalFloat:
 		receiver.OnBigDecimalFloat(_this.V1.(*apd.Decimal))
-	case TEventNan:
+	case TEventQNan:
 		receiver.OnNan(false)
 	case TEventSNan:
 		receiver.OnNan(true)

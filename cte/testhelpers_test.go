@@ -90,8 +90,8 @@ func NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset 
 func TT() *test.TEvent                       { return test.TT() }
 func FF() *test.TEvent                       { return test.FF() }
 func I(v int64) *test.TEvent                 { return test.I(v) }
-func F(v float64) *test.TEvent               { return test.BF(v) }
-func BF(v *big.Float) *test.TEvent           { return test.BBF(v) }
+func BF(v float64) *test.TEvent              { return test.BF(v) }
+func BBF(v *big.Float) *test.TEvent          { return test.BBF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func NULL() *test.TEvent                     { return test.NULL() }
@@ -101,7 +101,7 @@ func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func NAN() *test.TEvent                      { return test.NAN() }
+func NAN() *test.TEvent                      { return test.QNAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UID(v []byte) *test.TEvent              { return test.UID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }

@@ -386,28 +386,8 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.stream.WriteByte(' ')
-				bits := (uint32(data[0]) << 16) | (uint32(data[1]) << 24)
-				if bits == uint32(common.Bfloat16SignalingNanBits)<<16 {
-					_this.stream.WriteSignalingNan()
-				} else if bits == uint32(common.Bfloat16QuietNanBits)<<16 {
-					_this.stream.WriteQuietNan()
-				} else {
-					v := math.Float32frombits(bits)
-					if v < 0 {
-						if math.IsInf(float64(v), -1) {
-							_this.stream.WriteNegInfinity()
-						} else {
-							_this.stream.WriteByte('-')
-							_this.stream.WriteFmtStripped(3, "%x", v)
-						}
-					} else {
-						if math.IsInf(float64(v), 1) {
-							_this.stream.WritePosInfinity()
-						} else {
-							_this.stream.WriteFmtStripped(2, "%x", v)
-						}
-					}
-				}
+				bits := uint16(data[0]) | (uint16(data[1]) << 8)
+				_this.stream.WriteFloatHexNoPrefix(common.Float64FromFloat16Bits(bits))
 				data = data[elemWidth:]
 			}
 		}
@@ -418,23 +398,8 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByte(' ')
-			bits := (uint32(data[0]) << 16) | (uint32(data[1]) << 24)
-			if bits == uint32(common.Bfloat16SignalingNanBits)<<16 {
-				_this.stream.WriteSignalingNan()
-			} else if bits == uint32(common.Bfloat16QuietNanBits)<<16 {
-				_this.stream.WriteQuietNan()
-			} else {
-				v := math.Float32frombits(bits)
-				if math.IsInf(float64(v), 0) {
-					if v < 0 {
-						_this.stream.WriteNegInfinity()
-					} else {
-						_this.stream.WritePosInfinity()
-					}
-				} else {
-					_this.stream.WriteFmt(format, v)
-				}
-			}
+			bits := uint16(data[0]) | (uint16(data[1]) << 8)
+			_this.stream.WriteFloat32UsingFormat(common.Float32FromFloat16Bits(bits), format)
 			data = data[elemWidth:]
 		}
 	}
@@ -449,8 +414,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 			for len(data) > 0 {
 				_this.stream.WriteByte(' ')
 				bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
-				v := math.Float32frombits(bits)
-				_this.stream.WriteFloatHexNoPrefix(float64(v))
+				_this.stream.WriteFloatHexNoPrefix(common.Float64FromFloat32Bits(bits))
 				data = data[elemWidth:]
 			}
 		}
@@ -478,8 +442,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 				_this.stream.WriteByte(' ')
 				bits := uint64(data[0]) | (uint64(data[1]) << 8) | (uint64(data[2]) << 16) | (uint64(data[3]) << 24) |
 					(uint64(data[4]) << 32) | (uint64(data[5]) << 40) | (uint64(data[6]) << 48) | (uint64(data[7]) << 56)
-				v := math.Float64frombits(bits)
-				_this.stream.WriteFloatHexNoPrefix(v)
+				_this.stream.WriteFloatHexNoPrefix(math.Float64frombits(bits))
 				data = data[elemWidth:]
 			}
 		}

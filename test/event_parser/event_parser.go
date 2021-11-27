@@ -687,6 +687,9 @@ func init() {
 	eventParsersByName["au16b"] = newParser(false, test.TEventArrayUint16Begin).ParseEvent
 	eventParsersByName["au32b"] = newParser(false, test.TEventArrayUint32Begin).ParseEvent
 	eventParsersByName["au64b"] = newParser(false, test.TEventArrayUint64Begin).ParseEvent
+	eventParsersByName["af16b"] = newParser(false, test.TEventArrayFloat16Begin).ParseEvent
+	eventParsersByName["af32b"] = newParser(false, test.TEventArrayFloat32Begin).ParseEvent
+	eventParsersByName["af64b"] = newParser(false, test.TEventArrayFloat64Begin).ParseEvent
 	eventParsersByName["aub"] = newParser(false, test.TEventArrayUIDBegin).ParseEvent
 	eventParsersByName["mb"] = newParser(false, test.TEventMediaBegin).ParseEvent
 	eventParsersByName["ac"] = newParser(false, test.TEventArrayChunk, parseUint, parseBool).ParseEvent

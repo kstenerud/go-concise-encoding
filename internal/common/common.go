@@ -72,8 +72,42 @@ func IsFieldExported(name string) bool {
 	return unicode.IsUpper(ch)
 }
 
-func IsSignalingNan(value float64) bool {
-	return math.Float64bits(value)&QuietNanBit == 0
+func IsNegativeFloat(value float64) bool {
+	return math.Float64bits(value)&Float64SignMask != 0
+}
+
+func HasQuietNanBitSet64(value float64) bool {
+	return math.Float64bits(value)&Float64QuietNanBit != 0
+}
+
+func HasQuietNanBitSet32(value float32) bool {
+	return math.Float32bits(value)&Float32QuietNanBit != 0
+}
+
+func Float64FromFloat32Bits(bits uint32) float64 {
+	// Need to do this manually because go tends to lose the quiet bit
+	if bits&Float32SpecialMask == Float32SpecialMask && bits&Float32FractionMask != 0 {
+		if bits&Float32QuietNanBit == 0 {
+			return Float64SignalingNan
+		}
+		return Float64QuietNan
+	}
+	return float64(math.Float32frombits(bits))
+}
+
+func Float64FromFloat16Bits(bits uint16) float64 {
+	return Float64FromFloat32Bits(uint32(bits) << 16)
+}
+
+func Float32FromFloat16Bits(bits uint16) float32 {
+	// Need to do this manually because go tends to lose the quiet bit
+	if bits&Bfloat16SpecialMask == Bfloat16SpecialMask && bits&Bfloat16FractionMask != 0 {
+		if bits&Bfloat16QuietNanBit == 0 {
+			return Float32SignalingNan
+		}
+		return Float32QuietNan
+	}
+	return math.Float32frombits(uint32(bits) << 16)
 }
 
 func IsBigIntNegative(value *big.Int) bool {

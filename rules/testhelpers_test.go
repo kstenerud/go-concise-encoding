@@ -88,76 +88,7 @@ func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundred
 }
 
 var (
-	EvBD      = test.EvBD
-	EvED      = test.EvED
-	EvV       = test.EvV
-	EvPAD     = test.EvPAD
-	EvB       = test.EvB
-	EvTT      = test.EvTT
-	EvFF      = test.EvFF
-	EvPI      = test.EvPI
-	EvNI      = test.EvNI
-	EvI       = test.EvI
-	EvBI      = test.EvBI
-	EvBINull  = test.EvBINull
-	EvF       = test.EvF
-	EvFNAN    = test.EvFNAN
-	EvBF      = test.EvBF
-	EvBFNull  = test.EvBFNull
-	EvDF      = test.EvDF
-	EvDFNAN   = test.EvDFNAN
-	EvBDF     = test.EvBDF
-	EvBDFNull = test.EvBDFNull
-	EvBDFNAN  = test.EvBDFNAN
-	EvNAN     = test.EvNAN
-	EvUID     = test.EvUID
-	EvGT      = test.EvGT
-	EvCT      = test.EvCT
-	EvL       = test.EvL
-	EvM       = test.EvM
-	EvMUP     = test.EvMUP
-	EvNODE    = test.EvNODE
-	EvEDGE    = test.EvEDGE
-	EvE       = test.EvE
-	EvMARK    = test.EvMARK
-	EvREF     = test.EvREF
-	EvAC      = test.EvAC
-	EvAD      = test.EvAD
-	EvS       = test.EvS
-	EvSB      = test.EvSB
-	EvRID     = test.EvRID
-	EvRB      = test.EvRB
-	EvCUB     = test.EvCUB
-	EvCBB     = test.EvCBB
-	EvCUT     = test.EvCUT
-	EvCTB     = test.EvCTB
-	EvAB      = test.EvAB
-	EvABB     = test.EvABB
-	EvAU8     = test.EvAU8
-	EvAU8B    = test.EvAU8B
-	EvAU16    = test.EvAU16
-	EvAU16B   = test.EvAU16B
-	EvAU32    = test.EvAU32
-	EvAU32B   = test.EvAU32B
-	EvAU64    = test.EvAU64
-	EvAU64B   = test.EvAU64B
-	EvAI8     = test.EvAI8
-	EvAI8B    = test.EvAI8B
-	EvAI16    = test.EvAI16
-	EvAI16B   = test.EvAI16B
-	EvAI32    = test.EvAI32
-	EvAI32B   = test.EvAI32B
-	EvAI64    = test.EvAI64
-	EvAI64B   = test.EvAI64B
-	EvAF16    = test.EvAF16
-	EvAF16B   = test.EvAF16B
-	EvAF32    = test.EvAF32
-	EvAF32B   = test.EvAF32B
-	EvAF64    = test.EvAF64
-	EvAF64B   = test.EvAF64B
-	EvAUU     = test.EvAUU
-	EvAUUB    = test.EvAUUB
-	EvMB      = test.EvMB
+	EvV = test.EvV
 )
 
 func ComplementaryEvents(events []*test.TEvent) []*test.TEvent {
@@ -167,8 +98,8 @@ func ComplementaryEvents(events []*test.TEvent) []*test.TEvent {
 func TT() *test.TEvent                       { return test.TT() }
 func FF() *test.TEvent                       { return test.FF() }
 func I(v int64) *test.TEvent                 { return test.I(v) }
-func F(v float64) *test.TEvent               { return test.BF(v) }
-func BF(v *big.Float) *test.TEvent           { return test.BBF(v) }
+func BF(v float64) *test.TEvent              { return test.BF(v) }
+func BBF(v *big.Float) *test.TEvent          { return test.BBF(v) }
 func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
 func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
 func V(v uint64) *test.TEvent                { return test.V(v) }
@@ -179,16 +110,16 @@ func B(v bool) *test.TEvent                  { return test.B(v) }
 func PI(v uint64) *test.TEvent               { return test.PI(v) }
 func NI(v uint64) *test.TEvent               { return test.NI(v) }
 func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func NAN() *test.TEvent                      { return test.NAN() }
+func NAN() *test.TEvent                      { return test.QNAN() }
 func SNAN() *test.TEvent                     { return test.SNAN() }
 func UID(v []byte) *test.TEvent              { return test.UID(v) }
 func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v compact_time.Time) *test.TEvent    { return test.T(v) }
+func T(v compact_time.Time) *test.TEvent     { return test.T(v) }
 func S(v string) *test.TEvent                { return test.S(v) }
 func RID(v string) *test.TEvent              { return test.RID(v) }
 func RREF(v string) *test.TEvent             { return test.RREF(v) }
-func CUB(v []byte) *test.TEvent              { return test.CB(v) }
-func CUT(v string) *test.TEvent              { return test.CT(v) }
+func CB(v []byte) *test.TEvent               { return test.CB(v) }
+func CT(v string) *test.TEvent               { return test.CT(v) }
 func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
 func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
 func AU16(v []uint16) *test.TEvent           { return test.AU16(v) }
@@ -225,7 +156,7 @@ func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
 func AD(v []byte) *test.TEvent               { return test.AD(v) }
 func L() *test.TEvent                        { return test.L() }
 func M() *test.TEvent                        { return test.M() }
-func MUP(id string) *test.TEvent             { return test.MU(id) }
+func MU(id string) *test.TEvent              { return test.MU(id) }
 func NODE() *test.TEvent                     { return test.NODE() }
 func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }

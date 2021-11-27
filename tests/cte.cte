@@ -53,6 +53,9 @@ c0
  * au16b                           Begin uint16 array
  * au32b                           Begin uint32 array
  * au64b                           Begin uint64 array
+ * af16b                           Begin float16 array
+ * af32b                           Begin float32 array
+ * af64b                           Begin float64 array
  * aub                             Begin UID array
  * mb                              Begin media
  * ac <element count> <has more?>  Begin array chunk
@@ -1386,6 +1389,148 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
                 "c0 |u ffffffff-ffff-ffff-ffff-fffffffffff|"   // Incomplete
                 "c0 |u ffffffffffffffffffffffffffffffff|"      // Malformed
                 "c0 |u fffffff-fffff-ffff-ffff-fffffffffff|"   // Malformed
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked bit array"
+            "encode" = [
+                {"events"=["v 0" "abb" "ac 0 false"]         "document"="c0\n|b|"}
+                {"events"=["v 0" "abb" "ac 1 false" "ad 01"] "document"="c0\n|b 1|"}
+                {"events"=["v 0" "abb" "ac 2 false" "ad 01"] "document"="c0\n|b 10|"}
+                {"events"=["v 0" "abb" "ac 7 false" "ad 51"] "document"="c0\n|b 1000101|"}
+                {"events"=["v 0" "abb" "ac 8 false" "ad d1"] "document"="c0\n|b 10001011|"}
+                {"events"=["v 0" "abb" "ac 8 true" "ad d1" "ac 1 false" "ad 01"] "document"="c0\n|b 100010111|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked uint8 array"
+            "encode" = [
+                {"events"=["v 0" "au8b" "ac 0 false"]                             "document"="c0\n|u8x|"}
+                {"events"=["v 0" "au8b" "ac 1 false" "ad ff"]                     "document"="c0\n|u8x ff|"}
+                {"events"=["v 0" "au8b" "ac 2 false" "ad ff d4"]                  "document"="c0\n|u8x ff d4|"}
+                {"events"=["v 0" "au8b" "ac 2 false" "ad ff" "ad d4"]             "document"="c0\n|u8x ff d4|"}
+                {"events"=["v 0" "au8b" "ac 2 true" "ad ff" "ad d4" "ac 0 false"] "document"="c0\n|u8x ff d4|"}
+                {"events"=["v 0" "au8b" "ac 1 true" "ad ff" "ac 1 false" "ad d4"] "document"="c0\n|u8x ff d4|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked uint16 array"
+            "encode" = [
+                {"events"=["v 0" "au16b" "ac 0 false"]                             "document"="c0\n|u16x|"}
+                {"events"=["v 0" "au16b" "ac 1 false" "ad ff 01"]                  "document"="c0\n|u16x 01ff|"}
+                {"events"=["v 0" "au16b" "ac 2 false" "ad ff 01 d4 aa"]            "document"="c0\n|u16x 01ff aad4|"}
+                {"events"=["v 0" "au16b" "ac 2 false" "ad ff" "ad 01 d4 aa"]       "document"="c0\n|u16x 01ff aad4|"}
+                {"events"=["v 0" "au16b" "ac 2 true" "ad ff" "ad 01 d4 aa" "ac 0 false"] "document"="c0\n|u16x 01ff aad4|"}
+                {"events"=["v 0" "au16b" "ac 1 true" "ad ff 01" "ac 1 false" "ad d4" "ad aa"] "document"="c0\n|u16x 01ff aad4|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked uint32 array"
+            "encode" = [
+                {"events"=["v 0" "au32b" "ac 0 false"]                             "document"="c0\n|u32x|"}
+                {"events"=["v 0" "au32b" "ac 1 false" "ad 34 12 ff 01"]            "document"="c0\n|u32x 01ff1234|"}
+                {"events"=["v 0" "au32b" "ac 2 false" "ad 34 12 ff 01 78 56 d4 aa"]  "document"="c0\n|u32x 01ff1234 aad45678|"}
+                {"events"=["v 0" "au32b" "ac 2 false" "ad 34" "ad 12 ff 01" "ad 78 56 d4 aa"]  "document"="c0\n|u32x 01ff1234 aad45678|"}
+                {"events"=["v 0" "au32b" "ac 2 true" "ad 34 12 ff 01 78 56 d4 aa" "ac 0 false"] "document"="c0\n|u32x 01ff1234 aad45678|"}
+                {"events"=["v 0" "au32b" "ac 1 true" "ad 34 12 ff 01" "ac 1 false" "ad 78 56 d4" "ad aa"] "document"="c0\n|u32x 01ff1234 aad45678|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked uint64 array"
+            "encode" = [
+                {"events"=["v 0" "au64b" "ac 0 false"]                             "document"="c0\n|u64x|"}
+                {"events"=["v 0" "au64b" "ac 1 false" "ad dd cc bb aa 34 12 ff 01"] "document"="c0\n|u64x 01ff1234aabbccdd|"}
+                {"events"=["v 0" "au64b" "ac 2 false" "ad dd cc bb aa 34 12 ff 01 44 33 22 11 78 56 d4 aa"]  "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
+                {"events"=["v 0" "au64b" "ac 2 false" "ad dd cc bb aa 34" "ad 12 ff 01 44 33" "ad 22 11 78 56 d4 aa"]  "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
+                {"events"=["v 0" "au64b" "ac 2 true" "ad dd cc bb aa 34 12 ff 01 44 33 22 11 78 56 d4 aa" "ac 0 false"] "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
+                {"events"=["v 0" "au64b" "ac 1 true" "ad dd cc bb aa 34 12 ff 01" "ac 1 false" "ad 44 33 22 11 78 56 d4" "ad aa"] "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked int8 array"
+            "encode" = [
+                {"events"=["v 0" "ai8b" "ac 0 false"]                             "document"="c0\n|i8|"}
+                {"events"=["v 0" "ai8b" "ac 1 false" "ad 7f"]                     "document"="c0\n|i8 127|"}
+                {"events"=["v 0" "ai8b" "ac 2 false" "ad 7f 9f"]                  "document"="c0\n|i8 127 -97|"}
+                {"events"=["v 0" "ai8b" "ac 2 false" "ad 7f" "ad 9f"]             "document"="c0\n|i8 127 -97|"}
+                {"events"=["v 0" "ai8b" "ac 2 true" "ad 7f" "ad 9f" "ac 0 false"] "document"="c0\n|i8 127 -97|"}
+                {"events"=["v 0" "ai8b" "ac 1 true" "ad 7f" "ac 1 false" "ad 9f"] "document"="c0\n|i8 127 -97|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked int16 array"
+            "encode" = [
+                {"events"=["v 0" "ai16b" "ac 0 false"]                             "document"="c0\n|i16|"}
+                {"events"=["v 0" "ai16b" "ac 1 false" "ad ff 7f"]                     "document"="c0\n|i16 32767|"}
+                {"events"=["v 0" "ai16b" "ac 2 false" "ad ff 7f 9f ff"]                  "document"="c0\n|i16 32767 -97|"}
+                {"events"=["v 0" "ai16b" "ac 2 false" "ad ff 7f" "ad 9f ff"]             "document"="c0\n|i16 32767 -97|"}
+                {"events"=["v 0" "ai16b" "ac 2 true" "ad ff 7f" "ad 9f ff" "ac 0 false"] "document"="c0\n|i16 32767 -97|"}
+                {"events"=["v 0" "ai16b" "ac 1 true" "ad ff 7f" "ac 1 false" "ad 9f ff"] "document"="c0\n|i16 32767 -97|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked int32 array"
+            "encode" = [
+                {"events"=["v 0" "ai32b" "ac 0 false"]                             "document"="c0\n|i32|"}
+                {"events"=["v 0" "ai32b" "ac 1 false" "ad ff ff ff 7f"]                     "document"="c0\n|i32 2147483647|"}
+                {"events"=["v 0" "ai32b" "ac 2 false" "ad ff ff ff 7f 9f ff ff ff"]                  "document"="c0\n|i32 2147483647 -97|"}
+                {"events"=["v 0" "ai32b" "ac 2 false" "ad ff ff ff 7f" "ad 9f ff ff ff"]             "document"="c0\n|i32 2147483647 -97|"}
+                {"events"=["v 0" "ai32b" "ac 2 true" "ad ff ff ff 7f" "ad 9f ff ff ff" "ac 0 false"] "document"="c0\n|i32 2147483647 -97|"}
+                {"events"=["v 0" "ai32b" "ac 1 true" "ad ff ff ff 7f" "ac 1 false" "ad 9f ff ff ff"] "document"="c0\n|i32 2147483647 -97|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked int64 array"
+            "encode" = [
+                {"events"=["v 0" "ai64b" "ac 0 false"]                             "document"="c0\n|i64|"}
+                {"events"=["v 0" "ai64b" "ac 1 false" "ad ff ff ff ff ff ff ff 7f"]                     "document"="c0\n|i64 9223372036854775807|"}
+                {"events"=["v 0" "ai64b" "ac 2 false" "ad ff ff ff ff ff ff ff 7f 9f ff ff ff ff ff ff ff"]                  "document"="c0\n|i64 9223372036854775807 -97|"}
+                {"events"=["v 0" "ai64b" "ac 2 false" "ad ff ff ff ff ff ff ff 7f" "ad 9f ff ff ff ff ff ff ff"]             "document"="c0\n|i64 9223372036854775807 -97|"}
+                {"events"=["v 0" "ai64b" "ac 2 true" "ad ff ff ff ff ff ff ff 7f" "ad 9f" "ad ff ff ff" "ad ff ff ff ff" "ac 0 false"] "document"="c0\n|i64 9223372036854775807 -97|"}
+                {"events"=["v 0" "ai64b" "ac 1 true" "ad ff ff ff ff ff ff ff 7f" "ac 1 false" "ad 9f ff" "ad ff ff ff ff ff ff"] "document"="c0\n|i64 9223372036854775807 -97|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked float16 array"
+            "encode" = [
+                {"events"=["v 0" "af16b" "ac 0 false"]                                   "document"="c0\n|f16x|"}
+                {"events"=["v 0" "af16b" "ac 1 false" "ad ff 7f"]                        "document"="c0\n|f16x nan|"}
+                {"events"=["v 0" "af16b" "ac 1 false" "ad bf 7f"]                        "document"="c0\n|f16x snan|"}
+                {"events"=["v 0" "af16b" "ac 1 false" "ad 99 3f"]                        "document"="c0\n|f16x 1.32|"}
+                {"events"=["v 0" "af16b" "ac 2 false" "ad ff 7f 99 3f"]                  "document"="c0\n|f16x nan 1.32|"}
+                {"events"=["v 0" "af16b" "ac 2 false" "ad bf 7f" "ad 99 3f"]             "document"="c0\n|f16x snan 1.32|"}
+                {"events"=["v 0" "af16b" "ac 2 true" "ad 80 7f" "ad 80 ff" "ac 0 false"] "document"="c0\n|f16x inf -inf|"}
+                {"events"=["v 0" "af16b" "ac 1 true" "ad 80 7f" "ac 1 false" "ad 80 ff"] "document"="c0\n|f16x inf -inf|"}
             ]
         }
 

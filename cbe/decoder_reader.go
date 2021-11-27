@@ -126,7 +126,7 @@ func (_this *Reader) ReadUint() (asUint uint64, asBig *big.Int) {
 }
 
 func (_this *Reader) ReadFloat16() float32 {
-	return math.Float32frombits(uint32(_this.ReadUint16()) << 16)
+	return common.Float32FromFloat16Bits(_this.ReadUint16())
 }
 
 func (_this *Reader) ReadFloat32() float32 {

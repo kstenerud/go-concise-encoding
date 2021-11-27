@@ -77,17 +77,17 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, pBigIntN, BI(pBigIntN))
 	assertIterate(t, *pBigIntN, BI(pBigIntN))
 	assertIterate(t, (*big.Int)(nil), NULL())
-	assertIterate(t, float32(-1.25), F(-1.25))
-	assertIterate(t, float64(-9.5e50), F(-9.5e50))
-	assertIterate(t, pBigFloat, BF(pBigFloat))
-	assertIterate(t, *pBigFloat, BF(pBigFloat))
+	assertIterate(t, float32(-1.25), BF(-1.25))
+	assertIterate(t, float64(-9.5e50), BF(-9.5e50))
+	assertIterate(t, pBigFloat, BBF(pBigFloat))
+	assertIterate(t, *pBigFloat, BBF(pBigFloat))
 	assertIterate(t, (*big.Float)(nil), NULL())
 	assertIterate(t, dfloat, DF(dfloat))
 	assertIterate(t, pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, *pBigDFloat, BDF(pBigDFloat))
 	assertIterate(t, (*apd.Decimal)(nil), NULL())
-	assertIterate(t, common.SignalingNan, F(common.SignalingNan))
-	assertIterate(t, common.QuietNan, F(common.QuietNan))
+	assertIterate(t, common.Float64SignalingNan, BF(common.Float64SignalingNan))
+	assertIterate(t, common.Float64QuietNan, BF(common.Float64QuietNan))
 	assertIterate(t, gTimeNow, GT(gTimeNow))
 	assertIterate(t, cTimeNow, CT(cTimeNow))
 	assertIterate(t, []byte{1, 2, 3, 4}, AU8([]byte{1, 2, 3, 4}))
@@ -225,7 +225,7 @@ func TestIterateArrayBool(t *testing.T) {
 }
 
 func TestIterateInterface(t *testing.T) {
-	assertIterate(t, []interface{}{1, nil, 5.5}, L(), I(1), NULL(), F(5.5), E())
+	assertIterate(t, []interface{}{1, nil, 5.5}, L(), I(1), NULL(), BF(5.5), E())
 }
 
 func TestIteratePointer(t *testing.T) {
