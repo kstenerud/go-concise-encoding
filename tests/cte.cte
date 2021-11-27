@@ -1607,10 +1607,11 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
     []
     {}
     <blah>
-]^"}
+]^"
+                }
             ]
             "decodeMustSucceed" = [
-                {"document"="c0 []"  "events"=["v 0" "l" "e"]}
+                {"document"="c0 []"   "events"=["v 0" "l" "e"]}
                 {"document"="c0 [1]"  "events"=["v 0" "l" "n 1" "e"]}
             ]
             "decodeMustFail" = [
@@ -1658,10 +1659,11 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
     4 = []
     5 = {}
     cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884 = <blah>
-}^"}
+}^"
+                }
             ]
             "decodeMustSucceed" = [
-                {"document"="c0 {}"  "events"=["v 0" "m" "e"]}
+                {"document"="c0 {}"         "events"=["v 0" "m" "e"]}
                 {"document"="c0 {\"a\"=1}"  "events"=["v 0" "m" "s a" "n 1" "e"]}
             ]
             "decodeMustFail" = [
@@ -1695,6 +1697,124 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
                 "c0 {|f32|=1}"    // Invalid key type
                 "c0 {|f64|=1}"    // Invalid key type
                 "c0 {|u|=1}"      // Invalid key type
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Markup"
+            "encode" = [
+                {"events"=["v 0" "mu x" "e" "e"] "document"="c0\n<x>"}
+                {"events"=["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "e"] "document"="c0\n<x 1=2 3=4>"}
+                {
+                    "events" = ["v 0" "mu x" "e" "s a" "e"]
+                    "document" = "\.^ c0
+<x;
+    a
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "s a" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    a
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "e" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x;
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "s blah" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    blah
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "s blah<>\\" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    blah\<\>\\
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu XYZ"
+                                    "s string"              "null"
+                                    "n 10"                  "b false"
+                                    "rid https://x.org"     "n -1"
+                                    "n 1.6444453466e1000"   "n 1.5e20"
+                                    "b true"                "n nan"
+                                    "t 2050-12-31"          "n snan"
+                                    "t 2123-01-01/12:04:54" "n inf"
+                                    "n 1"                   "n -inf"
+                                    "n 2"                   "s string"
+                                    "n 3"                   "rid https://concise-encoding.org"
+                                    "n 4"                   "l" "e"
+                                    "n 5"                   "m" "e"
+                                    "uid cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884"  "mu blah" "e" "e"
+                                "e" "s Some text" "e"]
+                    "document" = "\.^ c0
+<XYZ "string"=null 10=false @"https://x.org"=-1 1.6444453466e+1000=1.5e+20 true=nan 2050-12-31=snan 2123-01-01/12:04:54=inf 1=-inf 2="string" 3=@"https://concise-encoding.org" 4=[] 5={} cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884=<blah>;
+    Some text
+>^"
+                }
+            ]
+            "decodeMustSucceed" = [
+                {"document"="c0 <x>"                     "events"=["v 0" "mu x" "e" "e"]}
+                {"document"="c0 <x;>"                    "events"=["v 0" "mu x" "e" "e"]}
+                {"document"="c0 <x;Blah blah>"           "events"=["v 0" "mu x" "e" "s Blah blah" "e"]}
+                {"document"="c0 <x \"a\"=1>"             "events"=["v 0" "mu x" "s a" "n 1" "e" "e"]}
+                {"document"="c0 <x \"a\"=1; Some text>"  "events"=["v 0" "mu x" "s a" "n 1" "e" "s Some text" "e"]}
+            ]
+            "decodeMustFail" = [
+                "c0 <"              // Missing identifier
+                "c0 <x"             // Missing terminator
+                "c0 <x]"            // Wrong terminator
+                "c0 <x}"            // Wrong terminator
+                "c0 <x)"            // Wrong terminator
+                "c0 <x 1>"          // Missing value
+                "c0 <x 1;a>"        // Missing value
+                "c0 <x 1=>"         // Missing value
+                "c0 <x 1=;a>"       // Missing value
+                "c0 <x 1:2>"        // Bad separator
+                "c0 <x 1:2;a>"      // Bad separator
+                "c0 <x null=1>"     // Invalid key type
+                "c0 <x nan=1>"      // Invalid key type
+                "c0 <x snan=1>"     // Invalid key type
+                "c0 <x []=1>"       // Invalid key type
+                "c0 <x {}=1>"       // Invalid key type
+                "c0 <x <blah>=1>"   // Invalid key type
+                "c0 <x (1)=1>"      // Invalid key type
+                "c0 <x @(1 2 3)=1>" // Invalid key type
+                "c0 <x |ct a|=1>"   // Invalid key type
+                "c0 <x |cb 00|=1>"  // Invalid key type
+                "c0 <x |b|=1>"      // Invalid key type
+                "c0 <x |i8|=1>"     // Invalid key type
+                "c0 <x |i16|=1>"    // Invalid key type
+                "c0 <x |i32|=1>"    // Invalid key type
+                "c0 <x |i64|=1>"    // Invalid key type
+                "c0 <x |u8|=1>"     // Invalid key type
+                "c0 <x |u16|=1>"    // Invalid key type
+                "c0 <x |u32|=1>"    // Invalid key type
+                "c0 <x |u64|=1>"    // Invalid key type
+                "c0 <x |f16|=1>"    // Invalid key type
+                "c0 <x |f32|=1>"    // Invalid key type
+                "c0 <x |f64|=1>"    // Invalid key type
+                "c0 <x |u|=1>"      // Invalid key type
             ]
         }
 

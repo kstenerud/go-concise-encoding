@@ -421,13 +421,8 @@ func trimWhitespaceMarkupContent(str []byte) []byte {
 	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.StructWS) {
 		str = str[1:]
 	}
-	hasTrailingWS := false
 	for len(str) > 0 && chars.ByteHasProperty(str[len(str)-1], chars.StructWS) {
 		str = str[:len(str)-1]
-		hasTrailingWS = true
-	}
-	if hasTrailingWS {
-		str = append(str, ' ')
 	}
 	return str
 }
