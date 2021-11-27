@@ -1536,5 +1536,54 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
 
         // ====================================================================
 
+        {
+            "name" = "Chunked float32 array"
+            "encode" = [
+                {"events"=["v 0" "af32b" "ac 0 false"]                                    "document"="c0\n|f32x|"}
+                {"events"=["v 0" "af32b" "ac 1 false" "ad 00 00 ff 7f"]                   "document"="c0\n|f32x nan|"}
+                {"events"=["v 0" "af32b" "ac 1 false" "ad 00 00 bf 7f"]                   "document"="c0\n|f32x snan|"}
+                {"events"=["v 0" "af32b" "ac 1 false" "ad 00 00 99 3f"]                   "document"="c0\n|f32x 1.32|"}
+                {"events"=["v 0" "af32b" "ac 2 false" "ad 00 00 ff 7f 00 00 99 3f"]       "document"="c0\n|f32x nan 1.32|"}
+                {"events"=["v 0" "af32b" "ac 2 false" "ad 00 00 bf 7f" "ad 00 00 99 3f"]  "document"="c0\n|f32x snan 1.32|"}
+                {"events"=["v 0" "af32b" "ac 2 true" "ad 00 00 80 7f" "ad 00 00 80 ff" "ac 0 false"] "document"="c0\n|f32x inf -inf|"}
+                {"events"=["v 0" "af32b" "ac 1 true" "ad 00 00 80 7f" "ac 1 false" "ad 00 00 80 ff"] "document"="c0\n|f32x inf -inf|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked float64 array"
+            "encode" = [
+                {"events"=["v 0" "af64b" "ac 0 false"]                               "document"="c0\n|f64x|"}
+                {"events"=["v 0" "af64b" "ac 1 false" "ad 10 00 00 00 00 00 f8 7f"]  "document"="c0\n|f64x nan|"}
+                {"events"=["v 0" "af64b" "ac 1 false" "ad 10 00 00 00 00 00 f0 7f"]  "document"="c0\n|f64x snan|"}
+                {"events"=["v 0" "af64b" "ac 1 false" "ad 00 00 00 00 00 00 99 bf"]  "document"="c0\n|f64x -1.9p-06|"}
+                {"events"=["v 0" "af64b" "ac 2 false" "ad 10 00 00 00 00 00 f8 7f 00 00 00 00 00 00 99 bf"]  "document"="c0\n|f64x nan -1.9p-06|"}
+                {"events"=["v 0" "af64b" "ac 2 false" "ad 10 00 00 00 00 00 f0 7f" "ad 00 00 00 00 00 00 99 bf"]  "document"="c0\n|f64x snan -1.9p-06|"}
+                {"events"=["v 0" "af64b" "ac 2 true" "ad 00 00 00 00 00 00 f0 7f" "ad 00 00 00 00 00 00 f0 ff" "ac 0 false"] "document"="c0\n|f64x inf -inf|"}
+                {"events"=["v 0" "af64b" "ac 1 true" "ad 00" "ad 00 00 00 00 00 f0 7f" "ac 1 false" "ad 00 00 00 00 00" "ad 00 f0 ff"] "document"="c0\n|f64x inf -inf|"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Chunked UID array"
+            "encode" = [
+                {"events"=["v 0" "aub" "ac 0 false"]            "document"="c0\n|u|"}
+                {"events"=["v 0" "aub" "ac 1 false" "ad cb f4 9e b8 c2 4d 4a 4a be bc cd 2a 1a e4 d8 84"]
+                 "document"="c0\n|u cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884|"}
+                {"events"=["v 0" "aub" "ac 1 true" "ad cb f4 9e b8 c2 4d 4a 4a be bc cd 2a 1a e4 d8 84" "ac 0 false"]
+                 "document"="c0\n|u cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884|"}
+                {"events"=["v 0" "aub" "ac 2 false" "ad cb f4 9e b8 c2 4d 4a 4a be bc cd 2a 1a e4 d8 84 2e 66 10 38 4f 59 11 ec 81 d3 02 42 ac 13 00 03"]
+                 "document"="c0\n|u cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884 2e661038-4f59-11ec-81d3-0242ac130003|"}
+                {"events"=["v 0" "aub" "ac 2 false" "ad cb f4 9e b8 " "ad c2 4d 4a 4a be bc cd 2a 1a e4 d8 84 " "ad 2e 66 10 38 4f 59 11 ec 81 d3 02 42 ac 13 00 " "ad 03"]
+                 "document"="c0\n|u cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884 2e661038-4f59-11ec-81d3-0242ac130003|"}
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

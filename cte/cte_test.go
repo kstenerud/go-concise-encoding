@@ -100,42 +100,6 @@ func TestCTEArrayFloat16(t *testing.T) {
 	assertDecodeFails(t, "c0 |f16 -0x1.fffffffffffffffffffffffff|")
 }
 
-func TestCTEChunked(t *testing.T) {
-	assertChunkedStringlike := func(encoded string, startEvent *test.TEvent) {
-		assertEncode(t, nil, encoded, BD(), EvV, startEvent, AC(8, false), AD([]byte("abcdefgh")), ED())
-		assertEncode(t, nil, encoded, BD(), EvV, startEvent,
-			AC(1, true), AD([]byte("a")),
-			AC(2, true), AD([]byte("bc")),
-			AC(3, true), AD([]byte("def")),
-			AC(2, false), AD([]byte("gh")),
-			ED())
-
-		assertEncode(t, nil, encoded, BD(), EvV, startEvent,
-			AC(1, true), AD([]byte("a")),
-			AC(2, true), AD([]byte("bc")),
-			AC(3, true), AD([]byte("def")),
-			AC(2, true), AD([]byte("gh")),
-			AC(0, false), ED())
-	}
-
-	assertChunkedByteslike := func(encoded string, startEvent *test.TEvent) {
-		assertEncode(t, nil, encoded, BD(), EvV, startEvent, AC(5, false), AD([]byte{0x12, 0x34, 0x56, 0x78, 0x9a}), ED())
-		assertEncode(t, nil, encoded, BD(), EvV, startEvent,
-			AC(1, true), AD([]byte{0x12}),
-			AC(2, true), AD([]byte{0x34, 0x56}),
-			AC(2, false), AD([]byte{0x78, 0x9a}),
-			ED())
-	}
-
-	assertChunkedStringlike(`c0
-"abcdefgh"`, SB())
-	//TODO: assertChunkedStringlike("c0 `# abcdefgh#", VB())
-	assertChunkedStringlike("c0\n@\"abcdefgh\"", RB())
-	assertChunkedStringlike("c0\n|ct abcdefgh|", CTB())
-	assertChunkedByteslike("c0\n|cb 12 34 56 78 9a|", CBB())
-	assertChunkedByteslike("c0\n|u8x 12 34 56 78 9a|", AU8B())
-}
-
 func TestCTEList(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 []`, BD(), EvV, L(), E(), ED())
