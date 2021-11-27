@@ -1820,5 +1820,85 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
 
         // ====================================================================
 
+        {
+            "name" = "Node"
+            "encode" = [
+                {"events"=["v 0" "node" "n 1" "e"] "document"="c0\n(1\n)"}
+                {
+                    "events" = ["v 0" "node" "null"
+                                    "b false"
+                                    "n -1"
+                                    "node" "n 1.5e20"
+                                        "n nan"
+                                        "n snan"
+                                    "e"
+                                    "node" "n inf"
+                                        "n -inf"
+                                        "s string"
+                                        "rid https://concise-encoding.org"
+                                    "e"
+                                    "node" "l" "e"
+                                        "m" "e"
+                                        "mu blah" "e" "e"
+                                    "e"
+                                "e"]
+                    "document"="\.^ c0
+(null
+    false
+    -1
+    (1.5e+20
+        nan
+        snan
+    )
+    (inf
+        -inf
+        "string"
+        @"https://concise-encoding.org"
+    )
+    ([]
+        {}
+        <blah>
+    )
+)^"
+                }
+            ]
+            "decodeMustSucceed" = [
+                {"document"="c0 (1)"  "events"=["v 0" "node" "n 1" "e"]}
+            ]
+            "decodeMustFail" = [
+                "c0 ("   // Missing value
+                "c0 (1"  // Missing terminator
+                "c0 (1}" // Wrong terminator
+                "c0 (1>" // Wrong terminator
+                "c0 (1]" // Wrong terminator
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Edge"
+            "encode" = [
+                {"events"=["v 0" "edge" "n 1" "n 2" "n 3"] "document"="c0\n@(1 2 3)"}
+                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14"] "document"="c0\n@(nan \"x\" 2001-08-14)"}
+            ]
+            "decodeMustSucceed" = [
+                {"document"="c0 @(1 2 3)"  "events"=["v 0" "edge" "n 1" "n 2" "n 3"]}
+                {"document"="c0 @(nan \"x\" 2001-08-14)"  "events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14"]}
+                {"document"="c0 @(@\"https://x.y\" 1.5 [1])"  "events"=["v 0" "edge" "rid https://x.y" "n 1.5" "l" "n 1" "e"]}
+            ]
+            "decodeMustFail" = [
+                "c0 @("       // Missing value
+                "c0 @(1"      // Missing value
+                "c0 @(1 2"    // Missing value
+                "c0 @(1 2 3"  // Missing terminator
+                "c0 @(1 2 3}" // Wrong terminator
+                "c0 @(1 2 3>" // Wrong terminator
+                "c0 @(1 2 3]" // Wrong terminator
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

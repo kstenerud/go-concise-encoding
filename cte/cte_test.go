@@ -450,16 +450,6 @@ func TestIdentifier(t *testing.T) {
 	assertDecodeFails(t, "c0 &12345\u000178:1")
 }
 
-func TestCTEEdge(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-@(@"a" @"b" 1)`, BD(), EvV, EDGE(), RID("a"), RID("b"), I(1), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    true = @(@"a" @"b" 1)
-}`, BD(), EvV, M(), TT(), EDGE(), RID("a"), RID("b"), I(1), E(), ED())
-}
-
 func TestCTEMedia(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 |application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|`,
@@ -565,30 +555,4 @@ func TestSingleLineCommentAndObject(t *testing.T) {
     // a comment
     blah
 >`, BD(), EvV, MUP("x"), E(), COM(false, " a comment"), S("blah"), E(), ED())
-}
-
-func TestNode(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-("a"
-    1
-    2
-)`, BD(), EvV, NODE(), S("a"), PI(1), PI(2), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-(null
-    1
-    (2
-    )
-    (3
-        4
-        5
-    )
-)`, BD(), EvV, NODE(), NULL(),
-		PI(1),
-		NODE(), PI(2), E(),
-		NODE(), PI(3),
-		PI(4),
-		PI(5),
-		E(),
-		E(), ED())
 }
