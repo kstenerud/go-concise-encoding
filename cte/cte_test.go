@@ -100,27 +100,6 @@ func TestCTEArrayFloat16(t *testing.T) {
 	assertDecodeFails(t, "c0 |f16 -0x1.fffffffffffffffffffffffff|")
 }
 
-func TestCTEList(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[]`, BD(), EvV, L(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    123
-]`, BD(), EvV, L(), PI(123), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    "test"
-]`, BD(), EvV, L(), S("test"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    -1
-    "a"
-    2
-    "test"
-    -3
-]`, BD(), EvV, L(), NI(1), S("a"), PI(2), S("test"), NI(3), E(), ED())
-}
-
 func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
 	v := []interface{}{sl, sl, sl}
@@ -130,125 +109,6 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
     []
     []
 ]`)
-}
-
-func TestCTEMap(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-{}`, BD(), EvV, M(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = 2
-}`, BD(), EvV, M(), PI(1), PI(2), E(), ED())
-	assertDecode(t, nil, "c0 {  1 = 2 3=4 \t}", BD(), EvV, M(), PI(1), PI(2), PI(3), PI(4), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    "null" = null
-    1.5 = 1000
-}`)
-
-	assertDecode(t, nil, `c0 {"email" = @"mailto:me@somewhere.com" 1.5 = "a string"}`, BD(), EvV, M(),
-		S("email"), RID("mailto:me@somewhere.com"),
-		DF(NewDFloat("1.5")), S("a string"),
-		E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    "a" = inf
-    "b" = 1
-}`)
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    "a" = -inf
-    "b" = 1
-}`)
-}
-
-func TestCTEMapBadKVSeparator(t *testing.T) {
-	assertDecodeFails(t, "c0 {a:b}")
-}
-
-func TestCTEListList(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    []
-]`, BD(), EvV, L(), L(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    []
-]`, BD(), EvV, L(), PI(1), L(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    []
-    1
-]`, BD(), EvV, L(), PI(1), L(), E(), PI(1), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    [
-        2
-    ]
-    1
-]`, BD(), EvV, L(), PI(1), L(), PI(2), E(), PI(1), E(), ED())
-}
-
-func TestCTEListMap(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    {}
-]`, BD(), EvV, L(), M(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    {}
-]`, BD(), EvV, L(), PI(1), M(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    {}
-    1
-]`, BD(), EvV, L(), PI(1), M(), E(), PI(1), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    1
-    {
-        2 = 3
-    }
-    1
-]`, BD(), EvV, L(), PI(1), M(), PI(2), PI(3), E(), PI(1), E(), ED())
-}
-
-func TestCTEMapList(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = []
-}`, BD(), EvV, M(), PI(1), L(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = [
-        2
-    ]
-    "test" = [
-        1
-        2
-        3
-    ]
-}`, BD(), EvV, M(), PI(1), L(), PI(2), E(), S("test"), L(), PI(1), PI(2), PI(3), E(), E(), ED())
-}
-
-func TestCTEMapMap(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = {}
-}`, BD(), EvV, M(), PI(1), M(), E(), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    1 = {
-        "a" = "b"
-    }
-    "test" = {}
-}`, BD(), EvV, M(), PI(1), M(), S("a"), S("b"), E(), S("test"), M(), E(), E(), ED())
 }
 
 func TestCTEMarkup(t *testing.T) {
@@ -348,16 +208,6 @@ func TestCTEMarkupComment(t *testing.T) {
 
 	// TODO: Should it be picking up the extra space between the x and comment?
 	assertDecode(t, nil, "c0 <a;x /*blah*/ x>", BD(), EvV, MUP("a"), E(), S("x "), COM(true, "blah"), S("x"), E(), ED())
-}
-
-func TestCTENamed(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, "c0\nnull", BD(), EvV, NULL(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\nnan", BD(), EvV, NAN(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\nsnan", BD(), EvV, SNAN(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\ninf", BD(), EvV, DF(compact_float.Infinity()), ED())
-	assertDecodeEncode(t, nil, nil, "c0\n-inf", BD(), EvV, DF(compact_float.NegativeInfinity()), ED())
-	assertDecodeEncode(t, nil, nil, "c0\nfalse", BD(), EvV, FF(), ED())
-	assertDecodeEncode(t, nil, nil, "c0\ntrue", BD(), EvV, TT(), ED())
 }
 
 func TestCTEMarker(t *testing.T) {
