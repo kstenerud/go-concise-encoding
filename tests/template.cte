@@ -1,0 +1,175 @@
+c0
+
+/* Event types & arguments (see TESTING.md for more info)
+ * ---------------------------------------------------------------------------
+ * v <positive integer>            Version specifier
+ * pad <count>                     Padding
+ * com <is multiline?> <contents>  Comment
+ * null                            Null
+ * b <value>                       Boolean
+ * n <int or float>                Number (auto-detect)
+ * i <value>                       Integer
+ * bf <value>                      Binary float
+ * df <value>                      Decimal float
+ * uid <value>                     UID
+ * t <value>                       Time
+ * s <string contents>             String
+ * rid <string contents>           Resource ID
+ * cb <hex bytes>                  Custom binary
+ * ct <string contents>            Custom text
+ * ab <bit elements>               Bit array
+ * ai8 <int elements>              Int8 array
+ * ai8x <hex elements>             Int8 array
+ * ai16 <int elements>             Int16 array
+ * ai16x <hex elements>            Int16 array
+ * ai32 <int elements>             Int32 array
+ * ai32x <hex elements>            Int32 array
+ * ai64 <int elements>             Int64 array
+ * ai64x <hex elements>            Int64 array
+ * au8 <uint elements>             Uint8 array
+ * au8x <hex elements>             Uint8 array
+ * au16 <uint elements>            Uint16 array
+ * au16x <hex elements>            Uint16 array
+ * au32 <uint elements>            Uint32 array
+ * au32x <hex elements>            Uint32 array
+ * au64 <uint elements>            Uint64 array
+ * au64x <hex elements>            Uint64 array
+ * af16 <float elements>           Float16 array
+ * af32 <float elements>           Float32 array
+ * af64 <float elements>           Float64 array
+ * au <UID elements>               UID array
+ * sb                              Begin string
+ * rb                              Begin resource ID
+ * rrb                             Begin remote reference
+ * cbb                             Begin custom binary
+ * ctb                             Begin custom text
+ * abb                             Begin bit array
+ * ai8b                            Begin int8 array
+ * ai16b                           Begin int16 array
+ * ai32b                           Begin int32 array
+ * ai64b                           Begin int64 array
+ * au8b                            Begin uint8 array
+ * au16b                           Begin uint16 array
+ * au32b                           Begin uint32 array
+ * au64b                           Begin uint64 array
+ * af16b                           Begin float16 array
+ * af32b                           Begin float32 array
+ * af64b                           Begin float64 array
+ * aub                             Begin UID array
+ * mb                              Begin media
+ * ac <element count> <has more?>  Begin array chunk
+ * ad <hex bytes>                  Array data (as bytes)
+ * at <string contents>            Array data (as text)
+ * l                               Begin list
+ * m                               Begin map
+ * mu <identifier>                 Begin markup
+ * node                            Begin node
+ * edge                            Begin edge
+ * e                               End container
+ * mark <identifier>               Begin marker
+ * ref <identifier>                Reference
+ * rref <resource ID contents>     Remote reference
+ * const <identifier>              Constant
+ */
+
+{
+    "options" = {
+        "failFast" = false  // If true, halt tests on first error
+    }
+
+    "ceTests" = [
+
+        // ====================================================================
+
+        {
+            "name" = "CE Test Case Template"
+
+            /* Fields (see test/test_runner/test_runner.go):
+             * - name:   Name of this test (required)
+             * - cte:    Encoded CTE data (required if "t" specified in TO or FROM)
+             * - cbe:    Encoded CBE data (required if "b" specified in TO or FROM)
+             * - events: CE codec events (required if "e" specified in TO or FROM)
+             * - to:     Test converting to CTE ("t"), CBE ("b"), events ("e")
+             * - from:   Test converting from CTE ("t"), CBE ("b"), events ("e")
+             * - fail:   Expect failure? (default false)
+             * - trace:  Trace the code path on failure?? (default false)
+             * - debug:  Print debug information while testing? (default false)
+             * - skip:   Skip this test? (default false)
+             *
+             * Notes:
+             * - Events are shorthand representations of events associated with CE data
+             *   (see top of this file).
+             * - If "to" is empty, the data will simply run through the rules engine.
+             * - CTE data is string compared (after trimming leading and trailing whitespace),
+             *   so unexpected indentation will cause the comparison to fail.
+             */
+
+            "cte" = "\.%%%%
+c0
+null
+            %%%%"
+            "cbe"    = |u8x 83 00 7e|
+            "events" = ["v 0" "null"]
+            "from"   = ["t" "b" "e"]
+            "to"     = ["t" "b" "e"]
+            "fail"   = false
+            "trace"  = false
+            "debug"  = false
+            "skip"   = false
+        }
+    ]
+
+    // ========================================================================
+
+    "cteTests" = [
+        {
+            "name" = "CTE Test Case Template"
+
+            "encode" = [
+                /* Test the CTE encoder, with an additional roundtrip test:
+                 * - Encodes "events" into a new document
+                 * - Expects the new document to match "document" exactly
+                 * - If "skipRoundTrip" is false or not present:
+                 *   - Decodes the new document into new events
+                 *   - Expects the new events to be equivalent to "events"
+                 */
+                {
+                    "events" = ["v 0" "n 1"]
+                    "document" = "c0\n1"
+
+                    // Optional fields:
+                    "skipRoundTrip" = false // If true, skip the round-trip portion of the test
+                }
+            ]
+
+            "decodeMustSucceed" = [
+                /* Test the CTE decoder, with an additional roundtrip test:
+                 * - Decodes "document" into new events
+                 * - Expects the new events to be equivalent to "events"
+                 * - If "skipRoundTrip" is false or not present:
+                 *   - Encodes the new events into a CTE document and then decodes them again
+                 *   - Expects the resulting events to still be equivalent to "events"
+                 */
+                {
+                    "document" = "c0 1"
+                    "events" = ["v 0" "n 1"]
+
+                    // Optional fields:
+                    "skipRoundTrip" = false // If true, skip the round-trip portion of the test
+                }
+            ]
+
+            "decodeMustFail" = [
+                /* Test that the CTE decoder fails appropriately:
+                 * - Attempts to decode the document into events and expects a failure
+                 */
+                "c0{}"  // Missing whitespace
+            ]
+
+            // Optional fields:
+            "debug" = false  // If true, print out the events as they happen
+            "trace" = false  // If true, print a stack trace when an error occurs
+            "skip" = false   // If true, skip this test
+        }
+    ]
+}
