@@ -47,8 +47,7 @@ func main() {
 		return
 	}
 
-	for i := 1; i < len(args); i++ {
-		path := args[i]
+	for _, path := range args {
 		fi, err := os.Stat(path)
 		if err != nil {
 			fmt.Printf("Could not open %v: %v\n", path, err)
