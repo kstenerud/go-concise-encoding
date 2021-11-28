@@ -103,57 +103,6 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 ]`)
 }
 
-func TestCTEMarker(t *testing.T) {
-	assertDecodeFails(t, `c0 &2`)
-	assertDecode(t, nil, `c0 &1:"string"`, BD(), EvV, MARK("1"), S("string"), ED())
-	assertDecode(t, nil, `c0 &a:"string"`, BD(), EvV, MARK("a"), S("string"), ED())
-	assertDecodeFails(t, `c0 & 1:"string"`)
-	assertDecodeFails(t, `c0 &1 "string"`)
-	assertDecodeFails(t, `c0 &1"string"`)
-	assertDecodeFails(t, `c0 &rgnsekfrnsekrgfnskergnslekrgnslergselrgblserfbserfbvsekrskfrvbskerfbksefbskerbfserbfrbksuerfbsekjrfbdjfgbsdjfgbsdfgbsdjkhfg`)
-}
-
-func TestCTEReference(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    &2:"aaaaa"
-    $2
-]`, BD(), EvV, L(), MARK("2"), S("aaaaa"), REF("2"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    &a:"aaaaa"
-    $a
-]`, BD(), EvV, L(), MARK("a"), S("aaaaa"), REF("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    &a:"aaaaa"
-    "a"
-]`, BD(), EvV, L(), MARK("a"), S("aaaaa"), S("a"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-$"http://x.y"`, BD(), EvV, RREF("http://x.y"), ED())
-	assertDecodeFails(t, `c0 $ 1`)
-}
-
-func TestCTEMarkerReference(t *testing.T) {
-	assertDecode(t, nil, `c0 [&2:"testing" $2]`, BD(), EvV, L(), MARK("2"), S("testing"), REF("2"), E(), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    "first" = &1:1000
-    "second" = $1
-}`)
-}
-
-func TestCTEMarkerReference2(t *testing.T) {
-	assertDecode(t, nil, `c0 {"keys" = &1:"foo" $1 = 1}`,
-		BD(), EvV,
-		M(),
-		S("keys"),
-		MARK("1"), S("foo"),
-		REF("1"), I(1),
-		E(),
-		ED())
-}
-
 func TestCTEComment(t *testing.T) {
 	// TODO: Better comment formatting
 	assertDecodeEncode(t, nil, nil, `c0

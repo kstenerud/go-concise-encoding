@@ -120,6 +120,10 @@ func (_this *Reader) AdvanceByte() {
 	_this.ReadByteNoEOF()
 }
 
+func (_this *Reader) NextByteHasProperty(property chars.Properties) bool {
+	return chars.ByteHasProperty(_this.PeekByteNoEOF(), property)
+}
+
 func (_this *Reader) SkipWhileProperty(property chars.Properties) {
 	for _this.ReadByteAllowEOF().HasProperty(property) {
 	}

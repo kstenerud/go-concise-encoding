@@ -1949,5 +1949,99 @@ echo hello world
 
         // ====================================================================
 
+        {
+            "name" = "Marker"
+            "encode" = [
+                {"events"=["v 0" "mark 1" "n 2"]  "document"="c0\n&1:2"}
+                {"events"=["v 0" "mark 1" "s x"]  "document"="c0\n&1:\"x\""}
+            ]
+            "decodeMustFail" = [
+                "c0 & 1:2"    // Bad whitespace
+                "c0 & 1: 2"   // Bad whitespace
+                "c0 & 1 :2"   // Bad whitespace
+                "c0 & 1 : 2"  // Bad whitespace
+                "c0 &1: 2"    // Bad whitespace
+                "c0 &1 :2"    // Bad whitespace
+                "c0 &1 : 2"   // Bad whitespace
+                "c0 &1\"x\""  // Missing separator
+                "c0 &1 \"x\"" // Missing separator
+                // Identifier too long:
+                "c0 &abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh:1"
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Reference"
+            "encode" = [
+                {
+                    "events" = ["v 0" "l" "mark x" "n 2" "ref x" "e"]
+                    "document" = "\.^
+c0
+[
+    &x:2
+    $x
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "ref x" "mark x" "n 2" "e"]
+                    "document" = "\.^
+c0
+[
+    $x
+    &x:2
+]^"
+                }
+                {
+                    "events" = ["v 0" "m" "s My key" "mark mykey" "s Blah blah" "ref mykey" "n 1000" "e"]
+                    "document" = "\.^
+c0
+{
+    "My key" = &mykey:"Blah blah"
+    $mykey = 1000
+}^"
+                }
+                {
+                    "events" = ["v 0" "m" "ref mykey" "n 1000" "s My key" "mark mykey" "s Blah blah" "e"]
+                    "document" = "\.^
+c0
+{
+    $mykey = 1000
+    "My key" = &mykey:"Blah blah"
+}^"
+                }
+            ]
+            "decodeMustFail" = [
+                "c0 [&x:2 $y]"                                   // Unknown ID
+                "c0 [$y &x:2]"                                   // Unknown ID
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:null}^"     // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:nan}^"      // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:snan}^"     // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:[]}^"       // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:{}}^"       // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:<blah>}^"   // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:(1)}^"      // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:@(1 2 3)}^" // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|ct a|}^"   // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|cb 00|}^"  // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|b|}^"      // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i8|}^"     // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i16|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i32|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i64|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u8|}^"     // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u16|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u32|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u64|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|f16|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|f32|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|f64|}^"    // Referenced object not keyable type
+                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u|}^"      // Referenced object not keyable type
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

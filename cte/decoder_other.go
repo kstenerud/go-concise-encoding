@@ -399,6 +399,9 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 		ctx.Errorf("Missing colon between marker ID and marked value")
 	}
 	ctx.Stream.AdvanceByte()
+	if ctx.Stream.NextByteHasProperty(chars.StructWS) {
+		ctx.Errorf("whitespace not allowed between marker ID and marked object")
+	}
 	decodeByFirstChar(ctx)
 }
 
