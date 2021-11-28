@@ -22,12 +22,9 @@ package cte
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 
-	compact_float "github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/test"
 )
 
 // TODO: Remove this when releasing V1
@@ -57,11 +54,6 @@ func TestCTEVersion(t *testing.T) {
 		document := string([]byte{'c', byte(i), ' ', '1'})
 		assertDecodeFails(t, document)
 	}
-}
-
-func TestCTEStringWithNul(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-"test\0string"`, BD(), EvV, S("test\u0000string"), ED())
 }
 
 func TestCTEArrayFloat16(t *testing.T) {
@@ -259,13 +251,6 @@ func TestCTECommentFollowing(t *testing.T) {
 	// TODO: Also test for //
 }
 
-func TestCTEPretty(t *testing.T) {
-	opts := options.DefaultCTEEncoderOptions()
-
-	opts.Indent = "    "
-	assertDecodeEncode(t, nil, opts, "c0\n1", BD(), EvV, PI(1), ED())
-}
-
 func TestCTEBufferEdge(t *testing.T) {
 	assertDecode(t, nil, `c0
 {
@@ -386,7 +371,6 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
         >
     >
 }`
-	// TODO: "Please choose from the following widgets:" is getting a space appended to it
 	encoded := &bytes.Buffer{}
 	encOpts := options.DefaultCTEEncoderOptions()
 	encOpts.Indent = "    "
@@ -411,11 +395,6 @@ func TestMapValueComment(t *testing.T) {
     1 = /**/
     1
 }`, BD(), EvV, M(), PI(1), COM(true, ""), PI(1), E(), ED())
-}
-
-func TestEmptyDocument(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-null`, BD(), EvV, NULL(), ED())
 }
 
 func TestNestedComment(t *testing.T) {
@@ -450,37 +429,6 @@ func TestIdentifier(t *testing.T) {
 	assertDecodeFails(t, "c0 &12345\u000178:1")
 }
 
-func TestCTEMedia(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-|application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|`,
-		BD(), EvV, MB(), AC(16, false), AD([]byte("application/x-sh")), AC(28, false), AD([]byte(`#!/bin/sh
-
-echo hello world
-`)), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-|a|`, BD(), EvV, MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
-}
-
-func testDecodeCasePermutations(t *testing.T, name string, events ...*test.TEvent) {
-	for _, v := range generateCasePermutations(name) {
-		ev := []*test.TEvent{BD(), EvV}
-		ev = append(ev, events...)
-		ev = append(ev, ED())
-		assertDecode(t, nil, fmt.Sprintf("C0 %v", v), ev...)
-	}
-}
-
-func TestMixedCase(t *testing.T) {
-	testDecodeCasePermutations(t, "null", NULL())
-	testDecodeCasePermutations(t, "nan", NAN())
-	testDecodeCasePermutations(t, "snan", SNAN())
-	testDecodeCasePermutations(t, "inf", DF(compact_float.Infinity()))
-	testDecodeCasePermutations(t, "-inf", DF(compact_float.NegativeInfinity()))
-	testDecodeCasePermutations(t, "false", FF())
-	testDecodeCasePermutations(t, "true", TT())
-}
-
 func TestSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0[]`)
 	assertDecodeFails(t, `c0 ["a""b"]`)
@@ -498,43 +446,6 @@ func TestSpacing(t *testing.T) {
 
 	// TODO: This should not fail
 	assertDecodeFails(t, `c0 ["a"/* comment */ "b"]`)
-}
-
-func TestMismatchedContainerEnd(t *testing.T) {
-	assertDecode(t, nil, `c0 []`, BD(), EvV, L(), E(), ED())
-	assertDecodeFails(t, `c0 [}`)
-	assertDecodeFails(t, `c0 [>`)
-	assertDecodeFails(t, `c0 [)`)
-
-	assertDecode(t, nil, `c0 {}`, BD(), EvV, M(), E(), ED())
-	assertDecodeFails(t, `c0 {]`)
-	assertDecodeFails(t, `c0 {>`)
-	assertDecodeFails(t, `c0 {)`)
-
-	assertDecode(t, nil, `c0 <a>`, BD(), EvV, MUP("a"), E(), E(), ED())
-	assertDecodeFails(t, `c0 <a}`)
-	assertDecodeFails(t, `c0 <a]`)
-	assertDecodeFails(t, `c0 <a)`)
-
-	assertDecode(t, nil, `c0 <a 1=2>`, BD(), EvV, MUP("a"), I(1), I(2), E(), E(), ED())
-	assertDecodeFails(t, `c0 <a 1=2}`)
-	assertDecodeFails(t, `c0 <a 1=2]`)
-	assertDecodeFails(t, `c0 <a 1=2)`)
-
-	assertDecode(t, nil, `c0 <a;a>`, BD(), EvV, MUP("a"), E(), S("a"), E(), ED())
-	assertDecodeFails(t, `c0 <a;a}`)
-	assertDecodeFails(t, `c0 <a;a]`)
-	assertDecodeFails(t, `c0 <a;a)`)
-
-	assertDecode(t, nil, `c0 <a 1=2;a>`, BD(), EvV, MUP("a"), I(1), I(2), E(), S("a"), E(), ED())
-	assertDecodeFails(t, `c0 <a 1=2;a}`)
-	assertDecodeFails(t, `c0 <a 1=2;a]`)
-	assertDecodeFails(t, `c0 <a 1=2;a)`)
-
-	assertDecode(t, nil, `c0 @(@"a" @"a" 1)`, BD(), EvV, EDGE(), RID("a"), RID("a"), I(1), ED())
-	assertDecodeFails(t, `c0 @(@"a" @"a" 1]`)
-	assertDecodeFails(t, `c0 @(@"a" @"a" 1>`)
-	assertDecodeFails(t, `c0 @(@"a" @"a" 1}`)
 }
 
 func TestSingleLineCommentAndObject(t *testing.T) {

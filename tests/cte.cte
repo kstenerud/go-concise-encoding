@@ -18,11 +18,17 @@ c0
             ]
             "decodeMustSucceed" = [
                 {"document"="c0 1"           "events"=["v 0" "n 1"]}
+                {"document"="C0 1"           "events"=["v 0" "n 1"]}
                 {"document"="c0\n1"          "events"=["v 0" "n 1"]}
+                {"document"="C0\n1"          "events"=["v 0" "n 1"]}
                 {"document"="c0\t1"          "events"=["v 0" "n 1"]}
+                {"document"="C0\t1"          "events"=["v 0" "n 1"]}
                 {"document"="c0\r\n1"        "events"=["v 0" "n 1"]}
+                {"document"="C0\r\n1"        "events"=["v 0" "n 1"]}
                 {"document"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
+                {"document"="\r\n\t  C0 1"   "events"=["v 0" "n 1"]}
                 {"document"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
+                {"document"="C0 \r\n\t   1"  "events"=["v 0" "n 1"]}
             ]
             "decodeMustFail" = [
                 "c0{}"  // Missing whitespace
@@ -738,6 +744,19 @@ test"~"  "events"=["v 0" "s testtest"]}  // Continuation
         // ====================================================================
 
         {
+            "name" = "String with NUL character"
+            "encode" = [
+                {
+                    "events" = ["v 0" "s test\0string"]
+                    "document" = "\.^ c0
+"test\0string"^"
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
             // Resource IDs have the same capabilities and restrictions as strings.
             "name" = "Resource ID"
             "encode" = [
@@ -1353,6 +1372,36 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
                 "c0 |u ffffffff-ffff-ffff-ffff-fffffffffff|"   // Incomplete
                 "c0 |u ffffffffffffffffffffffffffffffff|"      // Malformed
                 "c0 |u fffffff-fffff-ffff-ffff-fffffffffff|"   // Malformed
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Media"
+            "encode" = [
+                {
+                    "events" = ["v 0" "mb" "ac 16 false" "at application/x-sh" "ac 28 false" "at \.^
+#!/bin/sh
+
+echo hello world
+^"]
+                    "document" = "\.^
+c0
+|application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|^"
+                }
+            ]
+            "decodeMustSucceed" = [
+                {
+                    "document" = "\.^
+c0
+|application/x-sh 23 21 2F 62 69 6E 2F 73 68 0A 0A 65 63 68 6F 20 68 65 6C 6C 6F 20 77 6F 72 6C 64 0A|^"
+                    "events" = ["v 0" "mb" "ac 16 false" "at application/x-sh" "ac 28 false" "at \.^
+#!/bin/sh
+
+echo hello world
+^"]
+                }
             ]
         }
 
