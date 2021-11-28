@@ -103,54 +103,6 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 ]`)
 }
 
-func TestCTEComment(t *testing.T) {
-	// TODO: Better comment formatting
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    "a" = inf
-    /* test */
-    "b" = 1
-}`)
-}
-
-func TestCTECommentSingleLine(t *testing.T) {
-	assertDecodeFails(t, "c0 //")
-	assertDecode(t, nil, "c0 //\n1", BD(), EvV, COM(false, ""), PI(1), ED())
-	assertDecode(t, nil, "c0 //\r\n1", BD(), EvV, COM(false, ""), PI(1), ED())
-	assertDecodeFails(t, "c0 // ")
-	assertDecode(t, nil, "c0 // \n1", BD(), EvV, COM(false, " "), PI(1), ED())
-	assertDecode(t, nil, "c0 // \r\n1", BD(), EvV, COM(false, " "), PI(1), ED())
-	assertDecodeFails(t, "c0 //a")
-	assertDecode(t, nil, "c0 //a\n1", BD(), EvV, COM(false, "a"), PI(1), ED())
-	assertDecode(t, nil, "c0 //a\r\n1", BD(), EvV, COM(false, "a"), PI(1), ED())
-	assertDecode(t, nil, "c0 // This is a comment\n1", BD(), EvV, COM(false, " This is a comment"), PI(1), ED())
-	assertDecodeFails(t, "c0 /-\n")
-}
-
-func TestCTECommentMultiline(t *testing.T) {
-	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, COM(true, ""), PI(1), ED())
-	assertDecode(t, nil, "c0 /**/ 1", BD(), EvV, COM(true, ""), PI(1), ED())
-	assertDecode(t, nil, "c0 /* This is a comment */ 1", BD(), EvV, COM(true, " This is a comment "), PI(1), ED())
-	assertDecode(t, nil, "c0 /*This is a comment*/ 1", BD(), EvV, COM(true, "This is a comment"), PI(1), ED())
-}
-
-func TestCTECommentMultilineNested(t *testing.T) {
-	assertDecode(t, nil, "c0 /*/**/*/ 1", BD(), EvV, COM(true, "/**/"), PI(1), ED())
-	assertDecode(t, nil, "c0 /*/**/ */ 1", BD(), EvV, COM(true, "/**/ "), PI(1), ED())
-	assertDecode(t, nil, "c0 /* /**/ */ 1", BD(), EvV, COM(true, " /**/ "), PI(1), ED())
-	assertDecode(t, nil, "c0  /* before/* mid */ after*/ 1  ", BD(), EvV, COM(true, " before/* mid */ after"), PI(1), ED())
-	assertDecode(t, nil, "c0 /* x /* y */ 10 */ 5", BD(), EvV, COM(true, " x /* y */ 10 "), PI(5), ED())
-	assertDecode(t, nil, "c0 /* x /* y */ na */ 5", BD(), EvV, COM(true, " x /* y */ na "), PI(5), ED())
-}
-
-func TestCTECommentAfterValue(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    "a"
-    /**/
-]`, BD(), EvV, L(), S("a"), COM(true, ""), E(), ED())
-}
-
 func TestCTEComplexComment(t *testing.T) {
 	document := []byte(`c0
 /**/ { /**/ "a"= /**/ "b" /**/ "c"= /**/
@@ -338,22 +290,6 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	}
 }
 
-func TestMapValueComment(t *testing.T) {
-	assertEncode(t, nil, `c0
-{
-    1 = /**/
-    1
-}`, BD(), EvV, M(), PI(1), COM(true, ""), PI(1), E(), ED())
-}
-
-func TestNestedComment(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    /* a /* nested */ comment */
-    1
-]`, BD(), EvV, L(), COM(true, " a /* nested */ comment "), PI(1), E(), ED())
-}
-
 func TestMarkupComment(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 <a;
@@ -395,24 +331,4 @@ func TestSpacing(t *testing.T) {
 
 	// TODO: This should not fail
 	assertDecodeFails(t, `c0 ["a"/* comment */ "b"]`)
-}
-
-func TestSingleLineCommentAndObject(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-[
-    // a comment
-    1
-]`, BD(), EvV, L(), COM(false, " a comment"), PI(1), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-{
-    // a comment
-    1 = 2
-}`, BD(), EvV, M(), COM(false, " a comment"), PI(1), PI(2), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-<x;
-    // a comment
-    blah
->`, BD(), EvV, MUP("x"), E(), COM(false, " a comment"), S("blah"), E(), ED())
 }
