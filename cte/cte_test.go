@@ -290,19 +290,6 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	}
 }
 
-func TestMarkupComment(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-<a;
-    /* comment */
-    1
->`, BD(), EvV, MUP("a"), E(), COM(true, " comment "), S("1"), E(), ED())
-
-	assertDecodeEncode(t, nil, nil, `c0
-<a;
-    /* comment */
->`, BD(), EvV, MUP("a"), E(), COM(true, " comment "), E(), ED())
-}
-
 func TestIdentifier(t *testing.T) {
 	assertDecodeEncode(t, nil, nil, `c0
 &1a:1`, BD(), EvV, MARK("1a"), I(1), ED())

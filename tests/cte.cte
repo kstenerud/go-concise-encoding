@@ -2357,6 +2357,24 @@ c0
     /* x */
 }^"
                 }
+                {
+                    "events" = ["v 0" "m" "s abc" "com false  x" "n 1" "e"]
+                    "document" = "\.^
+c0
+{
+    "abc" = // x
+    1
+}^"
+                }
+                {
+                    "events" = ["v 0" "m" "s abc" "com true  x " "n 1" "e"]
+                    "document" = "\.^
+c0
+{
+    "abc" = /* x */
+    1
+}^"
+                }
             ]
             "decodeMustSucceed" = [
 /* TODO: Allow "abc"// x
@@ -2428,6 +2446,258 @@ c0
     /* x */ "abc" = 1
 }^"
                     "events" = ["v 0" "m" "com true  x " "s abc" "n 1" "e"]
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Comment positioning (markup)"
+            "encode" = [
+                {
+                    "events" = ["v 0" "l" "mu a" "com false  c" "e" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a // c
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "com false  c" "n 2" "e" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=// c
+        2>
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "com false  c" "e" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2 // c
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "e" "com false  c" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a;
+        // c
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "com false  c" "n 2" "e" "s x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=// c
+        2;
+        x
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "com false  c" "e" "s x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2 // c
+    ;
+        x
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "e" "com false  c" "s x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2;
+        // c
+        x
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "e" "s x" "com false  c" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2;
+        x
+        // c
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "e" "com false  c" "s x" "com false  d" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2;
+        // c
+        x
+        // d
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "com false  c" "n 2" "com false  d" "e" "com false  e" "s x" "com false  f" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=// c
+        2 // d
+    ;
+        // e
+        x
+        // f
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "com false  c" "n 1" "com false  d" "n 2" "com false  e" "e" "com false  f" "s x" "com false  g" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a // c
+        1=// d
+        2 // e
+    ;
+        // f
+        x
+        // g
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "com true  c " "e" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a /* c */
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "com true  c " "n 2" "e" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=/* c */
+        2>
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "com true  c " "e" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2 /* c */
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "e" "com true  c " "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a;
+        /* c */
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "com true  c " "n 2" "e" "s x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=/* c */
+        2;
+        x
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "com true  c " "e" "s x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2 /* c */
+    ;
+        x
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "e" "com true  c " "s x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2;
+        /* c */
+        x
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "e" "s x" "com true  c " "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2;
+        x
+        /* c */
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "n 2" "e" "com true  c " "s x" "com true  d " "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=2;
+        /* c */
+        x
+        /* d */
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "n 1" "com true  c " "n 2" "com true  d " "e" "com true  e " "s x" "com true  f " "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a 1=/* c */
+        2 /* d */
+    ;
+        /* e */
+        x
+        /* f */
+    >
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "mu a" "com true  c " "n 1" "com true  d " "n 2" "com true  e " "e" "com true  f " "s x" "com true  g " "e" "e"]
+                    "document" = "\.^
+c0
+[
+    <a /* c */
+        1=/* d */
+        2 /* e */
+    ;
+        /* f */
+        x
+        /* g */
+    >
+]^"
                 }
             ]
         }

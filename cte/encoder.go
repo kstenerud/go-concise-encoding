@@ -67,7 +67,7 @@ func (_this *EncoderEventReceiver) OnBeginDocument() {
 
 func (_this *EncoderEventReceiver) OnVersion(version uint64) {
 	_this.context.Stream.WriteVersion(version)
-	_this.context.WriteIndent()
+	_this.context.WriteNewlineAndOriginAndIndent()
 }
 
 func (_this *EncoderEventReceiver) OnPadding(count int) {
@@ -77,7 +77,11 @@ func (_this *EncoderEventReceiver) OnPadding(count int) {
 func (_this *EncoderEventReceiver) OnComment(isMultiline bool, contents []byte) {
 	_this.context.BeforeComment()
 	_this.context.Stream.WriteCommentBegin(isMultiline)
-	_this.context.Stream.WriteBytes(contents)
+	if isMultiline {
+		_this.context.Stream.WriteBytesPossibleLF(contents)
+	} else {
+		_this.context.Stream.WriteBytesNotLF(contents)
+	}
 	_this.context.Stream.WriteCommentEnd(isMultiline)
 	_this.context.AfterComment(isMultiline)
 }

@@ -94,7 +94,7 @@ func (_this *Encoder) OnBeginDocument() {
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
-	_this.writer.WriteByte(cbeDocumentHeader)
+	_this.writer.WriteSingleByte(cbeDocumentHeader)
 	_this.writer.WriteULEB(version)
 }
 
@@ -370,7 +370,7 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 			if info.isPlane2 {
 				_this.writer.WriteType(cbeTypePlane2)
 			}
-			_this.writer.WriteByte(byte(info.shortArrayType) | byte(elementCount))
+			_this.writer.WriteSingleByte(byte(info.shortArrayType) | byte(elementCount))
 			_this.writer.WriteBytes(value)
 			return
 		}

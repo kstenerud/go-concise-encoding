@@ -21,19 +21,87 @@
 package cbe
 
 import (
+	"io"
 	"math"
 	"math/big"
+	"unicode/utf8"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	ceio "github.com/kstenerud/go-concise-encoding/internal/io"
 	"github.com/kstenerud/go-uleb128"
 )
 
 type Writer struct {
-	ceio.Writer
+	writer       io.Writer
+	stringWriter io.StringWriter
+	adapter      StringWriterAdapter
+	Buffer       []byte
+}
+
+func NewWriter() *Writer {
+	_this := &Writer{}
+	_this.Init()
+	return _this
+}
+
+func (_this *Writer) Init() {
+	_this.Buffer = make([]byte, writerStartBufferSize)
+	_this.adapter.Init(_this)
+}
+
+// Set the actual io.Writer (or io.StringWriter) that will write the data.
+func (_this *Writer) SetWriter(writer io.Writer) {
+	_this.writer = writer
+	if sw, ok := _this.writer.(io.StringWriter); ok {
+		_this.stringWriter = sw
+	} else {
+		_this.stringWriter = &_this.adapter
+	}
+}
+
+// Make sure the internal buffer is at least this big.
+func (_this *Writer) ExpandBuffer(size int) {
+	if len(_this.Buffer) < size {
+		_this.Buffer = make([]byte, size*2)
+	}
+}
+
+// Flush count bytes from the start of the buffer
+func (_this *Writer) FlushBuffer(count int) {
+	_this.writeBytes(_this.Buffer[:count])
+}
+
+// Flush the buffer from the start to the end position
+func (_this *Writer) FlushBufferPortion(start, end int) {
+	_this.writeBytes(_this.Buffer[start:end])
+}
+
+func (_this *Writer) WriteSingleByte(b byte) {
+	_this.Buffer[0] = b
+	_this.FlushBuffer(1)
+}
+
+func (_this *Writer) WriteRune(r rune) {
+	n := utf8.EncodeRune(_this.Buffer, r)
+	_this.FlushBuffer(n)
+}
+
+func (_this *Writer) WriteBytes(b []byte) {
+	_this.writeBytes(b)
+}
+
+func (_this *Writer) WriteString(str string) {
+	if _, err := _this.stringWriter.WriteString(str); err != nil {
+		panic(err)
+	}
+}
+
+func (_this *Writer) writeBytes(b []byte) {
+	if _, err := _this.writer.Write(b); err != nil {
+		panic(err)
+	}
 }
 
 func (_this *Writer) WriteULEB(value uint64) {
@@ -42,7 +110,7 @@ func (_this *Writer) WriteULEB(value uint64) {
 }
 
 func (_this *Writer) WriteType(t cbeTypeField) {
-	_this.WriteByte(byte(t))
+	_this.WriteSingleByte(byte(t))
 }
 
 func (_this *Writer) WriteTyped8Bits(typeValue cbeTypeField, value byte) {
@@ -185,6 +253,11 @@ func (_this *Writer) WriteNaN(signaling bool) {
 	_this.FlushBuffer(count + 1)
 }
 
+func (_this *Writer) WriteIdentifier(b []byte) {
+	_this.WriteSingleByte(byte(len(b)))
+	_this.WriteBytes(b)
+}
+
 func (_this *Writer) WriteArrayHeader(arrayType events.ArrayType) {
 	byteCount := _this.WriteArrayHeaderToBytes(arrayType, _this.Buffer)
 	_this.FlushBuffer(byteCount)
@@ -214,4 +287,24 @@ func (_this *Writer) WriteArrayHeaderToBytes(arrayType events.ArrayType, buffer 
 func (_this *Writer) WriteArrayChunkHeaderToBytes(elementCount uint64, moreChunksFollow uint64, buffer []byte) int {
 	value := (elementCount << 1) | moreChunksFollow
 	return uleb128.EncodeUint64ToBytes(value, _this.Buffer)
+}
+
+// ============================================================================
+
+const writerStartBufferSize = 32
+
+type StringWriterAdapter struct {
+	writer *Writer
+}
+
+func (_this *StringWriterAdapter) Init(writer *Writer) {
+	_this.writer = writer
+}
+
+func (_this *StringWriterAdapter) WriteString(str string) (n int, err error) {
+	n = len(str)
+	_this.writer.ExpandBuffer(n)
+	copy(_this.writer.Buffer, str)
+	_this.writer.FlushBuffer(n)
+	return
 }

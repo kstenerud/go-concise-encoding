@@ -29,32 +29,50 @@ type indenter struct {
 	indent []byte
 }
 
+var g_indent = []byte("    ")
+
+const g_indent_length = 4
+
 func (_this *indenter) Reset() {
 	_this.indent = _this.indent[:0]
-	_this.indent = append(_this.indent, '\n')
 }
 
 func (_this *indenter) increase() {
-	_this.indent = append(_this.indent, "    "...)
+	_this.indent = append(_this.indent, g_indent...)
 }
 
 func (_this *indenter) decrease() {
 	_this.indent = _this.indent[:len(_this.indent)-4]
 }
 
-func (_this *indenter) Get() []byte {
+func (_this *indenter) GetOriginPos() int {
+	return len(_this.indent) - g_indent_length
+}
+
+func (_this *indenter) GetOrigin() []byte {
+	originPos := _this.GetOriginPos()
+	if originPos >= 0 {
+		return _this.indent[:originPos]
+	}
+	return _this.indent
+}
+
+func (_this *indenter) GetIndent() []byte {
+	return g_indent
+}
+
+func (_this *indenter) GetOriginAndIndent() []byte {
 	return _this.indent
 }
 
 type EncoderContext struct {
-	opts                         options.CTEEncoderOptions
-	indenter                     indenter
-	stack                        []EncoderDecorator
-	Decorator                    EncoderDecorator
-	ContainerHasObjects          bool
-	Stream                       Writer
-	ArrayEngine                  arrayEncoderEngine
-	LastMarkupContentsWasComment bool
+	opts                options.CTEEncoderOptions
+	indenter            indenter
+	stack               []EncoderDecorator
+	Decorator           EncoderDecorator
+	ContainerHasObjects bool
+	Stream              Writer
+	ArrayEngine         arrayEncoderEngine
 }
 
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
@@ -111,6 +129,10 @@ func (_this *EncoderContext) Switch(decorator EncoderDecorator) {
 	_this.Decorator = decorator
 }
 
+func (_this *EncoderContext) IsAtOrigin() bool {
+	return _this.Stream.Column == _this.indenter.GetOriginPos()
+}
+
 func (_this *EncoderContext) Indent() {
 	_this.indenter.increase()
 }
@@ -119,16 +141,47 @@ func (_this *EncoderContext) Unindent() {
 	_this.indenter.decrease()
 }
 
-func (_this *EncoderContext) WriteIndent() {
-	_this.Stream.WriteBytes(_this.indenter.Get())
+func (_this *EncoderContext) WriteReturnToOrigin() {
+	if !_this.IsAtOrigin() {
+		_this.Stream.WriteLF()
+		_this.Stream.WriteBytesNotLF(_this.indenter.GetOrigin())
+	}
 }
 
-func (_this *EncoderContext) WriteSpace() {
-	_this.Stream.WriteByte(' ')
+func (_this *EncoderContext) WriteIndentIfOrigin() {
+	if _this.IsAtOrigin() {
+		_this.Stream.WriteBytesNotLF(_this.indenter.GetIndent())
+	}
+}
+
+func (_this *EncoderContext) WriteIndentOrSpace() {
+	if _this.IsAtOrigin() {
+		_this.Stream.WriteBytesNotLF(_this.indenter.GetIndent())
+	} else {
+		_this.Stream.WriteByteNotLF(' ')
+	}
+}
+
+func (_this *EncoderContext) WriteNewlineAndOrigin() {
+	_this.Stream.WriteLF()
+	_this.Stream.WriteBytesNotLF(_this.indenter.GetOrigin())
+}
+
+func (_this *EncoderContext) WriteIndent() {
+	_this.Stream.WriteBytesNotLF(_this.indenter.GetIndent())
+}
+
+func (_this *EncoderContext) WriteNewlineAndOriginAndIndent() {
+	_this.Stream.WriteLF()
+	_this.Stream.WriteBytesNotLF(_this.indenter.GetOriginAndIndent())
+}
+
+func (_this *EncoderContext) WriteElementSeparator() {
+	_this.Stream.WriteByteNotLF(' ')
 }
 
 func (_this *EncoderContext) WriteIdentifier(data []byte) {
-	_this.Stream.WriteBytes(data)
+	_this.Stream.WriteBytesNotLF(data)
 }
 
 func (_this *EncoderContext) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
@@ -170,7 +223,7 @@ func (_this *EncoderContext) WriteCommentString(data string) {
 
 func (_this *EncoderContext) WriteCommentStringData(data []uint8) {
 	// TODO: Need anything else?
-	_this.Stream.WriteBytes(data)
+	_this.Stream.WriteBytesPossibleLF(data)
 }
 
 func (_this *EncoderContext) WriteMarkupContentString(data string) {
