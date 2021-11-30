@@ -2819,6 +2819,41 @@ c0
         // ====================================================================
 
         {
+            "name" = "Complex comment"
+            "encode" = [
+                {
+                    "events" = ["v 0" "com true "
+                                    "m"
+                                        "com true "
+                                        "s a" "com true " "s b"
+                                        "com true "
+                                        "s c" "com true " "mu a"
+                                            "e"
+                                            "com true "
+                                            "mu b" "e" "e"
+                                        "e"
+                                    "e"]
+                    "document" = "\.^
+c0
+/**/
+{
+    /**/
+    "a" = /**/
+    "b"
+    /**/
+    "c" = /**/
+    <a;
+        /**/
+        <b>
+    >
+}^"
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
             "name" = "Identifier"
             "encode" = [
                 {
@@ -2854,8 +2889,113 @@ c0
                 "\.^ c0 <° &x:1=$x>^"
                 "\.^ c0 <x &°:1=$°>^"
             ]
-            "x" = [
-                "\.^ c0 <x &x:1=$x>^"
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Complex example"
+            "encode" = [
+                {
+                    "events" = ["v 0" "m" "com true  Comments look very C-like, except: /* Nested comments are allowed! */ "
+                                    "com true  Notice that there are no commas in maps and lists "
+                                    "s a_list" "l"
+                                        "n 1"
+                                        "n 2"
+                                        "s a string"
+                                    "e"
+                                    "s map" "m"
+                                        "n 2" "s two"
+                                        "n 3" "n 3000"
+                                        "n 1" "s one"
+                                    "e"
+                                    "s string" "s A string value"
+                                    "s boolean" "b true"
+                                    "s regular int" "n -10000000"
+                                    "s decimal float" "n -14.125"
+                                    "s uid" "uid f1ce4567-e89b-12d3-a456-426655440000"
+                                    "s date" "t 2019-07-01"
+                                    "s time" "t 18:04:00.940231541/Europe/Prague"
+                                    "s timestamp" "t 2010-07-15/13:28:15.415942344"
+                                    "s null" "null"
+                                    "s bytes" "au8x 10 ff 38 9a dd 00 4f 4f 91"
+                                    "s url" "rid https://example.com/"
+                                    "s email" "rid mailto:me@somewhere.com"
+                                    "n 1.5" "s Keys don't have to be strings"
+                                    "s marked_object" "mark tag1" "m"
+                                        "s description" "s This map will be referenced later using $tag1"
+                                        "s value" "n -inf"
+                                        "s child_elements" "null"
+                                        "s recursive" "ref tag1"
+                                    "e"
+                                    "s ref1" "ref tag1"
+                                    "s ref2" "ref tag1"
+                                    "s outside_ref" "rref https://somewhere.else.com/path/to/document.cte#some_tag"
+                                    "com false  The markup type is good for presentation data"
+                                    "s markup" "mu view"
+                                        "s ui:lang" "s en"
+                                        "e"
+                                        "mu body"
+                                            "e"
+                                            "s Please choose from the following widgets:"
+                                            "mu div"
+                                                "s id" "s parent"
+                                                "s style" "s normal"
+                                                "s ref-id" "n 1"
+                                                "e"
+                                                "com true  A comment "
+                                            "e"
+                                        "e"
+                                    "e"
+                                "e"]
+                    "document" = "\.^
+c0
+{
+    /* Comments look very C-like, except: /* Nested comments are allowed! */ */
+    /* Notice that there are no commas in maps and lists */
+    "a_list" = [
+        1
+        2
+        "a string"
+    ]
+    "map" = {
+        2 = "two"
+        3 = 3000
+        1 = "one"
+    }
+    "string" = "A string value"
+    "boolean" = true
+    "regular int" = -10000000
+    "decimal float" = -14.125
+    "uid" = f1ce4567-e89b-12d3-a456-426655440000
+    "date" = 2019-07-01
+    "time" = 18:04:00.940231541/Europe/Prague
+    "timestamp" = 2010-07-15/13:28:15.415942344
+    "null" = null
+    "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
+    "url" = @"https://example.com/"
+    "email" = @"mailto:me@somewhere.com"
+    1.5 = "Keys don't have to be strings"
+    "marked_object" = &tag1:{
+        "description" = "This map will be referenced later using $tag1"
+        "value" = -inf
+        "child_elements" = null
+        "recursive" = $tag1
+    }
+    "ref1" = $tag1
+    "ref2" = $tag1
+    "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
+    // The markup type is good for presentation data
+    "markup" = <view "ui:lang"="en";
+        <body;
+            Please choose from the following widgets:
+            <div "id"="parent" "style"="normal" "ref-id"=1;
+                /* A comment */
+            >
+        >
+    >
+}^"
+                }
             ]
         }
 

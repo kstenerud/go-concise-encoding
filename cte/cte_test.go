@@ -21,7 +21,6 @@
 package cte
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -103,46 +102,6 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 ]`)
 }
 
-func TestCTEComplexComment(t *testing.T) {
-	document := []byte(`c0
-/**/ { /**/ "a"= /**/ "b" /**/ "c"= /**/
-<a;
-    /**/
-    <b>
->}`)
-
-	expected := `c0
-/**/
-{
-    /**/
-    "a" = /**/
-    "b"
-    /**/
-    "c" = /**/
-    <a;
-        /**/
-        <b>
-    >
-}`
-
-	encoded := &bytes.Buffer{}
-	encOpts := options.DefaultCTEEncoderOptions()
-	encOpts.Indent = "    "
-	encoder := NewEncoder(encOpts)
-	encoder.PrepareToEncode(encoded)
-	decoder := NewDecoder(nil)
-	err := decoder.Decode(bytes.NewBuffer(document), encoder)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	actual := encoded.String()
-	if actual != expected {
-		t.Errorf("Expected %v but got %v", expected, actual)
-	}
-}
-
 func TestCTEBufferEdge(t *testing.T) {
 	assertDecode(t, nil, `c0
 {
@@ -165,120 +124,6 @@ func TestCTEBufferEdge2(t *testing.T) {
                        >
 }
 `)
-}
-
-func TestCTEEncodeDecodeExample(t *testing.T) {
-	document := `c0
-{
-    /* Comments look very C-like, except: /* Nested comments are allowed! */ */
-    /* Notice that there are no commas in maps and lists */
-    "a_list" = [
-        1
-        2
-        "a string"
-    ]
-    "map" = {
-        2 = "two"
-        3 = 3000
-        1 = "one"
-    }
-    "string" = "A string value"
-    "boolean" = true
-    "regular int" = -10000000
-    "decimal float" = -14.125
-    "uid" = f1ce4567-e89b-12d3-a456-426655440000
-    "date" = 2019-07-01
-    "time" = 18:04:00.940231541/E/Prague
-    "timestamp" = 2010-07-15/13:28:15.415942344/Z
-    "null" = null
-    "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    "url" = @"https://example.com/"
-    "email" = @"mailto:me@somewhere.com"
-    1.5 = "Keys don't have to be strings"
-    "marked_object" = &tag1:{
-        "description" = "This map will be referenced later using $tag1"
-        "value" = -inf
-        "child_elements" = null
-        "recursive" = $tag1
-    }
-    "ref1" = $tag1
-    "ref2" = $tag1
-    "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
-    // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en";
-        <body;
-            Please choose from the following widgets:
-            <div "id"="parent" "style"="normal" "ref-id"=1;
-                /* Here we use a backtick to induce verbatim processing.
-                 * In this case, "#" is chosen as the ending sequence */
-            >
-        >
-    >
-}`
-
-	expected := `c0
-{
-    /* Comments look very C-like, except: /* Nested comments are allowed! */ */
-    /* Notice that there are no commas in maps and lists */
-    "a_list" = [
-        1
-        2
-        "a string"
-    ]
-    "map" = {
-        2 = "two"
-        3 = 3000
-        1 = "one"
-    }
-    "string" = "A string value"
-    "boolean" = true
-    "regular int" = -10000000
-    "decimal float" = -14.125
-    "uid" = f1ce4567-e89b-12d3-a456-426655440000
-    "date" = 2019-07-01
-    "time" = 18:04:00.940231541/Europe/Prague
-    "timestamp" = 2010-07-15/13:28:15.415942344
-    "null" = null
-    "bytes" = |u8x 10 ff 38 9a dd 00 4f 4f 91|
-    "url" = @"https://example.com/"
-    "email" = @"mailto:me@somewhere.com"
-    1.5 = "Keys don't have to be strings"
-    "marked_object" = &tag1:{
-        "description" = "This map will be referenced later using $tag1"
-        "value" = -inf
-        "child_elements" = null
-        "recursive" = $tag1
-    }
-    "ref1" = $tag1
-    "ref2" = $tag1
-    "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
-    // The markup type is good for presentation data
-    "html_compatible" = <html "xmlns"=@"http://www.w3.org/1999/xhtml" "xml:lang"="en";
-        <body;
-            Please choose from the following widgets:
-            <div "id"="parent" "style"="normal" "ref-id"=1;
-                /* Here we use a backtick to induce verbatim processing.
-                 * In this case, "#" is chosen as the ending sequence */
-            >
-        >
-    >
-}`
-	encoded := &bytes.Buffer{}
-	encOpts := options.DefaultCTEEncoderOptions()
-	encOpts.Indent = "    "
-	encoder := NewEncoder(encOpts)
-	encoder.PrepareToEncode(encoded)
-	decoder := NewDecoder(nil)
-	err := decoder.Decode(bytes.NewBuffer([]byte(document)), encoder)
-	if err != nil {
-		t.Errorf("Error [%v] while decoding %v", err, document)
-		return
-	}
-
-	actual := encoded.String()
-	if actual != expected {
-		t.Errorf("Expected %v but got %v", expected, actual)
-	}
 }
 
 func TestSpacing(t *testing.T) {
