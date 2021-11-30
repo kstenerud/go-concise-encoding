@@ -143,15 +143,6 @@ func TestCTEComplexComment(t *testing.T) {
 	}
 }
 
-func TestCTECommentFollowing(t *testing.T) {
-	assertDecode(t, nil, `c0 {"a"="b" /**/}`, BD(), EvV, M(), S("a"), S("b"), COM(true, ""), E(), ED())
-	assertDecode(t, nil, `c0 {"a"=2 /**/}`, BD(), EvV, M(), S("a"), PI(2), COM(true, ""), E(), ED())
-	assertDecode(t, nil, `c0 {"a"=-2 /**/}`, BD(), EvV, M(), S("a"), NI(2), COM(true, ""), E(), ED())
-	// TODO: All other bare values: float, date/time, etc
-	assertDecode(t, nil, `c0 {"a"=1.5 /**/}`, BD(), EvV, M(), S("a"), DF(NewDFloat("1.5")), COM(true, ""), E(), ED())
-	// TODO: Also test for //
-}
-
 func TestCTEBufferEdge(t *testing.T) {
 	assertDecode(t, nil, `c0
 {

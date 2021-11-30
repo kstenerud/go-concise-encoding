@@ -241,13 +241,17 @@ var edgeSourceDecorator EdgeSourceDecorator
 
 func (_this EdgeSourceDecorator) String() string                  { return "EdgeSourceDecorator" }
 func (_this EdgeSourceDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this EdgeSourceDecorator) BeforeValue(ctx *EncoderContext) {}
+func (_this EdgeSourceDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteIndentIfOrigin()
+}
 func (_this EdgeSourceDecorator) AfterValue(ctx *EncoderContext) {
 	ctx.Switch(edgeDescriptionDecorator)
 }
 func (_this EdgeSourceDecorator) BeforeComment(ctx *EncoderContext) {}
-func (_this EdgeSourceDecorator) AfterComment(ctx *EncoderContext)  {}
-func (_this EdgeSourceDecorator) EndContainer(ctx *EncoderContext)  { errorBadEvent(_this, "End") }
+func (_this EdgeSourceDecorator) AfterComment(ctx *EncoderContext) {
+	ctx.WriteReturnToOrigin()
+}
+func (_this EdgeSourceDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
 
 // ===========================================================================
 
@@ -258,15 +262,17 @@ var edgeDescriptionDecorator EdgeDescriptionDecorator
 func (_this EdgeDescriptionDecorator) String() string                  { return "EdgeDescriptionDecorator" }
 func (_this EdgeDescriptionDecorator) GetStringContext() stringContext { return stringContextDefault }
 func (_this EdgeDescriptionDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteElementSeparator()
+	ctx.WriteIndentOrSpace()
 }
 func (_this EdgeDescriptionDecorator) AfterValue(ctx *EncoderContext) {
 	ctx.Switch(edgeDestinationDecorator)
 }
 func (_this EdgeDescriptionDecorator) BeforeComment(ctx *EncoderContext) {
-	ctx.WriteElementSeparator()
+	ctx.WriteIndentOrSpace()
 }
-func (_this EdgeDescriptionDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this EdgeDescriptionDecorator) AfterComment(ctx *EncoderContext) {
+	ctx.WriteReturnToOrigin()
+}
 func (_this EdgeDescriptionDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
 
 // ===========================================================================
@@ -278,17 +284,20 @@ var edgeDestinationDecorator EdgeDestinationDecorator
 func (_this EdgeDestinationDecorator) String() string                  { return "EdgeDestinationDecorator" }
 func (_this EdgeDestinationDecorator) GetStringContext() stringContext { return stringContextDefault }
 func (_this EdgeDestinationDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteElementSeparator()
+	ctx.WriteIndentOrSpace()
 }
 func (_this EdgeDestinationDecorator) AfterValue(ctx *EncoderContext) {
+	ctx.Unindent()
 	ctx.Stream.WriteEdgeEnd()
 	ctx.Unstack()
 	ctx.AfterValue()
 }
 func (_this EdgeDestinationDecorator) BeforeComment(ctx *EncoderContext) {
-	ctx.WriteElementSeparator()
+	ctx.WriteIndentOrSpace()
 }
-func (_this EdgeDestinationDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this EdgeDestinationDecorator) AfterComment(ctx *EncoderContext) {
+	ctx.WriteReturnToOrigin()
+}
 func (_this EdgeDestinationDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
 
 // ===========================================================================
@@ -299,14 +308,17 @@ var nodeValueDecorator NodeValueDecorator
 
 func (_this NodeValueDecorator) String() string                  { return "NodeValueDecorator" }
 func (_this NodeValueDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this NodeValueDecorator) BeforeValue(ctx *EncoderContext) {}
+func (_this NodeValueDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteIndentIfOrigin()
+}
 func (_this NodeValueDecorator) AfterValue(ctx *EncoderContext) {
 	ctx.Switch(nodeChildrenDecorator)
-	ctx.Indent()
 }
 func (_this NodeValueDecorator) BeforeComment(ctx *EncoderContext) {}
-func (_this NodeValueDecorator) AfterComment(ctx *EncoderContext)  {}
-func (_this NodeValueDecorator) EndContainer(ctx *EncoderContext)  { errorBadEvent(_this, "End") }
+func (_this NodeValueDecorator) AfterComment(ctx *EncoderContext) {
+	ctx.WriteReturnToOrigin()
+}
+func (_this NodeValueDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
 
 // ===========================================================================
 

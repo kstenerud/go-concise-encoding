@@ -233,13 +233,16 @@ func (_this *EncoderEventReceiver) OnMarkup(id []byte) {
 
 func (_this *EncoderEventReceiver) OnEdge() {
 	_this.context.BeforeValue()
+	_this.context.BeginContainer()
 	_this.context.Stream.WriteEdgeBegin()
+	_this.context.Indent()
 	_this.context.Stack(edgeSourceDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnNode() {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteNodeBegin()
+	_this.context.Indent()
 	_this.context.Stack(nodeValueDecorator)
 }
 

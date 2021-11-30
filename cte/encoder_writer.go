@@ -134,6 +134,7 @@ func (_this *Writer) WriteStringNotLF(str string) {
 	if _, err := _this.stringWriter.WriteString(str); err != nil {
 		panic(err)
 	}
+	_this.Column += len(str)
 }
 
 func (_this *Writer) WriteStringPossibleLF(str string) {

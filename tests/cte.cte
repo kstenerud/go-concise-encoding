@@ -2704,5 +2704,119 @@ c0
 
         // ====================================================================
 
+        {
+            "name" = "Comment positioning (edge)"
+            "encode" = [
+                {
+                    "events" = ["v 0" "l" "edge" "com false  x" "n 1" "n 2" "n 3" "e"]
+                    "document" = "\.^
+c0
+[
+    @(// x
+        1 2 3)
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "edge" "com true  x " "n 1" "n 2" "n 3" "e"]
+                    "document" = "\.^
+c0
+[
+    @(/* x */
+        1 2 3)
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "edge" "n 1" "com false  x" "n 2" "n 3" "e"]
+                    "document" = "\.^
+c0
+[
+    @(1 // x
+        2 3)
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "edge" "n 1" "com true  x " "n 2" "n 3" "e"]
+                    "document" = "\.^
+c0
+[
+    @(1 /* x */
+        2 3)
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "edge" "n 1" "n 2" "com false  x" "n 3" "e"]
+                    "document" = "\.^
+c0
+[
+    @(1 2 // x
+        3)
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "edge" "n 1" "n 2" "com true  x " "n 3" "e"]
+                    "document" = "\.^
+c0
+[
+    @(1 2 /* x */
+        3)
+]^"
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Comment positioning (node)"
+            "encode" = [
+                {
+                    "events" = ["v 0" "l" "node" "com false  x" "n 1" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    (// x
+        1
+    )
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "node" "n 1" "com false  x" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    (1
+        // x
+    )
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "node" "n 1" "com false  x" "n 2" "n 3" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    (1
+        // x
+        2
+        3
+    )
+]^"
+                }
+                {
+                    "events" = ["v 0" "l" "node" "n 1" "n 2" "com false  x" "n 3" "e" "e"]
+                    "document" = "\.^
+c0
+[
+    (1
+        2
+        // x
+        3
+    )
+]^"
+                }
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
