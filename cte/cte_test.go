@@ -281,17 +281,6 @@ func TestCTEEncodeDecodeExample(t *testing.T) {
 	}
 }
 
-func TestIdentifier(t *testing.T) {
-	assertDecodeEncode(t, nil, nil, `c0
-&1a:1`, BD(), EvV, MARK("1a"), I(1), ED())
-	assertDecodeEncode(t, nil, nil, `c0
-&人気:1`, BD(), EvV, MARK("人気"), I(1), ED())
-
-	assertDecodeFails(t, "c0 &~:1")
-	assertDecodeFails(t, "c0 &12345|78:1")
-	assertDecodeFails(t, "c0 &12345\u000178:1")
-}
-
 func TestSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0[]`)
 	assertDecodeFails(t, `c0 ["a""b"]`)
