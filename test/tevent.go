@@ -113,7 +113,6 @@ const (
 	TEventEdge
 	TEventMarker
 	TEventReference
-	TEventConstant
 	TEventEndDocument
 )
 
@@ -186,7 +185,6 @@ var TEventNames = []string{
 	TEventEnd:               "E",
 	TEventMarker:            "MARK",
 	TEventReference:         "REF",
-	TEventConstant:          "CONST",
 	TEventEndDocument:       "ED",
 }
 
@@ -724,8 +722,6 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnMarker([]byte(_this.V1.(string)))
 	case TEventReference:
 		receiver.OnReference([]byte(_this.V1.(string)))
-	case TEventConstant:
-		receiver.OnConstant([]byte(_this.V1.(string)))
 	case TEventEndDocument:
 		receiver.OnEndDocument()
 	default:

@@ -292,10 +292,6 @@ func (h *TEventPrinter) OnReference(id []byte) {
 	h.Print(REF(string(id)))
 	h.Next.OnReference(id)
 }
-func (h *TEventPrinter) OnConstant(name []byte) {
-	h.Print(CONST(string(name)))
-	h.Next.OnConstant(name)
-}
 func (h *TEventPrinter) OnEndDocument() {
 	h.Print(ED())
 	h.Next.OnEndDocument()

@@ -382,14 +382,6 @@ func decodeNamedValueT(ctx *DecoderContext) {
 	ctx.RequireStructuralWS()
 }
 
-func advanceAndDecodeConstant(ctx *DecoderContext) {
-	ctx.AssertHasStructuralWS()
-	ctx.Stream.AdvanceByte() // Advance past '#'
-
-	ctx.EventReceiver.OnConstant(ctx.Stream.ReadIdentifier())
-	ctx.RequireStructuralWS()
-}
-
 func advanceAndDecodeMarker(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '&'

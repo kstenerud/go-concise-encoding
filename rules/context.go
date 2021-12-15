@@ -179,14 +179,6 @@ func (_this *Context) ReferenceAnyType(identifier []byte) {
 	_this.ReferenceObject(identifier, AllowAny)
 }
 
-func (_this *Context) BeginConstantKeyable(name []byte) {
-	panic(fmt.Errorf("TODO: Constants not supported until schema is developed"))
-}
-
-func (_this *Context) BeginConstantAnyType(name []byte) {
-	panic(fmt.Errorf("TODO: Constants not supported until schema is developed"))
-}
-
 func (_this *Context) EndDocument() {
 	if len(_this.forwardReferences) > 0 {
 		var sb strings.Builder

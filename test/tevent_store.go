@@ -264,10 +264,6 @@ func (h *TEventStore) OnReference(id []byte) {
 	h.add(REF(string(id)))
 	h.receiver.OnReference(id)
 }
-func (h *TEventStore) OnConstant(n []byte) {
-	h.add(CONST(string(n)))
-	h.receiver.OnConstant(n)
-}
 func (h *TEventStore) OnBeginDocument() {
 	h.Events = h.Events[:0]
 	h.add(BD())

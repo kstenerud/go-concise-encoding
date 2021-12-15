@@ -305,12 +305,6 @@ func (_this *RulesEventReceiver) OnReference(identifier []byte) {
 	_this.receiver.OnReference(identifier)
 }
 
-func (_this *RulesEventReceiver) OnConstant(identifier []byte) {
-	_this.context.ValidateIdentifier(identifier)
-	_this.context.CurrentEntry.Rule.OnConstant(&_this.context, identifier)
-	_this.receiver.OnConstant(identifier)
-}
-
 func (_this *RulesEventReceiver) OnEndDocument() {
 	_this.context.CurrentEntry.Rule.OnEndDocument(&_this.context)
 	_this.receiver.OnEndDocument()

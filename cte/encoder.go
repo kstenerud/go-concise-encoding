@@ -268,12 +268,6 @@ func (_this *EncoderEventReceiver) OnRemoteReference() {
 	_this.context.Stack(concatDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnConstant(name []byte) {
-	_this.context.BeforeValue()
-	_this.context.Stream.WriteConstant(name)
-	_this.context.AfterValue()
-}
-
 func (_this *EncoderEventReceiver) OnEndDocument() {
 	// Nothing to do
 }

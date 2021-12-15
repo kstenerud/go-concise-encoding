@@ -704,7 +704,6 @@ func init() {
 	eventParsersByName["mark"] = newParser(false, test.TEventMarker, parseString).ParseEvent
 	eventParsersByName["ref"] = newParser(false, test.TEventReference, parseString).ParseEvent
 	eventParsersByName["rref"] = newParser(false, test.TEventRemoteRef, parseString).ParseEvent
-	eventParsersByName["const"] = newParser(false, test.TEventConstant, parseString).ParseEvent
 	// eventParsersByName["tt"] = newParser(false, test.TEventTrue).ParseEvent
 	// eventParsersByName["ff"] = newParser(false, test.TEventFalse).ParseEvent
 	// eventParsersByName["bbf"] = newParser(false, test.TEventBigFloat, parseBigFloat).ParseEvent

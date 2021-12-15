@@ -69,7 +69,6 @@ c0
  * mark <identifier>               Begin marker
  * ref <identifier>                Reference
  * rref <resource ID contents>     Remote reference
- * const <identifier>              Constant
  */
 
 {

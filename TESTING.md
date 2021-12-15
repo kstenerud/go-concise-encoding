@@ -142,7 +142,6 @@ If present, this field contains string-encoded elements that are a kind of short
 | mark  | string        |         | Marker                          | `mark some-id`                             |
 | ref   | string        |         | Reference                       | `ref some-id`                              |
 | rref  | url           |         | Remote Reference                | `rref https://www.example.com`             |
-| const | string        |         | Constant                        | `const some-name`                          |
 
 **Notes**:
  * Integer and float values can be written using other bases (base 2, 8, 10, 16 for decimal, 10 and 16 for float).

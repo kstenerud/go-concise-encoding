@@ -34,8 +34,6 @@ type RuleOptions struct {
 
 	// TODO: Max bytes total for all array types
 	MaxTotalArrayBytes uint64
-
-	AllowUndefinedConstants bool
 }
 
 func DefaultRuleOptions() *RuleOptions {
@@ -46,7 +44,6 @@ func DefaultRuleOptions() *RuleOptions {
 		MaxContainerDepth:       1000,
 		MaxObjectCount:          10000000,
 		MaxReferenceCount:       100000,
-		AllowUndefinedConstants: false,
 		// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 	}
 }

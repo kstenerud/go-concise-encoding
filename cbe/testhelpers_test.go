@@ -230,7 +230,6 @@ func MARK(id string) *test.TEvent            { return test.MARK(id) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
 func RREF(v string) *test.TEvent             { return test.RREF(v) }
 func RRB() *test.TEvent                      { return test.RRB() }
-func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }
 

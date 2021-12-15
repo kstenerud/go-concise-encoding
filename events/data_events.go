@@ -168,7 +168,6 @@ type DataEventReceiver interface {
 	OnEnd()
 	OnMarker(identifier []byte)
 	OnReference(identifier []byte)
-	OnConstant(identifier []byte)
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
 	OnArrayBegin(arrayType ArrayType)
 	OnArrayChunk(length uint64, moreChunksFollow bool)
@@ -217,5 +216,4 @@ func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker([]byte)                     {}
 func (_this *NullEventReceiver) OnReference([]byte)                  {}
-func (_this *NullEventReceiver) OnConstant(_ []byte)                 {}
 func (_this *NullEventReceiver) OnEndDocument()                      {}

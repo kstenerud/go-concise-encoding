@@ -162,7 +162,6 @@ const (
 	DataTypeReference
 	DataTypeResourceID
 	DataTypeRemoteRef
-	DataTypeConstant
 	DataTypeComment
 	DataTypePadding
 	EndDataTypes
@@ -180,11 +179,10 @@ const (
 		DataTypeResourceID |
 		DataTypeMarker |
 		DataTypeReference |
-		DataTypeConstant |
 		DataTypePadding |
 		DataTypeComment
 	DataTypesNonKeyable     = ^DataTypesKeyable
-	DataTypesMarkable       = ^(DataTypeMarker | DataTypeReference | DataTypeRemoteRef | DataTypeConstant | DataTypeComment)
+	DataTypesMarkable       = ^(DataTypeMarker | DataTypeReference | DataTypeRemoteRef | DataTypeComment)
 	DataTypesTopLevel       = ^(DataTypeReference)
 	DataTypesContainer      = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup
 	DataTypesMarkupContents = DataTypeMarkup | DataTypeString | DataTypeComment | DataTypePadding
@@ -248,7 +246,6 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeReference:    "DataTypeReference",
 	DataTypeResourceID:   "DataTypeResourceID",
 	DataTypeRemoteRef:    "DataTypeRemoteRef",
-	DataTypeConstant:     "DataTypeConstant",
 	DataTypeComment:      "DataTypeComment",
 	DataTypePadding:      "DataTypePadding",
 }
@@ -372,12 +369,6 @@ var (
 		Signature:       "OnReference(ctx *Context, identifier []byte)",
 		AssociatedTypes: DataTypeReference,
 	}
-	Const = &Method{
-		Name:            "constant",
-		MethodType:      MethodTypeOther,
-		Signature:       "OnConstant(ctx *Context, identifier []byte)",
-		AssociatedTypes: DataTypeConstant,
-	}
 	Array = &Method{
 		Name:            "array",
 		MethodType:      MethodTypeArray,
@@ -410,7 +401,7 @@ var (
 	}
 
 	allMethods = []*Method{BDoc, EDoc, Child, Ver, Pad, Comment, Null, Key,
-		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref, Const,
+		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref,
 		Array, Stringlike, ABegin, AChunk, AData}
 )
 
@@ -561,16 +552,6 @@ var allRules = []Rule{
 		Name:         "MarkedObjectAnyTypeRule",
 		FriendlyName: "marked object",
 		AllowedTypes: DataTypesMarkable,
-	},
-	{
-		Name:         "ConstantKeyableRule",
-		FriendlyName: "constant",
-		AllowedTypes: DataTypesKeyable,
-	},
-	{
-		Name:         "ConstantAnyTypeRule",
-		FriendlyName: "constant",
-		AllowedTypes: DataTypesAll,
 	},
 	{
 		Name:         "EdgeSourceRule",

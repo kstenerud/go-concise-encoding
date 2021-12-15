@@ -778,11 +778,6 @@ func (_this *Writer) WriteReference(id []byte) {
 	_this.WriteBytesNotLF(id)
 }
 
-func (_this *Writer) WriteConstant(id []byte) {
-	_this.WriteByteNotLF('#')
-	_this.WriteBytesNotLF(id)
-}
-
 func (_this *Writer) WriteSeparator() {
 	_this.WriteByteNotLF(':')
 }

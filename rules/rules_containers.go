@@ -51,9 +51,6 @@ func (_this *ListRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *ListRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 }
-func (_this *ListRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
 func (_this *ListRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 }
@@ -81,9 +78,6 @@ func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MapKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
 	_this.switchMapValue(ctx)
-}
-func (_this *MapKeyRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantKeyable(name)
 }
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable("map key", arrayType, elementCount, data)
@@ -121,9 +115,6 @@ func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.switchMapKey(ctx)
 }
-func (_this *MapValueRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
 func (_this *MapValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.switchMapKey(ctx)
@@ -155,9 +146,6 @@ func (_this *MarkupKeyRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MarkupKeyRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceKeyable(identifier)
 	_this.switchMarkupValue(ctx)
-}
-func (_this *MarkupKeyRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantKeyable(name)
 }
 func (_this *MarkupKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable("markup attribute key", arrayType, elementCount, data)
@@ -198,9 +186,6 @@ func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
 }
 func (_this *MarkupValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -274,9 +259,6 @@ func (_this *EdgeSourceRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
-func (_this *EdgeSourceRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
 func (_this *EdgeSourceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.AssertArrayType("edge source", arrayType, AllowNonNull)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -341,9 +323,6 @@ func (_this *EdgeDescriptionRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
-func (_this *EdgeDescriptionRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
 func (_this *EdgeDescriptionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.AssertArrayType("edge description", arrayType, AllowAny)
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -383,9 +362,6 @@ func (_this *EdgeDestinationRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *EdgeDestinationRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.end(ctx)
-}
-func (_this *EdgeDestinationRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
 }
 func (_this *EdgeDestinationRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.AssertArrayType("edge destination", arrayType, AllowNonNull)
@@ -450,9 +426,6 @@ func (_this *NodeRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *NodeRule) OnReference(ctx *Context, identifier []byte) {
 	ctx.ReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
-}
-func (_this *NodeRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
 }
 func (_this *NodeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.AssertArrayType("node", arrayType, AllowAny)

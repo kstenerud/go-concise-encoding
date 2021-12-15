@@ -450,10 +450,6 @@ func (_this *Encoder) OnRemoteReference() {
 	_this.writer.WriteType(cbeTypeRemoteReference)
 }
 
-func (_this *Encoder) OnConstant(name []byte) {
-	_this.errorf("CBE Cannot encode constant (%s)", string(name))
-}
-
 func (_this *Encoder) OnEndDocument() {
 	// Nothing to do
 }

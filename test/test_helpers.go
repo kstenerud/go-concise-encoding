@@ -802,7 +802,6 @@ func EDGE() *TEvent                     { return NewTEvent(TEventEdge, nil, nil)
 func E() *TEvent                        { return NewTEvent(TEventEnd, nil, nil) }
 func MARK(id string) *TEvent            { return NewTEvent(TEventMarker, id, nil) }
 func REF(id string) *TEvent             { return NewTEvent(TEventReference, id, nil) }
-func CONST(n string) *TEvent            { return NewTEvent(TEventConstant, n, nil) }
 func BD() *TEvent                       { return NewTEvent(TEventBeginDocument, nil, nil) }
 func ED() *TEvent                       { return NewTEvent(TEventEndDocument, nil, nil) }
 

@@ -94,9 +94,6 @@ func (_this *TopLevelRule) OnEdge(ctx *Context)                      { ctx.Begin
 func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
-func (_this *TopLevelRule) OnConstant(ctx *Context, name []byte) {
-	ctx.BeginConstantAnyType(name)
-}
 func (_this *TopLevelRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.switchEndDocument(ctx)
@@ -141,84 +138,4 @@ func (_this *NARule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType,
 }
 func (_this *NARule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type ConstantKeyableRule struct{}
-
-func (_this *ConstantKeyableRule) String() string         { return "Keyable Constant Rule" }
-func (_this *ConstantKeyableRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *ConstantKeyableRule) OnKeyableObject(ctx *Context, objType DataType) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-	ctx.MarkObject(objType)
-}
-func (_this *ConstantKeyableRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	dataType := arrayTypeToDataType[arrayType]
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-	ctx.MarkObject(dataType)
-}
-func (_this *ConstantKeyableRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	dataType := arrayTypeToDataType[arrayType]
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-	ctx.MarkObject(dataType)
-}
-func (_this *ConstantKeyableRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayKeyable("constant (keyable)", arrayType)
-}
-func (_this *ConstantKeyableRule) OnChildContainerEnded(ctx *Context, objType DataType) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, objType)
-}
-
-// =============================================================================
-
-type ConstantAnyTypeRule struct{}
-
-func (_this *ConstantAnyTypeRule) String() string         { return "Constant Rule" }
-func (_this *ConstantAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *ConstantAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-}
-func (_this *ConstantAnyTypeRule) OnNull(ctx *Context) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnNull(ctx)
-}
-func (_this *ConstantAnyTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
-}
-func (_this *ConstantAnyTypeRule) OnList(ctx *Context) {
-	ctx.ParentRule().OnList(ctx)
-}
-func (_this *ConstantAnyTypeRule) OnMap(ctx *Context) {
-	ctx.ParentRule().OnMap(ctx)
-}
-func (_this *ConstantAnyTypeRule) OnMarkup(ctx *Context, identifier []byte) {
-	ctx.ParentRule().OnMarkup(ctx, identifier)
-}
-func (_this *ConstantAnyTypeRule) OnNode(ctx *Context) {
-	ctx.ParentRule().OnNode(ctx)
-}
-func (_this *ConstantAnyTypeRule) OnEdge(ctx *Context) {
-	ctx.ParentRule().OnEdge(ctx)
-}
-func (_this *ConstantAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnArray(ctx, arrayType, elementCount, data)
-}
-func (_this *ConstantAnyTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnStringlikeArray(ctx, arrayType, data)
-}
-func (_this *ConstantAnyTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.ParentRule().OnArrayBegin(ctx, arrayType)
-}
-func (_this *ConstantAnyTypeRule) OnChildContainerEnded(ctx *Context, cType DataType) {
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, cType)
 }

@@ -49,7 +49,6 @@ type EventRule interface {
 	OnEnd(ctx *Context)
 	OnMarker(ctx *Context, identifier []byte)
 	OnReference(ctx *Context, identifier []byte)
-	OnConstant(ctx *Context, identifier []byte)
 	OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)
 	OnArrayBegin(ctx *Context, arrayType events.ArrayType)
@@ -83,8 +82,6 @@ var (
 	mediaTypeChunkRule      MediaTypeChunkRule
 	markedObjectKeyableRule MarkedObjectKeyableRule
 	markedObjectAnyTypeRule MarkedObjectAnyTypeRule
-	constantKeyableRule     ConstantKeyableRule
-	constantAnyTypeRule     ConstantAnyTypeRule
 	stringBuilderRule       StringBuilderRule
 	stringBuilderChunkRule  StringBuilderChunkRule
 	edgeSourceRule          EdgeSourceRule

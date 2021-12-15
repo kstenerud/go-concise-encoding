@@ -226,7 +226,4 @@ func (_this *BuilderEventReceiver) OnMarker(id []byte) {
 func (_this *BuilderEventReceiver) OnReference(id []byte) {
 	_this.context.CurrentBuilder.BuildFromReference(&_this.context, id)
 }
-func (_this *BuilderEventReceiver) OnConstant(name []byte) {
-	panic(fmt.Errorf("cannot build from constant (%s)", string(name)))
-}
 func (_this *BuilderEventReceiver) OnEndDocument() {}

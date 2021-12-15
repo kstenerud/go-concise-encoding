@@ -32,7 +32,6 @@ Prerelease
 
 Please note that this library is still officially in the prerelease stage. The most common functionality is in-place and tested, but there are still some parts to do:
 
-* Constants (partially implemented)
 * Proper validation of markup and comment strings
 * Extremely large values aren't tested well
 * Everything marked with a `TODO` in the code

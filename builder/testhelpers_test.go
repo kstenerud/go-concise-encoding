@@ -149,7 +149,6 @@ func NODE() *test.TEvent                     { return test.NODE() }
 func EDGE() *test.TEvent                     { return test.EDGE() }
 func E() *test.TEvent                        { return test.E() }
 func MARK(id string) *test.TEvent            { return test.MARK(id) }
-func CONST(n string) *test.TEvent            { return test.CONST(n) }
 func REF(id string) *test.TEvent             { return test.REF(id) }
 func BD() *test.TEvent                       { return test.BD() }
 func ED() *test.TEvent                       { return test.ED() }

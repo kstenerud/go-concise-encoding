@@ -114,7 +114,6 @@ func init() {
 	decoderOpsByFirstChar['T'] = decodeNamedValueT
 	decoderOpsByFirstChar['-'] = advanceAndDecodeNumericNegative
 	decoderOpsByFirstChar['@'] = advanceAndDecodeEdgeOrResourceID
-	decoderOpsByFirstChar['#'] = advanceAndDecodeConstant
 	decoderOpsByFirstChar['$'] = advanceAndDecodeReference
 	decoderOpsByFirstChar['&'] = advanceAndDecodeMarker
 	decoderOpsByFirstChar['/'] = advanceAndDecodeComment
