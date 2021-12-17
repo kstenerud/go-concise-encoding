@@ -255,7 +255,6 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 	test.AssertNoPanic(t, fmt.Sprintf("CTE Encode %v", expectedEvents), func() {
 		document = cteEncode(encodeOpts, expectedEvents...)
 	})
-	fmt.Printf("### EVENTS %v PRODUCE %v\n", expectedEvents, string(document))
 
 	test.AssertNoPanic(t, fmt.Sprintf("CTE Decode %v", string(document)), func() {
 		actualEvents, err = cteDecode(decodeOpts, document)
