@@ -122,50 +122,134 @@ null
 
     // ========================================================================
 
+    "cbeTests" = [
+        {
+            "name" = "CBE Test Case Template"
+
+            "encode" = [
+                /* Test the CBE encoder:
+                 * - Encodes "events" into a new document
+                 * - Expects the new document to match "document" exactly
+                 */
+                {
+                    "events" = ["v 0" "n 1"]
+                    "document" = |u8x 83 00 01|
+                }
+            ]
+
+            "decode" = [
+                /* Test the CBE decoder:
+                 * - Decodes "document" into new events
+                 * - Expects the new events to be equivalent to "events"
+                 */
+                {
+                    "document" = |u8x 83 00 01|
+                    "events" = ["v 0" "n 1"]
+                }
+            ]
+
+            "decodeFail" = [
+                /* Test that the CBE decoder fails appropriately:
+                 * - Attempts to decode the document into events and expects a failure
+                 */
+                |u8x 8c|  // Missing version specifier
+            ]
+
+            "encodeDecode" = [
+                /* Test the CBE encoder, with an additional roundtrip test:
+                 * - Encodes "events" into a new document
+                 * - Expects the new document to match "document" exactly
+                 * - Decodes the new document into new events
+                 * - Expects the new events to be equivalent to "events"
+                 */
+                {
+                    "events" = ["v 0" "n 1"]
+                    "document" = |u8x 83 00 01|
+                }
+            ]
+
+            "decodeEncode" = [
+                /* Test the CBE decoder, with an additional roundtrip test:
+                 * - Decodes "document" into new events
+                 * - Expects the new events to be equivalent to "events"
+                 * - Encodes the new events into a CBE document and then decodes them again
+                 * - Expects the resulting events to still be equivalent to "events"
+                 */
+                {
+                    "document" = |u8x 83 00 01|
+                    "events" = ["v 0" "n 1"]
+                }
+            ]
+
+
+            // Optional fields:
+            "debug" = false  // If true, print out the events as they happen
+            "trace" = false  // If true, print a stack trace when an error occurs
+            "skip" = false   // If true, skip this test
+        }
+    ]
+
+    // ========================================================================
+
     "cteTests" = [
         {
             "name" = "CTE Test Case Template"
 
             "encode" = [
-                /* Test the CTE encoder, with an additional roundtrip test:
+                /* Test the CTE encoder:
                  * - Encodes "events" into a new document
                  * - Expects the new document to match "document" exactly
-                 * - If "skipRoundTrip" is false or not present:
-                 *   - Decodes the new document into new events
-                 *   - Expects the new events to be equivalent to "events"
                  */
                 {
                     "events" = ["v 0" "n 1"]
                     "document" = "c0\n1"
-
-                    // Optional fields:
-                    "skipRoundTrip" = false // If true, skip the round-trip portion of the test
                 }
             ]
 
-            "decodeMustSucceed" = [
-                /* Test the CTE decoder, with an additional roundtrip test:
+            "decode" = [
+                /* Test the CTE decoder:
                  * - Decodes "document" into new events
                  * - Expects the new events to be equivalent to "events"
-                 * - If "skipRoundTrip" is false or not present:
-                 *   - Encodes the new events into a CTE document and then decodes them again
-                 *   - Expects the resulting events to still be equivalent to "events"
                  */
                 {
                     "document" = "c0 1"
                     "events" = ["v 0" "n 1"]
-
-                    // Optional fields:
-                    "skipRoundTrip" = false // If true, skip the round-trip portion of the test
                 }
             ]
 
-            "decodeMustFail" = [
+            "decodeFail" = [
                 /* Test that the CTE decoder fails appropriately:
                  * - Attempts to decode the document into events and expects a failure
                  */
                 "c0{}"  // Missing whitespace
             ]
+
+            "encodeDecode" = [
+                /* Test the CTE encoder, with an additional roundtrip test:
+                 * - Encodes "events" into a new document
+                 * - Expects the new document to match "document" exactly
+                 * - Decodes the new document into new events
+                 * - Expects the new events to be equivalent to "events"
+                 */
+                {
+                    "events" = ["v 0" "n 1"]
+                    "document" = "c0\n1"
+                }
+            ]
+
+            "decodeEncode" = [
+                /* Test the CTE decoder, with an additional roundtrip test:
+                 * - Decodes "document" into new events
+                 * - Expects the new events to be equivalent to "events"
+                 * - Encodes the new events into a CTE document and then decodes them again
+                 * - Expects the resulting events to still be equivalent to "events"
+                 */
+                {
+                    "document" = "c0 1"
+                    "events" = ["v 0" "n 1"]
+                }
+            ]
+
 
             // Optional fields:
             "debug" = false  // If true, print out the events as they happen

@@ -27,15 +27,300 @@ c0
     "cbeTests" = [
         {
             "name" = "Version specifier"
-            "decodeMustSucceed" = [
+            "decodeEncode" = [
                 {"document"=|u8x 83 00 01|  "events"=["v 0" "n 1"]}
             ]
-            "decodeMustFail" = [
+            "decodeFail" = [
                 |u8x 00|
             ]
         }
 
         // ====================================================================
+
+        {
+            "name" = "Small Integer"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 9c|  "events"=["v 0" "n -100"]}
+                {"document"=|u8x 83 00 9d|  "events"=["v 0" "n -99"]}
+                {"document"=|u8x 83 00 ec|  "events"=["v 0" "n -20"]}
+                {"document"=|u8x 83 00 fa|  "events"=["v 0" "n -6"]}
+                {"document"=|u8x 83 00 fb|  "events"=["v 0" "n -5"]}
+                {"document"=|u8x 83 00 fc|  "events"=["v 0" "n -4"]}
+                {"document"=|u8x 83 00 fd|  "events"=["v 0" "n -3"]}
+                {"document"=|u8x 83 00 fe|  "events"=["v 0" "n -2"]}
+                {"document"=|u8x 83 00 ff|  "events"=["v 0" "n -1"]}
+                {"document"=|u8x 83 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 01|  "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 02|  "events"=["v 0" "n 2"]}
+                {"document"=|u8x 83 00 03|  "events"=["v 0" "n 3"]}
+                {"document"=|u8x 83 00 04|  "events"=["v 0" "n 4"]}
+                {"document"=|u8x 83 00 05|  "events"=["v 0" "n 5"]}
+                {"document"=|u8x 83 00 06|  "events"=["v 0" "n 6"]}
+                {"document"=|u8x 83 00 37|  "events"=["v 0" "n 55"]}
+                {"document"=|u8x 83 00 5b|  "events"=["v 0" "n 91"]}
+                {"document"=|u8x 83 00 63|  "events"=["v 0" "n 99"]}
+                {"document"=|u8x 83 00 64|  "events"=["v 0" "n 100"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "8-Bit Integer"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 69 ff|  "events"=["v 0" "n -255"]}
+                {"document"=|u8x 83 00 69 fe|  "events"=["v 0" "n -254"]}
+                {"document"=|u8x 83 00 69 c8|  "events"=["v 0" "n -200"]}
+                {"document"=|u8x 83 00 69 65|  "events"=["v 0" "n -101"]}
+                {"document"=|u8x 83 00 69 64|  "events"=["v 0" "n -100"]}
+                {"document"=|u8x 83 00 69 63|  "events"=["v 0" "n -99"]}
+                {"document"=|u8x 83 00 69 14|  "events"=["v 0" "n -20"]}
+                {"document"=|u8x 83 00 69 06|  "events"=["v 0" "n -6"]}
+                {"document"=|u8x 83 00 69 05|  "events"=["v 0" "n -5"]}
+                {"document"=|u8x 83 00 69 04|  "events"=["v 0" "n -4"]}
+                {"document"=|u8x 83 00 69 03|  "events"=["v 0" "n -3"]}
+                {"document"=|u8x 83 00 69 02|  "events"=["v 0" "n -2"]}
+                {"document"=|u8x 83 00 69 01|  "events"=["v 0" "n -1"]}
+                {"document"=|u8x 83 00 69 00|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 68 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 68 01|  "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 68 02|  "events"=["v 0" "n 2"]}
+                {"document"=|u8x 83 00 68 03|  "events"=["v 0" "n 3"]}
+                {"document"=|u8x 83 00 68 04|  "events"=["v 0" "n 4"]}
+                {"document"=|u8x 83 00 68 05|  "events"=["v 0" "n 5"]}
+                {"document"=|u8x 83 00 68 06|  "events"=["v 0" "n 6"]}
+                {"document"=|u8x 83 00 68 37|  "events"=["v 0" "n 55"]}
+                {"document"=|u8x 83 00 68 5b|  "events"=["v 0" "n 91"]}
+                {"document"=|u8x 83 00 68 63|  "events"=["v 0" "n 99"]}
+                {"document"=|u8x 83 00 68 64|  "events"=["v 0" "n 100"]}
+                {"document"=|u8x 83 00 68 65|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 68 65|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 68 c8|  "events"=["v 0" "n 200"]}
+                {"document"=|u8x 83 00 68 fe|  "events"=["v 0" "n 254"]}
+                {"document"=|u8x 83 00 68 ff|  "events"=["v 0" "n 255"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "16-Bit Integer"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 6b ff ff|  "events"=["v 0" "n -65535"]}
+                {"document"=|u8x 83 00 6b e8 03|  "events"=["v 0" "n -1000"]}
+                {"document"=|u8x 83 00 6b ff 00|  "events"=["v 0" "n -255"]}
+                {"document"=|u8x 83 00 6b fe 00|  "events"=["v 0" "n -254"]}
+                {"document"=|u8x 83 00 6b c8 00|  "events"=["v 0" "n -200"]}
+                {"document"=|u8x 83 00 6b 65 00|  "events"=["v 0" "n -101"]}
+                {"document"=|u8x 83 00 6b 64 00|  "events"=["v 0" "n -100"]}
+                {"document"=|u8x 83 00 6b 63 00|  "events"=["v 0" "n -99"]}
+                {"document"=|u8x 83 00 6b 14 00|  "events"=["v 0" "n -20"]}
+                {"document"=|u8x 83 00 6b 06 00|  "events"=["v 0" "n -6"]}
+                {"document"=|u8x 83 00 6b 05 00|  "events"=["v 0" "n -5"]}
+                {"document"=|u8x 83 00 6b 04 00|  "events"=["v 0" "n -4"]}
+                {"document"=|u8x 83 00 6b 03 00|  "events"=["v 0" "n -3"]}
+                {"document"=|u8x 83 00 6b 02 00|  "events"=["v 0" "n -2"]}
+                {"document"=|u8x 83 00 6b 01 00|  "events"=["v 0" "n -1"]}
+                {"document"=|u8x 83 00 6b 00 00|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 6a 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 6a 01 00|  "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 6a 02 00|  "events"=["v 0" "n 2"]}
+                {"document"=|u8x 83 00 6a 03 00|  "events"=["v 0" "n 3"]}
+                {"document"=|u8x 83 00 6a 04 00|  "events"=["v 0" "n 4"]}
+                {"document"=|u8x 83 00 6a 05 00|  "events"=["v 0" "n 5"]}
+                {"document"=|u8x 83 00 6a 06 00|  "events"=["v 0" "n 6"]}
+                {"document"=|u8x 83 00 6a 37 00|  "events"=["v 0" "n 55"]}
+                {"document"=|u8x 83 00 6a 5b 00|  "events"=["v 0" "n 91"]}
+                {"document"=|u8x 83 00 6a 63 00|  "events"=["v 0" "n 99"]}
+                {"document"=|u8x 83 00 6a 64 00|  "events"=["v 0" "n 100"]}
+                {"document"=|u8x 83 00 6a 65 00|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 6a 65 00|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 6a c8 00|  "events"=["v 0" "n 200"]}
+                {"document"=|u8x 83 00 6a fe 00|  "events"=["v 0" "n 254"]}
+                {"document"=|u8x 83 00 6a ff 00|  "events"=["v 0" "n 255"]}
+                {"document"=|u8x 83 00 6a e8 03|  "events"=["v 0" "n 1000"]}
+                {"document"=|u8x 83 00 6a ff ff|  "events"=["v 0" "n 65535"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "32-Bit Integer"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 6d ff ff ff ff|  "events"=["v 0" "n -0xffffffff"]}
+                {"document"=|u8x 83 00 6d 00 00 01 00|  "events"=["v 0" "n -65536"]}
+                {"document"=|u8x 83 00 6d ff ff 00 00|  "events"=["v 0" "n -65535"]}
+                {"document"=|u8x 83 00 6d e8 03 00 00|  "events"=["v 0" "n -1000"]}
+                {"document"=|u8x 83 00 6d ff 00 00 00|  "events"=["v 0" "n -255"]}
+                {"document"=|u8x 83 00 6d fe 00 00 00|  "events"=["v 0" "n -254"]}
+                {"document"=|u8x 83 00 6d c8 00 00 00|  "events"=["v 0" "n -200"]}
+                {"document"=|u8x 83 00 6d 65 00 00 00|  "events"=["v 0" "n -101"]}
+                {"document"=|u8x 83 00 6d 64 00 00 00|  "events"=["v 0" "n -100"]}
+                {"document"=|u8x 83 00 6d 63 00 00 00|  "events"=["v 0" "n -99"]}
+                {"document"=|u8x 83 00 6d 14 00 00 00|  "events"=["v 0" "n -20"]}
+                {"document"=|u8x 83 00 6d 06 00 00 00|  "events"=["v 0" "n -6"]}
+                {"document"=|u8x 83 00 6d 05 00 00 00|  "events"=["v 0" "n -5"]}
+                {"document"=|u8x 83 00 6d 04 00 00 00|  "events"=["v 0" "n -4"]}
+                {"document"=|u8x 83 00 6d 03 00 00 00|  "events"=["v 0" "n -3"]}
+                {"document"=|u8x 83 00 6d 02 00 00 00|  "events"=["v 0" "n -2"]}
+                {"document"=|u8x 83 00 6d 01 00 00 00|  "events"=["v 0" "n -1"]}
+                {"document"=|u8x 83 00 6d 00 00 00 00|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 6c 00 00 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 6c 01 00 00 00|  "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 6c 02 00 00 00|  "events"=["v 0" "n 2"]}
+                {"document"=|u8x 83 00 6c 03 00 00 00|  "events"=["v 0" "n 3"]}
+                {"document"=|u8x 83 00 6c 04 00 00 00|  "events"=["v 0" "n 4"]}
+                {"document"=|u8x 83 00 6c 05 00 00 00|  "events"=["v 0" "n 5"]}
+                {"document"=|u8x 83 00 6c 06 00 00 00|  "events"=["v 0" "n 6"]}
+                {"document"=|u8x 83 00 6c 37 00 00 00|  "events"=["v 0" "n 55"]}
+                {"document"=|u8x 83 00 6c 5b 00 00 00|  "events"=["v 0" "n 91"]}
+                {"document"=|u8x 83 00 6c 63 00 00 00|  "events"=["v 0" "n 99"]}
+                {"document"=|u8x 83 00 6c 64 00 00 00|  "events"=["v 0" "n 100"]}
+                {"document"=|u8x 83 00 6c 65 00 00 00|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 6c 65 00 00 00|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 6c c8 00 00 00|  "events"=["v 0" "n 200"]}
+                {"document"=|u8x 83 00 6c fe 00 00 00|  "events"=["v 0" "n 254"]}
+                {"document"=|u8x 83 00 6c ff 00 00 00|  "events"=["v 0" "n 255"]}
+                {"document"=|u8x 83 00 6c e8 03 00 00|  "events"=["v 0" "n 1000"]}
+                {"document"=|u8x 83 00 6c ff ff 00 00|  "events"=["v 0" "n 65535"]}
+                {"document"=|u8x 83 00 6c 00 00 01 00|  "events"=["v 0" "n 65536"]}
+                {"document"=|u8x 83 00 6c ff ff ff ff|  "events"=["v 0" "n 0xffffffff"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "64-Bit Integer"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 6f ff ff ff ff ff ff ff ff|  "events"=["v 0" "n -0xffffffffffffffff"]}
+                {"document"=|u8x 83 00 6f 00 00 00 00 01 00 00 00|  "events"=["v 0" "n -0x100000000"]}
+                {"document"=|u8x 83 00 6f ff ff ff ff 00 00 00 00|  "events"=["v 0" "n -0xffffffff"]}
+                {"document"=|u8x 83 00 6f 00 00 01 00 00 00 00 00|  "events"=["v 0" "n -65536"]}
+                {"document"=|u8x 83 00 6f ff ff 00 00 00 00 00 00|  "events"=["v 0" "n -65535"]}
+                {"document"=|u8x 83 00 6f e8 03 00 00 00 00 00 00|  "events"=["v 0" "n -1000"]}
+                {"document"=|u8x 83 00 6f ff 00 00 00 00 00 00 00|  "events"=["v 0" "n -255"]}
+                {"document"=|u8x 83 00 6f fe 00 00 00 00 00 00 00|  "events"=["v 0" "n -254"]}
+                {"document"=|u8x 83 00 6f c8 00 00 00 00 00 00 00|  "events"=["v 0" "n -200"]}
+                {"document"=|u8x 83 00 6f 65 00 00 00 00 00 00 00|  "events"=["v 0" "n -101"]}
+                {"document"=|u8x 83 00 6f 64 00 00 00 00 00 00 00|  "events"=["v 0" "n -100"]}
+                {"document"=|u8x 83 00 6f 63 00 00 00 00 00 00 00|  "events"=["v 0" "n -99"]}
+                {"document"=|u8x 83 00 6f 14 00 00 00 00 00 00 00|  "events"=["v 0" "n -20"]}
+                {"document"=|u8x 83 00 6f 06 00 00 00 00 00 00 00|  "events"=["v 0" "n -6"]}
+                {"document"=|u8x 83 00 6f 05 00 00 00 00 00 00 00|  "events"=["v 0" "n -5"]}
+                {"document"=|u8x 83 00 6f 04 00 00 00 00 00 00 00|  "events"=["v 0" "n -4"]}
+                {"document"=|u8x 83 00 6f 03 00 00 00 00 00 00 00|  "events"=["v 0" "n -3"]}
+                {"document"=|u8x 83 00 6f 02 00 00 00 00 00 00 00|  "events"=["v 0" "n -2"]}
+                {"document"=|u8x 83 00 6f 01 00 00 00 00 00 00 00|  "events"=["v 0" "n -1"]}
+                {"document"=|u8x 83 00 6f 00 00 00 00 00 00 00 00|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 6e 00 00 00 00 00 00 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 6e 01 00 00 00 00 00 00 00|  "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 6e 02 00 00 00 00 00 00 00|  "events"=["v 0" "n 2"]}
+                {"document"=|u8x 83 00 6e 03 00 00 00 00 00 00 00|  "events"=["v 0" "n 3"]}
+                {"document"=|u8x 83 00 6e 04 00 00 00 00 00 00 00|  "events"=["v 0" "n 4"]}
+                {"document"=|u8x 83 00 6e 05 00 00 00 00 00 00 00|  "events"=["v 0" "n 5"]}
+                {"document"=|u8x 83 00 6e 06 00 00 00 00 00 00 00|  "events"=["v 0" "n 6"]}
+                {"document"=|u8x 83 00 6e 37 00 00 00 00 00 00 00|  "events"=["v 0" "n 55"]}
+                {"document"=|u8x 83 00 6e 5b 00 00 00 00 00 00 00|  "events"=["v 0" "n 91"]}
+                {"document"=|u8x 83 00 6e 63 00 00 00 00 00 00 00|  "events"=["v 0" "n 99"]}
+                {"document"=|u8x 83 00 6e 64 00 00 00 00 00 00 00|  "events"=["v 0" "n 100"]}
+                {"document"=|u8x 83 00 6e 65 00 00 00 00 00 00 00|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 6e 65 00 00 00 00 00 00 00|  "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 6e c8 00 00 00 00 00 00 00|  "events"=["v 0" "n 200"]}
+                {"document"=|u8x 83 00 6e fe 00 00 00 00 00 00 00|  "events"=["v 0" "n 254"]}
+                {"document"=|u8x 83 00 6e ff 00 00 00 00 00 00 00|  "events"=["v 0" "n 255"]}
+                {"document"=|u8x 83 00 6e e8 03 00 00 00 00 00 00|  "events"=["v 0" "n 1000"]}
+                {"document"=|u8x 83 00 6e ff ff 00 00 00 00 00 00|  "events"=["v 0" "n 65535"]}
+                {"document"=|u8x 83 00 6e 00 00 01 00 00 00 00 00|  "events"=["v 0" "n 65536"]}
+                {"document"=|u8x 83 00 6e ff ff ff ff 00 00 00 00|  "events"=["v 0" "n 0xffffffff"]}
+                {"document"=|u8x 83 00 6e 00 00 00 00 01 00 00 00|  "events"=["v 0" "n 0x100000000"]}
+                {"document"=|u8x 83 00 6e ff ff ff ff ff ff ff ff|  "events"=["v 0" "n 0xffffffffffffffff"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Arbitrary Integer"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 67 10 f0 de bc 9a 78 56 34 12 f0 de bc 9a 78 56 34 12|  "events"=["v 0" "n -0x123456789abcdef0123456789abcdef0"]}
+                {"document"=|u8x 83 00 67 08 ff ff ff ff ff ff ff ff|  "events"=["v 0" "n -0xffffffffffffffff"]}
+                {"document"=|u8x 83 00 67 07 00 00 00 00 00 00 01|     "events"=["v 0" "n -0x1000000000000"]}
+                {"document"=|u8x 83 00 67 06 00 00 00 00 00 01|        "events"=["v 0" "n -0x10000000000"]}
+                {"document"=|u8x 83 00 67 05 00 00 00 00 01|           "events"=["v 0" "n -0x100000000"]}
+                {"document"=|u8x 83 00 67 04 ff ff ff ff|              "events"=["v 0" "n -0xffffffff"]}
+                {"document"=|u8x 83 00 67 03 00 00 01|                 "events"=["v 0" "n -65536"]}
+                {"document"=|u8x 83 00 67 02 ff ff|                    "events"=["v 0" "n -65535"]}
+                {"document"=|u8x 83 00 67 02 e8 03|                    "events"=["v 0" "n -1000"]}
+                {"document"=|u8x 83 00 67 01 ff|                       "events"=["v 0" "n -255"]}
+                {"document"=|u8x 83 00 67 01 fe|                       "events"=["v 0" "n -254"]}
+                {"document"=|u8x 83 00 67 01 c8|                       "events"=["v 0" "n -200"]}
+                {"document"=|u8x 83 00 67 01 65|                       "events"=["v 0" "n -101"]}
+                {"document"=|u8x 83 00 67 01 64|                       "events"=["v 0" "n -100"]}
+                {"document"=|u8x 83 00 67 01 63|                       "events"=["v 0" "n -99"]}
+                {"document"=|u8x 83 00 67 01 14|                       "events"=["v 0" "n -20"]}
+                {"document"=|u8x 83 00 67 01 06|                       "events"=["v 0" "n -6"]}
+                {"document"=|u8x 83 00 67 01 05|                       "events"=["v 0" "n -5"]}
+                {"document"=|u8x 83 00 67 01 04|                       "events"=["v 0" "n -4"]}
+                {"document"=|u8x 83 00 67 01 03|                       "events"=["v 0" "n -3"]}
+                {"document"=|u8x 83 00 67 01 02|                       "events"=["v 0" "n -2"]}
+                {"document"=|u8x 83 00 67 01 01|                       "events"=["v 0" "n -1"]}
+                {"document"=|u8x 83 00 67 01 00|                       "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 66 01 00|                       "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 66 01 01|                       "events"=["v 0" "n 1"]}
+                {"document"=|u8x 83 00 66 01 02|                       "events"=["v 0" "n 2"]}
+                {"document"=|u8x 83 00 66 01 03|                       "events"=["v 0" "n 3"]}
+                {"document"=|u8x 83 00 66 01 04|                       "events"=["v 0" "n 4"]}
+                {"document"=|u8x 83 00 66 01 05|                       "events"=["v 0" "n 5"]}
+                {"document"=|u8x 83 00 66 01 06|                       "events"=["v 0" "n 6"]}
+                {"document"=|u8x 83 00 66 01 37|                       "events"=["v 0" "n 55"]}
+                {"document"=|u8x 83 00 66 01 5b|                       "events"=["v 0" "n 91"]}
+                {"document"=|u8x 83 00 66 01 63|                       "events"=["v 0" "n 99"]}
+                {"document"=|u8x 83 00 66 01 64|                       "events"=["v 0" "n 100"]}
+                {"document"=|u8x 83 00 66 01 65|                       "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 66 01 65|                       "events"=["v 0" "n 101"]}
+                {"document"=|u8x 83 00 66 01 c8|                       "events"=["v 0" "n 200"]}
+                {"document"=|u8x 83 00 66 01 fe|                       "events"=["v 0" "n 254"]}
+                {"document"=|u8x 83 00 66 01 ff|                       "events"=["v 0" "n 255"]}
+                {"document"=|u8x 83 00 66 02 e8 03|                    "events"=["v 0" "n 1000"]}
+                {"document"=|u8x 83 00 66 02 ff ff|                    "events"=["v 0" "n 65535"]}
+                {"document"=|u8x 83 00 66 03 00 00 01|                 "events"=["v 0" "n 65536"]}
+                {"document"=|u8x 83 00 66 04 ff ff ff ff|              "events"=["v 0" "n 0xffffffff"]}
+                {"document"=|u8x 83 00 66 05 00 00 00 00 01|           "events"=["v 0" "n 0x100000000"]}
+                {"document"=|u8x 83 00 66 06 00 00 00 00 00 01|        "events"=["v 0" "n 0x10000000000"]}
+                {"document"=|u8x 83 00 66 07 00 00 00 00 00 00 01|     "events"=["v 0" "n 0x1000000000000"]}
+                {"document"=|u8x 83 00 66 08 ff ff ff ff ff ff ff ff|  "events"=["v 0" "n 0xffffffffffffffff"]}
+                {"document"=|u8x 83 00 66 10 f0 de bc 9a 78 56 34 12 f0 de bc 9a 78 56 34 12|  "events"=["v 0" "n 0x123456789abcdef0123456789abcdef0"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "UID"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00|  "events"=["v 0" "uid 123e4567-e89b-12d3-a456-426655440000"]}
+            ]
+        }
+
+        // ====================================================================
+
+        // ====================================================================
+
+        {
+            "name" = "Binary Float"
+            "decodeEncode" = [
+                // float16
+                {"document"=|u8x 83 00 70 a8 40|  "events"=["v 0" "n 0x1.5p2"]}
+                {"document"=|u8x 83 00 70 fc b5|  "events"=["v 0" "n -0x1.f8p-20"]}
+                // float32
+                {"document"=|u8x 83 00 71 f8 c9 d4 b8|  "events"=["v 0" "n -0x1.a993fp-14"]}
+            ]
+            "encode" = [
+//                {"events"=["v 0" "n 0x1.5p2"]  "document"=|u8x 83 00|}
+            ]
+        }
 
     ]
 }
