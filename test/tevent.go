@@ -363,20 +363,26 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 		return true
 	}
 
-	if _this.IsEffectivelyNull() && that.IsEffectivelyNull() {
-		return true
+	if _this.IsEffectivelyNull() {
+		return that.IsEffectivelyNull()
 	}
 
-	if _this.Type.IsBoolean() && that.Type.IsBoolean() {
-		return _this.IsTrue() == that.IsTrue()
+	if _this.Type.IsBoolean() {
+		return that.Type.IsBoolean() && (_this.IsTrue() == that.IsTrue())
 	}
 
 	if _this.Type.IsNumeric() && that.Type.IsNumeric() {
-		if _this.IsQuietNan() && that.IsQuietNan() {
-			return true
+		if _this.IsQuietNan() {
+			return that.IsQuietNan()
 		}
-		if _this.IsSignalingNan() && that.IsSignalingNan() {
-			return true
+		if that.IsQuietNan() {
+			return _this.IsQuietNan()
+		}
+		if _this.IsSignalingNan() {
+			return that.IsSignalingNan()
+		}
+		if that.IsSignalingNan() {
+			return _this.IsSignalingNan()
 		}
 		switch _this.Type {
 		case TEventPInt:
@@ -398,7 +404,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventNInt:
 			switch that.Type {
@@ -419,7 +425,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventInt:
 			switch that.Type {
@@ -440,7 +446,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventBigInt:
 			switch that.Type {
@@ -461,7 +467,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventFloat:
 			switch that.Type {
@@ -482,7 +488,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventBigFloat:
 			switch that.Type {
@@ -503,7 +509,7 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventDecimalFloat:
 			switch that.Type {
@@ -524,12 +530,12 @@ func (_this *TEvent) IsEquivalentTo(that *TEvent) bool {
 			case TEventBigDecimalFloat:
 				return _this.stringify(_this.V1) == that.stringify(that.V1)
 			default:
-				panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+				panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 			}
 		case TEventBigDecimalFloat:
 			return _this.stringify(_this.V1) == that.stringify(that.V1)
 		default:
-			panic(fmt.Errorf("TEST BUG: Cannot compare %v to %v", _this.Type, that.Type))
+			panic(fmt.Errorf("TEST BUG: Cannot compare %v (%v) to %v (%v)", _this.Type, _this, that.Type, that))
 		}
 	}
 

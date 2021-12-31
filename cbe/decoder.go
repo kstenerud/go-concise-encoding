@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 
 	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
@@ -127,9 +128,21 @@ EOF:
 		case cbeTypeNegInt64:
 			eventReceiver.OnNegativeInt(_this.reader.ReadUint64())
 		case cbeTypeFloat16:
-			eventReceiver.OnFloat(float64(_this.reader.ReadFloat16()))
+			// Golang destroys the quiet bit status when converting to float64
+			bits := _this.reader.ReadUint16()
+			if bits & ^uint16(0x8000) == common.Bfloat16SignalingNanBits {
+				eventReceiver.OnFloat(common.Float64SignalingNan)
+			} else {
+				eventReceiver.OnFloat(float64(common.Float32FromFloat16Bits(bits)))
+			}
 		case cbeTypeFloat32:
-			eventReceiver.OnFloat(float64(_this.reader.ReadFloat32()))
+			// Golang destroys the quiet bit status when converting to float64
+			bits := _this.reader.ReadUint32()
+			if bits & ^uint32(0x80000000) == common.Float32SignalingNanBits {
+				eventReceiver.OnFloat(common.Float64SignalingNan)
+			} else {
+				eventReceiver.OnFloat(float64(math.Float32frombits(bits)))
+			}
 		case cbeTypeFloat64:
 			eventReceiver.OnFloat(_this.reader.ReadFloat64())
 		case cbeTypeUID:

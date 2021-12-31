@@ -18,9 +18,34 @@ c0
         // ====================================================================
 
         {
+            "name" = "Version"
+            "decodeEncode" = [
+                // TODO: Version 0 becomes invalid after v1 is released
+                {"document"=|u8x 83 00 7e|  "events"=["v 0" "null"]}
+                {"document"=|u8x 83 01 7e|  "events"=["v 0" "null"]}
+            ]
+
+            "decodeFail" = [
+                // |u8x 83 00 7e|
+                |u8x 83 02 7e|
+            ]
+        }
+
+        // ====================================================================
+
+        {
             "name" = "Empty document"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 7e|  "events"=["v 0" "null"]}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Padding"
+            "decode" = [
+                {"document"=|u8x 83 00 7f 7f 7f 7e|  "events"=["v 0" "pad 1" "pad 1" "pad 1" "null"]}
             ]
         }
 
@@ -360,6 +385,37 @@ c0
                 {"document"=|u8x 83 00 72 00 74 89 b8 52 15 6f 37|  "events"=["v 0" "n 0xf.8aa95c44bap-140"]}
                 {"document"=|u8x 83 00 72 48 e6 20 1f 99 f8 c4 c8|  "events"=["v 0" "n -0x2.9f1323e41cc9p+140"]}
             ]
+            "decode" = [
+                // float16
+                {"document"=|u8x 83 00 70 c1 ff|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 70 c1 7f|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 70 81 ff|  "events"=["v 0" "n snan"]}
+                {"document"=|u8x 83 00 70 81 7f|  "events"=["v 0" "n snan"]}
+                {"document"=|u8x 83 00 70 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 70 00 80|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 70 80 7f|  "events"=["v 0" "n inf"]}
+                {"document"=|u8x 83 00 70 80 ff|  "events"=["v 0" "n -inf"]}
+
+                // float32
+                {"document"=|u8x 83 00 71 01 00 c0 ff|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 71 01 00 c0 7f|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 71 01 00 80 ff|  "events"=["v 0" "n snan"]}
+                {"document"=|u8x 83 00 71 01 00 80 7f|  "events"=["v 0" "n snan"]}
+                {"document"=|u8x 83 00 71 00 00 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 71 00 00 00 80|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 71 00 00 80 7f|  "events"=["v 0" "n inf"]}
+                {"document"=|u8x 83 00 71 00 00 80 ff|  "events"=["v 0" "n -inf"]}
+
+                // float64
+                {"document"=|u8x 83 00 72 01 00 00 00 00 00 f8 ff|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 72 01 00 00 00 00 00 f8 7f|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 72 01 00 00 00 00 00 f0 ff|  "events"=["v 0" "n snan"]}
+                {"document"=|u8x 83 00 72 01 00 00 00 00 00 f0 7f|  "events"=["v 0" "n snan"]}
+                {"document"=|u8x 83 00 72 00 00 00 00 00 00 00 00|  "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 72 00 00 00 00 00 00 00 80|  "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 72 00 00 00 00 00 00 f0 7f|  "events"=["v 0" "n inf"]}
+                {"document"=|u8x 83 00 72 00 00 00 00 00 00 f0 ff|  "events"=["v 0" "n -inf"]}
+            ]
             "decodeFail" = [
                 |u8x 83 00 70 a8|                    // Incomplete
                 |u8x 83 00 71 f8 c9|                 // Incomplete
@@ -373,17 +429,90 @@ c0
 
         // ====================================================================
 
-        // ====================================================================
-
         {
             "name" = "Decimal Float"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 65 06 0c|  "events"=["v 0" "n 1.2"]}
             ]
+            "encode" = [
+                {"events"=["v 0" "n -9.492338558234976568723e-10000"]
+                "document"=|u8x 83 00 65 97 b9 02 93 8b ff da e4 c4 c2 d4 94 85 08|}
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 65 02|     "events"=["v 0" "n 0"]}
+                {"document"=|u8x 83 00 65 03|     "events"=["v 0" "n -0"]}
+                {"document"=|u8x 83 00 65 82 00|  "events"=["v 0" "n inf"]}
+                {"document"=|u8x 83 00 65 83 00|  "events"=["v 0" "n -inf"]}
+                {"document"=|u8x 83 00 65 80 00|  "events"=["v 0" "n nan"]}
+                {"document"=|u8x 83 00 65 81 00|  "events"=["v 0" "n snan"]}
+            ]
             "decodeFail" = [
                 |u8x 83 00 65 06|  // Incomplete
             ]
         }
+
+        // ====================================================================
+
+        {
+            "name" = "Date"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 99 97 55 00|  "events"=["v 0" "t 2021-12-23"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 99|           // Incomplete
+                |u8x 83 00 99 97|        // Incomplete
+                |u8x 83 00 99 97 55|     // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Time"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 9a 0e 00 00 00 76 4b fe|  "events"=["v 0" "t 18:22:59.000000001"]}
+                {"document"=|u8x 83 00 9a 3b 5f 5d ca 16 4d 2f 56 61 6e 63 6f 75 76 65 72|  "events"=["v 0" "t 05:11:42.999/America/Vancouver"]}
+                {"document"=|u8x 83 00 9a 0f 00 00 00 76 4b fe 00 e0 01|  "events"=["v 0" "t 18:22:59.000000001+0800"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 9a 0e 00 00 00 76 4b|  // Incomplete
+                |u8x 83 00 9a 0e 00 00 00 76|     // Incomplete
+                |u8x 83 00 9a 0e 00 00 00|        // Incomplete
+                |u8x 83 00 9a 0e 00 00|           // Incomplete
+                |u8x 83 00 9a 0e 00|              // Incomplete
+                |u8x 83 00 9a 0e|                 // Incomplete
+                |u8x 83 00 9a|                    // Incomplete
+                |u8x 83 00 9a 3b 5f 5d ca 16 4d 2f 56 61 6e 63 6f 75 76 65| // Incomplete
+                |u8x 83 00 9a 0f 00 00 00 76 4b fe 00 e0| // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Timestamp"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 9b 01 00 10 02 00 10 45 2f 42 65 72 6c 69 6e|  "events"=["v 0" "t 2000-01-01/00:00:00/Europe/Berlin"]}
+                {"document"=|u8x 83 00 9b 8d 1c b0 d7 06 1f 99 12 d5 2e 2f 04|  "events"=["v 0" "t 3190-08-31/00:54:47.394129/59.94/10.71"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 9b 01 00 10 02 00 10 45 2f 42 65 72 6c 69| // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06 1f 99 12 d5 2e 2f|       // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06 1f 99 12 d5 2e|          // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06 1f 99 12 d5|             // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06 1f 99 12|                // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06 1f 99|                   // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06 1f|                      // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7 06|                         // Incomplete
+                |u8x 83 00 9b 8d 1c b0 d7|                            // Incomplete
+                |u8x 83 00 9b 8d 1c b0|                               // Incomplete
+                |u8x 83 00 9b 8d 1c|                                  // Incomplete
+                |u8x 83 00 9b 8d|                                     // Incomplete
+                |u8x 83 00 9b|                                        // Incomplete
+            ]
+        }
+
+        // ====================================================================
 
     ]
 }
