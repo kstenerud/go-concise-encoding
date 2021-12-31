@@ -128,20 +128,22 @@ EOF:
 		case cbeTypeNegInt64:
 			eventReceiver.OnNegativeInt(_this.reader.ReadUint64())
 		case cbeTypeFloat16:
-			// Golang destroys the quiet bit status when converting to float64
-			bits := _this.reader.ReadUint16()
-			if bits & ^uint16(0x8000) == common.Bfloat16SignalingNanBits {
+			f32Val := _this.reader.ReadFloat16()
+			f64Val := float64(f32Val)
+			if math.IsNaN(f64Val) && !common.HasQuietNanBitSet32(f32Val) {
+				// Golang destroys the quiet bit status when converting to float64
 				eventReceiver.OnFloat(common.Float64SignalingNan)
 			} else {
-				eventReceiver.OnFloat(float64(common.Float32FromFloat16Bits(bits)))
+				eventReceiver.OnFloat(f64Val)
 			}
 		case cbeTypeFloat32:
-			// Golang destroys the quiet bit status when converting to float64
-			bits := _this.reader.ReadUint32()
-			if bits & ^uint32(0x80000000) == common.Float32SignalingNanBits {
+			f32Val := _this.reader.ReadFloat32()
+			f64Val := float64(f32Val)
+			if math.IsNaN(f64Val) && !common.HasQuietNanBitSet32(f32Val) {
+				// Golang destroys the quiet bit status when converting to float64
 				eventReceiver.OnFloat(common.Float64SignalingNan)
 			} else {
-				eventReceiver.OnFloat(float64(math.Float32frombits(bits)))
+				eventReceiver.OnFloat(f64Val)
 			}
 		case cbeTypeFloat64:
 			eventReceiver.OnFloat(_this.reader.ReadFloat64())
