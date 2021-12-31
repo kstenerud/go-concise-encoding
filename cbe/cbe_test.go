@@ -26,17 +26,6 @@ import (
 	"testing"
 )
 
-func TestCBERIDEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeRID, 0x02})
-	assertDecodeFails(t, []byte{header, ceVer, typeRID, 0x04, 'a'})
-}
-
-func TestCBERID(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeRID, 0x00}, BD(), EvV, RID(""), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeRID, 0x02, 'a'}, BD(), EvV, RID("a"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeRID, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), EvV, RID("00000000001111111111"), ED())
-}
-
 func TestCBECustomBinaryEOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typeCustomBinary, 0x02})
 	assertDecodeFails(t, []byte{header, ceVer, typeCustomBinary, 0x04, 'a'})

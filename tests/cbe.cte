@@ -622,5 +622,29 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "RID"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 91 00|           "events"=["v 0" "rid "]}
+                {"document"=|u8x 83 00 91 02 61|        "events"=["v 0" "rid a"]}
+                {"document"=|u8x 83 00 91 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                 "events"=["v 0" "rid https://concise-encoding.org/"]}
+            ]
+            "decode" = [
+                {
+                    "document"=|u8x 83 00 91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "events"=["v 0" "rb" "acm 1" "at h" "acl 28" "at ttps://concise-encoding.org/"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 91 01|        // Incomplete
+                |u8x 83 00 91 02|        // Incomplete
+                |u8x 83 00 91 04 40|     // Incomplete
+                |u8x 83 00 91 05 40 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
