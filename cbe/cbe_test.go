@@ -26,54 +26,6 @@ import (
 	"testing"
 )
 
-func TestCBEShortStringEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeString1})
-	assertDecodeFails(t, []byte{header, ceVer, typeString2, 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString3, 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString4, 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString5, 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString6, 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString7, 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString8, 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString9, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString10, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString11, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString12, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString13, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString14, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-	assertDecodeFails(t, []byte{header, ceVer, typeString15, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'})
-}
-
-func TestCBEShortString(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeString0}, BD(), EvV, S(""), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString1, 'a'}, BD(), EvV, S("a"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString2, 'a', 'a'}, BD(), EvV, S("aa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString3, 'a', 'a', 'a'}, BD(), EvV, S("aaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString4, 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString5, 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString6, 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString7, 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString8, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString9, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString10, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString11, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString12, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString13, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString14, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaaaaaaa"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString15, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, BD(), EvV, S("aaaaaaaaaaaaaaa"), ED())
-}
-
-func TestCBEStringEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeString, 0x02})
-	assertDecodeFails(t, []byte{header, ceVer, typeString, 0x04, 'a'})
-}
-
-func TestCBEString(t *testing.T) {
-	assertDecode(t, nil, []byte{header, ceVer, typeString, 0x00}, BD(), EvV, S(""), ED())
-	assertDecode(t, nil, []byte{header, ceVer, typeString, 0x02, 'a'}, BD(), EvV, S("a"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeString, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), EvV, S("00000000001111111111"), ED())
-}
-
 func TestCBERIDEOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typeRID, 0x02})
 	assertDecodeFails(t, []byte{header, ceVer, typeRID, 0x04, 'a'})

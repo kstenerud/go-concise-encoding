@@ -130,7 +130,8 @@ If present, this field contains string-encoded elements that are a kind of short
 | au64b |               |         | Begin array: uint64             | `au64b`                                    |
 | aub   |               |         | Begin array: uid                | `aub`                                      |
 | mb    |               |         | Begin Media                     | `mb`                                       |
-| ac    | uint          | bool    | Array chunk (elem count, more?) | `ac 10 false`                              |
+| acm   | uint          |         | Array chunk w/more (elem count) | `acm 10`                                   |
+| acl   | uint          |         | Last array chunk (elem count)   | `acl 10`                                   |
 | ad    | bytes         |         | Array data as binary            | `ad f8 ee 41 9a 13`                        |
 | at    | string        |         | Array data as text              | `at some text data`                        |
 | l     |               |         | Begin list                      | `l`                                        |

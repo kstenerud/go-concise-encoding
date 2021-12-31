@@ -518,5 +518,109 @@ c0
 
         // ====================================================================
 
+        {
+            "name" = "Strings (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 80|                                               "events"=["v 0" "s "]}
+                {"document"=|u8x 83 00 81 61|                                            "events"=["v 0" "s a"]}
+                {"document"=|u8x 83 00 82 61 61|                                         "events"=["v 0" "s aa"]}
+                {"document"=|u8x 83 00 83 61 61 61|                                      "events"=["v 0" "s aaa"]}
+                {"document"=|u8x 83 00 84 61 61 61 61|                                   "events"=["v 0" "s aaaa"]}
+                {"document"=|u8x 83 00 85 61 61 61 61 61|                                "events"=["v 0" "s aaaaa"]}
+                {"document"=|u8x 83 00 86 61 61 61 61 61 61|                             "events"=["v 0" "s aaaaaa"]}
+                {"document"=|u8x 83 00 87 61 61 61 61 61 61 61|                          "events"=["v 0" "s aaaaaaa"]}
+                {"document"=|u8x 83 00 88 61 61 61 61 61 61 61 61|                       "events"=["v 0" "s aaaaaaaa"]}
+                {"document"=|u8x 83 00 89 61 61 61 61 61 61 61 61 61|                    "events"=["v 0" "s aaaaaaaaa"]}
+                {"document"=|u8x 83 00 8a 61 61 61 61 61 61 61 61 61 61|                 "events"=["v 0" "s aaaaaaaaaa"]}
+                {"document"=|u8x 83 00 8b 61 61 61 61 61 61 61 61 61 61 61|              "events"=["v 0" "s aaaaaaaaaaa"]}
+                {"document"=|u8x 83 00 8c 61 61 61 61 61 61 61 61 61 61 61 61|           "events"=["v 0" "s aaaaaaaaaaaa"]}
+                {"document"=|u8x 83 00 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|        "events"=["v 0" "s aaaaaaaaaaaaa"]}
+                {"document"=|u8x 83 00 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|     "events"=["v 0" "s aaaaaaaaaaaaaa"]}
+                {"document"=|u8x 83 00 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|  "events"=["v 0" "s aaaaaaaaaaaaaaa"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 81|                                           // Incomplete
+                |u8x 83 00 82 61|                                        // Incomplete
+                |u8x 83 00 83 61 61|                                     // Incomplete
+                |u8x 83 00 84 61 61 61|                                  // Incomplete
+                |u8x 83 00 85 61 61 61 61|                               // Incomplete
+                |u8x 83 00 86 61 61 61 61 61|                            // Incomplete
+                |u8x 83 00 87 61 61 61 61 61 61|                         // Incomplete
+                |u8x 83 00 88 61 61 61 61 61 61 61|                      // Incomplete
+                |u8x 83 00 89 61 61 61 61 61 61 61 61|                   // Incomplete
+                |u8x 83 00 8a 61 61 61 61 61 61 61 61 61|                // Incomplete
+                |u8x 83 00 8b 61 61 61 61 61 61 61 61 61 61|             // Incomplete
+                |u8x 83 00 8c 61 61 61 61 61 61 61 61 61 61 61|          // Incomplete
+                |u8x 83 00 8d 61 61 61 61 61 61 61 61 61 61 61 61|       // Incomplete
+                |u8x 83 00 8e 61 61 61 61 61 61 61 61 61 61 61 61 61|    // Incomplete
+                |u8x 83 00 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61| // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Strings"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 90 00|           "events"=["v 0" "s "]}
+                {"document"=|u8x 83 00 90 02 78|        "events"=["v 0" "s x"]}
+                {"document"=|u8x 83 00 90 06 78 79 7a|  "events"=["v 0" "s xyz"]}
+                {"document"=|u8x 83 00 90 da 03 50 61 72 74 69 63 6c 65 20 6d 61
+                  6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a 44 6f 69 6e 67
+                  20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c
+                  65 20 63 61 6e 0a 57 68 61 74 27 73 20 68 65 20 6c 69 6b 65 3f
+                  20 49 74 27 73 20 6e 6f 74 20 69 6d 70 6f 72 74 61 6e 74 0a 50
+                  61 72 74 69 63 6c 65 20 6d 61 6e 0a 49 73 20 68 65 20 61 20 64
+                  6f 74 2c 20 6f 72 20 69 73 20 68 65 20 61 20 73 70 65 63 6b 3f
+                  0a 57 68 65 6e 20 68 65 27 73 20 75 6e 64 65 72 77 61 74 65 72
+                  20 64 6f 65 73 20 68 65 20 67 65 74 20 77 65 74 3f 0a 4f 72 20
+                  64 6f 65 73 20 74 68 65 20 77 61 74 65 72 20 67 65 74 20 68 69
+                  6d 20 69 6e 73 74 65 61 64 3f 0a 4e 6f 62 6f 64 79 20 6b 6e 6f
+                  77 73 2c 20 50 61 72 74 69 63 6c 65 20 6d 61 6e|
+                "events"=["v 0" "s \.#
+Particle man, particle man
+Doing the things a particle can
+What's he like? It's not important
+Particle man
+Is he a dot, or is he a speck?
+When he's underwater does he get wet?
+Or does the water get him instead?
+Nobody knows, Particle man#"]}
+            ]
+            "encode" = [
+                {
+                    "document" = |u8x 83 00 90 36 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a|
+                    "events" = ["v 0" "s Particle man, particle man\n"]
+                }
+                {
+                    "document" = |u8x 83 00 90 40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a|
+                    "events" = ["v 0" "s Doing the things a particle can\n"]
+                }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 90 01 00|  "events"=["v 0" "sb" "acm 0" "acl 0"]}
+                {
+                    "document" = |u8x
+                        83 00 90
+                        37 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a
+                        40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a
+                    |
+                    "events" = [
+                        "v 0" "sb"
+                        "acm 27" "at Particle man, particle man\n"
+                        "acl 32" "at Doing the things a particle can\n"
+                    ]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 90 01|        // Incomplete
+                |u8x 83 00 90 02|        // Incomplete
+                |u8x 83 00 90 04 40|     // Incomplete
+                |u8x 83 00 90 05 40 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

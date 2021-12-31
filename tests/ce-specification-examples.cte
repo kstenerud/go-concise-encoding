@@ -314,7 +314,7 @@ c0
             "events" = [
                             "v 0"
                             "l"
-                                "mb" "ac 16 false" "at application/x-sh" "ac 28 false" "at \.@@
+                                "mb" "acl 16" "at application/x-sh" "acl 28" "at \.@@
 #!/bin/sh
 
 echo hello world
@@ -865,8 +865,8 @@ c0
                                 "s a" "s We're inside a string, so /* this is not a comment; it's part of the string! */"
                                 "s data"
                                 "com f  A comment before some binary data"
-                                "au8b" "ac 3 t" "ad 01 02 03" "com f  A comment inside the binary array"
-                                "ac 4 t" "ad 04 05 06 07" "com t  Another comment inside " "ac 3 f" "ad 08 09 0a"
+                                "au8b" "acm 3" "ad 01 02 03" "com f  A comment inside the binary array"
+                                "acm 4" "ad 04 05 06 07" "com t  Another comment inside " "acl 3" "ad 08 09 0a"
                                 "com f  Comment before the end of the top-level object (the map), but not after!"
                             "e"
                         ]

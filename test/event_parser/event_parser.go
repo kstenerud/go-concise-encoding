@@ -199,6 +199,16 @@ func parseDecimalFloatEvent(eventStr string) *test.TEvent {
 	}
 }
 
+func parseArrayChunkMoreEvent(eventStr string) *test.TEvent {
+	param := get1ParamArg(eventStr, false)
+	return test.NewTEvent(test.TEventArrayChunk, parseUint(param), true)
+}
+
+func parseArrayChunkLastEvent(eventStr string) *test.TEvent {
+	param := get1ParamArg(eventStr, false)
+	return test.NewTEvent(test.TEventArrayChunk, parseUint(param), false)
+}
+
 type generalEventParser struct {
 	eventType         test.TEventType
 	paramParsers      []eventParamParser
@@ -692,7 +702,8 @@ func init() {
 	eventParsersByName["af64b"] = newParser(false, test.TEventArrayFloat64Begin).ParseEvent
 	eventParsersByName["aub"] = newParser(false, test.TEventArrayUIDBegin).ParseEvent
 	eventParsersByName["mb"] = newParser(false, test.TEventMediaBegin).ParseEvent
-	eventParsersByName["ac"] = newParser(false, test.TEventArrayChunk, parseUint, parseBool).ParseEvent
+	eventParsersByName["acm"] = parseArrayChunkMoreEvent
+	eventParsersByName["acl"] = parseArrayChunkLastEvent
 	eventParsersByName["ad"] = newParser(false, test.TEventArrayData, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
 	eventParsersByName["at"] = newParser(false, test.TEventArrayData, parseTextAsBytes).ParseEvent
 	eventParsersByName["l"] = newParser(false, test.TEventList).ParseEvent
