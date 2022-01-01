@@ -26,66 +26,6 @@ import (
 	"testing"
 )
 
-func TestCBECustomBinaryEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeCustomBinary, 0x02})
-	assertDecodeFails(t, []byte{header, ceVer, typeCustomBinary, 0x04, 'a'})
-}
-
-func TestCBECustomBinary(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeCustomBinary, 0x00}, BD(), EvV, CUB([]byte{}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeCustomBinary, 0x02, 'a'}, BD(), EvV, CUB([]byte("a")), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeCustomBinary, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), EvV, CUB([]byte("00000000001111111111")), ED())
-}
-
-func TestCBECustomTextEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeCustomText, 0x02})
-	assertDecodeFails(t, []byte{header, ceVer, typeCustomText, 0x04, 'a'})
-}
-
-func TestCBECustomText(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeCustomText, 0x00}, BD(), EvV, CUT(""), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeCustomText, 0x02, 'a'}, BD(), EvV, CUT("a"), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeCustomText, 0x28, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'}, BD(), EvV, CUT("00000000001111111111"), ED())
-}
-
-func TestCBEArrayUint8EOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeArrayUint8, 0x04, 0xfa})
-}
-
-func TestCBEArrayUint8(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeArrayUint8, 0x02, 0x01}, BD(), EvV, AU8([]byte{1}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeArrayUint8, 0x04, 0xfa, 0x11}, BD(), EvV, AU8([]byte{0xfa, 0x11}), ED())
-}
-
-func TestCBEArrayUint16EOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint16, 0x02, 0xfa})
-}
-
-func TestCBEArrayUint16(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayUint16 | 1, 0x01, 0x02}, BD(), EvV, AU16([]uint16{0x0201}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayUint16 | 2, 0xfa, 0x11, 0x01, 0x02}, BD(), EvV, AU16([]uint16{0x11fa, 0x0201}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeArrayUint16, 0x020,
-		0xfa, 0x11, 0x01, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0x00},
-		BD(), EvV, AU16([]uint16{0x11fa, 0x0201, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-			0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0001}), ED())
-}
-
-func TestCBEArrayUint32EOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint32, 0x02, 1})
-	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint32, 0x02, 1, 2})
-	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint32, 0x02, 1, 2, 3})
-	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint32, 0x04, 1, 2, 3, 4, 5})
-}
-
-func TestCBEArrayUint32(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayUint32 | 1, 0x01, 0x02, 0x03, 0x04}, BD(), EvV, AU32([]uint32{0x04030201}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayUint32 | 2, 1, 2, 3, 4, 5, 6, 7, 8}, BD(), EvV, AU32([]uint32{0x04030201, 0x08070605}), ED())
-
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeArrayUint32, 0x20,
-		1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-		BD(), EvV, AU32([]uint32{0x04030201, 0x08070605, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}), ED())
-}
-
 func TestCBEArrayUint64EOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint64, 0x02, 1})
 	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayUint64, 0x02, 1, 2})
