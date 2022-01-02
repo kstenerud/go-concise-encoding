@@ -677,7 +677,7 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
-            "name" = "Uint8"
+            "name" = "Uint8 Array"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 95 06 01 02 03|  "events"=["v 0" "au8x 01 02 03"]}
             ]
@@ -692,7 +692,7 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
-            "name" = "Uint16 (Short)"
+            "name" = "Uint16 Array (Short)"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 94 10|                    "events"=["v 0" "au16x"]}
                 {"document"=|u8x 83 00 94 13 02 01 04 03 06 05|  "events"=["v 0" "au16x 0102 0304 0506"]}
@@ -709,7 +709,7 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
-            "name" = "Uint16 (Long)"
+            "name" = "Uint16 Array (Long)"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 94 fe 20 02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00|
                  "events"=["v 0" "au16x 0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8 9"]}
@@ -730,7 +730,7 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
-            "name" = "Uint32 (Short)"
+            "name" = "Uint32 Array (Short)"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 94 30|                    "events"=["v 0" "au32x"]}
                 {"document"=|u8x 83 00 94 33 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["v 0" "au32x 01020304 05060708 090a0b0c"]}
@@ -762,7 +762,7 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
-            "name" = "Uint32 (Long)"
+            "name" = "Uint32 Array (Long)"
             "decodeEncode" = [
                 {
                     "document" = |u8x
@@ -807,6 +807,348 @@ Nobody knows, Particle man#"]}
                 |u8x 83 00 94|        // Incomplete
                 |u8x 83 00 94 fc|     // Incomplete
                 |u8x 83 00 94 fc 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Uint64 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 50|  "events"=["v 0" "au64x"]}
+                {"document"=|u8x 83 00 94 52 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
+                 "events"=["v 0" "au64x 0102030405060708 090a0b0c0d0e0f00"]}
+                {
+                    "document" = |u8x
+                        83 00 94 5f
+                        08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
+                        18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
+                        28 27 26 25 24 23 22 21 20 2f 2e 2d 2c 2b 2a 29
+                        38 37 36 35 34 33 32 31 30 3f 3e 3d 3c 3b 3a 39
+                        48 47 46 45 44 43 42 41 40 4f 4e 4d 4c 4b 4a 49
+                        58 57 56 55 54 53 52 51 50 5f 5e 5d 5c 5b 5a 59
+                        68 67 66 65 64 63 62 61 60 6f 6e 6d 6c 6b 6a 69
+                        78 77 76 75 74 73 72 71
+                    |
+                    "events" = [
+                        "v 0" "au64x
+                            0102030405060708 090a0b0c0d0e0f00
+                            1112131415161718 191a1b1c1d1e1f10
+                            2122232425262728 292a2b2c2d2e2f20
+                            3132333435363738 393a3b3c3d3e3f30
+                            4142434445464748 494a4b4c4d4e4f40
+                            5152535455565758 595a5b5c5d5e5f50
+                            6162636465666768 696a6b6c6d6e6f60
+                            7172737475767778
+                        "
+                    ]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 51|           // Incomplete
+                |u8x 83 00 94 53 01 02 03|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Uint64 Array (Long)"
+            "decodeEncode" = [
+                {
+                    "document" = |u8x
+                        83 00 94 fa 20
+                        08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
+                        18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
+                        28 27 26 25 24 23 22 21 20 2f 2e 2d 2c 2b 2a 29
+                        38 37 36 35 34 33 32 31 30 3f 3e 3d 3c 3b 3a 39
+                        48 47 46 45 44 43 42 41 40 4f 4e 4d 4c 4b 4a 49
+                        58 57 56 55 54 53 52 51 50 5f 5e 5d 5c 5b 5a 59
+                        68 67 66 65 64 63 62 61 60 6f 6e 6d 6c 6b 6a 69
+                        78 77 76 75 74 73 72 71 70 7f 7e 7d 7c 7b 7a 79
+                    |
+                    "events" = [
+                        "v 0" "au64x
+                            0102030405060708 090a0b0c0d0e0f00
+                            1112131415161718 191a1b1c1d1e1f10
+                            2122232425262728 292a2b2c2d2e2f20
+                            3132333435363738 393a3b3c3d3e3f30
+                            4142434445464748 494a4b4c4d4e4f40
+                            5152535455565758 595a5b5c5d5e5f50
+                            6162636465666768 696a6b6c6d6e6f60
+                            7172737475767778 797a7b7c7d7e7f70
+                        "
+                    ]
+                }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 fa 00|  "events"=["v 0" "au64x"]}
+                {"document"=|u8x 83 00 94 fa 04 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
+                 "events"=["v 0" "au64x 0102030405060708 090a0b0c0d0e0f00"]}
+                {
+                    "document" = |u8x
+                        83 00 94 fa 1e
+                        08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
+                        18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
+                        28 27 26 25 24 23 22 21 20 2f 2e 2d 2c 2b 2a 29
+                        38 37 36 35 34 33 32 31 30 3f 3e 3d 3c 3b 3a 39
+                        48 47 46 45 44 43 42 41 40 4f 4e 4d 4c 4b 4a 49
+                        58 57 56 55 54 53 52 51 50 5f 5e 5d 5c 5b 5a 59
+                        68 67 66 65 64 63 62 61 60 6f 6e 6d 6c 6b 6a 69
+                        78 77 76 75 74 73 72 71
+                    |
+                    "events" = [
+                        "v 0" "au64x
+                            0102030405060708 090a0b0c0d0e0f00
+                            1112131415161718 191a1b1c1d1e1f10
+                            2122232425262728 292a2b2c2d2e2f20
+                            3132333435363738 393a3b3c3d3e3f30
+                            4142434445464748 494a4b4c4d4e4f40
+                            5152535455565758 595a5b5c5d5e5f50
+                            6162636465666768 696a6b6c6d6e6f60
+                            7172737475767778
+                        "
+                    ]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|           // Incomplete
+                |u8x 83 00 94 fa|        // Incomplete
+                |u8x 83 00 94 fa 02|     // Incomplete
+                |u8x 83 00 94 fa 02 01|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int8 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 00|                 "events"=["v 0" "ai8"]}
+                {"document"=|u8x 83 00 94 05 fe ff 00 01 02|  "events"=["v 0" "ai8 -2 -1 0 1 2"]}
+                {"document"=|u8x 83 00 94 0f f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
+                 "events"=["v 0" "ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|           // Incomplete
+                |u8x 83 00 94 01|        // Incomplete
+                |u8x 83 00 94 03 01 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int8 Array (Long)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 ff 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08|
+                 "events"=["v 0" "ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]}
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 ff 00|                 "events"=["v 0" "ai8"]}
+                {"document"=|u8x 83 00 94 ff 0a fe ff 00 01 02|  "events"=["v 0" "ai8 -2 -1 0 1 2"]}
+                {"document"=|u8x 83 00 94 ff 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
+                 "events"=["v 0" "ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 ff|     // Incomplete
+                |u8x 83 00 94 ff 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int16 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 20|                 "events"=["v 0" "ai16"]}
+                {"document"=|u8x 83 00 94 25 fe ff ff ff 00 00 01 00 02 00|  "events"=["v 0" "ai16 -2 -1 0 1 2"]}
+                {"document"=|u8x 83 00 94 2f f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00|
+                 "events"=["v 0" "ai16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 21|           // Incomplete
+                |u8x 83 00 94 23 01 02 03|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int16 Array (Long)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 fd 20 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00|
+                 "events"=["v 0" "ai16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]}
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 fd 00|                                "events"=["v 0" "ai16"]}
+                {"document"=|u8x 83 00 94 fd 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["v 0" "ai16 -2 -1 0 1 2"]}
+                {"document"=|u8x 83 00 94 fd 1e f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00|
+                 "events"=["v 0" "ai16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 fd|     // Incomplete
+                |u8x 83 00 94 fd 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int32 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 40|                 "events"=["v 0" "ai32"]}
+                {
+                    "document"=|u8x 83 00 94 45 fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00|
+                    "events"=["v 0" "ai32 -2 -1 0 1 2"]
+                }
+                {
+                    "document"=|u8x 
+                        83 00 94 4f
+                        f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
+                        fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
+                        03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
+                    |
+                    "events"=["v 0" "ai32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 41|           // Incomplete
+                |u8x 83 00 94 43 01 02 03|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int32 Array (Long)"
+            "decodeEncode" = [
+                {
+                    "document"=|u8x
+                        83 00 94 fb 20
+                        f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
+                        fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
+                        03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
+                        08 00 00 00
+                    |
+                    "events"=["v 0" "ai32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
+                }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 fb 00|  "events"=["v 0" "ai32"]}
+                {
+                    "document"=|u8x 83 00 94 fb 0a fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00|
+                    "events"=["v 0" "ai32 -2 -1 0 1 2"]
+                }
+                {
+                    "document"=|u8x
+                        83 00 94 fb 1e
+                        f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
+                        fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
+                        03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
+                    |
+                    "events"=["v 0" "ai32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 fb|     // Incomplete
+                |u8x 83 00 94 fb 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int64 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 60|                 "events"=["v 0" "ai64"]}
+                {
+                    "document"=|u8x
+                        83 00 94 65
+                        fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                        00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
+                        02 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "ai64 -2 -1 0 1 2"]
+                }
+                {
+                    "document"=|u8x 
+                        83 00 94 6f
+                        f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
+                        fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
+                        fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff
+                        ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00
+                        01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00
+                        03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00
+                        05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00
+                        07 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "ai64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 61|           // Incomplete
+                |u8x 83 00 94 63 01 02 03|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Int64 Array (Long)"
+            "decodeEncode" = [
+                {
+                    "document"=|u8x
+                        83 00 94 f9 20
+                        f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
+                        fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
+                        fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff
+                        ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00
+                        01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00
+                        03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00
+                        05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00
+                        07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "ai64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
+                }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 f9 00|  "events"=["v 0" "ai64"]}
+                {
+                    "document"=|u8x
+                        83 00 94 f9 0a
+                        fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                        00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
+                        02 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "ai64 -2 -1 0 1 2"]
+                }
+                {
+                    "document"=|u8x
+                        83 00 94 f9 1e
+                        f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
+                        fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
+                        fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff
+                        ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00
+                        01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00
+                        03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00
+                        05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00
+                        07 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "ai64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 f9|     // Incomplete
+                |u8x 83 00 94 f9 02|  // Incomplete
             ]
         }
 
