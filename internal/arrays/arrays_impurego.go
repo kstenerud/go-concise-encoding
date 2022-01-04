@@ -70,6 +70,10 @@ func Int16SliceAsBytes(data []int16) []byte {
 	return int16SliceToBytes(data)
 }
 
+func Float16SliceAsBytes(data []float32) []byte {
+	return float16SliceToBytes(data)
+}
+
 func Uint32SliceAsBytes(data []uint32) []byte {
 	if isLittleEndian {
 		return asBytes(unsafe.Pointer(&data[0]), len(data)*4)
@@ -131,6 +135,10 @@ func BytesToInt16Slice(data []byte) []int16 {
 		return (*[common.AddressSpace / 2]int16)(clonedBytesPtr(data))[:len(data)*2]
 	}
 	return bytesToInt16Slice(data)
+}
+
+func BytesToFloat16Slice(data []byte) []float32 {
+	return bytesToFloat16Slice(data)
 }
 
 func BytesToUint32Slice(data []byte) []uint32 {

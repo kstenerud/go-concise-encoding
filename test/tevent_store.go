@@ -152,7 +152,7 @@ func (h *TEventStore) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	case events.ArrayTypeUint64:
 		h.add(AU64(arrays.BytesToUint64Slice(value)))
 	case events.ArrayTypeFloat16:
-		h.add(AF16(CloneBytes(value)))
+		h.add(AF16(arrays.BytesToFloat16Slice(value)))
 	case events.ArrayTypeFloat32:
 		h.add(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:

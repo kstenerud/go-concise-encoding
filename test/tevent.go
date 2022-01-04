@@ -658,8 +658,7 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		bytes := arrays.Uint64SliceAsBytes(_this.V1.([]uint64))
 		receiver.OnArray(events.ArrayTypeUint64, uint64(len(bytes)/8), bytes)
 	case TEventArrayFloat16:
-		// TODO: How to handle float16 in go code?
-		bytes := _this.V1.([]byte)
+		bytes := arrays.Float16SliceAsBytes(_this.V1.([]float32))
 		receiver.OnArray(events.ArrayTypeFloat16, uint64(len(bytes)/2), bytes)
 	case TEventArrayFloat32:
 		bytes := arrays.Float32SliceAsBytes(_this.V1.([]float32))

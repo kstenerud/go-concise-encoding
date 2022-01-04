@@ -22,8 +22,6 @@ package cte
 
 import (
 	"testing"
-
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // TODO: Remove this when releasing V1
@@ -55,41 +53,41 @@ func TestCTEVersion(t *testing.T) {
 	}
 }
 
-func TestCTEArrayFloat16(t *testing.T) {
-	eOpts := options.DefaultCTEEncoderOptions()
+// func TestCTEArrayFloat16(t *testing.T) {
+// 	eOpts := options.DefaultCTEEncoderOptions()
 
-	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatHexadecimal
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x 1.fep+10 -1.3p-40 1.18p+127 1.18p-126|",
-		BD(), EvV, AF16([]uint8{0xff, 0x44, 0x98, 0xab, 0x0c, 0x7f, 0x8c, 0x00}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x|", BD(), EvV, AF16([]uint8{}), ED())
-	assertDecodeFails(t, "c0\n|f16x -|")
+// 	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatHexadecimal
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x 1.fep+10 -1.3p-40 1.18p+127 1.18p-126|",
+// 		BD(), EvV, AF16([]uint8{0xff, 0x44, 0x98, 0xab, 0x0c, 0x7f, 0x8c, 0x00}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x|", BD(), EvV, AF16([]uint8{}), ED())
+// 	assertDecodeFails(t, "c0\n|f16x -|")
 
-	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatUnset
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 250 -0.25|",
-		BD(), EvV, AF16([]uint8{0x7a, 0x43, 0x80, 0xbe}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16|", BD(), EvV, AF16([]uint8{}), ED())
-	assertDecodeFails(t, "c0\n|f16 -|")
+// 	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatUnset
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 250 -0.25|",
+// 		BD(), EvV, AF16([]uint8{0x7a, 0x43, 0x80, 0xbe}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16|", BD(), EvV, AF16([]uint8{}), ED())
+// 	assertDecodeFails(t, "c0\n|f16 -|")
 
-	assertDecode(t, nil, "c0 |f16 0.25 0x4.dp-30|",
-		BD(), EvV, AF16([]uint8{0x80, 0x3e, 0x9a, 0x31}), ED())
+// 	assertDecode(t, nil, "c0 |f16 0.25 0x4.dp-30|",
+// 		BD(), EvV, AF16([]uint8{0x80, 0x3e, 0x9a, 0x31}), ED())
 
-	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatHexadecimal
-	// TODO: AF16() is broken and needs to take a float32 arg instead
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x nan|", BD(), EvV, AF16([]uint8{0xc1, 0x7f}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x snan|", BD(), EvV, AF16([]uint8{0x81, 0x7f}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x inf|", BD(), EvV, AF16([]uint8{0x80, 0x7f}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x -inf|", BD(), EvV, AF16([]uint8{0x80, 0xff}), ED())
-	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatUnset
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 nan|", BD(), EvV, AF16([]uint8{0xc1, 0x7f}), ED())
-	// assertDecodeEncode(t, nil, eOpts, "c0\n|f16 snan|", BD(), EvV, AF16([]uint8{0x81, 0x7f}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 inf|", BD(), EvV, AF16([]uint8{0x80, 0x7f}), ED())
-	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 -inf|", BD(), EvV, AF16([]uint8{0x80, 0xff}), ED())
+// 	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatHexadecimal
+// 	// TODO: AF16() is broken and needs to take a float32 arg instead
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x nan|", BD(), EvV, AF16([]uint8{0xc1, 0x7f}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x snan|", BD(), EvV, AF16([]uint8{0x81, 0x7f}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x inf|", BD(), EvV, AF16([]uint8{0x80, 0x7f}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16x -inf|", BD(), EvV, AF16([]uint8{0x80, 0xff}), ED())
+// 	eOpts.DefaultFormats.Array.Float16 = options.CTEEncodingFormatUnset
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 nan|", BD(), EvV, AF16([]uint8{0xc1, 0x7f}), ED())
+// 	// assertDecodeEncode(t, nil, eOpts, "c0\n|f16 snan|", BD(), EvV, AF16([]uint8{0x81, 0x7f}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 inf|", BD(), EvV, AF16([]uint8{0x80, 0x7f}), ED())
+// 	assertDecodeEncode(t, nil, eOpts, "c0\n|f16 -inf|", BD(), EvV, AF16([]uint8{0x80, 0xff}), ED())
 
-	assertDecodeFails(t, "c0 |f16 0x1.fep+128|")
-	assertDecodeFails(t, "c0 |f16 0x1.fep-127|")
-	assertDecodeFails(t, "c0 |f16 0x1.fffffffffffffffffffffffff|")
-	assertDecodeFails(t, "c0 |f16 -0x1.fffffffffffffffffffffffff|")
-}
+// 	assertDecodeFails(t, "c0 |f16 0x1.fep+128|")
+// 	assertDecodeFails(t, "c0 |f16 0x1.fep-127|")
+// 	assertDecodeFails(t, "c0 |f16 0x1.fffffffffffffffffffffffff|")
+// 	assertDecodeFails(t, "c0 |f16 -0x1.fffffffffffffffffffffffff|")
+// }
 
 func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}

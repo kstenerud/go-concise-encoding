@@ -30,14 +30,14 @@ func TestCBEArrayFloat16EOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayFloat16, 0x02, 0xfa})
 }
 
-func TestCBEArrayFloat16(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayFloat16 | 1, 0x01, 0x02}, BD(), EvV, AF16([]byte{0x01, 0x02}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayFloat16 | 2, 0xfa, 0x11, 0x9c, 0xff}, BD(), EvV, AF16([]byte{0xfa, 0x11, 0x9c, 0xff}), ED())
+// func TestCBEArrayFloat16(t *testing.T) {
+// 	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayFloat16 | 1, 0x01, 0x02}, BD(), EvV, AF16([]byte{0x01, 0x02}), ED())
+// 	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeShortArrayFloat16 | 2, 0xfa, 0x11, 0x9c, 0xff}, BD(), EvV, AF16([]byte{0xfa, 0x11, 0x9c, 0xff}), ED())
 
-	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeArrayFloat16, 0x20,
-		0xfa, 0x11, 0x9c, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		BD(), EvV, AF16([]byte{0xfa, 0x11, 0x9c, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), ED())
-}
+// 	assertDecodeEncode(t, []byte{header, ceVer, typePlane2, typeArrayFloat16, 0x20,
+// 		0xfa, 0x11, 0x9c, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+// 		BD(), EvV, AF16([]byte{0xfa, 0x11, 0x9c, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), ED())
+// }
 
 func TestCBEArrayFloat32EOF(t *testing.T) {
 	assertDecodeFails(t, []byte{header, ceVer, typePlane2, typeArrayFloat32, 0x02, 1})

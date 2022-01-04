@@ -77,6 +77,16 @@ func bytesToInt32Slice(data []byte) []int32 {
 	return result
 }
 
+func bytesToFloat16Slice(data []byte) []float32 {
+	length := len(data) / 2
+	result := make([]float32, length)
+	for i := 0; i < length; i++ {
+		result[i] = math.Float32frombits(uint32(uint32(data[i*2])<<16 |
+			uint32(data[i*2+1])<<24))
+	}
+	return result
+}
+
 func bytesToFloat32Slice(data []byte) []float32 {
 	length := len(data) / 4
 	result := make([]float32, length)
@@ -162,6 +172,17 @@ func int16SliceToBytes(data []int16) []byte {
 	for i, v := range data {
 		result[i*2] = byte(v)
 		result[i*2+1] = byte(v >> 8)
+	}
+	return result
+}
+
+func float16SliceToBytes(data []float32) []byte {
+	length := len(data) * 2
+	result := make([]byte, length)
+	for i, v := range data {
+		f := math.Float32bits(v)
+		result[i*2] = byte(f >> 16)
+		result[i*2+1] = byte(f >> 24)
 	}
 	return result
 }

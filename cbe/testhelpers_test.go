@@ -197,7 +197,7 @@ func AI8(v []int8) *test.TEvent              { return test.AI8(v) }
 func AI16(v []int16) *test.TEvent            { return test.AI16(v) }
 func AI32(v []int32) *test.TEvent            { return test.AI32(v) }
 func AI64(v []int64) *test.TEvent            { return test.AI64(v) }
-func AF16(v []byte) *test.TEvent             { return test.AF16(v) }
+func AF16(v []float32) *test.TEvent          { return test.AF16(v) }
 func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
 func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
 func SB() *test.TEvent                       { return test.SB() }

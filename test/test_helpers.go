@@ -401,7 +401,7 @@ var (
 	EvAI32B   = AI32B()
 	EvAI64    = AI64([]int64{1})
 	EvAI64B   = AI64B()
-	EvAF16    = AF16([]byte{1, 2})
+	EvAF16    = AF16([]float32{1})
 	EvAF16B   = AF16B()
 	EvAF32    = AF32([]float32{1})
 	EvAF32B   = AF32B()
@@ -769,7 +769,7 @@ func AU8(v []byte) *TEvent              { return NewTEvent(TEventArrayUint8, v, 
 func AU16(v []uint16) *TEvent           { return NewTEvent(TEventArrayUint16, v, nil) }
 func AU32(v []uint32) *TEvent           { return NewTEvent(TEventArrayUint32, v, nil) }
 func AU64(v []uint64) *TEvent           { return NewTEvent(TEventArrayUint64, v, nil) }
-func AF16(v []byte) *TEvent             { return NewTEvent(TEventArrayFloat16, v, nil) }
+func AF16(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat16, v, nil) }
 func AF32(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat32, v, nil) }
 func AF64(v []float64) *TEvent          { return NewTEvent(TEventArrayFloat64, v, nil) }
 func AU(v [][]byte) *TEvent             { return NewTEvent(TEventArrayUID, v, nil) }

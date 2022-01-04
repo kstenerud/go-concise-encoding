@@ -1154,5 +1154,43 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "Float16 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 70|              "events"=["v 0" "af16"]}
+                {"document"=|u8x 83 00 94 72 a8 40 fc b5|  "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
+                {"document"=|u8x 83 00 94 7f a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f 00 00 00 80 80 7f 80 ff 00 00 00 00 00 00|
+                 "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 71|           // Incomplete
+                |u8x 83 00 94 72 01 02 03|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Float16 Array (Long)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 f8 20 a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f 00 00 00 80 80 7f 80 ff 00 00 00 00 00 00 00 00|
+                 "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0 0"]}
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 f8 00|              "events"=["v 0" "af16"]}
+                {"document"=|u8x 83 00 94 f8 04 a8 40 fc b5|  "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
+                {"document"=|u8x 83 00 94 f8 1e a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f 00 00 00 80 80 7f 80 ff 00 00 00 00 00 00|
+                 "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 f8|     // Incomplete
+                |u8x 83 00 94 f8 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

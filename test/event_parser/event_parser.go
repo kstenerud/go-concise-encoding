@@ -340,18 +340,31 @@ func parseIntHex(bytes []byte) interface{} {
 	return sign * int64(value)
 }
 
-func parseFloat(bytes []byte) interface{} {
-	nanBits := math.Float64bits(math.NaN())
-	signalingNan := math.Float64frombits(nanBits & ^uint64(1<<50))
-	if string(bytes) == "snan" {
+var signalingNan = math.Float64frombits(math.Float64bits(math.NaN()) & ^uint64(1<<50))
+
+func parseFloatFromString(str string) float64 {
+	if str == "snan" {
 		return signalingNan
 	}
 
-	value, err := strconv.ParseFloat(string(bytes), 64)
+	value, err := strconv.ParseFloat(str, 64)
 	if err != nil {
-		panic(fmt.Errorf("error parsing float [%v]: %w", string(bytes), err))
+		panic(fmt.Errorf("error parsing float [%v]: %w", str, err))
 	}
 	return value
+}
+
+func parseFloat(bytes []byte) interface{} {
+	return parseFloatFromString(string(bytes))
+}
+
+func parseFloat32(bytes []byte) interface{} {
+	f64 := parseFloatFromString(string(bytes))
+	f32 := float32(f64)
+	if f64 == signalingNan {
+		f32 = common.Float32SignalingNan
+	}
+	return f32
 }
 
 var uuidMatcher = regexp.MustCompile(`^([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})`)
@@ -583,10 +596,6 @@ func parseBitArrayEvent(eventStr string) *test.TEvent {
 		array)
 }
 
-func parseFloat16ArrayEvent(eventStr string) *test.TEvent {
-	panic("TODO: parseFloat16ArrayEvent")
-}
-
 func newArrayParser(elemType reflect.Type, elementParser eventParamParser) eventParamParser {
 	var typeAppropriate func(src interface{}) reflect.Value
 	switch elemType.Kind() {
@@ -679,8 +688,8 @@ func init() {
 	eventParsersByName["au32x"] = newParser(true, test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUintHex)).ParseEvent
 	eventParsersByName["au64"] = newParser(true, test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUint)).ParseEvent
 	eventParsersByName["au64x"] = newParser(true, test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUintHex)).ParseEvent
-	eventParsersByName["af16"] = parseFloat16ArrayEvent
-	eventParsersByName["af32"] = newParser(true, test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat)).ParseEvent
+	eventParsersByName["af16"] = newParser(true, test.TEventArrayFloat16, newArrayParser(reflect.TypeOf(float32(0)), parseFloat32)).ParseEvent
+	eventParsersByName["af32"] = newParser(true, test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat32)).ParseEvent
 	eventParsersByName["af64"] = newParser(true, test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat)).ParseEvent
 	eventParsersByName["au"] = newParser(true, test.TEventArrayUID, newArrayParser(reflect.TypeOf([]byte{}), parseUUID)).ParseEvent
 	eventParsersByName["sb"] = newParser(false, test.TEventStringBegin).ParseEvent

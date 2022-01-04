@@ -29,6 +29,8 @@ func Uint16SliceAsBytes(data []uint16) []byte { return uint16SliceToBytes(data) 
 
 func Int16SliceAsBytes(data []int16) []byte { return int16SliceToBytes(data) }
 
+func Float16SliceAsBytes(data []float32) []byte { return float16SliceToBytes(data) }
+
 func Uint32SliceAsBytes(data []uint32) []byte { return uint32SliceToBytes(data) }
 
 func Int32SliceAsBytes(data []int32) []byte { return int32SliceToBytes(data) }
@@ -46,6 +48,8 @@ func BytesToInt8Slice(data []byte) []int8 { return bytesToInt8Slice(data) }
 func BytesToUint16Slice(data []byte) []uint16 { return bytesToUint16Slice(data) }
 
 func BytesToInt16Slice(data []byte) []int16 { return bytesToInt16Slice(data) }
+
+func BytesToFloat16Slice(data []byte) []float32 { return bytesToFloat16Slice(data) }
 
 func BytesToUint32Slice(data []byte) []uint32 { return bytesToUint32Slice(data) }
 

@@ -180,7 +180,7 @@ func (h *TEventPrinter) OnArray(arrayType events.ArrayType, elementCount uint64,
 	case events.ArrayTypeUint64:
 		h.Print(AU64(arrays.BytesToUint64Slice(value)))
 	case events.ArrayTypeFloat16:
-		h.Print(AF16(value))
+		h.Print(AF16(arrays.BytesToFloat16Slice(value)))
 	case events.ArrayTypeFloat32:
 		h.Print(AF32(arrays.BytesToFloat32Slice(value)))
 	case events.ArrayTypeFloat64:
