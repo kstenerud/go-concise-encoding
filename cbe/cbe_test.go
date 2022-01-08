@@ -59,23 +59,6 @@ func TestCBEContainers(t *testing.T) {
 		E(), ED())
 }
 
-func TestCBEMultipartArray(t *testing.T) {
-	assertDecode(t, nil, []byte{header, ceVer, typeString, 0x03, 'a', 0x02, 'b'}, BD(), EvV, SB(), AC(1, true), AD([]byte{'a'}), AC(1, false), AD([]byte{'b'}), ED())
-	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeArrayUint16, 0x03, 0x01, 0x02, 0x02, 0x03, 0x04}, BD(), EvV, AU16B(), AC(1, true), AD([]byte{0x01, 0x02}), AC(1, false), AD([]byte{0x03, 0x04}), ED())
-}
-
-func TestCBEChunkedArray(t *testing.T) {
-	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(nil)
-	encoder.PrepareToEncode(buffer)
-	InvokeEvents(encoder, EvV, AU16B(), AC(2, true), AD([]byte{1, 0, 2, 0}), AC(2, false), AD([]byte{3, 0, 4, 0}), ED())
-
-	expected := []byte{header, ceVer, typePlane2, typeArrayUint16, 0x05, 1, 0, 2, 0, 0x04, 3, 0, 4, 0}
-	if !reflect.DeepEqual(buffer.Bytes(), expected) {
-		t.Errorf("Expected first buffer %v but got %v", expected, buffer.Bytes())
-	}
-}
-
 func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
@@ -103,10 +86,6 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 
 func TestRemoteReference(t *testing.T) {
 	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeRemoteRef, 0x02, 'a'}, BD(), EvV, RREF("a"), ED())
-}
-
-func TestMultichunk(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeString, 0x03, 'a', 0}, BD(), EvV, SB(), AC(1, true), AD([]byte{'a'}), AC(0, false), ED())
 }
 
 func TestEdge(t *testing.T) {
