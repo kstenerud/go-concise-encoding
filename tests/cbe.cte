@@ -647,6 +647,30 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
+            "name" = "Remote Reference"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 e0 00|        "events"=["v 0" "rref "]}
+                {"document"=|u8x 83 00 94 e0 02 61|        "events"=["v 0" "rref a"]}
+                {"document"=|u8x 83 00 94 e0 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                 "events"=["v 0" "rref https://concise-encoding.org/"]}
+            ]
+            "decode" = [
+                {
+                    "document"=|u8x 83 00 94 e0 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "events"=["v 0" "rrb" "acm 1" "at h" "acl 28" "at ttps://concise-encoding.org/"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94 e0 01|        // Incomplete
+                |u8x 83 00 94 e0 02|        // Incomplete
+                |u8x 83 00 94 e0 04 40|     // Incomplete
+                |u8x 83 00 94 e0 05 40 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
             "name" = "Custom Binary"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 92 06 01 02 03|  "events"=["v 0" "cb 01 02 03"]}
@@ -1762,6 +1786,37 @@ Nobody knows, Particle man#"]}
                 |u8x 83 00 96|        // Incomplete
                 |u8x 83 00 96 02|     // Incomplete
                 |u8x 83 00 96 20 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Media"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 e1 06 61 2f 61 00|  "events"=["v 0" "mb" "acl 3" "at a/a" "acl 0"]}
+                {
+                    "document"=|u8x 83 00 94 e1 20 61 70 70 6c 69 63 61 74
+                        69 6f 6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f
+                        73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77
+                        6f 72 6c 64 0a
+                    |
+                    "events"=[
+                        "v 0" "mb"
+                        "acl 16"
+                        "at application/x-sh"
+                        "acl 28"
+                        "ad 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
+                    ]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94 e1|              // Incomplete
+                |u8x 83 00 94 e1 06|           // Incomplete
+                |u8x 83 00 94 e1 06 61|        // Incomplete
+                |u8x 83 00 94 e1 06 61 2f|     // Incomplete
+                |u8x 83 00 94 e1 06 61 2f 61|  // Incomplete
+                // TODO: Naming rules. Must be in the form "a/b"
             ]
         }
 

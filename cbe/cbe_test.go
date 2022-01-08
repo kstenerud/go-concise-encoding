@@ -84,10 +84,6 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	assertMarshalUnmarshal(t, v, []byte{header, ceVer, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
 }
 
-func TestRemoteReference(t *testing.T) {
-	assertDecode(t, nil, []byte{header, ceVer, typePlane2, typeRemoteRef, 0x02, 'a'}, BD(), EvV, RREF("a"), ED())
-}
-
 func TestEdge(t *testing.T) {
 	assertDecodeEncode(t,
 		[]byte{header, ceVer, typeEdge, typeRID, 0x02, 'a', typeRID, 0x02, 'b', 1},
@@ -100,10 +96,4 @@ func TestNode(t *testing.T) {
 			typeNode, typeNull, typeString1, 'a', typeRID, 0x02, 'b',
 			typeNode, typeNull, typeEndContainer, typeEndContainer},
 		BD(), EvV, NODE(), NULL(), S("a"), RID("b"), NODE(), NULL(), E(), E(), ED())
-}
-
-func TestMedia(t *testing.T) {
-	assertDecodeEncode(t,
-		[]byte{header, ceVer, typePlane2, typeMedia, 0x02, 'a', 0x00},
-		BD(), EvV, MB(), AC(1, false), AD([]byte("a")), AC(0, false), ED())
 }
