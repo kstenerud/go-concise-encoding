@@ -35,24 +35,6 @@ func TestCBEReference(t *testing.T) {
 		BD(), EvV, L(), MARK("x"), S("a"), REF("x"), E(), ED())
 }
 
-func TestCBEContainers(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeList, 1,
-		typeList, typeString1, 'a', typeEndContainer,
-		typeMap, typeString1, 'a', 100, typeEndContainer,
-		typeMarkup, 1, 'a', typeString1, 'a', 50, typeEndContainer, typeString1, 'a', typeEndContainer,
-		typeNode, typeTrue, 1, typeEndContainer,
-		typeEdge, 1, 2, 3,
-		typeEndContainer,
-	},
-		BD(), EvV, L(), I(1),
-		L(), S("a"), E(),
-		M(), S("a"), I(100), E(),
-		MUP("a"), S("a"), I(50), E(), S("a"), E(),
-		NODE(), TT(), I(1), E(),
-		EDGE(), I(1), I(2), I(3),
-		E(), ED())
-}
-
 func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
