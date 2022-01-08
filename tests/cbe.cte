@@ -1192,5 +1192,141 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "Float32 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 80|              "events"=["v 0" "af32"]}
+                {"document"=|u8x 83 00 94 82 00 c8 fc b5 00 b1 48 d0|
+                 "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30"]}
+                {
+                    "document"=|u8x
+                        83 00 94 8f
+                        00 c8 fc b5 00 b1 48 d0
+                        01 00 cf ff 01 00 cf 7f 01 ff cf ff
+                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff
+                        00 00 00 00 00 00 00 80
+                        00 00 80 7f 00 00 80 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 81 00 00 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Float32 Array (Long)"
+            "decodeEncode" = [
+                {
+                    "document"=|u8x
+                        83 00 94 f7 20
+                        00 c8 fc b5 00 b1 48 d0
+                        01 00 cf ff 01 00 cf 7f 01 ff cf ff
+                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff
+                        00 00 00 00 00 00 00 80
+                        00 00 80 7f 00 00 80 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0 0"]
+                 }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 f7 00|              "events"=["v 0" "af32"]}
+                {"document"=|u8x 83 00 94 f7 04 00 c8 fc b5 00 b1 48 d0|  "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30"]}
+                {
+                    "document"=|u8x
+                        83 00 94 f7 1e
+                        00 c8 fc b5 00 b1 48 d0
+                        01 00 cf ff 01 00 cf 7f 01 ff cf ff
+                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff
+                        00 00 00 00 00 00 00 80
+                        00 00 80 7f 00 00 80 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 f7|     // Incomplete
+                |u8x 83 00 94 f7 02|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Float64 Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 90|              "events"=["v 0" "af64"]}
+                {"document"=|u8x 83 00 94 92 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
+                 "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]}
+                {
+                    "document"=|u8x
+                        83 00 94 9f
+                        00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
+                        01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
+                        01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+                        00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 91 00 00 00 00 00 00 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Float64 Array (Long)"
+            "decodeEncode" = [
+                {
+                    "document"=|u8x
+                        83 00 94 f6 20
+                        00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
+                        01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
+                        01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+                        00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0 0"]
+                 }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 f6 00|              "events"=["v 0" "af64"]}
+                {"document"=|u8x 83 00 94 f6 04 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|  "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]}
+                {
+                    "document"=|u8x
+                        83 00 94 f6 1e
+                        00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
+                        01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
+                        01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+                        00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                    |
+                    "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 f6|     // Incomplete
+                |u8x 83 00 94 f6 02|  // Incomplete
+                |u8x 83 00 94 f6 02 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
