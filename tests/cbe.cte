@@ -1491,5 +1491,23 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "Bit Array"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 96 00|  "events"=["v 0" "ab"]}
+                {"document"=|u8x 83 00 96 02 01|  "events"=["v 0" "ab 1"]}
+                {"document"=|u8x 83 00 96 04 01|  "events"=["v 0" "ab 10"]}
+                {"document"=|u8x 83 00 96 06 05|  "events"=["v 0" "ab 101"]}
+                {"document"=|u8x 83 00 96 3e 4d 29 6b 52|  "events"=["v 0" "ab 1011001010010100110101100100101"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 96|        // Incomplete
+                |u8x 83 00 96 02|     // Incomplete
+                |u8x 83 00 96 20 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

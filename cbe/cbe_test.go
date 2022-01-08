@@ -26,16 +26,6 @@ import (
 	"testing"
 )
 
-func TestCBEArrayBitEOF(t *testing.T) {
-	assertDecodeFails(t, []byte{header, ceVer, typeArrayBit, 0x12, 0x00})
-}
-
-func TestCBEArrayBit(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeArrayBit, 0x02, 0x01}, BD(), EvV, AB(1, []byte{0x01}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeArrayBit, 0x08, 0x03}, BD(), EvV, AB(4, []byte{0x03}), ED())
-	assertDecodeEncode(t, []byte{header, ceVer, typeArrayBit, 0x26, 0xfe, 0xc1, 0x03}, BD(), EvV, AB(19, []byte{0xfe, 0xc1, 0x03}), ED())
-}
-
 func TestCBEMarker(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, 'x', typeString1, 'a'}, BD(), EvV, MARK("x"), S("a"), ED())
 }
