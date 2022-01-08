@@ -26,15 +26,6 @@ import (
 	"testing"
 )
 
-func TestCBEMarker(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, 'x', typeString1, 'a'}, BD(), EvV, MARK("x"), S("a"), ED())
-}
-
-func TestCBEReference(t *testing.T) {
-	assertDecodeEncode(t, []byte{header, ceVer, typeList, typeMarker, 1, 'x', typeString1, 'a', typeReference, 1, 'x', typeEndContainer},
-		BD(), EvV, L(), MARK("x"), S("a"), REF("x"), E(), ED())
-}
-
 func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
@@ -45,7 +36,7 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 	encoder.PrepareToEncode(buffer2)
 	InvokeEvents(encoder, EvV, M(), E(), ED())
 
-	expected := []byte{header, ceVer, typeMap, typeEndContainer}
+	expected := []byte{0x83, 0x00, 0x79, 0x7b}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {
 		t.Errorf("Expected first buffer %v but got %v", expected, buffer.Bytes())
 	}
@@ -57,5 +48,5 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
 	v := []interface{}{sl, sl, sl}
-	assertMarshalUnmarshal(t, v, []byte{header, ceVer, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
+	assertMarshalUnmarshal(t, v, []byte{0x83, 0x00, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
 }

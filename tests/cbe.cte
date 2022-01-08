@@ -2214,5 +2214,66 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "Marker Reference"
+            "decodeEncode" = [
+                { // Backward ref
+                    "document"=|u8x
+                        83 00
+                        7a
+                            97 01 61 01
+                            98 01 61
+                        7b
+                    |
+                    "events"=[
+                        "v 0"
+                        "l"
+                            "mark a" "n 1"
+                            "ref a"
+                        "e"
+                    ]
+                }
+                { // Forward ref
+                    "document"=|u8x
+                        83 00
+                        7a
+                            98 01 61
+                            97 01 61 01
+                        7b
+                    |
+                    "events"=[
+                        "v 0"
+                        "l"
+                            "ref a"
+                            "mark a" "n 1"
+                        "e"
+                    ]
+                }
+                { // Recursive ref
+                    "document"=|u8x
+                        83 00
+                        97 01 61 7a
+                            01
+                            98 01 61
+                        7b
+                    |
+                    "events"=[
+                        "v 0"
+                        "mark a" "l"
+                            "n 1"
+                            "ref a"
+                        "e"
+                    ]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 97|          // Incomplete
+                |u8x 83 00 97 01|       // Incomplete
+                |u8x 83 00 97 01 61|    // ID not found
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }

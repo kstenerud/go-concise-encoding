@@ -21,9 +21,7 @@
 package cbe
 
 import (
-	"bytes"
 	"math/big"
-	"net/url"
 	"testing"
 	"time"
 
@@ -31,140 +29,12 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/events"
-	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
-	"github.com/kstenerud/go-concise-encoding/version"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
 
 var EvV = test.EvV
-
-const (
-	header = 0x83
-	ceVer  = version.ConciseEncodingVersion
-
-	typeDecimal      = 0x65
-	typePosInt       = 0x66
-	typeNegInt       = 0x67
-	typePosInt8      = 0x68
-	typeNegInt8      = 0x69
-	typePosInt16     = 0x6a
-	typeNegInt16     = 0x6b
-	typePosInt32     = 0x6c
-	typeNegInt32     = 0x6d
-	typePosInt64     = 0x6e
-	typeNegInt64     = 0x6f
-	typeFloat16      = 0x70
-	typeFloat32      = 0x71
-	typeFloat64      = 0x72
-	typeUID          = 0x73
-	typeEdge         = 0x76
-	typeNode         = 0x77
-	typeMarkup       = 0x78
-	typeMap          = 0x79
-	typeList         = 0x7a
-	typeEndContainer = 0x7b
-	typeFalse        = 0x7c
-	typeTrue         = 0x7d
-	typeNull         = 0x7e
-	typePadding      = 0x7f
-	typeString0      = 0x80
-	typeString1      = 0x81
-	typeString2      = 0x82
-	typeString3      = 0x83
-	typeString4      = 0x84
-	typeString5      = 0x85
-	typeString6      = 0x86
-	typeString7      = 0x87
-	typeString8      = 0x88
-	typeString9      = 0x89
-	typeString10     = 0x8a
-	typeString11     = 0x8b
-	typeString12     = 0x8c
-	typeString13     = 0x8d
-	typeString14     = 0x8e
-	typeString15     = 0x8f
-	typeString       = 0x90
-	typeRID          = 0x91
-	typeCustomBinary = 0x92
-	typeCustomText   = 0x93
-	typePlane2       = 0x94
-	typeArrayUint8   = 0x95
-	typeArrayBit     = 0x96
-	typeMarker       = 0x97
-	typeReference    = 0x98
-	typeDate         = 0x99
-	typeTime         = 0x9a
-	typeTimestamp    = 0x9b
-
-	typeShortArrayInt8    = 0x00
-	typeShortArrayUint16  = 0x10
-	typeShortArrayInt16   = 0x20
-	typeShortArrayUint32  = 0x30
-	typeShortArrayInt32   = 0x40
-	typeShortArrayUint64  = 0x50
-	typeShortArrayInt64   = 0x60
-	typeShortArrayFloat16 = 0x70
-	typeShortArrayFloat32 = 0x80
-	typeShortArrayFloat64 = 0x90
-	typeShortArrayUID     = 0xa0
-
-	typeRemoteRef    = 0xe0
-	typeMedia        = 0xe1
-	typeArrayInt8    = 0xff
-	typeArrayUint16  = 0xfe
-	typeArrayInt16   = 0xfd
-	typeArrayUint32  = 0xfc
-	typeArrayInt32   = 0xfb
-	typeArrayUint64  = 0xfa
-	typeArrayInt64   = 0xf9
-	typeArrayFloat16 = 0xf8
-	typeArrayFloat32 = 0xf7
-	typeArrayFloat64 = 0xf6
-	typeArrayUID     = 0xf5
-)
-
-func NewBigInt(str string) *big.Int {
-	return test.NewBigInt(str)
-}
-
-func NewBigFloat(str string) *big.Float {
-	return test.NewBigFloat(str)
-}
-
-func NewDFloat(str string) compact_float.DFloat {
-	return test.NewDFloat(str)
-}
-
-func NewBDF(str string) *apd.Decimal {
-	return test.NewBDF(str)
-}
-
-func NewRID(RIDString string) *url.URL {
-	return test.NewRID(RIDString)
-}
-
-func NewDate(year, month, day int) compact_time.Time {
-	return test.NewDate(year, month, day)
-}
-
-func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
-	return test.NewTime(hour, minute, second, nanosecond, areaLocation)
-}
-
-func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
-	return test.NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
-}
-
-func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
-	return test.NewTS(year, month, day, hour, minute, second, nanosecond, areaLocation)
-}
-
-func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
-	return test.NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
-}
 
 func TT() *test.TEvent                       { return test.TT() }
 func FF() *test.TEvent                       { return test.FF() }
@@ -238,70 +108,6 @@ func InvokeEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
 }
 
 var DebugPrintEvents = false
-
-func decodeToEvents(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
-	var topLevelReceiver events.DataEventReceiver
-	ter := test.NewTEventStore(events.NewNullEventReceiver())
-	topLevelReceiver = rules.NewRules(ter, nil)
-	if DebugPrintEvents {
-		topLevelReceiver = test.NewStdoutTEventPrinter(topLevelReceiver)
-	}
-	err = NewDecoder(opts).Decode(bytes.NewBuffer(document), topLevelReceiver)
-	evts = ter.Events
-	return
-}
-
-func encodeEvents(opts *options.CBEEncoderOptions, events ...*test.TEvent) []byte {
-	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(opts)
-	encoder.PrepareToEncode(buffer)
-	receiver := rules.NewRules(encoder, nil)
-	test.InvokeEvents(receiver, events...)
-	return buffer.Bytes()
-}
-
-func assertDecode(t *testing.T, opts *options.CEDecoderOptions, document []byte, expectedEvents ...*test.TEvent) (successful bool, events []*test.TEvent) {
-	actualEvents, err := decodeToEvents(opts, document)
-	if err != nil {
-		t.Errorf("Error [%v] while decoding %v", err, describe.D(document))
-		return
-	}
-
-	if len(expectedEvents) > 0 {
-		if !equivalence.IsEquivalent(actualEvents, expectedEvents) {
-			t.Errorf("Expected document %v to decode to events %v but got %v", describe.D(document), expectedEvents, actualEvents)
-			return
-		}
-	}
-	events = actualEvents
-	successful = true
-	return
-}
-
-func assertDecodeFails(t *testing.T, document []byte) {
-	_, err := decodeToEvents(nil, document)
-	if err == nil {
-		t.Errorf("Expected decode to fail in document %v", describe.D(document))
-	}
-}
-
-func assertEncode(t *testing.T, opts *options.CBEEncoderOptions, expectedDocument []byte, events ...*test.TEvent) (successful bool) {
-	actualDocument := encodeEvents(opts, events...)
-	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
-		t.Errorf("Expected encoded document %v but got %v after sending events %v", describe.D(expectedDocument), describe.D(actualDocument), events)
-		return
-	}
-	successful = true
-	return
-}
-
-func assertDecodeEncode(t *testing.T, document []byte, expectedEvents ...*test.TEvent) (successful bool) {
-	successful, actualEvents := assertDecode(t, nil, document, expectedEvents...)
-	if !successful {
-		return
-	}
-	return assertEncode(t, nil, document, actualEvents...)
-}
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (successful bool) {
 	document, err := NewMarshaler(nil).MarshalToDocument(value)
