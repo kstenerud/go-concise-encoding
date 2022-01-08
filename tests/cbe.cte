@@ -2002,5 +2002,37 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "Edge"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 76 00 00 00|              "events"=["v 0" "edge" "n 0" "n 0" "n 0"]}
+                {"document"=|u8x 83 00 76 91 02 61 7e 91 02 62|  "events"=["v 0" "edge" "rid a" "null" "rid b"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 76|           // Unterminated
+                |u8x 83 00 76 00|        // Unterminated
+                |u8x 83 00 76 00 00|     // Unterminated
+                |u8x 83 00 76 7e 00 00|  // Invalid source
+                |u8x 83 00 76 00 00 7e|  // Invalid destination
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Node"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 77 00 7b|              "events"=["v 0" "node" "n 0" "e"]}
+                {"document"=|u8x 83 00 77 00 77 81 61 7b 7b|  "events"=["v 0" "node" "n 0" "node" "s a" "e" "e"]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 77|           // Unterminated
+                |u8x 83 00 77 01|        // Unterminated
+                |u8x 83 00 77 7b|        // Missing value
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
