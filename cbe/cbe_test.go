@@ -36,10 +36,6 @@ func TestCBEArrayBit(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeArrayBit, 0x26, 0xfe, 0xc1, 0x03}, BD(), EvV, AB(19, []byte{0xfe, 0xc1, 0x03}), ED())
 }
 
-func TestCBEArrayUID(t *testing.T) {
-	// TODO: TestCBEArrayUID
-}
-
 func TestCBEMarker(t *testing.T) {
 	assertDecodeEncode(t, []byte{header, ceVer, typeMarker, 1, 'x', typeString1, 'a'}, BD(), EvV, MARK("x"), S("a"), ED())
 }

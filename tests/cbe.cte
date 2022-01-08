@@ -1328,5 +1328,168 @@ Nobody knows, Particle man#"]}
 
         // ====================================================================
 
+        {
+            "name" = "UID Array (Short)"
+            "decodeEncode" = [
+                {"document"=|u8x 83 00 94 a0|              "events"=["v 0" "au"]}
+                {
+                    "document"=|u8x
+                        83 00 94 a2
+                        2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
+                        2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
+                    |
+                    "events"=["v 0" "au
+                        2db68748-707f-11ec-959e-6f943cbabf82
+                        2db6b6a0-707f-11ec-aca8-4fceb7fca666
+                    "]
+                }
+                {
+                    "document"=|u8x
+                        83 00 94 af
+                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
+                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                    |
+                    "events"=["v 0" "au
+                        836f3554-707f-11ec-a6a1-6f76dee406ec
+                        836f6466-707f-11ec-a425-335b61d32dfc
+                        836f9198-707f-11ec-a1d5-9b6bce592067
+                        836fc032-707f-11ec-9aab-13947004ca3a
+                        836ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        83701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8370482c-707f-11ec-a05a-8bf071944e58
+                        837073ce-707f-11ec-b1ba-67eddde89cc7
+                        8370a722-707f-11ec-9e1e-db4c4ba4166d
+                        8370dbe8-707f-11ec-b847-5b92031104ff
+                        83711bbc-707f-11ec-9e07-ffd7def4c924
+                        83714dd0-707f-11ec-a3a6-334fbbbeb811
+                        83717b02-707f-11ec-8587-ff7c836240f2
+                        8371a866-707f-11ec-b1f9-9b1f8586fae4
+                        8371d732-707f-11ec-b679-9f0d9e42a6f0
+                    "]}
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|              // Incomplete
+                |u8x 83 00 94 a1|           // Incomplete
+                |u8x 83 00 94 a2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "UID Array (Long)"
+            "decodeEncode" = [
+                {
+                    "document"=|u8x
+                        83 00 94 f5 20
+                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
+                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        e3 db 8a b4 70 7f 11 ec b9 a7 9f b7 52 e6 24 8a
+                    |
+                    "events"=["v 0" "au
+                        836f3554-707f-11ec-a6a1-6f76dee406ec
+                        836f6466-707f-11ec-a425-335b61d32dfc
+                        836f9198-707f-11ec-a1d5-9b6bce592067
+                        836fc032-707f-11ec-9aab-13947004ca3a
+                        836ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        83701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8370482c-707f-11ec-a05a-8bf071944e58
+                        837073ce-707f-11ec-b1ba-67eddde89cc7
+                        8370a722-707f-11ec-9e1e-db4c4ba4166d
+                        8370dbe8-707f-11ec-b847-5b92031104ff
+                        83711bbc-707f-11ec-9e07-ffd7def4c924
+                        83714dd0-707f-11ec-a3a6-334fbbbeb811
+                        83717b02-707f-11ec-8587-ff7c836240f2
+                        8371a866-707f-11ec-b1f9-9b1f8586fae4
+                        8371d732-707f-11ec-b679-9f0d9e42a6f0
+                        e3db8ab4-707f-11ec-b9a7-9fb752e6248a
+                    "]
+                 }
+            ]
+            "decode" = [
+                {"document"=|u8x 83 00 94 f5 00|              "events"=["v 0" "au"]}
+                {
+                    "document"=|u8x
+                        83 00 94 f5 04
+                        2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
+                        2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
+                    |
+                    "events"=["v 0" "au
+                        2db68748-707f-11ec-959e-6f943cbabf82
+                        2db6b6a0-707f-11ec-aca8-4fceb7fca666
+                    "]}
+                {
+                    "document"=|u8x
+                        83 00 94 f5 1e
+                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
+                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                    |
+                    "events"=["v 0" "au
+                        836f3554-707f-11ec-a6a1-6f76dee406ec
+                        836f6466-707f-11ec-a425-335b61d32dfc
+                        836f9198-707f-11ec-a1d5-9b6bce592067
+                        836fc032-707f-11ec-9aab-13947004ca3a
+                        836ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        83701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8370482c-707f-11ec-a05a-8bf071944e58
+                        837073ce-707f-11ec-b1ba-67eddde89cc7
+                        8370a722-707f-11ec-9e1e-db4c4ba4166d
+                        8370dbe8-707f-11ec-b847-5b92031104ff
+                        83711bbc-707f-11ec-9e07-ffd7def4c924
+                        83714dd0-707f-11ec-a3a6-334fbbbeb811
+                        83717b02-707f-11ec-8587-ff7c836240f2
+                        8371a866-707f-11ec-b1f9-9b1f8586fae4
+                        8371d732-707f-11ec-b679-9f0d9e42a6f0
+                    "]
+                }
+            ]
+            "decodeFail" = [
+                |u8x 83 00 94|        // Incomplete
+                |u8x 83 00 94 f5|     // Incomplete
+                |u8x 83 00 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
     ]
 }
