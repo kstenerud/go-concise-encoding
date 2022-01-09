@@ -13,9 +13,11 @@ c0
     "cteTests" = [
         {
             "name" = "Version specifier"
-            "encodeDecode" = [
-                {"events"=["v 0" "n 1"]  "document"="c0\n1"}
-            ]
+
+            // TODO: Version 0 becomes invalid after v1 is released
+            "encodeDecode" = [{"document"="c0\n1" "events"=["v 0" "n 1"]}]
+            "decode" =       [{"document"="c1\n1" "events"=["v 0" "n 1"]}]
+
             "decodeEncode" = [
                 {"document"="c0 1"           "events"=["v 0" "n 1"]}
                 {"document"="C0 1"           "events"=["v 0" "n 1"]}
@@ -33,6 +35,7 @@ c0
             "decodeFail" = [
                 "c0{}"  // Missing whitespace
                 "c2 1"  // Future version number
+                // "c0 1"  // V0 not valid after v1 released
                 "c-1 1" // Bad version number
                 "ca 1"  // Bad version number
                 "d0 1"  // Bad first char
@@ -692,6 +695,20 @@ c0
             "name" = "String"
             "encodeDecode" = [
                 {"events"=["v 0" "s this is a string"]  "document"="c0\n\"this is a string\""}
+                {
+                    "events"=["v 0" "s \
+                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
+                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
+                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
+                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
+                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
+                    "document"="c0\n\"\
+                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
+                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
+                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
+                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
+                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun\""
+                }
             ]
             "decodeEncode" = [
                 {"document"="\.~ c0 "test test"~"            "events"=["v 0" "s test test"]}

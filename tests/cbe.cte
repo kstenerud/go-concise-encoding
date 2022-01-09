@@ -26,8 +26,8 @@ c0
             ]
 
             "decodeFail" = [
-                // |u8x 83 00 7e|
-                |u8x 83 02 7e|
+                // |u8x 83 00 7e| // V0 not valid after v1 released
+                |u8x 83 02 7e| // V2 not valid because not released yet
             ]
         }
 
@@ -565,6 +565,51 @@ c0
                 {"document"=|u8x 83 00 90 00|           "events"=["v 0" "s "]}
                 {"document"=|u8x 83 00 90 02 78|        "events"=["v 0" "s x"]}
                 {"document"=|u8x 83 00 90 06 78 79 7a|  "events"=["v 0" "s xyz"]}
+                {
+                    "document"=|u8x
+                        83 00 90 d8 08 73 6b 79 20 e0 ae b5 e0 ae be e0
+                        ae a9 e0 ae ae e0 af 8d 20 e1 88 b0 e1 88 9b e1
+                        8b ad 20 d8 b3 d9 85 d8 a7 d8 a1 20 d5 a5 d6 80
+                        d5 af d5 ab d5 b6 d6 84 20 73 c9 99 6d 61 20 d0
+                        bd d0 b5 d0 b1 d0 b0 20 e0 a6 86 e0 a6 95 e0 a6
+                        be e0 a6 b6 20 d0 bd d0 b5 d0 b1 d0 b5 d1 82 d0
+                        be 20 e5 a4 a9 e7 a9 ba 20 e1 83 aa e1 83 90 20
+                        ce bf cf 85 cf 81 ce b1 ce bd cf 8c cf 82 20 e0
+                        aa 86 e0 aa 95 e0 aa be e0 aa b6 20 73 79 c3 a8
+                        6c 20 d7 a9 d7 81 d6 b8 d7 9e d6 b7 d7 99 d6 b4
+                        d7 9d 20 e0 a4 86 e0 a4 95 e0 a4 be e0 a4 b6 20
+                        c3 a9 67 20 e7 a9 ba 20 e0 b2 86 e0 b2 95 e0 b2
+                        be e0 b2 b6 20 d0 b0 d1 81 d0 bf d0 b0 d0 bd 20
+                        e1 9e 98 e1 9f 81 e1 9e 83 20 ed 95 98 eb 8a 98
+                        20 61 73 c3 bb 6d 61 6e 20 d0 b0 d1 81 d0 bc d0
+                        b0 d0 bd 20 e0 ba 97 e0 bb 89 e0 ba ad e0 ba 87
+                        e0 ba 9f e0 bb 89 e0 ba b2 20 d0 bd d0 b5 d0 b1
+                        d0 be d1 82 d0 be 20 e0 b4 86 e0 b4 95 e0 b4 be
+                        e0 b4 b6 e0 b4 82 20 e0 a4 86 e0 a4 95 e0 a4 be
+                        e0 a4 b6 20 d1 82 d1 8d d0 bd d0 b3 d1 8d d1 80
+                        20 e1 80 80 e1 80 b1 e1 80 ac e1 80 84 e1 80 ba
+                        e1 80 b8 e1 80 80 e1 80 84 e1 80 ba 20 e0 a4 86
+                        e0 a4 95 e0 a4 be e0 a4 b6 20 e0 ac 86 e0 ac 95
+                        e0 ac be e0 ac b6 20 d8 a7 d8 b3 d9 85 d8 a7 d9
+                        86 20 d8 a2 d8 b3 d9 85 d8 a7 d9 86 20 63 c3 a9
+                        75 20 e0 a8 85 e0 a8 b8 e0 a8 ae e0 a8 be e0 a8
+                        a8 20 d0 bd d0 b5 d0 b1 d0 be 20 e0 b6 85 e0 b7
+                        84 e0 b7 83 20 e0 ae b5 e0 ae be e0 ae a9 e0 ae
+                        ae e0 af 8d 20 d0 ba d2 af d0 ba 20 e0 b0 86 e0
+                        b0 95 e0 b0 be e0 b0 b6 e0 b0 82 20 e0 b8 97 e0
+                        b9 89 e0 b8 ad e0 b8 87 e0 b8 9f e0 b9 89 e0 b8
+                        b2 20 67 c3 b6 6b 79 c3 bc 7a c3 bc 20 d8 a2 d8
+                        b3 d9 85 d8 a7 d9 86 20 d8 a6 d8 a7 d8 b3 d9 85
+                        d8 a7 d9 86 20 62 e1 ba a7 75 20 74 72 e1 bb 9d
+                        69 20 d7 94 d7 99 d7 9e d7 9c 20 e1 bb 8d 72 75
+                        6e|
+                    "events"=["v 0" "s \
+                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 ცა \
+                        ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 asûman \
+                        асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် आकाश ଆକାଶ \
+                        اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం ท้องฟ้า gökyüzü \
+                        آسمان ئاسمان bầu trời הימל ọrun"]
+                }
                 {"document"=|u8x 83 00 90 da 03 50 61 72 74 69 63 6c 65 20 6d 61
                   6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a 44 6f 69 6e 67
                   20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c
