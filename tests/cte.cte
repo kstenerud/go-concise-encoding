@@ -1280,12 +1280,26 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
 
         {
             "name" = "Float16 array"
+            // 8 sig bits, 8 exp bits
             "decodeEncode" = [
+                {"document"="c0 |f16|"                                "events"=["v 0" "af16"]}
+                {"document"="c0 |f16x|"                               "events"=["v 0" "af16"]}
+                {"document"="c0\n|f16 0x1.5p2 -0x1.f8p-20|"           "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
+                {"document"="c0\n|f16x 1.5p2 -1.f8p-20|"              "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
+                {"document"="c0 |f16 nan snan inf -inf|"              "events"=["v 0" "af16 nan snan inf -inf"]}
+                {"document"="c0 |f16 NAN SNAN INF -INF|"              "events"=["v 0" "af16 nan snan inf -inf"]}
+                {"document"="c0 |f16x nan snan inf -inf|"             "events"=["v 0" "af16 nan snan inf -inf"]}
+                {"document"="c0 |f16x NAN SNAN INF -INF|"             "events"=["v 0" "af16 nan snan inf -inf"]}
             ]
             "decodeFail" = [
+                "c0 |f16 -|"                              // Incomplete value
+                "c0 |f16 -nan|"                           // NaN does not have a negative form
+                "c0 |f16 -snan|"                          // NaN does not have a negative form
+                "c0 |f16 0x1.8p+128|"                    // Exponent too big
+                "c0 |f16 0x1.8p-127|"                    // Exponent too small
+                "c0 |f16 0x1.ffff|"  // Coefficient too big
+                "c0 |f16 -0x1.ffff|" // Coefficient too big
             ]
-            // TODO: Float16 array
-            "skip" = true
         }
 
         // ====================================================================

@@ -448,20 +448,24 @@ func decodeArrayF16(ctx *DecoderContext, digitType string, decodeElement floatTo
 		}
 		v, decodedCount := decodeElement(token, ctx.TextPos)
 		token[decodedCount:].AssertAtEnd(ctx.TextPos, ctx.ArrayDigitType)
-		bits := math.Float32bits(float32(v)) >> 16
+		f32bits := math.Float32bits(float32(v))
+		if f32bits&0xffff != 0 {
+			ctx.Errorf("%x is too big to fit into float16", float32(v))
+		}
+		f16bits := f32bits >> 16
 		exp := common.Float64GetExponent(v)
 		if exp < common.Float32ExponentMin || exp > common.Float32ExponentMax {
 			if math.IsNaN(v) {
 				if common.HasQuietNanBitSet64(v) {
-					bits = uint32(common.Bfloat16QuietNanBits)
+					f16bits = uint32(common.Bfloat16QuietNanBits)
 				} else {
-					bits = uint32(common.Bfloat16SignalingNanBits)
+					f16bits = uint32(common.Bfloat16SignalingNanBits)
 				}
 			} else if !math.IsInf(v, 0) {
 				ctx.Errorf("Exponent too big for float32 type")
 			}
 		}
-		ctx.Scratch = append(ctx.Scratch, uint8(bits), uint8(bits>>8))
+		ctx.Scratch = append(ctx.Scratch, uint8(f16bits), uint8(f16bits>>8))
 	}
 	finishTypedArray(ctx)
 }
