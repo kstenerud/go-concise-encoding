@@ -20,12 +20,12 @@ The other secondary sections are:
 - [Options](#options)
 
 
-
 Code Organization
 -----------------
 
 | Directory                  | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
+| [bugreport](bugreport)     | Templates for constructing and testing bug reports              |
 | [builder](builder)         | [Builders](#builders)                                           |
 | [cbe](cbe)                 | [CBE](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) codec |
 | [ce](ce)                   | Top-level API                                                   |
@@ -38,7 +38,8 @@ Code Organization
 | [iterator](iterator)       | [Iterators](#iterators)                                         |
 | [options](options)         | Configuration for all high level APIs                           |
 | [rules](rules)             | [Rules](#rules)                                                 |
-| [test](test)               | Test helper code                                                |
+| [test](test)               | Test helper code and unit test parser                           |
+| [tests](tests)             | Portable unit tests                                             |
 | [types](types)             | Types not present in the standard library                       |
 | [version](version)         | The currently supported Concise Encoding version                |
 
@@ -135,6 +136,7 @@ The [test](test) directory contains code to help with writing and debugging test
 - Data event constructors and generators for quickly building events.
 - Event printer that sits in the middle of an event receiver chain and prints out the events passing through.
 - Event receiver that converts events into objects representing those events, and an event driver that turns those objects back into events. Much of the code can be accessed locally via `testhelpers_test.go` files in the major subsections.
+- Test runners to run unit tests written in CTE for portability. Most of the unit tests are in the [tests](tests) directory.
 
 ### Conversions
 
