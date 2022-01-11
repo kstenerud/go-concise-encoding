@@ -51,10 +51,6 @@ func (_this *EncoderEventReceiver) Init(opts *options.CTEEncoderOptions) {
 	_this.context.Init(opts)
 }
 
-// Reset the encoder back to its initial state.
-func (_this *EncoderEventReceiver) Reset() {
-}
-
 // Prepare the encoder for encoding. All events will be encoded to writer.
 // PrepareToEncode MUST be called before using the encoder.
 func (_this *EncoderEventReceiver) PrepareToEncode(writer io.Writer) {
@@ -63,6 +59,7 @@ func (_this *EncoderEventReceiver) PrepareToEncode(writer io.Writer) {
 
 func (_this *EncoderEventReceiver) OnBeginDocument() {
 	_this.context.Begin()
+	_this.context.Stream.WriteByteNotLF('c')
 }
 
 func (_this *EncoderEventReceiver) OnVersion(version uint64) {
@@ -71,7 +68,7 @@ func (_this *EncoderEventReceiver) OnVersion(version uint64) {
 }
 
 func (_this *EncoderEventReceiver) OnPadding(count int) {
-	// Nothing to do
+	// CTE doesn't have padding, so do nothing.
 }
 
 func (_this *EncoderEventReceiver) OnComment(isMultiline bool, contents []byte) {

@@ -251,7 +251,6 @@ func (_this *Writer) WriteSignalingNan() {
 }
 
 func (_this *Writer) WriteVersion(value uint64) {
-	_this.WriteByteNotLF('c')
 	_this.WritePositiveInt(value)
 }
 

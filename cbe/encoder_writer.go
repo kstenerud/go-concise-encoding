@@ -62,9 +62,9 @@ func (_this *Writer) SetWriter(writer io.Writer) {
 }
 
 // Make sure the internal buffer is at least this big.
-func (_this *Writer) ExpandBufferTo(size int) {
-	if len(_this.Buffer) < size {
-		_this.Buffer = make([]byte, size*2)
+func (_this *Writer) ExpandBufferTo(minSize int) {
+	if len(_this.Buffer) < minSize {
+		_this.Buffer = make([]byte, minSize*2)
 	}
 }
 

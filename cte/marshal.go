@@ -77,7 +77,6 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 		}()
 	}
 
-	_this.encoder.Reset()
 	_this.encoder.PrepareToEncode(writer)
 	iterator := _this.session.NewIterator(&_this.encoder, &_this.opts.Iterator)
 	iterator.Iterate(object)
@@ -124,7 +123,7 @@ func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
 	if !debug.DebugOptions.PassThroughPanics {
 		defer func() {
@@ -154,7 +153,7 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 func (_this *Unmarshaler) UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error) {
 	return _this.Unmarshal(bytes.NewBuffer(document), template)
 }

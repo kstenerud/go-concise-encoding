@@ -220,7 +220,7 @@ func (_this *Reader) readSmallULEB128(name string, maxValue uint64) uint64 {
 }
 
 func (_this *Reader) readIntoBuffer(count int) {
-	_this.expandBuffer(count)
+	_this.expandBufferTo(count)
 	dst := _this.buffer[:count]
 	for len(dst) > 0 {
 		if bytesRead, err := _this.reader.Read(dst); err != nil {
@@ -231,9 +231,9 @@ func (_this *Reader) readIntoBuffer(count int) {
 	}
 }
 
-func (_this *Reader) expandBuffer(size int) {
-	if len(_this.buffer) < size {
-		_this.buffer = make([]byte, size*2)
+func (_this *Reader) expandBufferTo(minSize int) {
+	if len(_this.buffer) < minSize {
+		_this.buffer = make([]byte, minSize*2)
 	}
 }
 

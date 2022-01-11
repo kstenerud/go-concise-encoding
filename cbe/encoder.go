@@ -87,7 +87,7 @@ func (_this *Encoder) OnPadding(count int) {
 }
 
 func (_this *Encoder) OnComment(bool, []byte) {
-	// Ignored
+	// CBE doesn't have comments, so do nothing.
 }
 
 func (_this *Encoder) OnBeginDocument() {
