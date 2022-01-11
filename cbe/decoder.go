@@ -38,24 +38,26 @@ type Decoder struct {
 	opts   options.CEDecoderOptions
 }
 
-// Create a new CBE decoder, which will read from reader and send data events
-// to nextReceiver. If opts is nil, default options will be used.
+// Create a new CBE decoder. If opts is nil, default options will be used.
 func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
 	_this := &Decoder{}
 	_this.Init(opts)
 	return _this
 }
 
-// Initialize this decoder, which will read from reader and send data events
-// to nextReceiver. If opts is nil, default options will be used.
+// Initialize this decoder. If opts is nil, default options will be used.
 func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
 	_this.reader.Init()
 }
 
-// Run the complete decode process. The document and data receiver specified
-// when initializing the decoder will be used.
+// Decode an already streamed document, sending all decoded events to eventReceiver.
+func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
+	return _this.Decode(bytes.NewBuffer(document), eventReceiver)
+}
+
+// Read and decode a document from reader, sending all decoded events to eventReceiver.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
 		if !debug.DebugOptions.PassThroughPanics {
@@ -85,10 +87,18 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	}
 	eventReceiver.OnVersion(ver)
 
+	return _this.runMainDecodeLoop(eventReceiver)
+}
+
+// ============================================================================
+
+// Internal
+
+func (_this *Decoder) runMainDecodeLoop(eventReceiver events.DataEventReceiver) (err error) {
 	// TODO: Need to query rules to see when to stop
 EOF:
 	for {
-		cbeType := _this.reader.ReadTypeWithEOFCheck()
+		cbeType := _this.reader.ReadTypeOrEOF()
 		switch cbeType {
 		case cbeTypeDecimal:
 			value, bigValue := _this.reader.ReadDecimalFloat()
@@ -188,7 +198,7 @@ EOF:
 		case cbeTypeEOF:
 			break EOF
 		case cbeTypePlane2:
-			_this.decodePlane2(reader, eventReceiver)
+			_this.decodePlane2(eventReceiver)
 		case cbeTypeArrayBit:
 			_this.decodeArray(events.ArrayTypeBit, eventReceiver)
 		case cbeTypeArrayUint8:
@@ -216,7 +226,7 @@ EOF:
 	return
 }
 
-func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEventReceiver) {
+func (_this *Decoder) decodePlane2(eventReceiver events.DataEventReceiver) {
 	cbeType := _this.reader.ReadType()
 	const lengthMask = 0x0f
 	const shortTypeMask = 0xf0
@@ -282,14 +292,6 @@ func (_this *Decoder) decodePlane2(reader io.Reader, eventReceiver events.DataEv
 		_this.decodeArray(arrayType, eventReceiver)
 	}
 }
-
-func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
-	return _this.Decode(bytes.NewBuffer(document), eventReceiver)
-}
-
-// ============================================================================
-
-// Internal
 
 func (_this *Decoder) decodeMedia(eventReceiver events.DataEventReceiver) {
 	eventReceiver.OnArrayBegin(events.ArrayTypeMedia)

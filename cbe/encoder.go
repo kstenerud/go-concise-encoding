@@ -79,11 +79,11 @@ func (_this *Encoder) OnPadding(count int) {
 		return
 	}
 
-	_this.writer.ExpandBuffer(count)
+	_this.writer.ExpandBufferTo(count)
 	for i := 0; i < count; i++ {
 		_this.writer.Buffer[i] = byte(cbeTypePadding)
 	}
-	_this.writer.FlushBuffer(count)
+	_this.writer.FlushBufferFirstBytes(count)
 }
 
 func (_this *Encoder) OnComment(bool, []byte) {
@@ -91,10 +91,10 @@ func (_this *Encoder) OnComment(bool, []byte) {
 }
 
 func (_this *Encoder) OnBeginDocument() {
+	_this.writer.WriteSingleByte(cbeDocumentHeader)
 }
 
 func (_this *Encoder) OnVersion(version uint64) {
-	_this.writer.WriteSingleByte(cbeDocumentHeader)
 	_this.writer.WriteULEB(version)
 }
 
@@ -268,10 +268,10 @@ func (_this *Encoder) OnUID(value []byte) {
 }
 
 func (_this *Encoder) OnTime(value time.Time) {
-	_this.writer.ExpandBuffer(compact_time.EncodedSizeGoTime(value) + 1)
+	_this.writer.ExpandBufferTo(compact_time.EncodedSizeGoTime(value) + 1)
 	_this.writer.Buffer[0] = byte(cbeTypeTimestamp)
 	count := compact_time.EncodeGoTimestampToBytes(value, _this.writer.Buffer[1:])
-	_this.writer.FlushBuffer(count + 1)
+	_this.writer.FlushBufferFirstBytes(count + 1)
 }
 
 var ctimeToCBEType = [...]cbeTypeField{
@@ -286,10 +286,10 @@ func (_this *Encoder) OnCompactTime(value compact_time.Time) {
 		return
 	}
 
-	_this.writer.ExpandBuffer(value.EncodedSize() + 1)
+	_this.writer.ExpandBufferTo(value.EncodedSize() + 1)
 	_this.writer.Buffer[0] = byte(ctimeToCBEType[value.Type])
 	count := value.EncodeToBytes(_this.writer.Buffer[1:])
-	_this.writer.FlushBuffer(count + 1)
+	_this.writer.FlushBufferFirstBytes(count + 1)
 }
 
 const maxSmallArrayLength = 15

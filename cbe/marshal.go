@@ -45,16 +45,14 @@ type Marshaler struct {
 	opts    options.CBEMarshalerOptions
 }
 
-// Create a new marshaler with the specified options.
-// If opts is nil, default options will be used.
+// Create a new marshaler. If opts is nil, default options will be used.
 func NewMarshaler(opts *options.CBEMarshalerOptions) *Marshaler {
 	_this := &Marshaler{}
 	_this.Init(opts)
 	return _this
 }
 
-// Init a marshaler with the specified options.
-// If opts is nil, default options will be used.
+// Init a marshaler. If opts is nil, default options will be used.
 func (_this *Marshaler) Init(opts *options.CBEMarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
@@ -105,16 +103,14 @@ type Unmarshaler struct {
 	rules   rules.RulesEventReceiver
 }
 
-// Create a new unmarshaler with the specified options.
-// If opts is nil, default options will be used.
+// Create a new unmarshaler. If opts is nil, default options will be used.
 func NewUnmarshaler(opts *options.CEUnmarshalerOptions) *Unmarshaler {
 	_this := &Unmarshaler{}
 	_this.Init(opts)
 	return _this
 }
 
-// Init an unmarshaler with the specified options.
-// If opts is nil, default options will be used.
+// Init an unmarshaler. If opts is nil, default options will be used.
 func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
 	opts = opts.WithDefaultsApplied()
 	_this.opts = *opts
@@ -124,7 +120,7 @@ func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
 }
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
 	if !debug.DebugOptions.PassThroughPanics {
 		defer func() {
@@ -154,7 +150,7 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 }
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 func (_this *Unmarshaler) UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error) {
 	return _this.Unmarshal(bytes.NewBuffer(document), template)
 }

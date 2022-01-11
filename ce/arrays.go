@@ -24,6 +24,9 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 )
 
+// These functions are used to decode multibyte array elements coming from OnArrayData events.
+// If you're using lower level APIs like decoders, you'll need these.
+
 // Copy byte slice data, interpreting as little endian data of larger types.
 func BytesToInt8Slice(data []byte) []int8 { return arrays.BytesToInt8Slice(data) }
 

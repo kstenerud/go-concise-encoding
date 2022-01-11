@@ -41,6 +41,9 @@ type Decoder interface {
 	DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error)
 }
 
+// A universal decoder automatically chooses a decoding method based on the first byte of the document:
+// - 0x63 = Decode as CTE
+// - 0x83 = Decode as CBE
 type UniversalDecoder struct {
 	opts *options.CEDecoderOptions
 }

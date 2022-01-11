@@ -79,7 +79,7 @@ func (_this *Reader) ReadVersion() uint64 {
 	return _this.readSmallULEB128("version", math.MaxUint64)
 }
 
-func (_this *Reader) ReadTypeWithEOFCheck() cbeTypeField {
+func (_this *Reader) ReadTypeOrEOF() cbeTypeField {
 	if _, err := _this.reader.Read(_this.buffer[:1]); err != nil {
 		if err == io.EOF {
 			return cbeTypeEOF

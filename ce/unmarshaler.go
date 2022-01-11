@@ -33,9 +33,11 @@ import (
 // returns an object that is compatible with the given template.
 type Unmarshaler interface {
 	// Unmarshal an object from the given reader, in a type compatible with template.
+	// If template is nil, a best-guess type will be returned (likely a slice or map).
 	Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error)
 
 	// Unmarshal an object from the given document, in a type compatible with template.
+	// If template is nil, a best-guess type will be returned (likely a slice or map).
 	UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error)
 }
 

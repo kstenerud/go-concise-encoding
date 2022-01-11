@@ -62,14 +62,14 @@ func (_this *Writer) SetWriter(writer io.Writer) {
 }
 
 // Make sure the internal buffer is at least this big.
-func (_this *Writer) ExpandBuffer(size int) {
+func (_this *Writer) ExpandBufferTo(size int) {
 	if len(_this.Buffer) < size {
 		_this.Buffer = make([]byte, size*2)
 	}
 }
 
 // Flush count bytes from the start of the buffer
-func (_this *Writer) FlushBuffer(count int) {
+func (_this *Writer) FlushBufferFirstBytes(count int) {
 	_this.writeBytes(_this.Buffer[:count])
 }
 
@@ -80,12 +80,12 @@ func (_this *Writer) FlushBufferPortion(start, end int) {
 
 func (_this *Writer) WriteSingleByte(b byte) {
 	_this.Buffer[0] = b
-	_this.FlushBuffer(1)
+	_this.FlushBufferFirstBytes(1)
 }
 
 func (_this *Writer) WriteRune(r rune) {
 	n := utf8.EncodeRune(_this.Buffer, r)
-	_this.FlushBuffer(n)
+	_this.FlushBufferFirstBytes(n)
 }
 
 func (_this *Writer) WriteBytes(b []byte) {
@@ -106,7 +106,7 @@ func (_this *Writer) writeBytes(b []byte) {
 
 func (_this *Writer) WriteULEB(value uint64) {
 	byteCount := uleb128.EncodeUint64ToBytes(value, _this.Buffer)
-	_this.FlushBuffer(byteCount)
+	_this.FlushBufferFirstBytes(byteCount)
 }
 
 func (_this *Writer) WriteType(t cbeTypeField) {
@@ -116,14 +116,14 @@ func (_this *Writer) WriteType(t cbeTypeField) {
 func (_this *Writer) WriteTyped8Bits(typeValue cbeTypeField, value byte) {
 	_this.Buffer[0] = byte(typeValue)
 	_this.Buffer[1] = byte(value)
-	_this.FlushBuffer(2)
+	_this.FlushBufferFirstBytes(2)
 }
 
 func (_this *Writer) WriteTyped16Bits(typeValue cbeTypeField, value uint16) {
 	_this.Buffer[0] = byte(typeValue)
 	_this.Buffer[1] = byte(value)
 	_this.Buffer[2] = byte(value >> 8)
-	_this.FlushBuffer(3)
+	_this.FlushBufferFirstBytes(3)
 }
 
 func (_this *Writer) WriteTyped32Bits(typeValue cbeTypeField, value uint32) {
@@ -132,7 +132,7 @@ func (_this *Writer) WriteTyped32Bits(typeValue cbeTypeField, value uint32) {
 	_this.Buffer[2] = byte(value >> 8)
 	_this.Buffer[3] = byte(value >> 16)
 	_this.Buffer[4] = byte(value >> 24)
-	_this.FlushBuffer(5)
+	_this.FlushBufferFirstBytes(5)
 }
 
 func (_this *Writer) WriteTyped64Bits(typeValue cbeTypeField, value uint64) {
@@ -145,7 +145,7 @@ func (_this *Writer) WriteTyped64Bits(typeValue cbeTypeField, value uint64) {
 	_this.Buffer[6] = byte(value >> 40)
 	_this.Buffer[7] = byte(value >> 48)
 	_this.Buffer[8] = byte(value >> 56)
-	_this.FlushBuffer(9)
+	_this.FlushBufferFirstBytes(9)
 }
 
 func (_this *Writer) WriteTypedInt(cbeType cbeTypeField, value uint64) {
@@ -157,7 +157,7 @@ func (_this *Writer) WriteTypedInt(cbeType cbeTypeField, value uint64) {
 		accum >>= 8
 	}
 	_this.Buffer[1] = byte(byteCount)
-	_this.FlushBuffer(byteCount + 2)
+	_this.FlushBufferFirstBytes(byteCount + 2)
 }
 
 func (_this *Writer) WriteTypedBigInt(cbeType cbeTypeField, value *big.Int) {
@@ -206,15 +206,15 @@ func (_this *Writer) WriteFloat64(value float64) {
 func (_this *Writer) WriteDecimalFloat(value compact_float.DFloat) {
 	_this.Buffer[0] = byte(cbeTypeDecimal)
 	count := compact_float.EncodeToBytes(value, _this.Buffer[1:])
-	_this.FlushBuffer(count + 1)
+	_this.FlushBufferFirstBytes(count + 1)
 }
 
 func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
-	_this.ExpandBuffer(compact_float.MaxEncodeLengthBig(value) + 1)
+	_this.ExpandBufferTo(compact_float.MaxEncodeLengthBig(value) + 1)
 
 	_this.Buffer[0] = byte(cbeTypeDecimal)
 	count := compact_float.EncodeBigToBytes(value, _this.Buffer[1:])
-	_this.FlushBuffer(count + 1)
+	_this.FlushBufferFirstBytes(count + 1)
 }
 
 func (_this *Writer) WriteZero(sign int) {
@@ -226,7 +226,7 @@ func (_this *Writer) WriteZero(sign int) {
 	} else {
 		count = compact_float.EncodeZero(_this.Buffer[1:])
 	}
-	_this.FlushBuffer(count + 1)
+	_this.FlushBufferFirstBytes(count + 1)
 }
 
 func (_this *Writer) WriteInfinity(sign int) {
@@ -238,7 +238,7 @@ func (_this *Writer) WriteInfinity(sign int) {
 	} else {
 		count = compact_float.EncodeInfinity(_this.Buffer[1:])
 	}
-	_this.FlushBuffer(count + 1)
+	_this.FlushBufferFirstBytes(count + 1)
 }
 
 func (_this *Writer) WriteNaN(signaling bool) {
@@ -250,7 +250,7 @@ func (_this *Writer) WriteNaN(signaling bool) {
 	} else {
 		count = compact_float.EncodeQuietNan(_this.Buffer[1:])
 	}
-	_this.FlushBuffer(count + 1)
+	_this.FlushBufferFirstBytes(count + 1)
 }
 
 func (_this *Writer) WriteIdentifier(b []byte) {
@@ -260,7 +260,7 @@ func (_this *Writer) WriteIdentifier(b []byte) {
 
 func (_this *Writer) WriteArrayHeader(arrayType events.ArrayType) {
 	byteCount := _this.WriteArrayHeaderToBytes(arrayType, _this.Buffer)
-	_this.FlushBuffer(byteCount)
+	_this.FlushBufferFirstBytes(byteCount)
 }
 
 func (_this *Writer) WriteArrayChunkHeader(elementCount uint64, moreChunksFollow uint64) {
@@ -270,7 +270,7 @@ func (_this *Writer) WriteArrayChunkHeader(elementCount uint64, moreChunksFollow
 func (_this *Writer) WriteArrayAndChunkHeader(arrayType events.ArrayType, elementCount uint64, moreChunksFollow uint64) {
 	byteCount := _this.WriteArrayHeaderToBytes(arrayType, _this.Buffer)
 	byteCount += _this.WriteArrayChunkHeaderToBytes(elementCount, moreChunksFollow, _this.Buffer[byteCount:])
-	_this.FlushBuffer(byteCount)
+	_this.FlushBufferFirstBytes(byteCount)
 }
 
 func (_this *Writer) WriteArrayHeaderToBytes(arrayType events.ArrayType, buffer []byte) int {
@@ -303,8 +303,8 @@ func (_this *StringWriterAdapter) Init(writer *Writer) {
 
 func (_this *StringWriterAdapter) WriteString(str string) (n int, err error) {
 	n = len(str)
-	_this.writer.ExpandBuffer(n)
+	_this.writer.ExpandBufferTo(n)
 	copy(_this.writer.Buffer, str)
-	_this.writer.FlushBuffer(n)
+	_this.writer.FlushBufferFirstBytes(n)
 	return
 }

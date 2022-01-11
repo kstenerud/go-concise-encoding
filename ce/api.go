@@ -61,8 +61,8 @@ import (
 // ============================================================================
 // One-shot universal unmarshal API
 
-// Unmarshal a CE document from a reader, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// Unmarshal a CE document (CBE or CTE) from a reader, creating an object of the same type as the template.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 // If opts is nil, default options will be used.
 func UnmarshalCE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	bufReader := bufio.NewReader(reader)
@@ -78,8 +78,8 @@ func UnmarshalCE(reader io.Reader, template interface{}, opts *options.CEUnmarsh
 	return unmarshaler.Unmarshal(bufReader, template)
 }
 
-// Unmarshal a CE document from a byte slice, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// Unmarshal a CE document (CBE or CTE) from a byte slice, creating an object of the same type as the template.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 // If opts is nil, default options will be used.
 func UnmarshalFromCEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	if len(document) == 0 {
@@ -109,14 +109,14 @@ func MarshalToCBEDocument(object interface{}, opts *options.CBEMarshalerOptions)
 }
 
 // Unmarshal a CBE document from a reader, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 // If opts is nil, default options will be used.
 func UnmarshalCBE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).Unmarshal(reader, template)
 }
 
 // Unmarshal a CBE document from a byte slice, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 // If opts is nil, default options will be used.
 func UnmarshalFromCBEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(opts).UnmarshalFromDocument(document, template)
@@ -139,14 +139,14 @@ func MarshalToCTEDocument(object interface{}, opts *options.CTEMarshalerOptions)
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 // If opts is nil, default options will be used.
 func UnmarshalCTE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).Unmarshal(reader, template)
 }
 
 // Unmarshal a CTE document from a byte slice, creating an object of the same type as the template.
-// If template is nil, an interface type will be returned.
+// If template is nil, a best-guess type will be returned (likely a slice or map).
 // If opts is nil, default options will be used.
 func UnmarshalFromCTEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(opts).UnmarshalFromDocument(document, template)
