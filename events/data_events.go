@@ -127,10 +127,9 @@ var arrayTypeElementSizes = [...]int{
 //
 // WARNING: Do not directly store slice data! The underlying contents should be
 // considered volatile and likely to change after the method returns (the
-// decoders re-use memory).
+// decoders re-use the memory buffer).
 //
-// IMPORTANT: DataEventReceiver's methods signal errors via panics, not
-// returned errors.
+// IMPORTANT: DataEventReceiver's methods signal errors via panics, NOT as returned errors.
 // You must use recover() in code that calls DataEventReceiver methods. The
 // recover statements should not be inside of loops, as this causes slow defers.
 // (https://go.googlesource.com/proposal/+/refs/heads/master/design/34481-opencoded-defers.md)
@@ -142,78 +141,76 @@ type DataEventReceiver interface {
 	OnEndDocument()
 
 	OnVersion(version uint64)
+
 	OnPadding(count int)
+
 	OnComment(isMultiline bool, contents []byte)
+
 	OnNull()
+
 	OnBool(value bool)
+
 	OnTrue()
+
 	OnFalse()
+
 	OnPositiveInt(value uint64)
+
 	OnNegativeInt(value uint64)
+
 	OnInt(value int64)
+
 	OnBigInt(value *big.Int)
+
 	OnFloat(value float64)
+
 	OnBigFloat(value *big.Float)
+
 	OnDecimalFloat(value compact_float.DFloat)
+
 	OnBigDecimalFloat(value *apd.Decimal)
+
 	OnUID(value []byte)
+
 	OnNan(signaling bool)
+
 	OnTime(value time.Time)
+
 	OnCompactTime(value compact_time.Time)
+
 	OnList()
+
 	OnMap()
+
 	OnEdge()
+
 	OnNode()
+
 	OnMarkup(identifier []byte)
+
+	// Ends the current container (list, map, markup, or node).
+	// Note: Markup takes TWO ends (one for the attributes section,
+	//       one for the contents section).
+	// Note: Edge does NOT use end; it terminates automatically after three objects.
 	OnEnd()
+
 	OnMarker(identifier []byte)
+
 	OnReference(identifier []byte)
+
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
-	OnArrayBegin(arrayType ArrayType)
-	OnArrayChunk(length uint64, moreChunksFollow bool)
-	OnArrayData(data []byte)
 
 	// Stringlike array contents are safe to store directly.
 	OnStringlikeArray(arrayType ArrayType, data string)
-}
 
-// NullEventReceiver receives events and does nothing with them.
-type NullEventReceiver struct{}
+	OnArrayBegin(arrayType ArrayType)
 
-func NewNullEventReceiver() *NullEventReceiver {
-	return &NullEventReceiver{}
+	OnArrayChunk(length uint64, moreChunksFollow bool)
+
+	// Chunked array data is always passed as bytes. After receiving, you must
+	// cast the elements to the correct type yourself.
+	//
+	// Data will always end on an element boundary (the spec requires this).
+	// So for example uint32 data sent via this call will always be a multiple of 4 bytes.
+	OnArrayData(data []byte)
 }
-func (_this *NullEventReceiver) OnBeginDocument()                    {}
-func (_this *NullEventReceiver) OnVersion(uint64)                    {}
-func (_this *NullEventReceiver) OnComment(bool, []byte)              {}
-func (_this *NullEventReceiver) OnPadding(int)                       {}
-func (_this *NullEventReceiver) OnNull()                             {}
-func (_this *NullEventReceiver) OnBool(bool)                         {}
-func (_this *NullEventReceiver) OnTrue()                             {}
-func (_this *NullEventReceiver) OnFalse()                            {}
-func (_this *NullEventReceiver) OnPositiveInt(uint64)                {}
-func (_this *NullEventReceiver) OnNegativeInt(uint64)                {}
-func (_this *NullEventReceiver) OnInt(int64)                         {}
-func (_this *NullEventReceiver) OnBigInt(*big.Int)                   {}
-func (_this *NullEventReceiver) OnFloat(float64)                     {}
-func (_this *NullEventReceiver) OnBigFloat(*big.Float)               {}
-func (_this *NullEventReceiver) OnDecimalFloat(compact_float.DFloat) {}
-func (_this *NullEventReceiver) OnBigDecimalFloat(*apd.Decimal)      {}
-func (_this *NullEventReceiver) OnNan(bool)                          {}
-func (_this *NullEventReceiver) OnUID([]byte)                        {}
-func (_this *NullEventReceiver) OnTime(time.Time)                    {}
-func (_this *NullEventReceiver) OnCompactTime(compact_time.Time)     {}
-func (_this *NullEventReceiver) OnArray(ArrayType, uint64, []byte)   {}
-func (_this *NullEventReceiver) OnStringlikeArray(ArrayType, string) {}
-func (_this *NullEventReceiver) OnArrayBegin(ArrayType)              {}
-func (_this *NullEventReceiver) OnArrayChunk(uint64, bool)           {}
-func (_this *NullEventReceiver) OnArrayData([]byte)                  {}
-func (_this *NullEventReceiver) OnList()                             {}
-func (_this *NullEventReceiver) OnMap()                              {}
-func (_this *NullEventReceiver) OnEdge()                             {}
-func (_this *NullEventReceiver) OnNode()                             {}
-func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
-func (_this *NullEventReceiver) OnEnd()                              {}
-func (_this *NullEventReceiver) OnMarker([]byte)                     {}
-func (_this *NullEventReceiver) OnReference([]byte)                  {}
-func (_this *NullEventReceiver) OnEndDocument()                      {}

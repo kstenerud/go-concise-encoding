@@ -1879,6 +1879,7 @@ Nobody knows, Particle man#"]}
                 |u8x 83 00 7a|              // Unterminated
                 |u8x 83 00 7a 01 02|        // Unterminated
                 |u8x 83 00 7a 7a 7b|        // Unterminated
+                |u8x 83 00 7a 7b 7b|        // Terminated too many times
             ]
         }
 
@@ -1894,6 +1895,7 @@ Nobody knows, Particle man#"]}
                 |u8x 83 00 79|                      // Unterminated
                 |u8x 83 00 79 01|                   // Unterminated
                 |u8x 83 00 79 01 02|                // Unterminated
+                |u8x 83 00 79 7b 7b|                // Terminated too many times
                 |u8x 83 00 79 01 7b|                // Missing value
                 |u8x 83 00 79 7a 7b 01 7b|          // Invalid key type
                 |u8x 83 00 79 79 7b 01 7b|          // Invalid key type
@@ -1952,6 +1954,7 @@ Nobody knows, Particle man#"]}
                 |u8x 83 00 78 01 61 01|                      // Unterminated
                 |u8x 83 00 78 01 61 01 7b|                   // Unterminated
                 |u8x 83 00 78 01 61 01 02 7b|                // Unterminated
+                |u8x 83 00 78 7b 7b 7b|                      // Terminated too many times
                 |u8x 83 00 78 01 61 01 7b 7b|                // Missing value
                 |u8x 83 00 78 01 61 7a 7b 01 7b 7b|          // Invalid key type
                 |u8x 83 00 78 01 61 79 7b 01 7b 7b|          // Invalid key type
@@ -2073,6 +2076,7 @@ Nobody knows, Particle man#"]}
             "decodeFail" = [
                 |u8x 83 00 77|           // Unterminated
                 |u8x 83 00 77 01|        // Unterminated
+                |u8x 83 00 77 01 7b 7b|  // Terminated too many times
                 |u8x 83 00 77 7b|        // Missing value
             ]
         }
