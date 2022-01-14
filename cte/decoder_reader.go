@@ -258,6 +258,12 @@ func (_this *Reader) ReadToken() Token {
 	return _this.TokenGet()
 }
 
+func (_this *Reader) ReadWhitespaceSeparatedToken() Token {
+	_this.TokenBegin()
+	_this.TokenReadUntilPropertyAllowEOF(chars.StructWS)
+	return _this.TokenGet()
+}
+
 func (_this *Reader) ReadNamedValue() []byte {
 	_this.TokenBegin()
 	_this.TokenReadWhilePropertyAllowEOF(chars.AZ)

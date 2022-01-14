@@ -171,17 +171,24 @@ func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 		decodeArrayF64(ctx, "float", Token.DecodeSmallFloat)
 	case "f64x":
 		decodeArrayF64(ctx, "hex", Token.DecodeSmallHexFloat)
+	case "m":
+		decodeMedia(ctx)
 	default:
-		decodeMedia(ctx, arrayType)
+		ctx.Errorf("%v: Unknown array type", arrayType)
 	}
 	ctx.RequireStructuralWS()
 }
 
-func decodeMedia(ctx *DecoderContext, mediaType []byte) {
+func decodeMedia(ctx *DecoderContext) {
+	token := ctx.Stream.ReadWhitespaceSeparatedToken()
+	if len(token) == 0 {
+		ctx.Errorf("missing media type")
+	}
+
 	ctx.BeginArray("hex", events.ArrayTypeMedia, 1)
 	ctx.EventReceiver.OnArrayBegin(ctx.ArrayType)
-	ctx.EventReceiver.OnArrayChunk(uint64(len(mediaType)), false)
-	ctx.EventReceiver.OnArrayData(mediaType)
+	ctx.EventReceiver.OnArrayChunk(uint64(len(token)), false)
+	ctx.EventReceiver.OnArrayData(token)
 
 	// TODO: Buffered read of media data
 	for {

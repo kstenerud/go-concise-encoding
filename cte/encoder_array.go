@@ -476,7 +476,7 @@ func (_this *arrayEncoderEngine) beginArrayUID(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayMedia(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteByteNotLF('|')
+	_this.stream.WriteStringNotLF("|m ")
 	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
 	_this.onComplete = func() {
 		_this.stream.WriteBytesNotLF(_this.stringBuffer)
