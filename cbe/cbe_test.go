@@ -30,11 +30,11 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	InvokeEvents(encoder, EvV, M(), E(), ED())
+	InvokeEvents(encoder, BD(), EvV, M(), E(), ED())
 
 	buffer2 := &bytes.Buffer{}
 	encoder.PrepareToEncode(buffer2)
-	InvokeEvents(encoder, EvV, M(), E(), ED())
+	InvokeEvents(encoder, BD(), EvV, M(), E(), ED())
 
 	expected := []byte{0x83, 0x00, 0x79, 0x7b}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {
