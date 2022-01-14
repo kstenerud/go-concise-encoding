@@ -1,0 +1,330 @@
+c0
+// ========================
+// CTE container test cases
+// ========================
+{
+    "options" = {
+        "failFast" = false  // If true, halt tests on first error
+    }
+
+    "cteTests" = [
+
+        // ====================================================================
+
+        {
+            "name" = "List"
+            "encodeDecode" = [
+                {"events"=["v 0" "l" "e"] "document"="c0\n[]"}
+                {
+                    "events" = ["v 0" "l" "null" "b false" "n -1" "n 1.5e20" "n nan" "n snan" "n inf" "n -inf"
+                                "s string" "rid https://concise-encoding.org" "l" "e" "m" "e" "mu blah" "e" "e" "e"]
+                    "document"="\.^ c0
+[
+    null
+    false
+    -1
+    1.5e+20
+    nan
+    snan
+    inf
+    -inf
+    "string"
+    @"https://concise-encoding.org"
+    []
+    {}
+    <blah>
+]^"
+                }
+            ]
+            "decodeEncode" = [
+                {"document"="c0 []"   "events"=["v 0" "l" "e"]}
+                {"document"="c0 [1]"  "events"=["v 0" "l" "n 1" "e"]}
+            ]
+            "decodeFail" = [
+                "c0 ["  // Missing terminator
+                "c0 [}" // Wrong terminator
+                "c0 [>" // Wrong terminator
+                "c0 [)" // Wrong terminator
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Map"
+            "encodeDecode" = [
+                {"events"=["v 0" "m" "e"] "document"="c0\n{}"}
+                {
+                    "events" = ["v 0" "m"
+                                    "s string"              "null"
+                                    "n 10"                  "b false"
+                                    "rid https://x.org"     "n -1"
+                                    "n 1.6444453466e1000"   "n 1.5e20"
+                                    "b true"                "n nan"
+                                    "t 2050-12-31"          "n snan"
+                                    "t 2123-01-01/12:04:54" "n inf"
+                                    "n 1"                   "n -inf"
+                                    "n 2"                   "s string"
+                                    "n 3"                   "rid https://concise-encoding.org"
+                                    "n 4"                   "l" "e"
+                                    "n 5"                   "m" "e"
+                                    "uid cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884"  "mu blah" "e" "e"
+                                "e"]
+                    "document"="\.^ c0
+{
+    "string" = null
+    10 = false
+    @"https://x.org" = -1
+    1.6444453466e+1000 = 1.5e+20
+    true = nan
+    2050-12-31 = snan
+    2123-01-01/12:04:54 = inf
+    1 = -inf
+    2 = "string"
+    3 = @"https://concise-encoding.org"
+    4 = []
+    5 = {}
+    cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884 = <blah>
+}^"
+                }
+            ]
+            "decodeEncode" = [
+                {"document"="c0 {}"         "events"=["v 0" "m" "e"]}
+                {"document"="c0 {\"a\"=1}"  "events"=["v 0" "m" "s a" "n 1" "e"]}
+            ]
+            "decodeFail" = [
+                "c0 {"            // Missing terminator
+                "c0 {]"           // Wrong terminator
+                "c0 {>"           // Wrong terminator
+                "c0 {)"           // Wrong terminator
+                "c0 {1}"          // Missing value
+                "c0 {1=}"         // Missing value
+                "c0 {1:2}"        // Bad separator
+                "c0 {null=1}"     // Invalid key type
+                "c0 {nan=1}"      // Invalid key type
+                "c0 {snan=1}"     // Invalid key type
+                "c0 {[]=1}"       // Invalid key type
+                "c0 {{}=1}"       // Invalid key type
+                "c0 {<blah>=1}"   // Invalid key type
+                "c0 {(1)=1}"      // Invalid key type
+                "c0 {@(1 2 3)=1}" // Invalid key type
+                "c0 {|ct a|=1}"   // Invalid key type
+                "c0 {|cb 00|=1}"  // Invalid key type
+                "c0 {|b|=1}"      // Invalid key type
+                "c0 {|i8|=1}"     // Invalid key type
+                "c0 {|i16|=1}"    // Invalid key type
+                "c0 {|i32|=1}"    // Invalid key type
+                "c0 {|i64|=1}"    // Invalid key type
+                "c0 {|u8|=1}"     // Invalid key type
+                "c0 {|u16|=1}"    // Invalid key type
+                "c0 {|u32|=1}"    // Invalid key type
+                "c0 {|u64|=1}"    // Invalid key type
+                "c0 {|f16|=1}"    // Invalid key type
+                "c0 {|f32|=1}"    // Invalid key type
+                "c0 {|f64|=1}"    // Invalid key type
+                "c0 {|u|=1}"      // Invalid key type
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Markup"
+            "encodeDecode" = [
+                {"events"=["v 0" "mu x" "e" "e"] "document"="c0\n<x>"}
+                {"events"=["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "e"] "document"="c0\n<x 1=2 3=4>"}
+                {
+                    "events" = ["v 0" "mu x" "e" "s a" "e"]
+                    "document" = "\.^ c0
+<x;
+    a
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "s a" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    a
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "e" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x;
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "s blah" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    blah
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu x" "n 1" "n 2" "n 3" "n 4" "e" "s blah<>\\" "mu a" "e" "e" "e"]
+                    "document" = "\.^ c0
+<x 1=2 3=4;
+    blah\<\>\\
+    <a>
+>^"
+                }
+                {
+                    "events" = ["v 0" "mu XYZ"
+                                    "s string"              "null"
+                                    "n 10"                  "b false"
+                                    "rid https://x.org"     "n -1"
+                                    "n 1.6444453466e1000"   "n 1.5e20"
+                                    "b true"                "n nan"
+                                    "t 2050-12-31"          "n snan"
+                                    "t 2123-01-01/12:04:54" "n inf"
+                                    "n 1"                   "n -inf"
+                                    "n 2"                   "s string"
+                                    "n 3"                   "rid https://concise-encoding.org"
+                                    "n 4"                   "l" "e"
+                                    "n 5"                   "m" "e"
+                                    "uid cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884"  "mu blah" "e" "e"
+                                "e" "s Some text" "e"]
+                    "document" = "\.^ c0
+<XYZ "string"=null 10=false @"https://x.org"=-1 1.6444453466e+1000=1.5e+20 true=nan 2050-12-31=snan 2123-01-01/12:04:54=inf 1=-inf 2="string" 3=@"https://concise-encoding.org" 4=[] 5={} cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884=<blah>;
+    Some text
+>^"
+                }
+            ]
+            "decodeEncode" = [
+                {"document"="c0 <x>"                     "events"=["v 0" "mu x" "e" "e"]}
+                {"document"="c0 <x;>"                    "events"=["v 0" "mu x" "e" "e"]}
+                {"document"="c0 <x;Blah blah>"           "events"=["v 0" "mu x" "e" "s Blah blah" "e"]}
+                {"document"="c0 <x \"a\"=1>"             "events"=["v 0" "mu x" "s a" "n 1" "e" "e"]}
+                {"document"="c0 <x \"a\"=1; Some text>"  "events"=["v 0" "mu x" "s a" "n 1" "e" "s Some text" "e"]}
+            ]
+            "decodeFail" = [
+                "c0 <"              // Missing identifier
+                "c0 <x"             // Missing terminator
+                "c0 <x]"            // Wrong terminator
+                "c0 <x}"            // Wrong terminator
+                "c0 <x)"            // Wrong terminator
+                "c0 <x 1>"          // Missing value
+                "c0 <x 1;a>"        // Missing value
+                "c0 <x 1=>"         // Missing value
+                "c0 <x 1=;a>"       // Missing value
+                "c0 <x 1:2>"        // Bad separator
+                "c0 <x 1:2;a>"      // Bad separator
+                "c0 <x null=1>"     // Invalid key type
+                "c0 <x nan=1>"      // Invalid key type
+                "c0 <x snan=1>"     // Invalid key type
+                "c0 <x []=1>"       // Invalid key type
+                "c0 <x {}=1>"       // Invalid key type
+                "c0 <x <blah>=1>"   // Invalid key type
+                "c0 <x (1)=1>"      // Invalid key type
+                "c0 <x @(1 2 3)=1>" // Invalid key type
+                "c0 <x |ct a|=1>"   // Invalid key type
+                "c0 <x |cb 00|=1>"  // Invalid key type
+                "c0 <x |b|=1>"      // Invalid key type
+                "c0 <x |i8|=1>"     // Invalid key type
+                "c0 <x |i16|=1>"    // Invalid key type
+                "c0 <x |i32|=1>"    // Invalid key type
+                "c0 <x |i64|=1>"    // Invalid key type
+                "c0 <x |u8|=1>"     // Invalid key type
+                "c0 <x |u16|=1>"    // Invalid key type
+                "c0 <x |u32|=1>"    // Invalid key type
+                "c0 <x |u64|=1>"    // Invalid key type
+                "c0 <x |f16|=1>"    // Invalid key type
+                "c0 <x |f32|=1>"    // Invalid key type
+                "c0 <x |f64|=1>"    // Invalid key type
+                "c0 <x |u|=1>"      // Invalid key type
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Node"
+            "encodeDecode" = [
+                {"events"=["v 0" "node" "n 1" "e"] "document"="c0\n(1\n)"}
+                {
+                    "events" = ["v 0" "node" "null"
+                                    "b false"
+                                    "n -1"
+                                    "node" "n 1.5e20"
+                                        "n nan"
+                                        "n snan"
+                                    "e"
+                                    "node" "n inf"
+                                        "n -inf"
+                                        "s string"
+                                        "rid https://concise-encoding.org"
+                                    "e"
+                                    "node" "l" "e"
+                                        "m" "e"
+                                        "mu blah" "e" "e"
+                                    "e"
+                                "e"]
+                    "document"="\.^ c0
+(null
+    false
+    -1
+    (1.5e+20
+        nan
+        snan
+    )
+    (inf
+        -inf
+        "string"
+        @"https://concise-encoding.org"
+    )
+    ([]
+        {}
+        <blah>
+    )
+)^"
+                }
+            ]
+            "decodeEncode" = [
+                {"document"="c0 (1)"  "events"=["v 0" "node" "n 1" "e"]}
+            ]
+            "decodeFail" = [
+                "c0 ("   // Missing value
+                "c0 (1"  // Missing terminator
+                "c0 (1}" // Wrong terminator
+                "c0 (1>" // Wrong terminator
+                "c0 (1]" // Wrong terminator
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Edge"
+            "encodeDecode" = [
+                {"events"=["v 0" "edge" "n 1" "n 2" "n 3"] "document"="c0\n@(1 2 3)"}
+                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14"] "document"="c0\n@(nan \"x\" 2001-08-14)"}
+            ]
+            "decodeEncode" = [
+                {"document"="c0 @(1 2 3)"  "events"=["v 0" "edge" "n 1" "n 2" "n 3"]}
+                {"document"="c0 @(nan \"x\" 2001-08-14)"  "events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14"]}
+                {"document"="c0 @(@\"https://x.y\" 1.5 [1])"  "events"=["v 0" "edge" "rid https://x.y" "n 1.5" "l" "n 1" "e"]}
+            ]
+            "decodeFail" = [
+                "c0 @("       // Missing value
+                "c0 @(1"      // Missing value
+                "c0 @(1 2"    // Missing value
+                "c0 @(1 2 3"  // Missing terminator
+                "c0 @(1 2 3}" // Wrong terminator
+                "c0 @(1 2 3>" // Wrong terminator
+                "c0 @(1 2 3]" // Wrong terminator
+            ]
+        }
+
+        // ====================================================================
+
+    ]
+}

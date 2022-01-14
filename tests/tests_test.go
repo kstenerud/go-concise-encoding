@@ -47,12 +47,36 @@ func TestCE(t *testing.T) {
 	test_runner.RunCEUnitTests(t, "ce-basic.cte")
 }
 
-func TestCTE(t *testing.T) {
-	test_runner.RunCEUnitTests(t, "cte.cte")
+func TestCTEBasic(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cte-basic.cte")
 }
 
-func TestCBE(t *testing.T) {
-	test_runner.RunCEUnitTests(t, "cbe.cte")
+func TestCTEArrays(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cte-arrays.cte")
+}
+
+func TestCTEComment(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cte-comment.cte")
+}
+
+func TestCTEComplex(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cte-complex.cte")
+}
+
+func TestCTEContainers(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cte-containers.cte")
+}
+
+func TestCBEBasic(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cbe-basic.cte")
+}
+
+func TestCBEArrays(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cbe-arrays.cte")
+}
+
+func TestCBEContainers(t *testing.T) {
+	test_runner.RunCEUnitTests(t, "cbe-containers.cte")
 }
 
 func TestWebsiteExamples(t *testing.T) {
