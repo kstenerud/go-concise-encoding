@@ -12,7 +12,7 @@ c0
 c0
 null
             %%%%"
-            "cbe"    = |u8x 83 00 7e|
+            "cbe"    = |u8x 8f 00 7e|
             "events" = ["v 0" "null"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]
@@ -26,7 +26,7 @@ null
 c0
 |i8 1 -1|
             %%%%"
-            "cbe"    = |u8x 83 00 94 02 01 ff|
+            "cbe"    = |u8x 8f 00 94 02 01 ff|
             "events" = ["v 0" "ai8 1 -1"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]

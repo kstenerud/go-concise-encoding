@@ -45,7 +45,7 @@ func chooseUnmarshaler(identifier byte, opts *options.CEUnmarshalerOptions) (unm
 	switch identifier {
 	case 'c':
 		unmarshaler = cte.NewUnmarshaler(opts)
-	case 0x83:
+	case cbe.CBESignatureByte:
 		unmarshaler = cbe.NewUnmarshaler(opts)
 	default:
 		err = fmt.Errorf("%02d: Unknown CE identifier", identifier)

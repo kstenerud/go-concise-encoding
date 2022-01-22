@@ -12,13 +12,13 @@ c0
         {
             "name" = "Uint8 Array"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 95 06 01 02 03|  "events"=["v 0" "au8x 01 02 03"]}
+                {"document"=|u8x 8f 00 95 06 01 02 03|  "events"=["v 0" "au8x 01 02 03"]}
             ]
             "decode" = [
-                {"document"=|u8x 83 00 95 07 01 02 03 02 04|  "events"=["v 0" "au8b" "acm 3" "ad 01 02 03" "acl 1" "ad 04"]}
+                {"document"=|u8x 8f 00 95 07 01 02 03 02 04|  "events"=["v 0" "au8b" "acm 3" "ad 01 02 03" "acl 1" "ad 04"]}
             ]
             "decodeFail" = [
-                |u8x 83 00 95 01|        // Incomplete
+                |u8x 8f 00 95 01|        // Incomplete
             ]
         }
 
@@ -27,11 +27,11 @@ c0
         {
             "name" = "Uint16 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 10|                    "events"=["v 0" "au16x"]}
-                {"document"=|u8x 83 00 94 13 02 01 04 03 06 05|  "events"=["v 0" "au16x 0102 0304 0506"]}
+                {"document"=|u8x 8f 00 94 10|                    "events"=["v 0" "au16x"]}
+                {"document"=|u8x 8f 00 94 13 02 01 04 03 06 05|  "events"=["v 0" "au16x 0102 0304 0506"]}
                 {
                     "document"=|u8x
-                        83 00 94 1f
+                        8f 00 94 1f
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00
                     |
@@ -39,9 +39,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|           // Incomplete
-                |u8x 83 00 94 11|        // Incomplete
-                |u8x 83 00 94 13 01 02|  // Incomplete
+                |u8x 8f 00 94|           // Incomplete
+                |u8x 8f 00 94 11|        // Incomplete
+                |u8x 8f 00 94 13 01 02|  // Incomplete
             ]
         }
 
@@ -52,7 +52,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 fe 20
+                        8f 00 94 fe 20
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00
                     |
@@ -60,11 +60,11 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 fe 00|                    "events"=["v 0" "au16x"]}
-                {"document"=|u8x 83 00 94 fe 06 02 01 04 03 06 05|  "events"=["v 0" "au16x 0102 0304 0506"]}
+                {"document"=|u8x 8f 00 94 fe 00|                    "events"=["v 0" "au16x"]}
+                {"document"=|u8x 8f 00 94 fe 06 02 01 04 03 06 05|  "events"=["v 0" "au16x 0102 0304 0506"]}
                 {
                     "document"=|u8x
-                        83 00 94 fe 1e
+                        8f 00 94 fe 1e
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00
                     |
@@ -72,7 +72,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 fe
+                        8f 00 94 fe
                         05 02 01 04 03
                         1a 06 05 08 07 0a 09 0c 0b 0e 0d 01 00 02 00
                            03 00 04 00 05 00 06 00 07 00 08 00
@@ -86,9 +86,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 fe|     // Incomplete
-                |u8x 83 00 94 fe 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 fe|     // Incomplete
+                |u8x 8f 00 94 fe 02|  // Incomplete
             ]
         }
 
@@ -97,11 +97,11 @@ c0
         {
             "name" = "Uint32 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 30|                    "events"=["v 0" "au32x"]}
-                {"document"=|u8x 83 00 94 33 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["v 0" "au32x 01020304 05060708 090a0b0c"]}
+                {"document"=|u8x 8f 00 94 30|                    "events"=["v 0" "au32x"]}
+                {"document"=|u8x 8f 00 94 33 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["v 0" "au32x 01020304 05060708 090a0b0c"]}
                 {
                     "document" = |u8x
-                        83 00 94 3f
+                        8f 00 94 3f
                         04 03 02 01 08 07 06 05 0c 0b 0a 09 00 0f 0e 0d
                         14 13 12 11 18 17 16 15 1c 1b 1a 19 10 1f 1e 1d
                         24 23 22 21 28 27 26 25 2c 2b 2a 29 20 2f 2e 2d
@@ -118,9 +118,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 31|           // Incomplete
-                |u8x 83 00 94 33 01 02 03|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 31|           // Incomplete
+                |u8x 8f 00 94 33 01 02 03|  // Incomplete
             ]
         }
 
@@ -131,7 +131,7 @@ c0
             "decodeEncode" = [
                 {
                     "document" = |u8x
-                        83 00 94 fc 20
+                        8f 00 94 fc 20
                         04 03 02 01 08 07 06 05 0c 0b 0a 09 00 0f 0e 0d
                         14 13 12 11 18 17 16 15 1c 1b 1a 19 10 1f 1e 1d
                         24 23 22 21 28 27 26 25 2c 2b 2a 29 20 2f 2e 2d
@@ -148,11 +148,11 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 fc 00|                    "events"=["v 0" "au32x"]}
-                {"document"=|u8x 83 00 94 fc 06 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["v 0" "au32x 01020304 05060708 090a0b0c"]}
+                {"document"=|u8x 8f 00 94 fc 00|                    "events"=["v 0" "au32x"]}
+                {"document"=|u8x 8f 00 94 fc 06 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["v 0" "au32x 01020304 05060708 090a0b0c"]}
                 {
                     "document" = |u8x
-                        83 00 94 fc 1e
+                        8f 00 94 fc 1e
                         04 03 02 01 08 07 06 05 0c 0b 0a 09 00 0f 0e 0d
                         14 13 12 11 18 17 16 15 1c 1b 1a 19 10 1f 1e 1d
                         24 23 22 21 28 27 26 25 2c 2b 2a 29 20 2f 2e 2d
@@ -169,7 +169,7 @@ c0
                 }
                 {
                     "document" = |u8x
-                        83 00 94 fc
+                        8f 00 94 fc
                         07
                         04 03 02 01 08 07 06 05 0c 0b 0a 09
                         18
@@ -189,9 +189,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 fc|     // Incomplete
-                |u8x 83 00 94 fc 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 fc|     // Incomplete
+                |u8x 8f 00 94 fc 02|  // Incomplete
             ]
         }
 
@@ -200,14 +200,14 @@ c0
         {
             "name" = "Uint64 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 50|  "events"=["v 0" "au64x"]}
+                {"document"=|u8x 8f 00 94 50|  "events"=["v 0" "au64x"]}
                 {
-                    "document"=|u8x 83 00 94 52 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
+                    "document"=|u8x 8f 00 94 52 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
                     "events"=["v 0" "au64x 0102030405060708 090a0b0c0d0e0f00"]
                 }
                 {
                     "document" = |u8x
-                        83 00 94 5f
+                        8f 00 94 5f
                         08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
                         18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
                         28 27 26 25 24 23 22 21 20 2f 2e 2d 2c 2b 2a 29
@@ -232,9 +232,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 51|           // Incomplete
-                |u8x 83 00 94 53 01 02 03|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 51|           // Incomplete
+                |u8x 8f 00 94 53 01 02 03|  // Incomplete
             ]
         }
 
@@ -245,7 +245,7 @@ c0
             "decodeEncode" = [
                 {
                     "document" = |u8x
-                        83 00 94 fa 20
+                        8f 00 94 fa 20
                         08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
                         18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
                         28 27 26 25 24 23 22 21 20 2f 2e 2d 2c 2b 2a 29
@@ -270,14 +270,14 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 fa 00|  "events"=["v 0" "au64x"]}
+                {"document"=|u8x 8f 00 94 fa 00|  "events"=["v 0" "au64x"]}
                 {
-                    "document"=|u8x 83 00 94 fa 04 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
+                    "document"=|u8x 8f 00 94 fa 04 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
                     "events"=["v 0" "au64x 0102030405060708 090a0b0c0d0e0f00"]
                 }
                 {
                     "document" = |u8x
-                        83 00 94 fa 1e
+                        8f 00 94 fa 1e
                         08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
                         18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
                         28 27 26 25 24 23 22 21 20 2f 2e 2d 2c 2b 2a 29
@@ -302,7 +302,7 @@ c0
                 }
                 {
                     "document" = |u8x
-                        83 00 94 fa
+                        8f 00 94 fa
                         03
                         08 07 06 05 04 03 02 01
                         1c
@@ -330,10 +330,10 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|           // Incomplete
-                |u8x 83 00 94 fa|        // Incomplete
-                |u8x 83 00 94 fa 02|     // Incomplete
-                |u8x 83 00 94 fa 02 01|  // Incomplete
+                |u8x 8f 00 94|           // Incomplete
+                |u8x 8f 00 94 fa|        // Incomplete
+                |u8x 8f 00 94 fa 02|     // Incomplete
+                |u8x 8f 00 94 fa 02 01|  // Incomplete
             ]
         }
 
@@ -342,17 +342,17 @@ c0
         {
             "name" = "Int8 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 00|                 "events"=["v 0" "ai8"]}
-                {"document"=|u8x 83 00 94 05 fe ff 00 01 02|  "events"=["v 0" "ai8 -2 -1 0 1 2"]}
+                {"document"=|u8x 8f 00 94 00|                 "events"=["v 0" "ai8"]}
+                {"document"=|u8x 8f 00 94 05 fe ff 00 01 02|  "events"=["v 0" "ai8 -2 -1 0 1 2"]}
                 {
-                    "document"=|u8x 83 00 94 0f f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
+                    "document"=|u8x 8f 00 94 0f f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
                     "events"=["v 0" "ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|           // Incomplete
-                |u8x 83 00 94 01|        // Incomplete
-                |u8x 83 00 94 03 01 02|  // Incomplete
+                |u8x 8f 00 94|           // Incomplete
+                |u8x 8f 00 94 01|        // Incomplete
+                |u8x 8f 00 94 03 01 02|  // Incomplete
             ]
         }
 
@@ -362,20 +362,20 @@ c0
             "name" = "Int8 Array (Long)"
             "decodeEncode" = [
                 {
-                    "document"=|u8x 83 00 94 ff 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08|
+                    "document"=|u8x 8f 00 94 ff 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08|
                     "events"=["v 0" "ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 ff 00|                 "events"=["v 0" "ai8"]}
-                {"document"=|u8x 83 00 94 ff 0a fe ff 00 01 02|  "events"=["v 0" "ai8 -2 -1 0 1 2"]}
+                {"document"=|u8x 8f 00 94 ff 00|                 "events"=["v 0" "ai8"]}
+                {"document"=|u8x 8f 00 94 ff 0a fe ff 00 01 02|  "events"=["v 0" "ai8 -2 -1 0 1 2"]}
                 {
-                    "document"=|u8x 83 00 94 ff 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
+                    "document"=|u8x 8f 00 94 ff 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
                     "events"=["v 0" "ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 ff
+                        8f 00 94 ff
                         03 f9 03 fa 03 fb 03 fc 03 fd 03 fe 03 ff
                         03 00 03 01 03 02 03 03 03 04 03 05 03 06 02 07
                     |
@@ -399,9 +399,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 ff|     // Incomplete
-                |u8x 83 00 94 ff 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 ff|     // Incomplete
+                |u8x 8f 00 94 ff 02|  // Incomplete
             ]
         }
 
@@ -410,14 +410,14 @@ c0
         {
             "name" = "Int16 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 20|                 "events"=["v 0" "ai16"]}
+                {"document"=|u8x 8f 00 94 20|                 "events"=["v 0" "ai16"]}
                 {
-                    "document"=|u8x 83 00 94 25 fe ff ff ff 00 00 01 00 02 00|
+                    "document"=|u8x 8f 00 94 25 fe ff ff ff 00 00 01 00 02 00|
                     "events"=["v 0" "ai16 -2 -1 0 1 2"]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 2f
+                        8f 00 94 2f
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
                     |
@@ -425,9 +425,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 21|           // Incomplete
-                |u8x 83 00 94 23 01 02 03|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 21|           // Incomplete
+                |u8x 8f 00 94 23 01 02 03|  // Incomplete
             ]
         }
 
@@ -438,7 +438,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 fd 20
+                        8f 00 94 fd 20
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00
                     |
@@ -446,11 +446,11 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 fd 00|                                "events"=["v 0" "ai16"]}
-                {"document"=|u8x 83 00 94 fd 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["v 0" "ai16 -2 -1 0 1 2"]}
+                {"document"=|u8x 8f 00 94 fd 00|                                "events"=["v 0" "ai16"]}
+                {"document"=|u8x 8f 00 94 fd 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["v 0" "ai16 -2 -1 0 1 2"]}
                 {
                     "document"=|u8x
-                        83 00 94 fd 1e
+                        8f 00 94 fd 1e
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
                     |
@@ -458,7 +458,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 fd
+                        8f 00 94 fd
                         0b f9 ff fa ff fb ff fc ff fd ff
                         14 fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
                     |
@@ -470,9 +470,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 fd|     // Incomplete
-                |u8x 83 00 94 fd 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 fd|     // Incomplete
+                |u8x 8f 00 94 fd 02|  // Incomplete
             ]
         }
 
@@ -481,17 +481,17 @@ c0
         {
             "name" = "Int32 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 40|                 "events"=["v 0" "ai32"]}
+                {"document"=|u8x 8f 00 94 40|                 "events"=["v 0" "ai32"]}
                 {
                     "document"=|u8x
-                        83 00 94 45
+                        8f 00 94 45
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                     |
                     "events"=["v 0" "ai32 -2 -1 0 1 2"]
                 }
                 {
                     "document"=|u8x 
-                        83 00 94 4f
+                        8f 00 94 4f
                         f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                         03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
@@ -500,9 +500,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 41|           // Incomplete
-                |u8x 83 00 94 43 01 02 03|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 41|           // Incomplete
+                |u8x 8f 00 94 43 01 02 03|  // Incomplete
             ]
         }
 
@@ -513,7 +513,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 fb 20
+                        8f 00 94 fb 20
                         f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                         03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
@@ -523,17 +523,17 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 fb 00|  "events"=["v 0" "ai32"]}
+                {"document"=|u8x 8f 00 94 fb 00|  "events"=["v 0" "ai32"]}
                 {
                     "document"=|u8x
-                        83 00 94 fb 0a
+                        8f 00 94 fb 0a
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                     |
                     "events"=["v 0" "ai32 -2 -1 0 1 2"]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 fb 1e
+                        8f 00 94 fb 1e
                         f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                         03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
@@ -542,7 +542,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 fb
+                        8f 00 94 fb
                         05
                         f9 ff ff ff fa ff ff ff
                         1a
@@ -562,9 +562,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 fb|     // Incomplete
-                |u8x 83 00 94 fb 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 fb|     // Incomplete
+                |u8x 8f 00 94 fb 02|  // Incomplete
             ]
         }
 
@@ -573,10 +573,10 @@ c0
         {
             "name" = "Int64 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 60|                 "events"=["v 0" "ai64"]}
+                {"document"=|u8x 8f 00 94 60|                 "events"=["v 0" "ai64"]}
                 {
                     "document"=|u8x
-                        83 00 94 65
+                        8f 00 94 65
                         fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
                         00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
                         02 00 00 00 00 00 00 00
@@ -585,7 +585,7 @@ c0
                 }
                 {
                     "document"=|u8x 
-                        83 00 94 6f
+                        8f 00 94 6f
                         f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
                         fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
                         fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff
@@ -599,9 +599,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 61|           // Incomplete
-                |u8x 83 00 94 63 01 02 03|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 61|           // Incomplete
+                |u8x 8f 00 94 63 01 02 03|  // Incomplete
             ]
         }
 
@@ -612,7 +612,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 f9 20
+                        8f 00 94 f9 20
                         f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
                         fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
                         fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff
@@ -626,10 +626,10 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 f9 00|  "events"=["v 0" "ai64"]}
+                {"document"=|u8x 8f 00 94 f9 00|  "events"=["v 0" "ai64"]}
                 {
                     "document"=|u8x
-                        83 00 94 f9 0a
+                        8f 00 94 f9 0a
                         fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
                         00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
                         02 00 00 00 00 00 00 00
@@ -638,7 +638,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f9 1e
+                        8f 00 94 f9 1e
                         f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
                         fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
                         fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff
@@ -652,7 +652,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f9
+                        8f 00 94 f9
                         05
                         f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
                         1a
@@ -680,9 +680,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 f9|     // Incomplete
-                |u8x 83 00 94 f9 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 f9|     // Incomplete
+                |u8x 8f 00 94 f9 02|  // Incomplete
             ]
         }
 
@@ -691,11 +691,11 @@ c0
         {
             "name" = "Float16 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 70|              "events"=["v 0" "af16"]}
-                {"document"=|u8x 83 00 94 72 a8 40 fc b5|  "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
+                {"document"=|u8x 8f 00 94 70|              "events"=["v 0" "af16"]}
+                {"document"=|u8x 8f 00 94 72 a8 40 fc b5|  "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
                 {
                     "document"=|u8x
-                        83 00 94 7f
+                        8f 00 94 7f
                         a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
                     |
@@ -703,9 +703,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 71|           // Incomplete
-                |u8x 83 00 94 72 01 02 03|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 71|           // Incomplete
+                |u8x 8f 00 94 72 01 02 03|  // Incomplete
             ]
         }
 
@@ -716,7 +716,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 f8 20
+                        8f 00 94 f8 20
                         a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00 00 00
                     |
@@ -724,11 +724,11 @@ c0
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 f8 00|              "events"=["v 0" "af16"]}
-                {"document"=|u8x 83 00 94 f8 04 a8 40 fc b5|  "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
+                {"document"=|u8x 8f 00 94 f8 00|              "events"=["v 0" "af16"]}
+                {"document"=|u8x 8f 00 94 f8 04 a8 40 fc b5|  "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
                 {
                     "document"=|u8x
-                        83 00 94 f8 1e
+                        8f 00 94 f8 1e
                         a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
                     |
@@ -736,7 +736,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f8
+                        8f 00 94 f8
                         0b
                         a8 40 fc b5 c1 ff c1 7f cf 7f
                         14
@@ -750,9 +750,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 f8|     // Incomplete
-                |u8x 83 00 94 f8 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 f8|     // Incomplete
+                |u8x 8f 00 94 f8 02|  // Incomplete
             ]
         }
 
@@ -761,14 +761,14 @@ c0
         {
             "name" = "Float32 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 80|              "events"=["v 0" "af32"]}
+                {"document"=|u8x 8f 00 94 80|              "events"=["v 0" "af32"]}
                 {
-                    "document"=|u8x 83 00 94 82 00 c8 fc b5 00 b1 48 d0|
+                    "document"=|u8x 8f 00 94 82 00 c8 fc b5 00 b1 48 d0|
                     "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30"]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 8f
+                        8f 00 94 8f
                         00 c8 fc b5 00 b1 48 d0
                         01 00 cf ff 01 00 cf 7f 01 ff cf ff
                         01 00 8f ff 01 00 8f 7f 01 ff 8f ff
@@ -779,8 +779,8 @@ c0
                     "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]}
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 81 00 00 00|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 81 00 00 00|  // Incomplete
             ]
         }
 
@@ -791,7 +791,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 f7 20
+                        8f 00 94 f7 20
                         00 c8 fc b5 00 b1 48 d0
                         01 00 cf ff 01 00 cf 7f 01 ff cf ff
                         01 00 8f ff 01 00 8f 7f 01 ff 8f ff
@@ -803,11 +803,11 @@ c0
                  }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 f7 00|              "events"=["v 0" "af32"]}
-                {"document"=|u8x 83 00 94 f7 04 00 c8 fc b5 00 b1 48 d0|  "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30"]}
+                {"document"=|u8x 8f 00 94 f7 00|              "events"=["v 0" "af32"]}
+                {"document"=|u8x 8f 00 94 f7 04 00 c8 fc b5 00 b1 48 d0|  "events"=["v 0" "af32 -0x1.f99p-20 -0xc.8b1p30"]}
                 {
                     "document"=|u8x
-                        83 00 94 f7 1e
+                        8f 00 94 f7 1e
                         00 c8 fc b5 00 b1 48 d0
                         01 00 cf ff 01 00 cf 7f 01 ff cf ff
                         01 00 8f ff 01 00 8f 7f 01 ff 8f ff
@@ -819,7 +819,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f7
+                        8f 00 94 f7
                         03
                         00 c8 fc b5
                         1c
@@ -841,9 +841,9 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 f7|     // Incomplete
-                |u8x 83 00 94 f7 02|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 f7|     // Incomplete
+                |u8x 8f 00 94 f7 02|  // Incomplete
             ]
         }
 
@@ -852,14 +852,14 @@ c0
         {
             "name" = "Float64 Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 90|              "events"=["v 0" "af64"]}
+                {"document"=|u8x 8f 00 94 90|              "events"=["v 0" "af64"]}
                 {
-                    "document"=|u8x 83 00 94 92 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
+                    "document"=|u8x 8f 00 94 92 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
                     "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 9f
+                        8f 00 94 9f
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
                         01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
                         01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
@@ -871,8 +871,8 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 91 00 00 00 00 00 00 00|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 91 00 00 00 00 00 00 00|  // Incomplete
             ]
         }
 
@@ -883,7 +883,7 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 f6 20
+                        8f 00 94 f6 20
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
                         01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
                         01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
@@ -895,14 +895,14 @@ c0
                  }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 f6 00|              "events"=["v 0" "af64"]}
+                {"document"=|u8x 8f 00 94 f6 00|              "events"=["v 0" "af64"]}
                 {
-                    "document"=|u8x 83 00 94 f6 04 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
+                    "document"=|u8x 8f 00 94 f6 04 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
                     "events"=["v 0" "af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f6 1e
+                        8f 00 94 f6 1e
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
                         01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
                         01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
@@ -914,7 +914,7 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f6
+                        8f 00 94 f6
                         03
                         00 00 cc ea f1 7f 32 be
                         1c
@@ -938,10 +938,10 @@ c0
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 f6|     // Incomplete
-                |u8x 83 00 94 f6 02|  // Incomplete
-                |u8x 83 00 94 f6 02 00|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 f6|     // Incomplete
+                |u8x 8f 00 94 f6 02|  // Incomplete
+                |u8x 8f 00 94 f6 02 00|  // Incomplete
             ]
         }
 
@@ -950,10 +950,10 @@ c0
         {
             "name" = "UID Array (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 a0|              "events"=["v 0" "au"]}
+                {"document"=|u8x 8f 00 94 a0|              "events"=["v 0" "au"]}
                 {
                     "document"=|u8x
-                        83 00 94 a2
+                        8f 00 94 a2
                         2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
                         2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
                     |
@@ -964,45 +964,45 @@ c0
                 }
                 {
                     "document"=|u8x
-                        83 00 94 af
-                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
-                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
-                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
-                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
-                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
-                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
-                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
-                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
-                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
-                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
-                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
-                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
-                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
-                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
-                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        8f 00 94 af
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                     |
                     "events"=["v 0" "au
-                        836f3554-707f-11ec-a6a1-6f76dee406ec
-                        836f6466-707f-11ec-a425-335b61d32dfc
-                        836f9198-707f-11ec-a1d5-9b6bce592067
-                        836fc032-707f-11ec-9aab-13947004ca3a
-                        836ff0fc-707f-11ec-9da2-5b5d31a03ba4
-                        83701d3e-707f-11ec-a13e-b7aaa92e5adb
-                        8370482c-707f-11ec-a05a-8bf071944e58
-                        837073ce-707f-11ec-b1ba-67eddde89cc7
-                        8370a722-707f-11ec-9e1e-db4c4ba4166d
-                        8370dbe8-707f-11ec-b847-5b92031104ff
-                        83711bbc-707f-11ec-9e07-ffd7def4c924
-                        83714dd0-707f-11ec-a3a6-334fbbbeb811
-                        83717b02-707f-11ec-8587-ff7c836240f2
-                        8371a866-707f-11ec-b1f9-9b1f8586fae4
-                        8371d732-707f-11ec-b679-9f0d9e42a6f0
+                        8f6f3554-707f-11ec-a6a1-6f76dee406ec
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
                     "]}
             ]
             "decodeFail" = [
-                |u8x 83 00 94|              // Incomplete
-                |u8x 83 00 94 a1|           // Incomplete
-                |u8x 83 00 94 a2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|  // Incomplete
+                |u8x 8f 00 94|              // Incomplete
+                |u8x 8f 00 94 a1|           // Incomplete
+                |u8x 8f 00 94 a2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|  // Incomplete
             ]
         }
 
@@ -1013,49 +1013,49 @@ c0
             "decodeEncode" = [
                 {
                     "document"=|u8x
-                        83 00 94 f5 20
-                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
-                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
-                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
-                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
-                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
-                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
-                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
-                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
-                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
-                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
-                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
-                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
-                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
-                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
-                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        8f 00 94 f5 20
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                         e3 db 8a b4 70 7f 11 ec b9 a7 9f b7 52 e6 24 8a
                     |
                     "events"=["v 0" "au
-                        836f3554-707f-11ec-a6a1-6f76dee406ec
-                        836f6466-707f-11ec-a425-335b61d32dfc
-                        836f9198-707f-11ec-a1d5-9b6bce592067
-                        836fc032-707f-11ec-9aab-13947004ca3a
-                        836ff0fc-707f-11ec-9da2-5b5d31a03ba4
-                        83701d3e-707f-11ec-a13e-b7aaa92e5adb
-                        8370482c-707f-11ec-a05a-8bf071944e58
-                        837073ce-707f-11ec-b1ba-67eddde89cc7
-                        8370a722-707f-11ec-9e1e-db4c4ba4166d
-                        8370dbe8-707f-11ec-b847-5b92031104ff
-                        83711bbc-707f-11ec-9e07-ffd7def4c924
-                        83714dd0-707f-11ec-a3a6-334fbbbeb811
-                        83717b02-707f-11ec-8587-ff7c836240f2
-                        8371a866-707f-11ec-b1f9-9b1f8586fae4
-                        8371d732-707f-11ec-b679-9f0d9e42a6f0
+                        8f6f3554-707f-11ec-a6a1-6f76dee406ec
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
                         e3db8ab4-707f-11ec-b9a7-9fb752e6248a
                     "]
                  }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 94 f5 00|              "events"=["v 0" "au"]}
+                {"document"=|u8x 8f 00 94 f5 00|              "events"=["v 0" "au"]}
                 {
                     "document"=|u8x
-                        83 00 94 f5 04
+                        8f 00 94 f5 04
                         2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
                         2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
                     |
@@ -1065,87 +1065,87 @@ c0
                     "]}
                 {
                     "document"=|u8x
-                        83 00 94 f5 1e
-                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
-                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
-                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
-                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
-                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
-                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
-                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
-                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
-                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
-                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
-                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
-                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
-                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
-                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
-                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        8f 00 94 f5 1e
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                     |
                     "events"=["v 0" "au
-                        836f3554-707f-11ec-a6a1-6f76dee406ec
-                        836f6466-707f-11ec-a425-335b61d32dfc
-                        836f9198-707f-11ec-a1d5-9b6bce592067
-                        836fc032-707f-11ec-9aab-13947004ca3a
-                        836ff0fc-707f-11ec-9da2-5b5d31a03ba4
-                        83701d3e-707f-11ec-a13e-b7aaa92e5adb
-                        8370482c-707f-11ec-a05a-8bf071944e58
-                        837073ce-707f-11ec-b1ba-67eddde89cc7
-                        8370a722-707f-11ec-9e1e-db4c4ba4166d
-                        8370dbe8-707f-11ec-b847-5b92031104ff
-                        83711bbc-707f-11ec-9e07-ffd7def4c924
-                        83714dd0-707f-11ec-a3a6-334fbbbeb811
-                        83717b02-707f-11ec-8587-ff7c836240f2
-                        8371a866-707f-11ec-b1f9-9b1f8586fae4
-                        8371d732-707f-11ec-b679-9f0d9e42a6f0
+                        8f6f3554-707f-11ec-a6a1-6f76dee406ec
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
                     "]
                 }
                 {
                     "document"=|u8x
-                        83 00 94 f5
+                        8f 00 94 f5
                         03
-                        83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
                         1c
-                        83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
-                        83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
-                        83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
-                        83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
-                        83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
-                        83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
-                        83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
-                        83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
-                        83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
-                        83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
-                        83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
-                        83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
-                        83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
-                        83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                     |
                     "events"=[
                         "v 0" "aub"
-                        "acm 1" "ad 83 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec"
+                        "acm 1" "ad 8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec"
                         "acl 14" "ad
-                            83 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
-                            83 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
-                            83 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
-                            83 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
-                            83 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
-                            83 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
-                            83 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
-                            83 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
-                            83 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
-                            83 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
-                            83 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
-                            83 71 7b 02 70 7f 11 ec 85 87 ff 7c 83 62 40 f2
-                            83 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
-                            83 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                            8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                            8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                            8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                            8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                            8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                            8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                            8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                            8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                            8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                            8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                            8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                            8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                            8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                            8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                     "]
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94|        // Incomplete
-                |u8x 83 00 94 f5|     // Incomplete
-                |u8x 83 00 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|  // Incomplete
+                |u8x 8f 00 94|        // Incomplete
+                |u8x 8f 00 94 f5|     // Incomplete
+                |u8x 8f 00 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|  // Incomplete
             ]
         }
 
@@ -1154,16 +1154,16 @@ c0
         {
             "name" = "Bit Array"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 96 00|  "events"=["v 0" "ab"]}
-                {"document"=|u8x 83 00 96 02 01|  "events"=["v 0" "ab 1"]}
-                {"document"=|u8x 83 00 96 04 01|  "events"=["v 0" "ab 10"]}
-                {"document"=|u8x 83 00 96 06 05|  "events"=["v 0" "ab 101"]}
-                {"document"=|u8x 83 00 96 3e 4d 29 6b 52|  "events"=["v 0" "ab 1011001010010100110101100100101"]}
+                {"document"=|u8x 8f 00 96 00|  "events"=["v 0" "ab"]}
+                {"document"=|u8x 8f 00 96 02 01|  "events"=["v 0" "ab 1"]}
+                {"document"=|u8x 8f 00 96 04 01|  "events"=["v 0" "ab 10"]}
+                {"document"=|u8x 8f 00 96 06 05|  "events"=["v 0" "ab 101"]}
+                {"document"=|u8x 8f 00 96 3e 4d 29 6b 52|  "events"=["v 0" "ab 1011001010010100110101100100101"]}
             ]
             "decode" = [
                 {
                     "document"=|u8x
-                        83 00 96
+                        8f 00 96
                         07 05
                         02 01
                     |
@@ -1176,9 +1176,9 @@ c0
 
             ]
             "decodeFail" = [
-                |u8x 83 00 96|        // Incomplete
-                |u8x 83 00 96 02|     // Incomplete
-                |u8x 83 00 96 20 00|  // Incomplete
+                |u8x 8f 00 96|        // Incomplete
+                |u8x 8f 00 96 02|     // Incomplete
+                |u8x 8f 00 96 20 00|  // Incomplete
             ]
         }
 
@@ -1187,39 +1187,39 @@ c0
         {
             "name" = "String (Short)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 80|                                               "events"=["v 0" "s "]}
-                {"document"=|u8x 83 00 81 61|                                            "events"=["v 0" "s a"]}
-                {"document"=|u8x 83 00 82 61 61|                                         "events"=["v 0" "s aa"]}
-                {"document"=|u8x 83 00 83 61 61 61|                                      "events"=["v 0" "s aaa"]}
-                {"document"=|u8x 83 00 84 61 61 61 61|                                   "events"=["v 0" "s aaaa"]}
-                {"document"=|u8x 83 00 85 61 61 61 61 61|                                "events"=["v 0" "s aaaaa"]}
-                {"document"=|u8x 83 00 86 61 61 61 61 61 61|                             "events"=["v 0" "s aaaaaa"]}
-                {"document"=|u8x 83 00 87 61 61 61 61 61 61 61|                          "events"=["v 0" "s aaaaaaa"]}
-                {"document"=|u8x 83 00 88 61 61 61 61 61 61 61 61|                       "events"=["v 0" "s aaaaaaaa"]}
-                {"document"=|u8x 83 00 89 61 61 61 61 61 61 61 61 61|                    "events"=["v 0" "s aaaaaaaaa"]}
-                {"document"=|u8x 83 00 8a 61 61 61 61 61 61 61 61 61 61|                 "events"=["v 0" "s aaaaaaaaaa"]}
-                {"document"=|u8x 83 00 8b 61 61 61 61 61 61 61 61 61 61 61|              "events"=["v 0" "s aaaaaaaaaaa"]}
-                {"document"=|u8x 83 00 8c 61 61 61 61 61 61 61 61 61 61 61 61|           "events"=["v 0" "s aaaaaaaaaaaa"]}
-                {"document"=|u8x 83 00 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|        "events"=["v 0" "s aaaaaaaaaaaaa"]}
-                {"document"=|u8x 83 00 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|     "events"=["v 0" "s aaaaaaaaaaaaaa"]}
-                {"document"=|u8x 83 00 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|  "events"=["v 0" "s aaaaaaaaaaaaaaa"]}
+                {"document"=|u8x 8f 00 80|                                               "events"=["v 0" "s "]}
+                {"document"=|u8x 8f 00 81 61|                                            "events"=["v 0" "s a"]}
+                {"document"=|u8x 8f 00 82 61 61|                                         "events"=["v 0" "s aa"]}
+                {"document"=|u8x 8f 00 83 61 61 61|                                      "events"=["v 0" "s aaa"]}
+                {"document"=|u8x 8f 00 84 61 61 61 61|                                   "events"=["v 0" "s aaaa"]}
+                {"document"=|u8x 8f 00 85 61 61 61 61 61|                                "events"=["v 0" "s aaaaa"]}
+                {"document"=|u8x 8f 00 86 61 61 61 61 61 61|                             "events"=["v 0" "s aaaaaa"]}
+                {"document"=|u8x 8f 00 87 61 61 61 61 61 61 61|                          "events"=["v 0" "s aaaaaaa"]}
+                {"document"=|u8x 8f 00 88 61 61 61 61 61 61 61 61|                       "events"=["v 0" "s aaaaaaaa"]}
+                {"document"=|u8x 8f 00 89 61 61 61 61 61 61 61 61 61|                    "events"=["v 0" "s aaaaaaaaa"]}
+                {"document"=|u8x 8f 00 8a 61 61 61 61 61 61 61 61 61 61|                 "events"=["v 0" "s aaaaaaaaaa"]}
+                {"document"=|u8x 8f 00 8b 61 61 61 61 61 61 61 61 61 61 61|              "events"=["v 0" "s aaaaaaaaaaa"]}
+                {"document"=|u8x 8f 00 8c 61 61 61 61 61 61 61 61 61 61 61 61|           "events"=["v 0" "s aaaaaaaaaaaa"]}
+                {"document"=|u8x 8f 00 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|        "events"=["v 0" "s aaaaaaaaaaaaa"]}
+                {"document"=|u8x 8f 00 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|     "events"=["v 0" "s aaaaaaaaaaaaaa"]}
+                {"document"=|u8x 8f 00 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|  "events"=["v 0" "s aaaaaaaaaaaaaaa"]}
             ]
             "decodeFail" = [
-                |u8x 83 00 81|                                           // Incomplete
-                |u8x 83 00 82 61|                                        // Incomplete
-                |u8x 83 00 83 61 61|                                     // Incomplete
-                |u8x 83 00 84 61 61 61|                                  // Incomplete
-                |u8x 83 00 85 61 61 61 61|                               // Incomplete
-                |u8x 83 00 86 61 61 61 61 61|                            // Incomplete
-                |u8x 83 00 87 61 61 61 61 61 61|                         // Incomplete
-                |u8x 83 00 88 61 61 61 61 61 61 61|                      // Incomplete
-                |u8x 83 00 89 61 61 61 61 61 61 61 61|                   // Incomplete
-                |u8x 83 00 8a 61 61 61 61 61 61 61 61 61|                // Incomplete
-                |u8x 83 00 8b 61 61 61 61 61 61 61 61 61 61|             // Incomplete
-                |u8x 83 00 8c 61 61 61 61 61 61 61 61 61 61 61|          // Incomplete
-                |u8x 83 00 8d 61 61 61 61 61 61 61 61 61 61 61 61|       // Incomplete
-                |u8x 83 00 8e 61 61 61 61 61 61 61 61 61 61 61 61 61|    // Incomplete
-                |u8x 83 00 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61| // Incomplete
+                |u8x 8f 00 81|                                           // Incomplete
+                |u8x 8f 00 82 61|                                        // Incomplete
+                |u8x 8f 00 83 61 61|                                     // Incomplete
+                |u8x 8f 00 84 61 61 61|                                  // Incomplete
+                |u8x 8f 00 85 61 61 61 61|                               // Incomplete
+                |u8x 8f 00 86 61 61 61 61 61|                            // Incomplete
+                |u8x 8f 00 87 61 61 61 61 61 61|                         // Incomplete
+                |u8x 8f 00 88 61 61 61 61 61 61 61|                      // Incomplete
+                |u8x 8f 00 89 61 61 61 61 61 61 61 61|                   // Incomplete
+                |u8x 8f 00 8a 61 61 61 61 61 61 61 61 61|                // Incomplete
+                |u8x 8f 00 8b 61 61 61 61 61 61 61 61 61 61|             // Incomplete
+                |u8x 8f 00 8c 61 61 61 61 61 61 61 61 61 61 61|          // Incomplete
+                |u8x 8f 00 8d 61 61 61 61 61 61 61 61 61 61 61 61|       // Incomplete
+                |u8x 8f 00 8e 61 61 61 61 61 61 61 61 61 61 61 61 61|    // Incomplete
+                |u8x 8f 00 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61| // Incomplete
             ]
         }
 
@@ -1228,12 +1228,12 @@ c0
         {
             "name" = "String (Long)"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 90 00|           "events"=["v 0" "s "]}
-                {"document"=|u8x 83 00 90 02 78|        "events"=["v 0" "s x"]}
-                {"document"=|u8x 83 00 90 06 78 79 7a|  "events"=["v 0" "s xyz"]}
+                {"document"=|u8x 8f 00 90 00|           "events"=["v 0" "s "]}
+                {"document"=|u8x 8f 00 90 02 78|        "events"=["v 0" "s x"]}
+                {"document"=|u8x 8f 00 90 06 78 79 7a|  "events"=["v 0" "s xyz"]}
                 {
                     "document"=|u8x
-                        83 00 90 d8 08 73 6b 79 20 e0 ae b5 e0 ae be e0
+                        8f 00 90 d8 08 73 6b 79 20 e0 ae b5 e0 ae be e0
                         ae a9 e0 ae ae e0 af 8d 20 e1 88 b0 e1 88 9b e1
                         8b ad 20 d8 b3 d9 85 d8 a7 d8 a1 20 d5 a5 d6 80
                         d5 af d5 ab d5 b6 d6 84 20 73 c9 99 6d 61 20 d0
@@ -1276,7 +1276,7 @@ c0
                         اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం ท้องฟ้า gökyüzü \
                         آسمان ئاسمان bầu trời הימל ọrun"]
                 }
-                {"document"=|u8x 83 00 90 da 03 50 61 72 74 69 63 6c 65 20 6d 61
+                {"document"=|u8x 8f 00 90 da 03 50 61 72 74 69 63 6c 65 20 6d 61
                   6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a 44 6f 69 6e 67
                   20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c
                   65 20 63 61 6e 0a 57 68 61 74 27 73 20 68 65 20 6c 69 6b 65 3f
@@ -1300,19 +1300,19 @@ Nobody knows, Particle man#"]}
             ]
             "encode" = [
                 {
-                    "document" = |u8x 83 00 90 36 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a|
+                    "document" = |u8x 8f 00 90 36 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a|
                     "events" = ["v 0" "s Particle man, particle man\n"]
                 }
                 {
-                    "document" = |u8x 83 00 90 40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a|
+                    "document" = |u8x 8f 00 90 40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a|
                     "events" = ["v 0" "s Doing the things a particle can\n"]
                 }
             ]
             "decode" = [
-                {"document"=|u8x 83 00 90 01 00|  "events"=["v 0" "sb" "acm 0" "acl 0"]}
+                {"document"=|u8x 8f 00 90 01 00|  "events"=["v 0" "sb" "acm 0" "acl 0"]}
                 {
                     "document" = |u8x
-                        83 00 90
+                        8f 00 90
                         37 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a
                         40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a
                     |
@@ -1324,10 +1324,10 @@ Nobody knows, Particle man#"]}
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 90 01|        // Incomplete
-                |u8x 83 00 90 02|        // Incomplete
-                |u8x 83 00 90 04 40|     // Incomplete
-                |u8x 83 00 90 05 40 02|  // Incomplete
+                |u8x 8f 00 90 01|        // Incomplete
+                |u8x 8f 00 90 02|        // Incomplete
+                |u8x 8f 00 90 04 40|     // Incomplete
+                |u8x 8f 00 90 05 40 02|  // Incomplete
             ]
         }
 
@@ -1336,22 +1336,22 @@ Nobody knows, Particle man#"]}
         {
             "name" = "Resource ID"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 91 00|           "events"=["v 0" "rid "]}
-                {"document"=|u8x 83 00 91 02 61|        "events"=["v 0" "rid a"]}
-                {"document"=|u8x 83 00 91 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                {"document"=|u8x 8f 00 91 00|           "events"=["v 0" "rid "]}
+                {"document"=|u8x 8f 00 91 02 61|        "events"=["v 0" "rid a"]}
+                {"document"=|u8x 8f 00 91 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
                  "events"=["v 0" "rid https://concise-encoding.org/"]}
             ]
             "decode" = [
                 {
-                    "document"=|u8x 83 00 91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "document"=|u8x 8f 00 91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
                     "events"=["v 0" "rb" "acm 1" "at h" "acl 28" "at ttps://concise-encoding.org/"]
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 91 01|        // Incomplete
-                |u8x 83 00 91 02|        // Incomplete
-                |u8x 83 00 91 04 40|     // Incomplete
-                |u8x 83 00 91 05 40 02|  // Incomplete
+                |u8x 8f 00 91 01|        // Incomplete
+                |u8x 8f 00 91 02|        // Incomplete
+                |u8x 8f 00 91 04 40|     // Incomplete
+                |u8x 8f 00 91 05 40 02|  // Incomplete
             ]
         }
 
@@ -1360,24 +1360,24 @@ Nobody knows, Particle man#"]}
         {
             "name" = "Remote Reference"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 e0 00|        "events"=["v 0" "rref "]}
-                {"document"=|u8x 83 00 94 e0 02 61|        "events"=["v 0" "rref a"]}
+                {"document"=|u8x 8f 00 94 e0 00|        "events"=["v 0" "rref "]}
+                {"document"=|u8x 8f 00 94 e0 02 61|        "events"=["v 0" "rref a"]}
                 {
-                    "document"=|u8x 83 00 94 e0 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "document"=|u8x 8f 00 94 e0 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
                     "events"=["v 0" "rref https://concise-encoding.org/"]
                 }
             ]
             "decode" = [
                 {
-                    "document"=|u8x 83 00 94 e0 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "document"=|u8x 8f 00 94 e0 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
                     "events"=["v 0" "rrb" "acm 1" "at h" "acl 28" "at ttps://concise-encoding.org/"]
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94 e0 01|        // Incomplete
-                |u8x 83 00 94 e0 02|        // Incomplete
-                |u8x 83 00 94 e0 04 40|     // Incomplete
-                |u8x 83 00 94 e0 05 40 02|  // Incomplete
+                |u8x 8f 00 94 e0 01|        // Incomplete
+                |u8x 8f 00 94 e0 02|        // Incomplete
+                |u8x 8f 00 94 e0 04 40|     // Incomplete
+                |u8x 8f 00 94 e0 05 40 02|  // Incomplete
             ]
         }
 
@@ -1386,13 +1386,13 @@ Nobody knows, Particle man#"]}
         {
             "name" = "Custom Type"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 92 06 01 02 03|  "events"=["v 0" "cb 01 02 03"]}
+                {"document"=|u8x 8f 00 92 06 01 02 03|  "events"=["v 0" "cb 01 02 03"]}
             ]
             "decode" = [
-                {"document"=|u8x 83 00 92 07 01 02 03 02 04|  "events"=["v 0" "cbb" "acm 3" "ad 01 02 03" "acl 1" "ad 04"]}
+                {"document"=|u8x 8f 00 92 07 01 02 03 02 04|  "events"=["v 0" "cbb" "acm 3" "ad 01 02 03" "acl 1" "ad 04"]}
             ]
             "decodeFail" = [
-                |u8x 83 00 92 01|        // Incomplete
+                |u8x 8f 00 92 01|        // Incomplete
             ]
         }
 
@@ -1401,9 +1401,9 @@ Nobody knows, Particle man#"]}
         {
             "name" = "Media"
             "decodeEncode" = [
-                {"document"=|u8x 83 00 94 e1 06 61 2f 61 00|  "events"=["v 0" "mb" "acl 3" "at a/a" "acl 0"]}
+                {"document"=|u8x 8f 00 94 e1 06 61 2f 61 00|  "events"=["v 0" "mb" "acl 3" "at a/a" "acl 0"]}
                 {
-                    "document"=|u8x 83 00 94 e1 20 61 70 70 6c 69 63 61 74
+                    "document"=|u8x 8f 00 94 e1 20 61 70 70 6c 69 63 61 74
                         69 6f 6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f
                         73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77
                         6f 72 6c 64 0a
@@ -1418,11 +1418,11 @@ Nobody knows, Particle man#"]}
                 }
             ]
             "decodeFail" = [
-                |u8x 83 00 94 e1|              // Incomplete
-                |u8x 83 00 94 e1 06|           // Incomplete
-                |u8x 83 00 94 e1 06 61|        // Incomplete
-                |u8x 83 00 94 e1 06 61 2f|     // Incomplete
-                |u8x 83 00 94 e1 06 61 2f 61|  // Incomplete
+                |u8x 8f 00 94 e1|              // Incomplete
+                |u8x 8f 00 94 e1 06|           // Incomplete
+                |u8x 8f 00 94 e1 06 61|        // Incomplete
+                |u8x 8f 00 94 e1 06 61 2f|     // Incomplete
+                |u8x 8f 00 94 e1 06 61 2f 61|  // Incomplete
                 // TODO: Naming rules. Must be in the form "a/b"
             ]
         }

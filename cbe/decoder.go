@@ -77,8 +77,8 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	eventReceiver.OnBeginDocument()
 
 	docHeader := _this.reader.ReadUint8()
-	if docHeader != cbeDocumentHeader {
-		_this.reader.errorf("First byte of CBE document must be 0x%02x (found 0x%02x)", cbeDocumentHeader, docHeader)
+	if docHeader != CBESignatureByte {
+		_this.reader.errorf("First byte of CBE document must be 0x%02x (found 0x%02x)", CBESignatureByte, docHeader)
 	}
 	ver := _this.reader.ReadVersion()
 	// TODO: Remove this when releasing V1

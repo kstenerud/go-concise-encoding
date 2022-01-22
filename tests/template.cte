@@ -107,7 +107,7 @@ c0
 c0
 null
             %%%%"
-            "cbe"      = |u8x 83 00 7e|
+            "cbe"      = |u8x 8f 00 7e|
             "events"   = ["v 0" "null"]
             "from"     = ["t" "b" "e"]
             "to"       = ["t" "b" "e"]
@@ -133,7 +133,7 @@ null
                  */
                 {
                     "events" = ["v 0" "n 1"]
-                    "document" = |u8x 83 00 01|
+                    "document" = |u8x 8f 00 01|
                 }
             ]
 
@@ -143,7 +143,7 @@ null
                  * - Expects the new events to be equivalent to "events"
                  */
                 {
-                    "document" = |u8x 83 00 01|
+                    "document" = |u8x 8f 00 01|
                     "events" = ["v 0" "n 1"]
                 }
             ]
@@ -164,7 +164,7 @@ null
                  */
                 {
                     "events" = ["v 0" "n 1"]
-                    "document" = |u8x 83 00 01|
+                    "document" = |u8x 8f 00 01|
                 }
             ]
 
@@ -176,7 +176,7 @@ null
                  * - Expects the resulting events to still be equivalent to "events"
                  */
                 {
-                    "document" = |u8x 83 00 01|
+                    "document" = |u8x 8f 00 01|
                     "events" = ["v 0" "n 1"]
                 }
             ]

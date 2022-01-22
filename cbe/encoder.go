@@ -91,7 +91,7 @@ func (_this *Encoder) OnComment(bool, []byte) {
 }
 
 func (_this *Encoder) OnBeginDocument() {
-	_this.writer.WriteSingleByte(cbeDocumentHeader)
+	_this.writer.WriteSingleByte(CBESignatureByte)
 }
 
 func (_this *Encoder) OnVersion(version uint64) {

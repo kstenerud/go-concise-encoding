@@ -33,7 +33,7 @@ import (
 
 // Internal
 
-const cbeDocumentHeader = byte(0x83)
+const CBESignatureByte = byte(0x8f)
 
 type cbeTypeField uint16
 

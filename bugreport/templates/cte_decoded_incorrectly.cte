@@ -23,7 +23,7 @@ c0
     "ceTests" = [
         {
             "name" = "CTE is decoded incorrectly"
-            "cbe"    = |u8x 83 00 79 81 61 7d 7b|
+            "cbe"    = |u8x 8f 00 79 81 61 7d 7b|
             "events" = [
                             "v 0"
                             "m"
