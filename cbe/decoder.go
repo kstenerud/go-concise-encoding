@@ -191,10 +191,8 @@ EOF:
 			_this.decodeArray(events.ArrayTypeString, eventReceiver)
 		case cbeTypeRID:
 			_this.decodeArray(events.ArrayTypeResourceID, eventReceiver)
-		case cbeTypeCustomBinary:
+		case cbeTypeCustomType:
 			_this.decodeArray(events.ArrayTypeCustomBinary, eventReceiver)
-		case cbeTypeCustomText:
-			_this.decodeArray(events.ArrayTypeCustomText, eventReceiver)
 		case cbeTypeEOF:
 			break EOF
 		case cbeTypePlane2:

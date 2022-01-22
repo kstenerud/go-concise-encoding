@@ -841,54 +841,53 @@ test"~"  "events"=["v 0" "rid testtest"]}  // Continuation
             // Custom text has the same capabilities and restrictions as strings.
             "name" = "Custom Text"
             "encodeDecode" = [
-                {"events"=["v 0" "ct cplx(2.94+3i)"]  "document"="c0\n|ct cplx(2.94+3i)|"}
+                {"events"=["v 0" "ct cplx(2.94+3i)"]  "document"="c0\n|c \"cplx(2.94+3i)\"|"}
             ]
             "decodeEncode" = [
-                {"document"="\.~ c0 |ct something(123)|~"       "events"=["v 0" "ct something(123)"]}
-                {"document"="\.~ c0 |ct|~"                      "events"=["v 0" "ct "]}               // Empty string
-                {"document"="\.~ c0 |ct |~"                     "events"=["v 0" "ct "]}               // Empty string
-                {"document"="\.~ c0 |ct test/*test|~"           "events"=["v 0" "ct test/*test"]}     // Comment initiator inside a string
-                {"document"="\.~ c0 |ct test*/test|~"           "events"=["v 0" "ct test*/test"]}     // Comment terminator inside a string
-                {"document"="\.~ c0 |ct test\ttest|~"           "events"=["v 0" "ct test\19test"]}    // Escaped tab
-                {"document"="\.~ c0 |ct test\rtest|~"           "events"=["v 0" "ct test\1dtest"]}    // Escaped CR
-                {"document"="\.~ c0 |ct test\"test|~"           "events"=["v 0" "ct \.~ test"test~"]} // Escaped quote
-                {"document"="\.~ c0 |ct test\\test|~"           "events"=["v 0" "ct \.~ test\test~"]} // Escaped backslash
-                {"document"="\.~ c0 |ct test\/test|~"           "events"=["v 0" "ct \.~ test/test~"]} // Escaped slash
-                {"document"="\.~ c0 |ct test\*test|~"           "events"=["v 0" "ct \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 |ct test\<test|~"           "events"=["v 0" "ct \.~ test<test~"]} // Escaped lt
-                {"document"="\.~ c0 |ct test\>test|~"           "events"=["v 0" "ct \.~ test>test~"]} // Escaped gt
-                {"document"="\.~ c0 |ct test\|test|~"           "events"=["v 0" "ct \.~ test|test~"]} // Escaped pipe
-                {"document"="\.~ c0 |ct test\_test|~"           "events"=["v 0" "ct test\2a0test"]}   // Escaped non-breaking space
-                {"document"="\.~ c0 |ct test\-test|~"           "events"=["v 0" "ct test\2adtest"]}   // Escaped soft hyphen
-                {"document"="\.~ c0 |ct test\1atest|~"          "events"=["v 0" "ct test\ntest"]}     // Escaped 1-digit codepoint
-                {"document"="\.~ c0 |ct test\2f7test|~"         "events"=["v 0" "ct test÷test"]}      // Escaped 2-digit codepoint
-                {"document"="\.~ c0 |ct test\317dtest|~"        "events"=["v 0" "ct testŽtest"]}      // Escaped 3-digit codepoint
-                {"document"="\.~ c0 |ct test\42021test|~"       "events"=["v 0" "ct test‡test"]}      // Escaped 4-digit codepoint
-                {"document"="\.~ c0 |ct test\51f43atest|~"      "events"=["v 0" "ct test🐺test"]}     // Escaped 5-digit codepoint
-                {"document"="\.~ c0 |ct test\6000020test|~"     "events"=["v 0" "ct test test"]}      // Escaped 6-digit codepoint
-                {"document"="\.~ c0 |ct test\70000020test|~"    "events"=["v 0" "ct test test"]}      // Escaped 7-digit codepoint
-                {"document"="\.~ c0 |ct test\800000020test|~"   "events"=["v 0" "ct test test"]}      // Escaped 8-digit codepoint
-                {"document"="\.~ c0 |ct test\9000000020test|~"  "events"=["v 0" "ct test test"]}      // Escaped 9-digit codepoint
-                {"document"="\.~ c0 |ct test\ntest|~"           "events"=["v 0" "ct \.~ test
+                {"document"="\.~ c0 |c "something(123)"|~"       "events"=["v 0" "ct something(123)"]}
+                {"document"="\.~ c0 |c ""|~"                     "events"=["v 0" "ct "]}               // Empty String
+                {"document"="\.~ c0 |c "test/*test"|~"           "events"=["v 0" "ct test/*test"]}     // Comment initiator inside a string
+                {"document"="\.~ c0 |c "test*/test"|~"           "events"=["v 0" "ct test*/test"]}     // Comment terminator inside a string
+                {"document"="\.~ c0 |c "test\ttest"|~"           "events"=["v 0" "ct test\19test"]}    // Escaped tab
+                {"document"="\.~ c0 |c "test\rtest"|~"           "events"=["v 0" "ct test\1dtest"]}    // Escaped CR
+                {"document"="\.~ c0 |c "test\"test"|~"           "events"=["v 0" "ct \.~ test"test~"]} // Escaped quote
+                {"document"="\.~ c0 |c "test\\test"|~"           "events"=["v 0" "ct \.~ test\test~"]} // Escaped backslash
+                {"document"="\.~ c0 |c "test\/test"|~"           "events"=["v 0" "ct \.~ test/test~"]} // Escaped slash
+                {"document"="\.~ c0 |c "test\*test"|~"           "events"=["v 0" "ct \.~ test*test~"]} // Escaped star
+                {"document"="\.~ c0 |c "test\<test"|~"           "events"=["v 0" "ct \.~ test<test~"]} // Escaped lt
+                {"document"="\.~ c0 |c "test\>test"|~"           "events"=["v 0" "ct \.~ test>test~"]} // Escaped gt
+                {"document"="\.~ c0 |c "test\|test"|~"           "events"=["v 0" "ct \.~ test|test~"]} // Escaped pipe
+                {"document"="\.~ c0 |c "test\_test"|~"           "events"=["v 0" "ct test\2a0test"]}   // Escaped non-breaking space
+                {"document"="\.~ c0 |c "test\-test"|~"           "events"=["v 0" "ct test\2adtest"]}   // Escaped soft hyphen
+                {"document"="\.~ c0 |c "test\1atest"|~"          "events"=["v 0" "ct test\ntest"]}     // Escaped 1-digit codepoint
+                {"document"="\.~ c0 |c "test\2f7test"|~"         "events"=["v 0" "ct test÷test"]}      // Escaped 2-digit codepoint
+                {"document"="\.~ c0 |c "test\317dtest"|~"        "events"=["v 0" "ct testŽtest"]}      // Escaped 3-digit codepoint
+                {"document"="\.~ c0 |c "test\42021test"|~"       "events"=["v 0" "ct test‡test"]}      // Escaped 4-digit codepoint
+                {"document"="\.~ c0 |c "test\51f43atest"|~"      "events"=["v 0" "ct test🐺test"]}     // Escaped 5-digit codepoint
+                {"document"="\.~ c0 |c "test\6000020test"|~"     "events"=["v 0" "ct test test"]}      // Escaped 6-digit codepoint
+                {"document"="\.~ c0 |c "test\70000020test"|~"    "events"=["v 0" "ct test test"]}      // Escaped 7-digit codepoint
+                {"document"="\.~ c0 |c "test\800000020test"|~"   "events"=["v 0" "ct test test"]}      // Escaped 8-digit codepoint
+                {"document"="\.~ c0 |c "test\9000000020test"|~"  "events"=["v 0" "ct test test"]}      // Escaped 9-digit codepoint
+                {"document"="\.~ c0 |c "test\ntest"|~"           "events"=["v 0" "ct \.~ test
 test~"]}  // Escaped newline
-                {"document"="\.~ c0 |ct test\
-                                          test|~"             "events"=["v 0" "ct testtest"]}  // Continuation
+                {"document"="\.~ c0 |c "test\
+                                          test"|~"               "events"=["v 0" "ct testtest"]}  // Continuation
             ]
             "decodeFail" = [
-                "\.~ c0 |ct test\1gtest|~"    // Invalid codepoint digit
-                "\.~ c0 |ct test\xtest|~"     // Invalid escape character
-                "\.~ c0 |ct test test~"       // Unterminated
+                "\.~ c0 |c "test\1gtest"|~"    // Invalid codepoint digit
+                "\.~ c0 |c "test\xtest"|~"     // Invalid escape character
+                "\.~ c0 |c "test test"~"       // Unterminated
                 "\.~ c0 test test~"           // Missing bars
-                "\.~ c0 |ct test\|~"          // Unterminated escape
-                "\.~ c0 |ct test\1|~"         // Unterminated codepoint
-                "\.~ c0 |ct test\21|~"        // Unterminated codepoint
-                "\.~ c0 |ct test\301|~"       // Unterminated codepoint
-                "\.~ c0 |ct test\4001|~"      // Unterminated codepoint
-                "\.~ c0 |ct test\50001|~"     // Unterminated codepoint
-                "\.~ c0 |ct test\600001|~"    // Unterminated codepoint
-                "\.~ c0 |ct test\7000001|~"   // Unterminated codepoint
-                "\.~ c0 |ct test\80000001|~"  // Unterminated codepoint
-                "\.~ c0 |ct test\900000001|~" // Unterminated codepoint
+                "\.~ c0 |c "test\"|~"          // Unterminated escape
+                "\.~ c0 |c "test\1"|~"         // Unterminated codepoint
+                "\.~ c0 |c "test\21"|~"        // Unterminated codepoint
+                "\.~ c0 |c "test\301"|~"       // Unterminated codepoint
+                "\.~ c0 |c "test\4001"|~"      // Unterminated codepoint
+                "\.~ c0 |c "test\50001"|~"     // Unterminated codepoint
+                "\.~ c0 |c "test\600001"|~"    // Unterminated codepoint
+                "\.~ c0 |c "test\7000001"|~"   // Unterminated codepoint
+                "\.~ c0 |c "test\80000001"|~"  // Unterminated codepoint
+                "\.~ c0 |c "test\900000001"|~" // Unterminated codepoint
             ]
         }
 
@@ -897,17 +896,17 @@ test~"]}  // Escaped newline
         {
             "name" = "Custom Binary"
             "encodeDecode" = [
-                {"events"=["v 0" "cb 04 f6 28 3c 40 00 00 40 40"]  "document"="c0\n|cb 04 f6 28 3c 40 00 00 40 40|"}
+                {"events"=["v 0" "cb 04 f6 28 3c 40 00 00 40 40"]  "document"="c0\n|c 04 f6 28 3c 40 00 00 40 40|"}
             ]
             "decodeEncode" = [
-                {"document"="c0 |cb 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
-                {"document"="c0 |cb 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
-                {"document"="c0 |cb |"             "events"=["v 0" "cb "]}
-                {"document"="c0 |cb|"              "events"=["v 0" "cb "]}
+                {"document"="c0 |c 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
+                {"document"="c0 |c 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
+                {"document"="c0 |c |"             "events"=["v 0" "cb "]}
+                {"document"="c0 |c|"              "events"=["v 0" "cb "]}
             ]
             "decodeFail" = [
-                "c0 |cb 00"  // Not terminated
-                "c0 |cb gg|" // Non-hex characters
+                "c0 |c 00"  // Not terminated
+                "c0 |c gg|" // Non-hex characters
             ]
         }
 
@@ -956,6 +955,23 @@ c0
                     "document" = "\.^
 c0
 |m application/x-sh 23 21 2F 62 69 6E 2F 73 68 0A 0A 65 63 68 6F 20 68 65 6C 6C 6F 20 77 6F 72 6C 64 0A|^"
+                    "events" = ["v 0" "mb" "acl 16" "at application/x-sh" "acl 28" "at \.^
+#!/bin/sh
+
+echo hello world
+^"]
+                }
+            ]
+            "decode" = [
+                {
+                    "document" = "\.^^
+c0
+|m application/x-sh "\.@@
+#!/bin/sh
+
+echo hello world
+@@"|
+^^"
                     "events" = ["v 0" "mb" "acl 16" "at application/x-sh" "acl 28" "at \.^
 #!/bin/sh
 

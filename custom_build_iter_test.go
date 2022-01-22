@@ -212,34 +212,6 @@ func convertFromCustomText(src []byte, dst reflect.Value) error {
 	return nil
 }
 
-func assertCBEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
-	marshalOpts := options.DefaultCBEMarshalerOptions()
-	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
-	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
-	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
-
-	marshaler := ce.NewCBEMarshaler(marshalOpts)
-	document, err := marshaler.MarshalToDocument(value)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	template := value
-	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
-	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !equivalence.IsEquivalent(actual, value) {
-		t.Errorf("Expected %v but got %v", describe.D(value), describe.D(actual))
-	}
-}
-
 func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
@@ -269,7 +241,6 @@ func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 }
 
 func assertMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
-	assertCBEMarshalUnmarshalComplexFromText(t, value)
 	assertCTEMarshalUnmarshalComplexFromText(t, value)
 }
 

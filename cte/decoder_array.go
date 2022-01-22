@@ -87,10 +87,8 @@ func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 	arrayTypeAsString := string(arrayType)
 	ctx.Stream.SkipWhitespace()
 	switch arrayTypeAsString {
-	case "cb":
-		decodeCustomBinary(ctx)
-	case "ct":
-		decodeCustomText(ctx)
+	case "c":
+		decodeCustom(ctx)
 	case "u":
 		decodeArrayUID(ctx)
 	case "b":
@@ -190,6 +188,19 @@ func decodeMedia(ctx *DecoderContext) {
 	ctx.EventReceiver.OnArrayChunk(uint64(len(token)), false)
 	ctx.EventReceiver.OnArrayData(token)
 
+	ctx.Stream.SkipWhitespace()
+	if ctx.Stream.PeekByteAllowEOF() == '"' {
+		ctx.Stream.AdvanceByte()
+		bytes := ctx.Stream.ReadQuotedString()
+		ctx.Stream.SkipWhitespace()
+		if ch := ctx.Stream.ReadByteNoEOF(); ch != '|' {
+			ctx.Errorf("Expected '|' but got '%c'", ch)
+		}
+		ctx.EventReceiver.OnArrayChunk(uint64(len(bytes)), false)
+		ctx.EventReceiver.OnArrayData(bytes)
+		return
+	}
+
 	// TODO: Buffered read of media data
 	for {
 		ctx.Stream.SkipWhitespace()
@@ -219,12 +230,19 @@ func decodeMedia(ctx *DecoderContext) {
 	}
 }
 
-func decodeCustomText(ctx *DecoderContext) {
-	bytes := ctx.Stream.ReadStringArray()
-	ctx.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
-}
+func decodeCustom(ctx *DecoderContext) {
+	ctx.Stream.SkipWhitespace()
+	if ctx.Stream.PeekByteNoEOF() == '"' {
+		ctx.Stream.AdvanceByte()
+		bytes := ctx.Stream.ReadQuotedString()
+		ctx.Stream.SkipWhitespace()
+		if ctx.Stream.ReadByteNoEOF() != '|' {
+			ctx.UnexpectedChar("custom text")
+		}
+		ctx.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
+		return
+	}
 
-func decodeCustomBinary(ctx *DecoderContext) {
 	ctx.BeginArray("hex", events.ArrayTypeCustomBinary, 1)
 	for {
 		ctx.Stream.SkipWhitespace()

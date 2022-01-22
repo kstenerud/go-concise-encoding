@@ -579,7 +579,7 @@ func containsEvent(events []*TEvent, event *TEvent) bool {
 	return false
 }
 
-func RemoveEvents(srcEvents []*TEvent, disallowedEvents []*TEvent) (events []*TEvent) {
+func RemoveEvents(srcEvents []*TEvent, disallowedEvents ...*TEvent) (events []*TEvent) {
 	for _, event := range srcEvents {
 		if !containsEvent(disallowedEvents, event) {
 			events = append(events, event)
@@ -639,7 +639,7 @@ func allPossibleEventStreams(
 
 	switch event.Type {
 	case TEventMarker:
-		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues), CommentsPaddingMarkerRefEnd) {
+		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues...), CommentsPaddingMarkerRefEnd...) {
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, prefix...)
 			newStream = append(newStream, event)
@@ -650,7 +650,7 @@ func allPossibleEventStreams(
 			allEvents = append(allEvents, newStream)
 		}
 	case TEventReference:
-		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues), CommentsPaddingMarkerRefEnd) {
+		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues...), CommentsPaddingMarkerRefEnd...) {
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, L(), MARK("a"))
 			newStream = append(newStream, following)
@@ -664,7 +664,7 @@ func allPossibleEventStreams(
 		}
 
 	case TEventPadding:
-		for _, following := range RemoveEvents(possibleFollowups, CommentsPaddingMarkerRefEnd) {
+		for _, following := range RemoveEvents(possibleFollowups, CommentsPaddingMarkerRefEnd...) {
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, prefix...)
 			newStream = append(newStream, event)

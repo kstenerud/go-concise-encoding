@@ -1384,7 +1384,7 @@ Nobody knows, Particle man#"]}
         // ====================================================================
 
         {
-            "name" = "Custom Binary"
+            "name" = "Custom Type"
             "decodeEncode" = [
                 {"document"=|u8x 83 00 92 06 01 02 03|  "events"=["v 0" "cb 01 02 03"]}
             ]
@@ -1393,21 +1393,6 @@ Nobody knows, Particle man#"]}
             ]
             "decodeFail" = [
                 |u8x 83 00 92 01|        // Incomplete
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "Custom Text"
-            "decodeEncode" = [
-                {"document"=|u8x 83 00 93 06 61 62 63|  "events"=["v 0" "ct abc"]}
-            ]
-            "decode" = [
-                {"document"=|u8x 83 00 93 07 61 62 63 02 64|  "events"=["v 0" "ctb" "acm 3" "at abc" "acl 1" "at d"]}
-            ]
-            "decodeFail" = [
-                |u8x 83 00 93 01|        // Incomplete
             ]
         }
 

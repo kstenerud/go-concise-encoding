@@ -281,7 +281,7 @@ func assertEncodeDecodeOpts(t *testing.T,
 	expected ...*test.TEvent) {
 
 	assertEncodeDecodeCBEOpts(t, cbeEncodeOpts, cbeDecodeOpts, expected...)
-	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, test.RemoveEvents(expected, test.Padding)...)
+	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, test.RemoveEvents(expected, test.Padding...)...)
 }
 
 func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {

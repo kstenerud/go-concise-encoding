@@ -649,16 +649,6 @@ var propertyNames = map[interface{}]string{
 	EndProperties: "EndProperties",
 }
 
-var namedValues = []string{
-	"true",
-	"false",
-	"inf",
-	"nan",
-	"snan",
-	"nil",
-	"na",
-}
-
 var lookalikes = map[rune][]rune{
 	'!': []rune{0x01c3, 0x203c, 0x2048, 0x2049, 0x2d51, 0xfe15, 0xfe57, 0xff01},
 	'"': []rune{0x02ba, 0x02ee, 0x201c, 0x201d, 0x201f, 0x2033, 0x2034, 0x2036, 0x2037, 0x2057, 0x3003, 0xff02},

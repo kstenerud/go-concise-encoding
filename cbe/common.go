@@ -83,8 +83,8 @@ const (
 	cbeTypeString15     cbeTypeField = 0x8f
 	cbeTypeString       cbeTypeField = 0x90
 	cbeTypeRID          cbeTypeField = 0x91
-	cbeTypeCustomBinary cbeTypeField = 0x92
-	cbeTypeCustomText   cbeTypeField = 0x93
+	cbeTypeCustomType   cbeTypeField = 0x92
+	cbeTypeReserved93   cbeTypeField = 0x93 //nolint
 	cbeTypePlane2       cbeTypeField = 0x94
 	cbeTypeArrayUint8   cbeTypeField = 0x95
 	cbeTypeArrayBit     cbeTypeField = 0x96
@@ -169,8 +169,8 @@ var arrayTypeToCBEType = []cbeTypeField{
 	events.ArrayTypeUID:          cbeTypeArrayUID,
 	events.ArrayTypeString:       cbeTypeString,
 	events.ArrayTypeResourceID:   cbeTypeRID,
-	events.ArrayTypeCustomBinary: cbeTypeCustomBinary,
-	events.ArrayTypeCustomText:   cbeTypeCustomText,
+	events.ArrayTypeCustomBinary: cbeTypeCustomType,
+	events.ArrayTypeCustomText:   cbeTypeCustomType,
 	events.ArrayTypeRemoteRef:    cbeTypeRemoteReference,
 	events.ArrayTypeMedia:        cbeTypeMedia,
 }

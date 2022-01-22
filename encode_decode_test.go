@@ -127,7 +127,7 @@ func TestEncodeDecodeAllValidTLO(t *testing.T) {
 			[]*test.TEvent{},
 			[]*test.TEvent{},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidTLOValues, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidTLOValues, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidList(t *testing.T) {
@@ -137,7 +137,7 @@ func TestEncodeDecodeAllValidList(t *testing.T) {
 			[]*test.TEvent{L()},
 			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidListValues, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidListValues, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidMapKey(t *testing.T) {
@@ -147,7 +147,7 @@ func TestEncodeDecodeAllValidMapKey(t *testing.T) {
 			[]*test.TEvent{M()},
 			[]*test.TEvent{TT(), E()},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMapKeys, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidMapKeys, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidMapValue(t *testing.T) {
@@ -157,7 +157,7 @@ func TestEncodeDecodeAllValidMapValue(t *testing.T) {
 			[]*test.TEvent{M(), TT()},
 			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMapValues, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidMapValues, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidMarkupKey(t *testing.T) {
@@ -167,7 +167,7 @@ func TestEncodeDecodeAllValidMarkupKey(t *testing.T) {
 			[]*test.TEvent{MUP("x")},
 			[]*test.TEvent{TT(), E(), E()},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMapKeys, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidMapKeys, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidMarkupValue(t *testing.T) {
@@ -177,7 +177,7 @@ func TestEncodeDecodeAllValidMarkupValue(t *testing.T) {
 			[]*test.TEvent{MUP("x"), TT()},
 			[]*test.TEvent{E(), E()},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMapValues, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidMapValues, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
@@ -187,7 +187,7 @@ func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
 			[]*test.TEvent{MUP("x"), E()},
 			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMarkupContents, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidMarkupContents, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidEdgeSources(t *testing.T) {
@@ -197,7 +197,7 @@ func TestEncodeDecodeAllValidEdgeSources(t *testing.T) {
 			[]*test.TEvent{EDGE()},
 			[]*test.TEvent{RID("x"), I(1)},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidEdgeSources, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidEdgeSources, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidEdgeDescriptions(t *testing.T) {
@@ -207,7 +207,7 @@ func TestEncodeDecodeAllValidEdgeDescriptions(t *testing.T) {
 			[]*test.TEvent{EDGE(), RID("x")},
 			[]*test.TEvent{I(1)},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidEdgeDescriptions, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidEdgeDescriptions, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestEncodeDecodeAllValidEdgeDestinations(t *testing.T) {
@@ -217,7 +217,7 @@ func TestEncodeDecodeAllValidEdgeDestinations(t *testing.T) {
 			[]*test.TEvent{EDGE(), RID("x"), RID("y")},
 			[]*test.TEvent{},
 			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidEdgeDestinations, test.ArrayBeginTypes)))
+			test.RemoveEvents(test.ValidEdgeDestinations, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
 func TestDecodeEncodeMapReferences(t *testing.T) {

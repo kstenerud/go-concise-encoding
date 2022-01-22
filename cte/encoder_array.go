@@ -78,8 +78,8 @@ func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringConte
 		_this.stream.WriteByteNotLF('$')
 		_this.stream.WriteQuotedString(false, data)
 	case events.ArrayTypeCustomText:
-		_this.stream.WriteStringNotLF("|ct ")
-		_this.stream.WritePotentiallyEscapedStringArrayContents(true, data)
+		_this.stream.WriteStringNotLF("|c ")
+		_this.stream.WriteQuotedString(true, data)
 		_this.stream.WriteArrayEnd()
 	default:
 		panic(fmt.Errorf("BUG: EncodeStringlikeArray passed unhandled array type %v", arrayType))
@@ -104,8 +104,8 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 		_this.stream.WriteByteNotLF('$')
 		_this.stream.WriteQuotedStringBytes(false, data)
 	case events.ArrayTypeCustomText:
-		_this.stream.WriteStringNotLF("|ct ")
-		_this.stream.WritePotentiallyEscapedStringArrayContentsBytes(true, data)
+		_this.stream.WriteStringNotLF("|c ")
+		_this.stream.WriteQuotedStringBytes(true, data)
 		_this.stream.WriteArrayEnd()
 	default:
 		_this.BeginArray(stringContext, arrayType, func() {})
@@ -250,13 +250,13 @@ func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayCustomText(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF("|ct")
+	_this.stream.WriteStringNotLF("|c ")
 	_this.addElementsFunc = func(data []byte) {
 		_this.handleFirstElement(data)
 		_this.appendStringbuffer(data)
 	}
 	_this.onComplete = func() {
-		_this.stream.WritePotentiallyEscapedStringArrayContentsBytes(true, _this.stringBuffer)
+		_this.stream.WriteQuotedStringBytes(true, _this.stringBuffer)
 		_this.stream.WriteArrayEnd()
 		onComplete()
 	}
@@ -264,7 +264,7 @@ func (_this *arrayEncoderEngine) beginArrayCustomText(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayCustomBinary(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF("|cb")
+	_this.stream.WriteStringNotLF("|c")
 	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
 }
 
