@@ -35,7 +35,7 @@ import (
 // Decodes CBE documents.
 type Decoder struct {
 	reader Reader
-	opts   options.CEDecoderOptions
+	opts   *options.CEDecoderOptions
 }
 
 // Create a new CBE decoder. If opts is nil, default options will be used.
@@ -47,8 +47,13 @@ func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
 
 // Initialize this decoder. If opts is nil, default options will be used.
 func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
+	if opts == nil {
+		o := options.DefaultCEDecoderOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 	_this.reader.Init()
 }
 

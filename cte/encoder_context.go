@@ -66,7 +66,7 @@ func (_this *indenter) GetOriginAndIndent() []byte {
 }
 
 type EncoderContext struct {
-	opts                options.CTEEncoderOptions
+	opts                *options.CTEEncoderOptions
 	indenter            indenter
 	stack               []EncoderDecorator
 	Decorator           EncoderDecorator
@@ -76,8 +76,8 @@ type EncoderContext struct {
 }
 
 func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
-	_this.opts = *opts
-	_this.ArrayEngine.Init(&_this.Stream, &_this.opts)
+	_this.opts = opts
+	_this.ArrayEngine.Init(&_this.Stream, _this.opts)
 	_this.Stream.Init()
 }
 

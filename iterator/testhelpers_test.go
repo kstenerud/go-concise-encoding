@@ -186,9 +186,7 @@ func assertIterateWithOptions(t *testing.T,
 }
 
 func assertIterate(t *testing.T, obj interface{}, events ...*test.TEvent) {
-	assertIterateWithOptions(t,
-		options.DefaultIteratorSessionOptions(),
-		options.DefaultIteratorOptions(),
-		obj,
-		events...)
+	sOpts := options.DefaultIteratorSessionOptions()
+	iOpts := options.DefaultIteratorOptions()
+	assertIterateWithOptions(t, &sOpts, &iOpts, obj, events...)
 }

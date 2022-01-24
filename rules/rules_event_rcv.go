@@ -31,7 +31,6 @@ import (
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
-	"github.com/kstenerud/go-concise-encoding/version"
 )
 
 // RulesEventReceiver is a DataEventsReceiver passthrough object that constrains
@@ -63,12 +62,18 @@ var nullReceiver = &events.NullEventReceiver{}
 // Initialize a rules set.
 // If opts = nil, defaults are used.
 func (_this *RulesEventReceiver) Init(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) {
-	opts = opts.WithDefaultsApplied()
+	if opts == nil {
+		o := options.DefaultRuleOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+
 	_this.receiver = nextReceiver
 	if _this.receiver == nil {
 		_this.receiver = nullReceiver
 	}
-	_this.context.Init(version.ConciseEncodingVersion, opts)
+	_this.context.Init(opts)
 }
 
 // Reset the rules set back to its initial state.

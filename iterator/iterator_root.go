@@ -26,6 +26,7 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/version"
 	"github.com/kstenerud/go-duplicates"
 )
 
@@ -41,7 +42,7 @@ type RootObjectIterator struct {
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
 	context         Context
-	opts            options.IteratorOptions
+	opts            *options.IteratorOptions
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
@@ -61,8 +62,13 @@ func (_this *RootObjectIterator) Init(context *Context,
 	eventReceiver events.DataEventReceiver,
 	opts *options.IteratorOptions) {
 
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
+	if opts == nil {
+		o := options.DefaultIteratorOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 	_this.context = iteratorContext(context,
 		eventReceiver,
 		_this.addReference)
@@ -75,7 +81,7 @@ func (_this *RootObjectIterator) Init(context *Context,
 // to recover() at an appropriate location when calling this function.
 func (_this *RootObjectIterator) Iterate(object interface{}) {
 	_this.context.EventReceiver.OnBeginDocument()
-	_this.context.EventReceiver.OnVersion(_this.opts.ConciseEncodingVersion)
+	_this.context.EventReceiver.OnVersion(version.ConciseEncodingVersion)
 	if object == nil {
 		_this.context.NotifyNil()
 		_this.context.EventReceiver.OnEndDocument()

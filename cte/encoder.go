@@ -47,7 +47,12 @@ func NewEncoder(opts *options.CTEEncoderOptions) *EncoderEventReceiver {
 // Initialize an encoder.
 // If opts = nil, defaults are used.
 func (_this *EncoderEventReceiver) Init(opts *options.CTEEncoderOptions) {
-	opts = opts.WithDefaultsApplied()
+	if opts == nil {
+		o := options.DefaultCTEEncoderOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
 	_this.context.Init(opts)
 }
 

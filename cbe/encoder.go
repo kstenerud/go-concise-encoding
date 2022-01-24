@@ -44,7 +44,7 @@ import (
 // designed to panic).
 type Encoder struct {
 	writer Writer
-	opts   options.CBEEncoderOptions
+	opts   *options.CBEEncoderOptions
 }
 
 // Create a new CBE encoder.
@@ -58,8 +58,13 @@ func NewEncoder(opts *options.CBEEncoderOptions) *Encoder {
 // Initialize this encoder.
 // If opts is nil, default options will be used.
 func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
+	if opts == nil {
+		o := options.DefaultCBEEncoderOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 	_this.writer.Init()
 }
 

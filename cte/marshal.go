@@ -42,7 +42,7 @@ import (
 type Marshaler struct {
 	session iterator.Session
 	encoder EncoderEventReceiver
-	opts    options.CTEMarshalerOptions
+	opts    *options.CTEMarshalerOptions
 }
 
 // Create a new marshaler with the specified options.
@@ -56,8 +56,13 @@ func NewMarshaler(opts *options.CTEMarshalerOptions) *Marshaler {
 // Init a marshaler with the specified options.
 // If opts is nil, default options will be used.
 func (_this *Marshaler) Init(opts *options.CTEMarshalerOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
+	if opts == nil {
+		o := options.DefaultCTEMarshalerOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 	_this.session.Init(nil, &_this.opts.Session)
 	_this.encoder.Init(&_this.opts.Encoder)
 }
@@ -100,7 +105,7 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 type Unmarshaler struct {
 	session builder.Session
 	decoder Decoder
-	opts    options.CEUnmarshalerOptions
+	opts    *options.CEUnmarshalerOptions
 	rules   rules.RulesEventReceiver
 }
 
@@ -115,8 +120,13 @@ func NewUnmarshaler(opts *options.CEUnmarshalerOptions) *Unmarshaler {
 // Init an unmarshaler with the specified options.
 // If opts is nil, default options will be used.
 func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
+	if opts == nil {
+		o := options.DefaultCEUnmarshalerOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 	_this.session.Init(nil, &_this.opts.Session)
 	_this.decoder.Init(&_this.opts.Decoder)
 	_this.rules.Init(nil, &_this.opts.Rules)

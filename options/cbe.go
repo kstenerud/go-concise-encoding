@@ -20,34 +20,19 @@
 
 package options
 
-import (
-	"github.com/kstenerud/go-concise-encoding/version"
-)
-
 // ============================================================================
 // CBE Encoder
 
 type CBEEncoderOptions struct {
-	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	ConciseEncodingVersion uint64
 }
 
-func DefaultCBEEncoderOptions() *CBEEncoderOptions {
-	return &CBEEncoderOptions{
-		ConciseEncodingVersion: version.ConciseEncodingVersion,
-	}
+func DefaultCBEEncoderOptions() CBEEncoderOptions {
+	return defaultCBEEncoderOptions
 }
 
-func (_this *CBEEncoderOptions) WithDefaultsApplied() *CBEEncoderOptions {
-	if _this == nil {
-		return DefaultCBEEncoderOptions()
-	}
+var defaultCBEEncoderOptions = CBEEncoderOptions{}
 
-	if _this.ConciseEncodingVersion == 0 {
-		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
-	}
-
-	return _this
+func (_this *CBEEncoderOptions) ApplyDefaults() {
 }
 
 func (_this *CBEEncoderOptions) Validate() error {
@@ -63,24 +48,20 @@ type CBEMarshalerOptions struct {
 	Session  IteratorSessionOptions
 }
 
-func DefaultCBEMarshalerOptions() *CBEMarshalerOptions {
-	return &CBEMarshalerOptions{
-		Encoder:  *DefaultCBEEncoderOptions(),
-		Iterator: *DefaultIteratorOptions(),
-		Session:  *DefaultIteratorSessionOptions(),
-	}
+func DefaultCBEMarshalerOptions() CBEMarshalerOptions {
+	return defaultCBEMarshalerOptions
 }
 
-func (_this *CBEMarshalerOptions) WithDefaultsApplied() *CBEMarshalerOptions {
-	if _this == nil {
-		return DefaultCBEMarshalerOptions()
-	}
+var defaultCBEMarshalerOptions = CBEMarshalerOptions{
+	Encoder:  DefaultCBEEncoderOptions(),
+	Iterator: DefaultIteratorOptions(),
+	Session:  DefaultIteratorSessionOptions(),
+}
 
-	_this.Encoder.WithDefaultsApplied()
-	_this.Iterator.WithDefaultsApplied()
-	_this.Session.WithDefaultsApplied()
-
-	return _this
+func (_this *CBEMarshalerOptions) ApplyDefaults() {
+	_this.Encoder.ApplyDefaults()
+	_this.Iterator.ApplyDefaults()
+	_this.Session.ApplyDefaults()
 }
 
 func (_this *CBEMarshalerOptions) Validate() error {

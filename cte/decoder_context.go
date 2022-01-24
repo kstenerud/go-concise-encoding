@@ -55,7 +55,7 @@ type DecoderStackEntry struct {
 }
 
 type DecoderContext struct {
-	opts                 options.CEDecoderOptions
+	opts                 *options.CEDecoderOptions
 	Stream               Reader
 	TextPos              *TextPositionCounter
 	EventReceiver        events.DataEventReceiver
@@ -79,7 +79,7 @@ func (_this *DecoderContext) BeginArray(digitType string, arrayType events.Array
 }
 
 func (_this *DecoderContext) Init(opts *options.CEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
-	_this.opts = *opts
+	_this.opts = opts
 	_this.Stream.Init(reader)
 	_this.TextPos = &_this.Stream.TextPos
 	_this.EventReceiver = eventReceiver

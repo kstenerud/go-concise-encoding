@@ -32,7 +32,7 @@ import (
 )
 
 type Context struct {
-	Options         options.BuilderOptions
+	opts            *options.BuilderOptions
 	dstType         reflect.Type
 	referenceFiller ReferenceFiller
 
@@ -54,8 +54,13 @@ func (_this *Context) Init(opts *options.BuilderOptions,
 	customTextBuildFunction options.CustomBuildFunction,
 	getBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator,
 ) {
-	opts = opts.WithDefaultsApplied()
-	_this.Options = *opts
+	if opts == nil {
+		o := options.DefaultBuilderOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 	_this.dstType = dstType
 	_this.CustomBinaryBuildFunction = customBinaryBuildFunction
 	_this.CustomTextBuildFunction = customTextBuildFunction

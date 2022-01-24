@@ -34,7 +34,7 @@ import (
 type DecoderOp func(*DecoderContext)
 
 type Decoder struct {
-	opts options.CEDecoderOptions
+	opts *options.CEDecoderOptions
 }
 
 // Create a new CTE decoder, which will read from reader and send data events
@@ -48,8 +48,13 @@ func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
 // Initialize this decoder, which will read from reader and send data events
 // to nextReceiver. If opts is nil, default options will be used.
 func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
+	if opts == nil {
+		o := options.DefaultCEDecoderOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
 }
 
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
@@ -67,7 +72,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	}()
 
 	ctx := DecoderContext{}
-	ctx.Init(&_this.opts, reader, eventReceiver)
+	ctx.Init(_this.opts, reader, eventReceiver)
 	ctx.StackDecoder(decodeDocumentBegin)
 
 	for !ctx.IsDocumentComplete {

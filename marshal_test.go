@@ -77,7 +77,7 @@ func TestEmptyListWithIndents(t *testing.T) {
 	v := []interface{}{}
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Encoder.Indent = "    "
-	encodedDocument, err := ce.MarshalToCTEDocument(v, opts)
+	encodedDocument, err := ce.MarshalToCTEDocument(v, &opts)
 	if err != nil {
 		t.Error(err)
 	}

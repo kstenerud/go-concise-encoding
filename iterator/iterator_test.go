@@ -250,7 +250,7 @@ func TestIterateStruct(t *testing.T) {
 	iOpts := options.DefaultIteratorOptions()
 
 	assertIterate(t, new(StructTestIterate), M(), S("a"), I(0), E())
-	assertIterateWithOptions(t, sOpts, iOpts, new(StructTestIterate), M(), S("A"), I(0), E())
+	assertIterateWithOptions(t, &sOpts, &iOpts, new(StructTestIterate), M(), S("A"), I(0), E())
 	assertIterate(t, (*StructTestIterate)(nil), NULL())
 }
 
@@ -280,7 +280,7 @@ func TestIterateRecurse(t *testing.T) {
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true
 	receiver := test.NewTEventStore(events.NewNullEventReceiver())
-	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
+	iterateObject(obj, receiver, &sessionOptions, &iteratorOptions)
 
 	if !equivalence.IsEquivalent(expected, receiver.Events) {
 		t.Errorf("Expected %v but got %v", expected, receiver.Events)

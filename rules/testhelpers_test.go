@@ -231,5 +231,5 @@ func newRulesAfterVersion(opts *options.RuleOptions) *RulesEventReceiver {
 func newRulesWithMaxDepth(maxDepth int) *RulesEventReceiver {
 	opts := options.DefaultRuleOptions()
 	opts.MaxContainerDepth = uint64(maxDepth)
-	return newRulesAfterVersion(opts)
+	return newRulesAfterVersion(&opts)
 }

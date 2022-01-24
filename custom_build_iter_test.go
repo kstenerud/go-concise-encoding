@@ -140,7 +140,7 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	marshaler := ce.NewCBEMarshaler(&marshalOpts)
 	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
@@ -148,7 +148,7 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	}
 
 	template := value
-	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalOpts)
 	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
@@ -168,7 +168,7 @@ func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalOpts)
 	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
@@ -176,7 +176,7 @@ func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	}
 
 	template := value
-	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
 	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
@@ -220,7 +220,7 @@ func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
 	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalOpts)
 	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
@@ -228,7 +228,7 @@ func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	}
 
 	template := value
-	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
 	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)

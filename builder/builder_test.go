@@ -607,7 +607,7 @@ func TestBuilderChunkedCustomBinary(t *testing.T) {
 		return nil
 	}
 	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
-	session := NewSession(nil, opts)
+	session := NewSession(nil, &opts)
 	expected := CustomBinaryExampleType(0x01020304)
 	assertBuildWithSession(t, session, expected, CBB(), AC(2, true), AD([]byte{1, 2}), AC(2, false), AD([]byte{3, 4}))
 	assertBuildWithSession(t, session, expected, CBB(), AC(2, true), AD([]byte{1, 2}), AC(2, true), AD([]byte{3, 4}), AC(0, false))
@@ -626,7 +626,7 @@ func TestBuilderChunkedCustomText(t *testing.T) {
 		return nil
 	}
 	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
-	session := NewSession(nil, opts)
+	session := NewSession(nil, &opts)
 	expected := CustomTextExampleType(0x1234)
 	assertBuildWithSession(t, session, expected, CTB(), AC(2, true), AD([]byte{'1', '2'}), AC(2, false), AD([]byte{'3', '4'}))
 	assertBuildWithSession(t, session, expected, CTB(), AC(2, true), AD([]byte{'1', '2'}), AC(2, true), AD([]byte{'3', '4'}), AC(0, false))

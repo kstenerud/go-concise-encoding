@@ -37,7 +37,7 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	iteratorFuncs sync.Map
-	opts          options.IteratorSessionOptions
+	opts          *options.IteratorSessionOptions
 	context       Context
 }
 
@@ -56,7 +56,14 @@ func NewSession(parent *Session, opts *options.IteratorSessionOptions) *Session 
 // for all basic go types.
 // If opts is nil, default options will be used.
 func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions) {
-	opts = opts.WithDefaultsApplied()
+	if opts == nil {
+		o := options.DefaultIteratorSessionOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
+
 	if parent == nil {
 		parent = &rootSession
 	}
@@ -65,8 +72,6 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 		_this.iteratorFuncs.Store(k, v)
 		return true
 	})
-
-	_this.opts = *opts
 
 	for t, converter := range _this.opts.CustomBinaryConverters {
 		_this.RegisterIteratorForType(t, newCustomBinaryIterator(converter))

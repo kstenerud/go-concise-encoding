@@ -450,10 +450,10 @@ func TestRulesErrorInvalidMarkerID(t *testing.T) {
 func TestRulesMaxBytesLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxArrayByteLength = 10
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsFail(t, rules, AU8(NewBytes(11, 0)))
 
-	rules = newRulesAfterVersion(opts)
+	rules = newRulesAfterVersion(&opts)
 	assertEventsSucceed(t, rules, AU8B(), AC(8, true), AD(NewBytes(8, 0)))
 	assertEventsFail(t, rules, AC(4, false))
 }
@@ -461,10 +461,10 @@ func TestRulesMaxBytesLength(t *testing.T) {
 func TestRulesMaxStringLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxStringByteLength = 10
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsFail(t, rules, S("12345678901"))
 
-	rules = newRulesAfterVersion(opts)
+	rules = newRulesAfterVersion(&opts)
 	assertEventsSucceed(t, rules, SB(), AC(8, true), AD(NewBytes(8, 40)))
 	assertEventsFail(t, rules, AC(4, false))
 }
@@ -472,10 +472,10 @@ func TestRulesMaxStringLength(t *testing.T) {
 func TestRulesMaxResourceIDLength(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxResourceIDByteLength = 10
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsFail(t, rules, RID("12345678901"))
 
-	rules = newRulesAfterVersion(opts)
+	rules = newRulesAfterVersion(&opts)
 	assertEventsSucceed(t, rules, RB(), AC(8, true), AD(NewBytes(8, 64)))
 	assertEventsFail(t, rules, AC(4, false))
 }
@@ -483,10 +483,10 @@ func TestRulesMaxResourceIDLength(t *testing.T) {
 func TestRulesMaxIDLength(t *testing.T) {
 	maxIDLength := 127
 	opts := options.DefaultRuleOptions()
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsFail(t, rules, MARK(string(NewString(maxIDLength+1, 0))))
 
-	rules = newRulesAfterVersion(opts)
+	rules = newRulesAfterVersion(&opts)
 	assertEventsFail(t, rules, REF(string(NewString(maxIDLength+1, 0))))
 }
 
@@ -499,7 +499,7 @@ func TestRulesMaxContainerDepth(t *testing.T) {
 func TestRulesMaxObjectCount(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxObjectCount = 3
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsSucceed(t, rules, L(), S("test"), TT())
 	assertEventsFail(t, rules, FF())
 }
@@ -507,7 +507,7 @@ func TestRulesMaxObjectCount(t *testing.T) {
 func TestRulesMaxReferenceCount(t *testing.T) {
 	opts := options.DefaultRuleOptions()
 	opts.MaxReferenceCount = 2
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsSucceed(t, rules, L(), MARK("test"), TT(), MARK("10"), TT())
 	assertEventsFail(t, rules, MARK("xx"), TT())
 }
@@ -517,7 +517,7 @@ func TestRulesReset(t *testing.T) {
 	opts.MaxContainerDepth = 2
 	opts.MaxObjectCount = 5
 	opts.MaxReferenceCount = 2
-	rules := newRulesAfterVersion(opts)
+	rules := newRulesAfterVersion(&opts)
 	assertEventsSucceed(t, rules, L())
 	rules.Reset()
 	assertEventsFail(t, rules, E())
@@ -532,7 +532,7 @@ func TestRulesReset(t *testing.T) {
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
-	rules := NewRules(events.NewNullEventReceiver(), opts)
+	rules := NewRules(events.NewNullEventReceiver(), &opts)
 	assertEventsSucceed(t, rules, BD(), EvV, RREF("http://x.y"), ED())
 }
 

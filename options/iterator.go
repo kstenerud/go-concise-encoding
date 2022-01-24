@@ -22,8 +22,6 @@ package options
 
 import (
 	"reflect"
-
-	"github.com/kstenerud/go-concise-encoding/version"
 )
 
 // ============================================================================
@@ -54,27 +52,24 @@ type IteratorSessionOptions struct {
 	CustomTextConverters map[reflect.Type]ConvertToCustomFunction
 }
 
-func DefaultIteratorSessionOptions() *IteratorSessionOptions {
-	return &IteratorSessionOptions{
-		LowercaseStructFieldNames: true,
-		CustomBinaryConverters:    make(map[reflect.Type]ConvertToCustomFunction),
-		CustomTextConverters:      make(map[reflect.Type]ConvertToCustomFunction),
-	}
+func DefaultIteratorSessionOptions() IteratorSessionOptions {
+	opts := defaultIteratorSessionOptions
+	opts.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	opts.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	return opts
 }
 
-func (_this *IteratorSessionOptions) WithDefaultsApplied() *IteratorSessionOptions {
-	if _this == nil {
-		return DefaultIteratorSessionOptions()
-	}
+var defaultIteratorSessionOptions = IteratorSessionOptions{
+	LowercaseStructFieldNames: true,
+}
 
+func (_this *IteratorSessionOptions) ApplyDefaults() {
 	if _this.CustomBinaryConverters == nil {
 		_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
 	}
 	if _this.CustomTextConverters == nil {
 		_this.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
 	}
-
-	return _this
 }
 
 func (_this *IteratorSessionOptions) Validate() error {
@@ -85,8 +80,6 @@ func (_this *IteratorSessionOptions) Validate() error {
 // Iterator
 
 type IteratorOptions struct {
-	ConciseEncodingVersion uint64
-
 	// If RecursionSupport is true, the iterator will also look for duplicate
 	// pointers to data, generating marker and reference events rather than
 	// walking the object again. This is useful for cyclic or recursive data
@@ -97,24 +90,17 @@ type IteratorOptions struct {
 	OmitNilPointers bool
 }
 
-func DefaultIteratorOptions() *IteratorOptions {
-	return &IteratorOptions{
-		ConciseEncodingVersion: version.ConciseEncodingVersion,
-		RecursionSupport:       true,
-		OmitNilPointers:        true,
-	}
+func DefaultIteratorOptions() IteratorOptions {
+	return defaultIteratorOptions
 }
 
-func (_this *IteratorOptions) WithDefaultsApplied() *IteratorOptions {
-	if _this == nil {
-		return DefaultIteratorOptions()
-	}
+var defaultIteratorOptions = IteratorOptions{
+	RecursionSupport: true,
+	OmitNilPointers:  true,
+}
 
-	if _this.ConciseEncodingVersion < 1 {
-		_this.ConciseEncodingVersion = DefaultIteratorOptions().ConciseEncodingVersion
-	}
-
-	return _this
+func (_this *IteratorOptions) ApplyDefaults() {
+	// Nothing to do
 }
 
 func (_this *IteratorOptions) Validate() error {

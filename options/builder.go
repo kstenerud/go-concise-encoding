@@ -51,34 +51,30 @@ type BuilderSessionOptions struct {
 	CustomTextBuildFunction CustomBuildFunction
 }
 
-func DefaultBuilderSessionOptions() *BuilderSessionOptions {
-	return &BuilderSessionOptions{
-		CustomBinaryBuildFunction: func(src []byte, dst reflect.Value) error {
-			return fmt.Errorf("no builder has been registered to handle custom binary data")
-		},
-		CustomTextBuildFunction: func(src []byte, dst reflect.Value) error {
-			return fmt.Errorf("no builder has been registered to handle custom text data")
-		},
-	}
+func DefaultBuilderSessionOptions() BuilderSessionOptions {
+	return defaultBuilderSessionOptions
 }
 
-func (_this *BuilderSessionOptions) WithDefaultsApplied() *BuilderSessionOptions {
-	defaults := DefaultBuilderSessionOptions()
-	if _this == nil {
-		return defaults
-	}
+var defaultBuilderSessionOptions = BuilderSessionOptions{
+	CustomBinaryBuildFunction: func(src []byte, dst reflect.Value) error {
+		return fmt.Errorf("no builder has been registered to handle custom binary data")
+	},
+	CustomTextBuildFunction: func(src []byte, dst reflect.Value) error {
+		return fmt.Errorf("no builder has been registered to handle custom text data")
+	},
+	CustomBuiltTypes: []reflect.Type{},
+}
 
+func (_this *BuilderSessionOptions) ApplyDefaults() {
 	if _this.CustomBinaryBuildFunction == nil {
-		_this.CustomBinaryBuildFunction = defaults.CustomBinaryBuildFunction
+		_this.CustomBinaryBuildFunction = defaultBuilderSessionOptions.CustomBinaryBuildFunction
 	}
 	if _this.CustomTextBuildFunction == nil {
-		_this.CustomTextBuildFunction = defaults.CustomTextBuildFunction
+		_this.CustomTextBuildFunction = defaultBuilderSessionOptions.CustomTextBuildFunction
 	}
 	if _this.CustomBuiltTypes == nil {
-		_this.CustomBuiltTypes = []reflect.Type{}
+		_this.CustomBuiltTypes = defaultBuilderSessionOptions.CustomBuiltTypes
 	}
-
-	return _this
 }
 
 func (_this *BuilderSessionOptions) Validate() error {
@@ -106,23 +102,20 @@ type BuilderOptions struct {
 	IgnoreUnknownFields bool
 }
 
-func DefaultBuilderOptions() *BuilderOptions {
-	const maxBase10Exp = 50
-	return &BuilderOptions{
-		FloatToBigIntMaxBase10Exponent:  maxBase10Exp,
-		FloatToBigIntMaxBase2Exponent:   maxBase10Exp * 10 / 3,
-		AllowLossyFloatConversion:       true,
-		IgnoreUnknownFields:             true,
-		CaseInsensitiveStructFieldNames: true,
-	}
+func DefaultBuilderOptions() BuilderOptions {
+	return defaultBuilderOptions
 }
 
-func (_this *BuilderOptions) WithDefaultsApplied() *BuilderOptions {
-	if _this == nil {
-		return DefaultBuilderOptions()
-	}
+var defaultBuilderOptions = BuilderOptions{
+	FloatToBigIntMaxBase10Exponent:  maxBase10Exp,
+	FloatToBigIntMaxBase2Exponent:   maxBase10Exp * 10 / 3,
+	AllowLossyFloatConversion:       true,
+	IgnoreUnknownFields:             true,
+	CaseInsensitiveStructFieldNames: true,
+}
 
-	return _this
+func (_this *BuilderOptions) ApplyDefaults() {
+	// Nothing to do
 }
 
 func (_this *BuilderOptions) Validate() error {

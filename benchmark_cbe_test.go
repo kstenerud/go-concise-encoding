@@ -91,14 +91,14 @@ func benchmarkMarshal(b *testing.B, marshaler ce.Marshaler) {
 func BenchmarkCTEMarshal(b *testing.B) {
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(opts)
+	marshaler := ce.NewCTEMarshaler(&opts)
 	benchmarkMarshal(b, marshaler)
 }
 
 func BenchmarkCBEMarshal(b *testing.B) {
 	opts := options.DefaultCBEMarshalerOptions()
 	opts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(opts)
+	marshaler := ce.NewCBEMarshaler(&opts)
 	benchmarkMarshal(b, marshaler)
 }
 
@@ -184,7 +184,7 @@ func benchmarkDecode(b *testing.B, marshaler ce.Marshaler, decoder ce.Decoder) {
 func BenchmarkCTEDecode(b *testing.B) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalOpts)
 	decoder := ce.NewCTEDecoder(nil)
 	benchmarkDecode(b, marshaler, decoder)
 }
@@ -192,38 +192,38 @@ func BenchmarkCTEDecode(b *testing.B) {
 func BenchmarkCTEUnmarshalRules(b *testing.B) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalOpts)
 	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCTEUnmarshalNoRules(b *testing.B) {
 	marshalOpts := options.DefaultCTEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalOpts)
 	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.EnforceRules = false
-	unmarshaler := ce.NewCTEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCBEUnmarshalRules(b *testing.B) {
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	marshaler := ce.NewCBEMarshaler(&marshalOpts)
 	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
 	marshalOpts := options.DefaultCBEMarshalerOptions()
 	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(marshalOpts)
+	marshaler := ce.NewCBEMarshaler(&marshalOpts)
 	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
 	unmarshalOpts.EnforceRules = false
-	unmarshaler := ce.NewCBEUnmarshaler(unmarshalOpts)
+	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalOpts)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
@@ -268,7 +268,7 @@ func BenchmarkRules(b *testing.B) {
 	iterSession := iterator.NewSession(nil, nil)
 	iterOptions := options.DefaultIteratorOptions()
 	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(store, iterOptions)
+	iter := iterSession.NewIterator(store, &iterOptions)
 
 	objs := generate()
 	documents := make([][]*test.TEvent, 0, len(objs))
@@ -294,7 +294,7 @@ func BenchmarkBuilder(b *testing.B) {
 	iterSession := iterator.NewSession(nil, nil)
 	iterOptions := options.DefaultIteratorOptions()
 	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(store, iterOptions)
+	iter := iterSession.NewIterator(store, &iterOptions)
 
 	objs := generate()
 	documents := make([][]*test.TEvent, 0, len(objs))
@@ -324,7 +324,7 @@ func BenchmarkIterator(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(events.NewNullEventReceiver(), iterOptions)
+	iter := iterSession.NewIterator(events.NewNullEventReceiver(), &iterOptions)
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		iter.Iterate(objs[index])

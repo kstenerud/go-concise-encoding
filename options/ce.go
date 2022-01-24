@@ -20,34 +20,90 @@
 
 package options
 
-import (
-	"github.com/kstenerud/go-concise-encoding/version"
-)
+type DocumentLimits struct {
+	MaxDocumentSizeBytes          uint64
+	MaxArraySizeBytes             uint64
+	MaxObjectCount                uint64
+	MaxContainerDepth             uint64
+	MaxIntegerDigitCount          uint64
+	MaxFloatCoefficientDigitCount uint64
+	MaxFloatExponentDigitCount    uint64
+	MaxYearDigitCount             uint64
+	MaxMarkerCount                uint64
+	MaxReferenceCount             uint64
+}
+
+var defaultDocumentLimits = DocumentLimits{
+	MaxDocumentSizeBytes:          5368709120,
+	MaxArraySizeBytes:             1073741824,
+	MaxObjectCount:                1000000,
+	MaxContainerDepth:             1000,
+	MaxIntegerDigitCount:          100,
+	MaxFloatCoefficientDigitCount: 100,
+	MaxFloatExponentDigitCount:    5,
+	MaxYearDigitCount:             11,
+	MaxMarkerCount:                10000,
+	MaxReferenceCount:             10000,
+}
+
+func (_this *DocumentLimits) ApplyDefaults() {
+	if _this.MaxDocumentSizeBytes == 0 {
+		_this.MaxDocumentSizeBytes = defaultDecoderOptions.DocumentLimits.MaxDocumentSizeBytes
+	}
+	if _this.MaxArraySizeBytes == 0 {
+		_this.MaxArraySizeBytes = defaultDecoderOptions.DocumentLimits.MaxArraySizeBytes
+	}
+	if _this.MaxObjectCount == 0 {
+		_this.MaxObjectCount = defaultDecoderOptions.DocumentLimits.MaxObjectCount
+	}
+	if _this.MaxContainerDepth == 0 {
+		_this.MaxContainerDepth = defaultDecoderOptions.DocumentLimits.MaxContainerDepth
+	}
+	if _this.MaxIntegerDigitCount == 0 {
+		_this.MaxIntegerDigitCount = defaultDecoderOptions.DocumentLimits.MaxIntegerDigitCount
+	}
+	if _this.MaxFloatCoefficientDigitCount == 0 {
+		_this.MaxFloatCoefficientDigitCount = defaultDecoderOptions.DocumentLimits.MaxFloatCoefficientDigitCount
+	}
+	if _this.MaxFloatExponentDigitCount == 0 {
+		_this.MaxFloatExponentDigitCount = defaultDecoderOptions.DocumentLimits.MaxFloatExponentDigitCount
+	}
+	if _this.MaxYearDigitCount == 0 {
+		_this.MaxYearDigitCount = defaultDecoderOptions.DocumentLimits.MaxYearDigitCount
+	}
+	if _this.MaxMarkerCount == 0 {
+		_this.MaxMarkerCount = defaultDecoderOptions.DocumentLimits.MaxMarkerCount
+	}
+	if _this.MaxReferenceCount == 0 {
+		_this.MaxReferenceCount = defaultDecoderOptions.DocumentLimits.MaxReferenceCount
+	}
+}
 
 // ============================================================================
 // CE Decoder
 
 type CEDecoderOptions struct {
-	// Concise encoding spec version to adhere to. Uses latest if set to 0.
-	ConciseEncodingVersion uint64
+	AllowRecursiveReferences  bool
+	FollowRemoteReferences    bool
+	CompleteTruncatedDocument bool
+	AllowNulCharacter         bool
+	DocumentLimits            DocumentLimits
 }
 
-func DefaultCEDecoderOptions() *CEDecoderOptions {
-	return &CEDecoderOptions{
-		ConciseEncodingVersion: version.ConciseEncodingVersion,
-	}
+var defaultDecoderOptions = CEDecoderOptions{
+	AllowRecursiveReferences:  false,
+	FollowRemoteReferences:    false,
+	CompleteTruncatedDocument: false,
+	AllowNulCharacter:         false,
+	DocumentLimits:            defaultDocumentLimits,
 }
 
-func (_this *CEDecoderOptions) WithDefaultsApplied() *CEDecoderOptions {
-	if _this == nil {
-		return DefaultCEDecoderOptions()
-	}
+func DefaultCEDecoderOptions() CEDecoderOptions {
+	return defaultDecoderOptions
+}
 
-	if _this.ConciseEncodingVersion == 0 {
-		_this.ConciseEncodingVersion = version.ConciseEncodingVersion
-	}
-
-	return _this
+func (_this *CEDecoderOptions) ApplyDefaults() {
+	_this.DocumentLimits.ApplyDefaults()
 }
 
 func (_this *CEDecoderOptions) Validate() error {
@@ -67,27 +123,23 @@ type CEUnmarshalerOptions struct {
 	EnforceRules bool
 }
 
-func DefaultCEUnmarshalerOptions() *CEUnmarshalerOptions {
-	return &CEUnmarshalerOptions{
-		Decoder:      *DefaultCEDecoderOptions(),
-		Builder:      *DefaultBuilderOptions(),
-		Session:      *DefaultBuilderSessionOptions(),
-		Rules:        *DefaultRuleOptions(),
-		EnforceRules: true,
-	}
+func DefaultCEUnmarshalerOptions() CEUnmarshalerOptions {
+	return defaultCEUnmarshalerOptions
 }
 
-func (_this *CEUnmarshalerOptions) WithDefaultsApplied() *CEUnmarshalerOptions {
-	if _this == nil {
-		return DefaultCEUnmarshalerOptions()
-	}
+var defaultCEUnmarshalerOptions = CEUnmarshalerOptions{
+	Decoder:      DefaultCEDecoderOptions(),
+	Builder:      DefaultBuilderOptions(),
+	Session:      DefaultBuilderSessionOptions(),
+	Rules:        DefaultRuleOptions(),
+	EnforceRules: true,
+}
 
-	_this.Decoder.WithDefaultsApplied()
-	_this.Builder.WithDefaultsApplied()
-	_this.Session.WithDefaultsApplied()
-	_this.Rules.WithDefaultsApplied()
-
-	return _this
+func (_this *CEUnmarshalerOptions) ApplyDefaults() {
+	_this.Decoder.ApplyDefaults()
+	_this.Builder.ApplyDefaults()
+	_this.Session.ApplyDefaults()
+	_this.Rules.ApplyDefaults()
 }
 
 func (_this *CEUnmarshalerOptions) Validate() error {

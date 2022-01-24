@@ -28,6 +28,7 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/version"
 )
 
 type contextStackEntry struct {
@@ -36,7 +37,7 @@ type contextStackEntry struct {
 }
 
 type Context struct {
-	opts            options.RuleOptions
+	opts            *options.RuleOptions
 	ExpectedVersion uint64
 
 	objectCount uint64
@@ -66,10 +67,9 @@ type Context struct {
 	referenceCount    uint64
 }
 
-func (_this *Context) Init(version uint64, opts *options.RuleOptions) {
-	opts = opts.WithDefaultsApplied()
-	_this.opts = *opts
-	_this.ExpectedVersion = version
+func (_this *Context) Init(opts *options.RuleOptions) {
+	_this.opts = opts
+	_this.ExpectedVersion = version.ConciseEncodingVersion
 	_this.stack = make([]contextStackEntry, 0, 16)
 	_this.Reset()
 }

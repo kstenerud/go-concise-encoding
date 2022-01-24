@@ -21,3 +21,5 @@
 // All options that can be used to fine-tune the behavior of various aspects of
 // this library.
 package options
+
+const maxBase10Exp = 50

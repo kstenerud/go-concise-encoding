@@ -354,7 +354,7 @@ func assertDecodeEncode(t *testing.T,
 func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
 	marshalOptions := options.DefaultCBEMarshalerOptions()
 	unmarshalOptions := options.DefaultCEUnmarshalerOptions()
-	assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
+	assertCBEMarshalUnmarshalWithOptions(t, &marshalOptions, &unmarshalOptions, expected)
 	// marshalOptions.Iterator.RecursionSupport = true
 	// assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
 }

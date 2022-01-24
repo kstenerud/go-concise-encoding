@@ -39,7 +39,7 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	builderGenerators sync.Map
-	opts              options.BuilderSessionOptions
+	opts              *options.BuilderSessionOptions
 }
 
 // Start a new builder session. It will inherit the builders of its parent.
@@ -57,7 +57,14 @@ func NewSession(parent *Session, opts *options.BuilderSessionOptions) *Session {
 // for all basic go types.
 // If opts is nil, default options will be used.
 func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions) {
-	opts = opts.WithDefaultsApplied()
+	if opts == nil {
+		o := options.DefaultBuilderSessionOptions()
+		opts = &o
+	} else {
+		opts.ApplyDefaults()
+	}
+	_this.opts = opts
+
 	if parent == nil {
 		parent = &rootSession
 	}
@@ -68,7 +75,6 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 		})
 	}
 
-	_this.opts = *opts
 	for _, t := range _this.opts.CustomBuiltTypes {
 		_this.RegisterBuilderGeneratorForType(t, generateCustomBuilder)
 	}
