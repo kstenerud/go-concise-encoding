@@ -113,7 +113,7 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	}
 
 	switch token[decodedCount] {
-	case '.', ',':
+	case '.':
 		// 1.23
 		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
 	case 'e', 'E':
@@ -173,7 +173,7 @@ func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
 	}
 
 	switch token[decodedCount] {
-	case '.', ',':
+	case '.':
 		// 0.123
 		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
 		return
@@ -224,7 +224,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	}
 
 	switch token[decodedCount] {
-	case '.', ',':
+	case '.':
 		// 1.23
 		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
 	case 'e', 'E':
@@ -291,7 +291,7 @@ func decode0Based(ctx *DecoderContext) {
 	}
 
 	switch token[decodedCount] {
-	case '.', ',':
+	case '.':
 		// 0.123
 		continueDecodingAsDecimalFloat(ctx, token, decodedCount, value, bigValue, sign)
 	case 'e', 'E':
@@ -495,7 +495,7 @@ func continueDecodingAsHexNumber(ctx *DecoderContext, token Token, sign int) {
 	}
 
 	switch token[pos] {
-	case '.', ',':
+	case '.':
 		// 0x3.1f
 		fvalue, bigFValue, decodedCount := token[pos:].CompleteHexFloat(ctx.TextPos, int64(sign), value, bigValue, digitCount)
 		token = token[decodedCount+pos:]

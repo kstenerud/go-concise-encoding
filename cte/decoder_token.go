@@ -521,7 +521,7 @@ func (_this Token) CompleteDecimalFloat(textPos *TextPositionCounter,
 	sign int64,
 	coefficient uint64,
 	bigCoefficient *big.Int) (value compact_float.DFloat, bigValue *apd.Decimal, decodedCount int) {
-	// Assumption: First byte is '.' or ','
+	// Assumption: First byte is '.'
 
 	_this.assertCharPropertyAtOffset(textPos, 1, chars.DigitBase10, "decimal float")
 
@@ -612,7 +612,7 @@ func (_this Token) CompleteHexFloat(textPos *TextPositionCounter,
 	coefficient uint64,
 	bigCoefficient *big.Int,
 	coefficientDigitCount int) (value float64, bigValue *big.Float, decodedCount int) {
-	// Assumption: First byte is '.' or ','
+	// Assumption: First byte is '.'
 
 	pos := 1
 	var exponent int
@@ -702,7 +702,7 @@ func (_this Token) DecodeSmallFloat(textPos *TextPositionCounter) (value float64
 		return
 	}
 
-	if _this[pos] != '.' && _this[pos] != ',' {
+	if _this[pos] != '.' {
 		_this.UnexpectedChar(textPos, pos, "float")
 	}
 	// Note: Do not advance past the radix point because CompleteDecimalFloat expects it
@@ -769,7 +769,7 @@ func (_this Token) DecodeSmallHexFloat(textPos *TextPositionCounter) (value floa
 		return
 	}
 
-	if _this[pos] != '.' && _this[pos] != ',' {
+	if _this[pos] != '.' {
 		_this.UnexpectedChar(textPos, pos, "hex float")
 	}
 	// Note: Do not advance past the radix point because CompleteHexFloat expects it
@@ -924,7 +924,7 @@ func (_this Token) DecodeLatOrLong(textPos *TextPositionCounter) (value int, dec
 		_this.errorf(textPos, 0, "Empty lat/long field")
 	}
 
-	if !_this.IsAtEnd(pos) && (_this[pos] == '.' || _this[pos] == ',') {
+	if !_this.IsAtEnd(pos) && _this[pos] == '.' {
 		pos++
 		_this.assertNotEnd(textPos, pos, "latitude/longitude")
 		maxCount := len(_this) - pos
@@ -1074,7 +1074,7 @@ func (_this Token) CompleteTime(textPos *TextPositionCounter, year, month, day, 
 
 	// Nanosecond
 	var nsec uint64
-	if !_this.IsAtEnd(pos) && (_this[pos] == '.' || _this[pos] == ',') {
+	if !_this.IsAtEnd(pos) && _this[pos] == '.' {
 		pos++
 		nsec, digitCount = _this[pos:].DecodeUintNoWhitespace(textPos)
 		// TODO: Check for overflow

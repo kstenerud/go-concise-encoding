@@ -519,7 +519,7 @@ func (_this *Writer) WriteCompactTime(value compact_time.Time) {
 	_this.WriteDecimalUintDigits(uint64(value.Second), 2)
 
 	if value.Nanosecond != 0 {
-		_this.WriteByteNotLF('.') // TODO: Optional radix ','
+		_this.WriteByteNotLF('.')
 		_this.WriteDecimalUintLeftLoaded(uint64(value.Nanosecond), 9)
 	}
 

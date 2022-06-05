@@ -249,15 +249,10 @@ c0
             "decodeEncode" = [
                 {"document"="c0 0.0"                  "events"=["v 0" "n 0"]}
                 {"document"="c0 -0.0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0,0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0,0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 1,1"                  "events"=["v 0" "n 1.1"]}
+                {"document"="c0 1.1"                  "events"=["v 0" "n 1.1"]}
                 {"document"="c0 0.1"                  "events"=["v 0" "n 0.1"]}
-                {"document"="c0 0,1"                  "events"=["v 0" "n 0.1"]}
                 {"document"="c0 4.7234634"            "events"=["v 0" "n 4.7234634"]}
                 {"document"="c0 -9.6534634727167134523472782456223624582452671345134745694657786776"
-                 "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
-                {"document"="c0 -9,6534634727167134523472782456223624582452671345134745694657786776"
                  "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
 
                 {"document"="c0 inf"                  "events"=["v 0" "n inf"]}
@@ -278,7 +273,6 @@ c0
                 {"document"="c0 -1.53476E93983456"    "events"=["v 0" "n -1.53476e93983456"]}
                 {"document"="c0 -1.53476E+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
                 {"document"="c0 -1.53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
-                {"document"="c0 -1,53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
 
                 {"document"="c0 1e80"                 "events"=["v 0" "n 1e80"]}
                 {"document"="c0 1E80"                 "events"=["v 0" "n 1E80"]}
@@ -301,30 +295,17 @@ c0
                  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e+10000"]}
                 {"document"="c0 -0.1500000000000000000000000000000000000000000000000001e-10000"
                  "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
-                {"document"="c0 -0,1500000000000000000000000000000000000000000000000001e-10000"
-                 "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
             ]
             "decodeFail" = [
                 "c0 1."      // Missing right digit
-                "c0 1,"      // Missing right digit
                 "c0 .1"      // Missing left digit
-                "c0 ,1"      // Missing left digit
                 "c0 _1.1"    // Bad whitespace placement
                 "c0 1_.1"    // Bad whitespace placement
                 "c0 1._1"    // Bad whitespace placement
                 "c0 1.1_"    // Bad whitespace placement
-                "c0 _1,1"    // Bad whitespace placement
-                "c0 1_,1"    // Bad whitespace placement
-                "c0 1,_1"    // Bad whitespace placement
-                "c0 1,1_"    // Bad whitespace placement
                 "c0 1.1.1"   // Too many radices
-                "c0 1,1.1"   // Too many radices
-                "c0 1.1,1"   // Too many radices
-                "c0 1,1,1"   // Too many radices
                 "c0 1.1e1e2" // Too many exponent markers
-                "c0 1,1e1e2" // Too many exponent markers
                 "c0 1.a"     // Not a digit
-                "c0 1,a"     // Not a digit
             ]
         }
 
@@ -340,16 +321,10 @@ c0
             "decodeEncode" = [
                 {"document"="c0 0x0.0"                  "events"=["v 0" "n 0"]}
                 {"document"="c0 -0x0.0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0x0,0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0,0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0x1,1"                  "events"=["v 0" "n 0x1.1p0"]}
                 {"document"="c0 0x0.1"                  "events"=["v 0" "n 0x0.1p0"]}
-                {"document"="c0 0x0,1"                  "events"=["v 0" "n 0x0.1p0"]}
                 {"document"="c0 0x4.7f3cc34"            "events"=["v 0" "n 0x4.7f3cc34p0"]}
                 {"document"="c0 -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
                  "events"=["v 0" "n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
-                {"document"="c0 -0xf,65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
-                 "events"=["v 0" "n -0xf.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
 
                 {"document"="c0 0x0.0p0"                  "events"=["v 0" "n 0"]}
                 {"document"="c0 -0x0.0p0"                 "events"=["v 0" "n -0"]}
@@ -412,27 +387,16 @@ c0
             ]
             "decodeFail" = [
                 "c0 0x1."      // Missing right digit
-                "c0 0x1,"      // Missing right digit
                 "c0 0x.1"      // Missing left digit
-                "c0 0x,1"      // Missing left digit
                 "c0 _0x1.1"    // Bad whitespace placement
                 "c0 0x1_.1"    // Bad whitespace placement
                 "c0 0x1._1"    // Bad whitespace placement
                 "c0 0x1.1_"    // Bad whitespace placement
-                "c0 _0x1,1"    // Bad whitespace placement
-                "c0 0x1_,1"    // Bad whitespace placement
-                "c0 0x1,_1"    // Bad whitespace placement
-                "c0 0x1,1_"    // Bad whitespace placement
                 "c0 0x_1.1"    // Bad whitespace placement
                 "c0 0_x1.1"    // Bad whitespace placement
                 "c0 0x1.1.1"   // Too many radices
-                "c0 0x1,1.1"   // Too many radices
-                "c0 0x1.1,1"   // Too many radices
-                "c0 0x1,1,1"   // Too many radices
                 "c0 0x1.1p1p2" // Too many exponent markers
-                "c0 0x1,1p1p2" // Too many exponent markers
                 "c0 0x1.l"     // Not a digit
-                "c0 0x1,l"     // Not a digit
             ]
         }
 
@@ -571,9 +535,7 @@ c0
                 {"document"="c0 0:00:00.1"                        "events"=["v 0" "t 0:00:00.1"]}
                 {"document"="c0 0:00:00.100000000"                "events"=["v 0" "t 0:00:00.1"]}
                 {"document"="c0 23:59:60.000000000"               "events"=["v 0" "t 23:59:60"]}
-                {"document"="c0 23:59:60,000000000"               "events"=["v 0" "t 23:59:60"]}
                 {"document"="c0 23:59:60.999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
-                {"document"="c0 23:59:60,999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
 
                 {"document"="c0 23:59:59.101"                     "events"=["v 0" "t 23:59:59.101"]}
 
@@ -584,8 +546,6 @@ c0
                 }
 
                 {"document"="c0 10:00:01.93/89.92/1.10"           "events"=["v 0" "t 10:00:01.93/89.92/1.10"]}
-                {"document"="c0 10:00:01.93/89,90/1.1"            "events"=["v 0" "t 10:00:01.93/89.90/1.1"]}
-                {"document"="c0 10:00:01.93/89.9/1,10"            "events"=["v 0" "t 10:00:01.93/89.9/1.10"]}
                 {"document"="c0 10:00:01.93/0/0"                  "events"=["v 0" "t 10:00:01.93/0/0"]}
                 {"document"="c0 10:00:01.93/00/00.00"             "events"=["v 0" "t 10:00:01.93/0/0"]}
                 {"document"="c0 10:00:01.93/1/1"                  "events"=["v 0" "t 10:00:01.93/1/1"]}
@@ -603,7 +563,6 @@ c0
                 "c0 12:000:00"           // Too many minute digits
                 "c0 12:00:000"           // Too many second digits
                 "c0 12:00:00.0000000000" // Too many subsecond digits
-                "c0 12:00:00,0000000000" // Too many subsecond digits
 
                 "c0 24:00:00"            // Hour too high
                 "c0 23:60:00"            // Minute too high
@@ -613,7 +572,6 @@ c0
                 "c0 20:0a:00"            // Invalid minute digit
                 "c0 20:00:0a"            // Invalid second digit
                 "c0 20:00:00.00a"        // Invalid subsecond digit
-                "c0 20:00:00,00a"        // Invalid subsecond digit
 
                 "c0 20:00:00/"           // Missing timezone after marker
 
