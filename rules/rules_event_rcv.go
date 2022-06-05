@@ -291,13 +291,13 @@ func (_this *RulesEventReceiver) OnEdge() {
 }
 
 func (_this *RulesEventReceiver) OnMarker(identifier []byte) {
-	_this.context.ValidateMarkerID(identifier)
+	_this.context.ValidateIdentifier(identifier)
 	_this.context.CurrentEntry.Rule.OnMarker(&_this.context, identifier)
 	_this.receiver.OnMarker(identifier)
 }
 
 func (_this *RulesEventReceiver) OnReference(identifier []byte) {
-	_this.context.ValidateMarkerID(identifier)
+	_this.context.ValidateIdentifier(identifier)
 	_this.context.NotifyNewObject()
 	_this.context.CurrentEntry.Rule.OnReference(&_this.context, identifier)
 	_this.receiver.OnReference(identifier)

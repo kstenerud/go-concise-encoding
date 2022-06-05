@@ -44,16 +44,16 @@ var imports = []string{
 
 func GenerateCode(projectDir string, xmlPath string) {
 	chars, err := loadUnicodeDB(xmlPath)
-	standard.PanicIfError(err, "Error reading [%v]", xmlPath)
+	standard.PanicIfError(err, "error reading [%v]", xmlPath)
 	classifyRunes(chars)
 
 	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
 	writer, err := os.Create(generatedFilePath)
-	standard.PanicIfError(err, "Error opening [%v] for writing", generatedFilePath)
+	standard.PanicIfError(err, "error opening [%v] for writing", generatedFilePath)
 	defer writer.Close()
 	defer func() {
 		if e := recover(); e != nil {
-			panic(fmt.Errorf("Error while generating %v: %v", generatedFilePath, e))
+			panic(fmt.Errorf("error while generating %v: %v", generatedFilePath, e))
 		}
 	}()
 
@@ -74,9 +74,6 @@ func GenerateCode(projectDir string, xmlPath string) {
 	generatePropertiesTable(writer)
 	generateSpacer(writer)
 
-	generateIdentifierFirstSafeTable(writer)
-	generateSpacer(writer)
-
 	generateIdentifierSafeTable(writer)
 	generateSpacer(writer)
 
@@ -90,9 +87,7 @@ func GenerateCode(projectDir string, xmlPath string) {
 func classifyRunes(chars CharSet) {
 	const (
 		unsafeID            = IdentifierUnsafe
-		safeIDFirst         = IdentifierFirstSafe
-		safeIDRest          = IdentifierRestSafe
-		safeIDAll           = IdentifierAllSafe
+		safeID              = IdentifierSafe
 		safeForStringlike   = SafetyAll
 		unsafeForStringlike = SafetyNone
 	)
@@ -115,12 +110,12 @@ func classifyRunes(chars CharSet) {
 	}))
 
 	// Letters, numbers
-	setSafety(safeIDFirst, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(safeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.MajorCategory == 'L' || char.MajorCategory == 'N'
 	}))
 
 	// Mark
-	setSafety(safeIDRest, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+	setSafety(safeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.MajorCategory == 'M'
 	}))
 
@@ -133,8 +128,7 @@ func classifyRunes(chars CharSet) {
 	setSafety(unsafeID, safeForStringlike, charSet('\r', '\n', '\t', ' '))
 
 	// Symbols allowed in identifiers
-	setSafety(safeIDRest, safeForStringlike, charSet('-', '.', ':'))
-	setSafety(safeIDAll, safeForStringlike, charSet('_'))
+	setSafety(safeID, safeForStringlike, charSet('_', '-', '.'))
 
 	// Stringlike safety
 	markUnsafeFor(SafetyString, charsAndLookalikes(charSet('\\', '"')...))
@@ -262,10 +256,6 @@ func generateRuneByteCounts(writer io.Writer) {
 	if _, err := writer.Write([]byte("}\n")); err != nil {
 		panic(err)
 	}
-}
-
-func generateIdentifierFirstSafeTable(writer io.Writer) {
-	generateByteTable(writer, "identifierFirstSafe", identifierFirstSafe[:])
 }
 
 func generateIdentifierSafeTable(writer io.Writer) {
@@ -398,8 +388,7 @@ func setRuneSafety(r rune, identifierSafety IdentifierSafety, safeFor SafetyFlag
 	unsafeFor := ^safeFor & SafetyAll
 	isStringlikeSafe := unsafeFor == 0
 
-	setBitArrayValue(identifierFirstSafe[:], int(r), identifierSafety&IdentifierFirstSafe != 0)
-	setBitArrayValue(identifierSafe[:], int(r), identifierSafety&(IdentifierRestSafe|IdentifierFirstSafe) != 0)
+	setBitArrayValue(identifierSafe[:], int(r), identifierSafety&(IdentifierSafe) != 0)
 	setBitArrayValue(stringlikeSafe[:], int(r), isStringlikeSafe)
 	stringlikeUnsafe[r] = unsafeFor
 }
@@ -590,16 +579,13 @@ var safetyNames = map[interface{}]string{
 type IdentifierSafety uint64
 
 const (
-	IdentifierFirstSafe IdentifierSafety = 1 << iota
-	IdentifierRestSafe
-	IdentifierAllSafe = ^IdentifierSafety(0)
-	IdentifierUnsafe  = IdentifierSafety(0)
+	IdentifierSafe   IdentifierSafety = 1 << iota
+	IdentifierUnsafe                  = IdentifierSafety(0)
 )
 
 var identifierSafetyNames = map[interface{}]string{
-	IdentifierUnsafe:    "IdentifierUnsafe",
-	IdentifierFirstSafe: "IdentifierFirstSafe",
-	IdentifierRestSafe:  "IdentifierAllSafe",
+	IdentifierUnsafe: "IdentifierUnsafe",
+	IdentifierSafe:   "IdentifierSafe",
 }
 
 func (_this IdentifierSafety) String() string {
@@ -608,7 +594,6 @@ func (_this IdentifierSafety) String() string {
 
 var goSafe [(utf8.MaxRune + 1) / 8]byte
 var identifierSafe [(utf8.MaxRune + 1) / 8]byte
-var identifierFirstSafe [(utf8.MaxRune + 1) / 8]byte
 var stringlikeSafe [(utf8.MaxRune + 1) / 8]byte
 var stringlikeUnsafe = make(map[rune]SafetyFlags)
 var properties [0x100]Properties

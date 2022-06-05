@@ -73,33 +73,9 @@ func IsIdentifierSafe(str []byte) bool {
 	if len(str) == 0 {
 		return false
 	}
-	r, size := utf8.DecodeRune(str)
-	if !IsRuneValidIdentifierFirstChar(r) {
-		return false
-	}
-	str = str[size:]
 	for len(str) > 0 {
 		r, size := utf8.DecodeRune(str)
 		if !IsRuneValidIdentifier(r) {
-			return false
-		}
-		str = str[size:]
-	}
-	return true
-}
-
-func IsMarkerIDSafe(str []byte) bool {
-	if len(str) == 0 {
-		return false
-	}
-	r, size := utf8.DecodeRune(str)
-	if !IsRuneValidIdentifierFirstChar(r) {
-		return false
-	}
-	str = str[size:]
-	for len(str) > 0 {
-		r, size := utf8.DecodeRune(str)
-		if !IsRuneValidMarkerID(r) {
 			return false
 		}
 		str = str[size:]
@@ -125,14 +101,6 @@ func (_this ByteWithEOF) HasProperty(property Properties) bool {
 
 func IsRuneValidIdentifier(r rune) bool {
 	return getBitArrayValue(identifierSafe[:], int(r))
-}
-
-func IsRuneValidIdentifierFirstChar(r rune) bool {
-	return getBitArrayValue(identifierFirstSafe[:], int(r))
-}
-
-func IsRuneValidMarkerID(r rune) bool {
-	return r != ':' && getBitArrayValue(identifierSafe[:], int(r))
 }
 
 func getBitArrayValue(array []byte, index int) bool {

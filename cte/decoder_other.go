@@ -386,7 +386,7 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '&'
 
-	ctx.EventReceiver.OnMarker(ctx.Stream.ReadMarkerIdentifier())
+	ctx.EventReceiver.OnMarker(ctx.Stream.ReadIdentifier())
 	if ctx.Stream.PeekByteNoEOF() != ':' {
 		ctx.Errorf("Missing colon between marker ID and marked value")
 	}
@@ -407,7 +407,7 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 		return
 	}
 
-	ctx.EventReceiver.OnReference(ctx.Stream.ReadMarkerIdentifier())
+	ctx.EventReceiver.OnReference(ctx.Stream.ReadIdentifier())
 }
 
 func advanceAndDecodeEdgeOrResourceID(ctx *DecoderContext) {
