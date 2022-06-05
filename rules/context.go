@@ -61,7 +61,6 @@ type Context struct {
 
 	// Marker/Reference
 	markerID          string
-	markerObjectRule  EventRule
 	markedObjects     map[interface{}]DataType
 	forwardReferences map[interface{}]DataType
 	referenceCount    uint64

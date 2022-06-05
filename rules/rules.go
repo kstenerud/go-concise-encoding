@@ -55,12 +55,6 @@ type EventRule interface {
 	OnArrayData(ctx *Context, data []byte)
 }
 
-const keyableTypes = (1 << events.ArrayTypeString) | (1 << events.ArrayTypeResourceID)
-
-func isKeyableType(arrayType events.ArrayType) bool {
-	return ((1 << arrayType) & keyableTypes) != 0
-}
-
 var (
 	beginDocumentRule       BeginDocumentRule
 	endDocumentRule         EndDocumentRule

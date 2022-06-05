@@ -562,7 +562,6 @@ func TestRulesIdentifier(t *testing.T) {
 	assertEventsSucceed(t, rules, MARK("a...."), I(1))
 	rules = newRulesAfterVersion(nil)
 	assertEventsSucceed(t, rules, MARK("a\u0300"), I(1))
-	rules = newRulesAfterVersion(nil)
 }
 
 func TestRulesMultichunk(t *testing.T) {
