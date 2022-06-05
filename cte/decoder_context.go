@@ -49,9 +49,8 @@ func (_this ContainerType) String() string {
 }
 
 type DecoderStackEntry struct {
-	DecoderFunc      DecoderOp
-	ContainerType    ContainerType
-	IsMarkupContents bool
+	DecoderFunc   DecoderOp
+	ContainerType ContainerType
 }
 
 type DecoderContext struct {
@@ -124,8 +123,7 @@ func (_this *DecoderContext) ChangeDecoder(decoder DecoderOp) {
 
 func (_this *DecoderContext) StackDecoder(decoder DecoderOp) {
 	_this.stack = append(_this.stack, DecoderStackEntry{
-		DecoderFunc:      decoder,
-		IsMarkupContents: false,
+		DecoderFunc: decoder,
 	})
 }
 
@@ -157,14 +155,6 @@ func (_this *DecoderContext) AssertIsInNode() {
 	if containerType != ContainerTypeNode {
 		panic(fmt.Errorf("cannot end a node using %v end", containerType))
 	}
-}
-
-func (_this *DecoderContext) EndMarkup() {
-	if !_this.stack[len(_this.stack)-1].IsMarkupContents {
-		// Add second end message
-		_this.EventReceiver.OnEnd()
-	}
-	_this.UnstackDecoder()
 }
 
 func (_this *DecoderContext) Errorf(format string, args ...interface{}) {

@@ -164,10 +164,6 @@ func (_this *nodeBuilder) BuildNewEdge(ctx *Context) {
 	globalInterfaceBuilder.BuildBeginEdgeContents(ctx)
 }
 
-func (_this *nodeBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	globalInterfaceBuilder.BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *nodeBuilder) BuildBeginNodeContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }

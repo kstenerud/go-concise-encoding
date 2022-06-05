@@ -45,7 +45,6 @@ type EventRule interface {
 	OnMap(ctx *Context)
 	OnEdge(ctx *Context)
 	OnNode(ctx *Context)
-	OnMarkup(ctx *Context, identifier []byte)
 	OnEnd(ctx *Context)
 	OnMarker(ctx *Context, identifier []byte)
 	OnReference(ctx *Context, identifier []byte)
@@ -71,9 +70,6 @@ var (
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
-	markupKeyRule           MarkupKeyRule
-	markupValueRule         MarkupValueRule
-	markupContentsRule      MarkupContentsRule
 	arrayRule               ArrayRule
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule

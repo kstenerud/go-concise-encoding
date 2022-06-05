@@ -62,7 +62,6 @@ c0
  * at <string contents>            Array data (as text)
  * l                               Begin list
  * m                               Begin map
- * mu <identifier>                 Begin markup
  * node                            Begin node
  * edge                            Begin edge
  * e                               End container

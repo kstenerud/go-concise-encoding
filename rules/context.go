@@ -157,10 +157,6 @@ func (_this *Context) BeginNode() {
 	_this.beginContainer(&nodeRule, DataTypeList)
 }
 
-func (_this *Context) BeginMarkup(identifier []byte) {
-	_this.beginContainer(&markupKeyRule, DataTypeMarkup)
-}
-
 func (_this *Context) BeginMarkerKeyable(id []byte, dataType DataType) {
 	_this.markerID = string(id)
 	_this.stackRule(&markedObjectKeyableRule, dataType)

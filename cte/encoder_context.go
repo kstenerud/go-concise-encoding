@@ -225,12 +225,3 @@ func (_this *EncoderContext) WriteCommentStringData(data []uint8) {
 	// TODO: Need anything else?
 	_this.Stream.WriteBytesPossibleLF(data)
 }
-
-func (_this *EncoderContext) WriteMarkupContentString(data string) {
-	// TODO: Not this
-	_this.WriteMarkupContentStringData([]byte(data))
-}
-
-func (_this *EncoderContext) WriteMarkupContentStringData(data []uint8) {
-	_this.Stream.WritePotentiallyEscapedMarkupContentsBytes(data)
-}

@@ -61,20 +61,18 @@ var (
 	Ref            = "BuildFromReference(ctx *Context, id []byte)"
 	List           = "BuildNewList(ctx *Context)"
 	Map            = "BuildNewMap(ctx *Context)"
-	Markup         = "BuildNewMarkup(ctx *Context, name []byte)"
 	Node           = "BuildNewNode(ctx *Context)"
 	Edge           = "BuildNewEdge(ctx *Context)"
 	End            = "BuildEndContainer(ctx *Context)"
 	ListContents   = "BuildBeginListContents(ctx *Context)"
 	MapContents    = "BuildBeginMapContents(ctx *Context)"
-	MarkupContents = "BuildBeginMarkupContents(ctx *Context, name []byte)"
 	NodeContents   = "BuildBeginNodeContents(ctx *Context)"
 	EdgeContents   = "BuildBeginEdgeContents(ctx *Context)"
 	NotifyFinished = "NotifyChildContainerFinished(ctx *Context, container reflect.Value)"
 
 	allMethods = []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-		BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map, Markup,
-		Node, Edge, ListContents, MapContents, MarkupContents, NodeContents,
+		BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+		Node, Edge, ListContents, MapContents, NodeContents,
 		EdgeContents, End, Ref, NotifyFinished}
 )
 
@@ -88,7 +86,7 @@ var builders = []Builder{
 		Name: "array",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, ListContents, End, Ref, NotifyFinished},
+			Node, Edge, ListContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "bigDecimalFloat",
@@ -142,19 +140,19 @@ var builders = []Builder{
 		Name: "ignore",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, Ref, NotifyFinished},
+			Node, Edge, Ref, NotifyFinished},
 	},
 	{
 		Name: "ignoreXTimes",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, Ref, NotifyFinished},
+			Node, Edge, Ref, NotifyFinished},
 	},
 	{
 		Name: "ignoreContainer",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, End, ListContents, MapContents, MarkupContents,
+			Node, Edge, End, ListContents, MapContents,
 			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
 	{
@@ -197,28 +195,20 @@ var builders = []Builder{
 		Name: "interface",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, MapContents, MarkupContents, ListContents,
+			Node, Edge, MapContents, ListContents,
 			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
 	{
 		Name: "map",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, MapContents, End, Ref, NotifyFinished},
-	},
-	{
-		Name:    "markup",
-		Methods: []string{MarkupContents, NotifyFinished},
-	},
-	{
-		Name:    "markupContents",
-		Methods: []string{Markup, Array, SArray, End, NotifyFinished},
+			Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name: "markerObject",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, Map,
-			Markup, Node, Edge, List, End, NotifyFinished},
+			Node, Edge, List, End, NotifyFinished},
 	},
 	{
 		Name:    "pBigDecimalFloat",
@@ -240,7 +230,7 @@ var builders = []Builder{
 		Name: "ptr",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, ListContents,
-			MapContents, MarkupContents, NodeContents, EdgeContents, NotifyFinished},
+			MapContents, NodeContents, EdgeContents, NotifyFinished},
 	},
 	{
 		Name:    "pRid",
@@ -250,7 +240,7 @@ var builders = []Builder{
 		Name: "slice",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, ListContents, End, Ref, NotifyFinished},
+			Node, Edge, ListContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "string",
@@ -260,7 +250,7 @@ var builders = []Builder{
 		Name: "struct",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, MapContents, End, Ref, NotifyFinished},
+			Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
 		Name:    "time",
@@ -270,7 +260,7 @@ var builders = []Builder{
 		Name: "topLevel",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, NotifyFinished},
+			Node, Edge, NotifyFinished},
 	},
 	{
 		Name:    "uint",
@@ -324,13 +314,13 @@ var builders = []Builder{
 		Name: "edge",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, EdgeContents, Ref, NotifyFinished},
+			Node, Edge, EdgeContents, Ref, NotifyFinished},
 	},
 	{
 		Name: "node",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
-			Markup, Node, Edge, NodeContents, Ref, NotifyFinished},
+			Node, Edge, NodeContents, Ref, NotifyFinished},
 	},
 }
 
@@ -341,7 +331,7 @@ func GenerateCode(projectDir string) {
 	defer writer.Close()
 	defer func() {
 		if e := recover(); e != nil {
-			panic(fmt.Errorf("Error while generating %v: %v", generatedFilePath, e))
+			panic(fmt.Errorf("error while generating %v: %v", generatedFilePath, e))
 		}
 	}()
 
@@ -369,7 +359,7 @@ func openMethod(builder Builder, methodSignature string, writer io.Writer) {
 }
 
 func closeMethod(writer io.Writer) {
-	if _, err := writer.Write([]byte(fmt.Sprintf("}\n"))); err != nil {
+	if _, err := writer.Write([]byte("}\n")); err != nil {
 		panic(err)
 	}
 }

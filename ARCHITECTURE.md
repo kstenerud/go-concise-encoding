@@ -13,11 +13,21 @@ The code is separated into five primary sections:
 
 The other secondary sections are: 
 
-- [Code Generation](#code-generation)
-- [Debug Helpers](#debug-helpers)
-- [Test Helpers](#test-helpers)
-- [Conversions](#conversions)
-- [Options](#options)
+- [Architecture](#architecture)
+	- [Code Organization](#code-organization)
+	- [Primary Sections](#primary-sections)
+		- [Events](#events)
+		- [Iterators](#iterators)
+		- [Builders](#builders)
+		- [Codecs](#codecs)
+		- [Rules](#rules)
+	- [Secondary Sections](#secondary-sections)
+		- [Code Generation](#code-generation)
+		- [Types](#types)
+		- [Debug Helpers](#debug-helpers)
+		- [Test Helpers](#test-helpers)
+		- [Conversions](#conversions)
+		- [Options](#options)
 
 
 Code Organization
@@ -117,7 +127,6 @@ The [types](types) directory contains the Concise Encoding types that are not pr
 
 - UID
 - Media
-- Markup
 - Edge
 - Node
 

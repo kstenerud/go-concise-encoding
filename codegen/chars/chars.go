@@ -139,11 +139,10 @@ func classifyRunes(chars CharSet) {
 	// Stringlike safety
 	markUnsafeFor(SafetyString, charsAndLookalikes(charSet('\\', '"')...))
 	markUnsafeFor(SafetyArray, charsAndLookalikes(charSet('\\', '|', '\t', '\r', '\n')...))
-	markUnsafeFor(SafetyMarkup, charsAndLookalikes(charSet('\\', '<', '>')...))
 
 	// Structural char properties
 	addProperties(StructWS, charSet('\r', '\n', '\t', ' '))
-	addProperties(ObjectEnd, charSet('\r', '\n', '\t', ' ', ']', '}', ')', '>', ';', '=', '|'))
+	addProperties(ObjectEnd, charSet('\r', '\n', '\t', ' ', ']', '}', ')', '=', '|'))
 	addProperties(DigitBase2, charRange('0', '1'))
 	addProperties(DigitBase8, charRange('0', '7'))
 	addProperties(DigitBase10, charRange('0', '9'))
@@ -568,7 +567,6 @@ type SafetyFlags uint64
 const (
 	SafetyString SafetyFlags = 1 << iota
 	SafetyArray
-	SafetyMarkup
 	SafetyComment
 
 	EndSafetyFlags
@@ -584,7 +582,6 @@ var safetyNames = map[interface{}]string{
 	SafetyNone:     "SafetyNone",
 	SafetyString:   "SafetyString",
 	SafetyArray:    "SafetyArray",
-	SafetyMarkup:   "SafetyMarkup",
 	SafetyComment:  "SafetyComment",
 	EndSafetyFlags: "EndSafetyFlags",
 	SafetyAll:      "SafetyAll",

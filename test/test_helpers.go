@@ -366,7 +366,6 @@ var (
 	EvCT      = T(NewDate(2020, 1, 1))
 	EvL       = L()
 	EvM       = M()
-	EvMUP     = MU("a")
 	EvNODE    = NODE()
 	EvEDGE    = EDGE()
 	EvE       = E()
@@ -415,7 +414,7 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvCOM, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
-	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvMUP, EvNODE, EvEDGE, EvE,
+	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvNODE, EvEDGE, EvE,
 	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
@@ -538,9 +537,6 @@ var (
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
 	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
 
-	ValidMarkupContents   = []*TEvent{EvPAD, EvCOM, EvS, EvSB, EvMUP, EvE}
-	InvalidMarkupContents = ComplementaryEvents(ValidMarkupContents)
-
 	ValidAfterNonStringArrayBegin   = []*TEvent{EvAC, EvCOM}
 	InvalidAfterNonStringArrayBegin = ComplementaryEvents(ValidAfterNonStringArrayBegin)
 
@@ -597,7 +593,6 @@ func copyEvents(events []*TEvent) []*TEvent {
 var basicCompletions = map[TEventType][]*TEvent{
 	TEventList:              {E()},
 	TEventMap:               {E()},
-	TEventMarkup:            {E(), E()},
 	TEventNode:              {I(1), E()},
 	TEventEdge:              {RID("a"), RID("b"), I(1)},
 	TEventStringBegin:       {AC(1, false), AD([]byte{'a'})},
@@ -796,7 +791,6 @@ func AC(l uint64, more bool) *TEvent    { return NewTEvent(TEventArrayChunk, l, 
 func AD(v []byte) *TEvent               { return NewTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return NewTEvent(TEventList, nil, nil) }
 func M() *TEvent                        { return NewTEvent(TEventMap, nil, nil) }
-func MU(id string) *TEvent              { return NewTEvent(TEventMarkup, id, nil) }
 func NODE() *TEvent                     { return NewTEvent(TEventNode, nil, nil) }
 func EDGE() *TEvent                     { return NewTEvent(TEventEdge, nil, nil) }
 func E() *TEvent                        { return NewTEvent(TEventEnd, nil, nil) }

@@ -64,7 +64,6 @@ func (_this *NullEventReceiver) OnList()                             {}
 func (_this *NullEventReceiver) OnMap()                              {}
 func (_this *NullEventReceiver) OnEdge()                             {}
 func (_this *NullEventReceiver) OnNode()                             {}
-func (_this *NullEventReceiver) OnMarkup([]byte)                     {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker([]byte)                     {}
 func (_this *NullEventReceiver) OnReference([]byte)                  {}

@@ -643,44 +643,6 @@ func (_this *Writer) WriteEscapedQuotedStringBytes(mayContainLF bool, value []by
 	_this.WriteByteNotLF('"')
 }
 
-func (_this *Writer) WritePotentiallyEscapedMarkupContents(value string) {
-	if len(value) == 0 {
-		return
-	}
-
-	if !needsEscapesMarkup(value) {
-		_this.WriteStringPossibleLF(value)
-		return
-	}
-
-	for _, ch := range value {
-		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
-			_this.WriteBytesNotLF(escapeCharMarkup(ch))
-		} else {
-			_this.WriteRunePossibleLF(ch)
-		}
-	}
-}
-
-func (_this *Writer) WritePotentiallyEscapedMarkupContentsBytes(value []byte) {
-	if len(value) == 0 {
-		return
-	}
-
-	if !needsEscapesMarkupBytes(value) {
-		_this.WriteBytesPossibleLF(value)
-		return
-	}
-
-	for _, ch := range string(value) {
-		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
-			_this.WriteBytesNotLF(escapeCharMarkup(ch))
-		} else {
-			_this.WriteRunePossibleLF(ch)
-		}
-	}
-}
-
 func (_this *Writer) WriteHexBytes(value []byte) {
 	length := len(value) * 3
 	_this.ExpandBuffer(length)
@@ -733,27 +695,6 @@ func (_this *Writer) WriteMapValueSeparator() {
 
 func (_this *Writer) WriteMapEnd() {
 	_this.WriteByteNotLF('}')
-}
-
-func (_this *Writer) WriteMarkupBegin(id []byte) {
-	_this.WriteByteNotLF('<')
-	_this.WriteBytesNotLF(id)
-}
-
-func (_this *Writer) WriteMarkupKeySeparator() {
-	_this.WriteByteNotLF(' ')
-}
-
-func (_this *Writer) WriteMarkupValueSeparator() {
-	_this.WriteByteNotLF('=')
-}
-
-func (_this *Writer) WriteMarkupContentsBegin() {
-	_this.WriteByteNotLF(';')
-}
-
-func (_this *Writer) WriteMarkupEnd() {
-	_this.WriteByteNotLF('>')
 }
 
 func (_this *Writer) WriteArrayBegin() {

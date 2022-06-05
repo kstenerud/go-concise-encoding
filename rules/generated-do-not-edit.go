@@ -43,7 +43,6 @@ const (
 	DataTypeMap
 	DataTypeEdge
 	DataTypeNode
-	DataTypeMarkup
 	DataTypeString
 	DataTypeMedia
 	DataTypeArrayBit
@@ -68,10 +67,10 @@ const (
 	DataTypeComment
 	DataTypePadding
 	DataTypeInvalid = 0x0
-	AllowAny = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeComment | DataTypePadding
-	AllowNonNull = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeComment | DataTypePadding
+	AllowAny = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeComment | DataTypePadding
+	AllowNonNull = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeRemoteRef | DataTypeComment | DataTypePadding
 	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeMarker | DataTypeReference | DataTypeResourceID | DataTypeComment | DataTypePadding
-	AllowMarkable = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
+	AllowMarkable = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
 	AllowString = DataTypeString
 	AllowResourceID = DataTypeResourceID
 )
@@ -114,7 +113,6 @@ var datatypeNames = map[DataType]string{
 	DataTypeMap: "DataTypeMap",
 	DataTypeEdge: "DataTypeEdge",
 	DataTypeNode: "DataTypeNode",
-	DataTypeMarkup: "DataTypeMarkup",
 	DataTypeString: "DataTypeString",
 	DataTypeMedia: "DataTypeMedia",
 	DataTypeArrayBit: "DataTypeArrayBit",
@@ -175,9 +173,6 @@ func (_this *BeginDocumentRule) OnEdge(ctx *Context) {
 func (_this *BeginDocumentRule) OnNode(ctx *Context) {
 	wrongType("begin document", "node")
 }
-func (_this *BeginDocumentRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("begin document", "markup")
-}
 func (_this *BeginDocumentRule) OnEnd(ctx *Context) {
 	wrongType("begin document", "end container")
 }
@@ -237,9 +232,6 @@ func (_this *EndDocumentRule) OnEdge(ctx *Context) {
 }
 func (_this *EndDocumentRule) OnNode(ctx *Context) {
 	wrongType("end document", "node")
-}
-func (_this *EndDocumentRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("end document", "markup")
 }
 func (_this *EndDocumentRule) OnEnd(ctx *Context) {
 	wrongType("end document", "end container")
@@ -304,9 +296,6 @@ func (_this *TerminalRule) OnEdge(ctx *Context) {
 func (_this *TerminalRule) OnNode(ctx *Context) {
 	wrongType("terminal", "node")
 }
-func (_this *TerminalRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("terminal", "markup")
-}
 func (_this *TerminalRule) OnEnd(ctx *Context) {
 	wrongType("terminal", "end container")
 }
@@ -366,9 +355,6 @@ func (_this *VersionRule) OnEdge(ctx *Context) {
 }
 func (_this *VersionRule) OnNode(ctx *Context) {
 	wrongType("version", "node")
-}
-func (_this *VersionRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("version", "markup")
 }
 func (_this *VersionRule) OnEnd(ctx *Context) {
 	wrongType("version", "end container")
@@ -457,9 +443,6 @@ func (_this *MapKeyRule) OnEdge(ctx *Context) {
 func (_this *MapKeyRule) OnNode(ctx *Context) {
 	wrongType("map key", "node")
 }
-func (_this *MapKeyRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("map key", "markup")
-}
 func (_this *MapKeyRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
 	wrongType("map key", "array chunk")
 }
@@ -483,102 +466,6 @@ func (_this *MapValueRule) OnArrayChunk(ctx *Context, length uint64, moreChunksF
 }
 func (_this *MapValueRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("map value", "array data")
-}
-func (_this *MarkupKeyRule) OnBeginDocument(ctx *Context) {
-	wrongType("markup key", "begin document")
-}
-func (_this *MarkupKeyRule) OnEndDocument(ctx *Context) {
-	wrongType("markup key", "end document")
-}
-func (_this *MarkupKeyRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("markup key", "version")
-}
-func (_this *MarkupKeyRule) OnNull(ctx *Context) {
-	wrongType("markup key", "Null")
-}
-func (_this *MarkupKeyRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("markup key", objType)
-}
-func (_this *MarkupKeyRule) OnList(ctx *Context) {
-	wrongType("markup key", "list")
-}
-func (_this *MarkupKeyRule) OnMap(ctx *Context) {
-	wrongType("markup key", "map")
-}
-func (_this *MarkupKeyRule) OnEdge(ctx *Context) {
-	wrongType("markup key", "edge")
-}
-func (_this *MarkupKeyRule) OnNode(ctx *Context) {
-	wrongType("markup key", "node")
-}
-func (_this *MarkupKeyRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("markup key", "markup")
-}
-func (_this *MarkupKeyRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("markup key", "array chunk")
-}
-func (_this *MarkupKeyRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("markup key", "array data")
-}
-func (_this *MarkupValueRule) OnBeginDocument(ctx *Context) {
-	wrongType("markup value", "begin document")
-}
-func (_this *MarkupValueRule) OnEndDocument(ctx *Context) {
-	wrongType("markup value", "end document")
-}
-func (_this *MarkupValueRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("markup value", "version")
-}
-func (_this *MarkupValueRule) OnEnd(ctx *Context) {
-	wrongType("markup value", "end container")
-}
-func (_this *MarkupValueRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("markup value", "array chunk")
-}
-func (_this *MarkupValueRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("markup value", "array data")
-}
-func (_this *MarkupContentsRule) OnBeginDocument(ctx *Context) {
-	wrongType("markup contents", "begin document")
-}
-func (_this *MarkupContentsRule) OnEndDocument(ctx *Context) {
-	wrongType("markup contents", "end document")
-}
-func (_this *MarkupContentsRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("markup contents", "version")
-}
-func (_this *MarkupContentsRule) OnNull(ctx *Context) {
-	wrongType("markup contents", "Null")
-}
-func (_this *MarkupContentsRule) OnKeyableObject(ctx *Context, objType DataType) {
-	wrongType("markup contents", objType)
-}
-func (_this *MarkupContentsRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("markup contents", objType)
-}
-func (_this *MarkupContentsRule) OnList(ctx *Context) {
-	wrongType("markup contents", "list")
-}
-func (_this *MarkupContentsRule) OnMap(ctx *Context) {
-	wrongType("markup contents", "map")
-}
-func (_this *MarkupContentsRule) OnEdge(ctx *Context) {
-	wrongType("markup contents", "edge")
-}
-func (_this *MarkupContentsRule) OnNode(ctx *Context) {
-	wrongType("markup contents", "node")
-}
-func (_this *MarkupContentsRule) OnMarker(ctx *Context, identifier []byte) {
-	wrongType("markup contents", "marker")
-}
-func (_this *MarkupContentsRule) OnReference(ctx *Context, identifier []byte) {
-	wrongType("markup contents", "reference")
-}
-func (_this *MarkupContentsRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("markup contents", "array chunk")
-}
-func (_this *MarkupContentsRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("markup contents", "array data")
 }
 func (_this *ArrayRule) OnBeginDocument(ctx *Context) {
 	wrongType("array", "begin document")
@@ -615,9 +502,6 @@ func (_this *ArrayRule) OnEdge(ctx *Context) {
 }
 func (_this *ArrayRule) OnNode(ctx *Context) {
 	wrongType("array", "node")
-}
-func (_this *ArrayRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("array", "markup")
 }
 func (_this *ArrayRule) OnEnd(ctx *Context) {
 	wrongType("array", "end container")
@@ -679,9 +563,6 @@ func (_this *ArrayChunkRule) OnEdge(ctx *Context) {
 func (_this *ArrayChunkRule) OnNode(ctx *Context) {
 	wrongType("array chunk", "node")
 }
-func (_this *ArrayChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("array chunk", "markup")
-}
 func (_this *ArrayChunkRule) OnEnd(ctx *Context) {
 	wrongType("array chunk", "end container")
 }
@@ -741,9 +622,6 @@ func (_this *StringRule) OnEdge(ctx *Context) {
 }
 func (_this *StringRule) OnNode(ctx *Context) {
 	wrongType("string", "node")
-}
-func (_this *StringRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("string", "markup")
 }
 func (_this *StringRule) OnEnd(ctx *Context) {
 	wrongType("string", "end container")
@@ -805,9 +683,6 @@ func (_this *StringChunkRule) OnEdge(ctx *Context) {
 func (_this *StringChunkRule) OnNode(ctx *Context) {
 	wrongType("string chunk", "node")
 }
-func (_this *StringChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("string chunk", "markup")
-}
 func (_this *StringChunkRule) OnEnd(ctx *Context) {
 	wrongType("string chunk", "end container")
 }
@@ -867,9 +742,6 @@ func (_this *StringBuilderRule) OnEdge(ctx *Context) {
 }
 func (_this *StringBuilderRule) OnNode(ctx *Context) {
 	wrongType("string", "node")
-}
-func (_this *StringBuilderRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("string", "markup")
 }
 func (_this *StringBuilderRule) OnEnd(ctx *Context) {
 	wrongType("string", "end container")
@@ -931,9 +803,6 @@ func (_this *StringBuilderChunkRule) OnEdge(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnNode(ctx *Context) {
 	wrongType("string chunk", "node")
 }
-func (_this *StringBuilderChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("string chunk", "markup")
-}
 func (_this *StringBuilderChunkRule) OnEnd(ctx *Context) {
 	wrongType("string chunk", "end container")
 }
@@ -990,9 +859,6 @@ func (_this *MediaTypeRule) OnEdge(ctx *Context) {
 }
 func (_this *MediaTypeRule) OnNode(ctx *Context) {
 	wrongType("media type", "node")
-}
-func (_this *MediaTypeRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("media type", "markup")
 }
 func (_this *MediaTypeRule) OnEnd(ctx *Context) {
 	wrongType("media type", "end container")
@@ -1054,9 +920,6 @@ func (_this *MediaTypeChunkRule) OnEdge(ctx *Context) {
 func (_this *MediaTypeChunkRule) OnNode(ctx *Context) {
 	wrongType("media type chunk", "node")
 }
-func (_this *MediaTypeChunkRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("media type chunk", "markup")
-}
 func (_this *MediaTypeChunkRule) OnEnd(ctx *Context) {
 	wrongType("media type chunk", "end container")
 }
@@ -1107,9 +970,6 @@ func (_this *MarkedObjectKeyableRule) OnEdge(ctx *Context) {
 }
 func (_this *MarkedObjectKeyableRule) OnNode(ctx *Context) {
 	wrongType("marked object", "node")
-}
-func (_this *MarkedObjectKeyableRule) OnMarkup(ctx *Context, identifier []byte) {
-	wrongType("marked object", "markup")
 }
 func (_this *MarkedObjectKeyableRule) OnEnd(ctx *Context) {
 	wrongType("marked object", "end container")

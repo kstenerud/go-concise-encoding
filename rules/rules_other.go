@@ -86,11 +86,10 @@ func (_this *TopLevelRule) OnDecimalFloat(ctx *Context, value compact_float.DFlo
 func (_this *TopLevelRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 	_this.switchEndDocument(ctx)
 }
-func (_this *TopLevelRule) OnList(ctx *Context)                      { ctx.BeginList() }
-func (_this *TopLevelRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
-func (_this *TopLevelRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
-func (_this *TopLevelRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
-func (_this *TopLevelRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
+func (_this *TopLevelRule) OnList(ctx *Context) { ctx.BeginList() }
+func (_this *TopLevelRule) OnMap(ctx *Context)  { ctx.BeginMap() }
+func (_this *TopLevelRule) OnNode(ctx *Context) { ctx.BeginNode() }
+func (_this *TopLevelRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -125,7 +124,6 @@ func (_this *NARule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) { 
 func (_this *NARule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { ctx.EndContainer() }
 func (_this *NARule) OnList(ctx *Context)                                     { ctx.BeginList() }
 func (_this *NARule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
-func (_this *NARule) OnMarkup(ctx *Context, identifier []byte)                { ctx.BeginMarkup(identifier) }
 func (_this *NARule) OnNode(ctx *Context)                                     { ctx.BeginNode() }
 func (_this *NARule) OnEdge(ctx *Context)                                     { ctx.BeginEdge() }
 func (_this *NARule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {

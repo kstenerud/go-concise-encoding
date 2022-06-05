@@ -208,9 +208,6 @@ func (_this *BuilderEventReceiver) OnList() {
 func (_this *BuilderEventReceiver) OnMap() {
 	_this.context.CurrentBuilder.BuildNewMap(&_this.context)
 }
-func (_this *BuilderEventReceiver) OnMarkup(id []byte) {
-	_this.context.CurrentBuilder.BuildNewMarkup(&_this.context, id)
-}
 func (_this *BuilderEventReceiver) OnNode() {
 	_this.context.CurrentBuilder.BuildNewNode(&_this.context)
 }

@@ -58,23 +58,6 @@ type Media struct {
 	Data      []byte
 }
 
-// Markup, which is a hierarchical node structure like XML DOM.
-type Markup struct {
-	Name       string
-	Attributes map[interface{}]interface{}
-
-	// Content can be a mix of strings and Markup objects.
-	Content []interface{}
-}
-
-func (_this *Markup) AddString(value string) {
-	_this.Content = append(_this.Content, value)
-}
-
-func (_this *Markup) AddMarkup(value *Markup) {
-	_this.Content = append(_this.Content, value)
-}
-
 // An edge between two vertices in a graph.
 type Edge struct {
 	Source      interface{}

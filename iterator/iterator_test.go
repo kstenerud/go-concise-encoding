@@ -49,11 +49,6 @@ func TestIterateBasic(t *testing.T) {
 		MediaType: "a",
 		Data:      []byte{0x00},
 	}
-	markup := types.Markup{
-		Name:       "x",
-		Attributes: map[interface{}]interface{}{"a": 1},
-		Content:    []interface{}{"abc"},
-	}
 	pNode := NewNode("test", []interface{}{"a"})
 	pEdge := NewEdge("a", "b", "c")
 
@@ -98,7 +93,6 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 	assertIterate(t, &uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 	assertIterate(t, media, MB(), AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{0}))
-	assertIterate(t, markup, MUP("x"), S("a"), I(1), E(), S("abc"), E())
 	assertIterate(t, pNode, NODE(), S("test"), S("a"), E())
 	assertIterate(t, *pNode, NODE(), S("test"), S("a"), E())
 	assertIterate(t, pEdge, EDGE(), S("a"), S("b"), S("c"))

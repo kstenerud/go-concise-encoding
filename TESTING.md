@@ -136,7 +136,6 @@ If present, this field contains string-encoded elements that are a kind of short
 | at    | string        |         | Array data as text              | `at some text data`                        |
 | l     |               |         | Begin list                      | `l`                                        |
 | m     |               |         | Begin map                       | `m`                                        |
-| mu    | string        |         | Begin markup                    | `mup some-name`                            |
 | node  |               |         | Begin node                      | `node`                                     |
 | edge  |               |         | Begin edge                      | `edge`                                     |
 | e     |               |         | End container                   | `e`                                        |

@@ -335,19 +335,6 @@ func (_this *Context) ValidateFullArrayCommentString(arrayType events.ArrayType,
 	_this.ValidateContentsCommentString(data)
 }
 
-func (_this *Context) ValidateFullArrayMarkupContents(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.AssertArrayType("markup contents", arrayType, AllowString)
-	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
-	_this.ValidateLengthAnyType(uint64(len(data)))
-	_this.ValidateContentsComment(data)
-}
-
-func (_this *Context) ValidateFullArrayMarkupContentsString(arrayType events.ArrayType, data string) {
-	_this.AssertArrayType("markup contents", arrayType, AllowString)
-	_this.ValidateLengthAnyType(uint64(len(data)))
-	_this.ValidateContentsCommentString(data)
-}
-
 func (_this *Context) ValidateFullArrayRID(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.AssertArrayType("resource ID", arrayType, AllowResourceID)
 	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))

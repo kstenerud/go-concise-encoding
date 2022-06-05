@@ -140,7 +140,6 @@ const (
 	DataTypeMap
 	DataTypeEdge
 	DataTypeNode
-	DataTypeMarkup
 	DataTypeString
 	DataTypeMedia
 	DataTypeArrayBit
@@ -181,12 +180,11 @@ const (
 		DataTypeReference |
 		DataTypePadding |
 		DataTypeComment
-	DataTypesNonKeyable     = ^DataTypesKeyable
-	DataTypesMarkable       = ^(DataTypeMarker | DataTypeReference | DataTypeRemoteRef | DataTypeComment)
-	DataTypesTopLevel       = ^(DataTypeReference)
-	DataTypesContainer      = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode | DataTypeMarkup
-	DataTypesMarkupContents = DataTypeMarkup | DataTypeString | DataTypeComment | DataTypePadding
-	DataTypesStringlike     = DataTypeString |
+	DataTypesNonKeyable = ^DataTypesKeyable
+	DataTypesMarkable   = ^(DataTypeMarker | DataTypeReference | DataTypeRemoteRef | DataTypeComment)
+	DataTypesTopLevel   = ^(DataTypeReference)
+	DataTypesContainer  = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode
+	DataTypesStringlike = DataTypeString |
 		DataTypeResourceID |
 		DataTypeRemoteRef |
 		DataTypeCustomText
@@ -224,7 +222,6 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeMap:          "DataTypeMap",
 	DataTypeEdge:         "DataTypeEdge",
 	DataTypeNode:         "DataTypeNode",
-	DataTypeMarkup:       "DataTypeMarkup",
 	DataTypeString:       "DataTypeString",
 	DataTypeMedia:        "DataTypeMedia",
 	DataTypeArrayBit:     "DataTypeArrayBit",
@@ -345,12 +342,6 @@ var (
 		Signature:       "OnNode(ctx *Context)",
 		AssociatedTypes: DataTypeNode,
 	}
-	Markup = &Method{
-		Name:            "markup",
-		MethodType:      MethodTypeOther,
-		Signature:       "OnMarkup(ctx *Context, identifier []byte)",
-		AssociatedTypes: DataTypeMarkup,
-	}
 	End = &Method{
 		Name:            "end container",
 		MethodType:      MethodTypeOther,
@@ -401,7 +392,7 @@ var (
 	}
 
 	allMethods = []*Method{BDoc, EDoc, Child, Ver, Pad, Comment, Null, Key,
-		NonKey, List, Map, Edge, Node, Markup, End, Marker, Ref,
+		NonKey, List, Map, Edge, Node, End, Marker, Ref,
 		Array, Stringlike, ABegin, AChunk, AData}
 )
 
@@ -477,24 +468,6 @@ var allRules = []Rule{
 		Name:         "MapValueRule",
 		FriendlyName: "map value",
 		AllowedTypes: DataTypesAll,
-	},
-	{
-		Name:           "MarkupKeyRule",
-		FriendlyName:   "markup key",
-		AllowedTypes:   DataTypesKeyable,
-		IncludeMethods: []*Method{End},
-	},
-	{
-		Name:         "MarkupValueRule",
-		FriendlyName: "markup value",
-		AllowedTypes: DataTypesAll,
-	},
-	{
-		Name:           "MarkupContentsRule",
-		FriendlyName:   "markup contents",
-		AllowedTypes:   DataTypesMarkupContents,
-		IncludeMethods: []*Method{End},
-		ExcludeMethods: []*Method{Key, NonKey},
 	},
 	{
 		Name:           "ArrayRule",

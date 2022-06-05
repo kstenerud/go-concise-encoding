@@ -55,9 +55,9 @@ const (
 	cbeTypeUID          cbeTypeField = 0x73
 	cbeTypeReserved74   cbeTypeField = 0x74 //nolint
 	cbeTypeReserved75   cbeTypeField = 0x75 //nolint
-	cbeTypeEdge         cbeTypeField = 0x76
-	cbeTypeNode         cbeTypeField = 0x77
-	cbeTypeMarkup       cbeTypeField = 0x78
+	cbeTypeReserved76   cbeTypeField = 0x76
+	cbeTypeEdge         cbeTypeField = 0x77
+	cbeTypeNode         cbeTypeField = 0x78
 	cbeTypeMap          cbeTypeField = 0x79
 	cbeTypeList         cbeTypeField = 0x7a
 	cbeTypeEndContainer cbeTypeField = 0x7b

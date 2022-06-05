@@ -240,10 +240,6 @@ func (h *TEventStore) OnMap() {
 	h.add(M())
 	h.receiver.OnMap()
 }
-func (h *TEventStore) OnMarkup(id []byte) {
-	h.add(MU(string(id)))
-	h.receiver.OnMarkup(id)
-}
 func (h *TEventStore) OnEnd() {
 	h.add(E())
 	h.receiver.OnEnd()

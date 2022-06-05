@@ -213,10 +213,6 @@ func (_this *mapBuilder) BuildNewMap(ctx *Context) {
 	_this.nextGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *mapBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	_this.nextGenerator(ctx).BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *mapBuilder) BuildNewEdge(ctx *Context) {
 	_this.nextGenerator(ctx).BuildBeginEdgeContents(ctx)
 }

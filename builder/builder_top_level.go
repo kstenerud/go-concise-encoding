@@ -153,13 +153,6 @@ func (_this *topLevelBuilder) BuildNewEdge(ctx *Context) {
 	builder.BuildBeginEdgeContents(ctx)
 }
 
-func (_this *topLevelBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	if reflect.TypeOf(_this.builderGenerator) == reflect.TypeOf(interfaceBuilder{}) {
-		_this.builderGenerator = generateMarkupBuilder
-	}
-	_this.builderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *topLevelBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.containerFinishedCallback(value)
 }

@@ -1358,65 +1358,6 @@ func TestBuilderMedia(t *testing.T) {
 	assertBuild(t, m, M(), I(1), MB(), AC(1, false), AD([]byte("a")), AC(1, false), AD([]byte{1}), E())
 }
 
-func TestBuilderMarkup(t *testing.T) {
-	m := types.Markup{
-		Name: "a",
-	}
-	pm := &m
-	assertBuild(t, m, MUP("a"), E(), E())
-	assertBuild(t, pm, MUP("a"), E(), E())
-
-	m.Attributes = map[interface{}]interface{}{
-		"a": 1,
-	}
-	m.Content = []interface{}{}
-	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), E())
-	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), E())
-
-	m.Attributes = map[interface{}]interface{}{}
-	m.Content = []interface{}{
-		"a",
-	}
-	assertBuild(t, m, MUP("a"), E(), S("a"), E())
-	assertBuild(t, pm, MUP("a"), E(), S("a"), E())
-
-	m.Attributes = map[interface{}]interface{}{
-		"a": 1,
-	}
-	m.Content = []interface{}{
-		"a",
-	}
-	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), S("a"), E())
-	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), S("a"), E())
-
-	m.Attributes = map[interface{}]interface{}{}
-	m.Content = []interface{}{}
-	m.AddMarkup(&types.Markup{
-		Name:       "b",
-		Attributes: map[interface{}]interface{}{},
-	})
-	assertBuild(t, m, MUP("a"), E(), MUP("b"), E(), E(), E())
-	assertBuild(t, pm, MUP("a"), E(), MUP("b"), E(), E(), E())
-
-	m.Attributes = map[interface{}]interface{}{
-		"a": 1,
-	}
-	m.Content = []interface{}{
-		"a",
-	}
-	m.AddMarkup(&types.Markup{
-		Name: "b",
-		Attributes: map[interface{}]interface{}{
-			100: "x",
-		},
-		Content: []interface{}{
-			"z",
-		},
-	})
-	assertBuild(t, m, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
-	assertBuild(t, pm, MUP("a"), S("a"), I(1), E(), S("a"), MUP("b"), I(100), S("x"), E(), S("z"), E(), E())
-}
-
 func TestBuilderEdge(t *testing.T) {
 	r := types.Edge{
 		Source:      NewRID("http://x.com"),

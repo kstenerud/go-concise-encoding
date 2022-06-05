@@ -720,7 +720,6 @@ c0
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:snan}^"     // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:[]}^"       // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:{}}^"       // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:<blah>}^"   // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:(1)}^"      // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:@(1 2 3)}^" // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:|ct a|}^"   // Referenced object not keyable type
@@ -738,46 +737,6 @@ c0
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:|f32|}^"    // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:|f64|}^"    // Referenced object not keyable type
                 "\.^ c0 {$mykey=1000 "My key"=&mykey:|u|}^"      // Referenced object not keyable type
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "Identifier"
-            "encodeDecode" = [
-                {
-                    "events" = ["v 0" "mu x" "mark x" "n 1" "ref x" "e" "e"]
-                    "document" = "\.^
-c0
-<x &x:1=$x>^"
-                }
-                {
-                    "events" = ["v 0" "mu 0" "mark 0" "n 1" "ref 0" "e" "e"]
-                    "document" = "\.^
-c0
-<0 &0:1=$0>^"
-                }
-                {
-                    "events" = ["v 0" "mu 人気" "mark 人気" "n 1" "ref 人気" "e" "e"]
-                    "document" = "\.^
-c0
-<人気 &人気:1=$人気>^"
-                }
-                {
-                    "events" = ["v 0" "mu ßЖभ" "mark ßЖभ" "n 1" "ref ßЖभ" "e" "e"]
-                    "document" = "\.^
-c0
-<ßЖभ &ßЖभ:1=$ßЖभ>^"
-                }
-            ]
-            "decodeFail" = [
-                "\.^ c0 <. &x:1=$x>^"
-                "\.^ c0 <x &.:1=$.>^"
-                "\.^ c0 <\255 &x:1=$x>^"
-                "\.^ c0 <x &\255:1=$\255>^"
-                "\.^ c0 <° &x:1=$x>^"
-                "\.^ c0 <x &°:1=$°>^"
             ]
         }
 

@@ -122,11 +122,6 @@ func (_this *ignoreBuilder) BuildNewMap(ctx *Context) {
 	ctx.StackBuilder(globalIgnoreContainerBuilder)
 }
 
-func (_this *ignoreBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	ctx.StackBuilder(globalIgnoreContainerBuilder)
-	ctx.StackBuilder(globalIgnoreContainerBuilder)
-}
-
 func (_this *ignoreBuilder) BuildNewEdge(ctx *Context) {
 	ctx.StackBuilder(generateIgnoreEdgeBuilder(ctx))
 }
@@ -265,11 +260,6 @@ func (_this *ignoreXTimesBuilder) BuildNewNode(ctx *Context) {
 	ctx.StackBuilder(globalIgnoreContainerBuilder)
 }
 
-func (_this *ignoreXTimesBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	ctx.StackBuilder(globalIgnoreContainerBuilder)
-	ctx.StackBuilder(globalIgnoreContainerBuilder)
-}
-
 func (_this *ignoreXTimesBuilder) BuildFromReference(ctx *Context, id []byte) {
 	_this.tryFinish(ctx)
 }
@@ -355,11 +345,6 @@ func (_this *ignoreContainerBuilder) BuildNewMap(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *ignoreContainerBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	ctx.StackBuilder(_this)
-	ctx.StackBuilder(_this)
-}
-
 func (_this *ignoreContainerBuilder) BuildNewEdge(ctx *Context) {
 	ctx.StackBuilder(generateIgnoreEdgeBuilder(ctx))
 }
@@ -376,9 +361,6 @@ func (_this *ignoreContainerBuilder) BuildBeginListContents(ctx *Context) {
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginMapContents(ctx *Context) {
-}
-
-func (_this *ignoreContainerBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginEdgeContents(ctx *Context) {

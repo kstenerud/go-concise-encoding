@@ -84,9 +84,6 @@ func (_this *MarkedObjectAnyTypeRule) OnList(ctx *Context) {
 func (_this *MarkedObjectAnyTypeRule) OnMap(ctx *Context) {
 	ctx.ParentRule().OnMap(ctx)
 }
-func (_this *MarkedObjectAnyTypeRule) OnMarkup(ctx *Context, identifier []byte) {
-	ctx.ParentRule().OnMarkup(ctx, identifier)
-}
 func (_this *MarkedObjectAnyTypeRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *MarkedObjectAnyTypeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *MarkedObjectAnyTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {

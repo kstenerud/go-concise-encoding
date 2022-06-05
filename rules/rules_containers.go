@@ -41,7 +41,6 @@ func (_this *ListRule) OnKeyableObject(ctx *Context, _ DataType)       { /* Noth
 func (_this *ListRule) OnNonKeyableObject(ctx *Context, _ DataType)    { /* Nothing to do */ }
 func (_this *ListRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *ListRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
-func (_this *ListRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
 func (_this *ListRule) OnEnd(ctx *Context)                             { ctx.EndContainer() }
 func (_this *ListRule) OnNode(ctx *Context)                            { ctx.BeginNode() }
 func (_this *ListRule) OnEdge(ctx *Context)                            { ctx.BeginEdge() }
@@ -105,7 +104,6 @@ func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)       { _th
 func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *MapValueRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
-func (_this *MapValueRule) OnMarkup(ctx *Context, identifier []byte)       { ctx.BeginMarkup(identifier) }
 func (_this *MapValueRule) OnNode(ctx *Context)                            { ctx.BeginNode() }
 func (_this *MapValueRule) OnEdge(ctx *Context)                            { ctx.BeginEdge() }
 func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
@@ -125,100 +123,6 @@ func (_this *MapValueRule) OnStringlikeArray(ctx *Context, arrayType events.Arra
 }
 func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type MarkupKeyRule struct{}
-
-func (_this *MarkupKeyRule) String() string                 { return "Markup Attribute Key Rule" }
-func (_this *MarkupKeyRule) switchMarkupValue(ctx *Context) { ctx.ChangeRule(&markupValueRule) }
-func (_this *MarkupKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) {
-	_this.switchMarkupValue(ctx)
-}
-func (_this *MarkupKeyRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
-func (_this *MarkupKeyRule) OnComment(ctx *Context)                   { /* Nothing to do */ }
-func (_this *MarkupKeyRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupValue(ctx) }
-func (_this *MarkupKeyRule) OnEnd(ctx *Context)                       { ctx.ChangeRule(&markupContentsRule) }
-func (_this *MarkupKeyRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
-}
-func (_this *MarkupKeyRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceKeyable(identifier)
-	_this.switchMarkupValue(ctx)
-}
-func (_this *MarkupKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayKeyable("markup attribute key", arrayType, elementCount, data)
-	_this.switchMarkupValue(ctx)
-}
-func (_this *MarkupKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlikeKeyable("markup attribute key", arrayType, data)
-	_this.switchMarkupValue(ctx)
-}
-func (_this *MarkupKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayKeyable("markup attribute key", arrayType)
-}
-
-// =============================================================================
-
-type MarkupValueRule struct{}
-
-func (_this *MarkupValueRule) String() string               { return "Markup Attribute Value Rule" }
-func (_this *MarkupValueRule) switchMarkupKey(ctx *Context) { ctx.ChangeRule(&markupKeyRule) }
-func (_this *MarkupValueRule) OnChildContainerEnded(ctx *Context, _ DataType) {
-	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnPadding(ctx *Context)                   { /* Nothing to do */ }
-func (_this *MarkupValueRule) OnComment(ctx *Context)                   { /* Nothing to do */ }
-func (_this *MarkupValueRule) OnNull(ctx *Context)                      { _this.switchMarkupKey(ctx) }
-func (_this *MarkupValueRule) OnKeyableObject(ctx *Context, _ DataType) { _this.switchMarkupKey(ctx) }
-func (_this *MarkupValueRule) OnNonKeyableObject(ctx *Context, _ DataType) {
-	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnList(ctx *Context)                      { ctx.BeginList() }
-func (_this *MarkupValueRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
-func (_this *MarkupValueRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
-func (_this *MarkupValueRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
-func (_this *MarkupValueRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
-func (_this *MarkupValueRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowAny)
-}
-func (_this *MarkupValueRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
-	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlike(arrayType, data)
-	_this.switchMarkupKey(ctx)
-}
-func (_this *MarkupValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type MarkupContentsRule struct{}
-
-func (_this *MarkupContentsRule) String() string                                 { return "Markup Contents Rule" }
-func (_this *MarkupContentsRule) OnChildContainerEnded(ctx *Context, _ DataType) { /* Nothing to do */ }
-func (_this *MarkupContentsRule) OnPadding(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MarkupContentsRule) OnComment(ctx *Context)                         { /* Nothing to do */ }
-func (_this *MarkupContentsRule) OnMarkup(ctx *Context, identifier []byte) {
-	ctx.BeginMarkup(identifier)
-}
-func (_this *MarkupContentsRule) OnEnd(ctx *Context) { ctx.EndContainer() }
-func (_this *MarkupContentsRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayMarkupContents(arrayType, elementCount, data)
-}
-func (_this *MarkupContentsRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayMarkupContentsString(arrayType, data)
-}
-func (_this *MarkupContentsRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayString("markup contents", arrayType)
 }
 
 // =============================================================================
@@ -247,11 +151,10 @@ func (_this *EdgeSourceRule) OnDecimalFloat(ctx *Context, value compact_float.DF
 func (_this *EdgeSourceRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 	_this.moveToNextRule(ctx)
 }
-func (_this *EdgeSourceRule) OnList(ctx *Context)                      { ctx.BeginList() }
-func (_this *EdgeSourceRule) OnMap(ctx *Context)                       { ctx.BeginMap() }
-func (_this *EdgeSourceRule) OnMarkup(ctx *Context, identifier []byte) { ctx.BeginMarkup(identifier) }
-func (_this *EdgeSourceRule) OnNode(ctx *Context)                      { ctx.BeginNode() }
-func (_this *EdgeSourceRule) OnEdge(ctx *Context)                      { ctx.BeginEdge() }
+func (_this *EdgeSourceRule) OnList(ctx *Context) { ctx.BeginList() }
+func (_this *EdgeSourceRule) OnMap(ctx *Context)  { ctx.BeginMap() }
+func (_this *EdgeSourceRule) OnNode(ctx *Context) { ctx.BeginNode() }
+func (_this *EdgeSourceRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *EdgeSourceRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
@@ -311,9 +214,6 @@ func (_this *EdgeDescriptionRule) OnBigDecimalFloat(ctx *Context, value *apd.Dec
 }
 func (_this *EdgeDescriptionRule) OnList(ctx *Context) { ctx.BeginList() }
 func (_this *EdgeDescriptionRule) OnMap(ctx *Context)  { ctx.BeginMap() }
-func (_this *EdgeDescriptionRule) OnMarkup(ctx *Context, identifier []byte) {
-	ctx.BeginMarkup(identifier)
-}
 func (_this *EdgeDescriptionRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *EdgeDescriptionRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *EdgeDescriptionRule) OnMarker(ctx *Context, identifier []byte) {
@@ -351,11 +251,8 @@ func (_this *EdgeDestinationRule) OnKeyableObject(ctx *Context, _ DataType)     
 func (_this *EdgeDestinationRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.end(ctx) }
 func (_this *EdgeDestinationRule) OnList(ctx *Context)                            { ctx.BeginList() }
 func (_this *EdgeDestinationRule) OnMap(ctx *Context)                             { ctx.BeginMap() }
-func (_this *EdgeDestinationRule) OnMarkup(ctx *Context, identifier []byte) {
-	ctx.BeginMarkup(identifier)
-}
-func (_this *EdgeDestinationRule) OnNode(ctx *Context) { ctx.BeginNode() }
-func (_this *EdgeDestinationRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
+func (_this *EdgeDestinationRule) OnNode(ctx *Context)                            { ctx.BeginNode() }
+func (_this *EdgeDestinationRule) OnEdge(ctx *Context)                            { ctx.BeginEdge() }
 func (_this *EdgeDestinationRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
@@ -415,9 +312,6 @@ func (_this *NodeRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 }
 func (_this *NodeRule) OnList(ctx *Context) { ctx.BeginList() }
 func (_this *NodeRule) OnMap(ctx *Context)  { ctx.BeginMap() }
-func (_this *NodeRule) OnMarkup(ctx *Context, identifier []byte) {
-	ctx.BeginMarkup(identifier)
-}
 func (_this *NodeRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *NodeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
 func (_this *NodeRule) OnMarker(ctx *Context, identifier []byte) {

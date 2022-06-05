@@ -156,10 +156,6 @@ func (_this *interfaceBuilder) BuildNewMap(ctx *Context) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *interfaceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	interfaceMapBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *interfaceBuilder) BuildNewEdge(ctx *Context) {
 	interfaceEdgeBuilderGenerator(ctx).BuildBeginEdgeContents(ctx)
 }
@@ -174,10 +170,6 @@ func (_this *interfaceBuilder) BuildBeginListContents(ctx *Context) {
 
 func (_this *interfaceBuilder) BuildBeginMapContents(ctx *Context) {
 	interfaceMapBuilderGenerator(ctx).BuildBeginMapContents(ctx)
-}
-
-func (_this *interfaceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	interfaceMapBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
 }
 
 func (_this *interfaceBuilder) BuildBeginEdgeContents(ctx *Context) {

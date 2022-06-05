@@ -29,7 +29,6 @@ type stringContext int
 const (
 	stringContextDefault stringContext = iota
 	stringContextComment
-	stringContextMarkup
 )
 
 // Encoder decorators take care of indentation and other pretty-printing details.
@@ -137,84 +136,6 @@ func (_this MapValueDecorator) AfterComment(ctx *EncoderContext) {
 func (_this MapValueDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
 
 // ===========================================================================
-
-type MarkupKeyDecorator struct{}
-
-var markupKeyDecorator MarkupKeyDecorator
-
-func (_this MarkupKeyDecorator) String() string                  { return "MarkupKeyDecorator" }
-func (_this MarkupKeyDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this MarkupKeyDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteIndentOrSpace()
-}
-func (_this MarkupKeyDecorator) AfterValue(ctx *EncoderContext) {
-	ctx.Stream.WriteMarkupValueSeparator()
-	ctx.Switch(markupValueDecorator)
-}
-func (_this MarkupKeyDecorator) BeforeComment(ctx *EncoderContext) {
-	ctx.WriteIndentOrSpace()
-}
-func (_this MarkupKeyDecorator) AfterComment(ctx *EncoderContext) {
-	ctx.WriteReturnToOrigin()
-}
-func (_this MarkupKeyDecorator) EndContainer(ctx *EncoderContext) {
-	ctx.BeginContainer()
-	ctx.Switch(markupContentsDecorator)
-}
-
-// ===========================================================================
-
-type MarkupValueDecorator struct{}
-
-var markupValueDecorator MarkupValueDecorator
-
-func (_this MarkupValueDecorator) String() string                  { return "MarkupValueDecorator" }
-func (_this MarkupValueDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this MarkupValueDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteIndentIfOrigin()
-}
-func (_this MarkupValueDecorator) AfterValue(ctx *EncoderContext) {
-	ctx.Switch(markupKeyDecorator)
-}
-func (_this MarkupValueDecorator) BeforeComment(ctx *EncoderContext) {
-	ctx.WriteIndentIfOrigin()
-}
-func (_this MarkupValueDecorator) AfterComment(ctx *EncoderContext) {
-	ctx.WriteReturnToOrigin()
-}
-func (_this MarkupValueDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
-
-// ===========================================================================
-
-type MarkupContentsDecorator struct{}
-
-var markupContentsDecorator MarkupContentsDecorator
-
-func (_this MarkupContentsDecorator) String() string                  { return "MarkupContentsDecorator" }
-func (_this MarkupContentsDecorator) GetStringContext() stringContext { return stringContextMarkup }
-func (_this MarkupContentsDecorator) BeforeValue(ctx *EncoderContext) {
-	if !ctx.ContainerHasObjects {
-		ctx.Stream.WriteMarkupContentsBegin()
-	}
-	ctx.WriteNewlineAndOriginAndIndent()
-}
-func (_this MarkupContentsDecorator) AfterValue(ctx *EncoderContext) {}
-func (_this MarkupContentsDecorator) BeforeComment(ctx *EncoderContext) {
-	if !ctx.ContainerHasObjects {
-		ctx.Stream.WriteMarkupContentsBegin()
-	}
-	ctx.WriteNewlineAndOriginAndIndent()
-}
-func (_this MarkupContentsDecorator) AfterComment(ctx *EncoderContext) {}
-func (_this MarkupContentsDecorator) EndContainer(ctx *EncoderContext) {
-	ctx.Unindent()
-	if ctx.ContainerHasObjects {
-		ctx.WriteNewlineAndOriginAndIndent()
-	}
-	ctx.Stream.WriteMarkupEnd()
-	ctx.Unstack()
-	ctx.AfterValue()
-}
 
 // ===========================================================================
 

@@ -295,10 +295,6 @@ func (_this *structBuilder) BuildNewMap(ctx *Context) {
 	_this.nextBuilderGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *structBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	_this.nextBuilderGenerator(ctx).BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *structBuilder) BuildNewNode(ctx *Context) {
 	_this.nextBuilderGenerator(ctx).BuildBeginNodeContents(ctx)
 }

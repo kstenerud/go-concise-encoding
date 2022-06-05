@@ -275,13 +275,6 @@ func (_this *RulesEventReceiver) OnMap() {
 	_this.receiver.OnMap()
 }
 
-func (_this *RulesEventReceiver) OnMarkup(identifier []byte) {
-	_this.context.ValidateIdentifier(identifier)
-	_this.context.NotifyNewObject()
-	_this.context.CurrentEntry.Rule.OnMarkup(&_this.context, identifier)
-	_this.receiver.OnMarkup(identifier)
-}
-
 func (_this *RulesEventReceiver) OnEnd() {
 	_this.context.CurrentEntry.Rule.OnEnd(&_this.context)
 	_this.receiver.OnEnd()

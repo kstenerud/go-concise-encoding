@@ -729,8 +729,6 @@ c0
                 {"document"="\.~ c0 "test\\test"~"           "events"=["v 0" "s \.~ test\test~"]} // Escaped backslash
                 {"document"="\.~ c0 "test\/test"~"           "events"=["v 0" "s \.~ test/test~"]} // Escaped slash
                 {"document"="\.~ c0 "test\*test"~"           "events"=["v 0" "s \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 "test\<test"~"           "events"=["v 0" "s \.~ test<test~"]} // Escaped lt
-                {"document"="\.~ c0 "test\>test"~"           "events"=["v 0" "s \.~ test>test~"]} // Escaped gt
                 {"document"="\.~ c0 "test\|test"~"           "events"=["v 0" "s \.~ test|test~"]} // Escaped pipe
                 {"document"="\.~ c0 "test\_test"~"           "events"=["v 0" "s test\2a0test"]}   // Escaped non-breaking space
                 {"document"="\.~ c0 "test\-test"~"           "events"=["v 0" "s test\2adtest"]}   // Escaped soft hyphen
@@ -798,8 +796,6 @@ test"~"  "events"=["v 0" "s testtest"]}  // Continuation
                 {"document"="\.~ c0 @"test\\test"~"           "events"=["v 0" "rid \.~ test\test~"]} // Escaped backslash
                 {"document"="\.~ c0 @"test\/test"~"           "events"=["v 0" "rid \.~ test/test~"]} // Escaped slash
                 {"document"="\.~ c0 @"test\*test"~"           "events"=["v 0" "rid \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 @"test\<test"~"           "events"=["v 0" "rid \.~ test<test~"]} // Escaped lt
-                {"document"="\.~ c0 @"test\>test"~"           "events"=["v 0" "rid \.~ test>test~"]} // Escaped gt
                 {"document"="\.~ c0 @"test\|test"~"           "events"=["v 0" "rid \.~ test|test~"]} // Escaped pipe
                 {"document"="\.~ c0 @"test\_test"~"           "events"=["v 0" "rid test\2a0test"]}   // Escaped non-breaking space
                 {"document"="\.~ c0 @"test\-test"~"           "events"=["v 0" "rid test\2adtest"]}   // Escaped soft hyphen
@@ -854,8 +850,6 @@ test"~"  "events"=["v 0" "rid testtest"]}  // Continuation
                 {"document"="\.~ c0 |c "test\\test"|~"           "events"=["v 0" "ct \.~ test\test~"]} // Escaped backslash
                 {"document"="\.~ c0 |c "test\/test"|~"           "events"=["v 0" "ct \.~ test/test~"]} // Escaped slash
                 {"document"="\.~ c0 |c "test\*test"|~"           "events"=["v 0" "ct \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 |c "test\<test"|~"           "events"=["v 0" "ct \.~ test<test~"]} // Escaped lt
-                {"document"="\.~ c0 |c "test\>test"|~"           "events"=["v 0" "ct \.~ test>test~"]} // Escaped gt
                 {"document"="\.~ c0 |c "test\|test"|~"           "events"=["v 0" "ct \.~ test|test~"]} // Escaped pipe
                 {"document"="\.~ c0 |c "test\_test"|~"           "events"=["v 0" "ct test\2a0test"]}   // Escaped non-breaking space
                 {"document"="\.~ c0 |c "test\-test"|~"           "events"=["v 0" "ct test\2adtest"]}   // Escaped soft hyphen

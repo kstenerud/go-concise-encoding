@@ -183,10 +183,6 @@ func (_this *sliceBuilder) BuildNewMap(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginMapContents(ctx)
 }
 
-func (_this *sliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *sliceBuilder) BuildNewNode(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginNodeContents(ctx)
 }

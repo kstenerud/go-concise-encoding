@@ -186,11 +186,7 @@ type DataEventReceiver interface {
 
 	OnNode()
 
-	OnMarkup(identifier []byte)
-
-	// Ends the current container (list, map, markup, or node).
-	// Note: Markup takes TWO ends (one for the attributes section,
-	//       one for the contents section).
+	// Ends the current container (list, map, or node).
 	// Note: Edge does NOT use end; it terminates automatically after three objects.
 	OnEnd()
 

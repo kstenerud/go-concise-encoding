@@ -20,10 +20,6 @@
 
 package cte
 
-import (
-	"github.com/kstenerud/go-concise-encoding/events"
-)
-
 func advanceAndDecodeMapBegin(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '{'
@@ -73,53 +69,6 @@ func advanceAndDecodeListEnd(ctx *DecoderContext) {
 	ctx.AssertIsInList()
 	ctx.EventReceiver.OnEnd()
 	ctx.UnstackDecoder()
-	ctx.RequireStructuralWS()
-}
-
-func advanceAndDecodeMarkupBegin(ctx *DecoderContext) {
-	ctx.AssertHasStructuralWS()
-	ctx.Stream.AdvanceByte() // Advance past '<'
-	decodeMarkupBegin(ctx)
-}
-
-func decodeMarkupBegin(ctx *DecoderContext) {
-	ctx.EventReceiver.OnMarkup(ctx.Stream.ReadIdentifier())
-	ctx.StackDecoder(decodeMapKey)
-}
-
-func advanceAndDecodeMarkupContentBegin(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past ','
-
-	ctx.EventReceiver.OnEnd()
-	ctx.ChangeDecoder(decodeMarkupContents)
-}
-
-func decodeMarkupContents(ctx *DecoderContext) {
-	ctx.stack[len(ctx.stack)-1].IsMarkupContents = true
-	str, next := ctx.Stream.ReadMarkupContent()
-	if len(str) > 0 {
-		ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(str)), str)
-	}
-	switch next {
-	case nextIsMultiLineComment:
-		contents := ctx.Stream.ReadMultiLineComment()
-		ctx.EventReceiver.OnComment(true, contents)
-	case nextIsSingleLineComment:
-		contents := ctx.Stream.ReadSingleLineComment()
-		ctx.EventReceiver.OnComment(false, contents)
-	case nextIsMarkupBegin:
-		decodeMarkupBegin(ctx)
-	case nextIsMarkupEnd:
-		ctx.EventReceiver.OnEnd()
-		ctx.UnstackDecoder()
-	}
-}
-
-func advanceAndDecodeMarkupEnd(ctx *DecoderContext) {
-	ctx.Stream.AdvanceByte() // Advance past '>'
-
-	ctx.EventReceiver.OnEnd()
-	ctx.EndMarkup()
 	ctx.RequireStructuralWS()
 }
 

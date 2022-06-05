@@ -164,8 +164,6 @@ EOF:
 			eventReceiver.OnFloat(_this.reader.ReadFloat64())
 		case cbeTypeUID:
 			eventReceiver.OnUID(_this.reader.ReadBytes(16))
-		case cbeTypeMarkup:
-			eventReceiver.OnMarkup(_this.reader.ReadIdentifier())
 		case cbeTypeMap:
 			eventReceiver.OnMap()
 		case cbeTypeList:

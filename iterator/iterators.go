@@ -163,23 +163,6 @@ func iterateMedia(context *Context, v reflect.Value) {
 	}
 }
 
-func iterateMarkup(context *Context, v reflect.Value) {
-	vCopy := v.Interface().(types.Markup)
-	context.EventReceiver.OnMarkup([]byte(vCopy.Name))
-	for k, v := range vCopy.Attributes {
-		rk := reflect.ValueOf(k)
-		context.GetIteratorForType(rk.Type())(context, rk)
-		rv := reflect.ValueOf(v)
-		context.GetIteratorForType(rv.Type())(context, rv)
-	}
-	context.EventReceiver.OnEnd()
-	for _, v := range vCopy.Content {
-		rv := reflect.ValueOf(v)
-		context.GetIteratorForType(rv.Type())(context, rv)
-	}
-	context.EventReceiver.OnEnd()
-}
-
 func iterateNode(context *Context, v reflect.Value) {
 	context.EventReceiver.OnNode()
 	iterateInterface(context, v.Field(types.NodeFieldIndexValue))

@@ -72,7 +72,6 @@ type Encoder interface {
 	OnArrayData(data []byte)
 	OnList()
 	OnMap()
-	OnMarkup(id []byte)
 	OnEdge()
 	OnNode()
 	OnEnd()

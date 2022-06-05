@@ -62,7 +62,6 @@ type Builder interface {
 	// This gets triggered from a data event.
 	BuildNewList(ctx *Context)
 	BuildNewMap(ctx *Context)
-	BuildNewMarkup(ctx *Context, name []byte)
 	BuildNewNode(ctx *Context)
 	BuildNewEdge(ctx *Context)
 
@@ -74,7 +73,6 @@ type Builder interface {
 	// This gets called by the parent builder.
 	BuildBeginListContents(ctx *Context)
 	BuildBeginMapContents(ctx *Context)
-	BuildBeginMarkupContents(ctx *Context, name []byte)
 	BuildBeginNodeContents(ctx *Context)
 	BuildBeginEdgeContents(ctx *Context)
 

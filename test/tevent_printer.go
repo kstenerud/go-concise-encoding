@@ -268,10 +268,6 @@ func (h *TEventPrinter) OnMap() {
 	h.Print(M())
 	h.Next.OnMap()
 }
-func (h *TEventPrinter) OnMarkup(id []byte) {
-	h.Print(MU(string(id)))
-	h.Next.OnMarkup(id)
-}
 func (h *TEventPrinter) OnEnd() {
 	h.Print(E())
 	h.Next.OnEnd()

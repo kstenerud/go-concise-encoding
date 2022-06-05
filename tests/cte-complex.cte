@@ -49,22 +49,6 @@ c0
                                     "s ref1" "ref tag1"
                                     "s ref2" "ref tag1"
                                     "s outside_ref" "rref https://somewhere.else.com/path/to/document.cte#some_tag"
-                                    "com false  The markup type is good for presentation data"
-                                    "s markup" "mu view"
-                                        "s ui:lang" "s en"
-                                        "e"
-                                        "mu body"
-                                            "e"
-                                            "s Please choose from the following widgets:"
-                                            "mu div"
-                                                "s id" "s parent"
-                                                "s style" "s normal"
-                                                "s ref-id" "n 1"
-                                                "e"
-                                                "com true  A comment "
-                                            "e"
-                                        "e"
-                                    "e"
                                 "e"]
                     "document" = "\.^
 c0
@@ -103,15 +87,6 @@ c0
     "ref1" = $tag1
     "ref2" = $tag1
     "outside_ref" = $"https://somewhere.else.com/path/to/document.cte#some_tag"
-    // The markup type is good for presentation data
-    "markup" = <view "ui:lang"="en";
-        <body;
-            Please choose from the following widgets:
-            <div "id"="parent" "style"="normal" "ref-id"=1;
-                /* A comment */
-            >
-        >
-    >
 }^"
                 }
             ]

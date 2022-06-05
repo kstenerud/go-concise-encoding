@@ -68,8 +68,6 @@ func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringConte
 			_this.stream.WriteQuotedString(true, data)
 		case stringContextComment:
 			_this.stream.WriteStringPossibleLF(data)
-		case stringContextMarkup:
-			_this.stream.WritePotentiallyEscapedMarkupContents(data)
 		}
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByteNotLF('@')
@@ -94,8 +92,6 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 			_this.stream.WriteQuotedStringBytes(true, data)
 		case stringContextComment:
 			_this.stream.WriteBytesPossibleLF(data)
-		case stringContextMarkup:
-			_this.stream.WritePotentiallyEscapedMarkupContentsBytes(data)
 		}
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByteNotLF('@')

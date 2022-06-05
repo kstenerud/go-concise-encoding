@@ -225,14 +225,6 @@ func (_this *EncoderEventReceiver) OnMap() {
 	_this.context.Stack(mapKeyDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnMarkup(id []byte) {
-	_this.context.BeforeValue()
-	_this.context.BeginContainer()
-	_this.context.Stream.WriteMarkupBegin(id)
-	_this.context.Indent()
-	_this.context.Stack(markupKeyDecorator)
-}
-
 func (_this *EncoderEventReceiver) OnEdge() {
 	_this.context.BeforeValue()
 	_this.context.BeginContainer()

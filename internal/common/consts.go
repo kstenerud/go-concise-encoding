@@ -132,7 +132,6 @@ var (
 	TypePURL             = reflect.TypeOf((*url.URL)(nil))
 	TypeUID              = reflect.TypeOf(types.UID{})
 	TypeMedia            = reflect.TypeOf(types.Media{})
-	TypeMarkup           = reflect.TypeOf(types.Markup{})
 	TypeEdge             = reflect.TypeOf(types.Edge{})
 	TypeNode             = reflect.TypeOf(types.Node{})
 )

@@ -63,24 +63,6 @@ func needsEscapesStringlikeArrayBytes(str []byte) bool {
 	return false
 }
 
-func needsEscapesMarkup(str string) bool {
-	for _, ch := range str {
-		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
-			return true
-		}
-	}
-	return false
-}
-
-func needsEscapesMarkupBytes(str []byte) bool {
-	for _, ch := range string(str) {
-		if !chars.IsRuneSafeFor(ch, chars.SafetyMarkup) {
-			return true
-		}
-	}
-	return false
-}
-
 // ============================================================================
 
 func escapeCharQuoted(ch rune) []byte {
@@ -109,27 +91,6 @@ func unicodeEscape(ch rune) []byte {
 	}
 	hex := fmt.Sprintf("%x", ch)
 	return []byte(fmt.Sprintf("\\%d%s", len(hex), hex))
-}
-func escapeCharMarkup(ch rune) []byte {
-	switch ch {
-	case '*':
-		// TODO: Check ahead for /* */ instead of blindly escaping
-		return []byte(`\*`)
-	case '/':
-		// TODO: Check ahead for /* */ instead of blindly escaping
-		return []byte(`\/`)
-	case '<':
-		return []byte(`\<`)
-	case '>':
-		return []byte(`\>`)
-	case 0xa0:
-		return []byte(`\_`)
-	case 0xad:
-		return []byte(`\-`)
-	case '\\':
-		return []byte(`\\`)
-	}
-	return unicodeEscape(ch)
 }
 
 // Ordered from least common to most common, chosen to not be confused by

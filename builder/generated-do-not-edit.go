@@ -37,9 +37,6 @@ import (
 func (_this *arrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
 }
-func (_this *arrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
-}
 func (_this *arrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
 }
@@ -76,9 +73,6 @@ func (_this *bigDecimalFloatBuilder) BuildNewList(ctx *Context) {
 func (_this *bigDecimalFloatBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *bigDecimalFloatBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *bigDecimalFloatBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -90,9 +84,6 @@ func (_this *bigDecimalFloatBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *bigDecimalFloatBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *bigDecimalFloatBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *bigDecimalFloatBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -139,9 +130,6 @@ func (_this *bigFloatBuilder) BuildNewList(ctx *Context) {
 func (_this *bigFloatBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *bigFloatBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *bigFloatBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -153,9 +141,6 @@ func (_this *bigFloatBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *bigFloatBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *bigFloatBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *bigFloatBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -202,9 +187,6 @@ func (_this *bigIntBuilder) BuildNewList(ctx *Context) {
 func (_this *bigIntBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *bigIntBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *bigIntBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -216,9 +198,6 @@ func (_this *bigIntBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *bigIntBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *bigIntBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *bigIntBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -283,9 +262,6 @@ func (_this *boolBuilder) BuildNewList(ctx *Context) {
 func (_this *boolBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *boolBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *boolBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -297,9 +273,6 @@ func (_this *boolBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *boolBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *boolBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *boolBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -358,9 +331,6 @@ func (_this *compactTimeBuilder) BuildNewList(ctx *Context) {
 func (_this *compactTimeBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *compactTimeBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *compactTimeBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -372,9 +342,6 @@ func (_this *compactTimeBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *compactTimeBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *compactTimeBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *compactTimeBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -439,9 +406,6 @@ func (_this *customBuilder) BuildNewList(ctx *Context) {
 func (_this *customBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *customBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *customBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -453,9 +417,6 @@ func (_this *customBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *customBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *customBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *customBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -502,9 +463,6 @@ func (_this *decimalFloatBuilder) BuildNewList(ctx *Context) {
 func (_this *decimalFloatBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *decimalFloatBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *decimalFloatBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -516,9 +474,6 @@ func (_this *decimalFloatBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *decimalFloatBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *decimalFloatBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *decimalFloatBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -565,9 +520,6 @@ func (_this *floatBuilder) BuildNewList(ctx *Context) {
 func (_this *floatBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *floatBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *floatBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -579,9 +531,6 @@ func (_this *floatBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *floatBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *floatBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *floatBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -646,9 +595,6 @@ func (_this *float32ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *float32ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *float32ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *float32ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -657,9 +603,6 @@ func (_this *float32ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *float32ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *float32ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *float32ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -721,9 +664,6 @@ func (_this *float32SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *float32SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *float32SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *float32SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -732,9 +672,6 @@ func (_this *float32SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *float32SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *float32SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *float32SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -799,9 +736,6 @@ func (_this *float64ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *float64ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *float64ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *float64ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -810,9 +744,6 @@ func (_this *float64ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *float64ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *float64ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *float64ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -874,9 +805,6 @@ func (_this *float64SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *float64SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *float64SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *float64SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -885,9 +813,6 @@ func (_this *float64SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *float64SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *float64SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *float64SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -910,9 +835,6 @@ func (_this *ignoreBuilder) BuildBeginListContents(ctx *Context) {
 func (_this *ignoreBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
 }
-func (_this *ignoreBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
-}
 func (_this *ignoreBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
 }
@@ -927,9 +849,6 @@ func (_this *ignoreXTimesBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *ignoreXTimesBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *ignoreXTimesBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *ignoreXTimesBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -970,9 +889,6 @@ func (_this *intBuilder) BuildNewList(ctx *Context) {
 func (_this *intBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *intBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *intBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -984,9 +900,6 @@ func (_this *intBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *intBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *intBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *intBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1051,9 +964,6 @@ func (_this *int8ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *int8ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int8ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int8ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1062,9 +972,6 @@ func (_this *int8ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int8ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int8ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int8ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1126,9 +1033,6 @@ func (_this *int8SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *int8SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int8SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int8SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1137,9 +1041,6 @@ func (_this *int8SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int8SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int8SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int8SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1204,9 +1105,6 @@ func (_this *int16ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *int16ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int16ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int16ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1215,9 +1113,6 @@ func (_this *int16ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int16ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int16ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int16ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1279,9 +1174,6 @@ func (_this *int16SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *int16SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int16SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int16SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1290,9 +1182,6 @@ func (_this *int16SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int16SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int16SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int16SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1357,9 +1246,6 @@ func (_this *int32ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *int32ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int32ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int32ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1368,9 +1254,6 @@ func (_this *int32ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int32ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int32ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int32ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1432,9 +1315,6 @@ func (_this *int32SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *int32SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int32SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int32SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1443,9 +1323,6 @@ func (_this *int32SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int32SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int32SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int32SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1510,9 +1387,6 @@ func (_this *int64ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *int64ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int64ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int64ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1521,9 +1395,6 @@ func (_this *int64ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int64ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int64ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int64ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1585,9 +1456,6 @@ func (_this *int64SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *int64SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *int64SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *int64SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1596,9 +1464,6 @@ func (_this *int64SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *int64SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *int64SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *int64SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1621,170 +1486,17 @@ func (_this *interfaceBuilder) BuildEndContainer(ctx *Context) {
 func (_this *mapBuilder) BuildBeginListContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
 }
-func (_this *mapBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
-}
 func (_this *mapBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
 }
 func (_this *mapBuilder) BuildBeginEdgeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
 }
-func (_this *markupBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
-}
-func (_this *markupBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
-}
-func (_this *markupContentsBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
-}
-func (_this *markupContentsBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
-}
 func (_this *markerObjectBuilder) BuildBeginListContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
 }
 func (_this *markerObjectBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *markerObjectBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *markerObjectBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1822,9 +1534,6 @@ func (_this *pBigDecimalFloatBuilder) BuildNewList(ctx *Context) {
 func (_this *pBigDecimalFloatBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *pBigDecimalFloatBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *pBigDecimalFloatBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1836,9 +1545,6 @@ func (_this *pBigDecimalFloatBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *pBigDecimalFloatBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *pBigDecimalFloatBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *pBigDecimalFloatBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1882,9 +1588,6 @@ func (_this *pBigFloatBuilder) BuildNewList(ctx *Context) {
 func (_this *pBigFloatBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *pBigFloatBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *pBigFloatBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1896,9 +1599,6 @@ func (_this *pBigFloatBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *pBigFloatBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *pBigFloatBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *pBigFloatBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -1942,9 +1642,6 @@ func (_this *pBigIntBuilder) BuildNewList(ctx *Context) {
 func (_this *pBigIntBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *pBigIntBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *pBigIntBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -1956,9 +1653,6 @@ func (_this *pBigIntBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *pBigIntBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *pBigIntBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *pBigIntBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2017,9 +1711,6 @@ func (_this *pCompactTimeBuilder) BuildNewList(ctx *Context) {
 func (_this *pCompactTimeBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *pCompactTimeBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *pCompactTimeBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2031,9 +1722,6 @@ func (_this *pCompactTimeBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *pCompactTimeBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *pCompactTimeBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *pCompactTimeBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2055,9 +1743,6 @@ func (_this *ptrBuilder) BuildNewList(ctx *Context) {
 }
 func (_this *ptrBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
-}
-func (_this *ptrBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
 }
 func (_this *ptrBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
@@ -2113,9 +1798,6 @@ func (_this *pRidBuilder) BuildNewList(ctx *Context) {
 func (_this *pRidBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *pRidBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *pRidBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2127,9 +1809,6 @@ func (_this *pRidBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *pRidBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *pRidBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *pRidBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2148,9 +1827,6 @@ func (_this *pRidBuilder) NotifyChildContainerFinished(ctx *Context, container r
 }
 func (_this *sliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *sliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *sliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2200,9 +1876,6 @@ func (_this *stringBuilder) BuildNewList(ctx *Context) {
 func (_this *stringBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *stringBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *stringBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2214,9 +1887,6 @@ func (_this *stringBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *stringBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *stringBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *stringBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2235,9 +1905,6 @@ func (_this *stringBuilder) NotifyChildContainerFinished(ctx *Context, container
 }
 func (_this *structBuilder) BuildBeginListContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
-}
-func (_this *structBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *structBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2290,9 +1957,6 @@ func (_this *timeBuilder) BuildNewList(ctx *Context) {
 func (_this *timeBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *timeBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *timeBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2304,9 +1968,6 @@ func (_this *timeBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *timeBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *timeBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *timeBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2328,9 +1989,6 @@ func (_this *topLevelBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *topLevelBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *topLevelBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *topLevelBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2374,9 +2032,6 @@ func (_this *uintBuilder) BuildNewList(ctx *Context) {
 func (_this *uintBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uintBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uintBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2388,9 +2043,6 @@ func (_this *uintBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *uintBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uintBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uintBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2455,9 +2107,6 @@ func (_this *uint8ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *uint8ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint8ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint8ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2466,9 +2115,6 @@ func (_this *uint8ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint8ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint8ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint8ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2530,9 +2176,6 @@ func (_this *uint8SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *uint8SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint8SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint8SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2541,9 +2184,6 @@ func (_this *uint8SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint8SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint8SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint8SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2608,9 +2248,6 @@ func (_this *uint16ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *uint16ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint16ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint16ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2619,9 +2256,6 @@ func (_this *uint16ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint16ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint16ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint16ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2683,9 +2317,6 @@ func (_this *uint16SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *uint16SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint16SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint16SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2694,9 +2325,6 @@ func (_this *uint16SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint16SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint16SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint16SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2761,9 +2389,6 @@ func (_this *uint32ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *uint32ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint32ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint32ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2772,9 +2397,6 @@ func (_this *uint32ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint32ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint32ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint32ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2836,9 +2458,6 @@ func (_this *uint32SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *uint32SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint32SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint32SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2847,9 +2466,6 @@ func (_this *uint32SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint32SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint32SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint32SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2914,9 +2530,6 @@ func (_this *uint64ArrayBuilder) BuildNewList(ctx *Context) {
 func (_this *uint64ArrayBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint64ArrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint64ArrayBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -2925,9 +2538,6 @@ func (_this *uint64ArrayBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint64ArrayBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint64ArrayBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint64ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -2989,9 +2599,6 @@ func (_this *uint64SliceBuilder) BuildNewList(ctx *Context) {
 func (_this *uint64SliceBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uint64SliceBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uint64SliceBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -3000,9 +2607,6 @@ func (_this *uint64SliceBuilder) BuildNewEdge(ctx *Context) {
 }
 func (_this *uint64SliceBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uint64SliceBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uint64SliceBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -3064,9 +2668,6 @@ func (_this *ridBuilder) BuildNewList(ctx *Context) {
 func (_this *ridBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *ridBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *ridBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -3078,9 +2679,6 @@ func (_this *ridBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *ridBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *ridBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *ridBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -3145,9 +2743,6 @@ func (_this *uidBuilder) BuildNewList(ctx *Context) {
 func (_this *uidBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *uidBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *uidBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -3159,9 +2754,6 @@ func (_this *uidBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *uidBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *uidBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *uidBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -3226,9 +2818,6 @@ func (_this *mediaBuilder) BuildNewList(ctx *Context) {
 func (_this *mediaBuilder) BuildNewMap(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
 }
-func (_this *mediaBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMarkup", reflect.TypeOf(_this)))
-}
 func (_this *mediaBuilder) BuildNewNode(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
 }
@@ -3240,9 +2829,6 @@ func (_this *mediaBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *mediaBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *mediaBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *mediaBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
@@ -3265,9 +2851,6 @@ func (_this *edgeBuilder) BuildBeginListContents(ctx *Context) {
 func (_this *edgeBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
 }
-func (_this *edgeBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
-}
 func (_this *edgeBuilder) BuildBeginNodeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
 }
@@ -3279,9 +2862,6 @@ func (_this *nodeBuilder) BuildBeginListContents(ctx *Context) {
 }
 func (_this *nodeBuilder) BuildBeginMapContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
-}
-func (_this *nodeBuilder) BuildBeginMarkupContents(ctx *Context, name []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMarkupContents", reflect.TypeOf(_this)))
 }
 func (_this *nodeBuilder) BuildBeginEdgeContents(ctx *Context) {
 	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))

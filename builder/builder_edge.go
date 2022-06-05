@@ -176,11 +176,6 @@ func (_this *edgeBuilder) BuildFromReference(ctx *Context, id []byte) {
 	_this.tryFinish(ctx)
 }
 
-func (_this *edgeBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	globalInterfaceBuilder.BuildBeginMarkupContents(ctx, name)
-	_this.tryFinish(ctx)
-}
-
 func (_this *edgeBuilder) BuildBeginEdgeContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }

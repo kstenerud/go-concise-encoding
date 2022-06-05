@@ -423,11 +423,6 @@ func (_this *Encoder) OnMap() {
 	_this.writer.WriteType(cbeTypeMap)
 }
 
-func (_this *Encoder) OnMarkup(id []byte) {
-	_this.writer.WriteType(cbeTypeMarkup)
-	_this.writer.WriteIdentifier(id)
-}
-
 func (_this *Encoder) OnNode() {
 	_this.writer.WriteType(cbeTypeNode)
 }

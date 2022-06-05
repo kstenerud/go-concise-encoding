@@ -167,10 +167,6 @@ func (_this *arrayBuilder) BuildNewEdge(ctx *Context) {
 	_this.elemGenerator(ctx).BuildBeginEdgeContents(ctx)
 }
 
-func (_this *arrayBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	_this.elemGenerator(ctx).BuildBeginMarkupContents(ctx, name)
-}
-
 func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {
 	object := _this.container
 	ctx.UnstackBuilderAndNotifyChildFinished(object)

@@ -160,36 +160,6 @@ func TestEncodeDecodeAllValidMapValue(t *testing.T) {
 			test.RemoveEvents(test.ValidMapValues, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
 
-func TestEncodeDecodeAllValidMarkupKey(t *testing.T) {
-	assertEncodeDecodeEventStreams(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("x")},
-			[]*test.TEvent{TT(), E(), E()},
-			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMapKeys, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
-}
-
-func TestEncodeDecodeAllValidMarkupValue(t *testing.T) {
-	assertEncodeDecodeEventStreams(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("x"), TT()},
-			[]*test.TEvent{E(), E()},
-			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMapValues, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
-}
-
-func TestEncodeDecodeAllValidMarkupContents(t *testing.T) {
-	assertEncodeDecodeEventStreams(t,
-		test.GenerateAllVariants(
-			[]*test.TEvent{BD(), V(ceVer)},
-			[]*test.TEvent{MUP("x"), E()},
-			[]*test.TEvent{E()},
-			[]*test.TEvent{ED()},
-			test.RemoveEvents(test.ValidMarkupContents, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
-}
-
 func TestEncodeDecodeAllValidEdgeSources(t *testing.T) {
 	assertEncodeDecodeEventStreams(t,
 		test.GenerateAllVariants(

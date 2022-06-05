@@ -427,20 +427,6 @@ func trimWhitespace(str []byte) []byte {
 	return str
 }
 
-func trimWhitespaceMarkupContent(str []byte) []byte {
-	for len(str) > 0 && chars.ByteHasProperty(str[0], chars.StructWS) {
-		str = str[1:]
-	}
-	for len(str) > 0 && chars.ByteHasProperty(str[len(str)-1], chars.StructWS) {
-		str = str[:len(str)-1]
-	}
-	return str
-}
-
-func trimWhitespaceMarkupEnd(str []byte) []byte {
-	return trimWhitespace(str)
-}
-
 func (_this *Reader) ReadSingleLineComment() []byte {
 	_this.TokenBegin()
 	_this.TokenReadUntilExcludingByte('\n')
@@ -476,34 +462,6 @@ func (_this *Reader) ReadMultiLineComment() []byte {
 	}
 }
 
-func (_this *Reader) ReadMarkupContent() ([]byte, nextType) {
-	_this.TokenBegin()
-	for {
-		b := _this.TokenReadByteNoEOF()
-		switch b {
-		case '<':
-			_this.TokenStripLastByte()
-			return trimWhitespaceMarkupContent(_this.TokenGet()), nextIsMarkupBegin
-		case '>':
-			_this.TokenStripLastByte()
-			return trimWhitespaceMarkupEnd(_this.TokenGet()), nextIsMarkupEnd
-		case '/':
-			switch _this.TokenReadByteAllowEOF() {
-			case '*':
-				_this.TokenStripLastBytes(2)
-				return trimWhitespaceMarkupContent(_this.TokenGet()), nextIsMultiLineComment
-			case '/':
-				_this.TokenStripLastBytes(2)
-				return trimWhitespaceMarkupContent(_this.TokenGet()), nextIsSingleLineComment
-			}
-		case '\\':
-			_this.TokenStripLastByte()
-			_this.TokenReadEscape()
-
-		}
-	}
-}
-
 // ============================================================================
 
 // Internal
@@ -513,8 +471,6 @@ type nextType int
 const (
 	nextIsMultiLineComment nextType = iota
 	nextIsSingleLineComment
-	nextIsMarkupBegin
-	nextIsMarkupEnd
 )
 
 var subsecondMagnitudes = []int{

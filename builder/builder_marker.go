@@ -157,11 +157,6 @@ func (_this *markerObjectBuilder) BuildNewMap(ctx *Context) {
 	_this.child.BuildNewMap(ctx)
 }
 
-func (_this *markerObjectBuilder) BuildNewMarkup(ctx *Context, name []byte) {
-	_this.isContainer = true
-	_this.child.BuildNewMarkup(ctx, name)
-}
-
 func (_this *markerObjectBuilder) BuildNewEdge(ctx *Context) {
 	_this.isContainer = true
 	_this.child.BuildNewEdge(ctx)

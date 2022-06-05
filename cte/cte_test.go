@@ -64,30 +64,6 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 ]`)
 }
 
-func TestCTEBufferEdge(t *testing.T) {
-	assertDecode(t, nil, `c0
-{
-     1  = <a;
-            <b;
-               <c; `+"`"+`##                       ##>
-                         >
-                       >
-}
-`)
-}
-
-func TestCTEBufferEdge2(t *testing.T) {
-	assertDecode(t, nil, `c0
-{
-    "x"  = <a;
-                     <b;
-                             <c; `+"`"+`##                     ##>
-                           >
-                       >
-}
-`)
-}
-
 func TestSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0[]`)
 	assertDecodeFails(t, `c0 ["a""b"]`)
