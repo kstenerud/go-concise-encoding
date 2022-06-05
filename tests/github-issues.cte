@@ -43,7 +43,7 @@ c0
     0:15:00/-13.54/-172.36
 ]
             %%%%"
-            "cbe" = |u8x 8f 00 7a 9a 19 d2 f8 6d f5 ac bc 9a a8 88 f4 9a 00 1e f0 9a 01 1e f0 6d f5 ac bc 7b|
+            "cbe" = |u8x 81 00 7a 9a 19 d2 f8 6d f5 ac bc 9a a8 88 f4 9a 00 1e f0 9a 01 1e f0 6d f5 ac bc 7b|
             "events" = [
                             "v 0" "l"
                                 "t 17:41:03/-13.54/-172.36"
@@ -77,7 +77,7 @@ c0 0:hello world
 c0
 -0
             %%%%"
-            "cbe" = |u8x 8f 00 69 00|
+            "cbe" = |u8x 81 00 69 00|
             "events" = ["v 0" "n -0"]
             "from"   = ["t" "b" "e"]
             "to"     = ["t" "b" "e"]

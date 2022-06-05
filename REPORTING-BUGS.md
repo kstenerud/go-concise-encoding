@@ -33,7 +33,7 @@ c0
     "a" = true
 }
             %%%%"
-            "cbe"    = |u8x 8f 00 79 81 61 7d 7b|
+            "cbe"    = |u8x 81 00 79 81 61 7d 7b|
             "from"   = ["t"]
             "to"     = ["b"]
         }
@@ -41,7 +41,7 @@ c0
 }
 ```
 
-This unit test attempts to decode a CTE document (in this case `c0 {"a"=true}`), validates that it is a properly formed document, converts it to CBE, and compares it to the expected CBE document [`8f 00 79 81 61 7d 7b`].
+This unit test attempts to decode a CTE document (in this case `c0 {"a"=true}`), validates that it is a properly formed document, converts it to CBE, and compares it to the expected CBE document [`81 00 79 81 61 7d 7b`].
 
 ### Fields:
 

@@ -36,7 +36,7 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 	encoder.PrepareToEncode(buffer2)
 	InvokeEvents(encoder, BD(), EvV, M(), E(), ED())
 
-	expected := []byte{0x8f, 0x00, 0x79, 0x7b}
+	expected := []byte{0x81, 0x00, 0x79, 0x7b}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {
 		t.Errorf("Expected first buffer %v but got %v", expected, buffer.Bytes())
 	}
@@ -48,5 +48,5 @@ func TestCBEEncoderMultiUse(t *testing.T) {
 func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
 	v := []interface{}{sl, sl, sl}
-	assertMarshalUnmarshal(t, v, []byte{0x8f, 0x00, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
+	assertMarshalUnmarshal(t, v, []byte{0x81, 0x00, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
 }

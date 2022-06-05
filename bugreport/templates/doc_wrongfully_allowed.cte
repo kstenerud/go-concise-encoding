@@ -24,7 +24,7 @@ c0
             "name"     = "Document is wrongfully allowed"
             "mustFail" = true
             "from"     = ["b"]
-            "cbe"      = |u8x 8f 00 74 81 61 7d 7b|
+            "cbe"      = |u8x 81 00 74 81 61 7d 7b|
             "cte"      = "\.%%%%
 c0
 {

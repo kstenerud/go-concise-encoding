@@ -43,7 +43,7 @@ type Decoder interface {
 
 // A universal decoder automatically chooses a decoding method based on the first byte of the document:
 // - 0x63 = Decode as CTE
-// - 0x8f = Decode as CBE
+// - 0x81 = Decode as CBE
 type UniversalDecoder struct {
 	opts *options.CEDecoderOptions
 }
