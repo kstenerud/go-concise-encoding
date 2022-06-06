@@ -86,11 +86,7 @@ func escapeCharQuoted(ch rune) []byte {
 }
 
 func unicodeEscape(ch rune) []byte {
-	if ch == 0 {
-		return []byte("\\0")
-	}
-	hex := fmt.Sprintf("%x", ch)
-	return []byte(fmt.Sprintf("\\%d%s", len(hex), hex))
+	return []byte(fmt.Sprintf("\\%s.", fmt.Sprintf("%x", ch)))
 }
 
 // Ordered from least common to most common, chosen to not be confused by

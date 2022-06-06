@@ -332,13 +332,11 @@ func (_this *Reader) TokenReadEscape() {
 	case '\r', '\n':
 		// Continuation
 		_this.SkipWhitespace()
-	case '0':
-		_this.TokenAppendByte(0)
-	case '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		length := int(escape - '0')
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F':
 		codepoint := rune(0)
-		for i := 0; i < length; i++ {
-			b := _this.ReadByteNoEOF()
+		b := escape
+	unicode:
+		for {
 			switch {
 			case chars.ByteHasProperty(b, chars.DigitBase10):
 				codepoint = (codepoint << 4) | (rune(b) - '0')
@@ -346,11 +344,13 @@ func (_this *Reader) TokenReadEscape() {
 				codepoint = (codepoint << 4) | (rune(b) - 'a' + 10)
 			case chars.ByteHasProperty(b, chars.UpperAF):
 				codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
+			case b == '.':
+				break unicode
 			default:
 				_this.unexpectedChar("unicode escape")
 			}
+			b = _this.ReadByteNoEOF()
 		}
-
 		_this.TokenAppendRune(codepoint)
 	case '.':
 		_this.TokenReadVerbatimSequence()
