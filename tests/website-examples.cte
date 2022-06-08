@@ -69,7 +69,7 @@ c0
             "cte" = "\.%%%%
 c0
 {
-    "string" = "Strings support escape sequences: \n \t \1F415."
+    "string" = "Strings support escape sequences: \n \t \+1f415."
     "url"    = @"https://example.com/"
     "email"  = @"mailto:me@somewhere.com"
 }
@@ -83,7 +83,7 @@ c0
                             65 40 73 6f 6d 65 77 68 65 72 65 2e 63 6f 6d 7b|
             "events" = [
                             "v 0" "m"
-                                "s string" "s Strings support escape sequences: \n \t \1F415."
+                                "s string" "s Strings support escape sequences: \n \t \+1f415."
                                 "s url"    "rid https://example.com/"
                                 "s email"  "rid mailto:me@somewhere.com"
                             "e"

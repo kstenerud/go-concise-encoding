@@ -332,11 +332,12 @@ func (_this *Reader) TokenReadEscape() {
 	case '\r', '\n':
 		// Continuation
 		_this.SkipWhitespace()
-	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F':
+	case '+':
 		codepoint := rune(0)
-		b := escape
+		cpLength := 0
 	unicode:
 		for {
+			b := _this.ReadByteNoEOF()
 			switch {
 			case chars.ByteHasProperty(b, chars.DigitBase10):
 				codepoint = (codepoint << 4) | (rune(b) - '0')
@@ -349,7 +350,11 @@ func (_this *Reader) TokenReadEscape() {
 			default:
 				_this.unexpectedChar("unicode escape")
 			}
-			b = _this.ReadByteNoEOF()
+			cpLength++
+		}
+		if cpLength == 0 {
+			_this.UnreadLastByte()
+			_this.unexpectedChar("unicode escape")
 		}
 		_this.TokenAppendRune(codepoint)
 	case '.':
