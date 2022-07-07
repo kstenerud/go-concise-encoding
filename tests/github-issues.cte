@@ -24,7 +24,7 @@ c0 |u8x /* foo */ 1 2 3|
             "cte" = "\.%%%%
 c0 @(@"homer" @"married-to" @"marge" )
             %%%%"
-            "events" = ["v 0" "edge" "rid homer" "rid married-to" "rid marge"]
+            "events" = ["v 0" "edge" "rid homer" "rid married-to" "rid marge" "e"]
             "from"   = ["t"]
             "to"     = ["e"]
         }

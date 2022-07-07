@@ -94,34 +94,34 @@ func classifyRunes(chars CharSet) {
 
 	// Character classes (https://unicodebook.readthedocs.io/unicode.html):
 
-	// "Other" chars
-	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.MajorCategory == 'C'
+	// Letters, mark, numbers
+	setSafety(safeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'L' || char.MajorCategory == 'M' || char.MajorCategory == 'N'
+	}))
+
+	// Punctuation, symbols
+	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'P' || char.MajorCategory == 'S'
 	}))
 
 	// Separators
 	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.Category == "Zl" || char.Category == "Zp"
-	}))
-
-	// Whitespace
-	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
 		return char.MajorCategory == 'Z'
 	}))
 
-	// Letters, numbers
-	setSafety(safeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.MajorCategory == 'L' || char.MajorCategory == 'N'
-	}))
-
-	// Mark
-	setSafety(safeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.MajorCategory == 'M'
-	}))
-
-	// Symbols, Punctuation
+	// Space separators
 	setSafety(unsafeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
-		return char.MajorCategory == 'P' || char.MajorCategory == 'S'
+		return char.Category == "Zs"
+	}))
+
+	// Control and others
+	setSafety(unsafeID, unsafeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.MajorCategory == 'C'
+	}))
+
+	// "Format" chars
+	setSafety(safeID, safeForStringlike, chars.RunesWithCriteria(func(char *Char) bool {
+		return char.Category == "Cf"
 	}))
 
 	// Structural whitespace
@@ -132,7 +132,6 @@ func classifyRunes(chars CharSet) {
 
 	// Stringlike safety
 	markUnsafeFor(SafetyString, charsAndLookalikes(charSet('\\', '"')...))
-	markUnsafeFor(SafetyArray, charsAndLookalikes(charSet('\\', '|', '\t', '\r', '\n')...))
 
 	// Structural char properties
 	addProperties(StructWS, charSet('\r', '\n', '\t', ' '))
@@ -555,7 +554,6 @@ type SafetyFlags uint64
 
 const (
 	SafetyString SafetyFlags = 1 << iota
-	SafetyArray
 	SafetyComment
 
 	EndSafetyFlags
@@ -570,7 +568,6 @@ func (_this SafetyFlags) String() string {
 var safetyNames = map[interface{}]string{
 	SafetyNone:     "SafetyNone",
 	SafetyString:   "SafetyString",
-	SafetyArray:    "SafetyArray",
 	SafetyComment:  "SafetyComment",
 	EndSafetyFlags: "EndSafetyFlags",
 	SafetyAll:      "SafetyAll",

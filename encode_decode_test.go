@@ -165,7 +165,7 @@ func TestEncodeDecodeAllValidEdgeSources(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE()},
-			[]*test.TEvent{RID("x"), I(1)},
+			[]*test.TEvent{RID("x"), I(1), E()},
 			[]*test.TEvent{ED()},
 			test.RemoveEvents(test.ValidEdgeSources, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
@@ -175,7 +175,7 @@ func TestEncodeDecodeAllValidEdgeDescriptions(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE(), RID("x")},
-			[]*test.TEvent{I(1)},
+			[]*test.TEvent{I(1), E()},
 			[]*test.TEvent{ED()},
 			test.RemoveEvents(test.ValidEdgeDescriptions, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }
@@ -185,7 +185,7 @@ func TestEncodeDecodeAllValidEdgeDestinations(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE(), RID("x"), RID("y")},
-			[]*test.TEvent{},
+			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
 			test.RemoveEvents(test.ValidEdgeDestinations, append(test.ArrayBeginTypes, test.EvCTB, test.EvCUT)...)))
 }

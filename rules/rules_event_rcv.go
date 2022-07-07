@@ -107,43 +107,43 @@ func (_this *RulesEventReceiver) OnComment(isMultiline bool, contents []byte) {
 }
 
 func (_this *RulesEventReceiver) OnNull() {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnNull(&_this.context)
 	_this.receiver.OnNull()
 }
 
 func (_this *RulesEventReceiver) OnBool(value bool) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
 	_this.receiver.OnBool(value)
 }
 
 func (_this *RulesEventReceiver) OnTrue() {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
 	_this.receiver.OnTrue()
 }
 
 func (_this *RulesEventReceiver) OnFalse() {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
 	_this.receiver.OnFalse()
 }
 
 func (_this *RulesEventReceiver) OnPositiveInt(value uint64) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnPositiveInt(value)
 }
 
 func (_this *RulesEventReceiver) OnNegativeInt(value uint64) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnNegativeInt(value)
 }
 
 func (_this *RulesEventReceiver) OnInt(value int64) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnInt(value)
 }
@@ -154,7 +154,7 @@ func (_this *RulesEventReceiver) OnBigInt(value *big.Int) {
 		return
 	}
 
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeInt)
 	_this.receiver.OnBigInt(value)
 }
@@ -165,7 +165,7 @@ func (_this *RulesEventReceiver) OnFloat(value float64) {
 		return
 	}
 
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnFloat(value)
 }
@@ -176,7 +176,7 @@ func (_this *RulesEventReceiver) OnBigFloat(value *big.Float) {
 		return
 	}
 
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnBigFloat(value)
 }
@@ -187,7 +187,7 @@ func (_this *RulesEventReceiver) OnDecimalFloat(value compact_float.DFloat) {
 		return
 	}
 
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnDecimalFloat(value)
 }
@@ -206,49 +206,49 @@ func (_this *RulesEventReceiver) OnBigDecimalFloat(value *apd.Decimal) {
 		return
 	}
 
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeFloat)
 	_this.receiver.OnBigDecimalFloat(value)
 }
 
 func (_this *RulesEventReceiver) OnNan(signaling bool) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnNonKeyableObject(&_this.context, DataTypeNan)
 	_this.receiver.OnNan(signaling)
 }
 
 func (_this *RulesEventReceiver) OnUID(value []byte) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeUID)
 	_this.receiver.OnUID(value)
 }
 
 func (_this *RulesEventReceiver) OnTime(value time.Time) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeTime)
 	_this.receiver.OnTime(value)
 }
 
 func (_this *RulesEventReceiver) OnCompactTime(value compact_time.Time) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeTime)
 	_this.receiver.OnCompactTime(value)
 }
 
 func (_this *RulesEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnArray(&_this.context, arrayType, elementCount, value)
 	_this.receiver.OnArray(arrayType, elementCount, value)
 }
 
 func (_this *RulesEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnStringlikeArray(&_this.context, arrayType, value)
 	_this.receiver.OnStringlikeArray(arrayType, value)
 }
 
 func (_this *RulesEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnArrayBegin(&_this.context, arrayType)
 	_this.receiver.OnArrayBegin(arrayType)
 }
@@ -264,13 +264,13 @@ func (_this *RulesEventReceiver) OnArrayData(data []byte) {
 }
 
 func (_this *RulesEventReceiver) OnList() {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnList(&_this.context)
 	_this.receiver.OnList()
 }
 
 func (_this *RulesEventReceiver) OnMap() {
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnMap(&_this.context)
 	_this.receiver.OnMap()
 }
@@ -280,25 +280,42 @@ func (_this *RulesEventReceiver) OnEnd() {
 	_this.receiver.OnEnd()
 }
 
+func (_this *RulesEventReceiver) OnStructTemplate(identifier []byte) {
+	_this.context.NotifyNewObject(false)
+	_this.context.ValidateIdentifier(identifier)
+	_this.context.CurrentEntry.Rule.OnStructTemplate(&_this.context, identifier)
+	_this.receiver.OnStructTemplate(identifier)
+}
+
+func (_this *RulesEventReceiver) OnStructInstance(identifier []byte) {
+	_this.context.NotifyNewObject(true)
+	_this.context.ValidateIdentifier(identifier)
+	_this.context.CurrentEntry.Rule.OnStructInstance(&_this.context, identifier)
+	_this.receiver.OnStructInstance(identifier)
+}
+
 func (_this *RulesEventReceiver) OnNode() {
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnNode(&_this.context)
 	_this.receiver.OnNode()
 }
 
 func (_this *RulesEventReceiver) OnEdge() {
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnEdge(&_this.context)
 	_this.receiver.OnEdge()
 }
 
 func (_this *RulesEventReceiver) OnMarker(identifier []byte) {
 	_this.context.ValidateIdentifier(identifier)
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnMarker(&_this.context, identifier)
 	_this.receiver.OnMarker(identifier)
 }
 
 func (_this *RulesEventReceiver) OnReference(identifier []byte) {
 	_this.context.ValidateIdentifier(identifier)
-	_this.context.NotifyNewObject()
+	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnReference(&_this.context, identifier)
 	_this.receiver.OnReference(identifier)
 }

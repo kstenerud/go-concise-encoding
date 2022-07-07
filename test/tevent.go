@@ -107,6 +107,8 @@ const (
 	TEventArrayData
 	TEventList
 	TEventMap
+	TEventStructTemplate
+	TEventStructInstance
 	TEventEnd
 	TEventNode
 	TEventEdge
@@ -177,6 +179,8 @@ var TEventNames = []string{
 	TEventArrayChunk:        "AC",
 	TEventArrayData:         "AD",
 	TEventList:              "L",
+	TEventStructTemplate:    "ST",
+	TEventStructInstance:    "SI",
 	TEventMap:               "M",
 	TEventNode:              "NODE",
 	TEventEdge:              "EDGE",
@@ -713,6 +717,10 @@ func (_this *TEvent) Invoke(receiver events.DataEventReceiver) {
 		receiver.OnList()
 	case TEventMap:
 		receiver.OnMap()
+	case TEventStructTemplate:
+		receiver.OnStructTemplate([]byte(_this.V1.(string)))
+	case TEventStructInstance:
+		receiver.OnStructInstance([]byte(_this.V1.(string)))
 	case TEventEnd:
 		receiver.OnEnd()
 	case TEventNode:

@@ -32,7 +32,6 @@ import (
 const path = "builder"
 
 var imports = []string{
-	"fmt",
 	"math/big",
 	"reflect",
 	"time",
@@ -205,6 +204,17 @@ var builders = []Builder{
 			Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
+		Name: "structTemplate",
+		Methods: []string{Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Time, CTime, End},
+	},
+	{
+		Name: "structInstance",
+		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
+			BigDFloat, UID, Array, SArray, Media, Time, CTime, List, Map,
+			Node, Edge, End, Ref, NotifyFinished},
+	},
+	{
 		Name: "markerObject",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Media, Time, CTime, Map,
@@ -369,12 +379,14 @@ func generateBadEventMethod(builder Builder, methodSignature string, writer io.W
 	openMethod(builder, methodSignature, writer)
 
 	if hasDstValue(methodSignature) {
-		format := "\tpanic(fmt.Errorf(\"BUG: %%v (building type %%v) cannot respond to %s\", reflect.TypeOf(_this), dst.Type()))\n"
+		format := "\treturn PanicBadEventBuildingValue(_this, dst, \"%v\")\n"
+		// format := "\tpanic(fmt.Errorf(\"BUG: %%v (building type %%v) cannot respond to %s\", reflect.TypeOf(_this), dst.Type()))\n"
 		if _, err := writer.Write([]byte(fmt.Sprintf(format, methodName))); err != nil {
 			panic(err)
 		}
 	} else {
-		format := "\tpanic(fmt.Errorf(\"BUG: %%v cannot respond to %s\", reflect.TypeOf(_this)))\n"
+		format := "\tPanicBadEvent(_this, \"%v\")\n"
+		// format := "\tpanic(fmt.Errorf(\"BUG: %%v cannot respond to %s\", reflect.TypeOf(_this)))\n"
 		if _, err := writer.Write([]byte(fmt.Sprintf(format, methodName))); err != nil {
 			panic(err)
 		}

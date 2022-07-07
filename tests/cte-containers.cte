@@ -125,6 +125,48 @@ c0
         // ====================================================================
 
         {
+            "name" = "Struct"
+            "encodeDecode" = [
+                {
+                    "events"=["v 0" "st a" "e" "si a" "e"]
+                    "document"="\.^
+c0
+@a<>
+@a()^"
+                }
+                {
+                    "events"=["v 0" "st a" "n 1" "e" "si a" "s x" "e"]
+                    "document"="\.^
+c0
+@a<
+    1
+>
+@a(
+    "x"
+)^"
+                }
+            ]
+            "decodeFail" = [
+                "c0 @"         // Incomplete
+                "c0 @x"        // Incomplete
+                "c0 @x<"       // Incomplete
+                "c0 @x<> @"    // Incomplete
+                "c0 @x<> @x"   // Incomplete
+                "c0 @x<> @x("  // Incomplete
+                "c0 @x<)"      // Wrong terminator
+                "c0 @x<}"      // Wrong terminator
+                "c0 @x<]"      // Wrong terminator
+                "c0 @x<> @x(>" // Wrong terminator
+                "c0 @x<> @x(}" // Wrong terminator
+                "c0 @x<> @x(]" // Wrong terminator
+                "c0 @x<1> @x()" // Contents mismatch
+                "c0 @x<> @x(1)" // Contents mismatch
+            ]
+        }
+
+        // ====================================================================
+
+        {
             "name" = "Node"
             "encodeDecode" = [
                 {"events"=["v 0" "node" "n 1" "e"] "document"="c0\n(1\n)"}
@@ -180,13 +222,43 @@ c0
         {
             "name" = "Edge"
             "encodeDecode" = [
-                {"events"=["v 0" "edge" "n 1" "n 2" "n 3"] "document"="c0\n@(1 2 3)"}
-                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14"] "document"="c0\n@(nan \"x\" 2001-08-14)"}
+                {"events"=["v 0" "edge" "n 1" "n 2" "n 3" "e"] "document"="\.^
+c0
+@(
+    1
+    2
+    3
+)^"}
+                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14" "e"] "document"="\.^
+c0
+@(
+    nan
+    "x"
+    2001-08-14
+)^"}
             ]
             "decodeEncode" = [
-                {"document"="c0 @(1 2 3)"  "events"=["v 0" "edge" "n 1" "n 2" "n 3"]}
-                {"document"="c0 @(nan \"x\" 2001-08-14)"  "events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14"]}
-                {"document"="c0 @(@\"https://x.y\" 1.5 [1])"  "events"=["v 0" "edge" "rid https://x.y" "n 1.5" "l" "n 1" "e"]}
+                {"events"=["v 0" "edge" "n 1" "n 2" "n 3" "e"] "document"="\.^
+c0
+@(
+    1
+    2
+    3
+)^" }
+                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14" "e"] "document"="\.^
+c0
+@(
+    nan
+    "x"
+    2001-08-14
+)^"}
+                {"events"=["v 0" "edge" "rid https://x.y" "n 1.5" "l" "n 1" "e" "e"] "document"="\.^
+c0
+@(
+    @"https://x.y"
+    1.5
+    [1]
+)^"}
             ]
             "decodeFail" = [
                 "c0 @("       // Missing value

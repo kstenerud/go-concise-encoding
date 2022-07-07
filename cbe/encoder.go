@@ -423,6 +423,16 @@ func (_this *Encoder) OnMap() {
 	_this.writer.WriteType(cbeTypeMap)
 }
 
+func (_this *Encoder) OnStructTemplate(id []byte) {
+	_this.writer.WriteType(cbeTypeStructTemplate)
+	_this.writer.WriteIdentifier(id)
+}
+
+func (_this *Encoder) OnStructInstance(id []byte) {
+	_this.writer.WriteType(cbeTypeStructInstance)
+	_this.writer.WriteIdentifier(id)
+}
+
 func (_this *Encoder) OnNode() {
 	_this.writer.WriteType(cbeTypeNode)
 }

@@ -31,6 +31,10 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
+type structTemplateKey func(*Context, Builder)
+
+var unusedValue reflect.Value
+
 type Context struct {
 	opts            *options.BuilderOptions
 	dstType         reflect.Type
@@ -46,6 +50,10 @@ type Context struct {
 	chunkRemainingLength    uint64
 	moreChunksFollow        bool
 	arrayCompletionCallback func(*Context)
+
+	structTemplates    map[string][]structTemplateKey
+	structTemplate     []structTemplateKey
+	structTemplateName string
 }
 
 func (_this *Context) Init(opts *options.BuilderOptions,
@@ -66,6 +74,7 @@ func (_this *Context) Init(opts *options.BuilderOptions,
 	_this.CustomTextBuildFunction = customTextBuildFunction
 	_this.GetBuilderGeneratorForType = getBuilderGeneratorForType
 	_this.builderStack = make([]Builder, 0, 16)
+	_this.structTemplates = make(map[string][]structTemplateKey)
 
 	_this.referenceFiller.Init()
 }
@@ -102,6 +111,28 @@ func (_this *Context) UnstackBuilderAndNotifyChildFinished(container reflect.Val
 
 func (_this *Context) IgnoreNext() {
 	_this.StackBuilder(globalIgnoreBuilder)
+}
+
+func (_this *Context) BeginStructTemplate(id []byte) {
+	_this.StackBuilder(generateStructTemplateBuilder(_this))
+	_this.structTemplateName = string(id)
+	_this.structTemplate = _this.structTemplate[:0]
+}
+
+func (_this *Context) BeginStructInstance(id []byte) {
+	keys := _this.structTemplates[string(id)]
+	_this.CurrentBuilder.BuildNewMap(_this)
+	builder := _this.UnstackBuilder()
+	_this.StackBuilder(generateStructInstanceBuilder(_this, keys, builder))
+}
+
+func (_this *Context) AddStructTemplateKey(key structTemplateKey) {
+	_this.structTemplate = append(_this.structTemplate, key)
+}
+
+func (_this *Context) EndStructTemplate() {
+	_this.structTemplates[_this.structTemplateName] = _this.structTemplate
+	_this.UnstackBuilder()
 }
 
 func (_this *Context) NotifyMarker(id []byte, value reflect.Value) {

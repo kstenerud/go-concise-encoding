@@ -45,13 +45,13 @@ func loadTestSuite(testDescriptorFile string) *CETestSuite {
 
 	file, err := os.Open(testDescriptorFile)
 	if err != nil {
-		panic(fmt.Errorf("unexpected error opening test suite file: %v", err))
+		panic(fmt.Errorf("unexpected error opening test suite file %v: %v", testDescriptorFile, err))
 	}
 	var testSuite *CETestSuite
 
 	testSuiteIntf, err := ce.UnmarshalCTE(file, testSuite, nil)
 	if err != nil {
-		panic(fmt.Errorf("malformed unit test: Unexpected CTE decode error in test suite file: %w", err))
+		panic(fmt.Errorf("malformed unit test: Unexpected CTE decode error in test suite file %v: %w", testDescriptorFile, err))
 	}
 	testSuite = testSuiteIntf.(*CETestSuite)
 	testSuite.TestFile = testDescriptorFile

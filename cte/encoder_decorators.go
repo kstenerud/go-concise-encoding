@@ -137,6 +137,58 @@ func (_this MapValueDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent
 
 // ===========================================================================
 
+type StructTemplateDecorator struct{}
+
+var structTemplateDecorator StructTemplateDecorator
+
+func (_this StructTemplateDecorator) String() string                  { return "StructTemplateDecorator" }
+func (_this StructTemplateDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this StructTemplateDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteNewlineAndOriginAndIndent()
+}
+func (_this StructTemplateDecorator) AfterValue(ctx *EncoderContext) {}
+func (_this StructTemplateDecorator) BeforeComment(ctx *EncoderContext) {
+	ctx.WriteNewlineAndOriginAndIndent()
+}
+func (_this StructTemplateDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this StructTemplateDecorator) EndContainer(ctx *EncoderContext) {
+	ctx.Unindent()
+	if ctx.ContainerHasObjects {
+		ctx.WriteNewlineAndOriginAndIndent()
+	}
+	ctx.Stream.WriteStructTemplateEnd()
+	ctx.Unstack()
+	ctx.WriteNewlineAndOriginAndIndent()
+}
+
+// ===========================================================================
+
+type StructInstanceDecorator struct{}
+
+var structInstanceDecorator StructInstanceDecorator
+
+func (_this StructInstanceDecorator) String() string                  { return "StructInstanceDecorator" }
+func (_this StructInstanceDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this StructInstanceDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteNewlineAndOriginAndIndent()
+}
+func (_this StructInstanceDecorator) AfterValue(ctx *EncoderContext) {}
+func (_this StructInstanceDecorator) BeforeComment(ctx *EncoderContext) {
+	ctx.WriteNewlineAndOriginAndIndent()
+}
+func (_this StructInstanceDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this StructInstanceDecorator) EndContainer(ctx *EncoderContext) {
+	ctx.Unindent()
+	if ctx.ContainerHasObjects {
+		ctx.WriteNewlineAndOriginAndIndent()
+	}
+	ctx.Stream.WriteStructInstanceEnd()
+	ctx.Unstack()
+	ctx.AfterValue()
+}
+
+// ===========================================================================
+
 // ===========================================================================
 
 type ConcatDecorator struct{}
@@ -156,70 +208,29 @@ func (_this ConcatDecorator) EndContainer(ctx *EncoderContext)  { errorBadEvent(
 
 // ===========================================================================
 
-type EdgeSourceDecorator struct{}
+type EdgeDecorator struct{}
 
-var edgeSourceDecorator EdgeSourceDecorator
+var edgeDecorator EdgeDecorator
 
-func (_this EdgeSourceDecorator) String() string                  { return "EdgeSourceDecorator" }
-func (_this EdgeSourceDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this EdgeSourceDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteIndentIfOrigin()
+func (_this EdgeDecorator) String() string                  { return "EdgeDecorator" }
+func (_this EdgeDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this EdgeDecorator) BeforeValue(ctx *EncoderContext) {
+	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this EdgeSourceDecorator) AfterValue(ctx *EncoderContext) {
-	ctx.Switch(edgeDescriptionDecorator)
+func (_this EdgeDecorator) AfterValue(ctx *EncoderContext) {}
+func (_this EdgeDecorator) BeforeComment(ctx *EncoderContext) {
+	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this EdgeSourceDecorator) BeforeComment(ctx *EncoderContext) {}
-func (_this EdgeSourceDecorator) AfterComment(ctx *EncoderContext) {
-	ctx.WriteReturnToOrigin()
-}
-func (_this EdgeSourceDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
-
-// ===========================================================================
-
-type EdgeDescriptionDecorator struct{}
-
-var edgeDescriptionDecorator EdgeDescriptionDecorator
-
-func (_this EdgeDescriptionDecorator) String() string                  { return "EdgeDescriptionDecorator" }
-func (_this EdgeDescriptionDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this EdgeDescriptionDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteIndentOrSpace()
-}
-func (_this EdgeDescriptionDecorator) AfterValue(ctx *EncoderContext) {
-	ctx.Switch(edgeDestinationDecorator)
-}
-func (_this EdgeDescriptionDecorator) BeforeComment(ctx *EncoderContext) {
-	ctx.WriteIndentOrSpace()
-}
-func (_this EdgeDescriptionDecorator) AfterComment(ctx *EncoderContext) {
-	ctx.WriteReturnToOrigin()
-}
-func (_this EdgeDescriptionDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
-
-// ===========================================================================
-
-type EdgeDestinationDecorator struct{}
-
-var edgeDestinationDecorator EdgeDestinationDecorator
-
-func (_this EdgeDestinationDecorator) String() string                  { return "EdgeDestinationDecorator" }
-func (_this EdgeDestinationDecorator) GetStringContext() stringContext { return stringContextDefault }
-func (_this EdgeDestinationDecorator) BeforeValue(ctx *EncoderContext) {
-	ctx.WriteIndentOrSpace()
-}
-func (_this EdgeDestinationDecorator) AfterValue(ctx *EncoderContext) {
+func (_this EdgeDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this EdgeDecorator) EndContainer(ctx *EncoderContext) {
 	ctx.Unindent()
+	if ctx.ContainerHasObjects {
+		ctx.WriteNewlineAndOriginAndIndent()
+	}
 	ctx.Stream.WriteEdgeEnd()
 	ctx.Unstack()
 	ctx.AfterValue()
 }
-func (_this EdgeDestinationDecorator) BeforeComment(ctx *EncoderContext) {
-	ctx.WriteIndentOrSpace()
-}
-func (_this EdgeDestinationDecorator) AfterComment(ctx *EncoderContext) {
-	ctx.WriteReturnToOrigin()
-}
-func (_this EdgeDestinationDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
 
 // ===========================================================================
 

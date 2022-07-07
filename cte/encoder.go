@@ -225,12 +225,28 @@ func (_this *EncoderEventReceiver) OnMap() {
 	_this.context.Stack(mapKeyDecorator)
 }
 
+func (_this *EncoderEventReceiver) OnStructTemplate(id []byte) {
+	_this.context.BeforeValue()
+	_this.context.BeginContainer()
+	_this.context.Stream.WriteStructTemplateBegin(id)
+	_this.context.Indent()
+	_this.context.Stack(structTemplateDecorator)
+}
+
+func (_this *EncoderEventReceiver) OnStructInstance(id []byte) {
+	_this.context.BeforeValue()
+	_this.context.BeginContainer()
+	_this.context.Stream.WriteStructInstanceBegin(id)
+	_this.context.Indent()
+	_this.context.Stack(structInstanceDecorator)
+}
+
 func (_this *EncoderEventReceiver) OnEdge() {
 	_this.context.BeforeValue()
 	_this.context.BeginContainer()
 	_this.context.Stream.WriteEdgeBegin()
 	_this.context.Indent()
-	_this.context.Stack(edgeSourceDecorator)
+	_this.context.Stack(edgeDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnNode() {

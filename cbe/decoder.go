@@ -168,6 +168,10 @@ EOF:
 			eventReceiver.OnMap()
 		case cbeTypeList:
 			eventReceiver.OnList()
+		case cbeTypeStructTemplate:
+			eventReceiver.OnStructTemplate(_this.reader.ReadIdentifier())
+		case cbeTypeStructInstance:
+			eventReceiver.OnStructInstance(_this.reader.ReadIdentifier())
 		case cbeTypeEdge:
 			eventReceiver.OnEdge()
 		case cbeTypeNode:

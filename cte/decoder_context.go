@@ -28,24 +28,35 @@ import (
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
-type ContainerType byte
+type ContainerType uint16
 
 const (
-	ContainerTypeOther ContainerType = iota
+	ContainerTypeUnset ContainerType = iota
 	ContainerTypeList
 	ContainerTypeMap
-	ContainerTypeNode
+	ContainerTypeNodeOrEdgeOrStructInstance
+	ContainerTypeStructTemplate
+	ContainerTypeEND
 )
 
-var containerTypeNames = []string{
-	ContainerTypeOther: "other",
-	ContainerTypeList:  "list",
-	ContainerTypeMap:   "map",
-	ContainerTypeNode:  "node",
-}
-
 func (_this ContainerType) String() string {
-	return containerTypeNames[_this]
+	if _this >= ContainerTypeEND {
+		panic(fmt.Errorf("BUG: ContainerType out of range: %x", uint(_this)))
+	}
+	switch _this {
+	case ContainerTypeUnset:
+		return "unset"
+	case ContainerTypeList:
+		return "list"
+	case ContainerTypeMap:
+		return "map"
+	case ContainerTypeNodeOrEdgeOrStructInstance:
+		return "node, edge, struct instance"
+	case ContainerTypeStructTemplate:
+		return "struct template"
+	default:
+		panic(fmt.Errorf("BUG: ContainerType.String(): Unknown container type %d (%x)", uint(_this), uint(_this)))
+	}
 }
 
 type DecoderStackEntry struct {
@@ -77,6 +88,26 @@ func (_this *DecoderContext) BeginArray(digitType string, arrayType events.Array
 	_this.ArrayContainsComments = false
 }
 
+func (_this *DecoderContext) BeginContainer(decoder DecoderOp, containerType ContainerType) {
+	_this.stack = append(_this.stack, DecoderStackEntry{
+		DecoderFunc:   decoder,
+		ContainerType: containerType,
+	})
+}
+
+func (_this *DecoderContext) EndContainer(allowedType ContainerType) {
+	entry := _this.topOfStack()
+	if entry.ContainerType != allowedType {
+		_this.Errorf("Container type %v cannot be closed by container for type (%v)", entry.ContainerType, allowedType)
+	}
+
+	_this.UnstackDecoder()
+}
+
+func (_this *DecoderContext) topOfStack() *DecoderStackEntry {
+	return &_this.stack[len(_this.stack)-1]
+}
+
 func (_this *DecoderContext) Init(opts *options.CEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
 	_this.opts = opts
 	_this.Stream.Init(reader)
@@ -100,7 +131,7 @@ func (_this *DecoderContext) AssertHasStructuralWS() {
 	}
 }
 
-func (_this *DecoderContext) RequireStructuralWS() {
+func (_this *DecoderContext) AwaitStructuralWS() {
 	_this.awaitingStructuralWS = true
 }
 
@@ -113,12 +144,11 @@ func (_this *DecoderContext) NotifyStructuralWS() {
 }
 
 func (_this *DecoderContext) DecodeNext() {
-	entry := _this.stack[len(_this.stack)-1]
-	entry.DecoderFunc(_this)
+	_this.topOfStack().DecoderFunc(_this)
 }
 
 func (_this *DecoderContext) ChangeDecoder(decoder DecoderOp) {
-	_this.stack[len(_this.stack)-1].DecoderFunc = decoder
+	_this.topOfStack().DecoderFunc = decoder
 }
 
 func (_this *DecoderContext) StackDecoder(decoder DecoderOp) {
@@ -127,34 +157,12 @@ func (_this *DecoderContext) StackDecoder(decoder DecoderOp) {
 	})
 }
 
-func (_this *DecoderContext) UnstackDecoder() DecoderStackEntry {
+func (_this *DecoderContext) UnstackDecoder() {
 	_this.stack = _this.stack[:len(_this.stack)-1]
-	return _this.stack[len(_this.stack)-1]
 }
 
 func (_this *DecoderContext) SetContainerType(containerType ContainerType) {
-	_this.stack[len(_this.stack)-1].ContainerType = containerType
-}
-
-func (_this *DecoderContext) AssertIsInMap() {
-	containerType := _this.stack[len(_this.stack)-1].ContainerType
-	if containerType != ContainerTypeMap {
-		panic(fmt.Errorf("cannot end a map using %v end", containerType))
-	}
-}
-
-func (_this *DecoderContext) AssertIsInList() {
-	containerType := _this.stack[len(_this.stack)-1].ContainerType
-	if containerType != ContainerTypeList {
-		panic(fmt.Errorf("cannot end a list using %v end", containerType))
-	}
-}
-
-func (_this *DecoderContext) AssertIsInNode() {
-	containerType := _this.stack[len(_this.stack)-1].ContainerType
-	if containerType != ContainerTypeNode {
-		panic(fmt.Errorf("cannot end a node using %v end", containerType))
-	}
+	_this.topOfStack().ContainerType = containerType
 }
 
 func (_this *DecoderContext) Errorf(format string, args ...interface{}) {

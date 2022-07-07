@@ -33,19 +33,19 @@ func advanceAndDecodeQuotedString(ctx *DecoderContext) {
 
 	bytes := ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeString, uint64(len(bytes)), bytes)
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeResourceID(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(bytes)), bytes)
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeRemoteReference(ctx *DecoderContext) {
 	bytes := ctx.Stream.ReadQuotedString()
 	ctx.EventReceiver.OnArray(events.ArrayTypeRemoteRef, uint64(len(bytes)), bytes)
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeArrayType(ctx *DecoderContext) []byte {
@@ -174,7 +174,7 @@ func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown array type", arrayType)
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeMedia(ctx *DecoderContext) {

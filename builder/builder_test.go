@@ -833,6 +833,58 @@ func TestBuilderMap(t *testing.T) {
 		E())
 }
 
+func TestBuilderCEStruct(t *testing.T) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err)
+	}
+	gtime := time.Date(2000, time.Month(1), 1, 1, 1, 1, 1, loc)
+	ctime := test.AsCompactTime(gtime)
+
+	assertBuild(t, map[int]interface{}{
+		1:  nil,
+		2:  true,
+		3:  1,
+		4:  -1,
+		5:  1.1,
+		6:  NewBigFloat("1.1"),
+		7:  NewDFloat("1.1"),
+		8:  NewBDF("1.1"),
+		9:  NewBigInt("100000000000000000000"),
+		10: "test",
+		11: NewRID("http://example.com"),
+		12: []byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		13: gtime,
+		14: ctime,
+		15: []float64{1},
+		16: map[int]int{1: 2},
+		17: []byte{1},
+	},
+		ST("some_template"),
+		I(1), I(2), I(3), I(4), I(5), I(6), I(7), I(8), I(9),
+		I(10), I(11), I(12), I(13), I(14), I(15), I(16), I(17),
+		E(),
+		SI("some_template"),
+		NULL(),
+		B(true),
+		PI(1),
+		NI(1),
+		F(1.1),
+		BF(NewBigFloat("1.1")),
+		DF(NewDFloat("1.1")),
+		BDF(NewBDF("1.1")),
+		BI(NewBigInt("100000000000000000000")),
+		S("test"),
+		RID("http://example.com"),
+		UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
+		GT(gtime),
+		CT(ctime),
+		L(), F(1), E(),
+		M(), I(1), I(2), E(),
+		AU8([]byte{1}),
+		E())
+}
+
 func TestBuilderStruct(t *testing.T) {
 	s := NewTestingOuterStruct(1)
 	includeFakes := true

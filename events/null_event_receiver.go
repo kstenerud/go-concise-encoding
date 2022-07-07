@@ -62,6 +62,8 @@ func (_this *NullEventReceiver) OnArrayChunk(uint64, bool)           {}
 func (_this *NullEventReceiver) OnArrayData([]byte)                  {}
 func (_this *NullEventReceiver) OnList()                             {}
 func (_this *NullEventReceiver) OnMap()                              {}
+func (_this *NullEventReceiver) OnStructTemplate([]byte)             {}
+func (_this *NullEventReceiver) OnStructInstance([]byte)             {}
 func (_this *NullEventReceiver) OnEdge()                             {}
 func (_this *NullEventReceiver) OnNode()                             {}
 func (_this *NullEventReceiver) OnEnd()                              {}

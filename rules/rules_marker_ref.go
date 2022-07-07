@@ -23,15 +23,12 @@
 package rules
 
 import (
-	"fmt"
-
 	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 type MarkedObjectKeyableRule struct{}
 
-func (_this *MarkedObjectKeyableRule) String() string         { return "Marked Keyable Object Rule" }
-func (_this *MarkedObjectKeyableRule) OnPadding(ctx *Context) { /* Nothing to do */ }
+func (_this *MarkedObjectKeyableRule) String() string { return "Marked Keyable Object Rule" }
 func (_this *MarkedObjectKeyableRule) OnKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
@@ -61,8 +58,7 @@ func (_this *MarkedObjectKeyableRule) OnChildContainerEnded(ctx *Context, dataTy
 
 type MarkedObjectAnyTypeRule struct{}
 
-func (_this *MarkedObjectAnyTypeRule) String() string         { return "Marked Object Rule" }
-func (_this *MarkedObjectAnyTypeRule) OnPadding(ctx *Context) { /* Nothing to do */ }
+func (_this *MarkedObjectAnyTypeRule) String() string { return "Marked Object Rule" }
 func (_this *MarkedObjectAnyTypeRule) OnNull(ctx *Context) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnNull(ctx)
@@ -83,6 +79,9 @@ func (_this *MarkedObjectAnyTypeRule) OnList(ctx *Context) {
 }
 func (_this *MarkedObjectAnyTypeRule) OnMap(ctx *Context) {
 	ctx.ParentRule().OnMap(ctx)
+}
+func (_this *MarkedObjectAnyTypeRule) OnStructInstance(ctx *Context, identifier []byte) {
+	ctx.ParentRule().OnStructInstance(ctx, identifier)
 }
 func (_this *MarkedObjectAnyTypeRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *MarkedObjectAnyTypeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
@@ -116,35 +115,6 @@ func (_this *MarkedObjectAnyTypeRule) OnArrayBegin(ctx *Context, arrayType event
 }
 func (_this *MarkedObjectAnyTypeRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 	ctx.MarkObject(cType)
-	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, cType)
-}
-
-// =============================================================================
-
-type RemoteReferenceRule struct{}
-
-func (_this *RemoteReferenceRule) String() string         { return "Remote Reference Rule" }
-func (_this *RemoteReferenceRule) OnPadding(ctx *Context) { /* Nothing to do */ }
-func (_this *RemoteReferenceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	dataType := arrayTypeToDataType[arrayType]
-	switch arrayType {
-	case events.ArrayTypeResourceID:
-		ctx.ValidateResourceID(data)
-		ctx.UnstackRule()
-		ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, dataType)
-	default:
-		panic(fmt.Errorf("remote reference cannot be type %v", arrayType))
-	}
-}
-func (_this *RemoteReferenceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayRemoteReference(arrayType)
-}
-func (_this *RemoteReferenceRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	// TODO: Make this properly
-	_this.OnArray(ctx, arrayType, uint64(len(data)), []byte(data))
-}
-func (_this *RemoteReferenceRule) OnChildContainerEnded(ctx *Context, cType DataType) {
 	ctx.UnstackRule()
 	ctx.CurrentEntry.Rule.OnChildContainerEnded(ctx, cType)
 }

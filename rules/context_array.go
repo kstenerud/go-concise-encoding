@@ -36,7 +36,7 @@ func (_this *Context) beginArray(arrayType events.ArrayType, rule EventRule, dat
 	_this.builtArrayBuffer = _this.builtArrayBuffer[:0]
 	_this.utf8RemainderBuffer = _this.utf8RemainderBacking[:0]
 
-	_this.stackRule(rule, dataType)
+	_this.stackRule(rule, dataType, noObjectCount)
 	_this.arrayType = arrayType
 	_this.arrayMaxByteCount = maxByteCount
 	_this.ValidateArrayDataFunc = validatorFunc
@@ -49,7 +49,7 @@ func (_this *Context) tryEndArray(moreChunksFollow bool, validator func(data []b
 	if validator != nil {
 		validator(_this.builtArrayBuffer)
 	}
-	_this.endContainerLike()
+	_this.endContainerLike(true)
 	return true
 }
 

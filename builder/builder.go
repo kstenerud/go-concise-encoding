@@ -93,6 +93,10 @@ func PanicBadEvent(builder Builder, eventFmt string, args ...interface{}) {
 	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), fmt.Sprintf(eventFmt, args...)))
 }
 
+func PanicBadEventBuildingValue(builder Builder, v reflect.Value, eventFmt string, args ...interface{}) reflect.Value {
+	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to %v", reflect.TypeOf(builder), v.Type(), fmt.Sprintf(eventFmt, args...)))
+}
+
 // Report that a builder couldn't convert between types. This can happen if
 // source values are out of range, or incompatible with the destination type.
 func PanicCannotConvert(value interface{}, dstType reflect.Type) {

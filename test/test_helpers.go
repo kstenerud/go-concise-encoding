@@ -366,6 +366,8 @@ var (
 	EvCT      = T(NewDate(2020, 1, 1))
 	EvL       = L()
 	EvM       = M()
+	EvST      = ST("a")
+	EvSI      = SI("a")
 	EvNODE    = NODE()
 	EvEDGE    = EDGE()
 	EvE       = E()
@@ -414,7 +416,8 @@ var (
 var allEvents = []*TEvent{
 	EvBD, EvED, EvV, EvPAD, EvCOM, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
 	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
-	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvNODE, EvEDGE, EvE,
+	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvST, /*EvSI, TODO: Some way to handle this */
+	EvNODE, EvEDGE, EvE,
 	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
 	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
 	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
@@ -537,6 +540,12 @@ var (
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
 	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
 
+	ValidStructTemplateValues   = ComplementaryEvents(InvalidStructTemplateValues)
+	InvalidStructTemplateValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvMARK, EvREF}
+
+	ValidStructInstanceValues   = ComplementaryEvents(InvalidStructInstanceValues)
+	InvalidStructInstanceValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+
 	ValidAfterNonStringArrayBegin   = []*TEvent{EvAC, EvCOM}
 	InvalidAfterNonStringArrayBegin = ComplementaryEvents(ValidAfterNonStringArrayBegin)
 
@@ -547,7 +556,7 @@ var (
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMARK, EvREF, EvRREF}
+	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMARK, EvREF, EvRREF, EvST}
 
 	Padding                     = []*TEvent{EvPAD}
 	CommentsPaddingRefEnd       = []*TEvent{EvPAD, EvCOM, EvREF, EvE}
@@ -593,8 +602,10 @@ func copyEvents(events []*TEvent) []*TEvent {
 var basicCompletions = map[TEventType][]*TEvent{
 	TEventList:              {E()},
 	TEventMap:               {E()},
+	TEventStructTemplate:    {E(), I(1)},
+	TEventStructInstance:    {E()},
 	TEventNode:              {I(1), E()},
-	TEventEdge:              {RID("a"), RID("b"), I(1)},
+	TEventEdge:              {RID("a"), RID("b"), I(1), E()},
 	TEventStringBegin:       {AC(1, false), AD([]byte{'a'})},
 	TEventResourceIDBegin:   {AC(1, false), AD([]byte{'a'})},
 	TEventRemoteRefBegin:    {AC(1, false), AD([]byte{'a'})},
@@ -791,6 +802,8 @@ func AC(l uint64, more bool) *TEvent    { return NewTEvent(TEventArrayChunk, l, 
 func AD(v []byte) *TEvent               { return NewTEvent(TEventArrayData, v, nil) }
 func L() *TEvent                        { return NewTEvent(TEventList, nil, nil) }
 func M() *TEvent                        { return NewTEvent(TEventMap, nil, nil) }
+func ST(id string) *TEvent              { return NewTEvent(TEventStructTemplate, id, nil) }
+func SI(id string) *TEvent              { return NewTEvent(TEventStructInstance, id, nil) }
 func NODE() *TEvent                     { return NewTEvent(TEventNode, nil, nil) }
 func EDGE() *TEvent                     { return NewTEvent(TEventEdge, nil, nil) }
 func E() *TEvent                        { return NewTEvent(TEventEnd, nil, nil) }

@@ -31,9 +31,13 @@ import (
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
+const noObjectCount = -1
+
 type contextStackEntry struct {
-	Rule     EventRule
-	DataType DataType
+	Rule                EventRule
+	DataType            DataType
+	CurrentObjectCount  int
+	ExpectedObjectCount int // -1 means ignored
 }
 
 type Context struct {
@@ -41,6 +45,9 @@ type Context struct {
 	ExpectedVersion uint64
 
 	objectCount uint64
+
+	structTemplates    map[string]int
+	structTemplateName string
 
 	// Stack
 	CurrentEntry   contextStackEntry
@@ -78,92 +85,132 @@ func (_this *Context) Reset() {
 	_this.containerDepth = 0
 	_this.referenceCount = 0
 	_this.stack = _this.stack[:0]
+	_this.structTemplates = make(map[string]int)
 	if _this.markedObjects == nil || len(_this.markedObjects) > 0 {
 		_this.markedObjects = make(map[interface{}]DataType)
 	}
 	if _this.forwardReferences == nil || len(_this.forwardReferences) > 0 {
 		_this.forwardReferences = make(map[interface{}]DataType)
 	}
-	_this.stackRule(&beginDocumentRule, DataTypeInvalid)
+	_this.CurrentEntry = contextStackEntry{
+		Rule:                &beginDocumentRule,
+		DataType:            DataTypeInvalid,
+		ExpectedObjectCount: noObjectCount,
+		CurrentObjectCount:  0,
+	}
 }
 
 func (_this *Context) ChangeRule(rule EventRule) {
 	_this.CurrentEntry.Rule = rule
-	_this.stack[len(_this.stack)-1] = _this.CurrentEntry
 }
 
-func (_this *Context) stackRule(rule EventRule, dataType DataType) {
-	_this.CurrentEntry = contextStackEntry{
-		Rule:     rule,
-		DataType: dataType,
-	}
+/**
+ * Use expectedObjectCount == -1 to ignore it.
+ */
+func (_this *Context) stackRule(rule EventRule, dataType DataType, expectedObjectCount int) {
 	_this.stack = append(_this.stack, _this.CurrentEntry)
+	_this.CurrentEntry = contextStackEntry{
+		Rule:                rule,
+		DataType:            dataType,
+		ExpectedObjectCount: expectedObjectCount,
+		CurrentObjectCount:  0,
+	}
 }
 
 func (_this *Context) UnstackRule() EventRule {
 	unstackedRule := _this.CurrentEntry.Rule
-	_this.stack = _this.stack[:len(_this.stack)-1]
 	_this.CurrentEntry = _this.stack[len(_this.stack)-1]
+	_this.stack = _this.stack[:len(_this.stack)-1]
 	return unstackedRule
 }
 
 func (_this *Context) ParentRule() EventRule {
-	return _this.stack[len(_this.stack)-2].Rule
+	return _this.stack[len(_this.stack)-1].Rule
 }
 
-func (_this *Context) NotifyNewObject() {
+func (_this *Context) NotifyNewObject(isRealObject bool) {
+	if isRealObject {
+		_this.CurrentEntry.CurrentObjectCount++
+		if _this.CurrentEntry.ExpectedObjectCount >= 0 && _this.CurrentEntry.CurrentObjectCount > _this.CurrentEntry.ExpectedObjectCount {
+			panic(fmt.Errorf("container exceeds expected object count of %d", _this.CurrentEntry.ExpectedObjectCount))
+		}
+	}
 	_this.objectCount++
 	if _this.objectCount > _this.opts.MaxObjectCount {
 		panic(fmt.Errorf("exceeded max object count of %d", _this.opts.MaxObjectCount))
 	}
 }
 
-func (_this *Context) beginContainer(rule EventRule, dataType DataType) {
+/**
+ * Use expectedObjectCount == -1 to ignore it.
+ */
+func (_this *Context) beginContainer(rule EventRule, dataType DataType, expectedObjectCount int) {
 	_this.containerDepth++
 	if _this.containerDepth > _this.opts.MaxContainerDepth {
 		panic(fmt.Errorf("exceeded max container depth of %d", _this.opts.MaxContainerDepth))
 	}
-	_this.stackRule(rule, dataType)
+	_this.stackRule(rule, dataType, expectedObjectCount)
 }
 
-func (_this *Context) endContainerLike() {
+func (_this *Context) endContainerLike(notifyParent bool) {
 	cType := _this.CurrentEntry.DataType
 	_this.UnstackRule()
-	_this.CurrentEntry.Rule.OnChildContainerEnded(_this, cType)
+	if notifyParent {
+		_this.CurrentEntry.Rule.OnChildContainerEnded(_this, cType)
+	}
 }
 
-func (_this *Context) EndContainer() {
+func (_this *Context) EndContainer(notifyParent bool) {
 	if _this.containerDepth == 0 {
 		panic("BUG: Too many end container calls")
 	}
+	if _this.CurrentEntry.ExpectedObjectCount >= 0 && _this.CurrentEntry.CurrentObjectCount != _this.CurrentEntry.ExpectedObjectCount {
+		panic(fmt.Errorf("container has %v objects but expected object count of %d", _this.CurrentEntry.CurrentObjectCount, _this.CurrentEntry.ExpectedObjectCount))
+	}
+	if _this.CurrentEntry.DataType == DataTypeStructTemplate {
+		_this.structTemplates[_this.structTemplateName] = _this.CurrentEntry.CurrentObjectCount
+	}
 	_this.containerDepth--
-	_this.endContainerLike()
+	_this.endContainerLike(notifyParent)
 }
 
 func (_this *Context) BeginList() {
-	_this.beginContainer(&listRule, DataTypeList)
+	_this.beginContainer(&listRule, DataTypeList, noObjectCount)
 }
 
 func (_this *Context) BeginMap() {
-	_this.beginContainer(&mapKeyRule, DataTypeMap)
+	_this.beginContainer(&mapKeyRule, DataTypeMap, noObjectCount)
+}
+
+func (_this *Context) BeginStructTemplate(id []byte) {
+	_this.beginContainer(&structTemplateRule, DataTypeStructTemplate, noObjectCount)
+	_this.structTemplateName = string(id)
+}
+
+func (_this *Context) BeginStructInstance(id []byte) {
+	expectedObjectCount, ok := _this.structTemplates[string(id)]
+	if !ok {
+		panic(fmt.Errorf("%v: no such struct template has been defined", string(id)))
+	}
+	_this.beginContainer(&structInstanceRule, DataTypeStructInstance, expectedObjectCount)
 }
 
 func (_this *Context) BeginEdge() {
-	_this.beginContainer(&edgeSourceRule, DataTypeEdge)
+	_this.beginContainer(&edgeSourceRule, DataTypeEdge, 3)
 }
 
 func (_this *Context) BeginNode() {
-	_this.beginContainer(&nodeRule, DataTypeList)
+	_this.beginContainer(&nodeRule, DataTypeList, noObjectCount)
 }
 
 func (_this *Context) BeginMarkerKeyable(id []byte, dataType DataType) {
 	_this.markerID = string(id)
-	_this.stackRule(&markedObjectKeyableRule, dataType)
+	_this.stackRule(&markedObjectKeyableRule, dataType, noObjectCount)
 }
 
 func (_this *Context) BeginMarkerAnyType(id []byte, dataType DataType) {
 	_this.markerID = string(id)
-	_this.stackRule(&markedObjectAnyTypeRule, dataType)
+	_this.stackRule(&markedObjectAnyTypeRule, dataType, noObjectCount)
 }
 
 func (_this *Context) ReferenceKeyable(identifier []byte) {

@@ -182,6 +182,10 @@ type DataEventReceiver interface {
 
 	OnMap()
 
+	OnStructTemplate(identifier []byte)
+
+	OnStructInstance(identifier []byte)
+
 	OnEdge()
 
 	OnNode()

@@ -571,10 +571,10 @@ func TestRulesMultichunk(t *testing.T) {
 
 func TestRulesEdge(t *testing.T) {
 	rules := newRulesAfterVersion(nil)
-	assertEventsSucceed(t, rules, EDGE(), RID("x"), RID("y"), I(1))
+	assertEventsSucceed(t, rules, EDGE(), RID("x"), RID("y"), I(1), E())
 
 	rules = newRulesAfterVersion(nil)
-	assertEventsSucceed(t, rules, EDGE(), RID("a"), RID("b"), I(1), ED())
+	assertEventsSucceed(t, rules, EDGE(), RID("a"), RID("b"), I(1), E(), ED())
 }
 
 // =============
@@ -801,7 +801,7 @@ func TestRulesAllowedTypesEdgeSource(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE()},
-			[]*test.TEvent{RID("a"), I(1)},
+			[]*test.TEvent{RID("a"), I(1), E()},
 			[]*test.TEvent{ED()},
 			test.ValidEdgeSources))
 
@@ -809,7 +809,7 @@ func TestRulesAllowedTypesEdgeSource(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE()},
-			[]*test.TEvent{RID("a"), I(1)},
+			[]*test.TEvent{RID("a"), I(1), E()},
 			[]*test.TEvent{ED()},
 			test.InvalidEdgeSources))
 }
@@ -819,7 +819,7 @@ func TestRulesAllowedTypesEdgeDescription(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE(), RID("a")},
-			[]*test.TEvent{I(1)},
+			[]*test.TEvent{I(1), E()},
 			[]*test.TEvent{ED()},
 			test.ValidEdgeDescriptions))
 
@@ -827,7 +827,7 @@ func TestRulesAllowedTypesEdgeDescription(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE(), RID("a")},
-			[]*test.TEvent{I(1)},
+			[]*test.TEvent{I(1), E()},
 			[]*test.TEvent{ED()},
 			test.InvalidEdgeDescriptions))
 }
@@ -837,7 +837,7 @@ func TestRulesAllowedTypesEdgeDestination(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE(), RID("a"), RID("b")},
-			[]*test.TEvent{},
+			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
 			test.ValidEdgeDestinations))
 
@@ -845,7 +845,7 @@ func TestRulesAllowedTypesEdgeDestination(t *testing.T) {
 		test.GenerateAllVariants(
 			[]*test.TEvent{BD(), V(ceVer)},
 			[]*test.TEvent{EDGE(), RID("a"), RID("b")},
-			[]*test.TEvent{},
+			[]*test.TEvent{E()},
 			[]*test.TEvent{ED()},
 			test.InvalidEdgeDescriptions))
 }
@@ -872,11 +872,11 @@ func TestComment(t *testing.T) {
 	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), COM(true, "a"), E(), ED())
 	assertEvents(t, BD(), V(ceVer), NODE(), COM(true, "a"), S("x"), COM(true, "a"), S("x"), S("x"), COM(true, "a"), E(), ED())
 
-	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), S("x"), S("x"), ED())
-	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), COM(true, "a"), S("x"), S("x"), S("x"), ED())
-	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), COM(true, "a"), S("x"), S("x"), ED())
-	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), S("x"), COM(true, "a"), S("x"), ED())
-	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), COM(true, "a"), COM(true, "a"), S("x"), COM(true, "a"), COM(true, "a"), S("x"), COM(true, "a"), COM(true, "a"), S("x"), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), S("x"), S("x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), COM(true, "a"), S("x"), S("x"), S("x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), COM(true, "a"), S("x"), S("x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), S("x"), S("x"), COM(true, "a"), S("x"), E(), ED())
+	assertEvents(t, BD(), V(ceVer), EDGE(), COM(true, "a"), COM(true, "a"), COM(true, "a"), S("x"), COM(true, "a"), COM(true, "a"), S("x"), COM(true, "a"), COM(true, "a"), S("x"), E(), ED())
 
 	// assertEvents(t, BD(), V(ceVer), AI8B(), AC(1, true), AD([]byte{1}), COM(true, "a"), AC(1, false), AD([]byte{1}), ED())
 }
@@ -884,11 +884,11 @@ func TestComment(t *testing.T) {
 func TestEdgeMaxDepth(t *testing.T) {
 	assertEvents(t, BD(), V(ceVer),
 		L(), MARK("a"), PI(1), MARK("b"), PI(2), MARK("c"), PI(3), MARK("d"), PI(4),
-		EDGE(), REF("a"), PI(1), REF("b"),
-		EDGE(), REF("a"), PI(1), REF("c"),
-		EDGE(), REF("b"), PI(1), REF("c"),
-		EDGE(), REF("b"), PI(1), REF("d"),
-		EDGE(), REF("c"), M(), E(), REF("d"),
+		EDGE(), REF("a"), PI(1), REF("b"), E(),
+		EDGE(), REF("a"), PI(1), REF("c"), E(),
+		EDGE(), REF("b"), PI(1), REF("c"), E(),
+		EDGE(), REF("b"), PI(1), REF("d"), E(),
+		EDGE(), REF("c"), M(), E(), REF("d"), E(),
 		E(),
 		ED())
 }

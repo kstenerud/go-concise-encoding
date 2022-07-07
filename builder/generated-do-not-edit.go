@@ -24,7 +24,6 @@
 package builder
 
 import (
-	"fmt"
 	"math/big"
 	"reflect"
 	"time"
@@ -35,2837 +34,2885 @@ import (
 )
 
 func (_this *arrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *arrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *arrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *bigDecimalFloatBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *bigDecimalFloatBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *bigDecimalFloatBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *bigDecimalFloatBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *bigDecimalFloatBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *bigDecimalFloatBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *bigDecimalFloatBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *bigDecimalFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *bigDecimalFloatBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *bigFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *bigFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *bigFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *bigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *bigFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *bigFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *bigFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *bigFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *bigFloatBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *bigFloatBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *bigFloatBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *bigFloatBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *bigFloatBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *bigFloatBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *bigFloatBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *bigFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *bigFloatBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *bigFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *bigFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *bigIntBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *bigIntBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *bigIntBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *bigIntBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *bigIntBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *bigIntBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *bigIntBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *bigIntBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *bigIntBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *bigIntBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *bigIntBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *bigIntBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *bigIntBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *bigIntBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *bigIntBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *bigIntBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *bigIntBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *bigIntBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *bigIntBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *boolBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *boolBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *boolBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *boolBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *boolBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *boolBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *boolBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *boolBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *boolBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *boolBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *boolBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *boolBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *boolBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *boolBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *boolBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *boolBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *boolBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *boolBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *boolBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *boolBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *boolBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *boolBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *boolBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *boolBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *boolBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *compactTimeBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *compactTimeBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *compactTimeBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *compactTimeBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *compactTimeBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *compactTimeBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *compactTimeBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *compactTimeBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *compactTimeBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *compactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *compactTimeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *compactTimeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *compactTimeBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *compactTimeBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *compactTimeBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *compactTimeBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *compactTimeBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *compactTimeBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *compactTimeBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *compactTimeBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *compactTimeBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *compactTimeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *compactTimeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *customBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *customBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *customBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *customBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *customBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *customBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *customBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *customBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *customBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *customBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *customBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *customBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *customBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *customBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *customBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *customBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *customBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *customBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *customBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *customBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *customBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *customBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *customBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *customBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *customBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *decimalFloatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *decimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *decimalFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *decimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *decimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *decimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *decimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *decimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *decimalFloatBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *decimalFloatBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *decimalFloatBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *decimalFloatBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *decimalFloatBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *decimalFloatBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *decimalFloatBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *decimalFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *decimalFloatBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *decimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *decimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *floatBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *floatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *floatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *floatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *floatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *floatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *floatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *floatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *floatBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *floatBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *floatBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *floatBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *floatBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *floatBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *floatBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *floatBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *floatBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *floatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *floatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *float32ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *float32ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *float32ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *float32ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *float32ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *float32ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *float32ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *float32ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *float32ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *float32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *float32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *float32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *float32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *float32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float32ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *float32ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *float32ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *float32ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *float32ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *float32ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *float32ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *float32ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *float32ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *float32ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *float32SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *float32SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *float32SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *float32SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *float32SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *float32SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *float32SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *float32SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *float32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *float32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *float32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *float32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *float32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float32SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *float32SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *float32SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *float32SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *float32SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *float32SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *float32SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *float32SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *float32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *float32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *float64ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *float64ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *float64ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *float64ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *float64ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *float64ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *float64ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *float64ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *float64ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *float64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *float64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *float64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *float64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *float64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float64ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *float64ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *float64ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *float64ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *float64ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *float64ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *float64ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *float64ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *float64ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *float64ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *float64SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *float64SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *float64SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *float64SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *float64SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *float64SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *float64SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *float64SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *float64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *float64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *float64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *float64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *float64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float64SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *float64SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *float64SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *float64SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *float64SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *float64SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *float64SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *float64SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *float64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *float64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *ignoreBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *ignoreBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *ignoreBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *ignoreBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *ignoreBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *ignoreXTimesBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *ignoreXTimesBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *ignoreXTimesBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *ignoreXTimesBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *ignoreXTimesBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *intBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *intBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *intBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *intBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *intBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *intBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *intBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *intBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *intBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *intBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *intBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *intBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *intBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *intBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *intBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *intBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *intBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *intBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *intBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int8ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *int8ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int8ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int8ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int8ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int8ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int8ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int8ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int8ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int8ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int8ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int8ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int8ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int8ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int8ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int8ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int8ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int8ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int8ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int8ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int8ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int8ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int8ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int8SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int8SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int8SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int8SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int8SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int8SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int8SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int8SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int8SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int8SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int8SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int8SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int8SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int8SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int8SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int8SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int8SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int8SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int8SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int8SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int8SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int8SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int16ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *int16ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int16ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int16ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int16ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int16ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int16ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int16ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int16ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int16ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int16ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int16ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int16ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int16ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int16ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int16ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int16ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int16ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int16ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int16ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int16ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int16ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int16ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int16SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int16SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int16SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int16SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int16SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int16SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int16SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int16SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int16SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int16SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int16SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int16SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int16SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int16SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int16SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int16SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int16SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int16SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int16SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int16SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int16SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int16SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int32ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *int32ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int32ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int32ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int32ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int32ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int32ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int32ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int32ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int32ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int32ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int32ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int32ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int32ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int32ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int32ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int32ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int32ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int32ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int32SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int32SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int32SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int32SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int32SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int32SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int32SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int32SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int32SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int32SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int32SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int32SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int32SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int32SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int32SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int32SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int64ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *int64ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int64ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int64ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int64ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int64ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int64ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int64ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int64ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int64ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int64ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int64ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int64ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int64ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int64ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int64ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int64ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int64ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int64ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *int64SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *int64SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *int64SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *int64SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *int64SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *int64SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *int64SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *int64SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *int64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *int64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *int64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *int64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *int64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int64SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *int64SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *int64SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *int64SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *int64SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *int64SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *int64SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *int64SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *int64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *int64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *interfaceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *mapBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *mapBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *mapBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
+}
+func (_this *structTemplateBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
+}
+func (_this *structTemplateBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
+}
+func (_this *structTemplateBuilder) BuildNewList(ctx *Context) {
+	PanicBadEvent(_this, "BuildNewList")
+}
+func (_this *structTemplateBuilder) BuildNewMap(ctx *Context) {
+	PanicBadEvent(_this, "BuildNewMap")
+}
+func (_this *structTemplateBuilder) BuildNewNode(ctx *Context) {
+	PanicBadEvent(_this, "BuildNewNode")
+}
+func (_this *structTemplateBuilder) BuildNewEdge(ctx *Context) {
+	PanicBadEvent(_this, "BuildNewEdge")
+}
+func (_this *structTemplateBuilder) BuildBeginListContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginListContents")
+}
+func (_this *structTemplateBuilder) BuildBeginMapContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginMapContents")
+}
+func (_this *structTemplateBuilder) BuildBeginNodeContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginNodeContents")
+}
+func (_this *structTemplateBuilder) BuildBeginEdgeContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
+}
+func (_this *structTemplateBuilder) BuildFromReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromReference")
+}
+func (_this *structTemplateBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
+}
+func (_this *structInstanceBuilder) BuildBeginListContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginListContents")
+}
+func (_this *structInstanceBuilder) BuildBeginMapContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginMapContents")
+}
+func (_this *structInstanceBuilder) BuildBeginNodeContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginNodeContents")
+}
+func (_this *structInstanceBuilder) BuildBeginEdgeContents(ctx *Context) {
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *markerObjectBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *markerObjectBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *markerObjectBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *markerObjectBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *markerObjectBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pBigDecimalFloatBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *pBigDecimalFloatBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *pBigDecimalFloatBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *pBigDecimalFloatBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *pBigDecimalFloatBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *pBigDecimalFloatBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *pBigDecimalFloatBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *pBigDecimalFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *pBigDecimalFloatBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pBigDecimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *pBigFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *pBigFloatBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *pBigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *pBigFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *pBigFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *pBigFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *pBigFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pBigFloatBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *pBigFloatBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *pBigFloatBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *pBigFloatBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *pBigFloatBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *pBigFloatBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *pBigFloatBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *pBigFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *pBigFloatBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *pBigFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pBigFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *pBigIntBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *pBigIntBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *pBigIntBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *pBigIntBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *pBigIntBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *pBigIntBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *pBigIntBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pBigIntBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *pBigIntBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *pBigIntBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *pBigIntBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *pBigIntBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *pBigIntBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *pBigIntBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *pBigIntBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *pBigIntBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *pBigIntBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pBigIntBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *pCompactTimeBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *pCompactTimeBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *pCompactTimeBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *pCompactTimeBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *pCompactTimeBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *pCompactTimeBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *pCompactTimeBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *pCompactTimeBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *pCompactTimeBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *pCompactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *pCompactTimeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *pCompactTimeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *pCompactTimeBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *pCompactTimeBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *pCompactTimeBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *pCompactTimeBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *pCompactTimeBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *pCompactTimeBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *pCompactTimeBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *pCompactTimeBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *pCompactTimeBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *pCompactTimeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pCompactTimeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *ptrBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *ptrBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *ptrBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *ptrBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *ptrBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *ptrBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pRidBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *pRidBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *pRidBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *pRidBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *pRidBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *pRidBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *pRidBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *pRidBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *pRidBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *pRidBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *pRidBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *pRidBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pRidBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *pRidBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *pRidBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *pRidBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *pRidBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *pRidBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *pRidBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *pRidBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *pRidBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *pRidBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *pRidBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *sliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *sliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *sliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *stringBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *stringBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *stringBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *stringBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *stringBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *stringBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *stringBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *stringBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *stringBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *stringBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *stringBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *stringBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *stringBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *stringBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *stringBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *stringBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *stringBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *stringBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *stringBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *stringBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *stringBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *stringBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *stringBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *structBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *structBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *structBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *timeBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *timeBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *timeBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *timeBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *timeBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *timeBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *timeBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *timeBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *timeBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *timeBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *timeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *timeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *timeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *timeBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *timeBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *timeBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *timeBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *timeBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *timeBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *timeBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *timeBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *timeBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *timeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *timeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *topLevelBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *topLevelBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *topLevelBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *topLevelBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *topLevelBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *topLevelBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uintBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *uintBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uintBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uintBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *uintBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uintBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uintBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uintBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uintBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uintBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uintBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uintBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uintBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *uintBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uintBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uintBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uintBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uintBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uintBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint8ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *uint8ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint8ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint8ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint8ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint8ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint8ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint8ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint8ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint8ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint8ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint8ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint8ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint8ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint8ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint8ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint8ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint8ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint8ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint8ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint8ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint8ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint8ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint8SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint8SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint8SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint8SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint8SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint8SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint8SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint8SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint8SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint8SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint8SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint8SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint8SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint8SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint8SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint8SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint8SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint8SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint8SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint8SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint8SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint8SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint16ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *uint16ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint16ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint16ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint16ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint16ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint16ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint16ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint16ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint16ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint16ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint16ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint16ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint16ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint16ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint16ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint16ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint16ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint16ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint16ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint16ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint16ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint16ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint16SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint16SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint16SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint16SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint16SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint16SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint16SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint16SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint16SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint16SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint16SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint16SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint16SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint16SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint16SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint16SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint16SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint16SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint16SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint16SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint16SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint16SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint32ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *uint32ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint32ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint32ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint32ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint32ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint32ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint32ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint32ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint32ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint32ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint32ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint32ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint32ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint32ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint32ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint32ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint32ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint32ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint32SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint32SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint32SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint32SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint32SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint32SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint32SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint32SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint32SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint32SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint32SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint32SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint32SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint32SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint32SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint32SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint64ArrayBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *uint64ArrayBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint64ArrayBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint64ArrayBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint64ArrayBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint64ArrayBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint64ArrayBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint64ArrayBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint64ArrayBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint64ArrayBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint64ArrayBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint64ArrayBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint64ArrayBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint64ArrayBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint64ArrayBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint64ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint64ArrayBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint64ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint64ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uint64SliceBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uint64SliceBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uint64SliceBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uint64SliceBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uint64SliceBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uint64SliceBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uint64SliceBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uint64SliceBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uint64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *uint64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uint64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uint64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uint64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint64SliceBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uint64SliceBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uint64SliceBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uint64SliceBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uint64SliceBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uint64SliceBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uint64SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uint64SliceBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uint64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uint64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *ridBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *ridBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *ridBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *ridBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *ridBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *ridBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *ridBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *ridBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *ridBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *ridBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *ridBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *ridBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *ridBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *ridBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *ridBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *ridBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *ridBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *ridBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *ridBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *ridBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *ridBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *ridBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *ridBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *ridBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *uidBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *uidBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *uidBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *uidBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *uidBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *uidBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *uidBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *uidBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *uidBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *uidBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *uidBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *uidBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromMedia", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
 func (_this *uidBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *uidBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uidBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *uidBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *uidBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *uidBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *uidBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *uidBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *uidBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *uidBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *uidBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *uidBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *uidBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *mediaBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromNull", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
 func (_this *mediaBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBool", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
 }
 func (_this *mediaBuilder) BuildFromInt(ctx *Context, value int64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromInt")
 }
 func (_this *mediaBuilder) BuildFromUint(ctx *Context, value uint64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUint", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUint")
 }
 func (_this *mediaBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigInt", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigInt")
 }
 func (_this *mediaBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromFloat")
 }
 func (_this *mediaBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigFloat")
 }
 func (_this *mediaBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromDecimalFloat")
 }
 func (_this *mediaBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromBigDecimalFloat", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromBigDecimalFloat")
 }
 func (_this *mediaBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromUID", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
 func (_this *mediaBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
 }
 func (_this *mediaBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromStringlikeArray", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
 func (_this *mediaBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
 }
 func (_this *mediaBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to BuildFromCompactTime", reflect.TypeOf(_this), dst.Type()))
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *mediaBuilder) BuildNewList(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewList", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewList")
 }
 func (_this *mediaBuilder) BuildNewMap(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewMap", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewMap")
 }
 func (_this *mediaBuilder) BuildNewNode(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewNode", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewNode")
 }
 func (_this *mediaBuilder) BuildNewEdge(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildNewEdge", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildNewEdge")
 }
 func (_this *mediaBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *mediaBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *mediaBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *mediaBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *mediaBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *mediaBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildFromReference", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildFromReference")
 }
 func (_this *mediaBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
-	panic(fmt.Errorf("BUG: %v cannot respond to NotifyChildContainerFinished", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
 func (_this *edgeBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *edgeBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *edgeBuilder) BuildBeginNodeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginNodeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
 func (_this *edgeBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }
 func (_this *nodeBuilder) BuildBeginListContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginListContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginListContents")
 }
 func (_this *nodeBuilder) BuildBeginMapContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginMapContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginMapContents")
 }
 func (_this *nodeBuilder) BuildBeginEdgeContents(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildBeginEdgeContents", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *nodeBuilder) BuildEndContainer(ctx *Context) {
-	panic(fmt.Errorf("BUG: %v cannot respond to BuildEndContainer", reflect.TypeOf(_this)))
+	PanicBadEvent(_this, "BuildEndContainer")
 }

@@ -235,16 +235,16 @@ c0
         {
             "name" = "Decimal Float"
             "encodeDecode" = [
-                {"events"=["v 0" "df 0"]             "document"="c0\n0"}
-                {"events"=["v 0" "df -0"]            "document"="c0\n-0"}
-                {"events"=["v 0" "df 123456"]        "document"="c0\n123456"}
-                {"events"=["v 0" "df -123456"]       "document"="c0\n-123456"}
-                {"events"=["v 0" "df 1.23456"]       "document"="c0\n1.23456"}
-                {"events"=["v 0" "df -1.23456"]      "document"="c0\n-1.23456"}
-                {"events"=["v 0" "df 1.23456e+50"]   "document"="c0\n1.23456e+50"}
-                {"events"=["v 0" "df -1.23456e+50"]  "document"="c0\n-1.23456e+50"}
-                {"events"=["v 0" "df 1.23456e-50"]   "document"="c0\n1.23456e-50"}
-                {"events"=["v 0" "df -1.23456e-50"]  "document"="c0\n-1.23456e-50"}
+                {"events"=["v 0" "n 0"]             "document"="c0\n0"}
+                {"events"=["v 0" "n -0"]            "document"="c0\n-0"}
+                {"events"=["v 0" "n 123456"]        "document"="c0\n123456"}
+                {"events"=["v 0" "n -123456"]       "document"="c0\n-123456"}
+                {"events"=["v 0" "n 1.23456"]       "document"="c0\n1.23456"}
+                {"events"=["v 0" "n -1.23456"]      "document"="c0\n-1.23456"}
+                {"events"=["v 0" "n 1.23456e+50"]   "document"="c0\n1.23456e+50"}
+                {"events"=["v 0" "n -1.23456e+50"]  "document"="c0\n-1.23456e+50"}
+                {"events"=["v 0" "n 1.23456e-50"]   "document"="c0\n1.23456e-50"}
+                {"events"=["v 0" "n -1.23456e-50"]  "document"="c0\n-1.23456e-50"}
             ]
             "decodeEncode" = [
                 {"document"="c0 0.0"                  "events"=["v 0" "n 0"]}

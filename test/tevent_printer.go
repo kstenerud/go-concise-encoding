@@ -268,6 +268,14 @@ func (h *TEventPrinter) OnMap() {
 	h.Print(M())
 	h.Next.OnMap()
 }
+func (h *TEventPrinter) OnStructTemplate(id []byte) {
+	h.Print(ST(string(id)))
+	h.Next.OnStructTemplate(id)
+}
+func (h *TEventPrinter) OnStructInstance(id []byte) {
+	h.Print(SI(string(id)))
+	h.Next.OnStructInstance(id)
+}
 func (h *TEventPrinter) OnEnd() {
 	h.Print(E())
 	h.Next.OnEnd()

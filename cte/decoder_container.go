@@ -25,8 +25,7 @@ func advanceAndDecodeMapBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '{'
 
 	ctx.EventReceiver.OnMap()
-	ctx.StackDecoder(decodeMapKey)
-	ctx.SetContainerType(ContainerTypeMap)
+	ctx.BeginContainer(decodeMapKey, ContainerTypeMap)
 }
 
 func decodeMapKey(ctx *DecoderContext) {
@@ -48,10 +47,9 @@ func decodeMapValue(ctx *DecoderContext) {
 func advanceAndDecodeMapEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '}'
 
-	ctx.AssertIsInMap()
+	ctx.EndContainer(ContainerTypeMap)
 	ctx.EventReceiver.OnEnd()
-	ctx.UnstackDecoder()
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func advanceAndDecodeListBegin(ctx *DecoderContext) {
@@ -59,40 +57,39 @@ func advanceAndDecodeListBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '['
 
 	ctx.EventReceiver.OnList()
-	ctx.StackDecoder(decodeByFirstChar)
-	ctx.SetContainerType(ContainerTypeList)
+	ctx.BeginContainer(decodeByFirstChar, ContainerTypeList)
 }
 
 func advanceAndDecodeListEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ']'
 
-	ctx.AssertIsInList()
+	ctx.EndContainer(ContainerTypeList)
 	ctx.EventReceiver.OnEnd()
-	ctx.UnstackDecoder()
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
+}
+
+func decodeStructTemplateBegin(ctx *DecoderContext, id []byte) {
+	ctx.EventReceiver.OnStructTemplate(id)
+	ctx.BeginContainer(decodeByFirstChar, ContainerTypeStructTemplate)
+}
+
+func decodeStructInstanceBegin(ctx *DecoderContext, id []byte) {
+	ctx.EventReceiver.OnStructInstance(id)
+	ctx.BeginContainer(decodeByFirstChar, ContainerTypeNodeOrEdgeOrStructInstance)
+}
+
+func advanceAndDecodeStructTemplateEnd(ctx *DecoderContext) {
+	ctx.Stream.AdvanceByte() // Advance past '>'
+
+	ctx.EndContainer(ContainerTypeStructTemplate)
+	ctx.EventReceiver.OnEnd()
+	ctx.AwaitStructuralWS()
+	ctx.StackDecoder(decodePostInvisible)
 }
 
 func decodeEdgeBegin(ctx *DecoderContext) {
 	ctx.EventReceiver.OnEdge()
-	ctx.StackDecoder(decodeEdgeEnd)
-	ctx.StackDecoder(decodeEdgeComponent)
-	ctx.StackDecoder(decodeEdgeComponent)
-	ctx.StackDecoder(decodeEdgeComponent)
-}
-
-func decodeEdgeComponent(ctx *DecoderContext) {
-	ctx.UnstackDecoder()
-	decodeByFirstChar(ctx)
-}
-
-func decodeEdgeEnd(ctx *DecoderContext) {
-	ctx.Stream.SkipWhitespace()
-	if ctx.Stream.ReadByteNoEOF() != ')' {
-		ctx.Stream.UnreadLastByte()
-		ctx.Errorf("Expected ')' at end of edge structure")
-	}
-	ctx.UnstackDecoder()
-	ctx.RequireStructuralWS()
+	ctx.BeginContainer(decodeByFirstChar, ContainerTypeNodeOrEdgeOrStructInstance)
 }
 
 func advanceAndDecodeNodeBegin(ctx *DecoderContext) {
@@ -100,15 +97,13 @@ func advanceAndDecodeNodeBegin(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past '('
 
 	ctx.EventReceiver.OnNode()
-	ctx.StackDecoder(decodeByFirstChar)
-	ctx.SetContainerType(ContainerTypeNode)
+	ctx.BeginContainer(decodeByFirstChar, ContainerTypeNodeOrEdgeOrStructInstance)
 }
 
-func advanceAndDecodeNodeEnd(ctx *DecoderContext) {
+func advanceAndDecodeNodeOrEdgeOrStructTemplateEnd(ctx *DecoderContext) {
 	ctx.Stream.AdvanceByte() // Advance past ')'
 
-	ctx.AssertIsInNode()
+	ctx.EndContainer(ContainerTypeNodeOrEdgeOrStructInstance)
 	ctx.EventReceiver.OnEnd()
-	ctx.UnstackDecoder()
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }

@@ -80,15 +80,16 @@ c0
         {
             "name" = "Edge"
             "decodeEncode" = [
-                {"document"=|u8x 81 00 77 00 00 00|              "events"=["v 0" "edge" "n 0" "n 0" "n 0"]}
-                {"document"=|u8x 81 00 77 91 02 61 7e 91 02 62|  "events"=["v 0" "edge" "rid a" "null" "rid b"]}
+                {"document"=|u8x 81 00 77 00 00 00 7b|              "events"=["v 0" "edge" "n 0" "n 0" "n 0" "e"]}
+                {"document"=|u8x 81 00 77 91 02 61 7e 91 02 62 7b|  "events"=["v 0" "edge" "rid a" "null" "rid b" "e"]}
             ]
             "decodeFail" = [
-                |u8x 81 00 77|           // Unterminated
-                |u8x 81 00 77 00|        // Unterminated
-                |u8x 81 00 77 00 00|     // Unterminated
-                |u8x 81 00 77 7e 00 00|  // Invalid source
-                |u8x 81 00 77 00 00 7e|  // Invalid destination
+                |u8x 81 00 77|              // Unterminated
+                |u8x 81 00 77 00|           // Unterminated
+                |u8x 81 00 77 00 00|        // Unterminated
+                |u8x 81 00 77 00 00 00|     // Unterminated
+                |u8x 81 00 77 7e 00 00 7b|  // Invalid source
+                |u8x 81 00 77 00 00 7e 7b|  // Invalid destination
             ]
         }
 
@@ -131,6 +132,7 @@ c0
                                     01
                                     02
                                     03
+                                7b
                             7b
                             79
                                 00 7a
@@ -144,6 +146,7 @@ c0
                                     01
                                     02
                                     03
+                                7b
                             7b
                             78
                                 7a
@@ -159,6 +162,7 @@ c0
                                     01
                                     02
                                     03
+                                7b
                             7b
                             77
                                 7a
@@ -167,6 +171,8 @@ c0
                                     81 61
                                     01
                                 7b
+                                01
+                            7b
                             77
                                 78
                                     01
@@ -175,7 +181,9 @@ c0
                                     01
                                     02
                                     03
+                                7b
                                 00
+                            7b
                         7b
                     |
                     "events"=[
@@ -195,6 +203,7 @@ c0
                                     "n 1"
                                     "n 2"
                                     "n 3"
+                                "e"
                             "e"
                             "m"
                                 "n 0" "l"
@@ -205,7 +214,10 @@ c0
                                     "s a"
                                 "e"
                                 "n 4" "edge"
-                                    "n 1" "n 2" "n 3"
+                                    "n 1"
+                                    "n 2"
+                                    "n 3"
+                                "e"
                             "e"
                             "node"
                                 "l"
@@ -221,6 +233,7 @@ c0
                                     "n 1"
                                     "n 2"
                                     "n 3"
+                                "e"
                             "e"
                             "edge"
                                 "l"
@@ -229,6 +242,8 @@ c0
                                     "s a"
                                     "n 1"
                                 "e"
+                                "n 1"
+                            "e"
                             "edge"
                                 "node"
                                 "n 1"
@@ -237,7 +252,9 @@ c0
                                     "n 1"
                                     "n 2"
                                     "n 3"
+                                "e"
                                 "n 0"
+                            "e"
                         "e"
                     ]
                 }

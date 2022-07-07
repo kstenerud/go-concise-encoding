@@ -240,6 +240,14 @@ func (h *TEventStore) OnMap() {
 	h.add(M())
 	h.receiver.OnMap()
 }
+func (h *TEventStore) OnStructTemplate(id []byte) {
+	h.add(ST(string(id)))
+	h.receiver.OnStructTemplate(id)
+}
+func (h *TEventStore) OnStructInstance(id []byte) {
+	h.add(SI(string(id)))
+	h.receiver.OnStructInstance(id)
+}
 func (h *TEventStore) OnEnd() {
 	h.add(E())
 	h.receiver.OnEnd()

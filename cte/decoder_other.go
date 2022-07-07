@@ -98,7 +98,7 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
 		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -108,7 +108,7 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	// 123
 	if token.IsAtEnd(decodedCount) {
 		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -130,14 +130,14 @@ func decodeNumericPositive(ctx *DecoderContext) {
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "numeric")
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeUID(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	token := ctx.Stream.ReadToken()
 	ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeTokenAsNegative0Based(ctx *DecoderContext, token Token) {
@@ -201,7 +201,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	switch token[0] {
 	case '0':
 		decodeTokenAsNegative0Based(ctx, token)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	case 'i', 'I':
 		common.ASCIIBytesToLower(token)
@@ -210,7 +210,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 			ctx.Errorf("Unknown named value: %v", namedValue)
 		}
 		ctx.EventReceiver.OnDecimalFloat(compact_float.NegativeInfinity())
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -219,7 +219,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	// 123
 	if token.IsAtEnd(decodedCount) {
 		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -237,7 +237,7 @@ func advanceAndDecodeNumericNegative(ctx *DecoderContext) {
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "numeric")
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decode0Based(ctx *DecoderContext) {
@@ -250,14 +250,14 @@ func decode0Based(ctx *DecoderContext) {
 	// 0
 	if len(token) == 1 {
 		ctx.EventReceiver.OnPositiveInt(0)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
 		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -267,17 +267,17 @@ func decode0Based(ctx *DecoderContext) {
 	case 'b', 'B':
 		// 0b1010
 		continueDecodingAsBinaryInt(ctx, token, sign)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	case 'o', 'O':
 		// 0o1234
 		continueDecodingAsOctalInt(ctx, token, sign)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	case 'x', 'X':
 		// 0x1234
 		continueDecodingAsHexNumber(ctx, token, sign)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -286,7 +286,7 @@ func decode0Based(ctx *DecoderContext) {
 	// 0123
 	if token.IsAtEnd(decodedCount) {
 		continueDecodingAsDecimalInt(ctx, token, decodedCount, value, bigValue, sign)
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -307,7 +307,7 @@ func decode0Based(ctx *DecoderContext) {
 	default:
 		token.UnexpectedChar(ctx.TextPos, decodedCount, "0-based numeric")
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeFalseOrUID(ctx *DecoderContext) {
@@ -317,7 +317,7 @@ func decodeFalseOrUID(ctx *DecoderContext) {
 	// 00000000-0000-0000-0000-000000000000
 	if len(token) == 36 && token[8] == '-' {
 		ctx.EventReceiver.OnUID(token.DecodeUID(ctx.TextPos))
-		ctx.RequireStructuralWS()
+		ctx.AwaitStructuralWS()
 		return
 	}
 
@@ -329,7 +329,7 @@ func decodeFalseOrUID(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", named)
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeNamedValueI(ctx *DecoderContext) {
@@ -341,7 +341,7 @@ func decodeNamedValueI(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeNamedValueN(ctx *DecoderContext) {
@@ -355,7 +355,7 @@ func decodeNamedValueN(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeNamedValueS(ctx *DecoderContext) {
@@ -367,7 +367,7 @@ func decodeNamedValueS(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func decodeNamedValueT(ctx *DecoderContext) {
@@ -379,7 +379,7 @@ func decodeNamedValueT(ctx *DecoderContext) {
 	default:
 		ctx.Errorf("%v: Unknown named value", string(namedValue))
 	}
-	ctx.RequireStructuralWS()
+	ctx.AwaitStructuralWS()
 }
 
 func advanceAndDecodeMarker(ctx *DecoderContext) {
@@ -408,19 +408,35 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 	}
 
 	ctx.EventReceiver.OnReference(ctx.Stream.ReadIdentifier())
+	ctx.AwaitStructuralWS()
 }
 
-func advanceAndDecodeEdgeOrResourceID(ctx *DecoderContext) {
+func advanceAndDecodeAt(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '@'
-	switch ctx.Stream.ReadByteNoEOF() {
+	b := ctx.Stream.ReadByteNoEOF()
+	switch b {
 	case '"':
 		decodeResourceID(ctx)
+		return
 	case '(':
 		decodeEdgeBegin(ctx)
+		return
 	default:
 		ctx.Stream.UnreadLastByte()
-		ctx.UnexpectedChar("edge or resource ID")
+		if chars.ByteHasProperty(b, chars.StructWS) {
+			ctx.UnexpectedChar("decoding @ token")
+		}
+	}
+	id := ctx.Stream.ReadIdentifier()
+	switch ctx.Stream.ReadByteNoEOF() {
+	case '<':
+		decodeStructTemplateBegin(ctx, id)
+	case '(':
+		decodeStructInstanceBegin(ctx, id)
+	default:
+		ctx.Stream.UnreadLastByte()
+		ctx.UnexpectedChar("decoding @ token")
 	}
 }
 

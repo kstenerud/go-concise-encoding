@@ -43,6 +43,8 @@ type EventRule interface {
 	OnNull(ctx *Context)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
+	OnStructTemplate(ctx *Context, identifier []byte)
+	OnStructInstance(ctx *Context, identifier []byte)
 	OnEdge(ctx *Context)
 	OnNode(ctx *Context)
 	OnEnd(ctx *Context)
@@ -64,6 +66,8 @@ var (
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
+	structTemplateRule      StructTemplateRule
+	structInstanceRule      StructInstanceRule
 	arrayRule               ArrayRule
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule
@@ -78,6 +82,7 @@ var (
 	edgeDescriptionRule     EdgeDescriptionRule
 	edgeDestinationRule     EdgeDestinationRule
 	nodeRule                NodeRule
+	awaitEndRule            AwaitEndRule
 )
 
 var arrayTypeToDataType = []DataType{

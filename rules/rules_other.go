@@ -72,8 +72,6 @@ func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.
 func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchEndDocument(ctx)
 }
-func (_this *TopLevelRule) OnPadding(ctx *Context)                    { /* Nothing to do */ }
-func (_this *TopLevelRule) OnComment(ctx *Context)                    { /* Nothing to do */ }
 func (_this *TopLevelRule) OnNull(ctx *Context)                       { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnInt(ctx *Context, value int64)           { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnPositiveInt(ctx *Context, value uint64)  { _this.switchEndDocument(ctx) }
@@ -86,13 +84,6 @@ func (_this *TopLevelRule) OnDecimalFloat(ctx *Context, value compact_float.DFlo
 func (_this *TopLevelRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 	_this.switchEndDocument(ctx)
 }
-func (_this *TopLevelRule) OnList(ctx *Context) { ctx.BeginList() }
-func (_this *TopLevelRule) OnMap(ctx *Context)  { ctx.BeginMap() }
-func (_this *TopLevelRule) OnNode(ctx *Context) { ctx.BeginNode() }
-func (_this *TopLevelRule) OnEdge(ctx *Context) { ctx.BeginEdge() }
-func (_this *TopLevelRule) OnMarker(ctx *Context, identifier []byte) {
-	ctx.BeginMarkerAnyType(identifier, AllowAny)
-}
 func (_this *TopLevelRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 	_this.switchEndDocument(ctx)
@@ -100,40 +91,4 @@ func (_this *TopLevelRule) OnArray(ctx *Context, arrayType events.ArrayType, ele
 func (_this *TopLevelRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 	_this.switchEndDocument(ctx)
-}
-func (_this *TopLevelRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayAnyType(arrayType)
-}
-
-// =============================================================================
-
-type NARule struct{}
-
-func (_this *NARule) String() string                                          { return "NA Rule" }
-func (_this *NARule) OnKeyableObject(ctx *Context, _ DataType)                { ctx.EndContainer() }
-func (_this *NARule) OnNonKeyableObject(ctx *Context, _ DataType)             { ctx.EndContainer() }
-func (_this *NARule) OnChildContainerEnded(ctx *Context, _ DataType)          { ctx.EndContainer() }
-func (_this *NARule) OnPadding(ctx *Context)                                  { /* Nothing to do */ }
-func (_this *NARule) OnNull(ctx *Context)                                     { ctx.EndContainer() }
-func (_this *NARule) OnInt(ctx *Context, value int64)                         { ctx.EndContainer() }
-func (_this *NARule) OnPositiveInt(ctx *Context, value uint64)                { ctx.EndContainer() }
-func (_this *NARule) OnBigInt(ctx *Context, value *big.Int)                   { ctx.EndContainer() }
-func (_this *NARule) OnFloat(ctx *Context, value float64)                     { ctx.EndContainer() }
-func (_this *NARule) OnBigFloat(ctx *Context, value *big.Float)               { ctx.EndContainer() }
-func (_this *NARule) OnDecimalFloat(ctx *Context, value compact_float.DFloat) { ctx.EndContainer() }
-func (_this *NARule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)      { ctx.EndContainer() }
-func (_this *NARule) OnList(ctx *Context)                                     { ctx.BeginList() }
-func (_this *NARule) OnMap(ctx *Context)                                      { ctx.BeginMap() }
-func (_this *NARule) OnNode(ctx *Context)                                     { ctx.BeginNode() }
-func (_this *NARule) OnEdge(ctx *Context)                                     { ctx.BeginEdge() }
-func (_this *NARule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
-	ctx.EndContainer()
-}
-func (_this *NARule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlike(arrayType, data)
-	ctx.EndContainer()
-}
-func (_this *NARule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayAnyType(arrayType)
 }

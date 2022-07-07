@@ -118,7 +118,7 @@ func init() {
 	decoderOpsByFirstChar['t'] = decodeNamedValueT
 	decoderOpsByFirstChar['T'] = decodeNamedValueT
 	decoderOpsByFirstChar['-'] = advanceAndDecodeNumericNegative
-	decoderOpsByFirstChar['@'] = advanceAndDecodeEdgeOrResourceID
+	decoderOpsByFirstChar['@'] = advanceAndDecodeAt
 	decoderOpsByFirstChar['$'] = advanceAndDecodeReference
 	decoderOpsByFirstChar['&'] = advanceAndDecodeMarker
 	decoderOpsByFirstChar['/'] = advanceAndDecodeComment
@@ -128,7 +128,8 @@ func init() {
 	decoderOpsByFirstChar[']'] = advanceAndDecodeListEnd
 	decoderOpsByFirstChar['|'] = advanceAndDecodeTypedArrayBegin
 	decoderOpsByFirstChar['('] = advanceAndDecodeNodeBegin
-	decoderOpsByFirstChar[')'] = advanceAndDecodeNodeEnd
+	decoderOpsByFirstChar[')'] = advanceAndDecodeNodeOrEdgeOrStructTemplateEnd
+	decoderOpsByFirstChar['>'] = advanceAndDecodeStructTemplateEnd
 
 	decoderOpsByFirstChar[chars.EOFMarker] = decodeInvalidChar
 }

@@ -208,6 +208,12 @@ func (_this *BuilderEventReceiver) OnList() {
 func (_this *BuilderEventReceiver) OnMap() {
 	_this.context.CurrentBuilder.BuildNewMap(&_this.context)
 }
+func (_this *BuilderEventReceiver) OnStructTemplate(id []byte) {
+	_this.context.BeginStructTemplate(id)
+}
+func (_this *BuilderEventReceiver) OnStructInstance(id []byte) {
+	_this.context.BeginStructInstance(id)
+}
 func (_this *BuilderEventReceiver) OnNode() {
 	_this.context.CurrentBuilder.BuildNewNode(&_this.context)
 }

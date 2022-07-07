@@ -717,6 +717,8 @@ func init() {
 	eventParsersByName["at"] = newParser(false, test.TEventArrayData, parseTextAsBytes).ParseEvent
 	eventParsersByName["l"] = newParser(false, test.TEventList).ParseEvent
 	eventParsersByName["m"] = newParser(false, test.TEventMap).ParseEvent
+	eventParsersByName["st"] = newParser(false, test.TEventStructTemplate, parseString).ParseEvent
+	eventParsersByName["si"] = newParser(false, test.TEventStructInstance, parseString).ParseEvent
 	eventParsersByName["node"] = newParser(false, test.TEventNode).ParseEvent
 	eventParsersByName["edge"] = newParser(false, test.TEventEdge).ParseEvent
 	eventParsersByName["e"] = newParser(false, test.TEventEnd).ParseEvent
