@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -161,16 +160,9 @@ func (_this *sliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data [
 	return object
 }
 
-func (_this *sliceBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+func (_this *sliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)
-	_this.storeValue(object)
-	return object
-}
-
-func (_this *sliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
-	object := _this.newElem()
-	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	_this.storeValue(object)
 	return object
 }
@@ -200,12 +192,12 @@ func (_this *sliceBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *sliceBuilder) BuildFromReference(ctx *Context, id []byte) {
+func (_this *sliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	ppContainer := _this.ppContainer
 	index := (**ppContainer).Len()
 	elem := _this.newElem()
 	_this.storeValue(elem)
-	ctx.NotifyReference(id, func(object reflect.Value) {
+	ctx.NotifyLocalReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, (**ppContainer).Index(index))
 	})
 }

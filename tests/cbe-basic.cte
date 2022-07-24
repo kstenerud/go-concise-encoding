@@ -45,7 +45,7 @@ c0
         {
             "name" = "Padding"
             "decode" = [
-                {"document"=|u8x 81 00 7f 7f 7f 7e|  "events"=["v 0" "pad 1" "pad 1" "pad 1" "null"]}
+                {"document"=|u8x 81 00 7f 7f 7f 7e|  "events"=["v 0" "pad" "pad" "pad" "null"]}
             ]
         }
 
@@ -533,7 +533,7 @@ c0
                         "v 0"
                         "l"
                             "mark a" "n 1"
-                            "ref a"
+                            "refl a"
                         "e"
                     ]
                 }
@@ -548,7 +548,7 @@ c0
                     "events"=[
                         "v 0"
                         "l"
-                            "ref a"
+                            "refl a"
                             "mark a" "n 1"
                         "e"
                     ]
@@ -565,7 +565,7 @@ c0
                         "v 0"
                         "mark a" "l"
                             "n 1"
-                            "ref a"
+                            "refl a"
                         "e"
                     ]
                 }

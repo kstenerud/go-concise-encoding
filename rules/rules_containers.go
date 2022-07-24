@@ -45,8 +45,8 @@ func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ DataType)       { _this
 func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
 }
-func (_this *MapKeyRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceKeyable(identifier)
+func (_this *MapKeyRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+	ctx.LocalReferenceKeyable(identifier)
 	_this.switchMapValue(ctx)
 }
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -71,8 +71,8 @@ func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _th
 func (_this *MapValueRule) OnNull(ctx *Context)                            { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
+func (_this *MapValueRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+	ctx.LocalReferenceAnyType(identifier)
 	_this.switchMapKey(ctx)
 }
 func (_this *MapValueRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -135,8 +135,8 @@ func (_this *EdgeSourceRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal)
 func (_this *EdgeSourceRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
-func (_this *EdgeSourceRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
+func (_this *EdgeSourceRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+	ctx.LocalReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
 func (_this *EdgeSourceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -190,8 +190,8 @@ func (_this *EdgeDescriptionRule) OnBigDecimalFloat(ctx *Context, value *apd.Dec
 func (_this *EdgeDescriptionRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
-func (_this *EdgeDescriptionRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
+func (_this *EdgeDescriptionRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+	ctx.LocalReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
 func (_this *EdgeDescriptionRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -251,8 +251,8 @@ func (_this *NodeRule) OnBigDecimalFloat(ctx *Context, value *apd.Decimal) {
 func (_this *NodeRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowNonNull)
 }
-func (_this *NodeRule) OnReference(ctx *Context, identifier []byte) {
-	ctx.ReferenceAnyType(identifier)
+func (_this *NodeRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+	ctx.LocalReferenceAnyType(identifier)
 	_this.moveToNextRule(ctx)
 }
 func (_this *NodeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {

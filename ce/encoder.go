@@ -23,7 +23,6 @@ package ce
 import (
 	"io"
 	"math/big"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -43,10 +42,10 @@ type Encoder interface {
 	OnEndDocument()
 
 	OnVersion(version uint64)
-	OnPadding(count int)
+	OnPadding()
 	OnComment(isMultiline bool, contents []byte)
 	OnNull()
-	OnBool(value bool)
+	OnBoolean(value bool)
 	OnTrue()
 	OnFalse()
 	OnPositiveInt(value uint64)
@@ -59,8 +58,7 @@ type Encoder interface {
 	OnBigDecimalFloat(value *apd.Decimal)
 	OnNan(signaling bool)
 	OnUID(value []byte)
-	OnTime(value time.Time)
-	OnCompactTime(value compact_time.Time)
+	OnTime(value compact_time.Time)
 	// Warning: Do not store a pointer to the data! Either use it right away or copy it.
 	// The underlying contents should be considered volatile and likely to change after this method returns!
 	OnArray(arrayType events.ArrayType, elementCount uint64, data []byte)
@@ -78,5 +76,5 @@ type Encoder interface {
 	OnNode()
 	OnEnd()
 	OnMarker(id []byte)
-	OnReference(id []byte)
+	OnReferenceLocal(id []byte)
 }

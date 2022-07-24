@@ -313,17 +313,19 @@ c0
 
         {
             "name" = "Hexadecimal Float"
+            "decode" = [
+                {"events"=["v 0" "n 0x0"]      "document"="c0\n0x0p+00"}
+                {"events"=["v 0" "n -0x0"]     "document"="c0\n-0x0p+00"}
+            ]
             "encodeDecode" = [
-                {"events"=["v 0" "bf 0x0"]      "document"="c0\n0x0p+00"}
-                {"events"=["v 0" "bf -0x0"]     "document"="c0\n-0x0p+00"}
-                {"events"=["v 0" "bf 0x1.f39"]  "document"="c0\n0x1.f39p+00"}
+                {"events"=["v 0" "n 0x1.f39"]  "document"="c0\n0x1.f39p+00"}
             ]
             "decodeEncode" = [
                 {"document"="c0 0x0.0"                  "events"=["v 0" "n 0"]}
                 {"document"="c0 -0x0.0"                 "events"=["v 0" "n -0"]}
                 {"document"="c0 0x0.1"                  "events"=["v 0" "n 0x0.1p0"]}
                 {"document"="c0 0x4.7f3cc34"            "events"=["v 0" "n 0x4.7f3cc34p0"]}
-                {"document"="c0 -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
+                {"document"="c0\n-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
                  "events"=["v 0" "n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
 
                 {"document"="c0 0x0.0p0"                  "events"=["v 0" "n 0"]}
@@ -676,7 +678,7 @@ c0
             "name" = "Reference"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "l" "mark x" "n 2" "ref x" "e"]
+                    "events" = ["v 0" "l" "mark x" "n 2" "refl x" "e"]
                     "document" = "\.^
 c0
 [
@@ -685,7 +687,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "ref x" "mark x" "n 2" "e"]
+                    "events" = ["v 0" "l" "refl x" "mark x" "n 2" "e"]
                     "document" = "\.^
 c0
 [
@@ -694,7 +696,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "m" "s My key" "mark mykey" "s Blah blah" "ref mykey" "n 1000" "e"]
+                    "events" = ["v 0" "m" "s My key" "mark mykey" "s Blah blah" "refl mykey" "n 1000" "e"]
                     "document" = "\.^
 c0
 {
@@ -703,7 +705,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "ref mykey" "n 1000" "s My key" "mark mykey" "s Blah blah" "e"]
+                    "events" = ["v 0" "m" "refl mykey" "n 1000" "s My key" "mark mykey" "s Blah blah" "e"]
                     "document" = "\.^
 c0
 {

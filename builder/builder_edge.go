@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -143,14 +142,8 @@ func (_this *edgeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []
 	return result
 }
 
-func (_this *edgeBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+func (_this *edgeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	result := globalInterfaceBuilder.BuildFromTime(ctx, value, _this.components[_this.index])
-	_this.tryFinish(ctx)
-	return result
-}
-
-func (_this *edgeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
-	result := globalInterfaceBuilder.BuildFromCompactTime(ctx, value, _this.components[_this.index])
 	_this.tryFinish(ctx)
 	return result
 }
@@ -171,8 +164,8 @@ func (_this *edgeBuilder) BuildNewNode(ctx *Context) {
 	globalInterfaceBuilder.BuildBeginNodeContents(ctx)
 }
 
-func (_this *edgeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	globalInterfaceBuilder.BuildFromReference(ctx, id)
+func (_this *edgeBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	globalInterfaceBuilder.BuildFromLocalReference(ctx, id)
 	_this.tryFinish(ctx)
 }
 

@@ -26,7 +26,6 @@ package builder
 import (
 	"math/big"
 	"reflect"
-	"time"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
@@ -60,11 +59,8 @@ func (_this *bigDecimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arra
 func (_this *bigDecimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *bigDecimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *bigDecimalFloatBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *bigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *bigDecimalFloatBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -93,8 +89,8 @@ func (_this *bigDecimalFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *bigDecimalFloatBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *bigDecimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *bigDecimalFloatBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *bigDecimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -117,11 +113,8 @@ func (_this *bigFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType e
 func (_this *bigFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *bigFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *bigFloatBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *bigFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *bigFloatBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -150,8 +143,8 @@ func (_this *bigFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *bigFloatBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *bigFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *bigFloatBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *bigFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -174,11 +167,8 @@ func (_this *bigIntBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 func (_this *bigIntBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *bigIntBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *bigIntBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *bigIntBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *bigIntBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -207,8 +197,8 @@ func (_this *bigIntBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *bigIntBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *bigIntBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *bigIntBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *bigIntBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -249,11 +239,8 @@ func (_this *boolBuilder) BuildFromStringlikeArray(ctx *Context, arrayType event
 func (_this *boolBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *boolBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *boolBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *boolBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *boolBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -282,8 +269,8 @@ func (_this *boolBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *boolBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *boolBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *boolBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *boolBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -351,8 +338,8 @@ func (_this *compactTimeBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *compactTimeBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *compactTimeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *compactTimeBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *compactTimeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -393,11 +380,8 @@ func (_this *customBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 func (_this *customBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *customBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *customBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *customBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *customBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -426,8 +410,8 @@ func (_this *customBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *customBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *customBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *customBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *customBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -450,11 +434,8 @@ func (_this *decimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 func (_this *decimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *decimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *decimalFloatBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *decimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *decimalFloatBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -483,8 +464,8 @@ func (_this *decimalFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *decimalFloatBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *decimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *decimalFloatBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *decimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -507,11 +488,8 @@ func (_this *floatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType even
 func (_this *floatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *floatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *floatBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *floatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *floatBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -540,8 +518,8 @@ func (_this *floatBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *floatBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *floatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *floatBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *floatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -582,11 +560,8 @@ func (_this *float32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 func (_this *float32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *float32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *float32ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *float32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float32ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -612,8 +587,8 @@ func (_this *float32ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *float32ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *float32ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *float32ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *float32ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -651,11 +626,8 @@ func (_this *float32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 func (_this *float32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *float32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *float32SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *float32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float32SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -681,8 +653,8 @@ func (_this *float32SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *float32SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *float32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *float32SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *float32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -723,11 +695,8 @@ func (_this *float64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 func (_this *float64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *float64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *float64ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *float64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float64ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -753,8 +722,8 @@ func (_this *float64ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *float64ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *float64ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *float64ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *float64ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -792,11 +761,8 @@ func (_this *float64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 func (_this *float64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *float64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *float64SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *float64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *float64SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -822,8 +788,8 @@ func (_this *float64SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *float64SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *float64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *float64SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *float64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -876,11 +842,8 @@ func (_this *intBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events
 func (_this *intBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *intBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *intBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *intBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *intBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -909,8 +872,8 @@ func (_this *intBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *intBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *intBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *intBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *intBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -951,11 +914,8 @@ func (_this *int8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType 
 func (_this *int8ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int8ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int8ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int8ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int8ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -981,8 +941,8 @@ func (_this *int8ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int8ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int8ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int8ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int8ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1020,11 +980,8 @@ func (_this *int8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType 
 func (_this *int8SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int8SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int8SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int8SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int8SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1050,8 +1007,8 @@ func (_this *int8SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int8SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int8SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int8SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int8SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1092,11 +1049,8 @@ func (_this *int16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *int16ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int16ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int16ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int16ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int16ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1122,8 +1076,8 @@ func (_this *int16ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int16ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int16ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int16ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int16ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1161,11 +1115,8 @@ func (_this *int16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *int16SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int16SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int16SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int16SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int16SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1191,8 +1142,8 @@ func (_this *int16SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int16SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int16SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int16SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int16SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1233,11 +1184,8 @@ func (_this *int32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *int32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int32ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int32ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1263,8 +1211,8 @@ func (_this *int32ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int32ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int32ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int32ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int32ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1302,11 +1250,8 @@ func (_this *int32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *int32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int32SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int32SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1332,8 +1277,8 @@ func (_this *int32SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int32SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int32SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1374,11 +1319,8 @@ func (_this *int64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *int64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int64ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int64ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1404,8 +1346,8 @@ func (_this *int64ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int64ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int64ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int64ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int64ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1443,11 +1385,8 @@ func (_this *int64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *int64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *int64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *int64SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *int64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *int64SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1473,8 +1412,8 @@ func (_this *int64SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *int64SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *int64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *int64SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *int64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1521,8 +1460,8 @@ func (_this *structTemplateBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *structTemplateBuilder) BuildBeginEdgeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
-func (_this *structTemplateBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *structTemplateBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *structTemplateBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1551,8 +1490,8 @@ func (_this *markerObjectBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *markerObjectBuilder) BuildBeginEdgeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
-func (_this *markerObjectBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *markerObjectBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pBigDecimalFloatBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
@@ -1569,11 +1508,8 @@ func (_this *pBigDecimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arr
 func (_this *pBigDecimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *pBigDecimalFloatBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *pBigDecimalFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pBigDecimalFloatBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1602,8 +1538,8 @@ func (_this *pBigDecimalFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *pBigDecimalFloatBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *pBigDecimalFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *pBigDecimalFloatBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pBigDecimalFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1623,11 +1559,8 @@ func (_this *pBigFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType 
 func (_this *pBigFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *pBigFloatBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *pBigFloatBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *pBigFloatBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pBigFloatBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1656,8 +1589,8 @@ func (_this *pBigFloatBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *pBigFloatBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *pBigFloatBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *pBigFloatBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pBigFloatBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1677,11 +1610,8 @@ func (_this *pBigIntBuilder) BuildFromStringlikeArray(ctx *Context, arrayType ev
 func (_this *pBigIntBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *pBigIntBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *pBigIntBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *pBigIntBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pBigIntBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1710,8 +1640,8 @@ func (_this *pBigIntBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *pBigIntBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *pBigIntBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *pBigIntBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pBigIntBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1779,8 +1709,8 @@ func (_this *pCompactTimeBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *pCompactTimeBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *pCompactTimeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *pCompactTimeBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pCompactTimeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1800,8 +1730,8 @@ func (_this *ptrBuilder) BuildNewEdge(ctx *Context) {
 func (_this *ptrBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *ptrBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *ptrBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pRidBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromBool")
@@ -1833,11 +1763,8 @@ func (_this *pRidBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.V
 func (_this *pRidBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *pRidBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *pRidBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *pRidBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *pRidBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1866,8 +1793,8 @@ func (_this *pRidBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *pRidBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *pRidBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *pRidBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *pRidBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -1911,11 +1838,8 @@ func (_this *stringBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect
 func (_this *stringBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *stringBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *stringBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *stringBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *stringBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -1944,8 +1868,8 @@ func (_this *stringBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *stringBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *stringBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *stringBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *stringBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2025,8 +1949,8 @@ func (_this *timeBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *timeBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *timeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *timeBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *timeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2046,8 +1970,8 @@ func (_this *topLevelBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *topLevelBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *topLevelBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *topLevelBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uintBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
@@ -2067,11 +1991,8 @@ func (_this *uintBuilder) BuildFromStringlikeArray(ctx *Context, arrayType event
 func (_this *uintBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uintBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uintBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uintBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uintBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2100,8 +2021,8 @@ func (_this *uintBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uintBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uintBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uintBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uintBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2142,11 +2063,8 @@ func (_this *uint8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *uint8ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint8ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint8ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint8ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint8ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2172,8 +2090,8 @@ func (_this *uint8ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint8ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint8ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint8ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint8ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2211,11 +2129,8 @@ func (_this *uint8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType
 func (_this *uint8SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint8SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint8SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint8SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint8SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2241,8 +2156,8 @@ func (_this *uint8SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint8SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint8SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint8SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint8SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2283,11 +2198,8 @@ func (_this *uint16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayTyp
 func (_this *uint16ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint16ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint16ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint16ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint16ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2313,8 +2225,8 @@ func (_this *uint16ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint16ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint16ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint16ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint16ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2352,11 +2264,8 @@ func (_this *uint16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayTyp
 func (_this *uint16SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint16SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint16SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint16SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint16SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2382,8 +2291,8 @@ func (_this *uint16SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint16SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint16SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint16SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint16SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2424,11 +2333,8 @@ func (_this *uint32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayTyp
 func (_this *uint32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint32ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint32ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint32ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint32ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2454,8 +2360,8 @@ func (_this *uint32ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint32ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint32ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint32ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint32ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2493,11 +2399,8 @@ func (_this *uint32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayTyp
 func (_this *uint32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint32SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint32SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint32SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint32SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2523,8 +2426,8 @@ func (_this *uint32SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint32SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint32SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint32SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint32SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2565,11 +2468,8 @@ func (_this *uint64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayTyp
 func (_this *uint64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint64ArrayBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint64ArrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint64ArrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint64ArrayBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2595,8 +2495,8 @@ func (_this *uint64ArrayBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint64ArrayBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint64ArrayBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint64ArrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint64ArrayBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2634,11 +2534,8 @@ func (_this *uint64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayTyp
 func (_this *uint64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uint64SliceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uint64SliceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uint64SliceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uint64SliceBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2664,8 +2561,8 @@ func (_this *uint64SliceBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uint64SliceBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uint64SliceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uint64SliceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uint64SliceBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2703,11 +2600,8 @@ func (_this *ridBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Va
 func (_this *ridBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *ridBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *ridBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *ridBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *ridBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2736,8 +2630,8 @@ func (_this *ridBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *ridBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *ridBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *ridBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *ridBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2778,11 +2672,8 @@ func (_this *uidBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events
 func (_this *uidBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *uidBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *uidBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *uidBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *uidBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2811,8 +2702,8 @@ func (_this *uidBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *uidBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *uidBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *uidBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *uidBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
@@ -2853,11 +2744,8 @@ func (_this *mediaBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 func (_this *mediaBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
-func (_this *mediaBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *mediaBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
-}
-func (_this *mediaBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	return PanicBadEventBuildingValue(_this, dst, "BuildFromCompactTime")
 }
 func (_this *mediaBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
@@ -2886,8 +2774,8 @@ func (_this *mediaBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *mediaBuilder) BuildEndContainer(ctx *Context) {
 	PanicBadEvent(_this, "BuildEndContainer")
 }
-func (_this *mediaBuilder) BuildFromReference(ctx *Context, id []byte) {
-	PanicBadEvent(_this, "BuildFromReference")
+func (_this *mediaBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	PanicBadEvent(_this, "BuildFromLocalReference")
 }
 func (_this *mediaBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")

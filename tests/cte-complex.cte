@@ -15,8 +15,8 @@ c0
             "name" = "Complex example"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "m" "com true  Comments look very C-like, except: /* Nested comments are allowed! */ "
-                                    "com true  Notice that there are no commas in maps and lists "
+                    "events" = ["v 0" "m" "cm  Comments look very C-like, except: /* Nested comments are allowed! */ "
+                                    "cm  Notice that there are no commas in maps and lists "
                                     "s a_list" "l"
                                         "n 1"
                                         "n 2"
@@ -44,11 +44,11 @@ c0
                                         "s description" "s This map will be referenced later using $tag1"
                                         "s value" "n -inf"
                                         "s child_elements" "null"
-                                        "s recursive" "ref tag1"
+                                        "s recursive" "refl tag1"
                                     "e"
-                                    "s ref1" "ref tag1"
-                                    "s ref2" "ref tag1"
-                                    "s outside_ref" "rref https://somewhere.else.com/path/to/document.cte#some_tag"
+                                    "s ref1" "refl tag1"
+                                    "s ref2" "refl tag1"
+                                    "s outside_ref" "refr https://somewhere.else.com/path/to/document.cte#some_tag"
                                 "e"]
                     "document" = "\.^
 c0

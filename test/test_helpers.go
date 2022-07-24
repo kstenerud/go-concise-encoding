@@ -320,10 +320,12 @@ func GenerateArrayElements(elemSize, length int) []byte {
 	return result
 }
 
-func InvokeEvents(receiver events.DataEventReceiver, events ...*TEvent) {
+func InvokeEventsAsCompleteDocument(receiver events.DataEventReceiver, events ...Event) {
+	BD().Invoke(receiver)
 	for _, event := range events {
 		event.Invoke(receiver)
 	}
+	ED().Invoke(receiver)
 }
 
 func CloneBytes(bytes []byte) []byte {
@@ -337,166 +339,167 @@ func CloneBytes(bytes []byte) []byte {
 // ----------------------------------------------------------------------------
 
 var (
-	EvBD      = BD()
-	EvED      = ED()
-	EvV       = V(version.ConciseEncodingVersion)
-	EvPAD     = PAD(1)
-	EvCOM     = COM(false, "a")
-	EvN       = NULL()
+	EvAB      = AB([]bool{true})
+	EvAC      = ACL(1)
+	EvAD      = ADU8([]byte{1})
+	EvAF16    = AF16([]float32{1})
+	EvAF32    = AF32([]float32{1})
+	EvAF64    = AF64([]float64{1})
+	EvAI16    = AI16([]int16{1})
+	EvAI32    = AI32([]int32{1})
+	EvAI64    = AI64([]int64{1})
+	EvAI8     = AI8([]int8{1})
+	EvAU16    = AU16([]uint16{1})
+	EvAU32    = AU32([]uint32{1})
+	EvAU64    = AU64([]uint64{1})
+	EvAU8     = AU8([]uint8{1})
+	EvAUU     = AU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
 	EvB       = B(true)
-	EvTT      = TT()
-	EvFF      = FF()
-	EvPI      = PI(1)
-	EvNI      = NI(1)
-	EvI       = I(0)
-	EvBI      = BI(NewBigInt("1"))
-	EvBINull  = BI(nil)
-	EvBF      = BF(0x1.0p-1)
-	EvFNAN    = BF(math.NaN())
-	EvBBF     = BBF(NewBigFloat("0x0.1"))
-	EvBBFNull = BBF(nil)
-	EvDF      = DF(NewDFloat("0.1"))
-	EvDFNAN   = DF(NewDFloat("nan"))
-	EvBDF     = BDF(NewBDF("0.1"))
-	EvBDFNull = BDF(nil)
-	EvBDFNAN  = BDF(NewBDF("nan"))
-	EvNAN     = QNAN()
-	EvUID     = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
-	EvGT      = GT(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC))
+	EvBAB     = BAB()
+	EvBAF16   = BAF16()
+	EvBAF32   = BAF32()
+	EvBAF64   = BAF64()
+	EvBAI16   = BAI16()
+	EvBAI32   = BAI32()
+	EvBAI64   = BAI64()
+	EvBAI8    = BAI8()
+	EvBAU16   = BAU16()
+	EvBAU32   = BAU32()
+	EvBAU64   = BAU64()
+	EvBAU8    = BAU8()
+	EvBAUU    = BAU()
+	EvBBF     = N(NewBigFloat("0x0.1"))
+	EvBBFNull = N(nil)
+	EvBDF     = N(NewBDF("0.1"))
+	EvBDFNAN  = N(NewBDF("nan"))
+	EvBDFNull = N(nil)
+	EvBF      = N(0x1.0p-1)
+	EvBI      = N(NewBigInt("1"))
+	EvBINull  = N(nil)
+	EvCBB     = BCB()
+	EvCS      = CS("a")
+	EvCM      = CM("a")
 	EvCT      = T(NewDate(2020, 1, 1))
+	EvCTB     = BCT()
+	EvCUB     = CB([]byte{1})
+	EvCUT     = CT("a")
+	EvDF      = N(NewDFloat("0.1"))
+	EvDFNAN   = N(compact_float.SignalingNaN())
+	EvE       = E()
+	EvEDGE    = EDGE()
+	EvFNAN    = N(math.NaN())
+	EvT       = T(compact_time.AsCompactTime(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC)))
+	EvI       = N(0)
 	EvL       = L()
 	EvM       = M()
-	EvST      = ST("a")
-	EvSI      = SI("a")
-	EvNODE    = NODE()
-	EvEDGE    = EDGE()
-	EvE       = E()
 	EvMARK    = MARK("a")
-	EvREF     = REF("a")
-	EvRREF    = RREF("a")
-	EvAC      = AC(1, false)
-	EvAD      = AD([]byte{1})
-	EvS       = S("a")
-	EvSB      = SB()
+	EvBMEDIA  = BMEDIA()
+	EvNAN     = N(compact_float.QuietNaN())
+	EvNI      = N(-1)
+	EvNODE    = NODE()
+	EvNULL    = NULL()
+	EvPAD     = PAD()
+	EvPI      = N(1)
+	EvBRID    = BRID()
+	EvREFL    = REFL("a")
+	EvREFR    = REFR("a")
 	EvRID     = RID("http://z.com")
-	EvRB      = RB()
-	EvCUB     = CB([]byte{1})
-	EvCBB     = CBB()
-	EvCUT     = CT("a")
-	EvCTB     = CTB()
-	EvAB      = AB(1, []byte{1})
-	EvABB     = ABB()
-	EvAU8     = AU8([]uint8{1})
-	EvAU8B    = AU8B()
-	EvAU16    = AU16([]uint16{1})
-	EvAU16B   = AU16B()
-	EvAU32    = AU32([]uint32{1})
-	EvAU32B   = AU32B()
-	EvAU64    = AU64([]uint64{1})
-	EvAU64B   = AU64B()
-	EvAI8     = AI8([]int8{1})
-	EvAI8B    = AI8B()
-	EvAI16    = AI16([]int16{1})
-	EvAI16B   = AI16B()
-	EvAI32    = AI32([]int32{1})
-	EvAI32B   = AI32B()
-	EvAI64    = AI64([]int64{1})
-	EvAI64B   = AI64B()
-	EvAF16    = AF16([]float32{1})
-	EvAF16B   = AF16B()
-	EvAF32    = AF32([]float32{1})
-	EvAF32B   = AF32B()
-	EvAF64    = AF64([]float64{1})
-	EvAF64B   = AF64B()
-	EvAUU     = AU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
-	EvAUUB    = AUB()
-	EvMB      = MB()
+	EvS       = S("a")
+	EvSB      = BS()
+	EvSI      = SI("a")
+	EvST      = ST("a")
+	EvUID     = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	EvV       = V(version.ConciseEncodingVersion)
 )
 
-var allEvents = []*TEvent{
-	EvBD, EvED, EvV, EvPAD, EvCOM, EvN, EvB, EvTT, EvFF, EvPI, EvNI, EvI,
+var allEvents = Events{
+	EvV, EvPAD, EvCS, EvCM, EvNULL, EvB, EvPI, EvNI, EvI,
 	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
-	EvBDFNAN, EvNAN, EvUID, EvGT, EvCT, EvL, EvM, EvST, /*EvSI, TODO: Some way to handle this */
+	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvST, /*EvSI, TODO: Some way to handle this */
 	EvNODE, EvEDGE, EvE,
-	EvMARK, EvREF, EvRREF, EvAC, EvAD, EvS, EvSB, EvRID, EvRB,
-	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvABB, EvAU8, EvAU8B, EvAU16,
-	EvAU16B, EvAU32, EvAU32B, EvAU64, EvAU64B, EvAI8, EvAI8B, EvAI16, EvAI16B,
-	EvAI32, EvAI32B, EvAI64, EvAI64B, EvAF16, EvAF16B, EvAF32, EvAF32B, EvAF64,
-	EvAF64B, EvAUU, EvAUUB, EvMB,
+	EvMARK, EvREFL, EvREFR, EvAC, EvAD, EvS, EvSB, EvRID, EvBRID,
+	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
+	EvBAU16, EvAU32, EvBAU32, EvAU64, EvBAU64, EvAI8, EvBAI8, EvAI16, EvBAI16,
+	EvAI32, EvBAI32, EvAI64, EvBAI64, EvAF16, EvBAF16, EvAF32, EvBAF32, EvAF64,
+	EvBAF64, EvAUU, EvBAUU, EvBMEDIA,
 }
 
-func FilterAllEvents(events []*TEvent, filter func(*TEvent) []*TEvent) []*TEvent {
-	filtered := []*TEvent{}
+func FilterAllEvents(events Events, filter func(Event) Events) Events {
+	filtered := Events{}
 	for _, event := range events {
 		filtered = append(filtered, filter(event)...)
 	}
 	return filtered
 }
 
-func FilterCTE(event *TEvent) []*TEvent {
-	switch event.Type {
-	case TEventPadding:
-		return []*TEvent{}
-	case TEventArrayBooleanBegin, TEventArrayFloat16Begin,
-		TEventArrayFloat32Begin, TEventArrayFloat64Begin,
-		TEventArrayInt8Begin, TEventArrayInt16Begin, TEventArrayInt32Begin,
-		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
-		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUIDBegin,
-		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
-		TEventRemoteRefBegin, TEventStringBegin:
-		return []*TEvent{S("x")}
-	case TEventArrayChunk, TEventArrayData:
-		return []*TEvent{}
+func FilterCTE(event Event) Events {
+	switch event.(type) {
+	case *EventPadding:
+		return Events{}
+	case *EventBeginArrayBit, *EventBeginArrayFloat16,
+		*EventBeginArrayFloat32, *EventBeginArrayFloat64,
+		*EventBeginArrayInt8, *EventBeginArrayInt16, *EventBeginArrayInt32,
+		*EventBeginArrayInt64, *EventBeginArrayUint8, *EventBeginArrayUint16,
+		*EventBeginArrayUint32, *EventBeginArrayUint64, *EventBeginArrayUID,
+		*EventBeginCustomBinary, *EventBeginCustomText, *EventBeginResourceID,
+		*EventBeginReferenceRemote, *EventBeginString:
+		return Events{S("x")}
+	case *EventArrayChunkMore, *EventArrayChunkLast, *EventArrayDataBit,
+		*EventArrayDataFloat16, *EventArrayDataFloat32, *EventArrayDataFloat64,
+		*EventArrayDataInt16, *EventArrayDataInt32, *EventArrayDataInt64, *EventArrayDataInt8,
+		*EventArrayDataText, *EventArrayDataUID, *EventArrayDataUint16,
+		*EventArrayDataUint32, *EventArrayDataUint64, *EventArrayDataUint8:
+		return Events{}
 	default:
-		return []*TEvent{event}
+		return Events{event}
 	}
 }
 
-func FilterContainer(event *TEvent) []*TEvent {
-	switch event.Type {
-	case TEventEnd:
-		return []*TEvent{}
+func FilterContainer(event Event) Events {
+	switch event.(type) {
+	case *EventEnd:
+		return Events{}
 	default:
-		return []*TEvent{event}
+		return Events{event}
 	}
 }
 
-func FilterKey(event *TEvent) []*TEvent {
-	switch event.Type {
-	case TEventEnd, TEventReference:
-		return []*TEvent{}
+func FilterKey(event Event) Events {
+	switch event.(type) {
+	case *EventEnd, *EventReferenceLocal:
+		return Events{}
 	default:
-		return []*TEvent{event}
+		return Events{event}
 	}
 }
 
-func FilterMarker(event *TEvent) []*TEvent {
-	switch event.Type {
-	case TEventComment, TEventMarker, TEventReference:
-		return []*TEvent{}
+func FilterMarker(event Event) Events {
+	switch event.(type) {
+	case *EventCommentSingleLine, *EventCommentMultiline, *EventMarker, *EventReferenceLocal:
+		return Events{}
 	default:
-		return []*TEvent{event}
+		return Events{event}
 	}
 }
 
-func FilterEventsForCTE(events []*TEvent) []*TEvent {
+func FilterEventsForCTE(events Events) Events {
 	return FilterAllEvents(events, FilterCTE)
 }
 
-func FilterEventsForMarker(events []*TEvent) []*TEvent {
+func FilterEventsForMarker(events Events) Events {
 	return FilterAllEvents(events, FilterMarker)
 }
 
-func FilterEventsForContainer(events []*TEvent) []*TEvent {
+func FilterEventsForContainer(events Events) Events {
 	return FilterAllEvents(events, FilterContainer)
 }
 
-func FilterEventsForKey(events []*TEvent) []*TEvent {
+func FilterEventsForKey(events Events) Events {
 	return FilterAllEvents(events, FilterKey)
 }
 
-func ComplementaryEvents(events []*TEvent) []*TEvent {
-	complementary := make([]*TEvent, 0, len(allEvents)/2)
+func ComplementaryEvents(events Events) Events {
+	complementary := make(Events, 0, len(allEvents)/2)
 	for _, event := range allEvents {
 		for _, compareEvent := range events {
 			if event == compareEvent {
@@ -510,60 +513,60 @@ func ComplementaryEvents(events []*TEvent) []*TEvent {
 }
 
 var (
-	ArrayBeginTypes = []*TEvent{
-		EvSB, EvRB, EvCBB, EvCTB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
-		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB, EvMB,
+	ArrayBeginTypes = Events{
+		EvSB, EvBRID, EvCBB, EvCTB, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
+		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAUU, EvBMEDIA,
 	}
 
-	StringArrayBeginTypes = []*TEvent{
-		EvSB, EvRB, EvCTB,
+	StringArrayBeginTypes = Events{
+		EvSB, EvBRID, EvCTB,
 	}
 
-	NonStringArrayBeginTypes = []*TEvent{
-		EvCBB, EvABB, EvAU8B, EvAU16B, EvAU32B, EvAU64B,
-		EvAI8B, EvAI16B, EvAI32B, EvAI64B, EvAF16B, EvAF32B, EvAF64B, EvAUUB, EvMB,
+	NonStringArrayBeginTypes = Events{
+		EvCBB, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
+		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAUU, EvBMEDIA,
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
-	InvalidTLOValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvREF}
+	InvalidTLOValues = Events{EvV, EvE, EvAC, EvAD, EvREFL}
 
-	ValidMapKeys = []*TEvent{
-		EvPAD, EvCOM, EvB, EvTT, EvFF, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
-		EvBDF, EvUID, EvGT, EvCT, EvMARK, EvS, EvSB, EvRID, EvRB,
-		EvREF, EvE,
+	ValidMapKeys = Events{
+		EvPAD, EvCS, EvCM, EvB, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
+		EvBDF, EvUID, EvT, EvCT, EvMARK, EvS, EvSB, EvRID, EvBRID,
+		EvREFL, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
 	ValidMapValues   = ComplementaryEvents(InvalidMapValues)
-	InvalidMapValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD}
+	InvalidMapValues = Events{EvV, EvE, EvAC, EvAD}
 
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
-	InvalidListValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+	InvalidListValues = Events{EvV, EvAC, EvAD}
 
 	ValidStructTemplateValues   = ComplementaryEvents(InvalidStructTemplateValues)
-	InvalidStructTemplateValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvMARK, EvREF}
+	InvalidStructTemplateValues = Events{EvV, EvAC, EvAD, EvMARK, EvREFL}
 
 	ValidStructInstanceValues   = ComplementaryEvents(InvalidStructInstanceValues)
-	InvalidStructInstanceValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+	InvalidStructInstanceValues = Events{EvV, EvAC, EvAD}
 
-	ValidAfterNonStringArrayBegin   = []*TEvent{EvAC, EvCOM}
+	ValidAfterNonStringArrayBegin   = Events{EvAC, EvCS, EvCM}
 	InvalidAfterNonStringArrayBegin = ComplementaryEvents(ValidAfterNonStringArrayBegin)
 
-	ValidAfterStringArrayBegin   = []*TEvent{EvAC}
+	ValidAfterStringArrayBegin   = Events{EvAC}
 	InvalidAfterStringArrayBegin = ComplementaryEvents(ValidAfterStringArrayBegin)
 
-	ValidAfterArrayChunk   = []*TEvent{EvAD}
+	ValidAfterArrayChunk   = Events{EvAD}
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = []*TEvent{EvBD, EvED, EvV, EvE, EvAC, EvAD, EvMARK, EvREF, EvRREF, EvST}
+	InvalidMarkerValues = Events{EvV, EvE, EvAC, EvAD, EvMARK, EvREFL, EvREFR, EvST}
 
-	Padding                     = []*TEvent{EvPAD}
-	CommentsPaddingRefEnd       = []*TEvent{EvPAD, EvCOM, EvREF, EvE}
-	CommentsPaddingMarkerRefEnd = []*TEvent{EvPAD, EvCOM, EvMARK, EvREF, EvE}
+	Padding                     = Events{EvPAD}
+	CommentsPaddingRefEnd       = Events{EvPAD, EvCS, EvCM, EvREFL, EvE}
+	CommentsPaddingMarkerRefEnd = Events{EvPAD, EvCS, EvCM, EvMARK, EvREFL, EvE}
 
 	ValidEdgeSources   = ComplementaryEvents(InvalidEdgeSources)
-	InvalidEdgeSources = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD, EvN, EvBDFNull, EvBBFNull, EvBINull}
+	InvalidEdgeSources = Events{EvV, EvAC, EvAD, EvNULL, EvBDFNull, EvBBFNull, EvBINull}
 
 	ValidEdgeDescriptions   = ValidListValues
 	InvalidEdgeDescriptions = InvalidListValues
@@ -572,79 +575,79 @@ var (
 	InvalidOEdgeDestinations = InvalidEdgeSources
 
 	ValidNodeValues   = ComplementaryEvents(InvalidNodeValues)
-	InvalidNodeValues = []*TEvent{EvBD, EvED, EvV, EvAC, EvAD}
+	InvalidNodeValues = Events{EvV, EvAC, EvAD}
 )
 
-func containsEvent(events []*TEvent, event *TEvent) bool {
+func containsEventType(events Events, event Event) bool {
 	for _, e := range events {
-		if e.Type == event.Type {
+		if reflect.TypeOf(e) == reflect.TypeOf(event) {
 			return true
 		}
 	}
 	return false
 }
 
-func RemoveEvents(srcEvents []*TEvent, disallowedEvents ...*TEvent) (events []*TEvent) {
+func RemoveEvents(srcEvents Events, disallowedEvents ...Event) (events Events) {
 	for _, event := range srcEvents {
-		if !containsEvent(disallowedEvents, event) {
+		if !containsEventType(disallowedEvents, event) {
 			events = append(events, event)
 		}
 	}
 	return
 }
 
-func copyEvents(events []*TEvent) []*TEvent {
-	newEvents := make([]*TEvent, len(events))
+func copyEvents(events Events) Events {
+	newEvents := make(Events, len(events))
 	copy(newEvents, events)
 	return newEvents
 }
 
-var basicCompletions = map[TEventType][]*TEvent{
-	TEventList:              {E()},
-	TEventMap:               {E()},
-	TEventStructTemplate:    {E(), I(1)},
-	TEventStructInstance:    {E()},
-	TEventNode:              {I(1), E()},
-	TEventEdge:              {RID("a"), RID("b"), I(1), E()},
-	TEventStringBegin:       {AC(1, false), AD([]byte{'a'})},
-	TEventResourceIDBegin:   {AC(1, false), AD([]byte{'a'})},
-	TEventRemoteRefBegin:    {AC(1, false), AD([]byte{'a'})},
-	TEventCustomBinaryBegin: {AC(1, false), AD([]byte{1})},
-	TEventCustomTextBegin:   {AC(1, false), AD([]byte{'a'})},
-	TEventArrayBooleanBegin: {AC(1, false), AD([]byte{1})},
-	TEventArrayUint8Begin:   {AC(1, false), AD(GenerateArrayElements(1, 1))},
-	TEventArrayUint16Begin:  {AC(1, false), AD(GenerateArrayElements(2, 1))},
-	TEventArrayUint32Begin:  {AC(1, false), AD(GenerateArrayElements(4, 1))},
-	TEventArrayUint64Begin:  {AC(1, false), AD(GenerateArrayElements(8, 1))},
-	TEventArrayInt8Begin:    {AC(1, false), AD(GenerateArrayElements(1, 1))},
-	TEventArrayInt16Begin:   {AC(1, false), AD(GenerateArrayElements(2, 1))},
-	TEventArrayInt32Begin:   {AC(1, false), AD(GenerateArrayElements(4, 1))},
-	TEventArrayInt64Begin:   {AC(1, false), AD(GenerateArrayElements(8, 1))},
-	TEventArrayFloat16Begin: {AC(1, false), AD(GenerateArrayElements(2, 1))},
-	TEventArrayFloat32Begin: {AC(1, false), AD(GenerateArrayElements(4, 1))},
-	TEventArrayFloat64Begin: {AC(1, false), AD(GenerateArrayElements(8, 1))},
-	TEventArrayUIDBegin:     {AC(1, false), AD(GenerateArrayElements(16, 1))},
-	TEventMediaBegin:        {AC(1, false), AD([]byte{'a'}), AC(0, false)},
+var basicCompletions = map[reflect.Type]Events{
+	reflect.TypeOf(L()):      {E()},
+	reflect.TypeOf(M()):      {E()},
+	reflect.TypeOf(ST("a")):  {E(), N(1)},
+	reflect.TypeOf(SI("a")):  {E()},
+	reflect.TypeOf(NODE()):   {N(1), E()},
+	reflect.TypeOf(EDGE()):   {RID("a"), RID("b"), N(1), E()},
+	reflect.TypeOf(BS()):     {ACL(1), ADT("a")},
+	reflect.TypeOf(BRID()):   {ACL(1), ADT("a")},
+	reflect.TypeOf(BREFR()):  {ACL(1), ADT("a")},
+	reflect.TypeOf(BCB()):    {ACL(1), ADU8([]byte{1})},
+	reflect.TypeOf(BCT()):    {ACL(1), ADT("a")},
+	reflect.TypeOf(BAB()):    {ACL(1), ADB([]bool{true})},
+	reflect.TypeOf(BAU8()):   {ACL(1), ADU8([]uint8{0})},
+	reflect.TypeOf(BAU16()):  {ACL(1), ADU16([]uint16{0})},
+	reflect.TypeOf(BAU32()):  {ACL(1), ADU32([]uint32{0})},
+	reflect.TypeOf(BAU64()):  {ACL(1), ADU64([]uint64{0})},
+	reflect.TypeOf(BAI8()):   {ACL(1), ADI8([]int8{0})},
+	reflect.TypeOf(BAI16()):  {ACL(1), ADI16([]int16{0})},
+	reflect.TypeOf(BAI32()):  {ACL(1), ADI32([]int32{0})},
+	reflect.TypeOf(BAI64()):  {ACL(1), ADI64([]int64{0})},
+	reflect.TypeOf(BAF16()):  {ACL(1), ADF16([]float32{0})},
+	reflect.TypeOf(BAF32()):  {ACL(1), ADF32([]float32{0})},
+	reflect.TypeOf(BAF64()):  {ACL(1), ADF64([]float64{0})},
+	reflect.TypeOf(BAU()):    {ACL(1), ADU([][]byte{[]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})},
+	reflect.TypeOf(BMEDIA()): {ACL(1), ADT("a"), ACL(0)},
 }
 
-func getBasicCompletion(stream []*TEvent) []*TEvent {
+func getBasicCompletion(stream Events) Events {
 	if len(stream) == 0 {
-		return []*TEvent{}
+		return Events{}
 	}
 	lastEvent := stream[len(stream)-1]
-	return basicCompletions[lastEvent.Type]
+	return basicCompletions[reflect.TypeOf(lastEvent)]
 }
 
 func allPossibleEventStreams(
-	docBegin []*TEvent,
-	prefix []*TEvent,
-	suffix []*TEvent,
-	docEnd []*TEvent,
-	event *TEvent,
-	possibleFollowups []*TEvent) (allEvents [][]*TEvent) {
+	docBegin Events,
+	prefix Events,
+	suffix Events,
+	docEnd Events,
+	event Event,
+	possibleFollowups Events) (allEvents []Events) {
 
-	switch event.Type {
-	case TEventMarker:
+	switch event.(type) {
+	case *EventMarker:
 		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues...), CommentsPaddingMarkerRefEnd...) {
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, prefix...)
@@ -655,21 +658,21 @@ func allPossibleEventStreams(
 			newStream = append(newStream, docEnd...)
 			allEvents = append(allEvents, newStream)
 		}
-	case TEventReference:
+	case *EventReferenceLocal:
 		for _, following := range RemoveEvents(RemoveEvents(possibleFollowups, InvalidMarkerValues...), CommentsPaddingMarkerRefEnd...) {
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, L(), MARK("a"))
 			newStream = append(newStream, following)
 			newStream = append(newStream, getBasicCompletion(newStream)...)
 			newStream = append(newStream, prefix...)
-			newStream = append(newStream, REF("a"))
+			newStream = append(newStream, REFL("a"))
 			newStream = append(newStream, suffix...)
 			newStream = append(newStream, E())
 			newStream = append(newStream, docEnd...)
 			allEvents = append(allEvents, newStream)
 		}
 
-	case TEventPadding:
+	case *EventPadding:
 		for _, following := range RemoveEvents(possibleFollowups, CommentsPaddingMarkerRefEnd...) {
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, prefix...)
@@ -680,21 +683,27 @@ func allPossibleEventStreams(
 			newStream = append(newStream, docEnd...)
 			allEvents = append(allEvents, newStream)
 		}
-	case TEventArrayBooleanBegin, TEventArrayFloat16Begin,
-		TEventArrayFloat32Begin, TEventArrayFloat64Begin,
-		TEventArrayInt8Begin, TEventArrayInt16Begin, TEventArrayInt32Begin,
-		TEventArrayInt64Begin, TEventArrayUint8Begin, TEventArrayUint16Begin,
-		TEventArrayUint32Begin, TEventArrayUint64Begin, TEventArrayUIDBegin,
-		TEventCustomBinaryBegin, TEventCustomTextBegin, TEventResourceIDBegin,
-		TEventRemoteRefBegin, TEventStringBegin:
+	case *EventBeginArrayBit, *EventBeginArrayFloat16,
+		*EventBeginArrayFloat32, *EventBeginArrayFloat64,
+		*EventBeginArrayInt8, *EventBeginArrayInt16, *EventBeginArrayInt32,
+		*EventBeginArrayInt64, *EventBeginArrayUint8, *EventBeginArrayUint16,
+		*EventBeginArrayUint32, *EventBeginArrayUint64, *EventBeginArrayUID,
+		*EventBeginCustomBinary, *EventBeginCustomText, *EventBeginResourceID,
+		*EventBeginReferenceRemote, *EventBeginString:
 		newStream := copyEvents(docBegin)
 		newStream = append(newStream, prefix...)
 		newStream = append(newStream, event)
-		newStream = append(newStream, AC(0, false))
+		newStream = append(newStream, ACL(0))
 		newStream = append(newStream, suffix...)
 		newStream = append(newStream, docEnd...)
 		allEvents = append(allEvents, newStream)
-	case TEventArrayChunk, TEventArrayData:
+	case *EventArrayChunkMore, *EventArrayChunkLast,
+		*EventArrayDataBit, *EventArrayDataFloat16,
+		*EventArrayDataFloat32, *EventArrayDataFloat64,
+		*EventArrayDataInt8, *EventArrayDataInt16, *EventArrayDataInt32,
+		*EventArrayDataInt64, *EventArrayDataUint8, *EventArrayDataUint16,
+		*EventArrayDataUint32, *EventArrayDataUint64, *EventArrayDataUID,
+		*EventArrayDataText:
 		// TODO: Implement this better somehow?
 		newStream := copyEvents(docBegin)
 		newStream = append(newStream, prefix...)
@@ -702,7 +711,7 @@ func allPossibleEventStreams(
 		newStream = append(newStream, suffix...)
 		newStream = append(newStream, docEnd...)
 		allEvents = append(allEvents, newStream)
-	case TEventEnd, TEventComment:
+	case *EventEnd, *EventCommentSingleLine, *EventCommentMultiline:
 		// Skip
 	default:
 		newStream := copyEvents(docBegin)
@@ -717,11 +726,11 @@ func allPossibleEventStreams(
 }
 
 func GenerateAllVariants(
-	docBegin []*TEvent,
-	prefix []*TEvent,
-	suffix []*TEvent,
-	docEnd []*TEvent,
-	possibleFollowups []*TEvent) (events [][]*TEvent) {
+	docBegin Events,
+	prefix Events,
+	suffix Events,
+	docEnd Events,
+	possibleFollowups Events) (events []Events) {
 
 	for _, event := range possibleFollowups {
 		events = append(events, allPossibleEventStreams(docBegin, prefix, suffix, docEnd, event, possibleFollowups)...)
@@ -730,90 +739,8 @@ func GenerateAllVariants(
 	return
 }
 
-func EventOrNull(eventType TEventType, value interface{}) *TEvent {
-	if value == nil {
-		eventType = TEventNull
-	}
-	return NewTEvent(eventType, value, nil)
-}
-
-// ----------------------------------------------------------------------------
-// Stored event convenience constructors
-// ----------------------------------------------------------------------------
-
-func TT() *TEvent                       { return NewTEvent(TEventTrue, nil, nil) }
-func FF() *TEvent                       { return NewTEvent(TEventFalse, nil, nil) }
-func I(v int64) *TEvent                 { return NewTEvent(TEventInt, v, nil) }
-func BF(v float64) *TEvent              { return NewTEvent(TEventFloat, v, nil) }
-func BBF(v *big.Float) *TEvent          { return EventOrNull(TEventBigFloat, v) }
-func DF(v compact_float.DFloat) *TEvent { return NewTEvent(TEventDecimalFloat, v, nil) }
-func BDF(v *apd.Decimal) *TEvent        { return EventOrNull(TEventBigDecimalFloat, v) }
-func V(v uint64) *TEvent                { return NewTEvent(TEventVersion, v, nil) }
-func NULL() *TEvent                     { return NewTEvent(TEventNull, nil, nil) }
-func PAD(v int) *TEvent                 { return NewTEvent(TEventPadding, v, nil) }
-func COM(m bool, v string) *TEvent      { return NewTEvent(TEventComment, m, v) }
-func B(v bool) *TEvent                  { return NewTEvent(TEventBool, v, nil) }
-func PI(v uint64) *TEvent               { return NewTEvent(TEventPInt, v, nil) }
-func NI(v uint64) *TEvent               { return NewTEvent(TEventNInt, v, nil) }
-func BI(v *big.Int) *TEvent             { return EventOrNull(TEventBigInt, v) }
-func QNAN() *TEvent                     { return NewTEvent(TEventQNan, nil, nil) }
-func SNAN() *TEvent                     { return NewTEvent(TEventSNan, nil, nil) }
-func UID(v []byte) *TEvent              { return NewTEvent(TEventUID, v, nil) }
-func GT(v time.Time) *TEvent            { return NewTEvent(TEventTime, v, nil) }
-func T(v compact_time.Time) *TEvent     { return EventOrNull(TEventCompactTime, v) }
-func S(v string) *TEvent                { return NewTEvent(TEventString, v, nil) }
-func RID(v string) *TEvent              { return NewTEvent(TEventResourceID, v, nil) }
-func RREF(v string) *TEvent             { return NewTEvent(TEventRemoteRef, v, nil) }
-func CB(v []byte) *TEvent               { return NewTEvent(TEventCustomBinary, v, nil) }
-func CT(v string) *TEvent               { return NewTEvent(TEventCustomText, v, nil) }
-func AB(l uint64, v []byte) *TEvent     { return NewTEvent(TEventArrayBoolean, l, v) }
-func AI8(v []int8) *TEvent              { return NewTEvent(TEventArrayInt8, v, nil) }
-func AI16(v []int16) *TEvent            { return NewTEvent(TEventArrayInt16, v, nil) }
-func AI32(v []int32) *TEvent            { return NewTEvent(TEventArrayInt32, v, nil) }
-func AI64(v []int64) *TEvent            { return NewTEvent(TEventArrayInt64, v, nil) }
-func AU8(v []byte) *TEvent              { return NewTEvent(TEventArrayUint8, v, nil) }
-func AU16(v []uint16) *TEvent           { return NewTEvent(TEventArrayUint16, v, nil) }
-func AU32(v []uint32) *TEvent           { return NewTEvent(TEventArrayUint32, v, nil) }
-func AU64(v []uint64) *TEvent           { return NewTEvent(TEventArrayUint64, v, nil) }
-func AF16(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat16, v, nil) }
-func AF32(v []float32) *TEvent          { return NewTEvent(TEventArrayFloat32, v, nil) }
-func AF64(v []float64) *TEvent          { return NewTEvent(TEventArrayFloat64, v, nil) }
-func AU(v [][]byte) *TEvent             { return NewTEvent(TEventArrayUID, v, nil) }
-func SB() *TEvent                       { return NewTEvent(TEventStringBegin, nil, nil) }
-func RB() *TEvent                       { return NewTEvent(TEventResourceIDBegin, nil, nil) }
-func RRB() *TEvent                      { return NewTEvent(TEventRemoteRefBegin, nil, nil) }
-func CBB() *TEvent                      { return NewTEvent(TEventCustomBinaryBegin, nil, nil) }
-func CTB() *TEvent                      { return NewTEvent(TEventCustomTextBegin, nil, nil) }
-func ABB() *TEvent                      { return NewTEvent(TEventArrayBooleanBegin, nil, nil) }
-func AI8B() *TEvent                     { return NewTEvent(TEventArrayInt8Begin, nil, nil) }
-func AI16B() *TEvent                    { return NewTEvent(TEventArrayInt16Begin, nil, nil) }
-func AI32B() *TEvent                    { return NewTEvent(TEventArrayInt32Begin, nil, nil) }
-func AI64B() *TEvent                    { return NewTEvent(TEventArrayInt64Begin, nil, nil) }
-func AU8B() *TEvent                     { return NewTEvent(TEventArrayUint8Begin, nil, nil) }
-func AU16B() *TEvent                    { return NewTEvent(TEventArrayUint16Begin, nil, nil) }
-func AU32B() *TEvent                    { return NewTEvent(TEventArrayUint32Begin, nil, nil) }
-func AU64B() *TEvent                    { return NewTEvent(TEventArrayUint64Begin, nil, nil) }
-func AF16B() *TEvent                    { return NewTEvent(TEventArrayFloat16Begin, nil, nil) }
-func AF32B() *TEvent                    { return NewTEvent(TEventArrayFloat32Begin, nil, nil) }
-func AF64B() *TEvent                    { return NewTEvent(TEventArrayFloat64Begin, nil, nil) }
-func AUB() *TEvent                      { return NewTEvent(TEventArrayUIDBegin, nil, nil) }
-func MB() *TEvent                       { return NewTEvent(TEventMediaBegin, nil, nil) }
-func AC(l uint64, more bool) *TEvent    { return NewTEvent(TEventArrayChunk, l, more) }
-func AD(v []byte) *TEvent               { return NewTEvent(TEventArrayData, v, nil) }
-func L() *TEvent                        { return NewTEvent(TEventList, nil, nil) }
-func M() *TEvent                        { return NewTEvent(TEventMap, nil, nil) }
-func ST(id string) *TEvent              { return NewTEvent(TEventStructTemplate, id, nil) }
-func SI(id string) *TEvent              { return NewTEvent(TEventStructInstance, id, nil) }
-func NODE() *TEvent                     { return NewTEvent(TEventNode, nil, nil) }
-func EDGE() *TEvent                     { return NewTEvent(TEventEdge, nil, nil) }
-func E() *TEvent                        { return NewTEvent(TEventEnd, nil, nil) }
-func MARK(id string) *TEvent            { return NewTEvent(TEventMarker, id, nil) }
-func REF(id string) *TEvent             { return NewTEvent(TEventReference, id, nil) }
-func BD() *TEvent                       { return NewTEvent(TEventBeginDocument, nil, nil) }
-func ED() *TEvent                       { return NewTEvent(TEventEndDocument, nil, nil) }
-
 // Converts a go value into a stored event
-func EventForValue(value interface{}) *TEvent {
+func EventForValue(value interface{}) Event {
 	rv := reflect.ValueOf(value)
 	if !rv.IsValid() {
 		return NULL()
@@ -822,11 +749,11 @@ func EventForValue(value interface{}) *TEvent {
 	case reflect.Bool:
 		return B(rv.Bool())
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return I(rv.Int())
+		return N(rv.Int())
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return PI(rv.Uint())
+		return N(rv.Uint())
 	case reflect.Float32, reflect.Float64:
-		return BF(rv.Float())
+		return N(rv.Float())
 	case reflect.String:
 		return S(rv.String())
 	case reflect.Slice:
@@ -840,11 +767,11 @@ func EventForValue(value interface{}) *TEvent {
 		}
 		switch rv.Type() {
 		case common.TypePBigDecimalFloat:
-			return BDF(rv.Interface().(*apd.Decimal))
+			return N(rv.Interface().(*apd.Decimal))
 		case common.TypePBigFloat:
-			return BBF(rv.Interface().(*big.Float))
+			return N(rv.Interface().(*big.Float))
 		case common.TypePBigInt:
-			return BI(rv.Interface().(*big.Int))
+			return N(rv.Interface().(*big.Int))
 		case common.TypePURL:
 			return RID(rv.Interface().(*url.URL).String())
 		}
@@ -853,22 +780,22 @@ func EventForValue(value interface{}) *TEvent {
 		switch rv.Type() {
 		case common.TypeBigDecimalFloat:
 			v := rv.Interface().(apd.Decimal)
-			return BDF(&v)
+			return N(&v)
 		case common.TypeBigFloat:
 			v := rv.Interface().(big.Float)
-			return BBF(&v)
+			return N(&v)
 		case common.TypeBigInt:
 			v := rv.Interface().(big.Int)
-			return BI(&v)
+			return N(&v)
 		case common.TypeCompactTime:
 			v := rv.Interface().(compact_time.Time)
 			return T(v)
 		case common.TypeDFloat:
 			v := rv.Interface().(compact_float.DFloat)
-			return DF(v)
+			return N(v)
 		case common.TypeTime:
 			v := rv.Interface().(time.Time)
-			return GT(v)
+			return T(compact_time.AsCompactTime(v))
 		case common.TypeURL:
 			v := rv.Interface().(url.URL)
 			return RID(v.String())
@@ -944,8 +871,8 @@ type TestingOuterStruct struct {
 	UID    types.UID
 }
 
-func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (events []*TEvent) {
-	ade := func(e ...*TEvent) {
+func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (events Events) {
+	ade := func(e ...Event) {
 		events = append(events, e...)
 	}
 	adv := func(value interface{}) {
@@ -955,7 +882,7 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		adv(name)
 		adv(value)
 	}
-	ane := func(name string, e ...*TEvent) {
+	ane := func(name string, e ...Event) {
 		adv(name)
 		ade(e...)
 	}
@@ -1034,18 +961,18 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 	if includeFakes {
 		ane("F1", B(true))
 		ane("F2", B(false))
-		ane("F3", I(1))
-		ane("F4", I(-1))
-		ane("F5", BF(1.1))
-		ane("F6", BBF(NewBigFloat("1.1")))
-		ane("F7", DF(NewDFloat("1.1")))
-		ane("F8", BDF(NewBDF("1.1")))
+		ane("F3", N(1))
+		ane("F4", N(-1))
+		ane("F5", N(1.1))
+		ane("F6", N(NewBigFloat("1.1")))
+		ane("F7", N(NewDFloat("1.1")))
+		ane("F8", N(NewBDF("1.1")))
 		ane("F9", NULL())
-		ane("F10", BI(NewBigInt("1000")))
-		ane("F12", QNAN())
-		ane("F13", SNAN())
+		ane("F10", N(NewBigInt("1000")))
+		ane("F12", N(compact_float.QuietNaN()))
+		ane("F13", N(compact_float.SignalingNaN()))
 		ane("F14", UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}))
-		ane("F15", GT(_this.Time))
+		ane("F15", T(compact_time.AsCompactTime(_this.Time)))
 		ane("F16", T(_this.CTime))
 		ane("F17", AU8([]byte{1}))
 		ane("F18", S("xyz"))
@@ -1056,18 +983,18 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 		ane("FakeDeep", L(), M(), S("A"), L(),
 			B(true),
 			B(false),
-			I(1),
-			I(-1),
-			BF(1.1),
-			BBF(NewBigFloat("1.1")),
-			DF(NewDFloat("1.1")),
-			BDF(NewBDF("1.1")),
+			N(1),
+			N(-1),
+			N(1.1),
+			N(NewBigFloat("1.1")),
+			N(NewDFloat("1.1")),
+			N(NewBDF("1.1")),
 			NULL(),
-			BI(NewBigInt("1000")),
-			QNAN(),
-			SNAN(),
+			N(NewBigInt("1000")),
+			N(compact_float.QuietNaN()),
+			N(compact_float.SignalingNaN()),
 			UID([]byte{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
-			GT(_this.Time),
+			T(compact_time.AsCompactTime(_this.Time)),
 			T(_this.CTime),
 			AU8([]byte{1}),
 			S("xyz"),

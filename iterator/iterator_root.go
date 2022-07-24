@@ -71,7 +71,7 @@ func (_this *RootObjectIterator) Init(context *Context,
 	_this.opts = opts
 	_this.context = iteratorContext(context,
 		eventReceiver,
-		_this.addReference)
+		_this.addLocalReference)
 }
 
 // Iterates over an object, sending events to the root iterator's
@@ -102,7 +102,7 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 // ============================================================================
 // Internal
 
-func (_this *RootObjectIterator) getNamedReference(ptr duplicates.TypedPointer) (name []byte, exists bool) {
+func (_this *RootObjectIterator) getNamedLocalReference(ptr duplicates.TypedPointer) (name []byte, exists bool) {
 	num, exists := _this.namedReferences[ptr]
 	if !exists {
 		num = _this.nextMarkerName
@@ -113,7 +113,7 @@ func (_this *RootObjectIterator) getNamedReference(ptr duplicates.TypedPointer) 
 	return []byte(fmt.Sprintf("%v", num)), exists
 }
 
-func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateReferenceEvent bool) {
+func (_this *RootObjectIterator) addLocalReference(v reflect.Value) (didGenerateReferenceEvent bool) {
 	if !_this.opts.RecursionSupport {
 		return false
 	}
@@ -123,12 +123,12 @@ func (_this *RootObjectIterator) addReference(v reflect.Value) (didGenerateRefer
 		return false
 	}
 
-	name, exists := _this.getNamedReference(ptr)
+	name, exists := _this.getNamedLocalReference(ptr)
 	if !exists {
 		_this.context.EventReceiver.OnMarker(name)
 		return false
 	}
 
-	_this.context.EventReceiver.OnReference(name)
+	_this.context.EventReceiver.OnReferenceLocal(name)
 	return true
 }

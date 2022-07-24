@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -138,13 +137,12 @@ func (_this *interfaceBuilder) BuildFromMedia(ctx *Context, mediaType string, da
 	return dst
 }
 
-func (_this *interfaceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	dst.Set(reflect.ValueOf(value))
-	return dst
-}
-
-func (_this *interfaceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	dst.Set(reflect.ValueOf(value))
+func (_this *interfaceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+	if gTime, err := value.AsGoTime(); err == nil {
+		dst.Set(reflect.ValueOf(gTime))
+	} else {
+		dst.Set(reflect.ValueOf(value))
+	}
 	return dst
 }
 
@@ -184,8 +182,8 @@ func (_this *interfaceBuilder) BuildBeginMarker(ctx *Context, id []byte) {
 	panic("TODO: interfaceBuilder.BuildBeginMarker")
 }
 
-func (_this *interfaceBuilder) BuildFromReference(ctx *Context, id []byte) {
-	panic("TODO: interfaceBuilder.BuildFromReference")
+func (_this *interfaceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	panic("TODO: interfaceBuilder.BuildFromLocalReference")
 }
 
 func (_this *interfaceBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {

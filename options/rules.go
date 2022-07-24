@@ -30,7 +30,7 @@ type RuleOptions struct {
 	MaxResourceIDByteLength uint64
 	MaxContainerDepth       uint64
 	MaxObjectCount          uint64
-	MaxReferenceCount       uint64
+	MaxLocalReferenceCount  uint64
 
 	// TODO: Max bytes total for all array types
 	MaxTotalArrayBytes uint64
@@ -46,7 +46,7 @@ var defaultRuleOptions = RuleOptions{
 	MaxResourceIDByteLength: 10000,
 	MaxContainerDepth:       1000,
 	MaxObjectCount:          10000000,
-	MaxReferenceCount:       100000,
+	MaxLocalReferenceCount:  100000,
 	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 }
 
@@ -72,8 +72,8 @@ func (_this *RuleOptions) ApplyDefaults() {
 	if _this.MaxObjectCount < 1 {
 		_this.MaxObjectCount = defaultRuleOptions.MaxObjectCount
 	}
-	if _this.MaxReferenceCount < 1 {
-		_this.MaxReferenceCount = defaultRuleOptions.MaxReferenceCount
+	if _this.MaxLocalReferenceCount < 1 {
+		_this.MaxLocalReferenceCount = defaultRuleOptions.MaxLocalReferenceCount
 	}
 }
 

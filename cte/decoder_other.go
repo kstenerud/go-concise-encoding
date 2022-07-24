@@ -397,7 +397,7 @@ func advanceAndDecodeMarker(ctx *DecoderContext) {
 	decodeByFirstChar(ctx)
 }
 
-func advanceAndDecodeReference(ctx *DecoderContext) {
+func advanceAndDecodeLocalReference(ctx *DecoderContext) {
 	ctx.AssertHasStructuralWS()
 	ctx.Stream.AdvanceByte() // Advance past '$'
 
@@ -407,7 +407,7 @@ func advanceAndDecodeReference(ctx *DecoderContext) {
 		return
 	}
 
-	ctx.EventReceiver.OnReference(ctx.Stream.ReadIdentifier())
+	ctx.EventReceiver.OnReferenceLocal(ctx.Stream.ReadIdentifier())
 	ctx.AwaitStructuralWS()
 }
 
@@ -581,7 +581,7 @@ func continueDecodingAsDate(ctx *DecoderContext, token Token, decodedCount int, 
 	token = token[decodedCount:]
 	tvalue, decodedCount := token.CompleteDate(ctx.TextPos, year)
 	token = token[decodedCount:]
-	ctx.EventReceiver.OnCompactTime(tvalue)
+	ctx.EventReceiver.OnTime(tvalue)
 	token.AssertAtEnd(ctx.TextPos, "date")
 }
 
@@ -592,6 +592,6 @@ func continueDecodingAsTime(ctx *DecoderContext, token Token, decodedCount int, 
 	token = token[decodedCount:]
 	tvalue, decodedCount := token.CompleteTime(ctx.TextPos, 0, 0, 0, hour)
 	token = token[decodedCount:]
-	ctx.EventReceiver.OnCompactTime(tvalue)
+	ctx.EventReceiver.OnTime(tvalue)
 	token.AssertAtEnd(ctx.TextPos, "time")
 }

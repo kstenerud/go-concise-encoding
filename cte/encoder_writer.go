@@ -27,7 +27,6 @@ import (
 	"math"
 	"math/big"
 	"strconv"
-	"time"
 	"unicode/utf8"
 
 	"github.com/cockroachdb/apd/v2"
@@ -413,6 +412,16 @@ func (_this *Writer) WriteBigFloat(value *big.Float) {
 
 	var buff [64]byte
 	used := value.Append(buff[:0], 'x', -1)
+	if len(used) > 3 {
+		end := len(used) - 4
+		if used[end] == 'p' &&
+			// +-
+			used[end+2] == '0' &&
+			used[end+3] == '0' {
+			used = used[:end]
+		}
+	}
+
 	_this.WriteBytesNotLF(used)
 }
 
@@ -487,11 +496,7 @@ func (_this *Writer) WriteUID(v []byte) {
 	_this.WriteHexByte(v[15])
 }
 
-func (_this *Writer) WriteTime(value time.Time) {
-	_this.WriteCompactTime(compact_time.AsCompactTime(value))
-}
-
-func (_this *Writer) WriteCompactTime(value compact_time.Time) {
+func (_this *Writer) WriteTime(value compact_time.Time) {
 	if value.IsZeroValue() {
 		_this.WriteNull()
 		return
@@ -662,11 +667,11 @@ func (_this *Writer) WriteMarkerBegin(id []byte) {
 	_this.WriteByteNotLF(':')
 }
 
-func (_this *Writer) WriteReferenceBegin() {
+func (_this *Writer) WriteRemoteReferenceBegin() {
 	_this.WriteByteNotLF('$')
 }
 
-func (_this *Writer) WriteReference(id []byte) {
+func (_this *Writer) WriteLocalReference(id []byte) {
 	_this.WriteByteNotLF('$')
 	_this.WriteBytesNotLF(id)
 }

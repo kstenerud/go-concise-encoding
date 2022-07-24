@@ -89,7 +89,7 @@ const (
 	cbeTypeArrayUint8     cbeTypeField = 0x95
 	cbeTypeArrayBit       cbeTypeField = 0x96
 	cbeTypeMarker         cbeTypeField = 0x97
-	cbeTypeReference      cbeTypeField = 0x98
+	cbeTypeLocalReference cbeTypeField = 0x98
 	cbeTypeDate           cbeTypeField = 0x99
 	cbeTypeTime           cbeTypeField = 0x9a
 	cbeTypeTimestamp      cbeTypeField = 0x9b
@@ -132,47 +132,47 @@ const (
 )
 
 var isPlane2Array = []bool{
-	events.ArrayTypeBit:          false,
-	events.ArrayTypeUint8:        false,
-	events.ArrayTypeUint16:       true,
-	events.ArrayTypeUint32:       true,
-	events.ArrayTypeUint64:       true,
-	events.ArrayTypeInt8:         true,
-	events.ArrayTypeInt16:        true,
-	events.ArrayTypeInt32:        true,
-	events.ArrayTypeInt64:        true,
-	events.ArrayTypeFloat16:      true,
-	events.ArrayTypeFloat32:      true,
-	events.ArrayTypeFloat64:      true,
-	events.ArrayTypeUID:          true,
-	events.ArrayTypeString:       false,
-	events.ArrayTypeResourceID:   false,
-	events.ArrayTypeRemoteRef:    true,
-	events.ArrayTypeMedia:        true,
-	events.ArrayTypeCustomBinary: false,
-	events.ArrayTypeCustomText:   false,
+	events.ArrayTypeBit:             false,
+	events.ArrayTypeUint8:           false,
+	events.ArrayTypeUint16:          true,
+	events.ArrayTypeUint32:          true,
+	events.ArrayTypeUint64:          true,
+	events.ArrayTypeInt8:            true,
+	events.ArrayTypeInt16:           true,
+	events.ArrayTypeInt32:           true,
+	events.ArrayTypeInt64:           true,
+	events.ArrayTypeFloat16:         true,
+	events.ArrayTypeFloat32:         true,
+	events.ArrayTypeFloat64:         true,
+	events.ArrayTypeUID:             true,
+	events.ArrayTypeString:          false,
+	events.ArrayTypeResourceID:      false,
+	events.ArrayTypeReferenceRemote: true,
+	events.ArrayTypeMedia:           true,
+	events.ArrayTypeCustomBinary:    false,
+	events.ArrayTypeCustomText:      false,
 }
 
 var arrayTypeToCBEType = []cbeTypeField{
-	events.ArrayTypeBit:          cbeTypeArrayBit,
-	events.ArrayTypeUint8:        cbeTypeArrayUint8,
-	events.ArrayTypeUint16:       cbeTypeArrayUint16,
-	events.ArrayTypeUint32:       cbeTypeArrayUint32,
-	events.ArrayTypeUint64:       cbeTypeArrayUint64,
-	events.ArrayTypeInt8:         cbeTypeArrayInt8,
-	events.ArrayTypeInt16:        cbeTypeArrayInt16,
-	events.ArrayTypeInt32:        cbeTypeArrayInt32,
-	events.ArrayTypeInt64:        cbeTypeArrayInt64,
-	events.ArrayTypeFloat16:      cbeTypeArrayFloat16,
-	events.ArrayTypeFloat32:      cbeTypeArrayFloat32,
-	events.ArrayTypeFloat64:      cbeTypeArrayFloat64,
-	events.ArrayTypeUID:          cbeTypeArrayUID,
-	events.ArrayTypeString:       cbeTypeString,
-	events.ArrayTypeResourceID:   cbeTypeRID,
-	events.ArrayTypeCustomBinary: cbeTypeCustomType,
-	events.ArrayTypeCustomText:   cbeTypeCustomType,
-	events.ArrayTypeRemoteRef:    cbeTypeRemoteReference,
-	events.ArrayTypeMedia:        cbeTypeMedia,
+	events.ArrayTypeBit:             cbeTypeArrayBit,
+	events.ArrayTypeUint8:           cbeTypeArrayUint8,
+	events.ArrayTypeUint16:          cbeTypeArrayUint16,
+	events.ArrayTypeUint32:          cbeTypeArrayUint32,
+	events.ArrayTypeUint64:          cbeTypeArrayUint64,
+	events.ArrayTypeInt8:            cbeTypeArrayInt8,
+	events.ArrayTypeInt16:           cbeTypeArrayInt16,
+	events.ArrayTypeInt32:           cbeTypeArrayInt32,
+	events.ArrayTypeInt64:           cbeTypeArrayInt64,
+	events.ArrayTypeFloat16:         cbeTypeArrayFloat16,
+	events.ArrayTypeFloat32:         cbeTypeArrayFloat32,
+	events.ArrayTypeFloat64:         cbeTypeArrayFloat64,
+	events.ArrayTypeUID:             cbeTypeArrayUID,
+	events.ArrayTypeString:          cbeTypeString,
+	events.ArrayTypeResourceID:      cbeTypeRID,
+	events.ArrayTypeCustomBinary:    cbeTypeCustomType,
+	events.ArrayTypeCustomText:      cbeTypeCustomType,
+	events.ArrayTypeReferenceRemote: cbeTypeRemoteReference,
+	events.ArrayTypeMedia:           cbeTypeMedia,
 }
 
 var cbePlane2TypeToArrayType = [256]events.ArrayType{

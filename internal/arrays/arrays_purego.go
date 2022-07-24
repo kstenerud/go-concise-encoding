@@ -23,6 +23,8 @@
 
 package arrays
 
+func Uint8SliceAsBytes(data []uint8) []byte { return []byte(data) }
+
 func Int8SliceAsBytes(data []int8) []byte { return int8SliceToBytes(data) }
 
 func Uint16SliceAsBytes(data []uint16) []byte { return uint16SliceToBytes(data) }

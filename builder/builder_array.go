@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -139,15 +138,9 @@ func (_this *arrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data [
 	return object
 }
 
-func (_this *arrayBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+func (_this *arrayBuilder) BuildFromTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.advanceElem()
 	_this.elemGenerator(ctx).BuildFromTime(ctx, value, object)
-	return object
-}
-
-func (_this *arrayBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
-	object := _this.advanceElem()
-	_this.elemGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	return object
 }
 
@@ -176,11 +169,11 @@ func (_this *arrayBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *arrayBuilder) BuildFromReference(ctx *Context, id []byte) {
+func (_this *arrayBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	container := _this.container
 	index := _this.elemIndex
 	_this.elemIndex++
-	ctx.NotifyReference(id, func(object reflect.Value) {
+	ctx.NotifyLocalReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, container.Index(index))
 	})
 }

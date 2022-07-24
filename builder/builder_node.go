@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -136,14 +135,8 @@ func (_this *nodeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []
 	return _this.value
 }
 
-func (_this *nodeBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+func (_this *nodeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	globalInterfaceBuilder.BuildFromTime(ctx, value, _this.value)
-	_this.stackChildrenBuilder(ctx)
-	return _this.value
-}
-
-func (_this *nodeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
-	globalInterfaceBuilder.BuildFromCompactTime(ctx, value, _this.value)
 	_this.stackChildrenBuilder(ctx)
 	return _this.value
 }
@@ -168,8 +161,8 @@ func (_this *nodeBuilder) BuildBeginNodeContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *nodeBuilder) BuildFromReference(ctx *Context, id []byte) {
-	ctx.NotifyReference(id, func(object reflect.Value) {
+func (_this *nodeBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+	ctx.NotifyLocalReference(id, func(object reflect.Value) {
 		setAnythingFromAnything(object, _this.value)
 	})
 	_this.stackChildrenBuilder(ctx)

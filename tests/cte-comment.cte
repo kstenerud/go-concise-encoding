@@ -15,63 +15,63 @@ c0
             "name" = "Comment basic structure"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "com false " "n 1"]
+                    "events" = ["v 0" "cs " "n 1"]
                     "document" = "\.^
 c0
 //
 1^"
                 }
                 {
-                    "events" = ["v 0" "com false test" "n 1"]
+                    "events" = ["v 0" "cs test" "n 1"]
                     "document" = "\.^
 c0
 //test
 1^"
                 }
                 {
-                    "events" = ["v 0" "com false  test" "n 1"]
+                    "events" = ["v 0" "cs  test" "n 1"]
                     "document" = "\.^
 c0
 // test
 1^"
                 }
                 {
-                    "events" = ["v 0" "com false  test " "n 1"]
+                    "events" = ["v 0" "cs  test " "n 1"]
                     "document" = "\.^
 c0
 // test 
 1^"
                 }
                 {
-                    "events" = ["v 0" "com false  /* test */" "n 1"]
+                    "events" = ["v 0" "cs  /* test */" "n 1"]
                     "document" = "\.^
 c0
 // /* test */
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true " "n 1"]
+                    "events" = ["v 0" "cm " "n 1"]
                     "document" = "\.^
 c0
 /**/
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true test" "n 1"]
+                    "events" = ["v 0" "cm test" "n 1"]
                     "document" = "\.^
 c0
 /*test*/
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  test " "n 1"]
+                    "events" = ["v 0" "cm  test " "n 1"]
                     "document" = "\.^
 c0
 /* test */
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  test\nmultiline" "n 1"]
+                    "events" = ["v 0" "cm  test\nmultiline" "n 1"]
                     "document" = "\.^
 c0
 /* test
@@ -79,42 +79,42 @@ multiline*/
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  test /* nested */ " "n 1"]
+                    "events" = ["v 0" "cm  test /* nested */ " "n 1"]
                     "document" = "\.^
 c0
 /* test /* nested */ */
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true /**/" "n 1"]
+                    "events" = ["v 0" "cm /**/" "n 1"]
                     "document" = "\.^
 c0
 /*/**/*/
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true /*/**/*/" "n 1"]
+                    "events" = ["v 0" "cm /*/**/*/" "n 1"]
                     "document" = "\.^
 c0
 /*/*/**/*/*/
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  a /* b /* c */ d */ e " "n 1"]
+                    "events" = ["v 0" "cm  a /* b /* c */ d */ e " "n 1"]
                     "document" = "\.^
 c0
 /* a /* b /* c */ d */ e */
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  test // nested " "n 1"]
+                    "events" = ["v 0" "cm  test // nested " "n 1"]
                     "document" = "\.^
 c0
 /* test // nested */
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  test\n/* nested */\n" "n 1"]
+                    "events" = ["v 0" "cm  test\n/* nested */\n" "n 1"]
                     "document" = "\.^
 c0
 /* test
@@ -123,7 +123,7 @@ c0
 1^"
                 }
                 {
-                    "events" = ["v 0" "com true  test\n// nested\n" "n 1"]
+                    "events" = ["v 0" "cm  test\n// nested\n" "n 1"]
                     "document" = "\.^
 c0
 /* test
@@ -133,20 +133,20 @@ c0
                 }
             ]
             "decodeEncode" = [
-                {"document"="c0 //\r\n1"  "events"=["v 0" "com false " "n 1"]}
-                {"document"="c0 // \r\n1"  "events"=["v 0" "com false  " "n 1"]}
-                {"document"="c0 // test\r\n1"  "events"=["v 0" "com false  test" "n 1"]}
+                {"document"="c0 //\r\n1"  "events"=["v 0" "cs " "n 1"]}
+                {"document"="c0 // \r\n1"  "events"=["v 0" "cs  " "n 1"]}
+                {"document"="c0 // test\r\n1"  "events"=["v 0" "cs  test" "n 1"]}
                 {
                     "document" = "\.^
 c0
 /* x */1^"
-                    "events" = ["v 0" "com true  x " "n 1"]
+                    "events" = ["v 0" "cm  x " "n 1"]
                 }
                 {
                     "document" = "\.^
 c0
 /* x */ 1^"
-                    "events" = ["v 0" "com true  x " "n 1"]
+                    "events" = ["v 0" "cm  x " "n 1"]
                 }
             ]
             "decodeFail" = [
@@ -168,7 +168,7 @@ c0
             "name" = "Comment positioning (list)"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "l" "com false  x" "e"]
+                    "events" = ["v 0" "l" "cs  x" "e"]
                     "document" = "\.^
 c0
 [
@@ -176,7 +176,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "com true  x " "e"]
+                    "events" = ["v 0" "l" "cm  x " "e"]
                     "document" = "\.^
 c0
 [
@@ -184,7 +184,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "com false  x" "s abc" "e"]
+                    "events" = ["v 0" "l" "cs  x" "s abc" "e"]
                     "document" = "\.^
 c0
 [
@@ -193,7 +193,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "com true  x " "s abc" "e"]
+                    "events" = ["v 0" "l" "cm  x " "s abc" "e"]
                     "document" = "\.^
 c0
 [
@@ -202,7 +202,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "s abc" "com false  x" "e"]
+                    "events" = ["v 0" "l" "s abc" "cs  x" "e"]
                     "document" = "\.^
 c0
 [
@@ -211,7 +211,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "s abc" "com true  x " "e"]
+                    "events" = ["v 0" "l" "s abc" "cm  x " "e"]
                     "document" = "\.^
 c0
 [
@@ -228,7 +228,7 @@ c0
 [
     "abc"// x
 ]^"
-                    "events" = ["v 0" "l" "s abc" "com false  x" "e"]
+                    "events" = ["v 0" "l" "s abc" "cs  x" "e"]
                 }
 */
                 {
@@ -237,7 +237,7 @@ c0
 [
     "abc" // x
 ]^"
-                    "events" = ["v 0" "l" "s abc" "com false  x" "e"]
+                    "events" = ["v 0" "l" "s abc" "cs  x" "e"]
                 }
                 {
                     "document" = "\.^
@@ -245,7 +245,7 @@ c0
 [
     "abc" /* x */
 ]^"
-                    "events" = ["v 0" "l" "s abc" "com true  x " "e"]
+                    "events" = ["v 0" "l" "s abc" "cm  x " "e"]
                 }
 /* TODO: Allow "abc"/* x */
                 {
@@ -254,7 +254,7 @@ c0
 [
     "abc"/* x */
 ]^"
-                    "events" = ["v 0" "l" "s abc" "com true  x " "e"]
+                    "events" = ["v 0" "l" "s abc" "cm  x " "e"]
                 }
 */
                 {
@@ -263,7 +263,7 @@ c0
 [
     /* x */ "abc"
 ]^"
-                    "events" = ["v 0" "l" "com true  x " "s abc" "e"]
+                    "events" = ["v 0" "l" "cm  x " "s abc" "e"]
                 }
             ]
         }
@@ -274,7 +274,7 @@ c0
             "name" = "Comment positioning (map)"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "m" "com false  x" "e"]
+                    "events" = ["v 0" "m" "cs  x" "e"]
                     "document" = "\.^
 c0
 {
@@ -282,7 +282,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "com true  x " "e"]
+                    "events" = ["v 0" "m" "cm  x " "e"]
                     "document" = "\.^
 c0
 {
@@ -290,7 +290,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "com false  x" "s abc" "n 1" "e"]
+                    "events" = ["v 0" "m" "cs  x" "s abc" "n 1" "e"]
                     "document" = "\.^
 c0
 {
@@ -299,7 +299,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "com true  x " "s abc" "n 1" "e"]
+                    "events" = ["v 0" "m" "cm  x " "s abc" "n 1" "e"]
                     "document" = "\.^
 c0
 {
@@ -308,7 +308,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "s abc" "n 1" "com false  x" "e"]
+                    "events" = ["v 0" "m" "s abc" "n 1" "cs  x" "e"]
                     "document" = "\.^
 c0
 {
@@ -317,7 +317,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "s abc" "n 1" "com true  x " "e"]
+                    "events" = ["v 0" "m" "s abc" "n 1" "cm  x " "e"]
                     "document" = "\.^
 c0
 {
@@ -326,7 +326,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "s abc" "com false  x" "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cs  x" "n 1" "e"]
                     "document" = "\.^
 c0
 {
@@ -335,7 +335,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "s abc" "com true  x " "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cm  x " "n 1" "e"]
                     "document" = "\.^
 c0
 {
@@ -353,7 +353,7 @@ c0
     "abc"// x
     = 1
 }^"
-                    "events" = ["v 0" "m" "s abc" "com false  x" "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cs  x" "n 1" "e"]
                 }
 */
 /* TODO: Allow comment between key and value
@@ -364,7 +364,7 @@ c0
     "abc" // x
     = 1
 }^"
-                    "events" = ["v 0" "m" "s abc" "com false  x" "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cs  x" "n 1" "e"]
                 }
 */
                 {
@@ -374,7 +374,7 @@ c0
     "abc" = // x
     1
 }^"
-                    "events" = ["v 0" "m" "s abc" "com false  x" "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cs  x" "n 1" "e"]
                 }
 /* TODO: Allow comment between key and value
                 {
@@ -384,7 +384,7 @@ c0
     "abc" /* x */
     = 1
 }^"
-                    "events" = ["v 0" "m" "s abc" "com true  x " "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cm  x " "n 1" "e"]
                 }
 */
                 {
@@ -394,7 +394,7 @@ c0
     "abc" = /* x */
     1
 }^"
-                    "events" = ["v 0" "m" "s abc" "com true  x " "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cm  x " "n 1" "e"]
                 }
 /* TODO: Allow "abc"/* x */
                 {
@@ -404,7 +404,7 @@ c0
     "abc"/* x */
     = 1
 }^"
-                    "events" = ["v 0" "m" "s abc" "com true  x " "n 1" "e"]
+                    "events" = ["v 0" "m" "s abc" "cm  x " "n 1" "e"]
                 }
 */
                 {
@@ -413,7 +413,7 @@ c0
 {
     /* x */ "abc" = 1
 }^"
-                    "events" = ["v 0" "m" "com true  x " "s abc" "n 1" "e"]
+                    "events" = ["v 0" "m" "cm  x " "s abc" "n 1" "e"]
                 }
             ]
         }
@@ -424,7 +424,7 @@ c0
             "name" = "Comment positioning (edge)"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "l" "edge" "com false  x" "n 1" "n 2" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "edge" "cs  x" "n 1" "n 2" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -437,7 +437,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "edge" "com true  x " "n 1" "n 2" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "edge" "cm  x " "n 1" "n 2" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -450,7 +450,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "edge" "n 1" "com false  x" "n 2" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "edge" "n 1" "cs  x" "n 2" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -463,7 +463,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "edge" "n 1" "com true  x " "n 2" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "edge" "n 1" "cm  x " "n 2" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -476,7 +476,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "edge" "n 1" "n 2" "com false  x" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "edge" "n 1" "n 2" "cs  x" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -489,7 +489,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "edge" "n 1" "n 2" "com true  x " "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "edge" "n 1" "n 2" "cm  x " "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -510,7 +510,7 @@ c0
             "name" = "Comment positioning (node)"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "l" "node" "com false  x" "n 1" "e" "e"]
+                    "events" = ["v 0" "l" "node" "cs  x" "n 1" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -520,7 +520,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "node" "n 1" "com false  x" "e" "e"]
+                    "events" = ["v 0" "l" "node" "n 1" "cs  x" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -530,7 +530,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "node" "n 1" "com false  x" "n 2" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "node" "n 1" "cs  x" "n 2" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -542,7 +542,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "node" "n 1" "n 2" "com false  x" "n 3" "e" "e"]
+                    "events" = ["v 0" "l" "node" "n 1" "n 2" "cs  x" "n 3" "e" "e"]
                     "document" = "\.^
 c0
 [
@@ -562,11 +562,11 @@ c0
             "name" = "Complex comment"
             "encodeDecode" = [
                 {
-                    "events" = ["v 0" "com true "
+                    "events" = ["v 0" "cm "
                                     "m"
-                                        "com true "
-                                        "s a" "com true " "s b"
-                                        "com true "
+                                        "cm "
+                                        "s a" "cm " "s b"
+                                        "cm "
                                     "e"]
                     "document" = "\.^
 c0

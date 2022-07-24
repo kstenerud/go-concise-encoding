@@ -53,15 +53,15 @@ func capturePanic(operation func()) (err error) {
 	return
 }
 
-func wrapPanic(format string, args ...interface{}) {
-	if r := recover(); r != nil {
+func wrapPanic(recovery interface{}, format string, args ...interface{}) {
+	if recovery != nil {
 		message := fmt.Sprintf(format, args...)
 
-		switch e := r.(type) {
+		switch e := recovery.(type) {
 		case error:
 			panic(fmt.Errorf("%v: %w", message, e))
 		default:
-			panic(fmt.Errorf("%v: %v", message, r))
+			panic(fmt.Errorf("%v: %v", message, e))
 		}
 	}
 }
@@ -115,11 +115,11 @@ func assertEventProducingOperation(trace bool, debug bool, receiver events.DataE
 	describeSrc func() string) {
 
 	if debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
+		receiver = test.NewEventPrinter(receiver)
 	}
 
-	eventStore := test.NewTEventStore(receiver)
-	receiver = eventStore
+	var eventStore *test.EventCollection
+	receiver, eventStore = test.NewEventCollector(receiver)
 	op := func() {
 		operation(receiver)
 	}
@@ -127,7 +127,7 @@ func assertEventProducingOperation(trace bool, debug bool, receiver events.DataE
 	if trace {
 		defer func() {
 			if r := recover(); r != nil {
-				message := fmt.Sprintf("%v unexpectedly failed after producing events %v", describeSrc(), eventStore.Events)
+				message := fmt.Sprintf("%v unexpectedly failed after producing events [%v]", describeSrc(), eventStore.Events)
 
 				switch e := r.(type) {
 				case error:
@@ -140,14 +140,14 @@ func assertEventProducingOperation(trace bool, debug bool, receiver events.DataE
 		operation(receiver)
 	} else {
 		if err := capturePanic(op); err != nil {
-			testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
+			testFailed("%v unexpectedly failed after producing events [%v]: %w", describeSrc(), eventStore.Events, err)
 		}
 	}
 }
 
-func decodeCTE(trace bool, debug bool, document string) []*test.TEvent {
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	rules := rules.NewRules(eventStore, nil)
+func decodeCTE(trace bool, debug bool, document string) test.Events {
+	receiver, eventStore := test.NewEventCollector(nil)
+	rules := rules.NewRules(receiver, nil)
 	assertEventProducingOperation(trace, debug, rules,
 		func(recv events.DataEventReceiver) {
 			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
@@ -158,7 +158,7 @@ func decodeCTE(trace bool, debug bool, document string) []*test.TEvent {
 	return eventStore.Events
 }
 
-func encodeCTE(trace bool, debug bool, evts []*test.TEvent) string {
+func encodeCTE(trace bool, debug bool, eventStore test.Events) string {
 	buffer := &bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -166,19 +166,17 @@ func encodeCTE(trace bool, debug bool, evts []*test.TEvent) string {
 
 	assertEventProducingOperation(trace, debug, rules,
 		func(recv events.DataEventReceiver) {
-			for _, event := range evts {
-				event.Invoke(recv)
-			}
+			test.InvokeEventsAsCompleteDocument(recv, eventStore...)
 		}, func() string {
-			return fmt.Sprintf("Events %v", desc(evts))
+			return fmt.Sprintf("events [%v]", desc(eventStore))
 		})
 
 	return buffer.String()
 }
 
-func decodeCBE(trace bool, debug bool, document []byte) []*test.TEvent {
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	rules := rules.NewRules(eventStore, nil)
+func decodeCBE(trace bool, debug bool, document []byte) test.Events {
+	receiver, eventStore := test.NewEventCollector(nil)
+	rules := rules.NewRules(receiver, nil)
 	assertEventProducingOperation(trace, debug, rules,
 		func(recv events.DataEventReceiver) {
 			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
@@ -189,7 +187,7 @@ func decodeCBE(trace bool, debug bool, document []byte) []*test.TEvent {
 	return eventStore.Events
 }
 
-func encodeCBE(trace bool, debug bool, evts []*test.TEvent) []byte {
+func encodeCBE(trace bool, debug bool, eventStore test.Events) []byte {
 	buffer := &bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
@@ -197,11 +195,9 @@ func encodeCBE(trace bool, debug bool, evts []*test.TEvent) []byte {
 
 	assertEventProducingOperation(trace, debug, rules,
 		func(recv events.DataEventReceiver) {
-			for _, event := range evts {
-				event.Invoke(recv)
-			}
+			test.InvokeEventsAsCompleteDocument(recv, eventStore...)
 		}, func() string {
-			return fmt.Sprintf("Events %v", desc(evts))
+			return fmt.Sprintf("events [%v]", desc(eventStore))
 		})
 
 	return buffer.Bytes()

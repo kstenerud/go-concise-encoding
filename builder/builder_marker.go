@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -135,14 +134,8 @@ func (_this *markerObjectBuilder) BuildFromMedia(ctx *Context, mediaType string,
 	return dst
 }
 
-func (_this *markerObjectBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *markerObjectBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromTime(ctx, value, dst)
-	_this.onObjectFinished(ctx, object)
-	return object
-}
-
-func (_this *markerObjectBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	object := _this.child.BuildFromCompactTime(ctx, value, dst)
 	_this.onObjectFinished(ctx, object)
 	return object
 }

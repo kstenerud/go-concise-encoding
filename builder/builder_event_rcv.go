@@ -87,6 +87,11 @@ func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 	}
 
 	v := _this.object
+	switch v.Type() {
+	case reflect.TypeOf(time.Time{}):
+		return _this.object.Interface()
+	}
+
 	switch v.Kind() {
 	case reflect.Struct, reflect.Array:
 		return v.Addr().Interface()
@@ -104,13 +109,13 @@ func (_this *BuilderEventReceiver) GetBuiltObject() interface{} {
 
 func (_this *BuilderEventReceiver) OnBeginDocument()       {}
 func (_this *BuilderEventReceiver) OnVersion(_ uint64)     {}
-func (_this *BuilderEventReceiver) OnPadding(_ int)        {}
+func (_this *BuilderEventReceiver) OnPadding()             {}
 func (_this *BuilderEventReceiver) OnComment(bool, []byte) {}
 
 func (_this *BuilderEventReceiver) OnNull() {
 	_this.context.CurrentBuilder.BuildFromNull(&_this.context, _this.object)
 }
-func (_this *BuilderEventReceiver) OnBool(value bool) {
+func (_this *BuilderEventReceiver) OnBoolean(value bool) {
 	_this.context.CurrentBuilder.BuildFromBool(&_this.context, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnTrue() {
@@ -167,11 +172,8 @@ func (_this *BuilderEventReceiver) OnNan(signaling bool) {
 func (_this *BuilderEventReceiver) OnUID(value []byte) {
 	_this.context.CurrentBuilder.BuildFromUID(&_this.context, value, _this.object)
 }
-func (_this *BuilderEventReceiver) OnTime(value time.Time) {
+func (_this *BuilderEventReceiver) OnTime(value compact_time.Time) {
 	_this.context.CurrentBuilder.BuildFromTime(&_this.context, value, _this.object)
-}
-func (_this *BuilderEventReceiver) OnCompactTime(value compact_time.Time) {
-	_this.context.CurrentBuilder.BuildFromCompactTime(&_this.context, value, _this.object)
 }
 func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
 	_this.context.CurrentBuilder.BuildFromArray(&_this.context, arrayType, value, _this.object)
@@ -226,7 +228,7 @@ func (_this *BuilderEventReceiver) OnEnd() {
 func (_this *BuilderEventReceiver) OnMarker(id []byte) {
 	_this.context.BeginMarkerObject(id)
 }
-func (_this *BuilderEventReceiver) OnReference(id []byte) {
-	_this.context.CurrentBuilder.BuildFromReference(&_this.context, id)
+func (_this *BuilderEventReceiver) OnReferenceLocal(id []byte) {
+	_this.context.CurrentBuilder.BuildFromLocalReference(&_this.context, id)
 }
 func (_this *BuilderEventReceiver) OnEndDocument() {}

@@ -49,6 +49,10 @@ func asBytes(ptr unsafe.Pointer, length int) []byte {
 	return (*[common.AddressSpace]byte)(ptr)[:length]
 }
 
+func Uint8SliceAsBytes(data []uint8) []byte {
+	return []byte(data)
+}
+
 func Int8SliceAsBytes(data []int8) []byte {
 	if isLittleEndian {
 		return asBytes(unsafe.Pointer(&data[0]), len(data))

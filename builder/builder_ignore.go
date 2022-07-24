@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -104,12 +103,7 @@ func (_this *ignoreBuilder) BuildFromMedia(ctx *Context, mediaType string, data 
 	return dst
 }
 
-func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
-	ctx.UnstackBuilder()
-	return dst
-}
-
-func (_this *ignoreBuilder) BuildFromCompactTime(ctx *Context, _ compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ignoreBuilder) BuildFromTime(ctx *Context, _ compact_time.Time, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return dst
 }
@@ -130,7 +124,7 @@ func (_this *ignoreBuilder) BuildNewNode(ctx *Context) {
 	ctx.StackBuilder(globalIgnoreContainerBuilder)
 }
 
-func (_this *ignoreBuilder) BuildFromReference(ctx *Context, _ []byte) {
+func (_this *ignoreBuilder) BuildFromLocalReference(ctx *Context, _ []byte) {
 	ctx.UnstackBuilder()
 }
 
@@ -234,12 +228,7 @@ func (_this *ignoreXTimesBuilder) BuildFromMedia(ctx *Context, mediaType string,
 	return dst
 }
 
-func (_this *ignoreXTimesBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	_this.tryFinish(ctx)
-	return dst
-}
-
-func (_this *ignoreXTimesBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ignoreXTimesBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	_this.tryFinish(ctx)
 	return dst
 }
@@ -260,7 +249,7 @@ func (_this *ignoreXTimesBuilder) BuildNewNode(ctx *Context) {
 	ctx.StackBuilder(globalIgnoreContainerBuilder)
 }
 
-func (_this *ignoreXTimesBuilder) BuildFromReference(ctx *Context, id []byte) {
+func (_this *ignoreXTimesBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	_this.tryFinish(ctx)
 }
 
@@ -329,11 +318,7 @@ func (_this *ignoreContainerBuilder) BuildFromMedia(ctx *Context, mediaType stri
 	return dst
 }
 
-func (_this *ignoreContainerBuilder) BuildFromTime(ctx *Context, _ time.Time, dst reflect.Value) reflect.Value {
-	return dst
-}
-
-func (_this *ignoreContainerBuilder) BuildFromCompactTime(ctx *Context, _ compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *ignoreContainerBuilder) BuildFromTime(ctx *Context, _ compact_time.Time, dst reflect.Value) reflect.Value {
 	return dst
 }
 
@@ -369,7 +354,7 @@ func (_this *ignoreContainerBuilder) BuildBeginEdgeContents(ctx *Context) {
 func (_this *ignoreContainerBuilder) BuildBeginNodeContents(ctx *Context) {
 }
 
-func (_this *ignoreContainerBuilder) BuildFromReference(ctx *Context, _ []byte) {
+func (_this *ignoreContainerBuilder) BuildFromLocalReference(ctx *Context, _ []byte) {
 }
 
 func (_this *ignoreContainerBuilder) NotifyChildContainerFinished(ctx *Context, _ reflect.Value) {

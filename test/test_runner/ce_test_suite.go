@@ -41,7 +41,9 @@ func (_this *CETestSuite) String() string {
 
 func (_this *CETestSuite) postDecodeInit() {
 	postDecodeCETest := func(test *CETestRunner, index int) {
-		defer func() { wrapPanic("malformed unit test %v at index %v", test, index) }()
+		defer func() {
+			wrapPanic(recover(), "malformed CE test at index %v (%v)", index, test)
+		}()
 		test.postDecodeInit()
 	}
 	for index, test := range _this.CETests {
@@ -49,7 +51,9 @@ func (_this *CETestSuite) postDecodeInit() {
 	}
 
 	postDecodeCTETest := func(test *CTETestRunner, index int) {
-		defer func() { wrapPanic("malformed CTE unit test %v at index %v", test, index) }()
+		defer func() {
+			wrapPanic(recover(), "malformed CTE test at index %v (%v)", index, test)
+		}()
 		test.postDecodeInit()
 	}
 	for index, test := range _this.CTETests {
@@ -57,7 +61,9 @@ func (_this *CETestSuite) postDecodeInit() {
 	}
 
 	postDecodeCBETest := func(test *CBETestRunner, index int) {
-		defer func() { wrapPanic("malformed CBE unit test %v at index %v", test, index) }()
+		defer func() {
+			wrapPanic(recover(), "malformed CBE test at index %v (%v)", index, test)
+		}()
 		test.postDecodeInit()
 	}
 	for index, test := range _this.CBETests {
@@ -67,7 +73,9 @@ func (_this *CETestSuite) postDecodeInit() {
 
 func (_this *CETestSuite) validate() {
 	validateCETest := func(test *CETestRunner, index int) {
-		defer func() { wrapPanic("unit test %v at index %v failed validation", test, index) }()
+		defer func() {
+			wrapPanic(recover(), "CE test at index %v (%v) failed validation", index, test)
+		}()
 		test.validate()
 	}
 	for index, test := range _this.CETests {
@@ -75,7 +83,9 @@ func (_this *CETestSuite) validate() {
 	}
 
 	validateCTETest := func(test *CTETestRunner, index int) {
-		defer func() { wrapPanic("CTE unit test %v at index %v failed validation", test, index) }()
+		defer func() {
+			wrapPanic(recover(), "CTE test at index %v (%v) failed validation", index, test)
+		}()
 		test.validate()
 	}
 	for index, test := range _this.CTETests {
@@ -83,7 +93,9 @@ func (_this *CETestSuite) validate() {
 	}
 
 	validateCBETest := func(test *CBETestRunner, index int) {
-		defer func() { wrapPanic("CBE unit test %v at index %v failed validation", test, index) }()
+		defer func() {
+			wrapPanic(recover(), "CBE test at index %v (%v) failed validation", index, test)
+		}()
 		test.validate()
 	}
 	for index, test := range _this.CBETests {
@@ -92,18 +104,22 @@ func (_this *CETestSuite) validate() {
 }
 
 func (_this *CETestSuite) run(t *testing.T) {
+
 	fmt.Printf("Running test suite: %v\n", _this.TestFile)
 
 	errorCount := 0
 
 	runCETest := func(test *CETestRunner, index int) (success bool) {
-		defer func() { success = !reportAnyError(recover(), test.Trace, "❌ CE test index %v - %v", index, test) }()
+		defer func() { wrapPanic(recover(), "CE test at index %v (%v)", index, test) }()
+		defer func() {
+			success = !reportAnyError(recover(), test.Trace, "❌ %v, CE test %v: %v", _this.TestFile, index, test)
+		}()
 		test.run()
 		return
 	}
 	for index, test := range _this.CETests {
 		if runCETest(test, index) {
-			fmt.Printf("✅ CE test index %v - %v\n", index, test)
+			fmt.Printf("✅ %v, CE test %v: %v\n", _this.TestFile, index, test)
 		} else {
 			errorCount++
 			if _this.Options.FailFast {
@@ -115,16 +131,19 @@ func (_this *CETestSuite) run(t *testing.T) {
 	}
 
 	runCTETest := func(test *CTETestRunner, index int) (success bool) {
+		defer func() { wrapPanic(recover(), "CE test at index %v (%v)", index, test) }()
 		success = true
 		if !test.Trace {
-			defer func() { success = !reportAnyError(recover(), test.Trace, "❌ CTE test index %v - %v", index, test) }()
+			defer func() {
+				success = !reportAnyError(recover(), test.Trace, "❌ %v, CTE test %v: %v", _this.TestFile, index, test)
+			}()
 		}
 		test.run()
 		return
 	}
 	for index, test := range _this.CTETests {
 		if runCTETest(test, index) {
-			fmt.Printf("✅ CTE test index %v - %v\n", index, test)
+			fmt.Printf("✅ %v, CTE test %v: %v\n", _this.TestFile, index, test)
 		} else {
 			errorCount++
 			if _this.Options.FailFast {
@@ -136,13 +155,16 @@ func (_this *CETestSuite) run(t *testing.T) {
 	}
 
 	runCBETest := func(test *CBETestRunner, index int) (success bool) {
-		defer func() { success = !reportAnyError(recover(), test.Trace, "❌ CBE test index %v - %v", index, test) }()
+		defer func() { wrapPanic(recover(), "CE test at index %v (%v)", index, test) }()
+		defer func() {
+			success = !reportAnyError(recover(), test.Trace, "❌ %v, CBE test %v: %v", _this.TestFile, index, test)
+		}()
 		test.run()
 		return
 	}
 	for index, test := range _this.CBETests {
 		if runCBETest(test, index) {
-			fmt.Printf("✅ CBE test index %v - %v\n", index, test)
+			fmt.Printf("✅ %v, CBE test %v: %v\n", _this.TestFile, index, test)
 		} else {
 			errorCount++
 			if _this.Options.FailFast {

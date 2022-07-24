@@ -40,7 +40,7 @@ import (
 )
 
 func iterateTime(context *Context, v reflect.Value) {
-	context.EventReceiver.OnTime(v.Interface().(time.Time))
+	context.EventReceiver.OnTime(compact_time.AsCompactTime(v.Interface().(time.Time)))
 }
 
 func iteratePTime(context *Context, v reflect.Value) {
@@ -48,13 +48,13 @@ func iteratePTime(context *Context, v reflect.Value) {
 		context.NotifyNil()
 	} else {
 		t := v.Interface().(*time.Time)
-		context.EventReceiver.OnTime(*t)
+		context.EventReceiver.OnTime(compact_time.AsCompactTime(*t))
 	}
 }
 
 func iterateCompactTime(context *Context, v reflect.Value) {
 	ct := v.Interface().(compact_time.Time)
-	context.EventReceiver.OnCompactTime(ct)
+	context.EventReceiver.OnTime(ct)
 }
 
 func iteratePCompactTime(context *Context, v reflect.Value) {
@@ -62,7 +62,7 @@ func iteratePCompactTime(context *Context, v reflect.Value) {
 		context.NotifyNil()
 	} else {
 		t := v.Interface().(*compact_time.Time)
-		context.EventReceiver.OnCompactTime(*t)
+		context.EventReceiver.OnTime(*t)
 	}
 }
 
@@ -124,7 +124,7 @@ func iterateDecimalFloat(context *Context, v reflect.Value) {
 }
 
 func iterateBool(context *Context, v reflect.Value) {
-	context.EventReceiver.OnBool(v.Bool())
+	context.EventReceiver.OnBoolean(v.Bool())
 }
 
 func iterateInt(context *Context, v reflect.Value) {
@@ -198,7 +198,7 @@ func newPointerIterator(ctx *Context, pointerType reflect.Type) IteratorFunction
 			context.NotifyNil()
 			return
 		}
-		if context.TryAddReference(v) {
+		if context.TryAddLocalReference(v) {
 			return
 		}
 		iterate(context, v.Elem())
@@ -213,7 +213,7 @@ func newSliceOrArrayAsListIterator(ctx *Context, sliceType reflect.Type) Iterato
 			context.NotifyNil()
 			return
 		}
-		if context.TryAddReference(v) {
+		if context.TryAddLocalReference(v) {
 			return
 		}
 
@@ -235,7 +235,7 @@ func newMapIterator(ctx *Context, mapType reflect.Type) IteratorFunction {
 			context.NotifyNil()
 			return
 		}
-		if context.TryAddReference(v) {
+		if context.TryAddLocalReference(v) {
 			return
 		}
 
@@ -516,24 +516,22 @@ func iterateSliceOrArrayBool(context *Context, v reflect.Value) {
 		return
 	}
 
-	nextData := data
-	var nextByte uint8
-	if v.Index(0).Bool() {
-		nextByte = 1
+	iDst := 0
+	for iSrc := 0; iSrc < elementCount; {
+		bitCount := 8
+		if elementCount-iSrc < 8 {
+			bitCount = elementCount - iSrc
+		}
+		accum := byte(0)
+		for iBit := 0; iBit < bitCount; iBit++ {
+			if v.Index(iBit).Bool() {
+				accum |= 1 << iBit
+			}
+			iSrc++
+		}
+		data[iDst] = accum
+		iDst++
 	}
 
-	for i := 1; i < elementCount; i++ {
-		if i&7 == 0 {
-			nextData[0] = nextByte
-			nextData = nextData[1:]
-		}
-		nextByte <<= 1
-		if v.Index(i).Bool() {
-			nextByte |= 1
-		}
-	}
-	if elementCount&7 != 0 {
-		nextData[0] = nextByte
-	}
 	context.EventReceiver.OnArray(events.ArrayTypeBit, uint64(elementCount), data)
 }

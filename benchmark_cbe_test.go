@@ -264,14 +264,14 @@ func BenchmarkJSONUnmarshal(b *testing.B) {
 
 func BenchmarkRules(b *testing.B) {
 	b.Helper()
-	store := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver, store := test.NewEventCollector(nil)
 	iterSession := iterator.NewSession(nil, nil)
 	iterOptions := options.DefaultIteratorOptions()
 	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(store, &iterOptions)
+	iter := iterSession.NewIterator(receiver, &iterOptions)
 
 	objs := generate()
-	documents := make([][]*test.TEvent, 0, len(objs))
+	documents := make([]test.Events, 0, len(objs))
 	for _, obj := range objs {
 		iter.Iterate(obj)
 		documents = append(documents, store.Events)
@@ -283,21 +283,21 @@ func BenchmarkRules(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		r.Reset()
-		test.InvokeEvents(r, documents[index]...)
+		test.InvokeEventsAsCompleteDocument(r, documents[index]...)
 	}
 	b.StopTimer()
 }
 
 func BenchmarkBuilder(b *testing.B) {
 	b.Helper()
-	store := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver, store := test.NewEventCollector(nil)
 	iterSession := iterator.NewSession(nil, nil)
 	iterOptions := options.DefaultIteratorOptions()
 	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(store, &iterOptions)
+	iter := iterSession.NewIterator(receiver, &iterOptions)
 
 	objs := generate()
-	documents := make([][]*test.TEvent, 0, len(objs))
+	documents := make([]test.Events, 0, len(objs))
 	for _, obj := range objs {
 		iter.Iterate(obj)
 		documents = append(documents, store.Events)
@@ -310,7 +310,7 @@ func BenchmarkBuilder(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		builder := builderSession.NewBuilderFor(template, nil)
-		test.InvokeEvents(builder, documents[index]...)
+		test.InvokeEventsAsCompleteDocument(builder, documents[index]...)
 	}
 	b.StopTimer()
 }

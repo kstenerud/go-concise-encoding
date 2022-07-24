@@ -25,7 +25,6 @@ import (
 	"fmt"
 
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/event_parser"
@@ -135,27 +134,27 @@ func (_this *CTETestRunner) run() {
 type CTEDecodeFailTest string
 
 func (_this CTEDecodeFailTest) run() {
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver := rules.NewRules(eventStore, nil)
+	receiver, eventStore := test.NewEventCollector(nil)
+	receiver = rules.NewRules(receiver, nil)
 	err := capturePanic(func() {
 		// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
 		_ = cte.NewDecoder(nil).Decode(bytes.NewBuffer([]byte(_this)), receiver)
 	})
 	if err == nil {
-		panic(fmt.Errorf("expected CTE [%v] to fail, but generated events %v", _this, eventStore.Events))
+		panic(fmt.Errorf("expected CTE [%v] to fail, but generated events [%v]", _this, eventStore.Events))
 	}
 }
 
 type CTEDecodeTest struct {
 	Document string
 	Events   []string
-	events   []*test.TEvent
+	events   test.Events
 	debug    bool
 	trace    bool
 }
 
 func (_this *CTEDecodeTest) postDecodeInit() {
-	_this.events = event_parser.ParseEvents(_this.Events)
+	_this.events = event_parser.ParseEvents(_this.Events...)
 }
 
 func (_this *CTEDecodeTest) validate() {
@@ -164,8 +163,8 @@ func (_this *CTEDecodeTest) validate() {
 func (_this *CTEDecodeTest) run() {
 	expectedEvents := _this.events
 	actualEvents := decodeCTE(_this.trace, _this.debug, _this.Document)
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		testFailed("Expected document %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		testFailed("Expected document %v to produce events [%v] but got [%v]",
 			desc(_this.Document), expectedEvents, actualEvents)
 	}
 }
@@ -173,13 +172,13 @@ func (_this *CTEDecodeTest) run() {
 type CTEEncodeTest struct {
 	Document string
 	Events   []string
-	events   []*test.TEvent
+	events   test.Events
 	debug    bool
 	trace    bool
 }
 
 func (_this *CTEEncodeTest) postDecodeInit() {
-	_this.events = event_parser.ParseEvents(_this.Events)
+	_this.events = event_parser.ParseEvents(_this.Events...)
 }
 
 func (_this *CTEEncodeTest) validate() {
@@ -189,7 +188,7 @@ func (_this *CTEEncodeTest) run() {
 	expectedDocument := _this.Document
 	actualDocument := encodeCTE(_this.trace, _this.debug, _this.events)
 	if expectedDocument != actualDocument {
-		testFailed("Expected events %v to encode to document %v but got %v",
+		testFailed("Expected events [%v] to encode to document %v but got %v",
 			desc(_this.events), desc(expectedDocument), desc(actualDocument))
 	}
 }
@@ -197,13 +196,13 @@ func (_this *CTEEncodeTest) run() {
 type CTEEncodeDecodeTest struct {
 	Document string
 	Events   []string
-	events   []*test.TEvent
+	events   test.Events
 	debug    bool
 	trace    bool
 }
 
 func (_this *CTEEncodeDecodeTest) postDecodeInit() {
-	_this.events = event_parser.ParseEvents(_this.Events)
+	_this.events = event_parser.ParseEvents(_this.Events...)
 }
 
 func (_this *CTEEncodeDecodeTest) validate() {
@@ -213,14 +212,14 @@ func (_this *CTEEncodeDecodeTest) run() {
 	expectedDocument := _this.Document
 	actualDocument := encodeCTE(_this.trace, _this.debug, _this.events)
 	if expectedDocument != actualDocument {
-		testFailed("Expected events %v to encode to document %v but got %v",
+		testFailed("Expected events [%v] to encode to document %v but got %v",
 			desc(_this.events), desc(expectedDocument), desc(actualDocument))
 	}
 
 	expectedEvents := _this.events
 	actualEvents := decodeCTE(_this.trace, _this.debug, actualDocument)
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		testFailed("Expected document %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		testFailed("Expected document %v to produce events [%v] but got [%v]",
 			desc(actualDocument), expectedEvents, actualEvents)
 	}
 }
@@ -228,13 +227,13 @@ func (_this *CTEEncodeDecodeTest) run() {
 type CTEDecodeEncodeTest struct {
 	Document string
 	Events   []string
-	events   []*test.TEvent
+	events   test.Events
 	debug    bool
 	trace    bool
 }
 
 func (_this *CTEDecodeEncodeTest) postDecodeInit() {
-	_this.events = event_parser.ParseEvents(_this.Events)
+	_this.events = event_parser.ParseEvents(_this.Events...)
 }
 
 func (_this *CTEDecodeEncodeTest) validate() {
@@ -243,15 +242,15 @@ func (_this *CTEDecodeEncodeTest) validate() {
 func (_this *CTEDecodeEncodeTest) run() {
 	expectedEvents := _this.events
 	actualEvents := decodeCTE(_this.trace, _this.debug, _this.Document)
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		testFailed("Expected document %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		testFailed("Expected document %v to produce events [%v] but got [%v]",
 			desc(_this.Document), expectedEvents, actualEvents)
 	}
 
 	encodedDocument := encodeCTE(_this.trace, _this.debug, actualEvents)
 	secondRunEvents := decodeCTE(_this.trace, _this.debug, encodedDocument)
-	if !test.AreAllEventsEquivalent(expectedEvents, secondRunEvents) {
-		testFailed("Expected document %v re-encoded to %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, secondRunEvents) {
+		testFailed("Expected document %v re-encoded to %v to produce events [%v] but got [%v]",
 			desc(_this.Document), desc(encodedDocument), expectedEvents, secondRunEvents)
 	}
 }

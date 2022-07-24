@@ -23,7 +23,6 @@ package builder
 import (
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -115,14 +114,9 @@ func (_this *structInstanceBuilder) BuildFromMedia(ctx *Context, mediaType strin
 	return _this.builder.BuildFromMedia(ctx, mediaType, data, dst)
 }
 
-func (_this *structInstanceBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *structInstanceBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	_this.sendKey(ctx)
 	return _this.builder.BuildFromTime(ctx, value, dst)
-}
-
-func (_this *structInstanceBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	_this.sendKey(ctx)
-	return _this.builder.BuildFromCompactTime(ctx, value, dst)
 }
 
 func (_this *structInstanceBuilder) BuildNewList(ctx *Context) {
@@ -149,9 +143,9 @@ func (_this *structInstanceBuilder) BuildEndContainer(ctx *Context) {
 	_this.builder.BuildEndContainer(ctx)
 }
 
-func (_this *structInstanceBuilder) BuildFromReference(ctx *Context, id []byte) {
+func (_this *structInstanceBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	_this.sendKey(ctx)
-	_this.builder.BuildFromReference(ctx, id)
+	_this.builder.BuildFromLocalReference(ctx, id)
 }
 
 func (_this *structInstanceBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {

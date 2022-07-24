@@ -22,7 +22,6 @@ package events
 
 import (
 	"math/big"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -38,9 +37,9 @@ func NewNullEventReceiver() *NullEventReceiver {
 func (_this *NullEventReceiver) OnBeginDocument()                    {}
 func (_this *NullEventReceiver) OnVersion(uint64)                    {}
 func (_this *NullEventReceiver) OnComment(bool, []byte)              {}
-func (_this *NullEventReceiver) OnPadding(int)                       {}
+func (_this *NullEventReceiver) OnPadding()                          {}
 func (_this *NullEventReceiver) OnNull()                             {}
-func (_this *NullEventReceiver) OnBool(bool)                         {}
+func (_this *NullEventReceiver) OnBoolean(bool)                      {}
 func (_this *NullEventReceiver) OnTrue()                             {}
 func (_this *NullEventReceiver) OnFalse()                            {}
 func (_this *NullEventReceiver) OnPositiveInt(uint64)                {}
@@ -53,8 +52,7 @@ func (_this *NullEventReceiver) OnDecimalFloat(compact_float.DFloat) {}
 func (_this *NullEventReceiver) OnBigDecimalFloat(*apd.Decimal)      {}
 func (_this *NullEventReceiver) OnNan(bool)                          {}
 func (_this *NullEventReceiver) OnUID([]byte)                        {}
-func (_this *NullEventReceiver) OnTime(time.Time)                    {}
-func (_this *NullEventReceiver) OnCompactTime(compact_time.Time)     {}
+func (_this *NullEventReceiver) OnTime(compact_time.Time)            {}
 func (_this *NullEventReceiver) OnArray(ArrayType, uint64, []byte)   {}
 func (_this *NullEventReceiver) OnStringlikeArray(ArrayType, string) {}
 func (_this *NullEventReceiver) OnArrayBegin(ArrayType)              {}
@@ -68,5 +66,5 @@ func (_this *NullEventReceiver) OnEdge()                             {}
 func (_this *NullEventReceiver) OnNode()                             {}
 func (_this *NullEventReceiver) OnEnd()                              {}
 func (_this *NullEventReceiver) OnMarker([]byte)                     {}
-func (_this *NullEventReceiver) OnReference([]byte)                  {}
+func (_this *NullEventReceiver) OnReferenceLocal([]byte)             {}
 func (_this *NullEventReceiver) OnEndDocument()                      {}

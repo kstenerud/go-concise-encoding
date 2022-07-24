@@ -46,7 +46,7 @@ type CETestRunner struct {
 	Trace    bool
 	Skip     bool
 
-	events             []*test.TEvent
+	events             test.Events
 	srcEventTypes      map[string]bool
 	dstEventTypes      map[string]bool
 	requiredEventTypes map[string]bool
@@ -65,7 +65,7 @@ func (_this *CETestRunner) postDecodeInit() {
 		return
 	}
 
-	_this.events = event_parser.ParseEvents(_this.Events)
+	_this.events = event_parser.ParseEvents(_this.Events...)
 	_this.Cte = strings.TrimSpace(_this.Cte)
 	_this.srcEventTypes = toMembershipSet(_this.From)
 	_this.dstEventTypes = toMembershipSet(_this.To)
@@ -174,7 +174,7 @@ func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 	describeSrc func() string) {
 
 	if _this.Debug {
-		receiver = test.NewStdoutTEventPrinter(receiver)
+		receiver = test.NewEventPrinter(receiver)
 	}
 
 	if !_this.MustFail && _this.Trace {
@@ -182,23 +182,17 @@ func (_this *CETestRunner) assertOperation(receiver events.DataEventReceiver,
 		return
 	}
 
-	eventStore := test.NewTEventStore(receiver)
-	receiver = eventStore
+	var eventStore *test.EventCollection
+	receiver, eventStore = test.NewEventCollector(receiver)
 
 	err := capturePanic(func() {
 		operation(receiver)
 	})
 
 	if !_this.MustFail && err != nil {
-		_this.testFailed("%v unexpectedly failed after producing events %v: %w", describeSrc(), eventStore.Events, err)
+		_this.testFailed("%v unexpectedly failed after producing events [%v]: %w", describeSrc(), eventStore.Events, err)
 	} else if _this.MustFail && err == nil {
-		_this.testFailed("%v unexpectedly succeeded and produced events %v", describeSrc(), eventStore.Events)
-	}
-}
-
-func (_this *CETestRunner) driveEvents(receiver events.DataEventReceiver, events ...*test.TEvent) {
-	for _, event := range events {
-		event.Invoke(receiver)
+		_this.testFailed("%v unexpectedly succeeded and produced events [%v]", describeSrc(), eventStore.Events)
 	}
 }
 
@@ -215,9 +209,9 @@ func (_this *CETestRunner) runEventToNothing() {
 	receiver := rules.NewRules(events.NewNullEventReceiver(), nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			_this.driveEvents(recv, _this.events...)
+			test.InvokeEventsAsCompleteDocument(recv, _this.events...)
 		}, func() string {
-			return fmt.Sprintf("Events %v", _this.events)
+			return fmt.Sprintf("events [%v]", _this.events)
 		})
 }
 
@@ -250,19 +244,19 @@ func (_this *CETestRunner) runCTEToNothing() {
 func (_this *CETestRunner) runEventToEvent() {
 	_this.beginTestPhase("E2E")
 
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver := rules.NewRules(eventStore, nil)
+	receiver, eventStore := test.NewEventCollector(nil)
+	receiver = rules.NewRules(receiver, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			_this.driveEvents(recv, _this.events...)
+			test.InvokeEventsAsCompleteDocument(recv, _this.events...)
 		}, func() string {
-			return fmt.Sprintf("Events %v", _this.events)
+			return fmt.Sprintf("events [%v]", _this.events)
 		})
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		_this.testFailed("Expected events %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		_this.testFailed("Expected events [%v] to produce events [%v] but got [%v]",
 			_this.events, expectedEvents, actualEvents)
 	}
 }
@@ -276,15 +270,15 @@ func (_this *CETestRunner) runEventToCBE() {
 	receiver := rules.NewRules(encoder, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			_this.driveEvents(recv, _this.events...)
+			test.InvokeEventsAsCompleteDocument(recv, _this.events...)
 		}, func() string {
-			return fmt.Sprintf("Events %v", _this.events)
+			return fmt.Sprintf("events [%v]", _this.events)
 		})
 
 	expectedDocument := _this.Cbe
 	actualDocument := buffer.Bytes()
 	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
-		_this.testFailed("Expected events %v to produce CBE %v but got %v",
+		_this.testFailed("Expected events [%v] to produce CBE %v but got %v",
 			_this.events, desc(expectedDocument), desc(actualDocument))
 	}
 }
@@ -298,15 +292,15 @@ func (_this *CETestRunner) runEventToCTE() {
 	receiver := rules.NewRules(encoder, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
-			_this.driveEvents(recv, _this.events...)
+			test.InvokeEventsAsCompleteDocument(recv, _this.events...)
 		}, func() string {
-			return fmt.Sprintf("Events %v", _this.events)
+			return fmt.Sprintf("events [%v]", _this.events)
 		})
 
 	expectedDocument := _this.Cte
 	actualDocument := buffer.String()
 	if !equivalence.IsEquivalent(expectedDocument, actualDocument) {
-		_this.testFailed("Expected events %v to produce CTE %v but got %v after events %v",
+		_this.testFailed("Expected events [%v] to produce CTE %v but got %v after events [%v]",
 			_this.events, desc(expectedDocument), desc(actualDocument), _this.events)
 	}
 }
@@ -314,8 +308,8 @@ func (_this *CETestRunner) runEventToCTE() {
 func (_this *CETestRunner) runCBEToEvent() {
 	_this.beginTestPhase("B2E")
 
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver := rules.NewRules(eventStore, nil)
+	receiver, eventStore := test.NewEventCollector(nil)
+	receiver = rules.NewRules(receiver, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
 			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
@@ -326,8 +320,8 @@ func (_this *CETestRunner) runCBEToEvent() {
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		_this.testFailed("Expected CBE %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		_this.testFailed("Expected CBE %v to produce events [%v] but got [%v]",
 			desc(_this.Cbe), expectedEvents, actualEvents)
 	}
 }
@@ -381,8 +375,8 @@ func (_this *CETestRunner) runCBEToCTE() {
 func (_this *CETestRunner) runCTEToEvent() {
 	_this.beginTestPhase("T2E")
 
-	eventStore := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver := rules.NewRules(eventStore, nil)
+	receiver, eventStore := test.NewEventCollector(nil)
+	receiver = rules.NewRules(receiver, nil)
 	_this.assertOperation(receiver,
 		func(recv events.DataEventReceiver) {
 			// debug.DebugOptions.PassThroughPanics will be true, so we won't get an error
@@ -393,8 +387,8 @@ func (_this *CETestRunner) runCTEToEvent() {
 
 	expectedEvents := _this.events
 	actualEvents := eventStore.Events
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		_this.testFailed("Expected CTE %v to produce events %v but got %v",
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		_this.testFailed("Expected CTE %v to produce events [%v] but got [%v]",
 			desc(_this.Cte), expectedEvents, actualEvents)
 	}
 }

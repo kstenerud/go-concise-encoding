@@ -185,7 +185,7 @@ EOF:
 		case cbeTypeNull:
 			eventReceiver.OnNull()
 		case cbeTypePadding:
-			eventReceiver.OnPadding(1)
+			eventReceiver.OnPadding()
 		case cbeTypeString0:
 			eventReceiver.OnArray(events.ArrayTypeString, 0, []byte{})
 		case cbeTypeString1, cbeTypeString2, cbeTypeString3, cbeTypeString4,
@@ -210,14 +210,14 @@ EOF:
 			_this.decodeArray(events.ArrayTypeUint8, eventReceiver)
 		case cbeTypeMarker:
 			eventReceiver.OnMarker(_this.reader.ReadIdentifier())
-		case cbeTypeReference:
-			eventReceiver.OnReference(_this.reader.ReadIdentifier())
+		case cbeTypeLocalReference:
+			eventReceiver.OnReferenceLocal(_this.reader.ReadIdentifier())
 		case cbeTypeDate:
-			eventReceiver.OnCompactTime(_this.reader.ReadDate())
+			eventReceiver.OnTime(_this.reader.ReadDate())
 		case cbeTypeTime:
-			eventReceiver.OnCompactTime(_this.reader.ReadTime())
+			eventReceiver.OnTime(_this.reader.ReadTime())
 		case cbeTypeTimestamp:
-			eventReceiver.OnCompactTime(_this.reader.ReadTimestamp())
+			eventReceiver.OnTime(_this.reader.ReadTimestamp())
 		default:
 			asSmallInt := int64(int8(cbeType))
 			if asSmallInt < cbeSmallIntMin || asSmallInt > cbeSmallIntMax {
@@ -286,7 +286,7 @@ func (_this *Decoder) decodePlane2(eventReceiver events.DataEventReceiver) {
 
 	switch cbeType {
 	case cbeTypeRemoteReference:
-		_this.decodeArray(events.ArrayTypeRemoteRef, eventReceiver)
+		_this.decodeArray(events.ArrayTypeReferenceRemote, eventReceiver)
 	case cbeTypeMedia:
 		_this.decodeMedia(eventReceiver)
 	default:

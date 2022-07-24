@@ -195,7 +195,7 @@ func (_this *EncoderContext) EncodeArray(arrayType events.ArrayType, elementCoun
 func (_this *EncoderContext) BeginArray(arrayType events.ArrayType, completion func()) {
 	finalCompletion := completion
 	switch arrayType {
-	case events.ArrayTypeCustomText, events.ArrayTypeRemoteRef, events.ArrayTypeResourceID, events.ArrayTypeString:
+	case events.ArrayTypeCustomText, events.ArrayTypeReferenceRemote, events.ArrayTypeResourceID, events.ArrayTypeString:
 		// Do nothing
 	default:
 		_this.Stack(nonStringArrayDecorator)

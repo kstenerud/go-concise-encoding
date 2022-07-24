@@ -23,7 +23,6 @@ package builder
 import (
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -104,15 +103,9 @@ func (_this *structTemplateBuilder) BuildFromStringlikeArray(ctx *Context, array
 	})
 	return dst
 }
-func (_this *structTemplateBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *structTemplateBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	ctx.AddStructTemplateKey(func(c *Context, builder Builder) {
 		builder.BuildFromTime(c, value, unusedValue)
-	})
-	return dst
-}
-func (_this *structTemplateBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	ctx.AddStructTemplateKey(func(c *Context, builder Builder) {
-		builder.BuildFromCompactTime(c, value, unusedValue)
 	})
 	return dst
 }

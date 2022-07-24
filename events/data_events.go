@@ -27,7 +27,6 @@ package events
 
 import (
 	"math/big"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -40,7 +39,7 @@ const (
 	ArrayTypeInvalid ArrayType = iota
 	ArrayTypeString
 	ArrayTypeResourceID
-	ArrayTypeRemoteRef
+	ArrayTypeReferenceRemote
 	ArrayTypeCustomText
 	ArrayTypeCustomBinary
 	// Note: Boolean arrays are passed in the CBE boolean array representation,
@@ -74,51 +73,51 @@ func (_this ArrayType) ElementSize() int {
 }
 
 var arrayTypeNames = [...]string{
-	ArrayTypeInvalid:      "Invalid",
-	ArrayTypeString:       "String",
-	ArrayTypeResourceID:   "ResourceID",
-	ArrayTypeRemoteRef:    "RemoteRef",
-	ArrayTypeCustomText:   "Custom Text",
-	ArrayTypeCustomBinary: "Custom Binary",
-	ArrayTypeBit:          "Boolean",
-	ArrayTypeUint8:        "Uint8",
-	ArrayTypeUint16:       "Uint16",
-	ArrayTypeUint32:       "Uint32",
-	ArrayTypeUint64:       "Uint64",
-	ArrayTypeInt8:         "Int8",
-	ArrayTypeInt16:        "Int16",
-	ArrayTypeInt32:        "Int32",
-	ArrayTypeInt64:        "Int64",
-	ArrayTypeFloat16:      "Float16",
-	ArrayTypeFloat32:      "Float32",
-	ArrayTypeFloat64:      "Float64",
-	ArrayTypeUID:          "UID",
-	ArrayTypeMedia:        "Media",
-	ArrayTypeMediaData:    "MediaData",
+	ArrayTypeInvalid:         "Invalid",
+	ArrayTypeString:          "String",
+	ArrayTypeResourceID:      "ResourceID",
+	ArrayTypeReferenceRemote: "RemoteReference",
+	ArrayTypeCustomText:      "Custom Text",
+	ArrayTypeCustomBinary:    "Custom Binary",
+	ArrayTypeBit:             "Boolean",
+	ArrayTypeUint8:           "Uint8",
+	ArrayTypeUint16:          "Uint16",
+	ArrayTypeUint32:          "Uint32",
+	ArrayTypeUint64:          "Uint64",
+	ArrayTypeInt8:            "Int8",
+	ArrayTypeInt16:           "Int16",
+	ArrayTypeInt32:           "Int32",
+	ArrayTypeInt64:           "Int64",
+	ArrayTypeFloat16:         "Float16",
+	ArrayTypeFloat32:         "Float32",
+	ArrayTypeFloat64:         "Float64",
+	ArrayTypeUID:             "UID",
+	ArrayTypeMedia:           "Media",
+	ArrayTypeMediaData:       "MediaData",
 }
 
 var arrayTypeElementSizes = [...]int{
-	ArrayTypeInvalid:      0,
-	ArrayTypeString:       8,
-	ArrayTypeResourceID:   8,
-	ArrayTypeRemoteRef:    8,
-	ArrayTypeCustomText:   8,
-	ArrayTypeCustomBinary: 8,
-	ArrayTypeBit:          1,
-	ArrayTypeUint8:        8,
-	ArrayTypeUint16:       16,
-	ArrayTypeUint32:       32,
-	ArrayTypeUint64:       64,
-	ArrayTypeInt8:         8,
-	ArrayTypeInt16:        16,
-	ArrayTypeInt32:        32,
-	ArrayTypeInt64:        64,
-	ArrayTypeFloat16:      16,
-	ArrayTypeFloat32:      32,
-	ArrayTypeFloat64:      64,
-	ArrayTypeUID:          128,
-	ArrayTypeMedia:        8,
-	ArrayTypeMediaData:    8,
+	ArrayTypeInvalid:         0,
+	ArrayTypeString:          8,
+	ArrayTypeResourceID:      8,
+	ArrayTypeReferenceRemote: 8,
+	ArrayTypeCustomText:      8,
+	ArrayTypeCustomBinary:    8,
+	ArrayTypeBit:             1,
+	ArrayTypeUint8:           8,
+	ArrayTypeUint16:          16,
+	ArrayTypeUint32:          32,
+	ArrayTypeUint64:          64,
+	ArrayTypeInt8:            8,
+	ArrayTypeInt16:           16,
+	ArrayTypeInt32:           32,
+	ArrayTypeInt64:           64,
+	ArrayTypeFloat16:         16,
+	ArrayTypeFloat32:         32,
+	ArrayTypeFloat64:         64,
+	ArrayTypeUID:             128,
+	ArrayTypeMedia:           8,
+	ArrayTypeMediaData:       8,
 }
 
 // DataEventReceiver receives data events (int, string, etc) and performs
@@ -142,13 +141,13 @@ type DataEventReceiver interface {
 
 	OnVersion(version uint64)
 
-	OnPadding(count int)
+	OnPadding()
 
 	OnComment(isMultiline bool, contents []byte)
 
 	OnNull()
 
-	OnBool(value bool)
+	OnBoolean(value bool)
 
 	OnTrue()
 
@@ -174,9 +173,7 @@ type DataEventReceiver interface {
 
 	OnNan(signaling bool)
 
-	OnTime(value time.Time)
-
-	OnCompactTime(value compact_time.Time)
+	OnTime(value compact_time.Time)
 
 	OnList()
 
@@ -196,7 +193,7 @@ type DataEventReceiver interface {
 
 	OnMarker(identifier []byte)
 
-	OnReference(identifier []byte)
+	OnReferenceLocal(identifier []byte)
 
 	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
 

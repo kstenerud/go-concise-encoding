@@ -22,7 +22,6 @@ package builder
 
 import (
 	"reflect"
-	"time"
 
 	compact_time "github.com/kstenerud/go-compact-time"
 )
@@ -36,12 +35,7 @@ type timeBuilder struct{}
 func generateTimeBuilder(ctx *Context) Builder { return globalTimeBuilder }
 func (_this *timeBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *timeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	dst.Set(reflect.ValueOf(value))
-	return dst
-}
-
-func (_this *timeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *timeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	v, err := value.AsGoTime()
 	if err != nil {
 		panic(err)
@@ -64,13 +58,7 @@ func (_this *compactTimeBuilder) BuildFromNull(ctx *Context, dst reflect.Value) 
 	return dst
 }
 
-func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	t := compact_time.AsCompactTime(value)
-	dst.Set(reflect.ValueOf(t))
-	return dst
-}
-
-func (_this *compactTimeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
 }
@@ -89,13 +77,7 @@ func (_this *pCompactTimeBuilder) BuildFromNull(ctx *Context, dst reflect.Value)
 	return dst
 }
 
-func (_this *pCompactTimeBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
-	t := compact_time.AsCompactTime(value)
-	dst.Set(reflect.ValueOf(t))
-	return dst
-}
-
-func (_this *pCompactTimeBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
+func (_this *pCompactTimeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
 }

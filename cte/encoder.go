@@ -23,7 +23,6 @@ package cte
 import (
 	"io"
 	"math/big"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -72,7 +71,7 @@ func (_this *EncoderEventReceiver) OnVersion(version uint64) {
 	_this.context.WriteNewlineAndOriginAndIndent()
 }
 
-func (_this *EncoderEventReceiver) OnPadding(count int) {
+func (_this *EncoderEventReceiver) OnPadding() {
 	// CTE doesn't have padding, so do nothing.
 }
 
@@ -94,7 +93,7 @@ func (_this *EncoderEventReceiver) OnNull() {
 	_this.context.AfterValue()
 }
 
-func (_this *EncoderEventReceiver) OnBool(value bool) {
+func (_this *EncoderEventReceiver) OnBoolean(value bool) {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteBool(value)
 	_this.context.AfterValue()
@@ -172,15 +171,9 @@ func (_this *EncoderEventReceiver) OnUID(value []byte) {
 	_this.context.AfterValue()
 }
 
-func (_this *EncoderEventReceiver) OnTime(value time.Time) {
+func (_this *EncoderEventReceiver) OnTime(value compact_time.Time) {
 	_this.context.BeforeValue()
 	_this.context.Stream.WriteTime(value)
-	_this.context.AfterValue()
-}
-
-func (_this *EncoderEventReceiver) OnCompactTime(value compact_time.Time) {
-	_this.context.BeforeValue()
-	_this.context.Stream.WriteCompactTime(value)
 	_this.context.AfterValue()
 }
 
@@ -266,15 +259,15 @@ func (_this *EncoderEventReceiver) OnMarker(id []byte) {
 	_this.context.Stack(concatDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnReference(id []byte) {
+func (_this *EncoderEventReceiver) OnReferenceLocal(id []byte) {
 	_this.context.BeforeValue()
-	_this.context.Stream.WriteReference(id)
+	_this.context.Stream.WriteLocalReference(id)
 	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnRemoteReference() {
 	_this.context.BeforeValue()
-	_this.context.Stream.WriteReferenceBegin()
+	_this.context.Stream.WriteRemoteReferenceBegin()
 	_this.context.Stack(concatDecorator)
 }
 

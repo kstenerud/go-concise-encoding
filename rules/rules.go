@@ -49,7 +49,7 @@ type EventRule interface {
 	OnNode(ctx *Context)
 	OnEnd(ctx *Context)
 	OnMarker(ctx *Context, identifier []byte)
-	OnReference(ctx *Context, identifier []byte)
+	OnReferenceLocal(ctx *Context, identifier []byte)
 	OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8)
 	OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string)
 	OnArrayBegin(ctx *Context, arrayType events.ArrayType)
@@ -86,26 +86,26 @@ var (
 )
 
 var arrayTypeToDataType = []DataType{
-	events.ArrayTypeInvalid:      DataTypeInvalid,
-	events.ArrayTypeString:       DataTypeString,
-	events.ArrayTypeResourceID:   DataTypeResourceID,
-	events.ArrayTypeRemoteRef:    DataTypeRemoteRef,
-	events.ArrayTypeCustomText:   DataTypeCustomText,
-	events.ArrayTypeCustomBinary: DataTypeCustomBinary,
-	events.ArrayTypeBit:          DataTypeArrayBit,
-	events.ArrayTypeUint8:        DataTypeArrayUint8,
-	events.ArrayTypeUint16:       DataTypeArrayUint16,
-	events.ArrayTypeUint32:       DataTypeArrayUint32,
-	events.ArrayTypeUint64:       DataTypeArrayUint64,
-	events.ArrayTypeInt8:         DataTypeArrayInt8,
-	events.ArrayTypeInt16:        DataTypeArrayInt16,
-	events.ArrayTypeInt32:        DataTypeArrayInt32,
-	events.ArrayTypeInt64:        DataTypeArrayInt64,
-	events.ArrayTypeFloat16:      DataTypeArrayFloat16,
-	events.ArrayTypeFloat32:      DataTypeArrayFloat32,
-	events.ArrayTypeFloat64:      DataTypeArrayFloat64,
-	events.ArrayTypeUID:          DataTypeArrayUID,
-	events.ArrayTypeMedia:        DataTypeMedia,
+	events.ArrayTypeInvalid:         DataTypeInvalid,
+	events.ArrayTypeString:          DataTypeString,
+	events.ArrayTypeResourceID:      DataTypeResourceID,
+	events.ArrayTypeReferenceRemote: DataTypeRemoteReference,
+	events.ArrayTypeCustomText:      DataTypeCustomText,
+	events.ArrayTypeCustomBinary:    DataTypeCustomBinary,
+	events.ArrayTypeBit:             DataTypeArrayBit,
+	events.ArrayTypeUint8:           DataTypeArrayUint8,
+	events.ArrayTypeUint16:          DataTypeArrayUint16,
+	events.ArrayTypeUint32:          DataTypeArrayUint32,
+	events.ArrayTypeUint64:          DataTypeArrayUint64,
+	events.ArrayTypeInt8:            DataTypeArrayInt8,
+	events.ArrayTypeInt16:           DataTypeArrayInt16,
+	events.ArrayTypeInt32:           DataTypeArrayInt32,
+	events.ArrayTypeInt64:           DataTypeArrayInt64,
+	events.ArrayTypeFloat16:         DataTypeArrayFloat16,
+	events.ArrayTypeFloat32:         DataTypeArrayFloat32,
+	events.ArrayTypeFloat64:         DataTypeArrayFloat64,
+	events.ArrayTypeUID:             DataTypeArrayUID,
+	events.ArrayTypeMedia:           DataTypeMedia,
 }
 
 func wrongType(context interface{}, dataType interface{}) {

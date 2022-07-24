@@ -36,10 +36,10 @@ import (
 
 const path = "internal/chars"
 
-var imports = []string{
-	"fmt",
-	"strings",
-	"unicode/utf8",
+var imports = []*standard.Import{
+	&standard.Import{LocalName: "", Import: "fmt"},
+	&standard.Import{LocalName: "", Import: "strings"},
+	&standard.Import{LocalName: "", Import: "unicode/utf8"},
 }
 
 func GenerateCode(projectDir string, xmlPath string) {

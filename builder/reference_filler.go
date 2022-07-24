@@ -61,7 +61,7 @@ func (_this *ReferenceFiller) NotifyMarker(id []byte, value reflect.Value) {
 // Notify that a new reference has been found. valueSetter will be called when
 // the marker with lookingForID is found (possibly immediately if it already has
 // been found).
-func (_this *ReferenceFiller) NotifyReference(lookingForID []byte, valueSetter func(value reflect.Value)) {
+func (_this *ReferenceFiller) NotifyLocalReference(lookingForID []byte, valueSetter func(value reflect.Value)) {
 	idAsString := string(lookingForID)
 	if value, ok := _this.markedValues[idAsString]; ok {
 		valueSetter(value)

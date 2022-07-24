@@ -24,17 +24,19 @@ import (
 	"bytes"
 	"reflect"
 	"testing"
+
+	"github.com/kstenerud/go-concise-encoding/test"
 )
 
 func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	InvokeEvents(encoder, BD(), EvV, M(), E(), ED())
+	test.InvokeEventsAsCompleteDocument(encoder, EvV, M(), E())
 
 	buffer2 := &bytes.Buffer{}
 	encoder.PrepareToEncode(buffer2)
-	InvokeEvents(encoder, BD(), EvV, M(), E(), ED())
+	test.InvokeEventsAsCompleteDocument(encoder, EvV, M(), E())
 
 	expected := []byte{0x81, 0x00, 0x79, 0x7b}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {

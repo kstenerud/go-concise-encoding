@@ -28,7 +28,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -54,9 +53,8 @@ type Builder interface {
 	BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value
 	BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value
 	BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value
-	BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value
-	BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value
-	BuildFromReference(ctx *Context, id []byte)
+	BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value
+	BuildFromLocalReference(ctx *Context, id []byte)
 
 	// Signals that a new container has begun.
 	// This gets triggered from a data event.

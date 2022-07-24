@@ -28,7 +28,7 @@ import (
 
 // Common function signatures
 type GetIteratorForType func(reflect.Type) IteratorFunction
-type TryAddReference func(reflect.Value) (didGenerateReferenceEvent bool)
+type TryAddLocalReference func(reflect.Value) (didGenerateReferenceEvent bool)
 
 type Context struct {
 	// Per-session data
@@ -36,8 +36,8 @@ type Context struct {
 	LowercaseStructFieldNames bool
 
 	// Per-root-iterator data
-	EventReceiver   events.DataEventReceiver
-	TryAddReference TryAddReference
+	EventReceiver        events.DataEventReceiver
+	TryAddLocalReference TryAddLocalReference
 }
 
 func (_this *Context) NotifyNil() {
@@ -53,12 +53,12 @@ func sessionContext(getIteratorFunc GetIteratorForType, lowercaseStructFieldName
 
 func iteratorContext(sessionContext *Context,
 	eventReceiver events.DataEventReceiver,
-	tryAddReference TryAddReference) Context {
+	tryAddLocalReference TryAddLocalReference) Context {
 
 	return Context{
 		GetIteratorForType:        sessionContext.GetIteratorForType,
 		LowercaseStructFieldNames: sessionContext.LowercaseStructFieldNames,
 		EventReceiver:             eventReceiver,
-		TryAddReference:           tryAddReference,
+		TryAddLocalReference:      tryAddLocalReference,
 	}
 }

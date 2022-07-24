@@ -27,12 +27,11 @@ import (
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-concise-encoding/events"
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
-	"github.com/kstenerud/go-equivalence"
 )
 
 func TestIterateBasic(t *testing.T) {
@@ -55,36 +54,36 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, nil, NULL())
 	assertIterate(t, true, B(true))
 	assertIterate(t, false, B(false))
-	assertIterate(t, int(10), I(10))
-	assertIterate(t, int8(10), I(10))
-	assertIterate(t, int16(10), I(10))
-	assertIterate(t, int32(10), I(10))
-	assertIterate(t, int64(10), I(10))
-	assertIterate(t, uint(10), PI(10))
-	assertIterate(t, uint8(10), PI(10))
-	assertIterate(t, uint16(10), PI(10))
-	assertIterate(t, uint32(10), PI(10))
-	assertIterate(t, uint64(10), PI(10))
-	assertIterate(t, 1, I(1))
-	assertIterate(t, -1, I(-1))
-	assertIterate(t, pBigIntP, BI(pBigIntP))
-	assertIterate(t, *pBigIntP, BI(pBigIntP))
-	assertIterate(t, pBigIntN, BI(pBigIntN))
-	assertIterate(t, *pBigIntN, BI(pBigIntN))
+	assertIterate(t, int(10), N(10))
+	assertIterate(t, int8(10), N(10))
+	assertIterate(t, int16(10), N(10))
+	assertIterate(t, int32(10), N(10))
+	assertIterate(t, int64(10), N(10))
+	assertIterate(t, uint(10), N(10))
+	assertIterate(t, uint8(10), N(10))
+	assertIterate(t, uint16(10), N(10))
+	assertIterate(t, uint32(10), N(10))
+	assertIterate(t, uint64(10), N(10))
+	assertIterate(t, 1, N(1))
+	assertIterate(t, -1, N(-1))
+	assertIterate(t, pBigIntP, N(pBigIntP))
+	assertIterate(t, *pBigIntP, N(pBigIntP))
+	assertIterate(t, pBigIntN, N(pBigIntN))
+	assertIterate(t, *pBigIntN, N(pBigIntN))
 	assertIterate(t, (*big.Int)(nil), NULL())
-	assertIterate(t, float32(-1.25), BF(-1.25))
-	assertIterate(t, float64(-9.5e50), BF(-9.5e50))
-	assertIterate(t, pBigFloat, BBF(pBigFloat))
-	assertIterate(t, *pBigFloat, BBF(pBigFloat))
+	assertIterate(t, float32(-1.25), N(-1.25))
+	assertIterate(t, float64(-9.5e50), N(-9.5e50))
+	assertIterate(t, pBigFloat, N(pBigFloat))
+	assertIterate(t, *pBigFloat, N(pBigFloat))
 	assertIterate(t, (*big.Float)(nil), NULL())
-	assertIterate(t, dfloat, DF(dfloat))
-	assertIterate(t, pBigDFloat, BDF(pBigDFloat))
-	assertIterate(t, *pBigDFloat, BDF(pBigDFloat))
+	assertIterate(t, dfloat, N(dfloat))
+	assertIterate(t, pBigDFloat, N(pBigDFloat))
+	assertIterate(t, *pBigDFloat, N(pBigDFloat))
 	assertIterate(t, (*apd.Decimal)(nil), NULL())
-	assertIterate(t, common.Float64SignalingNan, BF(common.Float64SignalingNan))
-	assertIterate(t, common.Float64QuietNan, BF(common.Float64QuietNan))
-	assertIterate(t, gTimeNow, GT(gTimeNow))
-	assertIterate(t, cTimeNow, CT(cTimeNow))
+	assertIterate(t, common.Float64SignalingNan, N(common.Float64SignalingNan))
+	assertIterate(t, common.Float64QuietNan, N(common.Float64QuietNan))
+	assertIterate(t, gTimeNow, T(compact_time.AsCompactTime(gTimeNow)))
+	assertIterate(t, cTimeNow, T(cTimeNow))
 	assertIterate(t, []byte{1, 2, 3, 4}, AU8([]byte{1, 2, 3, 4}))
 	assertIterate(t, "test", S("test"))
 	assertIterate(t, pURL, RID("http://x.com"))
@@ -92,7 +91,7 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, (*url.URL)(nil), NULL())
 	assertIterate(t, uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 	assertIterate(t, &uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
-	assertIterate(t, media, MB(), AC(1, false), AD([]byte{'a'}), AC(1, false), AD([]byte{0}))
+	assertIterate(t, media, BMEDIA(), ACL(1), ADT("a"), ACL(1), ADU8([]byte{0}))
 	assertIterate(t, pNode, NODE(), S("test"), S("a"), E())
 	assertIterate(t, *pNode, NODE(), S("test"), S("a"), E())
 	assertIterate(t, pEdge, EDGE(), S("a"), S("b"), S("c"))
@@ -211,26 +210,26 @@ func TestIterateArrayFloat64(t *testing.T) {
 
 func TestIterateArrayBool(t *testing.T) {
 	a := [2]bool{true, false}
-	assertIterate(t, a, AB(2, []byte{0x02}))
-	assertIterate(t, &a, AB(2, []byte{0x02}))
+	assertIterate(t, a, AB([]bool{true, false}))
+	assertIterate(t, &a, AB([]bool{true, false}))
 	s := []bool{true, false}
-	assertIterate(t, s, AB(2, []byte{0x02}))
-	assertIterate(t, &s, AB(2, []byte{0x02}))
+	assertIterate(t, s, AB([]bool{true, false}))
+	assertIterate(t, &s, AB([]bool{true, false}))
 }
 
 func TestIterateInterface(t *testing.T) {
-	assertIterate(t, []interface{}{1, nil, 5.5}, L(), I(1), NULL(), BF(5.5), E())
+	assertIterate(t, []interface{}{1, nil, 5.5}, L(), N(1), NULL(), N(5.5), E())
 }
 
 func TestIteratePointer(t *testing.T) {
 	v := 1
-	assertIterate(t, &v, I(1))
+	assertIterate(t, &v, N(1))
 	pv := (*int)(nil)
 	assertIterate(t, pv, NULL())
 }
 
 func TestIterateMap(t *testing.T) {
-	assertIterate(t, map[string]int{"a": 1}, M(), S("a"), I(1), E())
+	assertIterate(t, map[string]int{"a": 1}, M(), S("a"), N(1), E())
 	assertIterate(t, (map[string]int)(nil), NULL())
 }
 
@@ -243,18 +242,18 @@ func TestIterateStruct(t *testing.T) {
 	sOpts.LowercaseStructFieldNames = false
 	iOpts := options.DefaultIteratorOptions()
 
-	assertIterate(t, new(StructTestIterate), M(), S("a"), I(0), E())
-	assertIterateWithOptions(t, &sOpts, &iOpts, new(StructTestIterate), M(), S("A"), I(0), E())
+	assertIterate(t, new(StructTestIterate), M(), S("a"), N(0), E())
+	assertIterateWithOptions(t, &sOpts, &iOpts, new(StructTestIterate), M(), S("A"), N(0), E())
 	assertIterate(t, (*StructTestIterate)(nil), NULL())
 }
 
 func TestIterateNilOpts(t *testing.T) {
-	expected := []*test.TEvent{BD(), EvV, I(1), ED()}
-	receiver := test.NewTEventStore(events.NewNullEventReceiver())
+	expected := test.Events{EvV, N(1)}
+	receiver, events := test.NewEventCollector(nil)
 	iterateObject(1, receiver, nil, nil)
 
-	if !equivalence.IsEquivalent(expected, receiver.Events) {
-		t.Errorf("Expected %v but got %v", expected, receiver.Events)
+	if !events.IsEquivalentTo(expected) {
+		t.Errorf("Expected %v but got %v", expected, events.Events)
 	}
 }
 
@@ -269,15 +268,15 @@ func TestIterateRecurse(t *testing.T) {
 	}
 	obj.R = obj
 
-	expected := []*test.TEvent{BD(), EvV, MARK("0"), M(), S("i"), I(50), S("r"), REF("0"), E(), ED()}
+	expected := test.Events{EvV, MARK("0"), M(), S("i"), N(50), S("r"), REFL("0"), E()}
 	sessionOptions := options.DefaultIteratorSessionOptions()
 	iteratorOptions := options.DefaultIteratorOptions()
 	iteratorOptions.RecursionSupport = true
-	receiver := test.NewTEventStore(events.NewNullEventReceiver())
+	receiver, events := test.NewEventCollector(nil)
 	iterateObject(obj, receiver, &sessionOptions, &iteratorOptions)
 
-	if !equivalence.IsEquivalent(expected, receiver.Events) {
-		t.Errorf("Expected %v but got %v", expected, receiver.Events)
+	if !events.IsEquivalentTo(expected) {
+		t.Errorf("Expected %v but got %v", expected, events.Events)
 	}
 }
 

@@ -32,6 +32,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/codegen/builder"
 	"github.com/kstenerud/go-concise-encoding/codegen/chars"
 	"github.com/kstenerud/go-concise-encoding/codegen/rules"
+	"github.com/kstenerud/go-concise-encoding/codegen/tests"
 )
 
 func main() {
@@ -42,6 +43,7 @@ func main() {
 
 	builder.GenerateCode(projectPath)
 	rules.GenerateCode(projectPath)
+	tests.GenerateCode(projectPath)
 
 	if *unicodePath != "" {
 		chars.GenerateCode(projectPath, *unicodePath)

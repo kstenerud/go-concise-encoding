@@ -23,7 +23,6 @@ package rules
 import (
 	"math"
 	"math/big"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -95,9 +94,9 @@ func (_this *RulesEventReceiver) OnVersion(version uint64) {
 	_this.receiver.OnVersion(version)
 }
 
-func (_this *RulesEventReceiver) OnPadding(count int) {
+func (_this *RulesEventReceiver) OnPadding() {
 	_this.context.CurrentEntry.Rule.OnPadding(&_this.context)
-	_this.receiver.OnPadding(count)
+	_this.receiver.OnPadding()
 }
 
 func (_this *RulesEventReceiver) OnComment(isMultiline bool, contents []byte) {
@@ -112,10 +111,10 @@ func (_this *RulesEventReceiver) OnNull() {
 	_this.receiver.OnNull()
 }
 
-func (_this *RulesEventReceiver) OnBool(value bool) {
+func (_this *RulesEventReceiver) OnBoolean(value bool) {
 	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeBool)
-	_this.receiver.OnBool(value)
+	_this.receiver.OnBoolean(value)
 }
 
 func (_this *RulesEventReceiver) OnTrue() {
@@ -223,16 +222,10 @@ func (_this *RulesEventReceiver) OnUID(value []byte) {
 	_this.receiver.OnUID(value)
 }
 
-func (_this *RulesEventReceiver) OnTime(value time.Time) {
+func (_this *RulesEventReceiver) OnTime(value compact_time.Time) {
 	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeTime)
 	_this.receiver.OnTime(value)
-}
-
-func (_this *RulesEventReceiver) OnCompactTime(value compact_time.Time) {
-	_this.context.NotifyNewObject(true)
-	_this.context.CurrentEntry.Rule.OnKeyableObject(&_this.context, DataTypeTime)
-	_this.receiver.OnCompactTime(value)
 }
 
 func (_this *RulesEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
@@ -313,11 +306,11 @@ func (_this *RulesEventReceiver) OnMarker(identifier []byte) {
 	_this.receiver.OnMarker(identifier)
 }
 
-func (_this *RulesEventReceiver) OnReference(identifier []byte) {
+func (_this *RulesEventReceiver) OnReferenceLocal(identifier []byte) {
 	_this.context.ValidateIdentifier(identifier)
 	_this.context.NotifyNewObject(true)
-	_this.context.CurrentEntry.Rule.OnReference(&_this.context, identifier)
-	_this.receiver.OnReference(identifier)
+	_this.context.CurrentEntry.Rule.OnReferenceLocal(&_this.context, identifier)
+	_this.receiver.OnReferenceLocal(identifier)
 }
 
 func (_this *RulesEventReceiver) OnEndDocument() {

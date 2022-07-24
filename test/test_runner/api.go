@@ -33,7 +33,7 @@ import (
 func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
 	testSuite := loadTestSuite(testDescriptorFile)
 
-	defer func() { wrapPanic("while running test suite %v", testSuite) }()
+	defer func() { wrapPanic(recover(), "while running test suite %v", testSuite) }()
 
 	debug.DebugOptions.PassThroughPanics = true
 	testSuite.run(t)
@@ -41,7 +41,7 @@ func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
 }
 
 func loadTestSuite(testDescriptorFile string) *CETestSuite {
-	defer func() { wrapPanic("while loading test suite from %v", testDescriptorFile) }()
+	defer func() { wrapPanic(recover(), "while loading test suite from %v", testDescriptorFile) }()
 
 	file, err := os.Open(testDescriptorFile)
 	if err != nil {

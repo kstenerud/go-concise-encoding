@@ -1,23 +1,3 @@
-// Copyright 2019 Karl Stenerud
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.
-
 package event_parser
 
 import (
@@ -30,31 +10,16 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/test/event_parser/parser"
 )
 
-// API
-
-// Parse a string shorthand into an event for testing
-func ParseEvent(eventStr string) *test.TEvent {
-	components := eventNameMatcher.FindSubmatch([]byte(eventStr))
-	if len(components) == 0 {
-		panic(fmt.Errorf("could not extract event name from [%v]", eventStr))
-	}
-	name := string(components[0])
-	parser := eventParsersByName[name]
-	if parser == nil {
-		panic(fmt.Errorf("%v: Unknown event name", name))
-	}
-	return parser(eventStr)
-}
-
-// Parse multiple events
-func ParseEvents(eventStrings []string) []*test.TEvent {
+func ParseEvents(eventStrings ...string) test.Events {
 	var index = 0
 	var eventStr string
 
@@ -62,247 +27,216 @@ func ParseEvents(eventStrings []string) []*test.TEvent {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
 			case error:
-				panic(fmt.Errorf("event index %v [%v]: %w", index, eventStr, v))
+				panic(fmt.Errorf("event index %v \"%v\": %w", index, eventStr, v))
 			default:
 				panic(v)
 			}
 		}
 	}()
 
-	events := []*test.TEvent{test.BD()}
+	events := test.Events{}
 	for index, eventStr = range eventStrings {
-		events = append(events, ParseEvent(eventStr))
+		evts, err := parseEventString(eventStr)
+		if err != nil {
+			panic(err)
+		}
+		events = append(events, evts...)
 	}
-	events = append(events, test.ED())
 
 	return events
 }
 
-// Parsers
+func parseEventString(eventStr string) (events test.Events, err error) {
+	errorListener := new(reportingErrorListener)
 
-type parseEvent func(eventStr string) *test.TEvent
+	is := antlr.NewInputStream(eventStr)
+	lexer := parser.NewCEEventLexer(is)
+	lexer.RemoveErrorListeners()
+	lexer.AddErrorListener(errorListener)
+	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 
-func tryParseIntegerEvent(data []byte) *test.TEvent {
-	str := string(data)
-	if strings.TrimSpace(str) == "-0" {
-		return test.NewTEvent(test.TEventNInt, uint64(0), nil)
-	}
+	p := parser.NewCEEventParser(stream)
+	p.RemoveErrorListeners()
+	p.AddErrorListener(errorListener)
+	p.SetErrorHandler(new(bailErrorStrategy))
 
-	if v, err := strconv.ParseInt(str, 0, 64); err == nil {
-		return test.NewTEvent(test.TEventInt, v, nil)
-	}
+	listener := &eventListener{}
 
-	bi := &big.Int{}
-	if _, success := bi.SetString(str, 0); success {
-		return test.NewTEvent(test.TEventBigInt, bi, nil)
-	}
+	antlr.ParseTreeWalkerDefault.Walk(listener, p.Start())
 
-	return nil
+	return listener.Events, errorListener.Error
 }
 
-func tryParseDecimalFloatEvent(data []byte) *test.TEvent {
-	str := strings.Replace(string(data), ",", ".", 1)
-	if v, err := compact_float.DFloatFromString(str); err == nil {
-		return test.NewTEvent(test.TEventDecimalFloat, v, nil)
-	}
-
-	if v, _, err := apd.NewFromString(str); err == nil {
-		return test.NewTEvent(test.TEventBigDecimalFloat, v, nil)
-	}
-
-	return nil
+type reportingErrorListener struct {
+	*antlr.DefaultErrorListener
+	Error error
 }
 
-func tryParseBinaryFloatEvent(data []byte) *test.TEvent {
-	str := strings.Replace(string(data), ",", ".", 1)
+func (_this *reportingErrorListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
+	_this.Error = fmt.Errorf("col %v: %v", column, msg)
+}
 
+type bailErrorStrategy struct {
+	antlr.DefaultErrorStrategy
+}
+
+func (b *bailErrorStrategy) Recover(recognizer antlr.Parser, e antlr.RecognitionException) {}
+func (b *bailErrorStrategy) Sync(recognizer antlr.Parser)                                  {}
+
+func iterateChildren(children []antlr.Tree, iterate func(string)) {
+	for j := 1; j < len(children); j++ {
+		child := children[j]
+		if c2, ok := child.(antlr.TerminalNode); ok {
+			iterate(c2.GetText())
+		}
+	}
+}
+
+func getTokenInfo(node antlr.Tree) (tokenType int, token string) {
+	if t, ok := node.(antlr.TerminalNode); ok {
+		return t.GetSymbol().GetTokenType(), t.GetText()
+	}
+	panic(fmt.Errorf("BUG: Expected terminal node but got %v", reflect.TypeOf(node)))
+}
+
+func getTokenText(node antlr.Tree) string {
+	if t, ok := node.(antlr.TerminalNode); ok {
+		return t.GetText()
+	}
+	panic(fmt.Errorf("BUG: Expected terminal node but got %v", reflect.TypeOf(node)))
+}
+
+func parseInt(str string) (smallInt int64, bigInt *big.Int) {
+	var err error
+	if smallInt, err = strconv.ParseInt(str, 0, 64); err == nil {
+		return
+	}
+
+	bigInt = &big.Int{}
+	if _, success := bigInt.SetString(str, 0); success {
+		return
+	}
+
+	panic(fmt.Errorf("BUG: Expected an integer but got \"%v\"", str))
+}
+
+func parseSmallInt(str string) int64 {
+	si, bi := parseInt(str)
+	if bi != nil {
+		panic(fmt.Errorf("unexpectedly large integer \"%v\"", str))
+	}
+	return si
+}
+
+func parseDecimalInt(str string) int64 {
+	if v, err := strconv.ParseInt(str, 10, 64); err == nil {
+		return v
+	} else {
+		panic(err)
+	}
+}
+
+func parseSmallUint(str string) uint64 {
+	if v, err := strconv.ParseUint(str, 0, 64); err == nil {
+		return v
+	} else {
+		panic(err)
+	}
+}
+
+func parseSmallUintX(str string) uint64 {
+	if v, err := strconv.ParseUint(str, 16, 64); err == nil {
+		return v
+	} else {
+		panic(err)
+	}
+}
+
+func parseBinaryFloat(str string) (smallFloat float64, bigFloat *big.Float) {
+	const quietNanBits = uint64(0x7ff8000000000001)
+	const signalingNanBits = uint64(0x7ff0000000000001)
+
+	switch str {
+	case "nan":
+		return math.Float64frombits(quietNanBits), nil
+	case "snan":
+		return math.Float64frombits(signalingNanBits), nil
+	}
+
+	var accuracy big.Accuracy
 	if strings.Contains(str, "0x") {
 		digitCount := len(strings.Split(str, "x")[1])
-		bf := &big.Float{}
-		bf.SetPrec(uint(digitCount) * 4)
-		if _, success := bf.SetString(str); success {
-			f64, accuracy := bf.Float64()
+		bigFloat = &big.Float{}
+		bigFloat.SetPrec(uint(digitCount) * 4)
+		if _, success := bigFloat.SetString(str); success {
+			smallFloat, accuracy = bigFloat.Float64()
 			if accuracy == big.Exact {
-				return test.NewTEvent(test.TEventFloat, f64, nil)
-			} else {
-				return test.NewTEvent(test.TEventBigFloat, bf, nil)
+				bigFloat = nil
 			}
+			return
 		} else {
-			return nil
+			panic(fmt.Errorf("BUG: Could not convert [%v] to float", str))
 		}
 	}
 
 	digitCount := len(str)
-	bf := &big.Float{}
-	bf.SetPrec(uint(common.DecimalDigitsToBits(digitCount)))
-	if _, success := bf.SetString(str); success {
-		f64, accuracy := bf.Float64()
+	bigFloat = &big.Float{}
+	bigFloat.SetPrec(uint(common.DecimalDigitsToBits(digitCount)))
+	if _, success := bigFloat.SetString(str); success {
+		smallFloat, accuracy = bigFloat.Float64()
 		if accuracy == big.Exact {
-			return test.NewTEvent(test.TEventFloat, f64, nil)
-		} else {
-			return test.NewTEvent(test.TEventBigFloat, bf, nil)
+			// big.Float to float64 introduces false precision, so parse with a better tested function
+			smallFloat, _ = strconv.ParseFloat(str, 64)
+			bigFloat = nil
 		}
-	}
-
-	return nil
-}
-
-func parseNumericEvent(eventStr string) *test.TEvent {
-	param := get1ParamArg(eventStr, false)
-
-	if event := tryParseIntegerEvent(param); event != nil {
-		return event
-	}
-
-	if strings.Contains(string(param), "0x") {
-		if event := tryParseBinaryFloatEvent(param); event != nil {
-			return event
-		} else {
-			panic(fmt.Errorf("could not convert %v to binary float", string(param)))
-		}
-	}
-
-	if event := tryParseDecimalFloatEvent(param); event != nil {
-		return event
 	} else {
-		panic(fmt.Errorf("could not convert %v to decimal float", string(param)))
+		panic(fmt.Errorf("BUG: Could not convert [%v] to float", str))
 	}
+
+	return
 }
 
-func parseIntegerEvent(eventStr string) *test.TEvent {
-	param := get1ParamArg(eventStr, false)
-
-	if event := tryParseIntegerEvent(param); event != nil {
-		return event
-	} else {
-		panic(fmt.Errorf("could not convert %v to integer", string(param)))
+func parseFloat64(str string) float64 {
+	sf, bf := parseBinaryFloat(str)
+	if bf != nil {
+		panic(fmt.Errorf("unexpectedly large binary float \"%v\"", str))
 	}
+	return float64(sf)
 }
 
-func parseBinaryFloatEvent(eventStr string) *test.TEvent {
-	param := get1ParamArg(eventStr, false)
+func parseFloat32(str string) float32 {
+	const quietNanBits = uint32(0x7fc10000)
+	const signalingNanBits = uint32(0x7f810000)
 
-	if event := tryParseBinaryFloatEvent(param); event != nil {
-		return event
-	} else {
-		panic(fmt.Errorf("could not convert %v to binary float", string(param)))
-	}
-}
-
-func parseDecimalFloatEvent(eventStr string) *test.TEvent {
-	param := get1ParamArg(eventStr, false)
-
-	if event := tryParseDecimalFloatEvent(param); event != nil {
-		return event
-	} else {
-		panic(fmt.Errorf("could not convert %v to decimal float", string(param)))
-	}
-}
-
-func parseArrayChunkMoreEvent(eventStr string) *test.TEvent {
-	param := get1ParamArg(eventStr, false)
-	return test.NewTEvent(test.TEventArrayChunk, parseUint(param), true)
-}
-
-func parseArrayChunkLastEvent(eventStr string) *test.TEvent {
-	param := get1ParamArg(eventStr, false)
-	return test.NewTEvent(test.TEventArrayChunk, parseUint(param), false)
-}
-
-type generalEventParser struct {
-	eventType         test.TEventType
-	paramParsers      []eventParamParser
-	paramsAreOptional bool
-}
-
-func newParser(paramsAreOptional bool, eventType test.TEventType, paramParsers ...eventParamParser) *generalEventParser {
-	return &generalEventParser{
-		eventType:         eventType,
-		paramParsers:      paramParsers,
-		paramsAreOptional: paramsAreOptional,
-	}
-}
-
-func (_this *generalEventParser) ParseEvent(eventStr string) *test.TEvent {
-	switch len(_this.paramParsers) {
-	case 0:
-		return test.NewTEvent(_this.eventType, nil, nil)
-	case 1:
-		param := get1ParamArg(eventStr, _this.paramsAreOptional)
-		return test.NewTEvent(_this.eventType,
-			_this.paramParsers[0](param),
-			nil)
-	case 2:
-		param1, param2 := get2ParamArg(eventStr)
-		return test.NewTEvent(_this.eventType,
-			_this.paramParsers[0](param1),
-			_this.paramParsers[1](param2))
+	switch str {
+	case "nan":
+		return math.Float32frombits(quietNanBits)
+	case "snan":
+		return math.Float32frombits(signalingNanBits)
 	default:
-		panic(fmt.Errorf("BUG: Event parser has %v param parsers", len(_this.paramParsers)))
-	}
-}
-
-func get1ParamArg(eventStr string, optional bool) []byte {
-	asBytes := []byte(eventStr)
-	indices := eventNameAndWSMatcher.FindSubmatchIndex(asBytes)
-	if len(indices) != 2 {
-		if optional {
-			return asBytes[:0]
+		if f, err := strconv.ParseFloat(str, 64); err == nil {
+			return float32(f)
 		}
-		panic(fmt.Errorf("event [%v] requires 1 parameter", eventStr))
 	}
-	return asBytes[indices[1]:]
+
+	panic(fmt.Errorf("BUG: Expected a binary float but got \"%v\"", str))
 }
 
-func get2ParamArg(eventStr string) ([]byte, []byte) {
-	asBytes := []byte(eventStr)
-	indices := firstParamAndWSMatcher.FindSubmatchIndex(asBytes)
-	if len(indices) != 4 {
-		panic(fmt.Errorf("event [%v] requires 2 parameters", eventStr))
+func parseDecimalFloat(str string) (smallFloat compact_float.DFloat, bigFloat *apd.Decimal) {
+	var err error
+	if smallFloat, err = compact_float.DFloatFromString(str); err == nil {
+		return
 	}
-	param1 := asBytes[indices[2]:indices[3]]
-	param2 := asBytes[indices[3]:]
-	if param2[0] == ' ' || param2[0] == '\r' || param2[0] == '\n' || param2[0] == '\t' {
-		param2 = param2[1:]
+
+	if bigFloat, _, err = apd.NewFromString(str); err == nil {
+		return
 	}
-	return param1, param2
+
+	panic(fmt.Errorf("BUG: Expected a decimal float but got \"%v\"", str))
 }
 
-type eventParamParser func(bytes []byte) interface{}
-
-func parseString(data []byte) interface{} {
-	return string(data)
-}
-
-func parseBool(bytes []byte) interface{} {
-	asString := string(bytes)
-	if asString == "true" || asString == "t" {
-		return true
-	}
-	if asString == "false" || asString == "f" {
-		return false
-	}
-	panic(fmt.Errorf("error parsing bool [%v]", string(bytes)))
-}
-
-func parseInt(bytes []byte) interface{} {
-	value, err := strconv.ParseInt(string(bytes), 0, 64)
-	if err != nil {
-		panic(fmt.Errorf("error parsing int [%v]: %w", string(bytes), err))
-	}
-	return value
-}
-
-func parseUint(bytes []byte) interface{} {
-	value, err := strconv.ParseUint(string(bytes), 0, 64)
-	if err != nil {
-		panic(fmt.Errorf("error parsing uint [%v]: %w", string(bytes), err))
-	}
-	return value
-}
-
-func parseHex(bytes []byte) (result uint64) {
-	for _, b := range bytes {
+func parseHex(str string) (result uint64) {
+	for _, b := range str {
 		switch b {
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 			result = (result << 4) | uint64(b-'0')
@@ -311,427 +245,602 @@ func parseHex(bytes []byte) (result uint64) {
 		case 'A', 'B', 'C', 'D', 'E', 'F':
 			result = (result << 4) | uint64(b-'A'+10)
 		default:
-			panic(fmt.Errorf("error parsing hexadecimal: Invalid char [%c] in [%v]", b, string(bytes)))
+			panic(fmt.Errorf("BUG: error parsing hexadecimal: Invalid char [%c] in [%v]", b, str))
 		}
 	}
 	return
 }
 
-func parseUintHex(bytes []byte) interface{} {
-	if len(bytes) == 0 {
-		panic(fmt.Errorf("error parsing hexadecimal: no data"))
+func parseCoord(str string) float64 {
+	if f, err := strconv.ParseFloat(str, 64); err == nil {
+		return f
+	} else {
+		panic(err)
 	}
-	return parseHex(bytes)
 }
 
-func parseIntHex(bytes []byte) interface{} {
-	if len(bytes) == 0 {
-		panic(fmt.Errorf("error parsing hexadecimal: no data"))
-	}
-	sign := int64(0)
-	if bytes[0] == '-' {
-		sign = -1
-		bytes = bytes[1:]
-	}
-	value := parseHex(bytes)
-	if value&0x8000000000000000 != 0 {
-		panic(fmt.Errorf("overflow parsing [%v]", string(bytes)))
-	}
-	return sign * int64(value)
-}
-
-var signalingNan = math.Float64frombits(math.Float64bits(math.NaN()) & ^uint64(1<<50))
-
-func parseFloatFromString(str string) float64 {
-	if str == "snan" {
-		return signalingNan
-	}
-
-	value, err := strconv.ParseFloat(str, 64)
+func parseDate(str string) compact_time.Time {
+	r, err := regexp.Compile(`(-?\d+)-(\d\d)-(\d\d)$`)
 	if err != nil {
-		panic(fmt.Errorf("error parsing float [%v]: %w", str, err))
+		panic(err)
 	}
-	return value
+	strs := r.FindAllStringSubmatch(str, -1)[0]
+	year := int(parseDecimalInt(strs[1]))
+	month := int(parseDecimalInt(strs[2]))
+	day := int(parseDecimalInt(strs[3]))
+	return compact_time.NewDate(year, month, day)
 }
 
-func parseFloat(bytes []byte) interface{} {
-	return parseFloatFromString(string(bytes))
+func parseTimeNanoseconds(str string) int {
+	if len(str) == 0 {
+		return 0
+	}
+	subsecStr := str[1:]
+	digitCount := len(subsecStr)
+	subseconds := int(parseDecimalInt(subsecStr))
+	return subseconds * int(math.Pow10(9-digitCount))
 }
 
-func parseFloat32(bytes []byte) interface{} {
-	f64 := parseFloatFromString(string(bytes))
-	f32 := float32(f64)
-	if f64 == signalingNan {
-		f32 = common.Float32SignalingNan
+func parseTimezone(str string) compact_time.Timezone {
+	if len(str) == 0 {
+		return compact_time.TZAtUTC()
 	}
-	return f32
-}
-
-var uuidMatcher = regexp.MustCompile(`^([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})`)
-
-func parseUUID(data []byte) interface{} {
-	components := uuidMatcher.FindSubmatch(data)
-	if len(components) == 0 {
-		panic(fmt.Errorf("error parsing UUID [%v]: not a UUID", string(data)))
-	}
-	buff := bytes.Buffer{}
-	for iComponent := 1; iComponent < len(components); iComponent++ {
-		component := components[iComponent]
-		for iByte := 0; iByte < len(component); iByte += 2 {
-			buff.WriteByte(byte(parseHex(component[iByte : iByte+2])))
+	switch str[0] {
+	case '/':
+		if (str[1] >= '0' && str[1] <= '9') || str[1] == '-' {
+			r, err := regexp.Compile(`(-?\d+(\.\d+)?)/(-?\d+(\.\d+)?)$`)
+			if err != nil {
+				panic(err)
+			}
+			strs := r.FindAllStringSubmatch(str[1:], -1)[0]
+			latitude := parseCoord(strs[1])
+			longitude := parseCoord(strs[3])
+			return compact_time.TZAtLatLong(int(latitude*100), int(longitude*100))
+		} else {
+			return compact_time.TZAtAreaLocation(str[1:])
 		}
+	case '+':
+		hours := parseDecimalInt(str[1:3])
+		minutes := parseDecimalInt(str[3:])
+		return compact_time.TZWithMiutesOffsetFromUTC(int(hours*60 + minutes))
+	case '-':
+		hours := parseDecimalInt(str[1:3])
+		minutes := parseDecimalInt(str[3:])
+		return compact_time.TZWithMiutesOffsetFromUTC(-int(hours*60 + minutes))
+	default:
+		panic(fmt.Errorf("BUG: Unknown time separator '%c'", str[0]))
+	}
+}
+
+func parseTime(str string) compact_time.Time {
+	r, err := regexp.Compile(`(\d+):(\d\d):(\d\d)(\.\d+)?([+-/].+)?$`)
+	if err != nil {
+		panic(err)
+	}
+	strs := r.FindAllStringSubmatch(str, -1)[0]
+	hour := int(parseDecimalInt(strs[1]))
+	minute := int(parseDecimalInt(strs[2]))
+	second := int(parseDecimalInt(strs[3]))
+	var nanosecond int
+	timezone := compact_time.TZAtUTC()
+	if len(strs[4]) > 0 {
+		nanosecond = parseTimeNanoseconds(strs[4])
+	}
+	if len(strs[5]) > 0 {
+		timezone = parseTimezone(strs[5])
+	}
+
+	return compact_time.NewTime(hour, minute, second, nanosecond, timezone)
+}
+
+func parseDateTime(str string) compact_time.Time {
+	r, err := regexp.Compile(`(-?\d+)-(\d\d)-(\d\d)/(\d+):(\d\d):(\d\d)(\.\d+)?([+-/].+)?$`)
+	if err != nil {
+		panic(err)
+	}
+	strs := r.FindAllStringSubmatch(str, -1)[0]
+	year := int(parseDecimalInt(strs[1]))
+	month := int(parseDecimalInt(strs[2]))
+	day := int(parseDecimalInt(strs[3]))
+	hour := int(parseDecimalInt(strs[4]))
+	minute := int(parseDecimalInt(strs[5]))
+	second := int(parseDecimalInt(strs[6]))
+	nanosecond := parseTimeNanoseconds(strs[7])
+	timezone := parseTimezone(strs[8])
+
+	return compact_time.NewTimestamp(year, month, day, hour, minute, second, nanosecond, timezone)
+}
+
+func parseUUID(str string) []byte {
+	buff := bytes.Buffer{}
+	endpoints := []int{8, 13, 18, 23, 36}
+	iData := 0
+	for iEndpoint := 0; iEndpoint < len(endpoints); iEndpoint++ {
+		endpoint := endpoints[iEndpoint]
+		for ; iData < endpoint; iData += 2 {
+			buff.WriteByte(byte(parseHex(str[iData : iData+2])))
+		}
+		iData++
 	}
 	return buff.Bytes()
 }
 
-func bytesToInt(bytes []byte) int {
-	if len(bytes) == 0 {
-		panic(fmt.Errorf("tried to parse empty byte array as int"))
+func getStringArg(tree []antlr.Tree) string {
+	if len(tree) > 1 {
+		return getTokenText(tree[1])
 	}
-	sign := 1
-	if bytes[0] == '-' {
-		sign = -1
-		bytes = bytes[1:]
-	}
-	accum := 0
-	for _, b := range bytes {
-		digit := int(b - '0')
-		if digit < 0 || digit > 9 {
-			panic(fmt.Errorf("%c: Invalid integer digit", b))
+	return ""
+}
+
+func parseArrayElementsBit(children []antlr.Tree) []bool {
+	elements := make([]bool, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		switch text {
+		case "1":
+			elements = append(elements, true)
+		case "0":
+			elements = append(elements, false)
+		default:
+			panic(fmt.Errorf("BUG: %v: unexpected boolean element value", text))
 		}
-		accum = accum*10 + digit
-	}
-	return accum * sign
+	})
+	return elements
 }
 
-var dateMatcher = regexp.MustCompile(`^(-?\d+)-(\d+)-(\d+)`)
-
-func tryParseDate(bytes []byte) (date compact_time.Time, remainingBytes []byte) {
-	remainingBytes = bytes
-	indices := dateMatcher.FindSubmatchIndex(bytes)
-	if len(indices) == 0 {
-		return
-	}
-
-	year := bytesToInt(bytes[indices[2]:indices[3]])
-	month := bytesToInt(bytes[indices[4]:indices[5]])
-	day := bytesToInt(bytes[indices[6]:indices[7]])
-
-	remainingBytes = bytes[indices[1]:]
-	if len(remainingBytes) > 0 && remainingBytes[0] == '/' {
-		remainingBytes = remainingBytes[1:]
-	}
-	date = compact_time.NewDate(year, month, day)
-	if err := date.Validate(); err != nil {
-		panic(fmt.Errorf("error parsing date from [%v]: %w", string(bytes), err))
-	}
-	return
+func parseArrayElementsUUID(children []antlr.Tree) [][]byte {
+	elements := make([][]byte, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, parseUUID(text))
+	})
+	return elements
 }
 
-var utcOffsetMatcher = regexp.MustCompile(`^[+-](\d\d)(\d\d)$`)
-
-func parseTZUTCOffset(data []byte) compact_time.Timezone {
-	components := utcOffsetMatcher.FindSubmatch(data)
-	if len(components) == 0 {
-		panic(fmt.Errorf("could not parse UTC offset from [%v]", string(data)))
-	}
-	sign := 1
-	if data[0] == '-' {
-		sign = -1
-	}
-	hours := bytesToInt(components[1])
-	minutes := bytesToInt(components[2])
-	return compact_time.TZWithMiutesOffsetFromUTC(sign * (hours*60 + minutes))
+func parseArrayElementsInt16(children []antlr.Tree) []int16 {
+	elements := make([]int16, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, int16(parseSmallInt(text)))
+	})
+	return elements
 }
 
-var latLongMatcher = regexp.MustCompile(`^(-?\d+(\.\d+)?)/(-?\d+(\.\d+)?)$`)
-
-func parseTZLatLong(data []byte) compact_time.Timezone {
-	components := latLongMatcher.FindSubmatch(data)
-	if len(components) == 0 {
-		panic(fmt.Errorf("could not parse lat/long from [%v]", string(data)))
-	}
-	lat, err := strconv.ParseFloat(string(components[1]), 64)
-	if err != nil {
-		panic(fmt.Errorf("error parsing latitude from [%v]: %w", string(components[1]), err))
-	}
-	long, err := strconv.ParseFloat(string(components[3]), 64)
-	if err != nil {
-		panic(fmt.Errorf("error parsing longitude from [%v]: %w", string(components[3]), err))
-	}
-	return compact_time.TZAtLatLong(int(lat*100), int(long*100))
+func parseArrayElementsInt32(children []antlr.Tree) []int32 {
+	elements := make([]int32, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, int32(parseSmallInt(text)))
+	})
+	return elements
 }
 
-func parseTZAreaLocation(data []byte) compact_time.Timezone {
-	return compact_time.TZAtAreaLocation(string(data))
+func parseArrayElementsInt64(children []antlr.Tree) []int64 {
+	elements := make([]int64, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, int64(parseSmallInt(text)))
+	})
+	return elements
 }
 
-func parseTZAreaLocationOrLatLong(data []byte) compact_time.Timezone {
-	if len(data) == 0 {
-		panic(fmt.Errorf("TZ data missing"))
-	}
-	switch data[0] {
-	case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		return parseTZLatLong(data)
-	default:
-		return parseTZAreaLocation(data)
-	}
+func parseArrayElementsInt8(children []antlr.Tree) []int8 {
+	elements := make([]int8, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, int8(parseSmallInt(text)))
+	})
+	return elements
 }
 
-func parseTimezone(data []byte) (tz compact_time.Timezone) {
-	tz = compact_time.TZAtUTC()
-	if len(data) == 0 {
-		return
-	}
-
-	switch data[0] {
-	case '+', '-':
-		return parseTZUTCOffset(data)
-	case '/':
-		return parseTZAreaLocationOrLatLong(data[1:])
-	default:
-		panic(fmt.Errorf("%v: Invalid timezone", string(data)))
-	}
+func parseArrayElementsUint8(children []antlr.Tree) []uint8 {
+	elements := make([]uint8, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint8(parseSmallUint(text)))
+	})
+	return elements
 }
 
-var timeMatcher = regexp.MustCompile(`^(\d+):(\d+):(\d+)(\.\d+)?`)
+func parseArrayElementsUint8X(children []antlr.Tree) []uint8 {
+	elements := make([]uint8, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint8(parseSmallUintX(text)))
+	})
+	return elements
+}
 
-func parseTime(data []byte) (t compact_time.Time) {
-	indices := timeMatcher.FindSubmatchIndex(data)
-	if len(indices) == 0 {
-		return
+func parseArrayElementsUint16(children []antlr.Tree) []uint16 {
+	elements := make([]uint16, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint16(parseSmallUint(text)))
+	})
+	return elements
+}
+
+func parseArrayElementsUint16X(children []antlr.Tree) []uint16 {
+	elements := make([]uint16, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint16(parseSmallUintX(text)))
+	})
+	return elements
+}
+
+func parseArrayElementsUint32(children []antlr.Tree) []uint32 {
+	elements := make([]uint32, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint32(parseSmallUint(text)))
+	})
+	return elements
+}
+
+func parseArrayElementsUint32X(children []antlr.Tree) []uint32 {
+	elements := make([]uint32, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint32(parseSmallUintX(text)))
+	})
+	return elements
+}
+
+func parseArrayElementsUint64(children []antlr.Tree) []uint64 {
+	elements := make([]uint64, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint64(parseSmallUint(text)))
+	})
+	return elements
+}
+
+func parseArrayElementsUint64X(children []antlr.Tree) []uint64 {
+	elements := make([]uint64, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, uint64(parseSmallUintX(text)))
+	})
+	return elements
+}
+
+func parseArrayElementsFloat16(children []antlr.Tree) []float32 {
+	elements := make([]float32, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, parseFloat32(text))
+	})
+	return elements
+}
+
+func parseArrayElementsFloat32(children []antlr.Tree) []float32 {
+	elements := make([]float32, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, parseFloat32(text))
+	})
+	return elements
+}
+
+func parseArrayElementsFloat64(children []antlr.Tree) []float64 {
+	elements := make([]float64, 0, len(children)-1)
+	iterateChildren(children, func(text string) {
+		elements = append(elements, float64(parseFloat64(text)))
+	})
+	return elements
+}
+
+type eventListener struct {
+	*parser.BaseCEEventParserListener
+	Events test.Events
+}
+
+func (_this *eventListener) setEvents(events ...test.Event) {
+	_this.Events = test.Events(events)
+}
+
+func (_this *eventListener) ExitEventArrayBits(ctx *parser.EventArrayBitsContext) {
+	_this.setEvents(test.AB(parseArrayElementsBit(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayChunkLast(ctx *parser.EventArrayChunkLastContext) {
+	_this.setEvents(test.ACL(parseSmallUint(getTokenText(ctx.GetChild(1)))))
+}
+func (_this *eventListener) ExitEventArrayChunkMore(ctx *parser.EventArrayChunkMoreContext) {
+	_this.setEvents(test.ACM(parseSmallUint(getTokenText(ctx.GetChild(1)))))
+}
+func (_this *eventListener) ExitEventArrayDataBits(ctx *parser.EventArrayDataBitsContext) {
+	_this.setEvents(test.ADB(parseArrayElementsBit(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataFloat16(ctx *parser.EventArrayDataFloat16Context) {
+	_this.setEvents(test.ADF16(parseArrayElementsFloat16(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataFloat32(ctx *parser.EventArrayDataFloat32Context) {
+	_this.setEvents(test.ADF32(parseArrayElementsFloat32(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataFloat64(ctx *parser.EventArrayDataFloat64Context) {
+	_this.setEvents(test.ADF64(parseArrayElementsFloat64(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataInt16(ctx *parser.EventArrayDataInt16Context) {
+	_this.setEvents(test.ADI16(parseArrayElementsInt16(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataInt32(ctx *parser.EventArrayDataInt32Context) {
+	_this.setEvents(test.ADI32(parseArrayElementsInt32(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataInt64(ctx *parser.EventArrayDataInt64Context) {
+	_this.setEvents(test.ADI64(parseArrayElementsInt64(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataInt8(ctx *parser.EventArrayDataInt8Context) {
+	_this.setEvents(test.ADI8(parseArrayElementsInt8(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataText(ctx *parser.EventArrayDataTextContext) {
+	_this.setEvents(test.ADT(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUID(ctx *parser.EventArrayDataUIDContext) {
+	_this.setEvents(test.ADU(parseArrayElementsUUID(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint16(ctx *parser.EventArrayDataUint16Context) {
+	_this.setEvents(test.ADU16(parseArrayElementsUint16(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint16X(ctx *parser.EventArrayDataUint16XContext) {
+	_this.setEvents(test.ADU16(parseArrayElementsUint16X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint32(ctx *parser.EventArrayDataUint32Context) {
+	_this.setEvents(test.ADU32(parseArrayElementsUint32(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint32X(ctx *parser.EventArrayDataUint32XContext) {
+	_this.setEvents(test.ADU32(parseArrayElementsUint32X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint64(ctx *parser.EventArrayDataUint64Context) {
+	_this.setEvents(test.ADU64(parseArrayElementsUint64(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint64X(ctx *parser.EventArrayDataUint64XContext) {
+	_this.setEvents(test.ADU64(parseArrayElementsUint64X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint8(ctx *parser.EventArrayDataUint8Context) {
+	_this.setEvents(test.ADU8(parseArrayElementsUint8(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayDataUint8X(ctx *parser.EventArrayDataUint8XContext) {
+	_this.setEvents(test.ADU8(parseArrayElementsUint8X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayFloat16(ctx *parser.EventArrayFloat16Context) {
+	_this.setEvents(test.AF16(parseArrayElementsFloat16(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayFloat32(ctx *parser.EventArrayFloat32Context) {
+	_this.setEvents(test.AF32(parseArrayElementsFloat32(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayFloat64(ctx *parser.EventArrayFloat64Context) {
+	_this.setEvents(test.AF64(parseArrayElementsFloat64(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayInt16(ctx *parser.EventArrayInt16Context) {
+	_this.setEvents(test.AI16(parseArrayElementsInt16(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayInt32(ctx *parser.EventArrayInt32Context) {
+	_this.setEvents(test.AI32(parseArrayElementsInt32(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayInt64(ctx *parser.EventArrayInt64Context) {
+	_this.setEvents(test.AI64(parseArrayElementsInt64(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayInt8(ctx *parser.EventArrayInt8Context) {
+	_this.setEvents(test.AI8(parseArrayElementsInt8(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUID(ctx *parser.EventArrayUIDContext) {
+	_this.setEvents(test.AU(parseArrayElementsUUID(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint16(ctx *parser.EventArrayUint16Context) {
+	_this.setEvents(test.AU16(parseArrayElementsUint16(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint16X(ctx *parser.EventArrayUint16XContext) {
+	_this.setEvents(test.AU16(parseArrayElementsUint16X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint32(ctx *parser.EventArrayUint32Context) {
+	_this.setEvents(test.AU32(parseArrayElementsUint32(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint32X(ctx *parser.EventArrayUint32XContext) {
+	_this.setEvents(test.AU32(parseArrayElementsUint32X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint64(ctx *parser.EventArrayUint64Context) {
+	_this.setEvents(test.AU64(parseArrayElementsUint64(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint64X(ctx *parser.EventArrayUint64XContext) {
+	_this.setEvents(test.AU64(parseArrayElementsUint64X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint8(ctx *parser.EventArrayUint8Context) {
+	_this.setEvents(test.AU8(parseArrayElementsUint8(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventArrayUint8X(ctx *parser.EventArrayUint8XContext) {
+	_this.setEvents(test.AU8(parseArrayElementsUint8X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventBeginArrayBits(ctx *parser.EventBeginArrayBitsContext) {
+	_this.setEvents(test.BAB())
+}
+func (_this *eventListener) ExitEventBeginArrayFloat16(ctx *parser.EventBeginArrayFloat16Context) {
+	_this.setEvents(test.BAF16())
+}
+func (_this *eventListener) ExitEventBeginArrayFloat32(ctx *parser.EventBeginArrayFloat32Context) {
+	_this.setEvents(test.BAF32())
+}
+func (_this *eventListener) ExitEventBeginArrayFloat64(ctx *parser.EventBeginArrayFloat64Context) {
+	_this.setEvents(test.BAF64())
+}
+func (_this *eventListener) ExitEventBeginArrayInt16(ctx *parser.EventBeginArrayInt16Context) {
+	_this.setEvents(test.BAI16())
+}
+func (_this *eventListener) ExitEventBeginArrayInt32(ctx *parser.EventBeginArrayInt32Context) {
+	_this.setEvents(test.BAI32())
+}
+func (_this *eventListener) ExitEventBeginArrayInt64(ctx *parser.EventBeginArrayInt64Context) {
+	_this.setEvents(test.BAI64())
+}
+func (_this *eventListener) ExitEventBeginArrayInt8(ctx *parser.EventBeginArrayInt8Context) {
+	_this.setEvents(test.BAI8())
+}
+func (_this *eventListener) ExitEventBeginArrayUID(ctx *parser.EventBeginArrayUIDContext) {
+	_this.setEvents(test.BAU())
+}
+func (_this *eventListener) ExitEventBeginArrayUint16(ctx *parser.EventBeginArrayUint16Context) {
+	_this.setEvents(test.BAU16())
+}
+func (_this *eventListener) ExitEventBeginArrayUint32(ctx *parser.EventBeginArrayUint32Context) {
+	_this.setEvents(test.BAU32())
+}
+func (_this *eventListener) ExitEventBeginArrayUint64(ctx *parser.EventBeginArrayUint64Context) {
+	_this.setEvents(test.BAU64())
+}
+func (_this *eventListener) ExitEventBeginArrayUint8(ctx *parser.EventBeginArrayUint8Context) {
+	_this.setEvents(test.BAU8())
+}
+func (_this *eventListener) ExitEventBeginCustomBinary(ctx *parser.EventBeginCustomBinaryContext) {
+	_this.setEvents(test.BCB())
+}
+func (_this *eventListener) ExitEventBeginCustomText(ctx *parser.EventBeginCustomTextContext) {
+	_this.setEvents(test.BCT())
+}
+func (_this *eventListener) ExitEventBeginMedia(ctx *parser.EventBeginMediaContext) {
+	_this.setEvents(test.BMEDIA())
+}
+func (_this *eventListener) ExitEventBeginResourceId(ctx *parser.EventBeginResourceIdContext) {
+	_this.setEvents(test.BRID())
+}
+func (_this *eventListener) ExitEventBeginString(ctx *parser.EventBeginStringContext) {
+	_this.setEvents(test.BS())
+}
+func (_this *eventListener) ExitEventBeginRemoteReference(ctx *parser.EventBeginRemoteReferenceContext) {
+	_this.setEvents(test.BREFR())
+}
+func (_this *eventListener) ExitEventBoolean(ctx *parser.EventBooleanContext) {
+	ttype, _ := getTokenInfo(ctx.GetChild(1))
+	_this.setEvents(test.B(ttype == parser.CEEventLexerTRUE))
+}
+func (_this *eventListener) ExitEventCommentMultiline(ctx *parser.EventCommentMultilineContext) {
+	str := getTokenText(ctx.GetChild(0))
+	if len(str) < 3 {
+		str = ""
+	} else {
+		str = str[3:]
 	}
-	hour := bytesToInt(data[indices[2]:indices[3]])
-	minute := bytesToInt(data[indices[4]:indices[5]])
-	second := bytesToInt(data[indices[6]:indices[7]])
-	subsecond := 0
-	if indices[8] >= 0 {
-		begin := indices[8] + 1
-		end := indices[9]
-		subsecond = bytesToInt(data[begin:end])
-		for i := end - begin; i < 9; i++ {
-			subsecond *= 10
+	_this.setEvents(test.CM(str))
+}
+func (_this *eventListener) ExitEventCommentSingleLine(ctx *parser.EventCommentSingleLineContext) {
+	str := getTokenText(ctx.GetChild(0))
+	if len(str) < 3 {
+		str = ""
+	} else {
+		str = str[3:]
+	}
+	_this.setEvents(test.CS(str))
+}
+func (_this *eventListener) ExitEventCustomBinary(ctx *parser.EventCustomBinaryContext) {
+	_this.setEvents(test.CB(parseArrayElementsUint8X(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventCustomText(ctx *parser.EventCustomTextContext) {
+	_this.setEvents(test.CT(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventEdge(ctx *parser.EventEdgeContext) {
+	_this.setEvents(test.EDGE())
+}
+func (_this *eventListener) ExitEventEndContainer(ctx *parser.EventEndContainerContext) {
+	_this.setEvents(test.E())
+}
+func (_this *eventListener) ExitEventList(ctx *parser.EventListContext) {
+	_this.setEvents(test.L())
+}
+func (_this *eventListener) ExitEventMap(ctx *parser.EventMapContext) {
+	_this.setEvents(test.M())
+}
+func (_this *eventListener) ExitEventMarker(ctx *parser.EventMarkerContext) {
+	_this.setEvents(test.MARK(getTokenText(ctx.GetChild(1))))
+}
+func (_this *eventListener) ExitEventMedia(ctx *parser.EventMediaContext) {
+	mediaType := getTokenText(ctx.GetChild(1))
+	children := ctx.GetChildren()
+	elements := make([]uint8, 0, len(children)-2)
+	for j := 2; j < len(children); j++ {
+		child := children[j]
+		if c2, ok := child.(antlr.TerminalNode); ok {
+			elements = append(elements, uint8(parseSmallUint(c2.GetText())))
 		}
 	}
-	data = data[indices[1]:]
-	tz := parseTimezone(data)
-	return compact_time.NewTime(hour, minute, second, subsecond, tz)
+	_this.setEvents(
+		test.BMEDIA(),
+		test.ACL(uint64(len(mediaType))),
+		test.ADT(mediaType),
+		test.ACL(uint64(len(elements))),
+		test.ADU8(elements),
+	)
 }
-
-func parseTemporal(data []byte) interface{} {
-	originalBytes := data
-	var datePart compact_time.Time
-	datePart, data = tryParseDate(data)
-	timePart := parseTime(data)
-
-	if datePart.IsZeroValue() && timePart.IsZeroValue() {
-		panic(fmt.Errorf("could not parse date [%v]: no date data found", string(originalBytes)))
-	}
-
-	if !datePart.IsZeroValue() {
-		if err := datePart.Validate(); err != nil {
-			panic(fmt.Errorf("error parsing date [%v]: %w", string(originalBytes), err))
+func (_this *eventListener) ExitEventNode(ctx *parser.EventNodeContext) {
+	_this.setEvents(test.NODE())
+}
+func (_this *eventListener) ExitEventNull(ctx *parser.EventNullContext) {
+	_this.setEvents(test.NULL())
+}
+func (_this *eventListener) ExitEventNumber(ctx *parser.EventNumberContext) {
+	ttype, ttext := getTokenInfo(ctx.GetChild(1))
+	switch ttype {
+	case parser.CEEventParserFLOAT_NAN:
+		_this.setEvents(test.N(compact_float.QuietNaN()))
+	case parser.CEEventParserFLOAT_SNAN:
+		_this.setEvents(test.N(compact_float.SignalingNaN()))
+	case parser.CEEventParserFLOAT_INF:
+		sign := 1
+		if ttext[0] == '-' {
+			sign = -1
 		}
-		if timePart.IsZeroValue() {
-			return datePart
+		_this.setEvents(test.N(math.Inf(sign)))
+	case parser.CEEventParserFLOAT_DEC:
+		sf, bf := parseDecimalFloat(ttext)
+		if bf != nil {
+			_this.setEvents(test.N(bf))
+		} else {
+			_this.setEvents(test.N(sf))
 		}
-		timePart.Year = datePart.Year
-		timePart.Month = datePart.Month
-		timePart.Day = datePart.Day
-		timePart.Type = compact_time.TimeTypeTimestamp
-	}
-	if err := timePart.Validate(); err != nil {
-		panic(fmt.Errorf("error parsing time value [%v]: %w", string(originalBytes), err))
-	}
-	return timePart
-}
-
-func parseTextAsBytes(data []byte) interface{} {
-	return data
-}
-
-func parseBitArrayEvent(eventStr string) *test.TEvent {
-	var array []byte
-	if len(eventStr) < 3 {
-		return test.NewTEvent(test.TEventArrayBoolean, 0, array)
-	}
-	asBytes := []byte(eventStr[3:])
-
-	iBytes := 0
-	generator := func() (next byte, bitCount int) {
-		for iBytes < len(asBytes) {
-			b := asBytes[iBytes]
-			iBytes++
-			switch b {
-			case '1':
-				next |= byte(1 << bitCount)
-				bitCount++
-			case '0':
-				bitCount++
-			case ' ', '\r', '\n', '\t':
-				// Skip whitespace
-			default:
-				panic(fmt.Errorf("[%c]: Invalid bit array character", b))
+	case parser.CEEventParserFLOAT_HEX:
+		sf, bf := parseBinaryFloat(ttext)
+		if bf != nil {
+			_this.setEvents(test.N(bf))
+		} else {
+			_this.setEvents(test.N(sf))
+		}
+	case parser.CEEventParserINT_BIN, parser.CEEventParserINT_OCT, parser.CEEventParserINT_DEC, parser.CEEventParserINT_HEX:
+		si, bi := parseInt(ttext)
+		if bi != nil {
+			_this.setEvents(test.N(bi))
+		} else {
+			if ttext[0] == '-' && si == 0 {
+				_this.setEvents(test.N(compact_float.NegativeZero()))
+			} else {
+				_this.setEvents(test.N(si))
 			}
-			if bitCount >= 8 {
-				return
-			}
-		}
-		return
-	}
-
-	// first byte low bit is first bit of array
-	totalBits := uint64(0)
-	for {
-		b, bitCount := generator()
-		if bitCount == 0 {
-			break
-		}
-		totalBits += uint64(bitCount)
-		array = append(array, b)
-	}
-
-	return test.NewTEvent(test.TEventArrayBoolean,
-		totalBits,
-		array)
-}
-
-func newArrayParser(elemType reflect.Type, elementParser eventParamParser) eventParamParser {
-	var typeAppropriate func(src interface{}) reflect.Value
-	switch elemType.Kind() {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		typeAppropriate = func(src interface{}) reflect.Value {
-			value := reflect.New(elemType).Elem()
-			value.SetInt(reflect.ValueOf(src).Int())
-			return value
-		}
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		typeAppropriate = func(src interface{}) reflect.Value {
-			value := reflect.New(elemType).Elem()
-			value.SetUint(reflect.ValueOf(src).Uint())
-			return value
-		}
-	case reflect.Float32, reflect.Float64:
-		typeAppropriate = func(src interface{}) reflect.Value {
-			value := reflect.New(elemType).Elem()
-			value.SetFloat(reflect.ValueOf(src).Float())
-			return value
-		}
-	case reflect.Slice:
-		typeAppropriate = func(src interface{}) reflect.Value {
-			value := reflect.New(elemType).Elem()
-			value.Set(reflect.ValueOf(src))
-			return value
 		}
 	default:
-		panic(fmt.Errorf("no parser defined for array type %v", elemType))
-	}
-	return func(data []byte) interface{} {
-		fields := strings.Fields(string(data))
-		slice := reflect.MakeSlice(reflect.SliceOf(elemType), 0, len(fields))
-		for _, field := range fields {
-			elem := elementParser([]byte(field))
-			slice = reflect.Append(slice, typeAppropriate(elem))
-		}
-		return slice.Interface()
+		panic(fmt.Errorf("BUG: Unexpected token type %v decoding \"%v\"", ttype, ttext))
 	}
 }
-
-// func parseBigInt(bytes []byte) interface{} {
-// 	return test.NewBigInt(string(bytes))
-// }
-
-// func parseBigFloat(bytes []byte) interface{} {
-// 	return test.NewBigFloat(string(bytes))
-// }
-
-// func parseBigDecimalFloat(bytes []byte) interface{} {
-// 	return test.NewBDF(string(bytes))
-// }
-
-var eventNameMatcher = regexp.MustCompile(`^(\w+)`)
-var eventNameAndWSMatcher = regexp.MustCompile(`^\w+\s`)
-var firstParamAndWSMatcher = regexp.MustCompile(`^\w+\s+(\w+)\s`)
-
-var eventParsersByName = make(map[string]parseEvent)
-
-func init() {
-	eventParsersByName["v"] = newParser(false, test.TEventVersion, parseUint).ParseEvent
-	eventParsersByName["pad"] = newParser(true, test.TEventPadding, parseInt).ParseEvent
-	eventParsersByName["com"] = newParser(false, test.TEventComment, parseBool, parseString).ParseEvent
-	eventParsersByName["null"] = newParser(false, test.TEventNull).ParseEvent
-	eventParsersByName["b"] = newParser(false, test.TEventBool, parseBool).ParseEvent
-	eventParsersByName["n"] = parseNumericEvent
-	eventParsersByName["i"] = parseIntegerEvent
-	eventParsersByName["bf"] = parseBinaryFloatEvent
-	eventParsersByName["df"] = parseDecimalFloatEvent
-	eventParsersByName["uid"] = newParser(false, test.TEventUID, parseUUID).ParseEvent
-	eventParsersByName["t"] = newParser(false, test.TEventCompactTime, parseTemporal).ParseEvent
-	eventParsersByName["s"] = newParser(false, test.TEventString, parseString).ParseEvent
-	eventParsersByName["rid"] = newParser(false, test.TEventResourceID, parseString).ParseEvent
-	eventParsersByName["cb"] = newParser(false, test.TEventCustomBinary, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
-	eventParsersByName["ct"] = newParser(false, test.TEventCustomText, parseString).ParseEvent
-	eventParsersByName["ab"] = parseBitArrayEvent
-	eventParsersByName["ai8"] = newParser(true, test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseInt)).ParseEvent
-	eventParsersByName["ai8x"] = newParser(true, test.TEventArrayInt8, newArrayParser(reflect.TypeOf(int8(0)), parseIntHex)).ParseEvent
-	eventParsersByName["ai16"] = newParser(true, test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseInt)).ParseEvent
-	eventParsersByName["ai16x"] = newParser(true, test.TEventArrayInt16, newArrayParser(reflect.TypeOf(int16(0)), parseIntHex)).ParseEvent
-	eventParsersByName["ai32"] = newParser(true, test.TEventArrayInt32, newArrayParser(reflect.TypeOf(int32(0)), parseInt)).ParseEvent
-	eventParsersByName["ai32x"] = newParser(true, test.TEventArrayInt32, newArrayParser(reflect.TypeOf(int32(0)), parseIntHex)).ParseEvent
-	eventParsersByName["ai64"] = newParser(true, test.TEventArrayInt64, newArrayParser(reflect.TypeOf(int64(0)), parseInt)).ParseEvent
-	eventParsersByName["ai64x"] = newParser(true, test.TEventArrayInt64, newArrayParser(reflect.TypeOf(int64(0)), parseIntHex)).ParseEvent
-	eventParsersByName["au8"] = newParser(true, test.TEventArrayUint8, newArrayParser(reflect.TypeOf(uint8(0)), parseUint)).ParseEvent
-	eventParsersByName["au8x"] = newParser(true, test.TEventArrayUint8, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
-	eventParsersByName["au16"] = newParser(true, test.TEventArrayUint16, newArrayParser(reflect.TypeOf(uint16(0)), parseUint)).ParseEvent
-	eventParsersByName["au16x"] = newParser(true, test.TEventArrayUint16, newArrayParser(reflect.TypeOf(uint16(0)), parseUintHex)).ParseEvent
-	eventParsersByName["au32"] = newParser(true, test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUint)).ParseEvent
-	eventParsersByName["au32x"] = newParser(true, test.TEventArrayUint32, newArrayParser(reflect.TypeOf(uint32(0)), parseUintHex)).ParseEvent
-	eventParsersByName["au64"] = newParser(true, test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUint)).ParseEvent
-	eventParsersByName["au64x"] = newParser(true, test.TEventArrayUint64, newArrayParser(reflect.TypeOf(uint64(0)), parseUintHex)).ParseEvent
-	eventParsersByName["af16"] = newParser(true, test.TEventArrayFloat16, newArrayParser(reflect.TypeOf(float32(0)), parseFloat32)).ParseEvent
-	eventParsersByName["af32"] = newParser(true, test.TEventArrayFloat32, newArrayParser(reflect.TypeOf(float32(0)), parseFloat32)).ParseEvent
-	eventParsersByName["af64"] = newParser(true, test.TEventArrayFloat64, newArrayParser(reflect.TypeOf(float64(0)), parseFloat)).ParseEvent
-	eventParsersByName["au"] = newParser(true, test.TEventArrayUID, newArrayParser(reflect.TypeOf([]byte{}), parseUUID)).ParseEvent
-	eventParsersByName["sb"] = newParser(false, test.TEventStringBegin).ParseEvent
-	eventParsersByName["rb"] = newParser(false, test.TEventResourceIDBegin).ParseEvent
-	eventParsersByName["rrb"] = newParser(false, test.TEventRemoteRefBegin).ParseEvent
-	eventParsersByName["cbb"] = newParser(false, test.TEventCustomBinaryBegin).ParseEvent
-	eventParsersByName["ctb"] = newParser(false, test.TEventCustomTextBegin).ParseEvent
-	eventParsersByName["abb"] = newParser(false, test.TEventArrayBooleanBegin).ParseEvent
-	eventParsersByName["ai8b"] = newParser(false, test.TEventArrayInt8Begin).ParseEvent
-	eventParsersByName["ai16b"] = newParser(false, test.TEventArrayInt16Begin).ParseEvent
-	eventParsersByName["ai32b"] = newParser(false, test.TEventArrayInt32Begin).ParseEvent
-	eventParsersByName["ai64b"] = newParser(false, test.TEventArrayInt64Begin).ParseEvent
-	eventParsersByName["au8b"] = newParser(false, test.TEventArrayUint8Begin).ParseEvent
-	eventParsersByName["au16b"] = newParser(false, test.TEventArrayUint16Begin).ParseEvent
-	eventParsersByName["au32b"] = newParser(false, test.TEventArrayUint32Begin).ParseEvent
-	eventParsersByName["au64b"] = newParser(false, test.TEventArrayUint64Begin).ParseEvent
-	eventParsersByName["af16b"] = newParser(false, test.TEventArrayFloat16Begin).ParseEvent
-	eventParsersByName["af32b"] = newParser(false, test.TEventArrayFloat32Begin).ParseEvent
-	eventParsersByName["af64b"] = newParser(false, test.TEventArrayFloat64Begin).ParseEvent
-	eventParsersByName["aub"] = newParser(false, test.TEventArrayUIDBegin).ParseEvent
-	eventParsersByName["mb"] = newParser(false, test.TEventMediaBegin).ParseEvent
-	eventParsersByName["acm"] = parseArrayChunkMoreEvent
-	eventParsersByName["acl"] = parseArrayChunkLastEvent
-	eventParsersByName["ad"] = newParser(false, test.TEventArrayData, newArrayParser(reflect.TypeOf(uint8(0)), parseUintHex)).ParseEvent
-	eventParsersByName["at"] = newParser(false, test.TEventArrayData, parseTextAsBytes).ParseEvent
-	eventParsersByName["l"] = newParser(false, test.TEventList).ParseEvent
-	eventParsersByName["m"] = newParser(false, test.TEventMap).ParseEvent
-	eventParsersByName["st"] = newParser(false, test.TEventStructTemplate, parseString).ParseEvent
-	eventParsersByName["si"] = newParser(false, test.TEventStructInstance, parseString).ParseEvent
-	eventParsersByName["node"] = newParser(false, test.TEventNode).ParseEvent
-	eventParsersByName["edge"] = newParser(false, test.TEventEdge).ParseEvent
-	eventParsersByName["e"] = newParser(false, test.TEventEnd).ParseEvent
-	eventParsersByName["mark"] = newParser(false, test.TEventMarker, parseString).ParseEvent
-	eventParsersByName["ref"] = newParser(false, test.TEventReference, parseString).ParseEvent
-	eventParsersByName["rref"] = newParser(false, test.TEventRemoteRef, parseString).ParseEvent
-	// eventParsersByName["tt"] = newParser(false, test.TEventTrue).ParseEvent
-	// eventParsersByName["ff"] = newParser(false, test.TEventFalse).ParseEvent
-	// eventParsersByName["bbf"] = newParser(false, test.TEventBigFloat, parseBigFloat).ParseEvent
-	// eventParsersByName["bdf"] = newParser(false, test.TEventBigDecimalFloat, parseBigDecimalFloat).ParseEvent
-	// eventParsersByName["pi"] = newParser(false, test.TEventPInt, parseUint).ParseEvent
-	// eventParsersByName["ni"] = newParser(false, test.TEventNInt, parseUint).ParseEvent
-	// eventParsersByName["bi"] = newParser(false, test.TEventBigInt, parseBigInt).ParseEvent
-	// eventParsersByName["nan"] = newParser(false, test.TEventNan).ParseEvent
-	// eventParsersByName["snan"] = newParser(false, test.TEventSNan).ParseEvent
+func (_this *eventListener) ExitEventPad(ctx *parser.EventPadContext) {
+	_this.setEvents(test.PAD())
+}
+func (_this *eventListener) ExitEventLocalReference(ctx *parser.EventLocalReferenceContext) {
+	_this.setEvents(test.REFL(getTokenText(ctx.GetChild(1))))
+}
+func (_this *eventListener) ExitEventRemoteReference(ctx *parser.EventRemoteReferenceContext) {
+	_this.setEvents(test.REFR(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventResourceId(ctx *parser.EventResourceIdContext) {
+	_this.setEvents(test.RID(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventString(ctx *parser.EventStringContext) {
+	_this.setEvents(test.S(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventStructInstance(ctx *parser.EventStructInstanceContext) {
+	_this.setEvents(test.SI(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventStructTemplate(ctx *parser.EventStructTemplateContext) {
+	_this.setEvents(test.ST(getStringArg(ctx.GetChildren())))
+}
+func (_this *eventListener) ExitEventTime(ctx *parser.EventTimeContext) {
+	text := getTokenText(ctx.GetChild(1))
+	if child, ok := ctx.GetChildren()[1].(antlr.TerminalNode); ok {
+		ttype := child.GetSymbol().GetTokenType()
+		switch ttype {
+		case parser.CEEventParserDATE:
+			_this.setEvents(test.T(parseDate(text)))
+		case parser.CEEventParserTIME:
+			_this.setEvents(test.T(parseTime(text)))
+		case parser.CEEventParserDATETIME:
+			_this.setEvents(test.T(parseDateTime(text)))
+		default:
+			panic(fmt.Errorf("BUG: Unexpected terminal node type %v", ttype))
+		}
+	}
+}
+func (_this *eventListener) ExitEventUID(ctx *parser.EventUIDContext) {
+	_this.setEvents(test.UID(parseUUID(getTokenText(ctx.GetChild(1)))))
+}
+func (_this *eventListener) ExitEventVersion(ctx *parser.EventVersionContext) {
+	_this.setEvents(test.V(parseSmallUint(getTokenText(ctx.GetChild(1)))))
 }

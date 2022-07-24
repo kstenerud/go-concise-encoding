@@ -72,7 +72,7 @@ func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringConte
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByteNotLF('@')
 		_this.stream.WriteQuotedString(false, data)
-	case events.ArrayTypeRemoteRef:
+	case events.ArrayTypeReferenceRemote:
 		_this.stream.WriteByteNotLF('$')
 		_this.stream.WriteQuotedString(false, data)
 	case events.ArrayTypeCustomText:
@@ -96,7 +96,7 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByteNotLF('@')
 		_this.stream.WriteQuotedStringBytes(false, data)
-	case events.ArrayTypeRemoteRef:
+	case events.ArrayTypeReferenceRemote:
 		_this.stream.WriteByteNotLF('$')
 		_this.stream.WriteQuotedStringBytes(false, data)
 	case events.ArrayTypeCustomText:

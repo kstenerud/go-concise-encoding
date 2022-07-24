@@ -26,7 +26,6 @@ import (
 	"math/big"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -95,117 +94,123 @@ func NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset 
 	return test.NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset)
 }
 
-func TT() *test.TEvent                       { return test.TT() }
-func FF() *test.TEvent                       { return test.FF() }
-func I(v int64) *test.TEvent                 { return test.I(v) }
-func F(v float64) *test.TEvent               { return test.BF(v) }
-func BF(v *big.Float) *test.TEvent           { return test.BBF(v) }
-func DF(v compact_float.DFloat) *test.TEvent { return test.DF(v) }
-func BDF(v *apd.Decimal) *test.TEvent        { return test.BDF(v) }
-func V(v uint64) *test.TEvent                { return test.V(v) }
-func NULL() *test.TEvent                     { return test.NULL() }
-func PAD(v int) *test.TEvent                 { return test.PAD(v) }
-func COM(m bool, v string) *test.TEvent      { return test.COM(m, v) }
-func B(v bool) *test.TEvent                  { return test.B(v) }
-func PI(v uint64) *test.TEvent               { return test.PI(v) }
-func NI(v uint64) *test.TEvent               { return test.NI(v) }
-func BI(v *big.Int) *test.TEvent             { return test.BI(v) }
-func NAN() *test.TEvent                      { return test.QNAN() }
-func SNAN() *test.TEvent                     { return test.SNAN() }
-func UID(v []byte) *test.TEvent              { return test.UID(v) }
-func GT(v time.Time) *test.TEvent            { return test.GT(v) }
-func CT(v compact_time.Time) *test.TEvent    { return test.T(v) }
-func S(v string) *test.TEvent                { return test.S(v) }
-func RID(v string) *test.TEvent              { return test.RID(v) }
-func CUB(v []byte) *test.TEvent              { return test.CB(v) }
-func CUT(v string) *test.TEvent              { return test.CT(v) }
-func AB(l uint64, v []byte) *test.TEvent     { return test.AB(l, v) }
-func AU8(v []byte) *test.TEvent              { return test.AU8(v) }
-func AU16(v []uint16) *test.TEvent           { return test.AU16(v) }
-func AU32(v []uint32) *test.TEvent           { return test.AU32(v) }
-func AU64(v []uint64) *test.TEvent           { return test.AU64(v) }
-func AI8(v []int8) *test.TEvent              { return test.AI8(v) }
-func AI16(v []int16) *test.TEvent            { return test.AI16(v) }
-func AI32(v []int32) *test.TEvent            { return test.AI32(v) }
-func AI64(v []int64) *test.TEvent            { return test.AI64(v) }
-func AF16(v []float32) *test.TEvent          { return test.AF16(v) }
-func AF32(v []float32) *test.TEvent          { return test.AF32(v) }
-func AF64(v []float64) *test.TEvent          { return test.AF64(v) }
-func AUU(v [][]byte) *test.TEvent            { return test.AU(v) }
-func SB() *test.TEvent                       { return test.SB() }
-func RB() *test.TEvent                       { return test.RB() }
-func CBB() *test.TEvent                      { return test.CBB() }
-func CTB() *test.TEvent                      { return test.CTB() }
-func ABB() *test.TEvent                      { return test.ABB() }
-func AU8B() *test.TEvent                     { return test.AU8B() }
-func AU16B() *test.TEvent                    { return test.AU16B() }
-func AU32B() *test.TEvent                    { return test.AU32B() }
-func AU64B() *test.TEvent                    { return test.AU64B() }
-func AI8B() *test.TEvent                     { return test.AI8B() }
-func AI16B() *test.TEvent                    { return test.AI16B() }
-func AI32B() *test.TEvent                    { return test.AI32B() }
-func AI64B() *test.TEvent                    { return test.AI64B() }
-func AF16B() *test.TEvent                    { return test.AF16B() }
-func AF32B() *test.TEvent                    { return test.AF32B() }
-func AF64B() *test.TEvent                    { return test.AF64B() }
-func AUUB() *test.TEvent                     { return test.AUB() }
-func MB() *test.TEvent                       { return test.MB() }
-func AC(l uint64, more bool) *test.TEvent    { return test.AC(l, more) }
-func AD(v []byte) *test.TEvent               { return test.AD(v) }
-func L() *test.TEvent                        { return test.L() }
-func M() *test.TEvent                        { return test.M() }
-func NODE() *test.TEvent                     { return test.NODE() }
-func EDGE() *test.TEvent                     { return test.EDGE() }
-func E() *test.TEvent                        { return test.E() }
-func MARK(id string) *test.TEvent            { return test.MARK(id) }
-func REF(id string) *test.TEvent             { return test.REF(id) }
-func RREF(v string) *test.TEvent             { return test.RREF(v) }
-func BD() *test.TEvent                       { return test.BD() }
-func ED() *test.TEvent                       { return test.ED() }
+func AB(v []bool) test.Event           { return test.AB(v) }
+func ACL(l uint64) test.Event          { return test.ACL(l) }
+func ACM(l uint64) test.Event          { return test.ACM(l) }
+func ADB(v []bool) test.Event          { return test.ADB(v) }
+func ADF16(v []float32) test.Event     { return test.ADF16(v) }
+func ADF32(v []float32) test.Event     { return test.ADF32(v) }
+func ADF64(v []float64) test.Event     { return test.ADF64(v) }
+func ADI16(v []int16) test.Event       { return test.ADI16(v) }
+func ADI32(v []int32) test.Event       { return test.ADI32(v) }
+func ADI64(v []int64) test.Event       { return test.ADI64(v) }
+func ADI8(v []int8) test.Event         { return test.ADI8(v) }
+func ADT(v string) test.Event          { return test.ADT(v) }
+func ADU(v [][]byte) test.Event        { return test.ADU(v) }
+func ADU16(v []uint16) test.Event      { return test.ADU16(v) }
+func ADU32(v []uint32) test.Event      { return test.ADU32(v) }
+func ADU64(v []uint64) test.Event      { return test.ADU64(v) }
+func ADU8(v []uint8) test.Event        { return test.ADU8(v) }
+func AF16(v []float32) test.Event      { return test.AF16(v) }
+func AF32(v []float32) test.Event      { return test.AF32(v) }
+func AF64(v []float64) test.Event      { return test.AF64(v) }
+func AI16(v []int16) test.Event        { return test.AI16(v) }
+func AI32(v []int32) test.Event        { return test.AI32(v) }
+func AI64(v []int64) test.Event        { return test.AI64(v) }
+func AI8(v []int8) test.Event          { return test.AI8(v) }
+func AU(v [][]byte) test.Event         { return test.AU(v) }
+func AU16(v []uint16) test.Event       { return test.AU16(v) }
+func AU32(v []uint32) test.Event       { return test.AU32(v) }
+func AU64(v []uint64) test.Event       { return test.AU64(v) }
+func AU8(v []byte) test.Event          { return test.AU8(v) }
+func B(v bool) test.Event              { return test.B(v) }
+func BAB() test.Event                  { return test.BAB() }
+func BAF16() test.Event                { return test.BAF16() }
+func BAF32() test.Event                { return test.BAF32() }
+func BAF64() test.Event                { return test.BAF64() }
+func BAI16() test.Event                { return test.BAI16() }
+func BAI32() test.Event                { return test.BAI32() }
+func BAI64() test.Event                { return test.BAI64() }
+func BAI8() test.Event                 { return test.BAI8() }
+func BAU() test.Event                  { return test.BAU() }
+func BAU16() test.Event                { return test.BAU16() }
+func BAU32() test.Event                { return test.BAU32() }
+func BAU64() test.Event                { return test.BAU64() }
+func BAU8() test.Event                 { return test.BAU8() }
+func BCB() test.Event                  { return test.BCB() }
+func BCT() test.Event                  { return test.BCT() }
+func BMEDIA() test.Event               { return test.BMEDIA() }
+func BREFR() test.Event                { return test.BREFR() }
+func BRID() test.Event                 { return test.BRID() }
+func BS() test.Event                   { return test.BS() }
+func CB(v []byte) test.Event           { return test.CB(v) }
+func CM(v string) test.Event           { return test.CM(v) }
+func CS(v string) test.Event           { return test.CS(v) }
+func CT(v string) test.Event           { return test.CT(v) }
+func E() test.Event                    { return test.E() }
+func EDGE() test.Event                 { return test.EDGE() }
+func L() test.Event                    { return test.L() }
+func M() test.Event                    { return test.M() }
+func MARK(id string) test.Event        { return test.MARK(id) }
+func N(v interface{}) test.Event       { return test.N(v) }
+func NAN() test.Event                  { return test.NAN() }
+func NODE() test.Event                 { return test.NODE() }
+func NULL() test.Event                 { return test.NULL() }
+func PAD() test.Event                  { return test.PAD() }
+func REFL(id string) test.Event        { return test.REFL(id) }
+func REFR(v string) test.Event         { return test.REFR(v) }
+func RID(v string) test.Event          { return test.RID(v) }
+func S(v string) test.Event            { return test.S(v) }
+func SI(id string) test.Event          { return test.SI(id) }
+func SNAN() test.Event                 { return test.SNAN() }
+func ST(id string) test.Event          { return test.ST(id) }
+func T(v compact_time.Time) test.Event { return test.T(v) }
+func UID(v []byte) test.Event          { return test.UID(v) }
+func V(v uint64) test.Event            { return test.V(v) }
 
 var DebugPrintEvents = false
 
-func cbeDecode(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
+func cbeDecode(opts *options.CEDecoderOptions, document []byte) (evts test.Events, err error) {
 	var receiver events.DataEventReceiver
-	ter := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver = ter
+	var events *test.EventCollection
+	receiver, events = test.NewEventCollector(nil)
 	if DebugPrintEvents {
-		receiver = test.NewStdoutTEventPrinter(receiver)
+		receiver = test.NewEventPrinter(receiver)
 	}
 	r := rules.NewRules(receiver, nil)
 	err = ce.NewCBEDecoder(opts).Decode(bytes.NewBuffer(document), r)
-	evts = ter.Events
+	evts = events.Events
 	return
 }
 
-func cbeEncode(encodeOpts *options.CBEEncoderOptions, evts ...*test.TEvent) []byte {
+func cbeEncode(encodeOpts *options.CBEEncoderOptions, evts ...test.Event) []byte {
 	buffer := &bytes.Buffer{}
 	encoder := ce.NewCBEEncoder(encodeOpts)
 	r := rules.NewRules(encoder, nil)
 	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(r, evts...)
+	test.InvokeEventsAsCompleteDocument(r, evts...)
 	return buffer.Bytes()
 }
 
-func cteDecode(opts *options.CEDecoderOptions, document []byte) (evts []*test.TEvent, err error) {
+func cteDecode(opts *options.CEDecoderOptions, document []byte) (evts test.Events, err error) {
 	var receiver events.DataEventReceiver
-	ter := test.NewTEventStore(events.NewNullEventReceiver())
-	receiver = ter
+	var events *test.EventCollection
+	receiver, events = test.NewEventCollector(nil)
 	if DebugPrintEvents {
-		receiver = test.NewStdoutTEventPrinter(receiver)
+		receiver = test.NewEventPrinter(receiver)
 	}
 	r := rules.NewRules(receiver, nil)
 	err = ce.NewCTEDecoder(opts).Decode(bytes.NewBuffer(document), r)
-	evts = ter.Events
+	evts = events.Events
 	return
 }
 
-func cteEncode(encodeOpts *options.CTEEncoderOptions, events ...*test.TEvent) []byte {
+func cteEncode(encodeOpts *options.CTEEncoderOptions, events ...test.Event) []byte {
 	buffer := &bytes.Buffer{}
 	encoder := ce.NewCTEEncoder(encodeOpts)
 	r := rules.NewRules(encoder, nil)
 	encoder.PrepareToEncode(buffer)
-	test.InvokeEvents(r, events...)
+	test.InvokeEventsAsCompleteDocument(r, events...)
 	return buffer.Bytes()
 }
 
@@ -215,13 +220,13 @@ func cteEncode(encodeOpts *options.CTEEncoderOptions, events ...*test.TEvent) []
 func assertEncodeDecodeCBEOpts(t *testing.T,
 	encodeOpts *options.CBEEncoderOptions,
 	decodeOpts *options.CEDecoderOptions,
-	expectedEvents ...*test.TEvent) {
+	expectedEvents ...test.Event) {
 
 	var document []byte
-	var actualEvents []*test.TEvent
+	var actualEvents test.Events
 	var err error
 
-	test.AssertNoPanic(t, fmt.Sprintf("CBE Encode %v", expectedEvents), func() {
+	test.AssertNoPanic(t, fmt.Sprintf("CBE Encode [%v]", test.Events(expectedEvents)), func() {
 		document = cbeEncode(encodeOpts, expectedEvents...)
 	})
 
@@ -233,25 +238,25 @@ func assertEncodeDecodeCBEOpts(t *testing.T,
 		return
 	}
 
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		t.Errorf("CBE: Expected %v but got %v while decoding %v", expectedEvents, actualEvents, describe.D(document))
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		t.Errorf("CBE: Expected [%v] but got [%v] while decoding %v", test.Events(expectedEvents), actualEvents, describe.D(document))
 	}
 }
 
-func assertEncodeDecodeCBE(t *testing.T, expected ...*test.TEvent) {
+func assertEncodeDecodeCBE(t *testing.T, expected ...test.Event) {
 	assertEncodeDecodeCBEOpts(t, nil, nil, expected...)
 }
 
 func assertEncodeDecodeCTEOpts(t *testing.T,
 	encodeOpts *options.CTEEncoderOptions,
 	decodeOpts *options.CEDecoderOptions,
-	expectedEvents ...*test.TEvent) {
+	expectedEvents ...test.Event) {
 
 	var document []byte
-	var actualEvents []*test.TEvent
+	var actualEvents test.Events
 	var err error
 
-	test.AssertNoPanic(t, fmt.Sprintf("CTE Encode %v", expectedEvents), func() {
+	test.AssertNoPanic(t, fmt.Sprintf("CTE Encode [%v]", test.Events(expectedEvents)), func() {
 		document = cteEncode(encodeOpts, expectedEvents...)
 	})
 
@@ -263,12 +268,12 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 		return
 	}
 
-	if !test.AreAllEventsEquivalent(expectedEvents, actualEvents) {
-		t.Errorf("CTE: Expected %v but got %v while decoding %v", expectedEvents, actualEvents, string(document))
+	if !test.AreEventsEquivalent(expectedEvents, actualEvents) {
+		t.Errorf("CTE: Expected [%v] but got [%v] while decoding %v", test.Events(expectedEvents), actualEvents, string(document))
 	}
 }
 
-func assertEncodeDecodeCTE(t *testing.T, expected ...*test.TEvent) {
+func assertEncodeDecodeCTE(t *testing.T, expected ...test.Event) {
 	assertEncodeDecodeCTEOpts(t, nil, nil, expected...)
 }
 
@@ -277,13 +282,13 @@ func assertEncodeDecodeOpts(t *testing.T,
 	cbeDecodeOpts *options.CEDecoderOptions,
 	cteEncodeOpts *options.CTEEncoderOptions,
 	cteDecodeOpts *options.CEDecoderOptions,
-	expected ...*test.TEvent) {
+	expected ...test.Event) {
 
 	assertEncodeDecodeCBEOpts(t, cbeEncodeOpts, cbeDecodeOpts, expected...)
 	assertEncodeDecodeCTEOpts(t, cteEncodeOpts, cteDecodeOpts, test.RemoveEvents(expected, test.Padding...)...)
 }
 
-func assertEncodeDecode(t *testing.T, expected ...*test.TEvent) {
+func assertEncodeDecode(t *testing.T, expected ...test.Event) {
 	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
 }
 
@@ -294,9 +299,10 @@ func assertDecodeEncode(t *testing.T,
 	cbeDecodeOpts *options.CEDecoderOptions,
 	cteExpectedDocument string,
 	cbeExpectedDocument []byte,
-	expectedEvents ...*test.TEvent) {
+	expectedEvents ...test.Event) {
 
-	var actualEvents *test.TEventStore
+	var receiver events.DataEventReceiver
+	var events *test.EventCollection
 
 	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
 	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
@@ -314,16 +320,16 @@ func assertDecodeEncode(t *testing.T,
 		return
 	}
 	if !equivalence.IsEquivalent(cbeExpectedDocument, cbeActualDocument.Bytes()) {
-		t.Errorf("Expected %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
+		t.Errorf("Expected CBE document %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
 	}
 
-	actualEvents = test.NewTEventStore(events.NewNullEventReceiver())
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+	receiver, events = test.NewEventCollector(nil)
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(receiver, nil)); err != nil {
 		t.Error(err)
 		return
 	}
-	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
-		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
+	if !events.IsEquivalentTo(expectedEvents) {
+		t.Errorf("Expected CBE document %v to produce events [%v] but got [%v]", describe.D(cbeActualDocument.Bytes()), test.Events(expectedEvents), events.Events)
 	}
 
 	cteActualDocument = &bytes.Buffer{}
@@ -333,17 +339,17 @@ func assertDecodeEncode(t *testing.T,
 		return
 	}
 	if !equivalence.IsEquivalent(cteExpectedDocument, cteActualDocument.String()) {
-		t.Errorf("Expected [%v] but got [%v]", cteExpectedDocument, cteActualDocument.String())
+		t.Errorf("Expected CTE document [%v] but got [%v]", cteExpectedDocument, cteActualDocument.String())
 	}
 
-	actualEvents = test.NewTEventStore(events.NewNullEventReceiver())
+	receiver, events = test.NewEventCollector(nil)
 	binEncoder.PrepareToEncode(cbeActualDocument)
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(actualEvents, nil)); err != nil {
+	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(receiver, nil)); err != nil {
 		t.Error(err)
 		return
 	}
-	if !equivalence.IsEquivalent(expectedEvents, actualEvents.Events) {
-		t.Errorf("Expected %v but got %v", expectedEvents, actualEvents.Events)
+	if !events.IsEquivalentTo(expectedEvents) {
+		t.Errorf("Expected CTE document %v to produce events [%v] but got [%v]", cbeActualDocument, test.Events(expectedEvents), events.Events)
 	}
 }
 
@@ -388,7 +394,7 @@ func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
 	// assertCTEMarshalUnmarshal(t, expected)
 }
 
-func assertEncodeDecodeEventStreams(t *testing.T, eventStreams [][]*test.TEvent) {
+func assertEncodeDecodeEventStreams(t *testing.T, eventStreams []test.Events) {
 	for _, stream := range eventStreams {
 		assertEncodeDecode(t, stream...)
 	}

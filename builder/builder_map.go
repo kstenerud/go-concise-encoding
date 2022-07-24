@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -191,16 +190,9 @@ func (_this *mapBuilder) BuildFromMedia(ctx *Context, mediaType string, data []b
 	return object
 }
 
-func (_this *mapBuilder) BuildFromTime(ctx *Context, value time.Time, _ reflect.Value) reflect.Value {
+func (_this *mapBuilder) BuildFromTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.nextGenerator(ctx).BuildFromTime(ctx, value, object)
-	_this.store(object)
-	return object
-}
-
-func (_this *mapBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, _ reflect.Value) reflect.Value {
-	object := _this.newElem()
-	_this.nextGenerator(ctx).BuildFromCompactTime(ctx, value, object)
 	_this.store(object)
 	return object
 }
@@ -230,12 +222,12 @@ func (_this *mapBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }
 
-func (_this *mapBuilder) BuildFromReference(ctx *Context, id []byte) {
+func (_this *mapBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	container := _this.container
 	key := _this.key
 	tempValue := _this.newElem()
 	_this.swapKeyValue()
-	ctx.NotifyReference(id, func(object reflect.Value) {
+	ctx.NotifyLocalReference(id, func(object reflect.Value) {
 		if container.Type().Elem().Kind() == reflect.Interface || object.Type() == container.Type().Elem() {
 			// In case of self-referencing pointers, we need to pass the original container, not a copy.
 			container.SetMapIndex(key, object)

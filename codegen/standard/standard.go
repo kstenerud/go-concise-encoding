@@ -53,7 +53,7 @@ var header = `// Copyright 2019 Karl Stenerud
 
 const generatedCodeFileName = "generated-do-not-edit.go"
 
-func WriteHeader(writer io.Writer, path string, imports []string) {
+func WriteHeader(writer io.Writer, path string, imports []*Import) {
 	_, packageName := filepath.Split(path)
 
 	if _, err := fmt.Fprint(writer, header); err != nil {
@@ -69,7 +69,7 @@ func WriteHeader(writer io.Writer, path string, imports []string) {
 			panic(err)
 		}
 		for _, imp := range imports {
-			if _, err := fmt.Fprintf(writer, "\t\"%s\"\n", imp); err != nil {
+			if _, err := fmt.Fprintf(writer, "\t%v\n", imp); err != nil {
 				panic(err)
 			}
 		}
@@ -88,5 +88,18 @@ func PanicIfError(err error, format string, args ...interface{}) {
 	if err != nil {
 		msg := fmt.Sprintf(format, args...)
 		panic(fmt.Errorf("%v: %v", msg, err))
+	}
+}
+
+type Import struct {
+	LocalName string
+	Import    string
+}
+
+func (_this *Import) String() string {
+	if len(_this.LocalName) != 0 {
+		return fmt.Sprintf("%v \"%v\"", _this.LocalName, _this.Import)
+	} else {
+		return fmt.Sprintf("\"%v\"", _this.Import)
 	}
 }

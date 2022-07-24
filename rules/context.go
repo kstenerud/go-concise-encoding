@@ -67,10 +67,10 @@ type Context struct {
 	ValidateArrayDataFunc  func(data []byte)
 
 	// Marker/Reference
-	markerID          string
-	markedObjects     map[interface{}]DataType
-	forwardReferences map[interface{}]DataType
-	referenceCount    uint64
+	markerID               string
+	markedObjects          map[interface{}]DataType
+	forwardLocalReferences map[interface{}]DataType
+	LocalReferenceCount    uint64
 }
 
 func (_this *Context) Init(opts *options.RuleOptions) {
@@ -83,14 +83,14 @@ func (_this *Context) Init(opts *options.RuleOptions) {
 func (_this *Context) Reset() {
 	_this.objectCount = 0
 	_this.containerDepth = 0
-	_this.referenceCount = 0
+	_this.LocalReferenceCount = 0
 	_this.stack = _this.stack[:0]
 	_this.structTemplates = make(map[string]int)
 	if _this.markedObjects == nil || len(_this.markedObjects) > 0 {
 		_this.markedObjects = make(map[interface{}]DataType)
 	}
-	if _this.forwardReferences == nil || len(_this.forwardReferences) > 0 {
-		_this.forwardReferences = make(map[interface{}]DataType)
+	if _this.forwardLocalReferences == nil || len(_this.forwardLocalReferences) > 0 {
+		_this.forwardLocalReferences = make(map[interface{}]DataType)
 	}
 	_this.CurrentEntry = contextStackEntry{
 		Rule:                &beginDocumentRule,
@@ -213,19 +213,19 @@ func (_this *Context) BeginMarkerAnyType(id []byte, dataType DataType) {
 	_this.stackRule(&markedObjectAnyTypeRule, dataType, noObjectCount)
 }
 
-func (_this *Context) ReferenceKeyable(identifier []byte) {
-	_this.ReferenceObject(identifier, AllowKeyable)
+func (_this *Context) LocalReferenceKeyable(identifier []byte) {
+	_this.LocalReferenceObject(identifier, AllowKeyable)
 }
 
-func (_this *Context) ReferenceAnyType(identifier []byte) {
-	_this.ReferenceObject(identifier, AllowAny)
+func (_this *Context) LocalReferenceAnyType(identifier []byte) {
+	_this.LocalReferenceObject(identifier, AllowAny)
 }
 
 func (_this *Context) EndDocument() {
-	if len(_this.forwardReferences) > 0 {
+	if len(_this.forwardLocalReferences) > 0 {
 		var sb strings.Builder
-		sb.WriteString("Forward references have not been resolved: [")
-		for id := range _this.forwardReferences {
+		sb.WriteString("Forward local references have not been resolved: [")
+		for id := range _this.forwardLocalReferences {
 			sb.WriteString(fmt.Sprintf("%v, ", id))
 		}
 
@@ -237,26 +237,26 @@ func (_this *Context) EndDocument() {
 }
 
 func (_this *Context) MarkObject(dataType DataType) {
-	newReferenceCount := _this.referenceCount + 1
-	if newReferenceCount > _this.opts.MaxReferenceCount {
-		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newReferenceCount, _this.opts.MaxReferenceCount))
+	newLocalReferenceCount := _this.LocalReferenceCount + 1
+	if newLocalReferenceCount > _this.opts.MaxLocalReferenceCount {
+		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newLocalReferenceCount, _this.opts.MaxLocalReferenceCount))
 	}
 
 	id := _this.markerID
 	if _, exists := _this.markedObjects[id]; exists {
 		panic(fmt.Errorf("marker ID [%v] already exists", id))
 	}
-	_this.referenceCount++
+	_this.LocalReferenceCount++
 	_this.markedObjects[id] = dataType
-	if allowedDataTypes, exists := _this.forwardReferences[id]; exists {
-		delete(_this.forwardReferences, id)
+	if allowedDataTypes, exists := _this.forwardLocalReferences[id]; exists {
+		delete(_this.forwardLocalReferences, id)
 		if allowedDataTypes&dataType == 0 {
 			panic(fmt.Errorf("forward reference to marker ID [%v] cannot accept type %v", id, dataType))
 		}
 	}
 }
 
-func (_this *Context) ReferenceObject(id []byte, allowedDataTypes DataType) {
+func (_this *Context) LocalReferenceObject(id []byte, allowedDataTypes DataType) {
 	idAsString := string(id)
 	if dataType, exists := _this.markedObjects[idAsString]; exists {
 		if dataType&allowedDataTypes == 0 {
@@ -265,11 +265,11 @@ func (_this *Context) ReferenceObject(id []byte, allowedDataTypes DataType) {
 		return
 	}
 
-	current := _this.forwardReferences[idAsString]
+	current := _this.forwardLocalReferences[idAsString]
 	if current == 0 {
 		current = allowedDataTypes
 	} else {
 		current &= allowedDataTypes
 	}
-	_this.forwardReferences[idAsString] = current
+	_this.forwardLocalReferences[idAsString] = current
 }

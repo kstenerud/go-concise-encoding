@@ -25,7 +25,6 @@ import (
 	"io"
 	"math"
 	"math/big"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -78,17 +77,8 @@ func (_this *Encoder) PrepareToEncode(writer io.Writer) {
 
 // DataEventReceiver
 
-func (_this *Encoder) OnPadding(count int) {
-	if count == 1 {
-		_this.writer.WriteType(cbeTypePadding)
-		return
-	}
-
-	_this.writer.ExpandBufferTo(count)
-	for i := 0; i < count; i++ {
-		_this.writer.Buffer[i] = byte(cbeTypePadding)
-	}
-	_this.writer.FlushBufferFirstBytes(count)
+func (_this *Encoder) OnPadding() {
+	_this.writer.WriteType(cbeTypePadding)
 }
 
 func (_this *Encoder) OnComment(bool, []byte) {
@@ -107,7 +97,7 @@ func (_this *Encoder) OnNull() {
 	_this.writer.WriteType(cbeTypeNull)
 }
 
-func (_this *Encoder) OnBool(value bool) {
+func (_this *Encoder) OnBoolean(value bool) {
 	if value {
 		_this.OnTrue()
 	} else {
@@ -251,7 +241,13 @@ func (_this *Encoder) OnBigFloat(value *big.Float) {
 }
 
 func (_this *Encoder) OnDecimalFloat(value compact_float.DFloat) {
-	_this.writer.WriteDecimalFloat(value)
+	if value.IsNegativeZero() {
+		_this.writer.WriteZero(-1)
+	} else if value.IsZero() {
+		_this.writer.WriteZero(1)
+	} else {
+		_this.writer.WriteDecimalFloat(value)
+	}
 }
 
 func (_this *Encoder) OnBigDecimalFloat(value *apd.Decimal) {
@@ -272,20 +268,13 @@ func (_this *Encoder) OnUID(value []byte) {
 	_this.writer.WriteBytes(value)
 }
 
-func (_this *Encoder) OnTime(value time.Time) {
-	_this.writer.ExpandBufferTo(compact_time.EncodedSizeGoTime(value) + 1)
-	_this.writer.Buffer[0] = byte(cbeTypeTimestamp)
-	count := compact_time.EncodeGoTimestampToBytes(value, _this.writer.Buffer[1:])
-	_this.writer.FlushBufferFirstBytes(count + 1)
-}
-
 var ctimeToCBEType = [...]cbeTypeField{
 	compact_time.TimeTypeDate:      cbeTypeDate,
 	compact_time.TimeTypeTime:      cbeTypeTime,
 	compact_time.TimeTypeTimestamp: cbeTypeTimestamp,
 }
 
-func (_this *Encoder) OnCompactTime(value compact_time.Time) {
+func (_this *Encoder) OnTime(value compact_time.Time) {
 	if value.IsZeroValue() {
 		_this.writer.WriteType(cbeTypeNull)
 		return
@@ -450,8 +439,8 @@ func (_this *Encoder) OnMarker(id []byte) {
 	_this.writer.WriteIdentifier(id)
 }
 
-func (_this *Encoder) OnReference(id []byte) {
-	_this.writer.WriteType(cbeTypeReference)
+func (_this *Encoder) OnReferenceLocal(id []byte) {
+	_this.writer.WriteType(cbeTypeLocalReference)
 	_this.writer.WriteIdentifier(id)
 }
 

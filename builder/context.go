@@ -138,8 +138,8 @@ func (_this *Context) EndStructTemplate() {
 func (_this *Context) NotifyMarker(id []byte, value reflect.Value) {
 	_this.referenceFiller.NotifyMarker(id, value)
 }
-func (_this *Context) NotifyReference(lookingForID []byte, valueSetter func(value reflect.Value)) {
-	_this.referenceFiller.NotifyReference(lookingForID, valueSetter)
+func (_this *Context) NotifyLocalReference(lookingForID []byte, valueSetter func(value reflect.Value)) {
+	_this.referenceFiller.NotifyLocalReference(lookingForID, valueSetter)
 }
 
 func (_this *Context) BeginMarkerObject(id []byte) {

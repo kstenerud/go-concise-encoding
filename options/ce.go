@@ -30,7 +30,7 @@ type DocumentLimits struct {
 	MaxFloatExponentDigitCount    uint64
 	MaxYearDigitCount             uint64
 	MaxMarkerCount                uint64
-	MaxReferenceCount             uint64
+	MaxLocalReferenceCount        uint64
 }
 
 var defaultDocumentLimits = DocumentLimits{
@@ -43,7 +43,7 @@ var defaultDocumentLimits = DocumentLimits{
 	MaxFloatExponentDigitCount:    5,
 	MaxYearDigitCount:             11,
 	MaxMarkerCount:                10000,
-	MaxReferenceCount:             10000,
+	MaxLocalReferenceCount:        10000,
 }
 
 func (_this *DocumentLimits) ApplyDefaults() {
@@ -74,8 +74,8 @@ func (_this *DocumentLimits) ApplyDefaults() {
 	if _this.MaxMarkerCount == 0 {
 		_this.MaxMarkerCount = defaultDecoderOptions.DocumentLimits.MaxMarkerCount
 	}
-	if _this.MaxReferenceCount == 0 {
-		_this.MaxReferenceCount = defaultDecoderOptions.DocumentLimits.MaxReferenceCount
+	if _this.MaxLocalReferenceCount == 0 {
+		_this.MaxLocalReferenceCount = defaultDecoderOptions.DocumentLimits.MaxLocalReferenceCount
 	}
 }
 
@@ -83,19 +83,19 @@ func (_this *DocumentLimits) ApplyDefaults() {
 // CE Decoder
 
 type CEDecoderOptions struct {
-	AllowRecursiveReferences  bool
-	FollowRemoteReferences    bool
-	CompleteTruncatedDocument bool
-	AllowNulCharacter         bool
-	DocumentLimits            DocumentLimits
+	AllowRecursiveLocalReferences bool
+	FollowRemoteReferences        bool
+	CompleteTruncatedDocument     bool
+	AllowNulCharacter             bool
+	DocumentLimits                DocumentLimits
 }
 
 var defaultDecoderOptions = CEDecoderOptions{
-	AllowRecursiveReferences:  false,
-	FollowRemoteReferences:    false,
-	CompleteTruncatedDocument: false,
-	AllowNulCharacter:         false,
-	DocumentLimits:            defaultDocumentLimits,
+	AllowRecursiveLocalReferences: false,
+	FollowRemoteReferences:        false,
+	CompleteTruncatedDocument:     false,
+	AllowNulCharacter:             false,
+	DocumentLimits:                defaultDocumentLimits,
 }
 
 func DefaultCEDecoderOptions() CEDecoderOptions {

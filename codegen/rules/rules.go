@@ -31,10 +31,10 @@ import (
 
 const path = "rules"
 
-var imports = []string{
-	"fmt",
-	"strings",
-	"github.com/kstenerud/go-concise-encoding/events",
+var imports = []*standard.Import{
+	&standard.Import{LocalName: "", Import: "fmt"},
+	&standard.Import{LocalName: "", Import: "strings"},
+	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/events"},
 }
 
 func GenerateCode(projectDir string) {
@@ -180,9 +180,9 @@ const (
 	DataTypeCustomText
 	DataTypeCustomBinary
 	DataTypeMarker
-	DataTypeReference
+	DataTypeLocalReference
 	DataTypeResourceID
-	DataTypeRemoteRef
+	DataTypeRemoteReference
 	DataTypeComment
 	DataTypePadding
 	EndDataTypes
@@ -199,16 +199,16 @@ const (
 		DataTypeString |
 		DataTypeResourceID |
 		DataTypeMarker |
-		DataTypeReference |
+		DataTypeLocalReference |
 		DataTypePadding |
 		DataTypeComment
 	DataTypesNonKeyable = ^DataTypesKeyable
-	DataTypesMarkable   = ^(DataTypeMarker | DataTypeReference | DataTypeRemoteRef | DataTypeComment | DataTypeStructTemplate)
-	DataTypesTopLevel   = ^(DataTypeReference)
+	DataTypesMarkable   = ^(DataTypeMarker | DataTypeLocalReference | DataTypeRemoteReference | DataTypeComment | DataTypeStructTemplate)
+	DataTypesTopLevel   = ^(DataTypeLocalReference)
 	DataTypesContainer  = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode
 	DataTypesStringlike = DataTypeString |
 		DataTypeResourceID |
-		DataTypeRemoteRef |
+		DataTypeRemoteReference |
 		DataTypeCustomText
 	DataTypesBinary = DataTypeArrayBit |
 		DataTypeArrayUint8 |
@@ -232,43 +232,43 @@ func (_this DataType) String() string {
 }
 
 var dataTypeNames = map[interface{}]string{
-	DataTypeInvalid:        "DataTypeInvalid",
-	DataTypeNull:           "DataTypeNull",
-	DataTypeNan:            "DataTypeNan",
-	DataTypeBool:           "DataTypeBool",
-	DataTypeInt:            "DataTypeInt",
-	DataTypeFloat:          "DataTypeFloat",
-	DataTypeUID:            "DataTypeUID",
-	DataTypeTime:           "DataTypeTime",
-	DataTypeList:           "DataTypeList",
-	DataTypeMap:            "DataTypeMap",
-	DataTypeStructTemplate: "DataTypeStructTemplate",
-	DataTypeStructInstance: "DataTypeStructInstance",
-	DataTypeEdge:           "DataTypeEdge",
-	DataTypeNode:           "DataTypeNode",
-	DataTypeString:         "DataTypeString",
-	DataTypeMedia:          "DataTypeMedia",
-	DataTypeArrayBit:       "DataTypeArrayBit",
-	DataTypeArrayUint8:     "DataTypeArrayUint8",
-	DataTypeArrayUint16:    "DataTypeArrayUint16",
-	DataTypeArrayUint32:    "DataTypeArrayUint32",
-	DataTypeArrayUint64:    "DataTypeArrayUint64",
-	DataTypeArrayInt8:      "DataTypeArrayInt8",
-	DataTypeArrayInt16:     "DataTypeArrayInt16",
-	DataTypeArrayInt32:     "DataTypeArrayInt32",
-	DataTypeArrayInt64:     "DataTypeArrayInt64",
-	DataTypeArrayFloat16:   "DataTypeArrayFloat16",
-	DataTypeArrayFloat32:   "DataTypeArrayFloat32",
-	DataTypeArrayFloat64:   "DataTypeArrayFloat64",
-	DataTypeArrayUID:       "DataTypeArrayUID",
-	DataTypeCustomText:     "DataTypeCustomText",
-	DataTypeCustomBinary:   "DataTypeCustomBinary",
-	DataTypeMarker:         "DataTypeMarker",
-	DataTypeReference:      "DataTypeReference",
-	DataTypeResourceID:     "DataTypeResourceID",
-	DataTypeRemoteRef:      "DataTypeRemoteRef",
-	DataTypeComment:        "DataTypeComment",
-	DataTypePadding:        "DataTypePadding",
+	DataTypeInvalid:         "DataTypeInvalid",
+	DataTypeNull:            "DataTypeNull",
+	DataTypeNan:             "DataTypeNan",
+	DataTypeBool:            "DataTypeBool",
+	DataTypeInt:             "DataTypeInt",
+	DataTypeFloat:           "DataTypeFloat",
+	DataTypeUID:             "DataTypeUID",
+	DataTypeTime:            "DataTypeTime",
+	DataTypeList:            "DataTypeList",
+	DataTypeMap:             "DataTypeMap",
+	DataTypeStructTemplate:  "DataTypeStructTemplate",
+	DataTypeStructInstance:  "DataTypeStructInstance",
+	DataTypeEdge:            "DataTypeEdge",
+	DataTypeNode:            "DataTypeNode",
+	DataTypeString:          "DataTypeString",
+	DataTypeMedia:           "DataTypeMedia",
+	DataTypeArrayBit:        "DataTypeArrayBit",
+	DataTypeArrayUint8:      "DataTypeArrayUint8",
+	DataTypeArrayUint16:     "DataTypeArrayUint16",
+	DataTypeArrayUint32:     "DataTypeArrayUint32",
+	DataTypeArrayUint64:     "DataTypeArrayUint64",
+	DataTypeArrayInt8:       "DataTypeArrayInt8",
+	DataTypeArrayInt16:      "DataTypeArrayInt16",
+	DataTypeArrayInt32:      "DataTypeArrayInt32",
+	DataTypeArrayInt64:      "DataTypeArrayInt64",
+	DataTypeArrayFloat16:    "DataTypeArrayFloat16",
+	DataTypeArrayFloat32:    "DataTypeArrayFloat32",
+	DataTypeArrayFloat64:    "DataTypeArrayFloat64",
+	DataTypeArrayUID:        "DataTypeArrayUID",
+	DataTypeCustomText:      "DataTypeCustomText",
+	DataTypeCustomBinary:    "DataTypeCustomBinary",
+	DataTypeMarker:          "DataTypeMarker",
+	DataTypeLocalReference:  "DataTypeLocalReference",
+	DataTypeResourceID:      "DataTypeResourceID",
+	DataTypeRemoteReference: "DataTypeRemoteReference",
+	DataTypeComment:         "DataTypeComment",
+	DataTypePadding:         "DataTypePadding",
 }
 
 type MethodType int
@@ -315,8 +315,8 @@ var (
 	beginMarkerAnyImplementation = `
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 `
-	referenceAnyImplementation = `
-	ctx.ReferenceAnyType(identifier)
+	LocalReferenceAnyImplementation = `
+	ctx.LocalReferenceAnyType(identifier)
 `
 	arrayAnyImplementation = `
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
@@ -448,11 +448,11 @@ var (
 		DefaultImplementation: beginMarkerAnyImplementation,
 	}
 	Ref = &Method{
-		Name:                  "reference",
+		Name:                  "LocalReference",
 		MethodType:            MethodTypeOther,
-		Signature:             "OnReference(ctx *Context, identifier []byte)",
-		AssociatedTypes:       DataTypeReference,
-		DefaultImplementation: referenceAnyImplementation,
+		Signature:             "OnReferenceLocal(ctx *Context, identifier []byte)",
+		AssociatedTypes:       DataTypeLocalReference,
+		DefaultImplementation: LocalReferenceAnyImplementation,
 	}
 	Array = &Method{
 		Name:                  "array",

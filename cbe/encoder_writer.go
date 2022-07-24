@@ -218,15 +218,11 @@ func (_this *Writer) WriteBigDecimalFloat(value *apd.Decimal) {
 }
 
 func (_this *Writer) WriteZero(sign int) {
-	_this.Buffer[0] = byte(cbeTypeDecimal)
-
-	var count int
 	if sign < 0 {
-		count = compact_float.EncodeNegativeZero(_this.Buffer[1:])
+		_this.WriteTyped8Bits(cbeTypeNegInt8, 0)
 	} else {
-		count = compact_float.EncodeZero(_this.Buffer[1:])
+		_this.WriteType(cbeTypeField(0))
 	}
-	_this.FlushBufferFirstBytes(count + 1)
 }
 
 func (_this *Writer) WriteInfinity(sign int) {

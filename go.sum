@@ -1,7 +1,9 @@
+github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220626175859-9abda183db8e h1:bt6SW1eSSvdmmsG0KqyxYXorcTnFBTX7hfVR1+68+jg=
+github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220626175859-9abda183db8e/go.mod h1:F7bn7fEU90QkQ3tnmaTx3LTKLEDqnwWODIYppRQ5hnY=
 github.com/cockroachdb/apd/v2 v2.0.2 h1:weh8u7Cneje73dDh+2tEVLUvyBc89iwepWCD8b8034E=
 github.com/cockroachdb/apd/v2 v2.0.2/go.mod h1:DDxRlzC2lo3/vSlmSoS7JkqbbrARPuFOGr0B9pvN3Gw=
-github.com/kstenerud/go-compact-float v1.6.0 h1:JKDQkSQ3vVDcTCh2rr/Hi7H/W6fD7xhCN+eJPxVDsI4=
-github.com/kstenerud/go-compact-float v1.6.0/go.mod h1:86Q5GkzClM2g0hObQndeX90g5kKMhG7eptDFsVrubbk=
+github.com/kstenerud/go-compact-float v1.6.1 h1:FhRID85bjfOSKrGkHEKgwSZTYPXoMxaiH/L7TsvpikA=
+github.com/kstenerud/go-compact-float v1.6.1/go.mod h1:86Q5GkzClM2g0hObQndeX90g5kKMhG7eptDFsVrubbk=
 github.com/kstenerud/go-compact-time v1.8.3 h1:VPhN2UwJsJjAHnHbGuqLibNF8e7PXG4nBFpZ3UkjsRg=
 github.com/kstenerud/go-compact-time v1.8.3/go.mod h1:wBgxWliL/ON5b1/EaefPqQ44u2UgTtiNiIvkmByYFFc=
 github.com/kstenerud/go-describe v1.2.13 h1:3EazEwS/oNw0uMGQt45UvuxNNVEjR65dkAoy3CtiQN8=

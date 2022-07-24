@@ -23,7 +23,6 @@ package builder
 import (
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -112,13 +111,8 @@ func (_this *topLevelBuilder) BuildFromMedia(ctx *Context, mediaType string, dat
 	return dst
 }
 
-func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value time.Time, dst reflect.Value) reflect.Value {
+func (_this *topLevelBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromTime(ctx, value, dst)
-	return dst
-}
-
-func (_this *topLevelBuilder) BuildFromCompactTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
-	_this.builderGenerator(ctx).BuildFromCompactTime(ctx, value, dst)
 	return dst
 }
 

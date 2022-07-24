@@ -26,7 +26,7 @@ import (
 
 // TODO: Remove this when releasing V1
 func TestCTEVersion1(t *testing.T) {
-	assertDecode(t, nil, "c1 1", BD(), EvV, PI(1), ED())
+	assertDecode(t, nil, "c1 1", EvV, N(1))
 }
 
 func TestCTEDocumentBegin(t *testing.T) {
@@ -77,7 +77,7 @@ func TestSpacing(t *testing.T) {
 	assertDecodeFails(t, `c0 [(@"a" @"a" 1)"a"]`)
 	assertDecodeFails(t, `c0 [(@"a" @"a" 1)(@"a" @"a" 1)]`)
 
-	assertDecode(t, nil, `c0 ["a" /* comment */ "b"]`, BD(), EvV, L(), S("a"), COM(true, " comment "), S("b"), E(), ED())
+	assertDecode(t, nil, `c0 ["a" /* comment */ "b"]`, EvV, L(), S("a"), CM(" comment "), S("b"), E())
 
 	// TODO: This should not fail
 	assertDecodeFails(t, `c0 ["a"/* comment */ "b"]`)
