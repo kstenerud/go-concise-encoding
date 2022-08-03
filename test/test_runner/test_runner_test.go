@@ -92,9 +92,10 @@ func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error)
 }
 
 type TestSuite struct {
-	Type    map[string]interface{}
-	Tests   []UnitTest
-	context string
+	Type      map[string]interface{}
+	CEVersion *int
+	Tests     []UnitTest
+	context   string
 }
 
 func (_this *TestSuite) PostDecodeInit(sourceFile string) (errors []error) {
@@ -120,8 +121,17 @@ func (_this *TestSuite) PostDecodeInit(sourceFile string) (errors []error) {
 		return []error{_this.errorf("missing identifier field")}
 	}
 
+	if _this.CEVersion == nil {
+		return []error{_this.errorf("missing ceversion field")}
+	}
+
+	if *_this.CEVersion != version.ConciseEncodingVersion {
+		return []error{_this.errorf("This codec is for Concise Encoding version %v and cannot run tests for version %v",
+			version.ConciseEncodingVersion, _this.CEVersion)}
+	}
+
 	for index, test := range _this.Tests {
-		if nextErrors := test.PostDecodeInit(_this.context, index); nextErrors != nil {
+		if nextErrors := test.PostDecodeInit(*_this.CEVersion, _this.context, index); nextErrors != nil {
 			errors = append(errors, nextErrors...)
 		}
 	}
@@ -148,17 +158,17 @@ type UnitTest struct {
 	MustFail    []*MustFailTest
 }
 
-func (_this *UnitTest) PostDecodeInit(context string, testIndex int) (errors []error) {
+func (_this *UnitTest) PostDecodeInit(ceVersion int, context string, testIndex int) (errors []error) {
 	context = fmt.Sprintf("%v, unit test #%v (%v)", context, testIndex+1, _this.Name)
 
 	for index, test := range _this.MustSucceed {
-		if err := test.PostDecodeInit(context, index); err != nil {
+		if err := test.PostDecodeInit(ceVersion, context, index); err != nil {
 			errors = append(errors, err)
 		}
 	}
 
 	for index, test := range _this.MustFail {
-		if err := test.PostDecodeInit(context, index); err != nil {
+		if err := test.PostDecodeInit(ceVersion, context, index); err != nil {
 			errors = append(errors, err)
 		}
 	}
@@ -185,26 +195,28 @@ func (_this *UnitTest) Run() (errors []error) {
 type BaseTest struct {
 	RawDocument bool
 	Skip        bool
+	ceVersion   int
 	Cbe         []byte
 	Cte         string
 	context     string
 }
 
-func (_this *BaseTest) PostDecodeInit(context string) error {
+func (_this *BaseTest) PostDecodeInit(ceVersion int, context string) error {
 	if _this.Skip {
 		return nil
 	}
 
+	_this.ceVersion = ceVersion
 	_this.context = context
 	_this.Cte = strings.TrimSpace(_this.Cte)
 	if !_this.RawDocument {
 		if len(_this.Cte) > 0 {
-			_this.Cte = fmt.Sprintf("c%v\n%v", version.ConciseEncodingVersion, _this.Cte)
+			_this.Cte = fmt.Sprintf("c%v\n%v", _this.ceVersion, _this.Cte)
 		}
 		if len(_this.Cbe) > 0 {
 			b := make([]byte, len(_this.Cbe)+2)
 			b[0] = 0x81
-			b[1] = version.ConciseEncodingVersion
+			b[1] = byte(_this.ceVersion)
 			copy(b[2:], _this.Cbe)
 			_this.Cbe = b
 		}
@@ -237,12 +249,12 @@ type MustSucceedTest struct {
 	events      test.Events
 }
 
-func (_this *MustSucceedTest) PostDecodeInit(context string, index int) error {
+func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, index int) error {
 	if _this.Skip {
 		return nil
 	}
 	context = fmt.Sprintf(`%v, "must succeed" test #%v`, context, index+1)
-	if err := _this.BaseTest.PostDecodeInit(context); err != nil {
+	if err := _this.BaseTest.PostDecodeInit(ceVersion, context); err != nil {
 		return err
 	}
 
@@ -253,7 +265,7 @@ func (_this *MustSucceedTest) PostDecodeInit(context string, index int) error {
 	_this.events = event_parser.ParseEvents(_this.Events...)
 	if !_this.RawDocument && len(_this.events) > 0 {
 		newEvents := make(test.Events, 0, len(_this.events)+1)
-		newEvents = append(newEvents, test.V(version.ConciseEncodingVersion))
+		newEvents = append(newEvents, test.V(uint64(_this.ceVersion)))
 		newEvents = append(newEvents, _this.events...)
 		_this.events = newEvents
 	}
@@ -357,12 +369,12 @@ type MustFailTest struct {
 	BaseTest
 }
 
-func (_this *MustFailTest) PostDecodeInit(context string, index int) error {
+func (_this *MustFailTest) PostDecodeInit(ceVersion int, context string, index int) error {
 	if _this.Skip {
 		return nil
 	}
 	context = fmt.Sprintf(`%v, "must fail" test #%v`, context, index+1)
-	if err := _this.BaseTest.PostDecodeInit(context); err != nil {
+	if err := _this.BaseTest.PostDecodeInit(ceVersion, context); err != nil {
 		return err
 	}
 
