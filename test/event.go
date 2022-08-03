@@ -64,6 +64,10 @@ func (_this Events) String() string {
 	return sb.String()
 }
 
+func (_this Events) AreEquivalentTo(that Events) bool {
+	return AreEventsEquivalent(_this, that)
+}
+
 var NoValue interface{}
 
 type EventWithValue struct {

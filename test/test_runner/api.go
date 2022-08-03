@@ -31,7 +31,7 @@ import (
 
 // Run a CE test suite, described by the CTE document at testDescriptorFile
 func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
-	testSuite := loadTestSuite(testDescriptorFile)
+	testSuite := loadTestSuiteOld(testDescriptorFile)
 
 	defer func() { wrapPanic(recover(), "while running test suite %v", testSuite) }()
 
@@ -40,7 +40,7 @@ func RunCEUnitTests(t *testing.T, testDescriptorFile string) {
 	debug.DebugOptions.PassThroughPanics = false
 }
 
-func loadTestSuite(testDescriptorFile string) *CETestSuite {
+func loadTestSuiteOld(testDescriptorFile string) *CETestSuite {
 	defer func() { wrapPanic(recover(), "while loading test suite from %v", testDescriptorFile) }()
 
 	file, err := os.Open(testDescriptorFile)
