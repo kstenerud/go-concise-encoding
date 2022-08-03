@@ -91,6 +91,8 @@ func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error)
 	return
 }
 
+const TestSuiteVersion = 1
+
 type TestSuite struct {
 	Type      map[string]interface{}
 	CEVersion *int
@@ -107,18 +109,21 @@ func (_this *TestSuite) PostDecodeInit(sourceFile string) (errors []error) {
 
 	if v, ok := _this.Type["identifier"]; ok {
 		if v != "ce test" {
-			return []error{_this.errorf("%v: unrecognized identifier", v)}
+			return []error{_this.errorf("%v: unrecognized type identifier", v)}
 		}
 	} else {
-		return []error{_this.errorf("missing identifier field")}
+		return []error{_this.errorf("missing type identifier field")}
 	}
 
 	if v, ok := _this.Type["version"]; ok {
-		if v != uint64(1) {
-			return []error{_this.errorf("%v (type %v): unrecognized ce test version", v, reflect.TypeOf(v))}
+		if v != uint64(TestSuiteVersion) {
+			if reflect.TypeOf(v).Kind() != reflect.Uint64 {
+				return []error{_this.errorf("type version must be an unsigned integer")}
+			}
+			return []error{_this.errorf("ce test format version %v runner cannot load from version %v file", TestSuiteVersion, v)}
 		}
 	} else {
-		return []error{_this.errorf("missing identifier field")}
+		return []error{_this.errorf("missing type version field")}
 	}
 
 	if _this.CEVersion == nil {
