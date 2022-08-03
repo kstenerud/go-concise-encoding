@@ -35,10 +35,18 @@ import (
 
 type structBuilderField struct {
 	Name      string
-	Index     int
+	IndexPath []int
 	Omit      bool
 	OmitEmpty bool
 	OmitValue string
+}
+
+func (_this *structBuilderField) GetField(container reflect.Value) (value reflect.Value) {
+	value = container
+	for _, index := range _this.IndexPath {
+		value = value.Field(index)
+	}
+	return
 }
 
 func (_this *structBuilderField) applyTags(tags string) {
@@ -92,25 +100,42 @@ type structBuilderGeneratorDesc struct {
 	builderGenerator BuilderGenerator
 }
 
+func makeGeneratorDescs(
+	getBuilderGeneratorForType BuilderGeneratorGetter,
+	dstType reflect.Type,
+	currentPath []int,
+	generatorDescs map[string]*structBuilderGeneratorDesc) {
+
+	for i := 0; i < dstType.NumField(); i++ {
+		reflectField := dstType.Field(i)
+		if reflectField.IsExported() {
+			path := make([]int, len(currentPath)+1)
+			copy(path, currentPath)
+			path[len(currentPath)] = i
+
+			if reflectField.Anonymous {
+				makeGeneratorDescs(getBuilderGeneratorForType, reflectField.Type, path, generatorDescs)
+			} else {
+				builderGenerator := getBuilderGeneratorForType(reflectField.Type)
+				structField := &structBuilderField{
+					Name:      reflectField.Name,
+					IndexPath: path,
+				}
+				structField.applyTags(reflectField.Tag.Get("ce"))
+				generatorDescs[structField.Name] = &structBuilderGeneratorDesc{
+					field:            structField,
+					builderGenerator: builderGenerator,
+				}
+			}
+		}
+	}
+}
+
 func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter, dstType reflect.Type) BuilderGenerator {
 	nameBuilderGenerator := getBuilderGeneratorForType(reflect.TypeOf(""))
 	generatorDescs := make(map[string]*structBuilderGeneratorDesc)
 
-	for i := 0; i < dstType.NumField(); i++ {
-		reflectField := dstType.Field(i)
-		if reflectField.PkgPath == "" {
-			builderGenerator := getBuilderGeneratorForType(reflectField.Type)
-			structField := &structBuilderField{
-				Name:  reflectField.Name,
-				Index: i,
-			}
-			structField.applyTags(reflectField.Tag.Get("ce"))
-			generatorDescs[structField.Name] = &structBuilderGeneratorDesc{
-				field:            structField,
-				builderGenerator: builderGenerator,
-			}
-		}
-	}
+	makeGeneratorDescs(getBuilderGeneratorForType, dstType, []int{}, generatorDescs)
 
 	// Make lowercase mappings as well in case we later do case-insensitive field name matching
 	for _, desc := range generatorDescs {
@@ -221,7 +246,7 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 
 			if generatorDesc, ok := _this.generatorDescs[string(value)]; ok {
 				_this.nextBuilderGenerator = generatorDesc.builderGenerator
-				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
+				_this.nextValue = generatorDesc.field.GetField(_this.container)
 			} else {
 				ctx.StackBuilder(globalIgnoreBuilder)
 				return rv
@@ -249,7 +274,7 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 
 			if generatorDesc, ok := _this.generatorDescs[value]; ok {
 				_this.nextBuilderGenerator = generatorDesc.builderGenerator
-				_this.nextValue = _this.container.Field(generatorDesc.field.Index)
+				_this.nextValue = generatorDesc.field.GetField(_this.container)
 			} else {
 				ctx.StackBuilder(globalIgnoreBuilder)
 				return rv

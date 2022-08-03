@@ -309,3 +309,30 @@ func TestIterateTaggedStruct(t *testing.T) {
 
 	assertIterate(t, obj2, M(), S("test"), S("Named should be present"), E())
 }
+
+type AnonStructInnerInner struct {
+	W float64
+}
+
+type AnonStructInner struct {
+	AnonStructInnerInner
+	X string
+}
+
+type AnonStructOuter struct {
+	AnonStructInner
+	Y int
+}
+
+func TestIterateAnonymousStruct(t *testing.T) {
+	obj := &AnonStructOuter{
+		AnonStructInner: AnonStructInner{
+			AnonStructInnerInner: AnonStructInnerInner{
+				W: float64(1.5),
+			},
+			X: "abc",
+		},
+		Y: 1,
+	}
+	assertIterate(t, obj, M(), S("w"), N(1.5), S("x"), S("abc"), S("y"), N(1), E())
+}

@@ -270,12 +270,13 @@ func newCustomTextIterator(convert options.ConvertToCustomFunction) IteratorFunc
 }
 
 type structField struct {
-	Name      string
-	Type      reflect.Type
-	Index     int
-	Iterate   IteratorFunction
-	Omit      bool
-	OmitEmpty bool
+	Name        string
+	Type        reflect.Type
+	Index       int
+	Iterate     IteratorFunction
+	IncludeName bool
+	Omit        bool
+	OmitEmpty   bool
 	// TODO: OmitValue
 	OmitValue string
 }
@@ -318,8 +319,19 @@ func (_this *structField) applyTags(tags string) {
 	}
 }
 
-func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
-	fields := make([]structField, 0, structType.NumField())
+func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFunction {
+	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
+	return func(context *Context, value reflect.Value) {
+		for _, field := range fields {
+			if field.IncludeName {
+				context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+			}
+			field.Iterate(context, value.Field(field.Index))
+		}
+	}
+}
+
+func extractFields(ctx *Context, structType reflect.Type, fields []structField) []structField {
 	for i := 0; i < structType.NumField(); i++ {
 		reflectField := structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {
@@ -334,17 +346,29 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 			}
 
 			if !field.Omit {
-				field.Iterate = ctx.GetIteratorForType(field.Type)
+				if reflectField.Anonymous {
+					field.Iterate = getEmbeddedFieldIterator(ctx, field.Type)
+				} else {
+					field.IncludeName = true
+					field.Iterate = ctx.GetIteratorForType(field.Type)
+				}
 				fields = append(fields, field)
 			}
 		}
 	}
+	return fields
+}
+
+func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
+	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
 
 	return func(context *Context, v reflect.Value) {
 		context.EventReceiver.OnMap()
 
 		for _, field := range fields {
-			context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+			if field.IncludeName {
+				context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+			}
 			field.Iterate(context, v.Field(field.Index))
 		}
 

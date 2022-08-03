@@ -1381,3 +1381,30 @@ func TestBuilderStructBadFieldName(t *testing.T) {
 	assertBuild(t, s, M(), S("aaa"), N(0), S("bbb"), L(), E(), E())
 	assertBuild(t, s, M(), S("x"), N(0), S("bbb"), L(), E(), E())
 }
+
+type AnonStructInnerInner struct {
+	W float64
+}
+
+type AnonStructInner struct {
+	AnonStructInnerInner
+	X string
+}
+
+type AnonStructOuter struct {
+	AnonStructInner
+	Y int
+}
+
+func TestBuilderAnonStruct(t *testing.T) {
+	s := &AnonStructOuter{
+		AnonStructInner: AnonStructInner{
+			AnonStructInnerInner: AnonStructInnerInner{
+				W: float64(1.5),
+			},
+			X: "abc",
+		},
+		Y: 1,
+	}
+	assertBuild(t, s, M(), S("W"), N(1.5), S("x"), S("abc"), S("y"), N(1), E())
+}
