@@ -1,27 +1,27 @@
 c0
-// CBE contaier type test cases
 {
-    "options" = {
-        "failFast" = false  // If true, halt tests on first error
-    }
-
-    "cbeTests" = [
+	"type" = {
+		"identifier" = "ce test"
+		"version" = 1
+	}
+	"ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
         {
             "name" = "List"
-            "decodeEncode" = [
-                {"document"=|u8x 81 00 7a 7b|  "events"=["v 0" "l" "e"]}
-                {"document"=|u8x 81 00 7a 01 02 03 7b|  "events"=["v 0" "l" "n 1" "n 2" "n 3" "e"]}
-                {"document"=|u8x 81 00 7a 01 7a 7a 02 7a 03 7a 7b 7b 7b 7b 7b|
-                 "events"=["v 0" "l" "n 1" "l" "l" "n 2" "l" "n 3" "l" "e" "e" "e" "e" "e"]}
+            "mustSucceed" = [
+                {"cbe"=|u8x 7a 7b|           "events"=["l" "e"]}
+                {"cbe"=|u8x 7a 01 02 03 7b|  "events"=["l" "n 1" "n 2" "n 3" "e"]}
+                {"cbe"=|u8x 7a 01 7a 7a 02 7a 03 7a 7b 7b 7b 7b 7b|
+                 "events"=["l" "n 1" "l" "l" "n 2" "l" "n 3" "l" "e" "e" "e" "e" "e"]}
             ]
-            "decodeFail" = [
-                |u8x 81 00 7a|              // Unterminated
-                |u8x 81 00 7a 01 02|        // Unterminated
-                |u8x 81 00 7a 7a 7b|        // Unterminated
-                |u8x 81 00 7a 7b 7b|        // Terminated too many times
+            "mustFail" = [
+                {"cbe"=|u8x 7a|}              // Unterminated
+                {"cbe"=|u8x 7a 01 02|}        // Unterminated
+                {"cbe"=|u8x 7a 7a 7b|}        // Unterminated
+                {"cbe"=|u8x 7a 7b 7b|}        // Terminated too many times
             ]
         }
 
@@ -29,49 +29,49 @@ c0
 
         {
             "name" = "Map"
-            "decodeEncode" = [
-                {"document"=|u8x 81 00 79 7b|  "events"=["v 0" "m" "e"]}
-                {"document"=|u8x 81 00 79 01 02 7b|  "events"=["v 0" "m" "n 1" "n 2" "e"]}
+            "mustSucceed" = [
+                {"cbe"=|u8x 79 7b|        "events"=["m" "e"]}
+                {"cbe"=|u8x 79 01 02 7b|  "events"=["m" "n 1" "n 2" "e"]}
             ]
-            "decodeFail" = [
-                |u8x 81 00 79|                      // Unterminated
-                |u8x 81 00 79 01|                   // Unterminated
-                |u8x 81 00 79 01 02|                // Unterminated
-                |u8x 81 00 79 7b 7b|                // Terminated too many times
-                |u8x 81 00 79 01 7b|                // Missing value
-                |u8x 81 00 79 7a 7b 01 7b|          // Invalid key type
-                |u8x 81 00 79 79 7b 01 7b|          // Invalid key type
-                |u8x 81 00 79 78 01 61 7b 7b 01 7b| // Invalid key type
-                |u8x 81 00 79 77 01 7b 01 7b|       // Invalid key type
-                |u8x 81 00 79 76 01 02 03 01 7b|    // Invalid key type
-                |u8x 81 00 79 92 00 01 7b|          // Invalid key type
-                |u8x 81 00 79 93 00 01 7b|          // Invalid key type
-                |u8x 81 00 79 95 00 01 7b|          // Invalid key type
-                |u8x 81 00 79 96 00 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 00 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 10 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 20 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 30 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 40 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 50 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 60 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 70 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 80 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 90 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 a0 01 7b|          // Invalid key type
-                |u8x 81 00 79 94 e0 02 61 7b|       // Invalid key type
-                |u8x 81 00 79 94 e1 02 61 00 7b|    // Invalid key type
-                |u8x 81 00 79 94 f5 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 f6 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 f7 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 f8 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 f9 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 fa 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 fb 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 fc 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 fd 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 fe 00 7b|          // Invalid key type
-                |u8x 81 00 79 94 ff 00 7b|          // Invalid key type
+            "mustFail" = [
+                {"cbe"=|u8x 79|}                      // Unterminated
+                {"cbe"=|u8x 79 01|}                   // Unterminated
+                {"cbe"=|u8x 79 01 02|}                // Unterminated
+                {"cbe"=|u8x 79 7b 7b|}                // Terminated too many times
+                {"cbe"=|u8x 79 01 7b|}                // Missing value
+                {"cbe"=|u8x 79 7a 7b 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 79 7b 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 78 01 61 7b 7b 01 7b|} // Invalid key type
+                {"cbe"=|u8x 79 77 01 7b 01 7b|}       // Invalid key type
+                {"cbe"=|u8x 79 76 01 02 03 01 7b|}    // Invalid key type
+                {"cbe"=|u8x 79 92 00 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 93 00 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 95 00 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 96 00 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 00 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 10 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 20 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 30 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 40 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 50 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 60 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 70 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 80 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 90 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 a0 01 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 e0 02 61 7b|}       // Invalid key type
+                {"cbe"=|u8x 79 94 e1 02 61 00 7b|}    // Invalid key type
+                {"cbe"=|u8x 79 94 f5 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 f6 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 f7 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 f8 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 f9 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 fa 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 fb 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 fc 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 fd 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 fe 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 79 94 ff 00 7b|}          // Invalid key type
             ]
         }
 
@@ -79,17 +79,17 @@ c0
 
         {
             "name" = "Edge"
-            "decodeEncode" = [
-                {"document"=|u8x 81 00 77 00 00 00 7b|              "events"=["v 0" "edge" "n 0" "n 0" "n 0" "e"]}
-                {"document"=|u8x 81 00 77 91 02 61 7e 91 02 62 7b|  "events"=["v 0" "edge" "rid a" "null" "rid b" "e"]}
+            "mustSucceed" = [
+                {"cbe"=|u8x 77 00 00 00 7b|              "events"=["edge" "n 0" "n 0" "n 0" "e"]}
+                {"cbe"=|u8x 77 91 02 61 7e 91 02 62 7b|  "events"=["edge" "rid a" "null" "rid b" "e"]}
             ]
-            "decodeFail" = [
-                |u8x 81 00 77|              // Unterminated
-                |u8x 81 00 77 00|           // Unterminated
-                |u8x 81 00 77 00 00|        // Unterminated
-                |u8x 81 00 77 00 00 00|     // Unterminated
-                |u8x 81 00 77 7e 00 00 7b|  // Invalid source
-                |u8x 81 00 77 00 00 7e 7b|  // Invalid destination
+            "mustFail" = [
+                {"cbe"=|u8x 77|}              // Unterminated
+                {"cbe"=|u8x 77 00|}           // Unterminated
+                {"cbe"=|u8x 77 00 00|}        // Unterminated
+                {"cbe"=|u8x 77 00 00 00|}     // Unterminated
+                {"cbe"=|u8x 77 7e 00 00 7b|}  // Invalid source
+                {"cbe"=|u8x 77 00 00 7e 7b|}  // Invalid destination
             ]
         }
 
@@ -97,15 +97,15 @@ c0
 
         {
             "name" = "Node"
-            "decodeEncode" = [
-                {"document"=|u8x 81 00 78 00 7b|              "events"=["v 0" "node" "n 0" "e"]}
-                {"document"=|u8x 81 00 78 00 78 81 61 7b 7b|  "events"=["v 0" "node" "n 0" "node" "s a" "e" "e"]}
+            "mustSucceed" = [
+                {"cbe"=|u8x 78 00 7b|              "events"=["node" "n 0" "e"]}
+                {"cbe"=|u8x 78 00 78 81 61 7b 7b|  "events"=["node" "n 0" "node" "s a" "e" "e"]}
             ]
-            "decodeFail" = [
-                |u8x 81 00 78|           // Unterminated
-                |u8x 81 00 78 01|        // Unterminated
-                |u8x 81 00 78 01 7b 7b|  // Terminated too many times
-                |u8x 81 00 78 7b|        // Missing value
+            "mustFail" = [
+                {"cbe"=|u8x 78|}           // Unterminated
+                {"cbe"=|u8x 78 01|}        // Unterminated
+                {"cbe"=|u8x 78 01 7b 7b|}  // Terminated too many times
+                {"cbe"=|u8x 78 7b|}        // Missing value
             ]
         }
 
@@ -113,10 +113,9 @@ c0
 
         {
             "name" = "Mixed Containers"
-            "decodeEncode" = [
+            "mustSucceed" = [
                 {
-                    "document"=|u8x
-                        81 00
+                    "cbe"=|u8x
                         7a
                             7a
                                 7a
@@ -187,7 +186,6 @@ c0
                         7b
                     |
                     "events"=[
-                        "v 0"
                         "l"
                             "l"
                                 "l"

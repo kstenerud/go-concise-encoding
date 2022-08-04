@@ -30,6 +30,7 @@ func TestNew(t *testing.T) {
 	test_runner.RunTests(t, "version.cte")
 	test_runner.RunTests(t, "cbe-basic.cte")
 	test_runner.RunTests(t, "cbe-arrays.cte")
+	test_runner.RunTests(t, "cbe-containers.cte")
 }
 
 func TestTemplates(t *testing.T) {
