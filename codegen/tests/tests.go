@@ -87,19 +87,19 @@ func generateAntlrCode(projectDir string) {
 }
 
 func generateEvents(writer io.Writer) {
-	generateEventWithValue(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(elements)), ArrayBitsToBytes(elements))")
-	generateEventWithValue(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(ArrayBitsToBytes(elements))")
+	generateEventWithValue(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), ArrayBitsToBytes(safeArg))")
+	generateEventWithValue(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(ArrayBitsToBytes(safeArg))")
 
-	generateEventWithValue(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(version)")
-	generateEventWithValue(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(value)")
-	generateEventWithValue(writer, "Time", "t", "value", "compact_time.Time", "receiver.OnTime(value)")
-	generateEventWithValue(writer, "UID", "uid", "value", "[]byte", "receiver.OnUID(value)")
+	generateEventWithValue(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(safeArg)")
+	generateEventWithValue(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(safeArg)")
+	generateEventWithValue(writer, "Time", "t", "value", "compact_time.Time", "receiver.OnTime(safeArg)")
+	generateEventWithValue(writer, "UID", "uid", "value", "[]byte", "receiver.OnUID(safeArg)")
 
-	generateEventWithValue(writer, "ArrayChunkMore", "acm", "length", "uint64", "receiver.OnArrayChunk(length, true)")
-	generateEventWithValue(writer, "ArrayChunkLast", "acl", "length", "uint64", "receiver.OnArrayChunk(length, false)")
-	generateEventWithValue(writer, "CommentMultiline", "cm", "comment", "string", "receiver.OnComment(true, []byte(comment))")
-	generateEventWithValue(writer, "CommentSingleLine", "cs", "comment", "string", "receiver.OnComment(false, []byte(comment))")
-	generateEventWithValue(writer, "CustomBinary", "cb", "elements", "[]byte", "receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(elements)), elements)")
+	generateEventWithValue(writer, "ArrayChunkMore", "acm", "length", "uint64", "receiver.OnArrayChunk(safeArg, true)")
+	generateEventWithValue(writer, "ArrayChunkLast", "acl", "length", "uint64", "receiver.OnArrayChunk(safeArg, false)")
+	generateEventWithValue(writer, "CommentMultiline", "cm", "comment", "string", "receiver.OnComment(true, []byte(safeArg))")
+	generateEventWithValue(writer, "CommentSingleLine", "cs", "comment", "string", "receiver.OnComment(false, []byte(safeArg))")
+	generateEventWithValue(writer, "CustomBinary", "cb", "elements", "[]byte", "receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(safeArg)), safeArg)")
 
 	generateIDEvent(writer, "Marker", "mark")
 	generateIDEvent(writer, "ReferenceLocal", "refl")
@@ -170,20 +170,20 @@ func generateEvents(writer io.Writer) {
 func generateArrayDataEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
 	generateEventWithValue(writer, "ArrayData"+eventName, functionName, argName, elementType,
-		fmt.Sprintf("receiver.OnArrayData(Array%vToBytes(%v))", eventName, argName))
+		fmt.Sprintf("receiver.OnArrayData(Array%vToBytes(safeArg))", eventName))
 }
 
 func generateArrayEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
 	generateEventWithValue(writer, "Array"+eventName, functionName, argName, "[]"+elementType,
-		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(%v)), Array%vToBytes(%v))", eventName, argName, eventName, argName))
+		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), Array%vToBytes(safeArg))", eventName, eventName))
 }
 
 func generateStringArrayEvent(writer io.Writer, arrayType string, functionName string) {
 	eventName := arrayType
 	argName := "str"
 	generateEventWithValue(writer, eventName, functionName, argName, "string",
-		fmt.Sprintf("receiver.OnStringlikeArray(events.ArrayType%v, %v)", arrayType, argName))
+		fmt.Sprintf("receiver.OnStringlikeArray(events.ArrayType%v, safeArg)", arrayType))
 }
 
 func generateArrayBeginEvent(writer io.Writer, eventName string, arrayType string, functionName string) {
@@ -193,7 +193,7 @@ func generateArrayBeginEvent(writer io.Writer, eventName string, arrayType strin
 func generateIDEvent(writer io.Writer, eventName string, functionName string) {
 	argName := "id"
 	generateEventWithValue(writer, eventName, functionName, argName, "string",
-		fmt.Sprintf("receiver.On%v([]byte(%v))", eventName, argName))
+		fmt.Sprintf("receiver.On%v([]byte(safeArg))", eventName))
 }
 
 func generateBasicEvent(writer io.Writer, eventName string, functionName string) {
@@ -227,9 +227,17 @@ func generateEventWithValue(writer io.Writer, eventName string, functionName str
 	v := copyOf(%v)
 	if len(%v) == 0 {
 		v = NoValue
-	}`, argName, argName)))
+	}
+	var safeArg %v
+	if v != nil {
+		safeArg = v.(%v)
+	}
+`, argName, argName, argType, argType)))
 	} else {
-		writer.Write([]byte(fmt.Sprintf("\n\tv := %v", argName)))
+		writer.Write([]byte(fmt.Sprintf(`
+	v := %v
+	safeArg := v
+`, argName)))
 	}
 
 	writer.Write([]byte(fmt.Sprintf(`

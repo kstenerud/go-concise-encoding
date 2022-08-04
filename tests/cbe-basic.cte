@@ -332,8 +332,8 @@ c0
                 {"nocbeoutput"=true  "cbe"=|u8x 66 08 ff ff ff ff ff ff ff ff|  "events"=["n 0xffffffffffffffff"]}
             ]
             "mustFail" = [
-                {"cbe"=|u8x 81 00 66 02 ff|}                          // Incomplete
-                {"cbe"=|u8x 81 00 66 10 ff ff ff ff ff ff ff ff ff|}  // Incomplete
+                {"cbe"=|u8x 66 02 ff|}                          // Incomplete
+                {"cbe"=|u8x 66 10 ff ff ff ff ff ff ff ff ff|}  // Incomplete
             ]
         }
 

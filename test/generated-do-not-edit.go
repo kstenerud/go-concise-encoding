@@ -35,9 +35,14 @@ func AB(elements []bool) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []bool
+	if v != nil {
+		safeArg = v.([]bool)
+	}
+
 	return &EventArrayBit{
 		EventWithValue: ConstructEventWithValue("ab", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeBit, uint64(len(elements)), ArrayBitsToBytes(elements))
+			receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), ArrayBitsToBytes(safeArg))
 		}),
 	}
 }
@@ -49,9 +54,14 @@ func ADB(elements []bool) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []bool
+	if v != nil {
+		safeArg = v.([]bool)
+	}
+
 	return &EventArrayDataBit{
 		EventWithValue: ConstructEventWithValue("adb", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayBitsToBytes(elements))
+			receiver.OnArrayData(ArrayBitsToBytes(safeArg))
 		}),
 	}
 }
@@ -60,9 +70,11 @@ type EventVersion struct{ EventWithValue }
 
 func V(version uint64) Event {
 	v := version
+	safeArg := v
+
 	return &EventVersion{
 		EventWithValue: ConstructEventWithValue("v", v, func(receiver events.DataEventReceiver) {
-			receiver.OnVersion(version)
+			receiver.OnVersion(safeArg)
 		}),
 	}
 }
@@ -71,9 +83,11 @@ type EventBoolean struct{ EventWithValue }
 
 func B(value bool) Event {
 	v := value
+	safeArg := v
+
 	return &EventBoolean{
 		EventWithValue: ConstructEventWithValue("b", v, func(receiver events.DataEventReceiver) {
-			receiver.OnBoolean(value)
+			receiver.OnBoolean(safeArg)
 		}),
 	}
 }
@@ -82,9 +96,11 @@ type EventTime struct{ EventWithValue }
 
 func T(value compact_time.Time) Event {
 	v := value
+	safeArg := v
+
 	return &EventTime{
 		EventWithValue: ConstructEventWithValue("t", v, func(receiver events.DataEventReceiver) {
-			receiver.OnTime(value)
+			receiver.OnTime(safeArg)
 		}),
 	}
 }
@@ -96,9 +112,14 @@ func UID(value []byte) Event {
 	if len(value) == 0 {
 		v = NoValue
 	}
+	var safeArg []byte
+	if v != nil {
+		safeArg = v.([]byte)
+	}
+
 	return &EventUID{
 		EventWithValue: ConstructEventWithValue("uid", v, func(receiver events.DataEventReceiver) {
-			receiver.OnUID(value)
+			receiver.OnUID(safeArg)
 		}),
 	}
 }
@@ -107,9 +128,11 @@ type EventArrayChunkMore struct{ EventWithValue }
 
 func ACM(length uint64) Event {
 	v := length
+	safeArg := v
+
 	return &EventArrayChunkMore{
 		EventWithValue: ConstructEventWithValue("acm", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayChunk(length, true)
+			receiver.OnArrayChunk(safeArg, true)
 		}),
 	}
 }
@@ -118,9 +141,11 @@ type EventArrayChunkLast struct{ EventWithValue }
 
 func ACL(length uint64) Event {
 	v := length
+	safeArg := v
+
 	return &EventArrayChunkLast{
 		EventWithValue: ConstructEventWithValue("acl", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayChunk(length, false)
+			receiver.OnArrayChunk(safeArg, false)
 		}),
 	}
 }
@@ -129,9 +154,11 @@ type EventCommentMultiline struct{ EventWithValue }
 
 func CM(comment string) Event {
 	v := comment
+	safeArg := v
+
 	return &EventCommentMultiline{
 		EventWithValue: ConstructEventWithValue("cm", v, func(receiver events.DataEventReceiver) {
-			receiver.OnComment(true, []byte(comment))
+			receiver.OnComment(true, []byte(safeArg))
 		}),
 	}
 }
@@ -140,9 +167,11 @@ type EventCommentSingleLine struct{ EventWithValue }
 
 func CS(comment string) Event {
 	v := comment
+	safeArg := v
+
 	return &EventCommentSingleLine{
 		EventWithValue: ConstructEventWithValue("cs", v, func(receiver events.DataEventReceiver) {
-			receiver.OnComment(false, []byte(comment))
+			receiver.OnComment(false, []byte(safeArg))
 		}),
 	}
 }
@@ -154,9 +183,14 @@ func CB(elements []byte) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []byte
+	if v != nil {
+		safeArg = v.([]byte)
+	}
+
 	return &EventCustomBinary{
 		EventWithValue: ConstructEventWithValue("cb", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(elements)), elements)
+			receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(safeArg)), safeArg)
 		}),
 	}
 }
@@ -165,9 +199,11 @@ type EventMarker struct{ EventWithValue }
 
 func MARK(id string) Event {
 	v := id
+	safeArg := v
+
 	return &EventMarker{
 		EventWithValue: ConstructEventWithValue("mark", v, func(receiver events.DataEventReceiver) {
-			receiver.OnMarker([]byte(id))
+			receiver.OnMarker([]byte(safeArg))
 		}),
 	}
 }
@@ -176,9 +212,11 @@ type EventReferenceLocal struct{ EventWithValue }
 
 func REFL(id string) Event {
 	v := id
+	safeArg := v
+
 	return &EventReferenceLocal{
 		EventWithValue: ConstructEventWithValue("refl", v, func(receiver events.DataEventReceiver) {
-			receiver.OnReferenceLocal([]byte(id))
+			receiver.OnReferenceLocal([]byte(safeArg))
 		}),
 	}
 }
@@ -187,9 +225,11 @@ type EventStructInstance struct{ EventWithValue }
 
 func SI(id string) Event {
 	v := id
+	safeArg := v
+
 	return &EventStructInstance{
 		EventWithValue: ConstructEventWithValue("si", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStructInstance([]byte(id))
+			receiver.OnStructInstance([]byte(safeArg))
 		}),
 	}
 }
@@ -198,9 +238,11 @@ type EventStructTemplate struct{ EventWithValue }
 
 func ST(id string) Event {
 	v := id
+	safeArg := v
+
 	return &EventStructTemplate{
 		EventWithValue: ConstructEventWithValue("st", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStructTemplate([]byte(id))
+			receiver.OnStructTemplate([]byte(safeArg))
 		}),
 	}
 }
@@ -209,9 +251,11 @@ type EventString struct{ EventWithValue }
 
 func S(str string) Event {
 	v := str
+	safeArg := v
+
 	return &EventString{
 		EventWithValue: ConstructEventWithValue("s", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStringlikeArray(events.ArrayTypeString, str)
+			receiver.OnStringlikeArray(events.ArrayTypeString, safeArg)
 		}),
 	}
 }
@@ -220,9 +264,11 @@ type EventCustomText struct{ EventWithValue }
 
 func CT(str string) Event {
 	v := str
+	safeArg := v
+
 	return &EventCustomText{
 		EventWithValue: ConstructEventWithValue("ct", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStringlikeArray(events.ArrayTypeCustomText, str)
+			receiver.OnStringlikeArray(events.ArrayTypeCustomText, safeArg)
 		}),
 	}
 }
@@ -231,9 +277,11 @@ type EventReferenceRemote struct{ EventWithValue }
 
 func REFR(str string) Event {
 	v := str
+	safeArg := v
+
 	return &EventReferenceRemote{
 		EventWithValue: ConstructEventWithValue("refr", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStringlikeArray(events.ArrayTypeReferenceRemote, str)
+			receiver.OnStringlikeArray(events.ArrayTypeReferenceRemote, safeArg)
 		}),
 	}
 }
@@ -242,9 +290,11 @@ type EventResourceID struct{ EventWithValue }
 
 func RID(str string) Event {
 	v := str
+	safeArg := v
+
 	return &EventResourceID{
 		EventWithValue: ConstructEventWithValue("rid", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStringlikeArray(events.ArrayTypeResourceID, str)
+			receiver.OnStringlikeArray(events.ArrayTypeResourceID, safeArg)
 		}),
 	}
 }
@@ -256,9 +306,14 @@ func ADI8(elements []int8) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int8
+	if v != nil {
+		safeArg = v.([]int8)
+	}
+
 	return &EventArrayDataInt8{
 		EventWithValue: ConstructEventWithValue("adi8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt8ToBytes(elements))
+			receiver.OnArrayData(ArrayInt8ToBytes(safeArg))
 		}),
 	}
 }
@@ -270,9 +325,14 @@ func ADI16(elements []int16) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int16
+	if v != nil {
+		safeArg = v.([]int16)
+	}
+
 	return &EventArrayDataInt16{
 		EventWithValue: ConstructEventWithValue("adi16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt16ToBytes(elements))
+			receiver.OnArrayData(ArrayInt16ToBytes(safeArg))
 		}),
 	}
 }
@@ -284,9 +344,14 @@ func ADI32(elements []int32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int32
+	if v != nil {
+		safeArg = v.([]int32)
+	}
+
 	return &EventArrayDataInt32{
 		EventWithValue: ConstructEventWithValue("adi32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt32ToBytes(elements))
+			receiver.OnArrayData(ArrayInt32ToBytes(safeArg))
 		}),
 	}
 }
@@ -298,9 +363,14 @@ func ADI64(elements []int64) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int64
+	if v != nil {
+		safeArg = v.([]int64)
+	}
+
 	return &EventArrayDataInt64{
 		EventWithValue: ConstructEventWithValue("adi64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt64ToBytes(elements))
+			receiver.OnArrayData(ArrayInt64ToBytes(safeArg))
 		}),
 	}
 }
@@ -312,9 +382,14 @@ func ADF16(elements []float32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []float32
+	if v != nil {
+		safeArg = v.([]float32)
+	}
+
 	return &EventArrayDataFloat16{
 		EventWithValue: ConstructEventWithValue("adf16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayFloat16ToBytes(elements))
+			receiver.OnArrayData(ArrayFloat16ToBytes(safeArg))
 		}),
 	}
 }
@@ -326,9 +401,14 @@ func ADF32(elements []float32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []float32
+	if v != nil {
+		safeArg = v.([]float32)
+	}
+
 	return &EventArrayDataFloat32{
 		EventWithValue: ConstructEventWithValue("adf32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayFloat32ToBytes(elements))
+			receiver.OnArrayData(ArrayFloat32ToBytes(safeArg))
 		}),
 	}
 }
@@ -340,9 +420,14 @@ func ADF64(elements []float64) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []float64
+	if v != nil {
+		safeArg = v.([]float64)
+	}
+
 	return &EventArrayDataFloat64{
 		EventWithValue: ConstructEventWithValue("adf64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayFloat64ToBytes(elements))
+			receiver.OnArrayData(ArrayFloat64ToBytes(safeArg))
 		}),
 	}
 }
@@ -354,9 +439,14 @@ func ADU8(elements []uint8) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint8
+	if v != nil {
+		safeArg = v.([]uint8)
+	}
+
 	return &EventArrayDataUint8{
 		EventWithValue: ConstructEventWithValue("adu8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint8ToBytes(elements))
+			receiver.OnArrayData(ArrayUint8ToBytes(safeArg))
 		}),
 	}
 }
@@ -368,9 +458,14 @@ func ADU16(elements []uint16) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint16
+	if v != nil {
+		safeArg = v.([]uint16)
+	}
+
 	return &EventArrayDataUint16{
 		EventWithValue: ConstructEventWithValue("adu16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint16ToBytes(elements))
+			receiver.OnArrayData(ArrayUint16ToBytes(safeArg))
 		}),
 	}
 }
@@ -382,9 +477,14 @@ func ADU32(elements []uint32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint32
+	if v != nil {
+		safeArg = v.([]uint32)
+	}
+
 	return &EventArrayDataUint32{
 		EventWithValue: ConstructEventWithValue("adu32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint32ToBytes(elements))
+			receiver.OnArrayData(ArrayUint32ToBytes(safeArg))
 		}),
 	}
 }
@@ -396,9 +496,14 @@ func ADU64(elements []uint64) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint64
+	if v != nil {
+		safeArg = v.([]uint64)
+	}
+
 	return &EventArrayDataUint64{
 		EventWithValue: ConstructEventWithValue("adu64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint64ToBytes(elements))
+			receiver.OnArrayData(ArrayUint64ToBytes(safeArg))
 		}),
 	}
 }
@@ -410,9 +515,14 @@ func ADU(elements [][]byte) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg [][]byte
+	if v != nil {
+		safeArg = v.([][]byte)
+	}
+
 	return &EventArrayDataUID{
 		EventWithValue: ConstructEventWithValue("adu", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUIDToBytes(elements))
+			receiver.OnArrayData(ArrayUIDToBytes(safeArg))
 		}),
 	}
 }
@@ -421,9 +531,11 @@ type EventArrayDataText struct{ EventWithValue }
 
 func ADT(elements string) Event {
 	v := elements
+	safeArg := v
+
 	return &EventArrayDataText{
 		EventWithValue: ConstructEventWithValue("adt", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayTextToBytes(elements))
+			receiver.OnArrayData(ArrayTextToBytes(safeArg))
 		}),
 	}
 }
@@ -435,9 +547,14 @@ func AI8(elements []int8) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int8
+	if v != nil {
+		safeArg = v.([]int8)
+	}
+
 	return &EventArrayInt8{
 		EventWithValue: ConstructEventWithValue("ai8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt8, uint64(len(elements)), ArrayInt8ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeInt8, uint64(len(safeArg)), ArrayInt8ToBytes(safeArg))
 		}),
 	}
 }
@@ -449,9 +566,14 @@ func AI16(elements []int16) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int16
+	if v != nil {
+		safeArg = v.([]int16)
+	}
+
 	return &EventArrayInt16{
 		EventWithValue: ConstructEventWithValue("ai16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt16, uint64(len(elements)), ArrayInt16ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeInt16, uint64(len(safeArg)), ArrayInt16ToBytes(safeArg))
 		}),
 	}
 }
@@ -463,9 +585,14 @@ func AI32(elements []int32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int32
+	if v != nil {
+		safeArg = v.([]int32)
+	}
+
 	return &EventArrayInt32{
 		EventWithValue: ConstructEventWithValue("ai32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt32, uint64(len(elements)), ArrayInt32ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeInt32, uint64(len(safeArg)), ArrayInt32ToBytes(safeArg))
 		}),
 	}
 }
@@ -477,9 +604,14 @@ func AI64(elements []int64) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []int64
+	if v != nil {
+		safeArg = v.([]int64)
+	}
+
 	return &EventArrayInt64{
 		EventWithValue: ConstructEventWithValue("ai64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt64, uint64(len(elements)), ArrayInt64ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeInt64, uint64(len(safeArg)), ArrayInt64ToBytes(safeArg))
 		}),
 	}
 }
@@ -491,9 +623,14 @@ func AF16(elements []float32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []float32
+	if v != nil {
+		safeArg = v.([]float32)
+	}
+
 	return &EventArrayFloat16{
 		EventWithValue: ConstructEventWithValue("af16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeFloat16, uint64(len(elements)), ArrayFloat16ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeFloat16, uint64(len(safeArg)), ArrayFloat16ToBytes(safeArg))
 		}),
 	}
 }
@@ -505,9 +642,14 @@ func AF32(elements []float32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []float32
+	if v != nil {
+		safeArg = v.([]float32)
+	}
+
 	return &EventArrayFloat32{
 		EventWithValue: ConstructEventWithValue("af32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeFloat32, uint64(len(elements)), ArrayFloat32ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeFloat32, uint64(len(safeArg)), ArrayFloat32ToBytes(safeArg))
 		}),
 	}
 }
@@ -519,9 +661,14 @@ func AF64(elements []float64) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []float64
+	if v != nil {
+		safeArg = v.([]float64)
+	}
+
 	return &EventArrayFloat64{
 		EventWithValue: ConstructEventWithValue("af64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeFloat64, uint64(len(elements)), ArrayFloat64ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeFloat64, uint64(len(safeArg)), ArrayFloat64ToBytes(safeArg))
 		}),
 	}
 }
@@ -533,9 +680,14 @@ func AU8(elements []uint8) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint8
+	if v != nil {
+		safeArg = v.([]uint8)
+	}
+
 	return &EventArrayUint8{
 		EventWithValue: ConstructEventWithValue("au8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint8, uint64(len(elements)), ArrayUint8ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeUint8, uint64(len(safeArg)), ArrayUint8ToBytes(safeArg))
 		}),
 	}
 }
@@ -547,9 +699,14 @@ func AU16(elements []uint16) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint16
+	if v != nil {
+		safeArg = v.([]uint16)
+	}
+
 	return &EventArrayUint16{
 		EventWithValue: ConstructEventWithValue("au16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint16, uint64(len(elements)), ArrayUint16ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeUint16, uint64(len(safeArg)), ArrayUint16ToBytes(safeArg))
 		}),
 	}
 }
@@ -561,9 +718,14 @@ func AU32(elements []uint32) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint32
+	if v != nil {
+		safeArg = v.([]uint32)
+	}
+
 	return &EventArrayUint32{
 		EventWithValue: ConstructEventWithValue("au32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint32, uint64(len(elements)), ArrayUint32ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeUint32, uint64(len(safeArg)), ArrayUint32ToBytes(safeArg))
 		}),
 	}
 }
@@ -575,9 +737,14 @@ func AU64(elements []uint64) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg []uint64
+	if v != nil {
+		safeArg = v.([]uint64)
+	}
+
 	return &EventArrayUint64{
 		EventWithValue: ConstructEventWithValue("au64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint64, uint64(len(elements)), ArrayUint64ToBytes(elements))
+			receiver.OnArray(events.ArrayTypeUint64, uint64(len(safeArg)), ArrayUint64ToBytes(safeArg))
 		}),
 	}
 }
@@ -589,9 +756,14 @@ func AU(elements [][]byte) Event {
 	if len(elements) == 0 {
 		v = NoValue
 	}
+	var safeArg [][]byte
+	if v != nil {
+		safeArg = v.([][]byte)
+	}
+
 	return &EventArrayUID{
 		EventWithValue: ConstructEventWithValue("au", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUID, uint64(len(elements)), ArrayUIDToBytes(elements))
+			receiver.OnArray(events.ArrayTypeUID, uint64(len(safeArg)), ArrayUIDToBytes(safeArg))
 		}),
 	}
 }

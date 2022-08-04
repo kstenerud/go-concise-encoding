@@ -329,8 +329,8 @@ func (_this *MustSucceedTest) Run() error {
 				return _this.wrapError(err, "Encoding events [%v] to CTE", events)
 			}
 			if _this.Cte != document {
-				return _this.errorf("re-encoding CTE [%v] produced unexpected CTE [%v]",
-					_this.Cte, document)
+				return _this.errorf("re-encoding events [%v] from CTE [%v] produced unexpected CTE [%v]",
+					events, _this.Cte, document)
 			}
 		}
 	}
@@ -358,8 +358,8 @@ func (_this *MustSucceedTest) Run() error {
 				return _this.wrapError(err, "Encoding events [%v] to CBE", events)
 			}
 			if !bytes.Equal(_this.Cbe, document) {
-				return _this.errorf("re-encoding CBE [%v] produced unexpected CBE [%v]",
-					asHex(_this.Cbe), asHex(document))
+				return _this.errorf("re-encoding events [%v] from CBE [%v] produced unexpected CBE [%v]",
+					events, asHex(_this.Cbe), asHex(document))
 			}
 		}
 	}
