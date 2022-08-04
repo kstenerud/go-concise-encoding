@@ -88,11 +88,14 @@ type BuilderGeneratorGetter func(reflect.Type) BuilderGenerator
 // Report that a builder was given an event that it can't handle.
 // This indicates a bug in the implementation.
 func PanicBadEvent(builder Builder, eventFmt string, args ...interface{}) {
-	panic(fmt.Errorf(`BUG: %v cannot respond to %v`, reflect.TypeOf(builder), fmt.Sprintf(eventFmt, args...)))
+	// TODO: Make this something like "Expected type X but got type Y"
+	// Otherwise decoding a document containing the wrong types gives a hard to understand error
+	panic(fmt.Errorf(`%v cannot respond to %v`, reflect.TypeOf(builder), fmt.Sprintf(eventFmt, args...)))
 }
 
 func PanicBadEventBuildingValue(builder Builder, v reflect.Value, eventFmt string, args ...interface{}) reflect.Value {
-	panic(fmt.Errorf("BUG: %v (building type %v) cannot respond to %v", reflect.TypeOf(builder), v.Type(), fmt.Sprintf(eventFmt, args...)))
+	// TODO: Make this something like "Expected type X but got type Y"
+	panic(fmt.Errorf("%v (building type %v) cannot respond to %v", reflect.TypeOf(builder), v.Type(), fmt.Sprintf(eventFmt, args...)))
 }
 
 // Report that a builder couldn't convert between types. This can happen if

@@ -169,7 +169,12 @@ func (_this *Encoder) OnBigInt(value *big.Int) {
 			_this.OnNegativeInt(uint64(-value.Int64()))
 			return
 		}
-		// TODO: -0x7fffffffffffffff to -0xffffffffffffffff don't need big int encoding
+		value = value.Neg(value)
+		if value.IsUint64() {
+			_this.OnNegativeInt(uint64(value.Uint64()))
+			return
+		}
+		value = value.Neg(value)
 		_this.writer.WriteTypedBigInt(cbeTypeNegInt, value)
 		return
 	}

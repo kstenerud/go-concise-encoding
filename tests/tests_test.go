@@ -26,6 +26,11 @@ import (
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 )
 
+func TestNew(t *testing.T) {
+	// test_runner.RunTests(t, "version.cte")
+	test_runner.RunTests(t, "cbe-basic.cte")
+}
+
 func TestTemplates(t *testing.T) {
 
 	// Make sure the general test template is valid

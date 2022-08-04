@@ -81,6 +81,7 @@ func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error)
 		panic(fmt.Errorf("unexpected error opening test suite file %v: %w", testDescriptorFile, err))
 	}
 
+	// debug.DebugOptions.PassThroughPanics = true
 	loadedTest, err := ce.UnmarshalCTE(file, suite, nil)
 	if err != nil {
 		panic(fmt.Errorf("malformed unit test: Unexpected CTE decode error in test suite file %v: %w", testDescriptorFile, err))
@@ -249,6 +250,7 @@ func (_this *BaseTest) wrapError(err error, format string, args ...interface{}) 
 type MustSucceedTest struct {
 	BaseTest
 	NoCteOutput bool
+	NoCbeOutput bool
 	Debug       bool
 	Events      []string
 	events      test.Events
@@ -305,6 +307,9 @@ func (_this *MustSucceedTest) Run() error {
 	hasEvents := len(_this.events) > 0
 
 	if hasCte {
+		if _this.Debug {
+			fmt.Printf("%v: Convert CTE to events: [%v]", _this.context, _this.Cte)
+		}
 		events, err := cteToEvents(_this.Cte)
 		if err != nil {
 			return _this.wrapError(err, "decoding CTE [%v]", _this.Cte)
@@ -316,6 +321,9 @@ func (_this *MustSucceedTest) Run() error {
 			}
 		}
 		if !_this.NoCteOutput {
+			if _this.Debug {
+				fmt.Printf("%v: Convert events to CTE: [%v]", _this.context, events)
+			}
 			document, err := eventsToCte(events)
 			if err != nil {
 				return _this.wrapError(err, "Encoding events [%v] to CTE", events)
@@ -325,19 +333,12 @@ func (_this *MustSucceedTest) Run() error {
 					_this.Cte, document)
 			}
 		}
-		if hasCbe {
-			document, err := eventsToCbe(events)
-			if err != nil {
-				return _this.wrapError(err, "Encoding events [%v] to CBE", events)
-			}
-			if !bytes.Equal(_this.Cbe, document) {
-				return _this.errorf("expected CTE [%v] to encode to CBE [%v] but got [%v]",
-					_this.Cte, asHex(_this.Cbe), asHex(document))
-			}
-		}
 	}
 
 	if hasCbe {
+		if _this.Debug {
+			fmt.Printf("%v: Convert CBE to events: [%v]", _this.context, _this.Cbe)
+		}
 		events, err := cbeToEvents(_this.Cbe)
 		if err != nil {
 			return _this.wrapError(err, "decoding CBE [%v]", asHex(_this.Cbe))
@@ -348,22 +349,17 @@ func (_this *MustSucceedTest) Run() error {
 					_this.Cbe, _this.events, events)
 			}
 		}
-		document, err := eventsToCbe(events)
-		if err != nil {
-			return _this.wrapError(err, "Encoding events [%v] to CBE", events)
-		}
-		if !bytes.Equal(_this.Cbe, document) {
-			return _this.errorf("re-encoding CBE [%v] produced unexpected CBE [%v]",
-				asHex(_this.Cbe), asHex(document))
-		}
-		if hasCte && !_this.NoCteOutput {
-			document, err := eventsToCte(events)
-			if err != nil {
-				return _this.wrapError(err, "Encoding events [%v] to CTE", events)
+		if !_this.NoCbeOutput {
+			if _this.Debug {
+				fmt.Printf("%v: Convert events to CBE: [%v]", _this.context, events)
 			}
-			if _this.Cte != document {
-				return _this.errorf("expected CBE [%v] to encode to CTE [%v] but got [%v]",
-					asHex(_this.Cbe), _this.Cte, document)
+			document, err := eventsToCbe(events)
+			if err != nil {
+				return _this.wrapError(err, "Encoding events [%v] to CBE", events)
+			}
+			if !bytes.Equal(_this.Cbe, document) {
+				return _this.errorf("re-encoding CBE [%v] produced unexpected CBE [%v]",
+					asHex(_this.Cbe), asHex(document))
 			}
 		}
 	}
