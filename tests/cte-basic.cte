@@ -1,62 +1,24 @@
 c0
-// ====================
-// CTE basic test cases
-// ====================
 {
-    "options" = {
-        "failFast" = false  // If true, halt tests on first error
-    }
-
-    // ========================================================================
-    // ========================================================================
-
-    "cteTests" = [
-        {
-            "name" = "Version specifier"
-
-            // TODO: Version 0 becomes invalid after v1 is released
-            "encodeDecode" = [{"document"="c0\n1" "events"=["v 0" "n 1"]}]
-            "decode" =       [{"document"="c1\n1" "events"=["v 0" "n 1"]}]
-
-            "decodeEncode" = [
-                {"document"="c0 1"           "events"=["v 0" "n 1"]}
-                {"document"="C0 1"           "events"=["v 0" "n 1"]}
-                {"document"="c0\n1"          "events"=["v 0" "n 1"]}
-                {"document"="C0\n1"          "events"=["v 0" "n 1"]}
-                {"document"="c0\t1"          "events"=["v 0" "n 1"]}
-                {"document"="C0\t1"          "events"=["v 0" "n 1"]}
-                {"document"="c0\r\n1"        "events"=["v 0" "n 1"]}
-                {"document"="C0\r\n1"        "events"=["v 0" "n 1"]}
-                {"document"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
-                {"document"="\r\n\t  C0 1"   "events"=["v 0" "n 1"]}
-                {"document"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
-                {"document"="C0 \r\n\t   1"  "events"=["v 0" "n 1"]}
-            ]
-            "decodeFail" = [
-                "c0{}"  // Missing whitespace
-                "c2 1"  // Future version number
-                // "c0 1"  // V0 not valid after v1 released
-                "c-1 1" // Bad version number
-                "ca 1"  // Bad version number
-                "d0 1"  // Bad first char
-            ]
-        }
+	"type" = {
+		"identifier" = "ce test"
+		"version" = 1
+	}
+	"ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
         {
             "name" = "Null"
-            "encodeDecode" = [
-                {"events"=["v 0" "null"]  "document"="c0\nnull"}
+            "mustSucceed" = [
+                {"cte"="null"  "events"=["null"]}
+                {"nocteoutput"=true  "cte"="Null"  "events"=["null"]}
+                {"nocteoutput"=true  "cte"="NULL"  "events"=["null"]}
             ]
-            "decodeEncode" = [
-                {"document"="c0 null"  "events"=["v 0" "null"]}
-                {"document"="c0 Null"  "events"=["v 0" "null"]}
-                {"document"="c0 null"  "events"=["v 0" "null"]}
-            ]
-            "decodeFail" = [
-                "c0 nulled"
-                "c0 -null"
+            "mustFail" = [
+                {"cte"="nulled"}
+                {"cte"="-null"}
             ]
         }
 
@@ -64,25 +26,21 @@ c0
 
         {
             "name" = "Boolean"
-            "encodeDecode" = [
-                {"events"=["v 0" "b true"]   "document"="c0\ntrue"}
-                {"events"=["v 0" "b false"]  "document"="c0\nfalse"}
+            "mustSucceed" = [
+                {"cte"="true"   "events"=["b true"]}
+                {"cte"="false"  "events"=["b false"]}
+                {"nocteoutput"=true  "cte"="True"   "events"=["b true"]}
+                {"nocteoutput"=true  "cte"="TRUE"   "events"=["b true"]}
+                {"nocteoutput"=true  "cte"="False"  "events"=["b false"]}
+                {"nocteoutput"=true  "cte"="FALSE"  "events"=["b false"]}
             ]
-            "decodeEncode" = [
-                {"document"="c0 true"   "events"=["v 0" "b true"]}
-                {"document"="c0 True"   "events"=["v 0" "b true"]}
-                {"document"="c0 TRUE"   "events"=["v 0" "b true"]}
-                {"document"="c0 false"  "events"=["v 0" "b false"]}
-                {"document"="c0 False"  "events"=["v 0" "b false"]}
-                {"document"="c0 FALSE"  "events"=["v 0" "b false"]}
-            ]
-            "decodeFail" = [
-                "c0 t"
-                "c0 truer"
-                "c0 -true"
-                "c0 f"
-                "c0 falser"
-                "c0 -false"
+            "mustFail" = [
+                {"cte"="t"}
+                {"cte"="truer"}
+                {"cte"="-true"}
+                {"cte"="f"}
+                {"cte"="falser"}
+                {"cte"="-false"}
             ]
         }
 
@@ -90,32 +48,26 @@ c0
 
         {
             "name" = "Decimal Integer"
-            "encodeDecode" = [
-                {"events"=["v 0" "n 0"]            "document"="c0\n0"}
-                {"events"=["v 0" "n -0"]           "document"="c0\n-0"}
-                {"events"=["v 0" "n 1234567890"]   "document"="c0\n1234567890"}
-                {"events"=["v 0" "n -1234567890"]  "document"="c0\n-1234567890"}
-                {"events"=["v 0" "n 10000000000000000000000000000"]   "document"="c0\n10000000000000000000000000000"}
-                {"events"=["v 0" "n -10000000000000000000000000000"]  "document"="c0\n-10000000000000000000000000000"}
+            "mustSucceed" = [
+                {"cte"="0"                               "events"=["n 0"]}
+                {"cte"="-0"                              "events"=["n -0"]}
+                {"cte"="1234567890"                      "events"=["n 1234567890"]}
+                {"cte"="-1234567890"                     "events"=["n -1234567890"]}
+                {"cte"="123"                             "events"=["n 123"]}
+                {"cte"="9412504234235366"                "events"=["n 9412504234235366"]}
+                {"cte"="-49523"                          "events"=["n -49523"]}
+                {"cte"="10000000000000000000000000000"   "events"=["n 10000000000000000000000000000"]}
+                {"cte"="-10000000000000000000000000000"  "events"=["n -10000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="100_00_0_00000000000_00000000_000_0"  "events"=["n 10000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="-4_9_5__2___3"     "events"=["n -49523"]}
             ]
-            "decodeEncode" = [
-                {"document"="c0 0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 123"               "events"=["v 0" "n 123"]}
-                {"document"="c0 9412504234235366"  "events"=["v 0" "n 9412504234235366"]}
-                {"document"="c0 -49523"            "events"=["v 0" "n -49523"]}
-                {"document"="c0 10000000000000000000000000000"        "events"=["v 0" "n 10000000000000000000000000000"]}
-                {"document"="c0 -10000000000000000000000000000"       "events"=["v 0" "n -10000000000000000000000000000"]}
-                {"document"="c0 100_00_0_00000000000_00000000_000_0"  "events"=["v 0" "n 10000000000000000000000000000"]}
-                {"document"="c0 -4_9_5__2___3"     "events"=["v 0" "n -49523"]}
-            ]
-            "decodeFail" = [
-                "c0 1f"  // Non-decimal digit
-                "c0 -1f" // Non-decimal digit
-                "c0 _1"  // Whitespace is not between digits
-                "c0 1_"  // Whitespace is not between digits
-                "c0 -_1" // Whitespace is not between digits
-                "c0 -1_" // Whitespace is not between digits
+            "mustFail" = [
+                {"cte"="1f"}  // Non-decimal digit
+                {"cte"="-1f"} // Non-decimal digit
+                {"cte"="_1"}  // Whitespace is not between digits
+                {"cte"="1_"}  // Whitespace is not between digits
+                {"cte"="-_1"} // Whitespace is not between digits
+                {"cte"="-1_"} // Whitespace is not between digits
             ]
         }
 
@@ -123,42 +75,46 @@ c0
 
         {
             "name" = "Binary Integer"
-            "decodeEncode" = [
-                {"document"="c0 0b0"              "events"=["v 0" "n 0"]}
-                {"document"="c0 -0b0"             "events"=["v 0" "n -0"]}
-                {"document"="c0 0b1"              "events"=["v 0" "n 1"]}
-                {"document"="c0 -0b101"           "events"=["v 0" "n -5"]}
-                {"document"="c0 0b0010100"        "events"=["v 0" "n 20"]}
-                {"document"="c0 -0b1_0_0"         "events"=["v 0" "n -4"]}
-                {"document"="c0 0b0_0_1__010__1"  "events"=["v 0" "n 21"]}
+            "mustSucceed" = [
+                {"nocteoutput"=true  "cte"="0b0"              "events"=["n 0"]}
+                {"nocteoutput"=true  "cte"="-0b0"             "events"=["n -0"]}
+                {"nocteoutput"=true  "cte"="0b1"              "events"=["n 1"]}
+                {"nocteoutput"=true  "cte"="-0b101"           "events"=["n -5"]}
+                {"nocteoutput"=true  "cte"="0b0010100"        "events"=["n 20"]}
+                {"nocteoutput"=true  "cte"="-0b1_0_0"         "events"=["n -4"]}
+                {"nocteoutput"=true  "cte"="0b0_0_1__010__1"  "events"=["n 21"]}
                 {
-                    "document" = "c0 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                    "events" = ["v 0" "n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "nocteoutput"=true
+                    "cte" = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    "events" = ["n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "document" = "c0 -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                    "events" = ["v 0" "n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "nocteoutput"=true
+                    "cte" = "-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    "events" = ["n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "document" = "c0 0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
-                    "events" = ["v 0" "n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "nocteoutput"=true
+                    "cte" = "0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
+                    "events" = ["n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "document" = "c0 -0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
-                    "events" = ["v 0" "n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "nocteoutput"=true
+                    "cte" = "-0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
+                    "events" = ["n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
             ]
-            "decodeFail" = [
-                "c0 0b12"  // Non-binary digit
-                "c0 -0b12" // Non-binary digit
-                "c0 _0b1"  // Bad whitespace placement
-                "c0 -_0b1" // Bad whitespace placement
-                "c0 0_b1"  // Bad whitespace placement
-                "c0 -0_b1" // Bad whitespace placement
-                "c0 0b_1"  // Whitespace is not between digits
-                "c0 0b1_"  // Whitespace is not between digits
-                "c0 -0b_1" // Whitespace is not between digits
-                "c0 -0b1_" // Whitespace is not between digits
+            "mustFail" = [
+                {"cte"="0b12"}  // Non-binary digit
+                {"cte"="-0b12"} // Non-binary digit
+                {"cte"="_0b1"}  // Bad whitespace placement
+                {"cte"="-_0b1"} // Bad whitespace placement
+                {"cte"="0_b1"}  // Bad whitespace placement
+                {"cte"="-0_b1"} // Bad whitespace placement
+                {"cte"="0b_1"}  // Whitespace is not between digits
+                {"cte"="0b1_"}  // Whitespace is not between digits
+                {"cte"="-0b_1"} // Whitespace is not between digits
+                {"cte"="-0b1_"} // Whitespace is not between digits
             ]
         }
 
@@ -166,33 +122,33 @@ c0
 
         {
             "name" = "Octal Integer"
-            "decodeEncode" = [
-                {"document"="c0 0o0"         "events"=["v 0" "n 0"]}
-                {"document"="c0 -0o0"        "events"=["v 0" "n -0"]}
-                {"document"="c0 0o1"         "events"=["v 0" "n 1"]}
-                {"document"="c0 0o7"         "events"=["v 0" "n 7"]}
-                {"document"="c0 -0o51"       "events"=["v 0" "n -0o51"]}
-                {"document"="c0 0o644"       "events"=["v 0" "n 0o644"]}
-                {"document"="c0 -0o777"      "events"=["v 0" "n -0o777"]}
-                {"document"="c0 0o1000000000000000000000000000000000000000000000"
-                 "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
-                {"document"="c0 -0o1000000000000000000000000000000000000000000000"
-                 "events"=["v 0" "n -0o1000000000000000000000000000000000000000000000"]}
-                {"document"="c0 0o1000000_0000000000_00000000000_000000000000_000000"
-                 "events"=["v 0" "n 0o1000000000000000000000000000000000000000000000"]}
-                {"document"="c0 0o7__7___7"  "events"=["v 0" "n 0o777"]}
+            "mustSucceed" = [
+                {"nocteoutput"=true  "cte"="0o0"         "events"=["n 0"]}
+                {"nocteoutput"=true  "cte"="-0o0"        "events"=["n -0"]}
+                {"nocteoutput"=true  "cte"="0o1"         "events"=["n 1"]}
+                {"nocteoutput"=true  "cte"="0o7"         "events"=["n 7"]}
+                {"nocteoutput"=true  "cte"="-0o51"       "events"=["n -0o51"]}
+                {"nocteoutput"=true  "cte"="0o644"       "events"=["n 0o644"]}
+                {"nocteoutput"=true  "cte"="-0o777"      "events"=["n -0o777"]}
+                {"nocteoutput"=true  "cte"="0o1000000000000000000000000000000000000000000000"
+                 "events"=["n 0o1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="-0o1000000000000000000000000000000000000000000000"
+                 "events"=["n -0o1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="0o1000000_0000000000_00000000000_000000000000_000000"
+                 "events"=["n 0o1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="0o7__7___7"  "events"=["n 0o777"]}
             ]
-            "decodeFail" = [
-                "c0 0o19"  // Non-octal digit
-                "c0 -0o19" // Non-octal digit
-                "c0 _0o1"  // Bad whitespace placement
-                "c0 -_0o1" // Bad whitespace placement
-                "c0 0_o1"  // Bad whitespace placement
-                "c0 -0_o1" // Bad whitespace placement
-                "c0 0o_1"  // Whitespace is not between digits
-                "c0 0o1_"  // Whitespace is not between digits
-                "c0 -0o_1" // Whitespace is not between digits
-                "c0 -0o1_" // Whitespace is not between digits
+            "mustFail" = [
+                {"cte"="0o19"}  // Non-octal digit
+                {"cte"="-0o19"} // Non-octal digit
+                {"cte"="_0o1"}  // Bad whitespace placement
+                {"cte"="-_0o1"} // Bad whitespace placement
+                {"cte"="0_o1"}  // Bad whitespace placement
+                {"cte"="-0_o1"} // Bad whitespace placement
+                {"cte"="0o_1"}  // Whitespace is not between digits
+                {"cte"="0o1_"}  // Whitespace is not between digits
+                {"cte"="-0o_1"} // Whitespace is not between digits
+                {"cte"="-0o1_"} // Whitespace is not between digits
             ]
         }
 
@@ -200,33 +156,33 @@ c0
 
         {
             "name" = "Hexadecimal Integer"
-            "decodeEncode" = [
-                {"document"="c0 0x0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0x1"                  "events"=["v 0" "n 1"]}
-                {"document"="c0 0xf"                  "events"=["v 0" "n 15"]}
-                {"document"="c0 -0xd4"                "events"=["v 0" "n -0xd4"]}
-                {"document"="c0 0xfedcba9876543210"   "events"=["v 0" "n 0xfedcba9876543210"]}
-                {"document"="c0 -0xFEDCBA9876543210"  "events"=["v 0" "n -0xfedcba9876543210"]}
-                {"document"="c0 0x1000000000000000000000000000000000000000000000"
-                 "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
-                {"document"="c0 -0x1000000000000000000000000000000000000000000000"
-                 "events"=["v 0" "n -0x1000000000000000000000000000000000000000000000"]}
-                {"document"="c0 0x100000000_000000_00000_000__000_0000000000000_0000000"
-                 "events"=["v 0" "n 0x1000000000000000000000000000000000000000000000"]}
-                {"document"="c0 0x8_8__5_a_f__d"  "events"=["v 0" "n 0x885afd"]}
+            "mustSucceed" = [
+                {"nocteoutput"=true  "cte"="0x0"                  "events"=["n 0"]}
+                {"nocteoutput"=true  "cte"="-0x0"                 "events"=["n -0"]}
+                {"nocteoutput"=true  "cte"="0x1"                  "events"=["n 1"]}
+                {"nocteoutput"=true  "cte"="0xf"                  "events"=["n 15"]}
+                {"nocteoutput"=true  "cte"="-0xd4"                "events"=["n -0xd4"]}
+                {"nocteoutput"=true  "cte"="0xfedcba9876543210"   "events"=["n 0xfedcba9876543210"]}
+                {"nocteoutput"=true  "cte"="-0xFEDCBA9876543210"  "events"=["n -0xfedcba9876543210"]}
+                {"nocteoutput"=true  "cte"="0x1000000000000000000000000000000000000000000000"
+                 "events"=["n 0x1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="-0x1000000000000000000000000000000000000000000000"
+                 "events"=["n -0x1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="0x100000000_000000_00000_000__000_0000000000000_0000000"
+                 "events"=["n 0x1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="0x8_8__5_a_f__d"  "events"=["n 0x885afd"]}
             ]
-            "decodeFail" = [
-                "c0 0x1g"  // Non-hex digit
-                "c0 -0x1g" // Non-hex digit
-                "c0 _0x1"  // Bad whitespace placement
-                "c0 -_0x1" // Bad whitespace placement
-                "c0 0_x1"  // Bad whitespace placement
-                "c0 -0_x1" // Bad whitespace placement
-                "c0 0x_1"  // Whitespace is not between digits
-                "c0 0x1_"  // Whitespace is not between digits
-                "c0 -0x_1" // Whitespace is not between digits
-                "c0 -0x1_" // Whitespace is not between digits
+            "mustFail" = [
+                {"cte"="0x1g"}  // Non-hex digit
+                {"cte"="-0x1g"} // Non-hex digit
+                {"cte"="_0x1"}  // Bad whitespace placement
+                {"cte"="-_0x1"} // Bad whitespace placement
+                {"cte"="0_x1"}  // Bad whitespace placement
+                {"cte"="-0_x1"} // Bad whitespace placement
+                {"cte"="0x_1"}  // Whitespace is not between digits
+                {"cte"="0x1_"}  // Whitespace is not between digits
+                {"cte"="-0x_1"} // Whitespace is not between digits
+                {"cte"="-0x1_"} // Whitespace is not between digits
             ]
         }
 
@@ -234,78 +190,85 @@ c0
 
         {
             "name" = "Decimal Float"
-            "encodeDecode" = [
-                {"events"=["v 0" "n 0"]             "document"="c0\n0"}
-                {"events"=["v 0" "n -0"]            "document"="c0\n-0"}
-                {"events"=["v 0" "n 123456"]        "document"="c0\n123456"}
-                {"events"=["v 0" "n -123456"]       "document"="c0\n-123456"}
-                {"events"=["v 0" "n 1.23456"]       "document"="c0\n1.23456"}
-                {"events"=["v 0" "n -1.23456"]      "document"="c0\n-1.23456"}
-                {"events"=["v 0" "n 1.23456e+50"]   "document"="c0\n1.23456e+50"}
-                {"events"=["v 0" "n -1.23456e+50"]  "document"="c0\n-1.23456e+50"}
-                {"events"=["v 0" "n 1.23456e-50"]   "document"="c0\n1.23456e-50"}
-                {"events"=["v 0" "n -1.23456e-50"]  "document"="c0\n-1.23456e-50"}
+            "mustSucceed" = [
+                {"nocteoutput"=true  "cte"="0.0"   "events"=["n 0"]}
+                {"nocteoutput"=true  "cte"="-0.0"  "events"=["n -0"]}
+                {"cte"="1.1"           "events"=["n 1.1"]}
+                {"cte"="0.1"           "events"=["n 0.1"]}
+                {"cte"="4.7234634"     "events"=["n 4.7234634"]}
+                {"cte"="1.23456"       "events"=["n 1.23456"]}
+                {"cte"="-1.23456"      "events"=["n -1.23456"]}
+                {"cte"="1.23456e+50"   "events"=["n 1.23456e+50"]}
+                {"cte"="-1.23456e+50"  "events"=["n -1.23456e+50"]}
+                {"cte"="1.23456e-50"   "events"=["n 1.23456e-50"]}
+                {"cte"="-1.23456e-50"  "events"=["n -1.23456e-50"]}
+
+                {"cte"="-9.6534634727167134523472782456223624582452671345134745694657786776"
+                 "events"=["n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
+
+                {"cte"="inf"                  "events"=["n inf"]}
+                {"cte"="-inf"                 "events"=["n -inf"]}
+                {"cte"="nan"                  "events"=["n nan"]}
+                {"cte"="snan"                 "events"=["n snan"]}
+
+                {"cte"="1.53476e80"           "events"=["n 1.53476e80"]  "nocteoutput"=true}
+                {"cte"="1.53476e93983456"     "events"=["n 1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476e+93983456"    "events"=["n 1.53476e93983456"]}
+                {"cte"="1.53476e-93983456"    "events"=["n 1.53476e-93983456"]}
+                {"cte"="1.53476E93983456"     "events"=["n 1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476E+93983456"    "events"=["n 1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476E-93983456"    "events"=["n 1.53476e-93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476e93983456"    "events"=["n -1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476e+93983456"   "events"=["n -1.53476e93983456"]}
+                {"cte"="-1.53476e-93983456"   "events"=["n -1.53476e-93983456"]}
+                {"cte"="-1.53476E93983456"    "events"=["n -1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476E+93983456"   "events"=["n -1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476E-93983456"   "events"=["n -1.53476e-93983456"]  "nocteoutput"=true}
+
+                {"cte"="1e80"                 "events"=["n 1e80"]  "nocteoutput"=true}
+                {"cte"="1E80"                 "events"=["n 1E80"]  "nocteoutput"=true}
+                {"cte"="-1e80"                "events"=["n -1e80"]  "nocteoutput"=true}
+                {"cte"="-1E80"                "events"=["n -1E80"]  "nocteoutput"=true}
+                {"cte"="1e+80"                "events"=["n 1e80"]}
+                {"cte"="1E+80"                "events"=["n 1E80"]  "nocteoutput"=true}
+                {"cte"="-1e+80"               "events"=["n -1e80"]}
+                {"cte"="-1E+80"               "events"=["n -1E80"]  "nocteoutput"=true}
+                {"cte"="1e-80"                "events"=["n 1e-80"]}
+                {"cte"="1E-80"                "events"=["n 1E-80"]  "nocteoutput"=true}
+                {"cte"="-1e-80"               "events"=["n -1e-80"]}
+                {"cte"="-1E-80"               "events"=["n -1E-80"]  "nocteoutput"=true}
+
+                {
+                    "nocteoutput"=true
+                    "cte"="0.1500000000000000000000000000000000000000000000000001e+10000"
+                    "events"=["n 0.1500000000000000000000000000000000000000000000000001e+10000"]
+                }
+                {
+                    "nocteoutput"=true
+                    "cte"="0.1500000000000000000000000000000000000000000000000001e-10000"
+                    "events"=["n 0.1500000000000000000000000000000000000000000000000001e-10000"]
+                }
+                {
+                    "nocteoutput"=true
+                    "cte"="-0.1500000000000000000000000000000000000000000000000001e+10000"
+                    "events"=["n -0.1500000000000000000000000000000000000000000000000001e+10000"]
+                }
+                {
+                    "nocteoutput"=true
+                    "cte"="-0.1500000000000000000000000000000000000000000000000001e-10000"
+                    "events"=["n -0.1500000000000000000000000000000000000000000000000001e-10000"]
+                }
             ]
-            "decodeEncode" = [
-                {"document"="c0 0.0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0.0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 1.1"                  "events"=["v 0" "n 1.1"]}
-                {"document"="c0 0.1"                  "events"=["v 0" "n 0.1"]}
-                {"document"="c0 4.7234634"            "events"=["v 0" "n 4.7234634"]}
-                {"document"="c0 -9.6534634727167134523472782456223624582452671345134745694657786776"
-                 "events"=["v 0" "n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
-
-                {"document"="c0 inf"                  "events"=["v 0" "n inf"]}
-                {"document"="c0 -inf"                 "events"=["v 0" "n -inf"]}
-                {"document"="c0 nan"                  "events"=["v 0" "n nan"]}
-                {"document"="c0 snan"                 "events"=["v 0" "n snan"]}
-
-                {"document"="c0 1.53476e80"           "events"=["v 0" "n 1.53476e80"]}
-                {"document"="c0 1.53476e93983456"     "events"=["v 0" "n 1.53476e93983456"]}
-                {"document"="c0 1.53476e+93983456"    "events"=["v 0" "n 1.53476e93983456"]}
-                {"document"="c0 1.53476e-93983456"    "events"=["v 0" "n 1.53476e-93983456"]}
-                {"document"="c0 1.53476E93983456"     "events"=["v 0" "n 1.53476e93983456"]}
-                {"document"="c0 1.53476E+93983456"    "events"=["v 0" "n 1.53476e93983456"]}
-                {"document"="c0 1.53476E-93983456"    "events"=["v 0" "n 1.53476e-93983456"]}
-                {"document"="c0 -1.53476e93983456"    "events"=["v 0" "n -1.53476e93983456"]}
-                {"document"="c0 -1.53476e+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
-                {"document"="c0 -1.53476e-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
-                {"document"="c0 -1.53476E93983456"    "events"=["v 0" "n -1.53476e93983456"]}
-                {"document"="c0 -1.53476E+93983456"   "events"=["v 0" "n -1.53476e93983456"]}
-                {"document"="c0 -1.53476E-93983456"   "events"=["v 0" "n -1.53476e-93983456"]}
-
-                {"document"="c0 1e80"                 "events"=["v 0" "n 1e80"]}
-                {"document"="c0 1E80"                 "events"=["v 0" "n 1E80"]}
-                {"document"="c0 -1e80"                "events"=["v 0" "n -1e80"]}
-                {"document"="c0 -1E80"                "events"=["v 0" "n -1E80"]}
-                {"document"="c0 1e+80"                "events"=["v 0" "n 1e80"]}
-                {"document"="c0 1E+80"                "events"=["v 0" "n 1E80"]}
-                {"document"="c0 -1e+80"               "events"=["v 0" "n -1e80"]}
-                {"document"="c0 -1E+80"               "events"=["v 0" "n -1E80"]}
-                {"document"="c0 1e-80"                "events"=["v 0" "n 1e-80"]}
-                {"document"="c0 1E-80"                "events"=["v 0" "n 1E-80"]}
-                {"document"="c0 -1e-80"               "events"=["v 0" "n -1e-80"]}
-                {"document"="c0 -1E-80"               "events"=["v 0" "n -1E-80"]}
-
-                {"document"="c0 0.1500000000000000000000000000000000000000000000000001e+10000"
-                  "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e+10000"]}
-                {"document"="c0 0.1500000000000000000000000000000000000000000000000001e-10000"
-                  "events"=["v 0" "n 0.1500000000000000000000000000000000000000000000000001e-10000"]}
-                {"document"="c0 -0.1500000000000000000000000000000000000000000000000001e+10000"
-                 "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e+10000"]}
-                {"document"="c0 -0.1500000000000000000000000000000000000000000000000001e-10000"
-                 "events"=["v 0" "n -0.1500000000000000000000000000000000000000000000000001e-10000"]}
-            ]
-            "decodeFail" = [
-                "c0 1."      // Missing right digit
-                "c0 .1"      // Missing left digit
-                "c0 _1.1"    // Bad whitespace placement
-                "c0 1_.1"    // Bad whitespace placement
-                "c0 1._1"    // Bad whitespace placement
-                "c0 1.1_"    // Bad whitespace placement
-                "c0 1.1.1"   // Too many radices
-                "c0 1.1e1e2" // Too many exponent markers
-                "c0 1.a"     // Not a digit
+            "mustFail" = [
+                {"cte"="1."}      // Missing right digit
+                {"cte"=".1"}      // Missing left digit
+                {"cte"="_1.1"}    // Bad whitespace placement
+                {"cte"="1_.1"}    // Bad whitespace placement
+                {"cte"="1._1"}    // Bad whitespace placement
+                {"cte"="1.1_"}    // Bad whitespace placement
+                {"cte"="1.1.1"}   // Too many radices
+                {"cte"="1.1e1e2"} // Too many exponent markers
+                {"cte"="1.a"}     // Not a digit
             ]
         }
 
@@ -313,92 +276,88 @@ c0
 
         {
             "name" = "Hexadecimal Float"
-            "decode" = [
-                {"events"=["v 0" "n 0x0"]      "document"="c0\n0x0p+00"}
-                {"events"=["v 0" "n -0x0"]     "document"="c0\n-0x0p+00"}
-            ]
-            "encodeDecode" = [
-                {"events"=["v 0" "n 0x1.f39"]  "document"="c0\n0x1.f39p+00"}
-            ]
-            "decodeEncode" = [
-                {"document"="c0 0x0.0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0.0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0x0.1"                  "events"=["v 0" "n 0x0.1p0"]}
-                {"document"="c0 0x4.7f3cc34"            "events"=["v 0" "n 0x4.7f3cc34p0"]}
-                {"document"="c0\n-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
-                 "events"=["v 0" "n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
+            "mustSucceed" = [
+                {"cte"="0x0p+00"   "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0p+00"  "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0x1.f39p+00"  "events"=["n 0x1.f39"]}
+                {"cte"="0x0.0"                  "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0.0"                 "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0x0.1"                  "events"=["n 0x0.1"] "nocteoutput"=true}
+                {"cte"="0x4.7f3cc34"            "events"=["n 0x4.7f3cc34"] "nocteoutput"=true}
+                {"cte"="-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
+                 "events"=["n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
 
-                {"document"="c0 0x0.0p0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0.0p0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0x0.0p+0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0.0p+0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 0x0.0p-0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0.0p-0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 0xf.1p10"                 "events"=["v 0" "n 0xf.1p10"]}
-                {"document"="c0 -0xf.1p10"                "events"=["v 0" "n -0xf.1p10"]}
-                {"document"="c0 0xf.1p+10"                "events"=["v 0" "n 0xf.1p10"]}
-                {"document"="c0 -0xf.1p+10"               "events"=["v 0" "n -0xf.1p10"]}
-                {"document"="c0 0xf.1p-10"                "events"=["v 0" "n 0xf.1p-10"]}
-                {"document"="c0 -0xf.1p-10"               "events"=["v 0" "n -0xf.1p-10"]}
+                {"cte"="0x0.0p0"                  "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0.0p0"                 "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0x0.0p+0"                 "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0.0p+0"                "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0x0.0p-0"                 "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0.0p-0"                "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0xf.1p10"                 "events"=["n 0xf.1p10"] "nocteoutput"=true}
+                {"cte"="-0xf.1p10"                "events"=["n -0xf.1p10"] "nocteoutput"=true}
+                {"cte"="0xf.1p+10"                "events"=["n 0xf.1p10"] "nocteoutput"=true}
+                {"cte"="-0xf.1p+10"               "events"=["n -0xf.1p10"] "nocteoutput"=true}
+                {"cte"="0xf.1p-10"                "events"=["n 0xf.1p-10"] "nocteoutput"=true}
+                {"cte"="-0xf.1p-10"               "events"=["n -0xf.1p-10"] "nocteoutput"=true}
 
-                {"document"="c0 0x0p0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0p0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0x0p+0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0p+0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 0x0p-0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0x0p-0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 0xfp10"                 "events"=["v 0" "n 0xfp10"]}
-                {"document"="c0 -0xfp10"                "events"=["v 0" "n -0xfp10"]}
-                {"document"="c0 0xfp+10"                "events"=["v 0" "n 0xfp10"]}
-                {"document"="c0 -0xfp+10"               "events"=["v 0" "n -0xfp10"]}
-                {"document"="c0 0xfp-10"                "events"=["v 0" "n 0xfp-10"]}
-                {"document"="c0 -0xfp-10"               "events"=["v 0" "n -0xfp-10"]}
+                {"cte"="0x0p0"                  "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0p0"                 "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0x0p+0"                 "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0p+0"                "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0x0p-0"                 "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0x0p-0"                "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0xfp10"                 "events"=["n 0xfp10"] "nocteoutput"=true}
+                {"cte"="-0xfp10"                "events"=["n -0xfp10"] "nocteoutput"=true}
+                {"cte"="0xfp+10"                "events"=["n 0xfp10"] "nocteoutput"=true}
+                {"cte"="-0xfp+10"               "events"=["n -0xfp10"] "nocteoutput"=true}
+                {"cte"="0xfp-10"                "events"=["n 0xfp-10"] "nocteoutput"=true}
+                {"cte"="-0xfp-10"               "events"=["n -0xfp-10"] "nocteoutput"=true}
 
-                {"document"="c0 0X0P0"                  "events"=["v 0" "n 0"]}
-                {"document"="c0 -0X0P0"                 "events"=["v 0" "n -0"]}
-                {"document"="c0 0X0P+0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0X0P+0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 0X0P-0"                 "events"=["v 0" "n 0"]}
-                {"document"="c0 -0X0P-0"                "events"=["v 0" "n -0"]}
-                {"document"="c0 0XFP10"                 "events"=["v 0" "n 0xfp10"]}
-                {"document"="c0 -0XFP10"                "events"=["v 0" "n -0xfp10"]}
-                {"document"="c0 0XFP+10"                "events"=["v 0" "n 0xfp10"]}
-                {"document"="c0 -0XFP+10"               "events"=["v 0" "n -0xfp10"]}
-                {"document"="c0 0XFP-10"                "events"=["v 0" "n 0xfp-10"]}
-                {"document"="c0 -0XFP-10"               "events"=["v 0" "n -0xfp-10"]}
+                {"cte"="0X0P0"                  "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0X0P0"                 "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0X0P+0"                 "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0X0P+0"                "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0X0P-0"                 "events"=["n 0"] "nocteoutput"=true}
+                {"cte"="-0X0P-0"                "events"=["n -0"] "nocteoutput"=true}
+                {"cte"="0XFP10"                 "events"=["n 0xfp10"] "nocteoutput"=true}
+                {"cte"="-0XFP10"                "events"=["n -0xfp10"] "nocteoutput"=true}
+                {"cte"="0XFP+10"                "events"=["n 0xfp10"] "nocteoutput"=true}
+                {"cte"="-0XFP+10"               "events"=["n -0xfp10"] "nocteoutput"=true}
+                {"cte"="0XFP-10"                "events"=["n 0xfp-10"] "nocteoutput"=true}
+                {"cte"="-0XFP-10"               "events"=["n -0xfp-10"] "nocteoutput"=true}
 
-                {"document"="c0 0xc.4_45__3p8"            "events"=["v 0" "n 0xc.4453p8"]}
+                {"cte"="0xc.4_45__3p8"            "events"=["n 0xc.4453p8"] "nocteoutput"=true}
 
                 // Coefficient too big for float64
-                {"document"="c0 0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap100"]}
-                {"document"="c0 -0x1.54fffe2ac00592375b427ap100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap100"]}
-                {"document"="c0 0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-100"]}
-                {"document"="c0 -0x1.54fffe2ac00592375b427ap-100" "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-100"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap+100" "events"=["n 0x1.54fffe2ac00592375b427ap100"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap+100" "events"=["n -0x1.54fffe2ac00592375b427ap100"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap-100" "events"=["n 0x1.54fffe2ac00592375b427ap-100"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap-100" "events"=["n -0x1.54fffe2ac00592375b427ap-100"]}
 
                 // Exponent too big for float64
-                {"document"="c0 0x1.8p10000"             "events"=["v 0" "n 0x1.8p10000"]}
-                {"document"="c0 -0x1.8p10000"            "events"=["v 0" "n -0x1.8p10000"]}
-                {"document"="c0 0x1.8p-10000"            "events"=["v 0" "n 0x1.8p-10000"]}
-                {"document"="c0 -0x1.8p-10000"           "events"=["v 0" "n -0x1.8p-10000"]}
+                {"cte"="0x1.8p+10000"             "events"=["n 0x1.8p10000"]}
+                {"cte"="-0x1.8p+10000"            "events"=["n -0x1.8p10000"]}
+                {"cte"="0x1.8p-10000"            "events"=["n 0x1.8p-10000"]}
+                {"cte"="-0x1.8p-10000"           "events"=["n -0x1.8p-10000"]}
 
                 // Everything too big for float64
-                {"document"="c0 0x1.54fffe2ac00592375b427ap10000"    "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap10000"]}
-                {"document"="c0 -0x1.54fffe2ac00592375b427ap10000"   "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap10000"]}
-                {"document"="c0 0x1.54fffe2ac00592375b427ap-10000"   "events"=["v 0" "n 0x1.54fffe2ac00592375b427ap-10000"]}
-                {"document"="c0 -0x1.54fffe2ac00592375b427ap-10000"  "events"=["v 0" "n -0x1.54fffe2ac00592375b427ap-10000"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap+10000"    "events"=["n 0x1.54fffe2ac00592375b427ap10000"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap+10000"   "events"=["n -0x1.54fffe2ac00592375b427ap10000"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap-10000"   "events"=["n 0x1.54fffe2ac00592375b427ap-10000"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap-10000"  "events"=["n -0x1.54fffe2ac00592375b427ap-10000"]}
             ]
-            "decodeFail" = [
-                "c0 0x1."      // Missing right digit
-                "c0 0x.1"      // Missing left digit
-                "c0 _0x1.1"    // Bad whitespace placement
-                "c0 0x1_.1"    // Bad whitespace placement
-                "c0 0x1._1"    // Bad whitespace placement
-                "c0 0x1.1_"    // Bad whitespace placement
-                "c0 0x_1.1"    // Bad whitespace placement
-                "c0 0_x1.1"    // Bad whitespace placement
-                "c0 0x1.1.1"   // Too many radices
-                "c0 0x1.1p1p2" // Too many exponent markers
-                "c0 0x1.l"     // Not a digit
+            "mustFail" = [
+                {"cte"="0x1."}      // Missing right digit
+                {"cte"="0x.1"}      // Missing left digit
+                {"cte"="_0x1.1"}    // Bad whitespace placement
+                {"cte"="0x1_.1"}    // Bad whitespace placement
+                {"cte"="0x1._1"}    // Bad whitespace placement
+                {"cte"="0x1.1_"}    // Bad whitespace placement
+                {"cte"="0x_1.1"}    // Bad whitespace placement
+                {"cte"="0_x1.1"}    // Bad whitespace placement
+                {"cte"="0x1.1.1"}   // Too many radices
+                {"cte"="0x1.1p1p2"} // Too many exponent markers
+                {"cte"="0x1.l"}     // Not a digit
             ]
         }
 
@@ -406,70 +365,124 @@ c0
 
         {
             "name" = "UID"
-            "encodeDecode" = [
-                {"events"=["v 0" "uid 00000000-0000-0000-0000-000000000000"]
-                 "document"="c0\n00000000-0000-0000-0000-000000000000"}
-                {"events"=["v 0" "uid fedbca98-1111-2222-cccc-723b87d4546a"]
-                 "document"="c0\nfedbca98-1111-2222-cccc-723b87d4546a"}
+            "mustSucceed" = [
+                {
+                    "cte"="00000000-0000-0000-0000-000000000000"
+                    "events"=["uid 00000000-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cte"="fedbca98-1111-2222-cccc-723b87d4546a"
+                    "events"=["uid fedbca98-1111-2222-cccc-723b87d4546a"]
+                }
+                {
+                    "cte"="00000000-0000-0000-0000-000000000000"
+                    "events"=["uid 00000000-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="123456af-0000-0000-0000-000000000000"
+                    "events"=["uid 123456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="223456af-0000-0000-0000-000000000000"
+                    "events"=["uid 223456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="323456af-0000-0000-0000-000000000000"
+                    "events"=["uid 323456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="423456af-0000-0000-0000-000000000000"
+                    "events"=["uid 423456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="523456af-0000-0000-0000-000000000000"
+                    "events"=["uid 523456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="623456af-0000-0000-0000-000000000000"
+                    "events"=["uid 623456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="723456af-0000-0000-0000-000000000000"
+                    "events"=["uid 723456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="823456af-0000-0000-0000-000000000000"
+                    "events"=["uid 823456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="923456af-0000-0000-0000-000000000000"
+                    "events"=["uid 923456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="a23456af-0000-0000-0000-000000000000"
+                    "events"=["uid a23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="b23456af-0000-0000-0000-000000000000"
+                    "events"=["uid b23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="c23456af-0000-0000-0000-000000000000"
+                    "events"=["uid c23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="d23456af-0000-0000-0000-000000000000"
+                    "events"=["uid d23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="e23456af-0000-0000-0000-000000000000"
+                    "events"=["uid e23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="f23456af-0000-0000-0000-000000000000"
+                    "events"=["uid f23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "nocteoutput"=true
+                    "cte"="A23456af-0000-0000-0000-000000000000"
+                    "events"=["uid a23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "nocteoutput"=true
+                    "cte"="B23456af-0000-0000-0000-000000000000"
+                    "events"=["uid b23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "nocteoutput"=true
+                    "cte"="C23456af-0000-0000-0000-000000000000"
+                    "events"=["uid c23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "nocteoutput"=true
+                    "cte"="D23456af-0000-0000-0000-000000000000"
+                    "events"=["uid d23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "nocteoutput"=true
+                    "cte"="E23456af-0000-0000-0000-000000000000"
+                    "events"=["uid e23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "nocteoutput"=true
+                    "cte"="F23456af-0000-0000-0000-000000000000"
+                    "events"=["uid f23456af-0000-0000-0000-000000000000"]
+                    }
+                {
+                    "cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"
+                    "events"=["uid fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]
+                    }
             ]
-            "decodeEncode" = [
-                {"document"="c0 00000000-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 00000000-0000-0000-0000-000000000000"]}
-                {"document"="c0 123456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 123456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 223456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 223456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 323456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 323456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 423456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 423456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 523456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 523456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 623456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 623456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 723456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 723456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 823456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 823456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 923456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid 923456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 a23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 b23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 c23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 d23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 e23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 f23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 A23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid a23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 B23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid b23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 C23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid c23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 D23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid d23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 E23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid e23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 F23456af-0000-0000-0000-000000000000"
-                 "events"=["v 0" "uid f23456af-0000-0000-0000-000000000000"]}
-                {"document"="c0 fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"
-                 "events"=["v 0" "uid fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]}
-            ]
-            "decodeFail" = [
-                "fbdcba98-7654-3210-aaaa-bbbbbbbbbbb"    // Too short
-                "fbdcba98-7654-3210-aaaa-bbbbbbbbbbbbb"  // Too long
-                "fbdcba987654-3210-aaaa-bbbbbbbbbbbb"    // Malformed
-                "fbdcba98-76543210-aaaa-bbbbbbbbbbbb"    // Malformed
-                "fbdcba98-7654-3210aaaa-bbbbbbbbbbbb"    // Malformed
-                "fbdcba98-7654-3210-aaaabbbbbbbbbbbb"    // Malformed
-                "fbdcba9876543210aaaabbbbbbbbbbbb"       // Malformed
-                "fbdcba98-7654-3210-aaaa-bbbbbbbbgbbb"   // Bad chars
-                "-fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"  // Negative UID is not a thing
+            "mustFail" = [
+                {"cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbbbb"}    // Too short
+                {"cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbbbbbb"}  // Too long
+                {"cte"="fbdcba987654-3210-aaaa-bbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba98-76543210-aaaa-bbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba98-7654-3210aaaa-bbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba98-7654-3210-aaaabbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba9876543210aaaabbbbbbbbbbbb"}       // Malformed
+                {"cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbgbbb"}   // Bad chars
+                {"cte"="-fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"}  // Negative UID is not a thing
             ]
         }
 
@@ -477,32 +490,30 @@ c0
 
         {
             "name" = "Date"
-            "encodeDecode" = [
-                {"events"=["v 0" "t 2050-11-15"]   "document"="c0\n2050-11-15"}
-                {"events"=["v 0" "t -9000-01-01"]  "document"="c0\n-9000-01-01"}
+            "mustSucceed" = [
+                {"cte"="2050-11-15"      "events"=["t 2050-11-15"]}
+                {"cte"="-9000-01-01"     "events"=["t -9000-01-01"]}
+                {"cte"="2000-01-01"      "events"=["t 2000-01-01"]}
+                {"cte"="-2000-01-01"     "events"=["t -2000-01-01"]}
+                {"cte"="2000-1-1"        "events"=["t 2000-01-01"] "nocteoutput"=true}
+                {"cte"="9412351-12-31"   "events"=["t 9412351-12-31"]}
+                {"cte"="-9412351-12-31"  "events"=["t -9412351-12-31"]}
+                {"cte"="1-01-01"         "events"=["t 1-01-01"]}
+                {"cte"="-1-01-01"        "events"=["t -1-01-01"]}
             ]
-            "decodeEncode" = [
-                {"document"="c0 2000-01-01"      "events"=["v 0" "t 2000-01-01"]}
-                {"document"="c0 -2000-01-01"     "events"=["v 0" "t -2000-01-01"]}
-                {"document"="c0 2000-1-1"        "events"=["v 0" "t 2000-01-01"]}
-                {"document"="c0 9412351-12-31"   "events"=["v 0" "t 9412351-12-31"]}
-                {"document"="c0 -9412351-12-31"  "events"=["v 0" "t -9412351-12-31"]}
-                {"document"="c0 1-01-01"         "events"=["v 0" "t 1-01-01"]}
-                {"document"="c0 -1-01-01"        "events"=["v 0" "t -1-01-01"]}
-            ]
-            "decodeFail" = [
-                "c0 0-01-01"     // Year 0 is invalid
-                "c0 -0-01-01"    // Year -0 is invalid
-                "c0 2000-0-01"   // Month 0 is invalid
-                "c0 2000-13-01"  // Month 13 is invalid
-                "c0 2000-01-0"   // Day 0 is invalid
-                "c0 2000-01-32"  // Day 32 is invalid
-                "c0 2000-001-01" // Too many digits
-                "c0 2000-01-001" // Too many digits
-                "c0 2000-01-0a"  // Bad digits
-                "c0 2000-0b-01"  // Bad digits
-                "c0 2000-01-"    // Incomplete
-                "c0 2000-01"     // Incomplete
+            "mustFail" = [
+                {"cte"="0-01-01"}     // Year 0 is invalid
+                {"cte"="-0-01-01"}    // Year -0 is invalid
+                {"cte"="2000-0-01"}   // Month 0 is invalid
+                {"cte"="2000-13-01"}  // Month 13 is invalid
+                {"cte"="2000-01-0"}   // Day 0 is invalid
+                {"cte"="2000-01-32"}  // Day 32 is invalid
+                {"cte"="2000-001-01"} // Too many digits
+                {"cte"="2000-01-001"} // Too many digits
+                {"cte"="2000-01-0a"}  // Bad digits
+                {"cte"="2000-0b-01"}  // Bad digits
+                {"cte"="2000-01-"}    // Incomplete
+                {"cte"="2000-01"}     // Incomplete
             ]
         }
 
@@ -510,97 +521,91 @@ c0
 
         {
             "name" = "Time"
-            "encodeDecode" = [
-                {"events"=["v 0" "t 00:00:00"]                          "document"="c0\n00:00:00"}
-                {"events"=["v 0" "t 14:21:09.583454111/Europe/Berlin"]  "document"="c0\n14:21:09.583454111/Europe/Berlin"}
-                {"events"=["v 0" "t 23:59:60.999999999/-21.04/86.99"]   "document"="c0\n23:59:60.999999999/-21.04/86.99"}
-                {"events"=["v 0" "t 22:01:15.9015-1300"]                "document"="c0\n22:01:15.9015-1300"}
-                {"events"=["v 0" "t 22:01:15.9015+1001"]                "document"="c0\n22:01:15.9015+1001"}
-            ]
-            "decodeEncode" = [
-                {"document"="c0 0:00:00"                          "events"=["v 0" "t 0:00:00"]}
-                {"document"="c0 00:00:00"                         "events"=["v 0" "t 0:00:00"]}
-                {"document"="c0 1:45:00"                          "events"=["v 0" "t 1:45:00"]}
-                {"document"="c0 01:45:00"                         "events"=["v 0" "t 1:45:00"]}
-                {"document"="c0 23:59:59"                         "events"=["v 0" "t 23:59:59"]}
-                {"document"="c0 23:59:60"                         "events"=["v 0" "t 23:59:60"]}
+            "mustSucceed" = [
+                {"cte"="00:00:00"                          "events"=["t 00:00:00"]}
+                {"cte"="14:21:09.583454111/Europe/Berlin"  "events"=["t 14:21:09.583454111/Europe/Berlin"]}
+                {"cte"="23:59:60.999999999/-21.04/86.99"   "events"=["t 23:59:60.999999999/-21.04/86.99"]}
+                {"cte"="22:01:15.9015-1300"                "events"=["t 22:01:15.9015-1300"]}
+                {"cte"="22:01:15.9015+1001"                "events"=["t 22:01:15.9015+1001"]}
 
-                {"document"="c0 0:00:00.000000000"                "events"=["v 0" "t 0:00:00"]}
-                {"document"="c0 0:00:00.000000001"                "events"=["v 0" "t 0:00:00.000000001"]}
-                {"document"="c0 0:00:00.00000001"                 "events"=["v 0" "t 0:00:00.00000001"]}
-                {"document"="c0 0:00:00.0000001"                  "events"=["v 0" "t 0:00:00.0000001"]}
-                {"document"="c0 0:00:00.000001"                   "events"=["v 0" "t 0:00:00.000001"]}
-                {"document"="c0 0:00:00.00001"                    "events"=["v 0" "t 0:00:00.00001"]}
-                {"document"="c0 0:00:00.0001"                     "events"=["v 0" "t 0:00:00.0001"]}
-                {"document"="c0 0:00:00.001"                      "events"=["v 0" "t 0:00:00.001"]}
-                {"document"="c0 0:00:00.01"                       "events"=["v 0" "t 0:00:00.01"]}
-                {"document"="c0 0:00:00.1"                        "events"=["v 0" "t 0:00:00.1"]}
-                {"document"="c0 0:00:00.100000000"                "events"=["v 0" "t 0:00:00.1"]}
-                {"document"="c0 23:59:60.000000000"               "events"=["v 0" "t 23:59:60"]}
-                {"document"="c0 23:59:60.999999999"               "events"=["v 0" "t 23:59:60.999999999"]}
+                {"cte"="0:00:00"                          "events"=["t 0:00:00"]  "nocteoutput"=true}
+                {"cte"="00:00:00"                         "events"=["t 0:00:00"]}
+                {"cte"="1:45:00"                          "events"=["t 1:45:00"]  "nocteoutput"=true}
+                {"cte"="01:45:00"                         "events"=["t 1:45:00"]}
+                {"cte"="23:59:59"                         "events"=["t 23:59:59"]}
+                {"cte"="23:59:60"                         "events"=["t 23:59:60"]}
 
-                {"document"="c0 23:59:59.101"                     "events"=["v 0" "t 23:59:59.101"]}
+                {"cte"="00:00:00.000000000"               "events"=["t 0:00:00"]  "nocteoutput"=true}
+                {"cte"="00:00:00.000000001"               "events"=["t 0:00:00.000000001"]}
+                {"cte"="00:00:00.00000001"                "events"=["t 0:00:00.00000001"]}
+                {"cte"="00:00:00.0000001"                 "events"=["t 0:00:00.0000001"]}
+                {"cte"="00:00:00.000001"                  "events"=["t 0:00:00.000001"]}
+                {"cte"="00:00:00.00001"                   "events"=["t 0:00:00.00001"]}
+                {"cte"="00:00:00.0001"                    "events"=["t 0:00:00.0001"]}
+                {"cte"="00:00:00.001"                     "events"=["t 0:00:00.001"]}
+                {"cte"="00:00:00.01"                      "events"=["t 0:00:00.01"]}
+                {"cte"="00:00:00.1"                       "events"=["t 0:00:00.1"]}
+                {"cte"="00:00:00.100000000"               "events"=["t 0:00:00.1"] "nocteoutput"=true}
+                {"cte"="23:59:60.000000000"               "events"=["t 23:59:60"] "nocteoutput"=true}
+                {"cte"="23:59:60.999999999"               "events"=["t 23:59:60.999999999"]}
 
-                {"document"="c0 10:00:01.93/America/Los_Angeles"  "events"=["v 0" "t 10:00:01.93/America/Los_Angeles"]}
+                {"cte"="23:59:59.101"                     "events"=["t 23:59:59.101"]}
+
+                {"cte"="10:00:01.93/America/Los_Angeles"  "events"=["t 10:00:01.93/America/Los_Angeles"]}
                 {
-                    "document" = "c0 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
-                    "events" = ["v 0" "t 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
+                    "cte" = "20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
+                    "events" = ["t 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
                 }
 
-                {"document"="c0 10:00:01.93/89.92/1.10"           "events"=["v 0" "t 10:00:01.93/89.92/1.10"]}
-                {"document"="c0 10:00:01.93/0/0"                  "events"=["v 0" "t 10:00:01.93/0/0"]}
-                {"document"="c0 10:00:01.93/00/00.00"             "events"=["v 0" "t 10:00:01.93/0/0"]}
-                {"document"="c0 10:00:01.93/1/1"                  "events"=["v 0" "t 10:00:01.93/1/1"]}
-                {"document"="c0 10:00:01.93/90/-180"              "events"=["v 0" "t 10:00:01.93/90/-180"]}
-                {"document"="c0 10:00:01.93/-90/180"              "events"=["v 0" "t 10:00:01.93/-90/180"]}
-                {"document"="c0 10:00:01.93+0000"                 "events"=["v 0" "t 10:00:01.93"]}
-                {"document"="c0 10:00:01.93+0001"                 "events"=["v 0" "t 10:00:01.93+0001"]}
-                {"document"="c0 10:00:01.93-0030"                 "events"=["v 0" "t 10:00:01.93-0030"]}
-                {"document"="c0 10:00:01.93-1259"                 "events"=["v 0" "t 10:00:01.93-1259"]}
-                {"document"="c0 10:00:01.93-2359"                 "events"=["v 0" "t 10:00:01.93-2359"]}
-                {"document"="c0 10:00:01.93+2359"                 "events"=["v 0" "t 10:00:01.93+2359"]}
+                {"cte"="10:00:01.93/0.00/0.00"            "events"=["t 10:00:01.93/0/0"]}
+                {"cte"="10:00:01.93/89.92/1.10"           "events"=["t 10:00:01.93/89.92/1.10"]}
+                {"cte"="10:00:01.93/0/0"                  "events"=["t 10:00:01.93/0/0"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/00/00.00"             "events"=["t 10:00:01.93/0/0"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/1/1"                  "events"=["t 10:00:01.93/1/1"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/90/-180"              "events"=["t 10:00:01.93/90/-180"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/-90/180"              "events"=["t 10:00:01.93/-90/180"] "nocteoutput"=true}
+                {"cte"="10:00:01.93+0000"                 "events"=["t 10:00:01.93"] "nocteoutput"=true}
+                {"cte"="10:00:01.93+0001"                 "events"=["t 10:00:01.93+0001"]}
+                {"cte"="10:00:01.93-0030"                 "events"=["t 10:00:01.93-0030"]}
+                {"cte"="10:00:01.93-1259"                 "events"=["t 10:00:01.93-1259"]}
+                {"cte"="10:00:01.93-2359"                 "events"=["t 10:00:01.93-2359"]}
+                {"cte"="10:00:01.93+2359"                 "events"=["t 10:00:01.93+2359"]}
             ]
-            "decodeFail" = [
-                "c0 012:00:00"           // Too many hour digits
-                "c0 12:000:00"           // Too many minute digits
-                "c0 12:00:000"           // Too many second digits
-                "c0 12:00:00.0000000000" // Too many subsecond digits
-
-                "c0 24:00:00"            // Hour too high
-                "c0 23:60:00"            // Minute too high
-                "c0 23:00:61"            // Second too high
-
-                "c0 2a:00:00"            // Invalid hour digit
-                "c0 20:0a:00"            // Invalid minute digit
-                "c0 20:00:0a"            // Invalid second digit
-                "c0 20:00:00.00a"        // Invalid subsecond digit
-
-                "c0 20:00:00/"           // Missing timezone after marker
-
-                "c0 20:00:00/Etc/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234" // Max area/location length is 127
-
-                "c0 20:00:00/0/"         // Missing longitude
-                "c0 20:00:00/90.01/0"    // Latitude max is 90
-                "c0 20:00:00/-90.01/0"   // Latitude min is -90
-                "c0 20:00:00/0/180.01"   // Longitude max is 180
-                "c0 20:00:00/0/-180.01"  // Longitude min is -180
-                "c0 20:00:00/0/0.011"    // Too much precision
-                "c0 20:00:00/0.011/0"    // Too much precision
-                "c0 20:00:00/0a/0"       // Invalid character
-                "c0 20:00:00/0/0a"       // Invalid character
-
-                "c0 20:00:00+0"          // Not enough digits
-                "c0 20:00:00-0"          // Not enough digits
-                "c0 20:00:00+00"         // Not enough digits
-                "c0 20:00:00-00"         // Not enough digits
-                "c0 20:00:00+000"        // Not enough digits
-                "c0 20:00:00-000"        // Not enough digits
-                "c0 20:00:00+00000"      // Too many digits
-                "c0 20:00:00-00000"      // Too many digits
-                "c0 20:00:00+2400"       // Too high
-                "c0 20:00:00-2400"       // Too low
-                "c0 20:00:00+230a"       // Invalid digits
-                "c0 20:00:00-230a"       // Invalid digits
+            "mustFail" = [
+                {"cte"="012:00:00"}           // Too many hour digits
+                {"cte"="12:000:00"}           // Too many minute digits
+                {"cte"="12:00:000"}           // Too many second digits
+                {"cte"="12:00:00.0000000000"} // Too many subsecond digits
+                {"cte"="24:00:00"}            // Hour too high
+                {"cte"="23:60:00"}            // Minute too high
+                {"cte"="23:00:61"}            // Second too high
+                {"cte"="2a:00:00"}            // Invalid hour digit
+                {"cte"="20:0a:00"}            // Invalid minute digit
+                {"cte"="20:00:0a"}            // Invalid second digit
+                {"cte"="20:00:00.00a"}        // Invalid subsecond digit
+                {"cte"="20:00:00/"}           // Missing timezone after marker
+                {"cte"="20:00:00/Etc/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234"} // Max area/location length is 127
+                {"cte"="20:00:00/0/"}         // Missing longitude
+                {"cte"="20:00:00/90.01/0"}    // Latitude max is 90
+                {"cte"="20:00:00/-90.01/0"}   // Latitude min is -90
+                {"cte"="20:00:00/0/180.01"}   // Longitude max is 180
+                {"cte"="20:00:00/0/-180.01"}  // Longitude min is -180
+                {"cte"="20:00:00/0/0.011"}    // Too much precision
+                {"cte"="20:00:00/0.011/0"}    // Too much precision
+                {"cte"="20:00:00/0a/0"}       // Invalid character
+                {"cte"="20:00:00/0/0a"}       // Invalid character
+                {"cte"="20:00:00+0"}          // Not enough digits
+                {"cte"="20:00:00-0"}          // Not enough digits
+                {"cte"="20:00:00+00"}         // Not enough digits
+                {"cte"="20:00:00-00"}         // Not enough digits
+                {"cte"="20:00:00+000"}        // Not enough digits
+                {"cte"="20:00:00-000"}        // Not enough digits
+                {"cte"="20:00:00+00000"}      // Too many digits
+                {"cte"="20:00:00-00000"}      // Too many digits
+                {"cte"="20:00:00+2400"}       // Too high
+                {"cte"="20:00:00-2400"}       // Too low
+                {"cte"="20:00:00+230a"}       // Invalid digits
+                {"cte"="20:00:00-230a"}       // Invalid digits
             ]
         }
 
@@ -609,43 +614,46 @@ c0
 
         {
             "name" = "Timestamp"
-            "encodeDecode" = [
-                {"events"=["v 0" "t 10233-01-01/09:31:44.901554/Z"]  "document"="c0\n10233-01-01/09:31:44.901554"}
-                {"events"=["v 0" "t 2000-01-01/09:31:44.9+0100"]     "document"="c0\n2000-01-01/09:31:44.9+0100"}
-                {"events"=["v 0" "t 2000-01-01/09:31:44.901554212/Europe/Prague"]
-                 "document"="c0\n2000-01-01/09:31:44.901554212/Europe/Prague"}
+            "mustSucceed" = [
+                {"cte"="10233-01-01/09:31:44.901554"  "events"=["t 10233-01-01/09:31:44.901554/Z"]}
+                {"cte"="2000-01-01/09:31:44.9+0100"   "events"=["t 2000-01-01/09:31:44.9+0100"]}
+                {
+                    "events"=["t 2000-01-01/09:31:44.901554212/Europe/Prague"]
+                    "cte"="2000-01-01/09:31:44.901554212/Europe/Prague"
+                }
+                {"cte"="2000-01-01/9:31:44.901554/Z"          "events"=["t 2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
+                {"cte"="02000-01-01/9:31:44.901554/Z"         "events"=["t 2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
+                {"cte"="-02000-01-01/9:31:44.901554/Z"        "events"=["t -2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
+                {"cte"="2020-01-15/13:41:00.000599"           "events"=["t 2020-01-15/13:41:00.000599"]}
+                {"cte"="2020-01-15/10:00:01.93/89.92/1.10"    "events"=["t 2020-01-15/10:00:01.93/89.92/1.10"]}
+                {"cte"="2020-01-15/10:00:01.93/89.92/-1.10"   "events"=["t 2020-01-15/10:00:01.93/89.92/-1.10"]}
+                {"cte"="2020-01-15/10:00:01.93/-89.92/1.10"   "events"=["t 2020-01-15/10:00:01.93/-89.92/1.10"]}
+                {"cte"="2020-01-15/10:00:01.93/-89.92/-1.10"  "events"=["t 2020-01-15/10:00:01.93/-89.92/-1.10"]}
+                {"cte"="2000-01-01/9:31:44.9+0100"            "events"=["t 2000-01-01/9:31:44.9+0100"] "nocteoutput"=true}
+                {
+                    "cte"="2000-01-01/9:31:44.901554212/Europe/Prague"
+                    "events"=["t 2000-01-01/9:31:44.901554212/Europe/Prague"]
+                    "nocteoutput"=true
+                }
             ]
-            "decodeEncode" = [
-                {"document"="c0 2000-01-01/9:31:44.901554/Z"          "events"=["v 0" "t 2000-01-01/9:31:44.901554/Z"]}
-                {"document"="c0 02000-01-01/9:31:44.901554/Z"         "events"=["v 0" "t 2000-01-01/9:31:44.901554/Z"]}
-                {"document"="c0 -02000-01-01/9:31:44.901554/Z"        "events"=["v 0" "t -2000-01-01/9:31:44.901554/Z"]}
-                {"document"="c0 2020-01-15/13:41:00.000599"           "events"=["v 0" "t 2020-01-15/13:41:00.000599"]}
-                {"document"="c0 2020-01-15/10:00:01.93/89.92/1.10"    "events"=["v 0" "t 2020-01-15/10:00:01.93/89.92/1.10"]}
-                {"document"="c0 2020-01-15/10:00:01.93/89.92/-1.10"   "events"=["v 0" "t 2020-01-15/10:00:01.93/89.92/-1.10"]}
-                {"document"="c0 2020-01-15/10:00:01.93/-89.92/1.10"   "events"=["v 0" "t 2020-01-15/10:00:01.93/-89.92/1.10"]}
-                {"document"="c0 2020-01-15/10:00:01.93/-89.92/-1.10"  "events"=["v 0" "t 2020-01-15/10:00:01.93/-89.92/-1.10"]}
-                {"document"="c0 2000-01-01/9:31:44.9+0100"            "events"=["v 0" "t 2000-01-01/9:31:44.9+0100"]}
-                {"document"="c0 2000-01-01/9:31:44.901554212/Europe/Prague"
-                 "events"=["v 0" "t 2000-01-01/9:31:44.901554212/Europe/Prague"]}
-            ]
-            "decodeFail" = [
-                "c0 0-01-01/9:31:44.901554"            // Year 0 is invalid
-                "c0 0000-01-01/9:31:44.901554"         // Year 0 is invalid
-                "c0 2000-00-01/9:31:44.901554"         // Month 0 is invalid
-                "c0 2000-13-01/9:31:44.901554"         // Month 13 is invalid
-                "c0 2000-01-00/9:31:44.901554"         // Day 0 is invalid
-                "c0 2000-01-32/9:31:44.901554"         // Day 32 is invalid
-                "c0 2000-01-01/24:31:44.901554"        // Hour 24 is invalid
-                "c0 2000-01-01/9:60:44.901554"         // Minute 60 is invalid
-                "c0 2000-01-01/9:31:61.901554"         // Second 61 is invalid
-                "c0 2000-01-01/9:31:44.-901554"        // Subseconds cannot be negative
-                "c0 2000-01-01/9:31:44.9015549343"     // Subseconds too long
-                "c0 2000-01-01/9:31:44.901554/91/0"    // Latitude 91 is invalid
-                "c0 2000-01-01/9:31:44.901554/-91/0"   // Latitude -91 is invalid
-                "c0 2000-01-01/9:31:44.901554/0/181"   // Longitude 181 is invalid
-                "c0 2000-01-01/9:31:44.901554/0/-181"  // Longitude -181 is invalid
-                "c0 2000-01-01/9:31:44.901554+2400"    // Offset 2400 is invalid
-                "c0 2000-01-01/9:31:44.901554-2400"    // Offset -2400 is invalid
+            "mustFail" = [
+                {"cte"="0-01-01/9:31:44.901554"}            // Year 0 is invalid
+                {"cte"="0000-01-01/9:31:44.901554"}         // Year 0 is invalid
+                {"cte"="2000-00-01/9:31:44.901554"}         // Month 0 is invalid
+                {"cte"="2000-13-01/9:31:44.901554"}         // Month 13 is invalid
+                {"cte"="2000-01-00/9:31:44.901554"}         // Day 0 is invalid
+                {"cte"="2000-01-32/9:31:44.901554"}         // Day 32 is invalid
+                {"cte"="2000-01-01/24:31:44.901554"}        // Hour 24 is invalid
+                {"cte"="2000-01-01/9:60:44.901554"}         // Minute 60 is invalid
+                {"cte"="2000-01-01/9:31:61.901554"}         // Second 61 is invalid
+                {"cte"="2000-01-01/9:31:44.-901554"}        // Subseconds cannot be negative
+                {"cte"="2000-01-01/9:31:44.9015549343"}     // Subseconds too long
+                {"cte"="2000-01-01/9:31:44.901554/91/0"}    // Latitude 91 is invalid
+                {"cte"="2000-01-01/9:31:44.901554/-91/0"}   // Latitude -91 is invalid
+                {"cte"="2000-01-01/9:31:44.901554/0/181"}   // Longitude 181 is invalid
+                {"cte"="2000-01-01/9:31:44.901554/0/-181"}  // Longitude -181 is invalid
+                {"cte"="2000-01-01/9:31:44.901554+2400"}    // Offset 2400 is invalid
+                {"cte"="2000-01-01/9:31:44.901554-2400"}    // Offset -2400 is invalid
             ]
         }
 
@@ -653,22 +661,22 @@ c0
 
         {
             "name" = "Marker"
-            "encodeDecode" = [
-                {"events"=["v 0" "mark 1" "n 2"]  "document"="c0\n&1:2"}
-                {"events"=["v 0" "mark 1" "s x"]  "document"="c0\n&1:\"x\""}
+            "mustSucceed" = [
+                {"cte"="&1:2"      "events"=["mark 1" "n 2"]}
+                {"cte"="&1:\"x\""  "events"=["mark 1" "s x"]}
             ]
-            "decodeFail" = [
-                "c0 & 1:2"    // Bad whitespace
-                "c0 & 1: 2"   // Bad whitespace
-                "c0 & 1 :2"   // Bad whitespace
-                "c0 & 1 : 2"  // Bad whitespace
-                "c0 &1: 2"    // Bad whitespace
-                "c0 &1 :2"    // Bad whitespace
-                "c0 &1 : 2"   // Bad whitespace
-                "c0 &1\"x\""  // Missing separator
-                "c0 &1 \"x\"" // Missing separator
+            "mustFail" = [
+                {"cte"="& 1:2"}    // Bad whitespace
+                {"cte"="& 1: 2"}   // Bad whitespace
+                {"cte"="& 1 :2"}   // Bad whitespace
+                {"cte"="& 1 : 2"}  // Bad whitespace
+                {"cte"="&1: 2"}    // Bad whitespace
+                {"cte"="&1 :2"}    // Bad whitespace
+                {"cte"="&1 : 2"}   // Bad whitespace
+                {"cte"="&1\"x\""}  // Missing separator
+                {"cte"="&1 \"x\""} // Missing separator
                 // Identifier too long:
-                "c0 &abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh:1"
+                {"cte"="&abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh:1"}
             ]
         }
 
@@ -676,69 +684,66 @@ c0
 
         {
             "name" = "Reference"
-            "encodeDecode" = [
+            "mustSucceed" = [
                 {
-                    "events" = ["v 0" "l" "mark x" "n 2" "refl x" "e"]
-                    "document" = "\.^
-c0
+                    "debug"=true
+                    "events" = ["l" "mark x" "n 2" "refl x" "e"]
+                    "cte" = "\.^
 [
     &x:2
     $x
 ]^"
                 }
                 {
-                    "events" = ["v 0" "l" "refl x" "mark x" "n 2" "e"]
-                    "document" = "\.^
-c0
+                    "events" = ["l" "refl x" "mark x" "n 2" "e"]
+                    "cte" = "\.^
 [
     $x
     &x:2
 ]^"
                 }
                 {
-                    "events" = ["v 0" "m" "s My key" "mark mykey" "s Blah blah" "refl mykey" "n 1000" "e"]
-                    "document" = "\.^
-c0
+                    "events" = ["m" "s My key" "mark mykey" "s Blah blah" "refl mykey" "n 1000" "e"]
+                    "cte" = "\.^
 {
     "My key" = &mykey:"Blah blah"
     $mykey = 1000
 }^"
                 }
                 {
-                    "events" = ["v 0" "m" "refl mykey" "n 1000" "s My key" "mark mykey" "s Blah blah" "e"]
-                    "document" = "\.^
-c0
+                    "events" = ["m" "refl mykey" "n 1000" "s My key" "mark mykey" "s Blah blah" "e"]
+                    "cte" = "\.^
 {
     $mykey = 1000
     "My key" = &mykey:"Blah blah"
 }^"
                 }
             ]
-            "decodeFail" = [
-                "c0 [&x:2 $y]"                                   // Unknown ID
-                "c0 [$y &x:2]"                                   // Unknown ID
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:null}^"     // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:nan}^"      // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:snan}^"     // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:[]}^"       // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:{}}^"       // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:(1)}^"      // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:@(1 2 3)}^" // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|ct a|}^"   // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|cb 00|}^"  // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|b|}^"      // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i8|}^"     // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i16|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i32|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|i64|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u8|}^"     // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u16|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u32|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u64|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|f16|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|f32|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|f64|}^"    // Referenced object not keyable type
-                "\.^ c0 {$mykey=1000 "My key"=&mykey:|u|}^"      // Referenced object not keyable type
+            "mustFail" = [
+                {"cte"="[&x:2 $y]"}                                      // Unknown ID
+                {"cte"="[$y &x:2]"}                                      // Unknown ID
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:null}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:nan}^"}      // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:snan}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:[]}^"}       // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:{}}^"}       // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:(1)}^"}      // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:@(1 2 3)}^"} // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|ct a|}^"}   // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|cb 00|}^"}  // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|b|}^"}      // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i8|}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i16|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i32|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i64|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u8|}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u16|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u32|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u64|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|f16|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|f32|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|f64|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u|}^"}      // Referenced object not keyable type
             ]
         }
 
