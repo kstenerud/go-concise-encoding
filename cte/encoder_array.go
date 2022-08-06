@@ -266,8 +266,8 @@ func (_this *arrayEncoderEngine) beginArrayCustomBinary(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF(arrayHeadersUint8[_this.opts.DefaultFormats.Array.Uint8])
-	format := arrayFormats8[_this.opts.DefaultFormats.Array.Uint8]
+	_this.stream.WriteStringNotLF(arrayHeadersUint8[_this.opts.DefaultNumericFormats.Array.Uint8])
+	format := arrayFormats8[_this.opts.DefaultNumericFormats.Array.Uint8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
 			_this.stream.WriteByteNotLF(' ')
@@ -279,8 +279,8 @@ func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersUint16[_this.opts.DefaultFormats.Array.Uint16])
-	format := arrayFormats16[_this.opts.DefaultFormats.Array.Uint16]
+	_this.stream.WriteStringNotLF(arrayHeadersUint16[_this.opts.DefaultNumericFormats.Array.Uint16])
+	format := arrayFormats16[_this.opts.DefaultNumericFormats.Array.Uint16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -293,8 +293,8 @@ func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersUint32[_this.opts.DefaultFormats.Array.Uint32])
-	format := arrayFormats32[_this.opts.DefaultFormats.Array.Uint32]
+	_this.stream.WriteStringNotLF(arrayHeadersUint32[_this.opts.DefaultNumericFormats.Array.Uint32])
+	format := arrayFormats32[_this.opts.DefaultNumericFormats.Array.Uint32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -307,8 +307,8 @@ func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersUint64[_this.opts.DefaultFormats.Array.Uint64])
-	format := arrayFormats64[_this.opts.DefaultFormats.Array.Uint64]
+	_this.stream.WriteStringNotLF(arrayHeadersUint64[_this.opts.DefaultNumericFormats.Array.Uint64])
+	format := arrayFormats64[_this.opts.DefaultNumericFormats.Array.Uint64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -321,8 +321,8 @@ func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF(arrayHeadersInt8[_this.opts.DefaultFormats.Array.Int8])
-	format := arrayFormats8[_this.opts.DefaultFormats.Array.Int8]
+	_this.stream.WriteStringNotLF(arrayHeadersInt8[_this.opts.DefaultNumericFormats.Array.Int8])
+	format := arrayFormats8[_this.opts.DefaultNumericFormats.Array.Int8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
 			_this.stream.WriteByteNotLF(' ')
@@ -334,8 +334,8 @@ func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersInt16[_this.opts.DefaultFormats.Array.Int16])
-	format := arrayFormats16[_this.opts.DefaultFormats.Array.Int16]
+	_this.stream.WriteStringNotLF(arrayHeadersInt16[_this.opts.DefaultNumericFormats.Array.Int16])
+	format := arrayFormats16[_this.opts.DefaultNumericFormats.Array.Int16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -348,8 +348,8 @@ func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersInt32[_this.opts.DefaultFormats.Array.Int32])
-	format := arrayFormats32[_this.opts.DefaultFormats.Array.Int32]
+	_this.stream.WriteStringNotLF(arrayHeadersInt32[_this.opts.DefaultNumericFormats.Array.Int32])
+	format := arrayFormats32[_this.opts.DefaultNumericFormats.Array.Int32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -362,8 +362,8 @@ func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersInt64[_this.opts.DefaultFormats.Array.Int64])
-	format := arrayFormats64[_this.opts.DefaultFormats.Array.Int64]
+	_this.stream.WriteStringNotLF(arrayHeadersInt64[_this.opts.DefaultNumericFormats.Array.Int64])
+	format := arrayFormats64[_this.opts.DefaultNumericFormats.Array.Int64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -377,8 +377,8 @@ func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersFloat16[_this.opts.DefaultFormats.Array.Float16])
-	if _this.opts.DefaultFormats.Array.Float16 == options.CTEEncodingFormatHexadecimal {
+	_this.stream.WriteStringNotLF(arrayHeadersFloat16[_this.opts.DefaultNumericFormats.Array.Float16])
+	if _this.opts.DefaultNumericFormats.Array.Float16 == options.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.stream.WriteByteNotLF(' ')
@@ -390,12 +390,12 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 		return
 	}
 
-	format := arrayFormatsGeneral[_this.opts.DefaultFormats.Array.Float16]
+	format := arrayFormatsGeneral[_this.opts.DefaultNumericFormats.Array.Float16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
 			bits := uint16(data[0]) | (uint16(data[1]) << 8)
-			_this.stream.WriteFloat32UsingFormat(common.Float32FromFloat16Bits(bits), format)
+			_this.stream.WriteFloatUsingFormat(common.Float64FromFloat16Bits(bits), format)
 			data = data[elemWidth:]
 		}
 	}
@@ -404,8 +404,8 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersFloat32[_this.opts.DefaultFormats.Array.Float32])
-	if _this.opts.DefaultFormats.Array.Float32 == options.CTEEncodingFormatHexadecimal {
+	_this.stream.WriteStringNotLF(arrayHeadersFloat32[_this.opts.DefaultNumericFormats.Array.Float32])
+	if _this.opts.DefaultNumericFormats.Array.Float32 == options.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.stream.WriteByteNotLF(' ')
@@ -417,12 +417,12 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 		return
 	}
 
-	format := arrayFormatsGeneral[_this.opts.DefaultFormats.Array.Float32]
+	format := arrayFormatsGeneral[_this.opts.DefaultNumericFormats.Array.Float32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
 			bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
-			_this.stream.WriteFloat32UsingFormat(math.Float32frombits(bits), format)
+			_this.stream.WriteFloatUsingFormat(common.Float64FromFloat32Bits(bits), format)
 			data = data[elemWidth:]
 		}
 	}
@@ -431,8 +431,8 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersFloat64[_this.opts.DefaultFormats.Array.Float64])
-	if _this.opts.DefaultFormats.Array.Float64 == options.CTEEncodingFormatHexadecimal {
+	_this.stream.WriteStringNotLF(arrayHeadersFloat64[_this.opts.DefaultNumericFormats.Array.Float64])
+	if _this.opts.DefaultNumericFormats.Array.Float64 == options.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.stream.WriteByteNotLF(' ')
@@ -445,7 +445,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 		return
 	}
 
-	format := arrayFormatsGeneral[_this.opts.DefaultFormats.Array.Float64]
+	format := arrayFormatsGeneral[_this.opts.DefaultNumericFormats.Array.Float64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.stream.WriteByteNotLF(' ')
@@ -515,7 +515,7 @@ var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
 }
 
 var arrayFormatsGeneral = []string{
-	options.CTEEncodingFormatUnset:                 "%v",
+	options.CTEEncodingFormatDecimal:               "%v",
 	options.CTEEncodingFormatBinary:                "%b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "%b",
 	options.CTEEncodingFormatOctal:                 "%o",
@@ -525,7 +525,7 @@ var arrayFormatsGeneral = []string{
 }
 
 var arrayFormats8 = []string{
-	options.CTEEncodingFormatUnset:                 "%v",
+	options.CTEEncodingFormatDecimal:               "%v",
 	options.CTEEncodingFormatBinary:                "%b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "%08b",
 	options.CTEEncodingFormatOctal:                 "%o",
@@ -535,7 +535,7 @@ var arrayFormats8 = []string{
 }
 
 var arrayFormats16 = []string{
-	options.CTEEncodingFormatUnset:                 "%v",
+	options.CTEEncodingFormatDecimal:               "%v",
 	options.CTEEncodingFormatBinary:                "%b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "%016b",
 	options.CTEEncodingFormatOctal:                 "%o",
@@ -545,7 +545,7 @@ var arrayFormats16 = []string{
 }
 
 var arrayFormats32 = []string{
-	options.CTEEncodingFormatUnset:                 "%v",
+	options.CTEEncodingFormatDecimal:               "%v",
 	options.CTEEncodingFormatBinary:                "%b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "%032b",
 	options.CTEEncodingFormatOctal:                 "%o",
@@ -555,7 +555,7 @@ var arrayFormats32 = []string{
 }
 
 var arrayFormats64 = []string{
-	options.CTEEncodingFormatUnset:                 "%v",
+	options.CTEEncodingFormatDecimal:               "%v",
 	options.CTEEncodingFormatBinary:                "%b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "%064b",
 	options.CTEEncodingFormatOctal:                 "%o",
@@ -565,7 +565,7 @@ var arrayFormats64 = []string{
 }
 
 var arrayHeadersUint8 = []string{
-	options.CTEEncodingFormatUnset:                 "|u8",
+	options.CTEEncodingFormatDecimal:               "|u8",
 	options.CTEEncodingFormatBinary:                "|u8b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|u8b",
 	options.CTEEncodingFormatOctal:                 "|u8o",
@@ -574,7 +574,7 @@ var arrayHeadersUint8 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|u8x",
 }
 var arrayHeadersUint16 = []string{
-	options.CTEEncodingFormatUnset:                 "|u16",
+	options.CTEEncodingFormatDecimal:               "|u16",
 	options.CTEEncodingFormatBinary:                "|u16b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|u16b",
 	options.CTEEncodingFormatOctal:                 "|u16o",
@@ -583,7 +583,7 @@ var arrayHeadersUint16 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|u16x",
 }
 var arrayHeadersUint32 = []string{
-	options.CTEEncodingFormatUnset:                 "|u32",
+	options.CTEEncodingFormatDecimal:               "|u32",
 	options.CTEEncodingFormatBinary:                "|u32b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|u32b",
 	options.CTEEncodingFormatOctal:                 "|u32o",
@@ -592,7 +592,7 @@ var arrayHeadersUint32 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|u32x",
 }
 var arrayHeadersUint64 = []string{
-	options.CTEEncodingFormatUnset:                 "|u64",
+	options.CTEEncodingFormatDecimal:               "|u64",
 	options.CTEEncodingFormatBinary:                "|u64b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|u64b",
 	options.CTEEncodingFormatOctal:                 "|u64o",
@@ -601,7 +601,7 @@ var arrayHeadersUint64 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|u64x",
 }
 var arrayHeadersInt8 = []string{
-	options.CTEEncodingFormatUnset:                 "|i8",
+	options.CTEEncodingFormatDecimal:               "|i8",
 	options.CTEEncodingFormatBinary:                "|i8b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|i8b",
 	options.CTEEncodingFormatOctal:                 "|i8o",
@@ -610,7 +610,7 @@ var arrayHeadersInt8 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|i8x",
 }
 var arrayHeadersInt16 = []string{
-	options.CTEEncodingFormatUnset:                 "|i16",
+	options.CTEEncodingFormatDecimal:               "|i16",
 	options.CTEEncodingFormatBinary:                "|i16b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|i16b",
 	options.CTEEncodingFormatOctal:                 "|i16o",
@@ -619,7 +619,7 @@ var arrayHeadersInt16 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|i16x",
 }
 var arrayHeadersInt32 = []string{
-	options.CTEEncodingFormatUnset:                 "|i32",
+	options.CTEEncodingFormatDecimal:               "|i32",
 	options.CTEEncodingFormatBinary:                "|i32b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|i32b",
 	options.CTEEncodingFormatOctal:                 "|i32o",
@@ -628,7 +628,7 @@ var arrayHeadersInt32 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|i32x",
 }
 var arrayHeadersInt64 = []string{
-	options.CTEEncodingFormatUnset:                 "|i64",
+	options.CTEEncodingFormatDecimal:               "|i64",
 	options.CTEEncodingFormatBinary:                "|i64b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|i64b",
 	options.CTEEncodingFormatOctal:                 "|i64o",
@@ -637,7 +637,7 @@ var arrayHeadersInt64 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|i64x",
 }
 var arrayHeadersFloat16 = []string{
-	options.CTEEncodingFormatUnset:                 "|f16",
+	options.CTEEncodingFormatDecimal:               "|f16",
 	options.CTEEncodingFormatBinary:                "|f16b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|f16b",
 	options.CTEEncodingFormatOctal:                 "|f16o",
@@ -646,7 +646,7 @@ var arrayHeadersFloat16 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|f16x",
 }
 var arrayHeadersFloat32 = []string{
-	options.CTEEncodingFormatUnset:                 "|f32",
+	options.CTEEncodingFormatDecimal:               "|f32",
 	options.CTEEncodingFormatBinary:                "|f32b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|f32b",
 	options.CTEEncodingFormatOctal:                 "|f32o",
@@ -655,7 +655,7 @@ var arrayHeadersFloat32 = []string{
 	options.CTEEncodingFormatHexadecimalZeroFilled: "|f32x",
 }
 var arrayHeadersFloat64 = []string{
-	options.CTEEncodingFormatUnset:                 "|f64",
+	options.CTEEncodingFormatDecimal:               "|f64",
 	options.CTEEncodingFormatBinary:                "|f64b",
 	options.CTEEncodingFormatBinaryZeroFilled:      "|f64b",
 	options.CTEEncodingFormatOctal:                 "|f64o",

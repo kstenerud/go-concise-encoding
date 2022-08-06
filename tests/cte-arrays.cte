@@ -1,57 +1,59 @@
 c0
-// ==============
-// CTE test cases
-// ==============
 {
-    "options" = {
-        "failFast" = false  // If true, halt tests on first error
-    }
-
-    "cteTests" = [
+	"type" = {
+		"identifier" = "ce test"
+		"version" = 1
+	}
+	"ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
         {
             "name" = "Int8 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "ai8 1 2 3 127"]  "document"="c0\n|i8 1 2 3 127|"}
+            "mustSucceed" = [
+                {"cte"="|i8 1 2 3 127|"  "events"=["ai8 1 2 3 127"]}
+                {"cte"="|i8|"                 "events"=["ai8"]}
+                {"cte"="|i8 |"                "events"=["ai8"] "nocteoutput"=true}
+                {
+                    "cte"="|i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                    "events"=["ai8 0 1 127 -128 5 -5 63 -63 27 -27"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i8b|"                "events"=["ai8"] "nocteoutput"=true}
+                {
+                    "cte"="|i8b 0 1 1011 -1001101 1111111 -10000000|"
+                    "events"=["ai8 0 1 11 -77 127 -128"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i8o|"                "events"=["ai8"] "nocteoutput"=true}
+                {"cte"="|i8o 177 -200 76|"    "events"=["ai8 127 -128 62"] "nocteoutput"=true}
+                {"cte"="|i8x|"                "events"=["ai8"] "nocteoutput"=true}
+                {"cte"="|i8x 7f -80 1c -29|"  "events"=["ai8 127 -128 28 -41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |i8|"                 "events"=["v 0" "ai8"]}
-                {"document"="c0 |i8 |"                "events"=["v 0" "ai8"]}
-                {"document"="c0 |i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
-                 "events"=["v 0" "ai8 0 1 127 -128 5 -5 63 -63 27 -27"]}
-                {"document"="c0 |i8b|"                "events"=["v 0" "ai8"]}
-                {"document"="c0 |i8b 0 1 1011 -1001101 1111111 -10000000|"
-                 "events"=["v 0" "ai8 0 1 11 -77 127 -128"]}
-                {"document"="c0 |i8o|"                "events"=["v 0" "ai8"]}
-                {"document"="c0 |i8o 177 -200 76|"    "events"=["v 0" "ai8 127 -128 62"]}
-                {"document"="c0 |i8x|"                "events"=["v 0" "ai8"]}
-                {"document"="c0 |i8x 7f -80 1c -29|"  "events"=["v 0" "ai8 127 -128 28 -41"]}
-            ]
-            "decodeFail" = [
-                "c0 |i8 nan|"         // Non-int digit
-                "c0 |i8 snan|"        // Non-int digit
-                "c0 |i8 inf|"         // Non-int digit
-                "c0 |i8 -inf|"        // Non-int digit
-                "c0 |i8b 2|"          // Non-binary digit
-                "c0 |i8b 10000000|"   // Element too big
-                "c0 |i8b -10000001|"  // Element too big
-                "c0 |i8o 9|"          // Non-octal digit
-                "c0 |i8o 178|"        // Element too big
-                "c0 |i8o -179|"       // Element too big
-                "c0 |i8x g|"          // Non-hex digit
-                "c0 |i8x 80|"         // Element too big
-                "c0 |i8x -81|"        // Element too big
-                "c0 |i8 a|"           // Non-int digit
-                "c0 |i8 128|"         // Element too big
-                "c0 |i8 -129|"        // Element too big
-                "c0 |i8 0b10000000|"  // Element too big
-                "c0 |i8 -0b10000001|" // Element too big
-                "c0 |i8 0o178|"       // Element too big
-                "c0 |i8 -0o179|"      // Element too big
-                "c0 |i8 0x80|"        // Element too big
-                "c0 |i8 -0x81|"       // Element too big
+            "mustFail" = [
+                {"cte"="|i8 nan|"}         // Non-int digit
+                {"cte"="|i8 snan|"}        // Non-int digit
+                {"cte"="|i8 inf|"}         // Non-int digit
+                {"cte"="|i8 -inf|"}        // Non-int digit
+                {"cte"="|i8b 2|"}          // Non-binary digit
+                {"cte"="|i8b 10000000|"}   // Element too big
+                {"cte"="|i8b -10000001|"}  // Element too big
+                {"cte"="|i8o 9|"}          // Non-octal digit
+                {"cte"="|i8o 178|"}        // Element too big
+                {"cte"="|i8o -179|"}       // Element too big
+                {"cte"="|i8x g|"}          // Non-hex digit
+                {"cte"="|i8x 80|"}         // Element too big
+                {"cte"="|i8x -81|"}        // Element too big
+                {"cte"="|i8 a|"}           // Non-int digit
+                {"cte"="|i8 128|"}         // Element too big
+                {"cte"="|i8 -129|"}        // Element too big
+                {"cte"="|i8 0b10000000|"}  // Element too big
+                {"cte"="|i8 -0b10000001|"} // Element too big
+                {"cte"="|i8 0o178|"}       // Element too big
+                {"cte"="|i8 -0o179|"}      // Element too big
+                {"cte"="|i8 0x80|"}        // Element too big
+                {"cte"="|i8 -0x81|"}       // Element too big
             ]
         }
 
@@ -59,45 +61,49 @@ c0
 
         {
             "name" = "Int16 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "ai16 1 2 3 32767"]  "document"="c0\n|i16 1 2 3 32767|"}
+            "mustSucceed" = [
+                {"cte"="|i16 1 2 3 32767|"         "events"=["ai16 1 2 3 32767"]}
+                {"cte"="|i16|"                     "events"=["ai16"]}
+                {"cte"="|i16 |"                    "events"=["ai16"] "nocteoutput"=true}
+                {
+                    "cte"="|i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                    "events"=["ai16 0 1 32767 -32768 5 -5 63 -63 27 -27"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i16b|"                    "events"=["ai16"] "nocteoutput"=true}
+                {
+                    "cte"="|i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"
+                    "events"=["ai16 0 1 11 -77 32767 -32768"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i16o|"                    "events"=["ai16"] "nocteoutput"=true}
+                {"cte"="|i16o 77777 -100000 76|"   "events"=["ai16 32767 -32768 62"] "nocteoutput"=true}
+                {"cte"="|i16x|"                    "events"=["ai16"] "nocteoutput"=true}
+                {"cte"="|i16x 7fff -8000 1c -29|"  "events"=["ai16 32767 -32768 28 -41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |i16|"                     "events"=["v 0" "ai16"]}
-                {"document"="c0 |i16 |"                    "events"=["v 0" "ai16"]}
-                {"document"="c0 |i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
-                 "events"=["v 0" "ai16 0 1 32767 -32768 5 -5 63 -63 27 -27"]}
-                {"document"="c0 |i16b|"                    "events"=["v 0" "ai16"]}
-                {"document"="c0 |i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"
-                 "events"=["v 0" "ai16 0 1 11 -77 32767 -32768"]}
-                {"document"="c0 |i16o|"                    "events"=["v 0" "ai16"]}
-                {"document"="c0 |i16o 77777 -100000 76|"   "events"=["v 0" "ai16 32767 -32768 62"]}
-                {"document"="c0 |i16x|"                    "events"=["v 0" "ai16"]}
-                {"document"="c0 |i16x 7fff -8000 1c -29|"  "events"=["v 0" "ai16 32767 -32768 28 -41"]}
-            ]
-            "decodeFail" = [
-                "c0 |i16 nan|"                 // Non-int digit
-                "c0 |i16 snan|"                // Non-int digit
-                "c0 |i16 inf|"                 // Non-int digit
-                "c0 |i16 -inf|"                // Non-int digit
-                "c0 |i16b 2|"                  // Non-binary digit
-                "c0 |i16b 1000000000000000|"   // Element too big
-                "c0 |i16b -1000000000000001|"  // Element too big
-                "c0 |i16o 9|"                  // Non-octal digit
-                "c0 |i16o 100000|"             // Element too big
-                "c0 |i16o -100001|"            // Element too big
-                "c0 |i16x g|"                  // Non-hex digit
-                "c0 |i16x 8000|"               // Element too big
-                "c0 |i16x -8001|"              // Element too big
-                "c0 |i16 a|"                   // Non-int digit
-                "c0 |i16 32768|"               // Element too big
-                "c0 |i16 -32769|"              // Element too big
-                "c0 |i16 0b1000000000000000|"  // Element too big
-                "c0 |i16 -0b1000000000000001|" // Element too big
-                "c0 |i16 0o100000|"            // Element too big
-                "c0 |i16 -0o100001|"           // Element too big
-                "c0 |i16 0x8000|"              // Element too big
-                "c0 |i16 -0x8001|"             // Element too big
+            "mustFail" = [
+                {"cte"="|i16 nan|"}                 // Non-int digit
+                {"cte"="|i16 snan|"}                // Non-int digit
+                {"cte"="|i16 inf|"}                 // Non-int digit
+                {"cte"="|i16 -inf|"}                // Non-int digit
+                {"cte"="|i16b 2|"}                  // Non-binary digit
+                {"cte"="|i16b 1000000000000000|"}   // Element too big
+                {"cte"="|i16b -1000000000000001|"}  // Element too big
+                {"cte"="|i16o 9|"}                  // Non-octal digit
+                {"cte"="|i16o 100000|"}             // Element too big
+                {"cte"="|i16o -100001|"}            // Element too big
+                {"cte"="|i16x g|"}                  // Non-hex digit
+                {"cte"="|i16x 8000|"}               // Element too big
+                {"cte"="|i16x -8001|"}              // Element too big
+                {"cte"="|i16 a|"}                   // Non-int digit
+                {"cte"="|i16 32768|"}               // Element too big
+                {"cte"="|i16 -32769|"}              // Element too big
+                {"cte"="|i16 0b1000000000000000|"}  // Element too big
+                {"cte"="|i16 -0b1000000000000001|"} // Element too big
+                {"cte"="|i16 0o100000|"}            // Element too big
+                {"cte"="|i16 -0o100001|"}           // Element too big
+                {"cte"="|i16 0x8000|"}              // Element too big
+                {"cte"="|i16 -0x8001|"}             // Element too big
             ]
         }
 
@@ -105,45 +111,49 @@ c0
 
         {
             "name" = "Int32 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "ai32 1 2 3 2147483647"]  "document"="c0\n|i32 1 2 3 2147483647|"}
+            "mustSucceed" = [
+                {"cte"="|i32 1 2 3 2147483647|"    "events"=["ai32 1 2 3 2147483647"]}
+                {"cte"="|i32|"                     "events"=["ai32"]}
+                {"cte"="|i32 |"                    "events"=["ai32"] "nocteoutput"=true}
+                {
+                    "cte"="|i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                    "events"=["ai32 0 1 2147483647 -2147483648 5 -5 63 -63 27 -27"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i32b|"                    "events"=["ai32"] "nocteoutput"=true}
+                {
+                    "cte"="|i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
+                    "events"=["ai32 0 1 11 -77 2147483647 -2147483648"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i32o|"                    "events"=["ai32"] "nocteoutput"=true}
+                {"cte"="|i32o 17777777777 -20000000000 76|"  "events"=["ai32 2147483647 -2147483648 62"] "nocteoutput"=true}
+                {"cte"="|i32x|"                    "events"=["ai32"] "nocteoutput"=true}
+                {"cte"="|i32x 7fffffff -80000000 1c -29|"  "events"=["ai32 2147483647 -2147483648 28 -41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |i32|"                     "events"=["v 0" "ai32"]}
-                {"document"="c0 |i32 |"                    "events"=["v 0" "ai32"]}
-                {"document"="c0 |i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
-                 "events"=["v 0" "ai32 0 1 2147483647 -2147483648 5 -5 63 -63 27 -27"]}
-                {"document"="c0 |i32b|"                    "events"=["v 0" "ai32"]}
-                {"document"="c0 |i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
-                 "events"=["v 0" "ai32 0 1 11 -77 2147483647 -2147483648"]}
-                {"document"="c0 |i32o|"                    "events"=["v 0" "ai32"]}
-                {"document"="c0 |i32o 17777777777 -20000000000 76|"  "events"=["v 0" "ai32 2147483647 -2147483648 62"]}
-                {"document"="c0 |i32x|"                    "events"=["v 0" "ai32"]}
-                {"document"="c0 |i32x 7fffffff -80000000 1c -29|"  "events"=["v 0" "ai32 2147483647 -2147483648 28 -41"]}
-            ]
-            "decodeFail" = [
-                "c0 |i32 nan|"                                 // Non-int digit
-                "c0 |i32 snan|"                                // Non-int digit
-                "c0 |i32 inf|"                                 // Non-int digit
-                "c0 |i32 -inf|"                                // Non-int digit
-                "c0 |i32b 2|"                                  // Non-binary digit
-                "c0 |i32b 10000000000000000000000000000000|"   // Element too big
-                "c0 |i32b -10000000000000000000000000000001|"  // Element too big
-                "c0 |i32o 9|"                                  // Non-octal digit
-                "c0 |i32o 20000000000|"                        // Element too big
-                "c0 |i32o -20000000001|"                       // Element too big
-                "c0 |i32x g|"                                  // Non-hex digit
-                "c0 |i32x 80000000|"                           // Element too big
-                "c0 |i32x -80000001|"                          // Element too big
-                "c0 |i32 a|"                                   // Non-int digit
-                "c0 |i32 2147483648|"                          // Element too big
-                "c0 |i32 -2147483649|"                         // Element too big
-                "c0 |i32 0b10000000000000000000000000000000|"  // Element too big
-                "c0 |i32 -0b10000000000000000000000000000001|" // Element too big
-                "c0 |i32 0o20000000000|"                       // Element too big
-                "c0 |i32 -0o20000000001|"                      // Element too big
-                "c0 |i32 0x80000000|"                          // Element too big
-                "c0 |i32 -0x80000001|"                         // Element too big
+            "mustFail" = [
+                {"cte"="|i32 nan|"}                                 // Non-int digit
+                {"cte"="|i32 snan|"}                                // Non-int digit
+                {"cte"="|i32 inf|"}                                 // Non-int digit
+                {"cte"="|i32 -inf|"}                                // Non-int digit
+                {"cte"="|i32b 2|"}                                  // Non-binary digit
+                {"cte"="|i32b 10000000000000000000000000000000|"}   // Element too big
+                {"cte"="|i32b -10000000000000000000000000000001|"}  // Element too big
+                {"cte"="|i32o 9|"}                                  // Non-octal digit
+                {"cte"="|i32o 20000000000|"}                        // Element too big
+                {"cte"="|i32o -20000000001|"}                       // Element too big
+                {"cte"="|i32x g|"}                                  // Non-hex digit
+                {"cte"="|i32x 80000000|"}                           // Element too big
+                {"cte"="|i32x -80000001|"}                          // Element too big
+                {"cte"="|i32 a|"}                                   // Non-int digit
+                {"cte"="|i32 2147483648|"}                          // Element too big
+                {"cte"="|i32 -2147483649|"}                         // Element too big
+                {"cte"="|i32 0b10000000000000000000000000000000|"}  // Element too big
+                {"cte"="|i32 -0b10000000000000000000000000000001|"} // Element too big
+                {"cte"="|i32 0o20000000000|"}                       // Element too big
+                {"cte"="|i32 -0o20000000001|"}                      // Element too big
+                {"cte"="|i32 0x80000000|"}                          // Element too big
+                {"cte"="|i32 -0x80000001|"}                         // Element too big
             ]
         }
 
@@ -151,48 +161,58 @@ c0
 
         {
             "name" = "Int64 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "ai64 1 2 3 9223372036854775807"]  "document"="c0\n|i64 1 2 3 9223372036854775807|"}
-            ]
-            "decodeEncode" = [
-                {"document"="c0 |i64|"                                "events"=["v 0" "ai64"]}
-                {"document"="c0 |i64 |"                               "events"=["v 0" "ai64"]}
-                {"document"="c0 |i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
-                 "events"=["v 0" "ai64 0 1 9223372036854775807 -9223372036854775808 5 -5 63 -63 27 -27"]}
-                {"document"="c0 |i64b|"                               "events"=["v 0" "ai64"]}
-                {"document"="c0 |i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111
+            "mustSucceed" = [
+                {"cte"="|i64 1 2 3 9223372036854775807|"  "events"=["ai64 1 2 3 9223372036854775807"]}
+                {"cte"="|i64|"                                "events"=["ai64"]}
+                {"cte"="|i64 |"                               "events"=["ai64"] "nocteoutput"=true}
+                {
+                    "cte"="|i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
+                    "events"=["ai64 0 1 9223372036854775807 -9223372036854775808 5 -5 63 -63 27 -27"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i64b|"                               "events"=["ai64"] "nocteoutput"=true}
+                {
+                    "cte"="|i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111
                                       -1000000000000000000000000000000000000000000000000000000000000000|"
-                 "events"=["v 0" "ai64 0 1 11 -77 9223372036854775807 -9223372036854775808"]}
-                {"document"="c0 |i64o|"                               "events"=["v 0" "ai64"]}
-                {"document"="c0 |i64o 777777777777777777777 -1000000000000000000000 76|"
-                 "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 62"]}
-                {"document"="c0 |i64x|"                               "events"=["v 0" "ai64"]}
-                {"document"="c0 |i64x 7fffffffffffffff -8000000000000000 1c -29|"
-                 "events"=["v 0" "ai64 9223372036854775807 -9223372036854775808 28 -41"]}
+                    "events"=["ai64 0 1 11 -77 9223372036854775807 -9223372036854775808"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i64o|"                               "events"=["ai64"] "nocteoutput"=true}
+                {
+                    "cte"="|i64o 777777777777777777777 -1000000000000000000000 76|"
+                    "events"=["ai64 9223372036854775807 -9223372036854775808 62"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|i64x|"                               "events"=["ai64"] "nocteoutput"=true}
+                {
+                    "cte"="|i64x 7fffffffffffffff -8000000000000000 1c -29|"
+                    "events"=["ai64 9223372036854775807 -9223372036854775808 28 -41"]
+                    "nocteoutput"=true
+                }
             ]
-            "decodeFail" = [
-                "c0 |i64 nan|"                                 // Non-binary digit
-                "c0 |i64 snan|"                                // Non-binary digit
-                "c0 |i64 inf|"                                 // Non-binary digit
-                "c0 |i64 -inf|"                                // Non-binary digit
-                "c0 |i64b 2|"                                  // Non-binary digit
-                "c0 |i64b 1000000000000000000000000000000000000000000000000000000000000000|"   // Element too big
-                "c0 |i64b -1000000000000000000000000000000000000000000000000000000000000001|"  // Element too big
-                "c0 |i64o 9|"                                  // Non-binary digit
-                "c0 |i64o 1000000000000000000000|"             // Element too big
-                "c0 |i64o -1000000000000000000001|"            // Element too big
-                "c0 |i64x g|"                                  // Non-binary digit
-                "c0 |i64x 8000000000000000|"                   // Element too big
-                "c0 |i64x -8000000000000001|"                  // Element too big
-                "c0 |i64 a|"                                   // Non-binary digit
-                "c0 |i64 9223372036854775808|"                 // Element too big
-                "c0 |i64 -9223372036854775809|"                // Element too big
-                "c0 |i64 0b1000000000000000000000000000000000000000000000000000000000000000|"  // Element too big
-                "c0 |i64 -0b1000000000000000000000000000000000000000000000000000000000000001|" // Element too big
-                "c0 |i64 0o1000000000000000000000|"            // Element too big
-                "c0 |i64 -0o1000000000000000000001|"           // Element too big
-                "c0 |i64 0x8000000000000000|"                  // Element too big
-                "c0 |i64 -0x8000000000000001|"                 // Element too big
+            "mustFail" = [
+                {"cte"="|i64 nan|"}                                 // Non-binary digit
+                {"cte"="|i64 snan|"}                                // Non-binary digit
+                {"cte"="|i64 inf|"}                                 // Non-binary digit
+                {"cte"="|i64 -inf|"}                                // Non-binary digit
+                {"cte"="|i64b 2|"}                                  // Non-binary digit
+                {"cte"="|i64b 1000000000000000000000000000000000000000000000000000000000000000|"}   // Element too big
+                {"cte"="|i64b -1000000000000000000000000000000000000000000000000000000000000001|"}  // Element too big
+                {"cte"="|i64o 9|"}                                  // Non-binary digit
+                {"cte"="|i64o 1000000000000000000000|"}             // Element too big
+                {"cte"="|i64o -1000000000000000000001|"}            // Element too big
+                {"cte"="|i64x g|"}                                  // Non-binary digit
+                {"cte"="|i64x 8000000000000000|"}                   // Element too big
+                {"cte"="|i64x -8000000000000001|"}                  // Element too big
+                {"cte"="|i64 a|"}                                   // Non-binary digit
+                {"cte"="|i64 9223372036854775808|"}                 // Element too big
+                {"cte"="|i64 -9223372036854775809|"}                // Element too big
+                {"cte"="|i64 0b1000000000000000000000000000000000000000000000000000000000000000|"}  // Element too big
+                {"cte"="|i64 -0b1000000000000000000000000000000000000000000000000000000000000001|"} // Element too big
+                {"cte"="|i64 0o1000000000000000000000|"}            // Element too big
+                {"cte"="|i64 -0o1000000000000000000001|"}           // Element too big
+                {"cte"="|i64 0x8000000000000000|"}                  // Element too big
+                {"cte"="|i64 -0x8000000000000001|"}                 // Element too big
             ]
         }
 
@@ -200,36 +220,34 @@ c0
 
         {
             "name" = "Uint8 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "au8 1 2 3 255"]  "document"="c0\n|u8x 01 02 03 ff|"}
+            "mustSucceed" = [
+                {"cte"="|u8 1 2 3 255|"       "events"=["au8 1 2 3 255"]}
+                {"cte"="|u8|"                 "events"=["au8"]}
+                {"cte"="|u8 |"                "events"=["au8"]  "nocteoutput"=true}
+                {"cte"="|u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["au8 0 1 255 128 5 63 27"] "nocteoutput"=true}
+                {"cte"="|u8b|"                "events"=["au8"] "nocteoutput"=true}
+                {"cte"="|u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["au8 0 1 11 77 255 128"] "nocteoutput"=true}
+                {"cte"="|u8o|"                "events"=["au8"] "nocteoutput"=true}
+                {"cte"="|u8o 377 22 76|"      "events"=["au8 255 18 62"] "nocteoutput"=true}
+                {"cte"="|u8x|"                "events"=["au8"] "nocteoutput"=true}
+                {"cte"="|u8x ff 80 1c 29|"    "events"=["au8 255 128 28 41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |u8|"                 "events"=["v 0" "au8"]}
-                {"document"="c0 |u8 |"                "events"=["v 0" "au8"]}
-                {"document"="c0 |u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["v 0" "au8 0 1 255 128 5 63 27"]}
-                {"document"="c0 |u8b|"                "events"=["v 0" "au8"]}
-                {"document"="c0 |u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["v 0" "au8 0 1 11 77 255 128"]}
-                {"document"="c0 |u8o|"                "events"=["v 0" "au8"]}
-                {"document"="c0 |u8o 377 22 76|"      "events"=["v 0" "au8 255 18 62"]}
-                {"document"="c0 |u8x|"                "events"=["v 0" "au8"]}
-                {"document"="c0 |u8x ff 80 1c 29|"    "events"=["v 0" "au8 255 128 28 41"]}
-            ]
-            "decodeFail" = [
-                "c0 |u8 nan|"         // Non-uint digit
-                "c0 |u8 snan|"        // Non-uint digit
-                "c0 |u8 inf|"         // Non-uint digit
-                "c0 |u8 -inf|"        // Non-uint digit
-                "c0 |u8b 2|"          // Non-binary digit
-                "c0 |u8b 100000000|"  // Element too big
-                "c0 |u8o 9|"          // Non-octal digit
-                "c0 |u8o 400|"        // Element too big
-                "c0 |u8x g|"          // Non-hex digit
-                "c0 |u8x 100|"        // Element too big
-                "c0 |u8 a|"           // Non-uint digit
-                "c0 |u8 256|"         // Element too big
-                "c0 |u8 0b100000000|" // Element too big
-                "c0 |u8 0o400|"       // Element too big
-                "c0 |u8 0x100|"       // Element too big
+            "mustFail" = [
+                {"cte"="|u8 nan|"}         // Non-uint digit
+                {"cte"="|u8 snan|"}        // Non-uint digit
+                {"cte"="|u8 inf|"}         // Non-uint digit
+                {"cte"="|u8 -inf|"}        // Non-uint digit
+                {"cte"="|u8b 2|"}          // Non-binary digit
+                {"cte"="|u8b 100000000|"}  // Element too big
+                {"cte"="|u8o 9|"}          // Non-octal digit
+                {"cte"="|u8o 400|"}        // Element too big
+                {"cte"="|u8x g|"}          // Non-hex digit
+                {"cte"="|u8x 100|"}        // Element too big
+                {"cte"="|u8 a|"}           // Non-uint digit
+                {"cte"="|u8 256|"}         // Element too big
+                {"cte"="|u8 0b100000000|"} // Element too big
+                {"cte"="|u8 0o400|"}       // Element too big
+                {"cte"="|u8 0x100|"}       // Element too big
             ]
         }
 
@@ -237,36 +255,34 @@ c0
 
         {
             "name" = "Uint16 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "au16 1 2 3 65535"]  "document"="c0\n|u16x 0001 0002 0003 ffff|"}
+            "mustSucceed" = [
+                {"cte"="|u16 1 2 3 65535|"     "events"=["au16 1 2 3 65535"]}
+                {"cte"="|u16|"                 "events"=["au16"]}
+                {"cte"="|u16 |"                "events"=["au16"] "nocteoutput"=true}
+                {"cte"="|u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["au16 0 1 65535 128 5 63 27"] "nocteoutput"=true}
+                {"cte"="|u16b|"                "events"=["au16"] "nocteoutput"=true}
+                {"cte"="|u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["au16 0 1 11 77 65535 128"] "nocteoutput"=true}
+                {"cte"="|u16o|"                "events"=["au16"] "nocteoutput"=true}
+                {"cte"="|u16o 177777 22 76|"   "events"=["au16 65535 18 62"] "nocteoutput"=true}
+                {"cte"="|u16x|"                "events"=["au16"] "nocteoutput"=true}
+                {"cte"="|u16x ffff 80 1c 29|"  "events"=["au16 65535 128 28 41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |u16|"                 "events"=["v 0" "au16"]}
-                {"document"="c0 |u16 |"                "events"=["v 0" "au16"]}
-                {"document"="c0 |u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["v 0" "au16 0 1 65535 128 5 63 27"]}
-                {"document"="c0 |u16b|"                "events"=["v 0" "au16"]}
-                {"document"="c0 |u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["v 0" "au16 0 1 11 77 65535 128"]}
-                {"document"="c0 |u16o|"                "events"=["v 0" "au16"]}
-                {"document"="c0 |u16o 177777 22 76|"   "events"=["v 0" "au16 65535 18 62"]}
-                {"document"="c0 |u16x|"                "events"=["v 0" "au16"]}
-                {"document"="c0 |u16x ffff 80 1c 29|"  "events"=["v 0" "au16 65535 128 28 41"]}
-            ]
-            "decodeFail" = [
-                "c0 |u16 nan|"                 // Non-uint digit
-                "c0 |u16 snan|"                // Non-uint digit
-                "c0 |u16 inf|"                 // Non-uint digit
-                "c0 |u16 -inf|"                // Non-uint digit
-                "c0 |u16b 2|"                  // Non-binary digit
-                "c0 |u16b 10000000000000000|"  // Element too big
-                "c0 |u16o 9|"                  // Non-octal digit
-                "c0 |u16o 200000|"             // Element too big
-                "c0 |u16x g|"                  // Non-hex digit
-                "c0 |u16x 10000|"              // Element too big
-                "c0 |u16 a|"                   // Non-uint digit
-                "c0 |u16 65536|"               // Element too big
-                "c0 |u16 0b10000000000000000|" // Element too big
-                "c0 |u16 0o200000|"            // Element too big
-                "c0 |u16 0x10000|"             // Element too big
+            "mustFail" = [
+                {"cte"="|u16 nan|"}                 // Non-uint digit
+                {"cte"="|u16 snan|"}                // Non-uint digit
+                {"cte"="|u16 inf|"}                 // Non-uint digit
+                {"cte"="|u16 -inf|"}                // Non-uint digit
+                {"cte"="|u16b 2|"}                  // Non-binary digit
+                {"cte"="|u16b 10000000000000000|"}  // Element too big
+                {"cte"="|u16o 9|"}                  // Non-octal digit
+                {"cte"="|u16o 200000|"}             // Element too big
+                {"cte"="|u16x g|"}                  // Non-hex digit
+                {"cte"="|u16x 10000|"}              // Element too big
+                {"cte"="|u16 a|"}                   // Non-uint digit
+                {"cte"="|u16 65536|"}               // Element too big
+                {"cte"="|u16 0b10000000000000000|"} // Element too big
+                {"cte"="|u16 0o200000|"}            // Element too big
+                {"cte"="|u16 0x10000|"}             // Element too big
             ]
         }
 
@@ -274,38 +290,42 @@ c0
 
         {
             "name" = "Uint32 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "au32 1 2 3 0xffffffff"]  "document"="c0\n|u32x 00000001 00000002 00000003 ffffffff|"}
+            "mustSucceed" = [
+                {"cte"="|u32 1 2 3 4294967295|" "events"=["au32 1 2 3 0xffffffff"]}
+                {"cte"="|u32|"                     "events"=["au32"]}
+                {"cte"="|u32 |"                    "events"=["au32"] "nocteoutput"=true}
+                {
+                    "cte"="|u32 0 1 4294967295 128 0b101 0o77 0x1b|"
+                    "events"=["au32 0 1 4294967295 128 5 63 27"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|u32b|"                    "events"=["au32"] "nocteoutput"=true}
+                {
+                    "cte"="|u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"
+                    "events"=["au32 0 1 11 77 4294967295 128"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|u32o|"                    "events"=["au32"] "nocteoutput"=true}
+                {"cte"="|u32o 37777777777 22 76|"  "events"=["au32 4294967295 18 62"] "nocteoutput"=true}
+                {"cte"="|u32x|"                    "events"=["au32"] "nocteoutput"=true}
+                {"cte"="|u32x ffffffff 80 1c 29|"  "events"=["au32 4294967295 128 28 41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |u32|"                     "events"=["v 0" "au32"]}
-                {"document"="c0 |u32 |"                    "events"=["v 0" "au32"]}
-                {"document"="c0 |u32 0 1 4294967295 128 0b101 0o77 0x1b|"
-                 "events"=["v 0" "au32 0 1 4294967295 128 5 63 27"]}
-                {"document"="c0 |u32b|"                    "events"=["v 0" "au32"]}
-                {"document"="c0 |u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"
-                 "events"=["v 0" "au32 0 1 11 77 4294967295 128"]}
-                {"document"="c0 |u32o|"                    "events"=["v 0" "au32"]}
-                {"document"="c0 |u32o 37777777777 22 76|"  "events"=["v 0" "au32 4294967295 18 62"]}
-                {"document"="c0 |u32x|"                    "events"=["v 0" "au32"]}
-                {"document"="c0 |u32x ffffffff 80 1c 29|"  "events"=["v 0" "au32 4294967295 128 28 41"]}
-            ]
-            "decodeFail" = [
-                "c0 |u32 nan|"                 // Non-uint digit
-                "c0 |u32 snan|"                // Non-uint digit
-                "c0 |u32 inf|"                 // Non-uint digit
-                "c0 |u32 -inf|"                // Non-uint digit
-                "c0 |u32b 2|"                  // Non-binary digit
-                "c0 |u32b 100000000000000000000000000000000|" // Element too big
-                "c0 |u32o 9|"                  // Non-octal digit
-                "c0 |u32o 40000000000|"        // Element too big
-                "c0 |u32x g|"                  // Non-hex digit
-                "c0 |u32x 100000000|"          // Element too big
-                "c0 |u32 a|"                   // Non-uint digit
-                "c0 |u32 4294967296|"          // Element too big
-                "c0 |u32 0b100000000000000000000000000000000|" // Element too big
-                "c0 |u32 0o40000000000|"       // Element too big
-                "c0 |u32 0x100000000|"         // Element too big
+            "mustFail" = [
+                {"cte"="|u32 nan|"}                 // Non-uint digit
+                {"cte"="|u32 snan|"}                // Non-uint digit
+                {"cte"="|u32 inf|"}                 // Non-uint digit
+                {"cte"="|u32 -inf|"}                // Non-uint digit
+                {"cte"="|u32b 2|"}                  // Non-binary digit
+                {"cte"="|u32b 100000000000000000000000000000000|"} // Element too big
+                {"cte"="|u32o 9|"}                  // Non-octal digit
+                {"cte"="|u32o 40000000000|"}        // Element too big
+                {"cte"="|u32x g|"}                  // Non-hex digit
+                {"cte"="|u32x 100000000|"}          // Element too big
+                {"cte"="|u32 a|"}                   // Non-uint digit
+                {"cte"="|u32 4294967296|"}          // Element too big
+                {"cte"="|u32 0b100000000000000000000000000000000|"} // Element too big
+                {"cte"="|u32 0o40000000000|"}       // Element too big
+                {"cte"="|u32 0x100000000|"}         // Element too big
             ]
         }
 
@@ -313,39 +333,45 @@ c0
 
         {
             "name" = "Uint64 array"
-            "encodeDecode" = [
-                {"events"=["v 0" "au64 1 2 3 0xffffffffffffffff"] 
-                 "document"="c0\n|u64x 0000000000000001 0000000000000002 0000000000000003 ffffffffffffffff|"}
+            "mustSucceed" = [
+                {
+                    "cte"="|u64 1 2 3 18446744073709551615|"
+                    "events"=["au64 1 2 3 0xffffffffffffffff"] 
+                }
+                {"cte"="|u64|"                                "events"=["au64"]}
+                {"cte"="|u64 |"                               "events"=["au64"] "nocteoutput"=true}
+                {
+                    "cte"="|u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
+                    "events"=["au64 0 1 18446744073709551615 128 5 63 27"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|u64b|"                               "events"=["au64"] "nocteoutput"=true}
+                {
+                    "cte"="|u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
+                    "events"=["au64 0 1 11 77 18446744073709551615 128"]
+                    "nocteoutput"=true
+                }
+                {"cte"="|u64o|"                               "events"=["au64"] "nocteoutput"=true}
+                {"cte"="|u64o 1777777777777777777777 22 76|"  "events"=["au64 18446744073709551615 18 62"] "nocteoutput"=true}
+                {"cte"="|u64x|"                               "events"=["au64"] "nocteoutput"=true}
+                {"cte"="|u64x ffffffffffffffff 80 1c 29|"     "events"=["au64 18446744073709551615 128 28 41"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |u64|"                                "events"=["v 0" "au64"]}
-                {"document"="c0 |u64 |"                               "events"=["v 0" "au64"]}
-                {"document"="c0 |u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
-                 "events"=["v 0" "au64 0 1 18446744073709551615 128 5 63 27"]}
-                {"document"="c0 |u64b|"                               "events"=["v 0" "au64"]}
-                {"document"="c0 |u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
-                 "events"=["v 0" "au64 0 1 11 77 18446744073709551615 128"]}
-                {"document"="c0 |u64o|"                               "events"=["v 0" "au64"]}
-                {"document"="c0 |u64o 1777777777777777777777 22 76|"  "events"=["v 0" "au64 18446744073709551615 18 62"]}
-                {"document"="c0 |u64x|"                               "events"=["v 0" "au64"]}
-                {"document"="c0 |u64x ffffffffffffffff 80 1c 29|"     "events"=["v 0" "au64 18446744073709551615 128 28 41"]}
-            ]
-            "decodeFail" = [
-                "c0 |u64 nan|"                      // Non-uint digit
-                "c0 |u64 snan|"                     // Non-uint digit
-                "c0 |u64 inf|"                      // Non-uint digit
-                "c0 |u64 -inf|"                     // Non-uint digit
-                "c0 |u64b 2|"                       // Non-binary digit
-                "c0 |u64b 10000000000000000000000000000000000000000000000000000000000000000|" // Element too big
-                "c0 |u64o 9|"                       // Non-octal digit
-                "c0 |u64o 2000000000000000000000|"  // Element too big
-                "c0 |u64x g|"                       // Non-hex digit
-                "c0 |u64x 10000000000000000|"       // Element too big
-                "c0 |u64 a|"                        // Non-uint digit
-                "c0 |u64 18446744073709551616|"     // Element too big
-                "c0 |u64 0b10000000000000000000000000000000000000000000000000000000000000000|" // Element too big
-                "c0 |u64 0o2000000000000000000000|" // Element too big
-                "c0 |u64 0x10000000000000000|"      // Element too big
+            "mustFail" = [
+                {"cte"="|u64 nan|"}                      // Non-uint digit
+                {"cte"="|u64 snan|"}                     // Non-uint digit
+                {"cte"="|u64 inf|"}                      // Non-uint digit
+                {"cte"="|u64 -inf|"}                     // Non-uint digit
+                {"cte"="|u64b 2|"}                       // Non-binary digit
+                {"cte"="|u64b 10000000000000000000000000000000000000000000000000000000000000000|"} // Element too big
+                {"cte"="|u64o 9|"}                       // Non-octal digit
+                {"cte"="|u64o 2000000000000000000000|"}  // Element too big
+                {"cte"="|u64x g|"}                       // Non-hex digit
+                {"cte"="|u64x 10000000000000000|"}       // Element too big
+                {"cte"="|u64 a|"}                        // Non-uint digit
+                {"cte"="|u64 18446744073709551616|"}     // Element too big
+                {"cte"="|u64 0b10000000000000000000000000000000000000000000000000000000000000000|"} // Element too big
+                {"cte"="|u64 0o2000000000000000000000|"} // Element too big
+                {"cte"="|u64 0x10000000000000000|"}      // Element too big
             ]
         }
 
@@ -354,24 +380,24 @@ c0
         {
             "name" = "Float16 array"
             // 8 sig bits, 8 exp bits
-            "decodeEncode" = [
-                {"document"="c0 |f16|"                                "events"=["v 0" "af16"]}
-                {"document"="c0 |f16x|"                               "events"=["v 0" "af16"]}
-                {"document"="c0\n|f16 0x1.5p2 -0x1.f8p-20|"           "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
-                {"document"="c0\n|f16x 1.5p2 -1.f8p-20|"              "events"=["v 0" "af16 0x1.5p2 -0x1.f8p-20"]}
-                {"document"="c0 |f16 nan snan inf -inf|"              "events"=["v 0" "af16 nan snan inf -inf"]}
-                {"document"="c0 |f16 NAN SNAN INF -INF|"              "events"=["v 0" "af16 nan snan inf -inf"]}
-                {"document"="c0 |f16x nan snan inf -inf|"             "events"=["v 0" "af16 nan snan inf -inf"]}
-                {"document"="c0 |f16x NAN SNAN INF -INF|"             "events"=["v 0" "af16 nan snan inf -inf"]}
+            "mustSucceed" = [
+                {"cte"="|f16|"                      "events"=["af16"] "nocteoutput"=true}
+                {"cte"="|f16x|"                     "events"=["af16"]}
+                {"cte"="|f16 0x1.5p2 -0x1.f8p-20|"  "events"=["af16 0x1.5p2 -0x1.f8p-20"] "nocteoutput"=true}
+// TODO: printing as 1.5p+02                {"cte"="|f16x 1.5p+2 -1.f8p-20|"    "events"=["af16 0x1.5p2 -0x1.f8p-20"]}
+                {"cte"="|f16 nan snan inf -inf|"    "events"=["af16 nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f16 NAN SNAN INF -INF|"    "events"=["af16 nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f16x nan snan inf -inf|"   "events"=["af16 nan snan inf -inf"]}
+                {"cte"="|f16x NAN SNAN INF -INF|"   "events"=["af16 nan snan inf -inf"] "nocteoutput"=true}
             ]
-            "decodeFail" = [
-                "c0 |f16 -|"                              // Incomplete value
-                "c0 |f16 -nan|"                           // NaN does not have a negative form
-                "c0 |f16 -snan|"                          // NaN does not have a negative form
-                "c0 |f16 0x1.8p+128|"                    // Exponent too big
-                "c0 |f16 0x1.8p-127|"                    // Exponent too small
-                "c0 |f16 0x1.ffff|"  // Coefficient too big
-                "c0 |f16 -0x1.ffff|" // Coefficient too big
+            "mustFail" = [
+                {"cte"="|f16 -|"}           // Incomplete value
+                {"cte"="|f16 -nan|"}        // NaN does not have a negative form
+                {"cte"="|f16 -snan|"}       // NaN does not have a negative form
+                {"cte"="|f16 0x1.8p+128|"}  // Exponent too big
+                {"cte"="|f16 0x1.8p-127|"}  // Exponent too small
+                {"cte"="|f16 0x1.ffff|"}    // Coefficient too big
+                {"cte"="|f16 -0x1.ffff|"}   // Coefficient too big
             ]
         }
 
@@ -380,31 +406,36 @@ c0
         {
             "name" = "Float32 array"
             // 24 sig bits, 8 exp bits
-            "encodeDecode" = [
-                {"events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
-                 "document"="c0\n|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"}
+            "mustSucceed" = [
+                {
+                    "cte"="|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
+                    "events"=["af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
+                }
+                {"cte"="|f32|"                                "events"=["af32"] "nocteoutput"=true}
+                {"cte"="|f32x|"                               "events"=["af32"]}
+                {"cte"="|f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["af32 1.4512e+20 9.41e-15 944523.55"] "nocteoutput"=true}
+                {
+                    "cte"="|f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"
+                    "events"=["af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
+                    "events"=["af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
+                }
+                {"cte"="|f32 nan snan inf -inf|"              "events"=["af32 nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f32 NAN SNAN INF -INF|"              "events"=["af32 nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f32x nan snan inf -inf|"             "events"=["af32 nan snan inf -inf"]}
+                {"cte"="|f32x NAN SNAN INF -INF|"             "events"=["af32 nan snan inf -inf"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |f32|"                                "events"=["v 0" "af32"]}
-                {"document"="c0 |f32x|"                               "events"=["v 0" "af32"]}
-                {"document"="c0 |f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af32 1.4512e+20 9.41e-15 944523.55"]}
-                {"document"="c0 |f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"
-                 "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
-                {"document"="c0 |f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
-                 "events"=["v 0" "af32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]}
-                {"document"="c0 |f32 nan snan inf -inf|"              "events"=["v 0" "af32 nan snan inf -inf"]}
-                {"document"="c0 |f32 NAN SNAN INF -INF|"              "events"=["v 0" "af32 nan snan inf -inf"]}
-                {"document"="c0 |f32x nan snan inf -inf|"             "events"=["v 0" "af32 nan snan inf -inf"]}
-                {"document"="c0 |f32x NAN SNAN INF -INF|"             "events"=["v 0" "af32 nan snan inf -inf"]}
-            ]
-            "decodeFail" = [
-                "c0 |f32 -|"                              // Incomplete value
-                "c0 |f32 -nan|"                           // NaN does not have a negative form
-                "c0 |f32 -snan|"                          // NaN does not have a negative form
-                "c0 |f32 0x1.fep+128|"                    // Exponent too big
-                "c0 |f32 0x1.fep-127|"                    // Exponent too small
-                "c0 |f32 0x1.fffffffffffffffffffffffff|"  // Coefficient too big
-                "c0 |f32 -0x1.fffffffffffffffffffffffff|" // Coefficient too big
+            "mustFail" = [
+                {"cte"="|f32 -|"}                              // Incomplete value
+                {"cte"="|f32 -nan|"}                           // NaN does not have a negative form
+                {"cte"="|f32 -snan|"}                          // NaN does not have a negative form
+                {"cte"="|f32 0x1.fep+128|"}                    // Exponent too big
+                {"cte"="|f32 0x1.fep-127|"}                    // Exponent too small
+                {"cte"="|f32 0x1.fffffffffffffffffffffffff|"}  // Coefficient too big
+                {"cte"="|f32 -0x1.fffffffffffffffffffffffff|"} // Coefficient too big
             ]
         }
 
@@ -413,31 +444,36 @@ c0
         {
             "name" = "Float64 array"
             // 53 sig bits, 11 exp bits
-            "encodeDecode" = [
-                {"events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
-                 "document"="c0\n|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"}
+            "mustSucceed" = [
+                {
+                    "cte"="|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
+                    "events"=["af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
+                }
+                {"cte"="|f64|"                                "events"=["af64"] "nocteoutput"=true}
+                {"cte"="|f64x|"                               "events"=["af64"]}
+                {"cte"="|f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["af64 1.4512e+20 9.41e-15 944523.55"] "nocteoutput"=true}
+                {
+                    "cte"="|f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"
+                    "events"=["af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
+                    "events"=["af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
+                }
+                {"cte"="|f64 nan snan inf -inf|"              "events"=["af64 nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f64 NAN SNAN INF -INF|"              "events"=["af64 nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f64x nan snan inf -inf|"             "events"=["af64 nan snan inf -inf"]}
+                {"cte"="|f64x NAN SNAN INF -INF|"             "events"=["af64 nan snan inf -inf"] "nocteoutput"=true}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |f64|"                                "events"=["v 0" "af64"]}
-                {"document"="c0 |f64x|"                               "events"=["v 0" "af64"]}
-                {"document"="c0 |f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["v 0" "af64 1.4512e+20 9.41e-15 944523.55"]}
-                {"document"="c0 |f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"
-                 "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
-                {"document"="c0 |f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
-                 "events"=["v 0" "af64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]}
-                {"document"="c0 |f64 nan snan inf -inf|"              "events"=["v 0" "af64 nan snan inf -inf"]}
-                {"document"="c0 |f64 NAN SNAN INF -INF|"              "events"=["v 0" "af64 nan snan inf -inf"]}
-                {"document"="c0 |f64x nan snan inf -inf|"             "events"=["v 0" "af64 nan snan inf -inf"]}
-                {"document"="c0 |f64x NAN SNAN INF -INF|"             "events"=["v 0" "af64 nan snan inf -inf"]}
-            ]
-            "decodeFail" = [
-                "c0 |f64 -|"                              // Incomplete value
-                "c0 |f64 -nan|"                           // NaN does not have a negative form
-                "c0 |f64 -snan|"                          // NaN does not have a negative form
-                "c0 |f64 0x1.fep+1024|"                   // Exponent too big
-                "c0 |f64 0x1.fep-1023|"                   // Exponent too small
-                "c0 |f64 0x1.fffffffffffffffffffffffff|"  // Coefficient too big
-                "c0 |f64 -0x1.fffffffffffffffffffffffff|" // Coefficient too big
+            "mustFail" = [
+                {"cte"="|f64 -|"}                              // Incomplete value
+                {"cte"="|f64 -nan|"}                           // NaN does not have a negative form
+                {"cte"="|f64 -snan|"}                          // NaN does not have a negative form
+                {"cte"="|f64 0x1.fep+1024|"}                   // Exponent too big
+                {"cte"="|f64 0x1.fep-1023|"}                   // Exponent too small
+                {"cte"="|f64 0x1.fffffffffffffffffffffffff|"}  // Coefficient too big
+                {"cte"="|f64 -0x1.fffffffffffffffffffffffff|"} // Coefficient too big
             ]
         }
 
@@ -445,20 +481,23 @@ c0
 
         {
             "name" = "UID array"
-            "encodeDecode" = [
-                {"events"=["v 0" "au ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595"]
-                 "document"="c0\n|u ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595|"}
+            "mustSucceed" = [
+                {
+                    "cte"="|u ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595|"
+                    "events"=["au ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595"]
+                }
+                {"cte"="|u|"                                "events"=["au"]}
+                {
+                    "cte"="|u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
+                    "events"=["au 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595"]
+                    "nocteoutput"=true
+                }
             ]
-            "decodeEncode" = [
-                {"document"="c0 |u|"                                "events"=["v 0" "au"]}
-                {"document"="c0 |u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
-                 "events"=["v 0" "au 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595"]}
-            ]
-            "decodeFail" = [
-                "c0 |u -ffffffff-ffff-ffff-ffff-ffffffffffff|" // UIDs cannot be negative
-                "c0 |u ffffffff-ffff-ffff-ffff-fffffffffff|"   // Incomplete
-                "c0 |u ffffffffffffffffffffffffffffffff|"      // Malformed
-                "c0 |u fffffff-fffff-ffff-ffff-fffffffffff|"   // Malformed
+            "mustFail" = [
+                {"cte"="|u -ffffffff-ffff-ffff-ffff-ffffffffffff|"} // UIDs cannot be negative
+                {"cte"="|u ffffffff-ffff-ffff-ffff-fffffffffff|"}   // Incomplete
+                {"cte"="|u ffffffffffffffffffffffffffffffff|"}      // Malformed
+                {"cte"="|u fffffff-fffff-ffff-ffff-fffffffffff|"}   // Malformed
             ]
         }
 
@@ -466,25 +505,25 @@ c0
 
         {
             "name" = "Bit array"
-            "encodeDecode" = [
-                {"events"=["v 0" "ab 110101000111000111"]  "document"="c0\n|b 110101000111000111|"}
+            "mustSucceed" = [
+                {"events"=["ab 110101000111000111"]  "cte"="|b 110101000111000111|"}
+                {"cte"="|b|"                "events"=["ab"]}
+                {"cte"="|b 0|"              "events"=["ab 0"]}
+                {"cte"="|b 1|"              "events"=["ab 1"]}
+                {"cte"="|b 1 0 1 1 0 1|"    "events"=["ab 101101"] "nocteoutput"=true}
+                {"cte"="|b 101101 |"        "events"=["ab 101101"] "nocteoutput"=true}
+                {"cte"="|b 10110111|"       "events"=["ab 10110111"]}
+                {"cte"="|b 1  0 110 1 11|"  "events"=["ab 10110111"] "nocteoutput"=true}
+                {
+                    "cte"="|b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
+                    "events"=["ab 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011"]
+                }
             ]
-            "decodeEncode" = [
-                {"document"="c0 |b|"                "events"=["v 0" "ab"]}
-                {"document"="c0 |b 0|"              "events"=["v 0" "ab 0"]}
-                {"document"="c0 |b 1|"              "events"=["v 0" "ab 1"]}
-                {"document"="c0 |b 1 0 1 1 0 1|"    "events"=["v 0" "ab 101101"]}
-                {"document"="c0 |b 101101 |"        "events"=["v 0" "ab 101101"]}
-                {"document"="c0 |b 10110111|"       "events"=["v 0" "ab 10110111"]}
-                {"document"="c0 |b 1  0 110 1 11|"  "events"=["v 0" "ab 10110111"]}
-                {"document"="c0 |b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
-                 "events"=["v 0" "ab 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011"]}
-            ]
-            "decodeFail" = [
-                "c0 |b 2|"        // Non-binary digit
-                "c0 |b -1|"       // Non-binary digit
-                "c0 |b nan|"      // Non-binary digit
-                "c0 |b 0x1|"      // Non-binary digit
+            "mustFail" = [
+                {"cte"="|b 2|"}        // Non-binary digit
+                {"cte"="|b -1|"}       // Non-binary digit
+                {"cte"="|b nan|"}      // Non-binary digit
+                {"cte"="|b 0x1|"}      // Non-binary digit
             ]
         }
 
@@ -492,13 +531,13 @@ c0
 
         {
             "name" = "Chunked uint8 array"
-            "encode" = [
-                {"events"=["v 0" "bau8" "acl 0"]                               "document"="c0\n|u8x|"}
-                {"events"=["v 0" "bau8" "acl 1" "adu8x ff"]                    "document"="c0\n|u8x ff|"}
-                {"events"=["v 0" "bau8" "acl 2" "adu8x ff d4"]                 "document"="c0\n|u8x ff d4|"}
-                {"events"=["v 0" "bau8" "acl 2" "adu8x ff" "adu8x d4"]         "document"="c0\n|u8x ff d4|"}
-                {"events"=["v 0" "bau8" "acm 2" "adu8x ff" "adu8x d4" "acl 0"] "document"="c0\n|u8x ff d4|"}
-                {"events"=["v 0" "bau8" "acm 1" "adu8x ff" "acl 1" "adu8x d4"] "document"="c0\n|u8x ff d4|"}
+            "mustSucceed" = [
+                {"events"=["bau8" "acl 0"]                               "cte"="|u8|" "noeventoutput"=true}
+                {"events"=["bau8" "acl 1" "adu8 255"]                    "cte"="|u8 255|" "noeventoutput"=true}
+                {"events"=["bau8" "acl 2" "adu8 255 212"]                "cte"="|u8 255 212|" "noeventoutput"=true}
+                {"events"=["bau8" "acl 2" "adu8 255" "adu8 212"]         "cte"="|u8 255 212|" "noeventoutput"=true}
+                {"events"=["bau8" "acm 2" "adu8 255" "adu8 212" "acl 0"] "cte"="|u8 255 212|" "noeventoutput"=true}
+                {"events"=["bau8" "acm 1" "adu8 255" "acl 1" "adu8 212"] "cte"="|u8 255 212|" "noeventoutput"=true}
             ]
         }
 
@@ -506,16 +545,25 @@ c0
 
         {
             "name" = "Chunked uint16 array"
-            "encode" = [
-                {"events"=["v 0" "bau16" "acl 0"]                   "document"="c0\n|u16x|"}
-                {"events"=["v 0" "bau16" "acl 1" "adu8x ff 01"]        "document"="c0\n|u16x 01ff|"}
-                {"events"=["v 0" "bau16" "acl 2" "adu8x ff 01 d4 aa"]  "document"="c0\n|u16x 01ff aad4|"}
-                {"events"=["v 0" "bau16" "acl 2" "adu8x ff" "adu8x 01 d4 aa"]
-                 "document"="c0\n|u16x 01ff aad4|"}
-                {"events"=["v 0" "bau16" "acm 2" "adu8x ff" "adu8x 01 d4 aa" "acl 0"]
-                 "document"="c0\n|u16x 01ff aad4|"}
-                {"events"=["v 0" "bau16" "acm 1" "adu8x ff 01" "acl 1" "adu8x d4" "adu8x aa"]
-                 "document"="c0\n|u16x 01ff aad4|"}
+            "mustSucceed" = [
+                {"events"=["bau16" "acl 0"]                    "cte"="|u16|" "noeventoutput"=true}
+                {"events"=["bau16" "acl 1" "adu16 256"]        "cte"="|u16 256|" "noeventoutput"=true}
+                {"events"=["bau16" "acl 2" "adu16 256 20000"]  "cte"="|u16 256 20000|" "noeventoutput"=true}
+                {
+                    "events"=["bau16" "acl 2" "adu16 256" "adu16 20000"]
+                    "cte"="|u16 256 20000|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau16" "acm 2" "adu16 256 20000" "acl 0"]
+                    "cte"="|u16 256 20000|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau16" "acm 1" "adu16 256" "acl 1" "adu16 20000"]
+                    "cte"="|u16 256 20000|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -523,16 +571,24 @@ c0
 
         {
             "name" = "Chunked uint32 array"
-            "encode" = [
-                {"events"=["v 0" "bau32" "acl 0"]                   "document"="c0\n|u32x|"}
-                {"events"=["v 0" "bau32" "acl 1" "adu8x 34 12 ff 01"]  "document"="c0\n|u32x 01ff1234|"}
-                {"events"=["v 0" "bau32" "acl 2" "adu8x 34 12 ff 01 78 56 d4 aa"]  "document"="c0\n|u32x 01ff1234 aad45678|"}
-                {"events"=["v 0" "bau32" "acl 2" "adu8x 34" "adu8x 12 ff 01" "adu8x 78 56 d4 aa"]
-                 "document"="c0\n|u32x 01ff1234 aad45678|"}
-                {"events"=["v 0" "bau32" "acm 2" "adu8x 34 12 ff 01 78 56 d4 aa" "acl 0"]
-                 "document"="c0\n|u32x 01ff1234 aad45678|"}
-                {"events"=["v 0" "bau32" "acm 1" "adu8x 34 12 ff 01" "acl 1" "adu8x 78 56 d4" "adu8x aa"]
-                 "document"="c0\n|u32x 01ff1234 aad45678|"}
+            "mustSucceed" = [
+                {"events"=["bau32" "acl 0"]                   "cte"="|u32|" "noeventoutput"=true}
+                {"events"=["bau32" "acl 1" "adu32 12345678"]  "cte"="|u32 12345678|" "noeventoutput"=true}
+                {
+                    "events"=["bau32" "acl 2" "adu32 12345678 87654321"]
+                    "cte"="|u32 12345678 87654321|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau32" "acm 2" "adu32 12345678 87654321" "acl 0"]
+                    "cte"="|u32 12345678 87654321|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau32" "acm 1" "adu32 12345678" "acl 1" "adu32 87654321"]
+                    "cte"="|u32 12345678 87654321|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -540,18 +596,28 @@ c0
 
         {
             "name" = "Chunked uint64 array"
-            "encode" = [
-                {"events"=["v 0" "bau64" "acl 0"]  "document"="c0\n|u64x|"}
-                {"events"=["v 0" "bau64" "acl 1" "adu8x dd cc bb aa 34 12 ff 01"]
-                 "document"="c0\n|u64x 01ff1234aabbccdd|"}
-                {"events"=["v 0" "bau64" "acl 2" "adu8x dd cc bb aa 34 12 ff 01 44 33 22 11 78 56 d4 aa"]
-                 "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
-                {"events"=["v 0" "bau64" "acl 2" "adu8x dd cc bb aa 34" "adu8x 12 ff 01 44 33" "adu8x 22 11 78 56 d4 aa"]
-                 "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
-                {"events"=["v 0" "bau64" "acm 2" "adu8x dd cc bb aa 34 12 ff 01 44 33 22 11 78 56 d4 aa" "acl 0"]
-                 "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
-                {"events"=["v 0" "bau64" "acm 1" "adu8x dd cc bb aa 34 12 ff 01" "acl 1" "adu8x 44 33 22 11 78 56 d4" "adu8x aa"]
-                 "document"="c0\n|u64x 01ff1234aabbccdd aad4567811223344|"}
+            "mustSucceed" = [
+                {"events"=["bau64" "acl 0"]  "cte"="|u64|" "noeventoutput"=true}
+                {
+                    "events"=["bau64" "acl 1" "adu64 1234567890123456789"]
+                    "cte"="|u64 1234567890123456789|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau64" "acl 2" "adu64 1234567890123456789 9876543210987654321"]
+                    "cte"="|u64 1234567890123456789 9876543210987654321|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau64" "acm 2" "adu64 1234567890123456789 9876543210987654321" "acl 0"]
+                    "cte"="|u64 1234567890123456789 9876543210987654321|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bau64" "acm 1" "adu64 1234567890123456789" "acl 1" "adu64 9876543210987654321"]
+                    "cte"="|u64 1234567890123456789 9876543210987654321|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -559,13 +625,13 @@ c0
 
         {
             "name" = "Chunked int8 array"
-            "encode" = [
-                {"events"=["v 0" "bai8" "acl 0"]                             "document"="c0\n|i8|"}
-                {"events"=["v 0" "bai8" "acl 1" "adu8x 7f"]                     "document"="c0\n|i8 127|"}
-                {"events"=["v 0" "bai8" "acl 2" "adu8x 7f 9f"]                  "document"="c0\n|i8 127 -97|"}
-                {"events"=["v 0" "bai8" "acl 2" "adu8x 7f" "adu8x 9f"]             "document"="c0\n|i8 127 -97|"}
-                {"events"=["v 0" "bai8" "acm 2" "adu8x 7f" "adu8x 9f" "acl 0"] "document"="c0\n|i8 127 -97|"}
-                {"events"=["v 0" "bai8" "acm 1" "adu8x 7f" "acl 1" "adu8x 9f"] "document"="c0\n|i8 127 -97|"}
+            "mustSucceed" = [
+                {"events"=["bai8" "acl 0"]                               "cte"="|i8|" "noeventoutput"=true}
+                {"events"=["bai8" "acl 1" "adu8x 7f"]                    "cte"="|i8 127|" "noeventoutput"=true}
+                {"events"=["bai8" "acl 2" "adu8x 7f 9f"]                 "cte"="|i8 127 -97|" "noeventoutput"=true}
+                {"events"=["bai8" "acl 2" "adu8x 7f" "adu8x 9f"]         "cte"="|i8 127 -97|" "noeventoutput"=true}
+                {"events"=["bai8" "acm 2" "adu8x 7f" "adu8x 9f" "acl 0"] "cte"="|i8 127 -97|" "noeventoutput"=true}
+                {"events"=["bai8" "acm 1" "adu8x 7f" "acl 1" "adu8x 9f"] "cte"="|i8 127 -97|" "noeventoutput"=true}
             ]
         }
 
@@ -573,15 +639,20 @@ c0
 
         {
             "name" = "Chunked int16 array"
-            "encode" = [
-                {"events"=["v 0" "bai16" "acl 0"]                        "document"="c0\n|i16|"}
-                {"events"=["v 0" "bai16" "acl 1" "adu8x ff 7f"]             "document"="c0\n|i16 32767|"}
-                {"events"=["v 0" "bai16" "acl 2" "adu8x ff 7f 9f ff"]       "document"="c0\n|i16 32767 -97|"}
-                {"events"=["v 0" "bai16" "acl 2" "adu8x ff 7f" "adu8x 9f ff"]  "document"="c0\n|i16 32767 -97|"}
-                {"events"=["v 0" "bai16" "acm 2" "adu8x ff 7f" "adu8x 9f ff" "acl 0"]
-                 "document"="c0\n|i16 32767 -97|"}
-                {"events"=["v 0" "bai16" "acm 1" "adu8x ff 7f" "acl 1" "adu8x 9f ff"]
-                 "document"="c0\n|i16 32767 -97|"}
+            "mustSucceed" = [
+                {"events"=["bai16" "acl 0"]                    "cte"="|i16|" "noeventoutput"=true}
+                {"events"=["bai16" "acl 1" "adi16 32767"]      "cte"="|i16 32767|" "noeventoutput"=true}
+                {"events"=["bai16" "acl 2" "adi16 32767 -97"]  "cte"="|i16 32767 -97|" "noeventoutput"=true}
+                {
+                    "events"=["bai16" "acm 2" "adi16 32767 -97" "acl 0"]
+                    "cte"="|i16 32767 -97|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai16" "acm 1" "adi16 32767" "acl 1" "adi16 -97"]
+                    "cte"="|i16 32767 -97|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -589,17 +660,28 @@ c0
 
         {
             "name" = "Chunked int32 array"
-            "encode" = [
-                {"events"=["v 0" "bai32" "acl 0"]                   "document"="c0\n|i32|"}
-                {"events"=["v 0" "bai32" "acl 1" "adu8x ff ff ff 7f"]  "document"="c0\n|i32 2147483647|"}
-                {"events"=["v 0" "bai32" "acl 2" "adu8x ff ff ff 7f 9f ff ff ff"]
-                 "document"="c0\n|i32 2147483647 -97|"}
-                {"events"=["v 0" "bai32" "acl 2" "adu8x ff ff ff 7f" "adu8x 9f ff ff ff"]
-                 "document"="c0\n|i32 2147483647 -97|"}
-                {"events"=["v 0" "bai32" "acm 2" "adu8x ff ff ff 7f" "adu8x 9f ff ff ff" "acl 0"]
-                 "document"="c0\n|i32 2147483647 -97|"}
-                {"events"=["v 0" "bai32" "acm 1" "adu8x ff ff ff 7f" "acl 1" "adu8x 9f ff ff ff"]
-                 "document"="c0\n|i32 2147483647 -97|"}
+            "mustSucceed" = [
+                {"events"=["bai32" "acl 0"] "cte"="|i32|" "noeventoutput"=true}
+                {
+                    "events"=["bai32" "acl 1" "adi32 2147483647"]
+                    "cte"="|i32 2147483647|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai32" "acl 2" "adi32 2147483647 -97"]
+                    "cte"="|i32 2147483647 -97|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai32" "acm 2" "adi32 2147483647 -97" "acl 0"]
+                    "cte"="|i32 2147483647 -97|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai32" "acm 1" "adi32 2147483647" "acl 1" "adi32 -97"]
+                    "cte"="|i32 2147483647 -97|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -607,18 +689,28 @@ c0
 
         {
             "name" = "Chunked int64 array"
-            "encode" = [
-                {"events"=["v 0" "bai64" "acl 0"]  "document"="c0\n|i64|"}
-                {"events"=["v 0" "bai64" "acl 1" "adu8x ff ff ff ff ff ff ff 7f"]
-                 "document"="c0\n|i64 9223372036854775807|"}
-                {"events"=["v 0" "bai64" "acl 2" "adu8x ff ff ff ff ff ff ff 7f 9f ff ff ff ff ff ff ff"]
-                 "document"="c0\n|i64 9223372036854775807 -97|"}
-                {"events"=["v 0" "bai64" "acl 2" "adu8x ff ff ff ff ff ff ff 7f" "adu8x 9f ff ff ff ff ff ff ff"]
-                 "document"="c0\n|i64 9223372036854775807 -97|"}
-                {"events"=["v 0" "bai64" "acm 2" "adu8x ff ff ff ff ff ff ff 7f" "adu8x 9f" "adu8x ff ff ff" "adu8x ff ff ff ff" "acl 0"]
-                 "document"="c0\n|i64 9223372036854775807 -97|"}
-                {"events"=["v 0" "bai64" "acm 1" "adu8x ff ff ff ff ff ff ff 7f" "acl 1" "adu8x 9f ff" "adu8x ff ff ff ff ff ff"]
-                 "document"="c0\n|i64 9223372036854775807 -97|"}
+            "mustSucceed" = [
+                {"events"=["bai64" "acl 0"]  "cte"="|i64|" "noeventoutput"=true}
+                {
+                    "events"=["bai64" "acl 1" "adi64 9223372036854775807"]
+                    "cte"="|i64 9223372036854775807|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai64" "acl 2" "adi64 9223372036854775807 -97"]
+                    "cte"="|i64 9223372036854775807 -97|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai64" "acm 2" "adi64 9223372036854775807 -97" "acl 0"]
+                    "cte"="|i64 9223372036854775807 -97|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["bai64" "acm 1" "adi64 9223372036854775807" "acl 1" "adi64 -97"]
+                    "cte"="|i64 9223372036854775807 -97|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -626,17 +718,22 @@ c0
 
         {
             "name" = "Chunked float16 array"
-            "encode" = [
-                {"events"=["v 0" "baf16" "acl 0"]                        "document"="c0\n|f16x|"}
-                {"events"=["v 0" "baf16" "acl 1" "adu8x ff 7f"]             "document"="c0\n|f16x nan|"}
-                {"events"=["v 0" "baf16" "acl 1" "adu8x bf 7f"]             "document"="c0\n|f16x snan|"}
-                {"events"=["v 0" "baf16" "acl 1" "adu8x 99 3f"]             "document"="c0\n|f16x 1.32|"}
-                {"events"=["v 0" "baf16" "acl 2" "adu8x ff 7f 99 3f"]       "document"="c0\n|f16x nan 1.32|"}
-                {"events"=["v 0" "baf16" "acl 2" "adu8x bf 7f" "adu8x 99 3f"]  "document"="c0\n|f16x snan 1.32|"}
-                {"events"=["v 0" "baf16" "acm 2" "adu8x 80 7f" "adu8x 80 ff" "acl 0"]
-                 "document"="c0\n|f16x inf -inf|"}
-                {"events"=["v 0" "baf16" "acm 1" "adu8x 80 7f" "acl 1" "adu8x 80 ff"]
-                 "document"="c0\n|f16x inf -inf|"}
+            "mustSucceed" = [
+                {"events"=["baf16" "acl 0"]                     "cte"="|f16x|" "noeventoutput"=true}
+                {"events"=["baf16" "acl 1" "adf16 nan"]         "cte"="|f16x nan|" "noeventoutput"=true}
+                {"events"=["baf16" "acl 1" "adf16 snan"]        "cte"="|f16x snan|" "noeventoutput"=true}
+                {"events"=["baf16" "acl 1" "adf16 0x1.a2"]      "cte"="|f16x 1.a2|" "noeventoutput"=true}
+                {"events"=["baf16" "acl 2" "adf16 nan 0x1.a2"]  "cte"="|f16x nan 1.a2|" "noeventoutput"=true}
+                {
+                    "events"=["baf16" "acm 2" "adf16 inf -inf" "acl 0"]
+                    "cte"="|f16x inf -inf|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf16" "acm 1" "adf16 inf" "acl 1" "adf16 -inf"]
+                    "cte"="|f16x inf -inf|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -644,19 +741,26 @@ c0
 
         {
             "name" = "Chunked float32 array"
-            "encode" = [
-                {"events"=["v 0" "baf32" "acl 0"]                   "document"="c0\n|f32x|"}
-                {"events"=["v 0" "baf32" "acl 1" "adu8x 00 00 ff 7f"]  "document"="c0\n|f32x nan|"}
-                {"events"=["v 0" "baf32" "acl 1" "adu8x 00 00 bf 7f"]  "document"="c0\n|f32x snan|"}
-                {"events"=["v 0" "baf32" "acl 1" "adu8x 00 00 99 3f"]  "document"="c0\n|f32x 1.32|"}
-                {"events"=["v 0" "baf32" "acl 2" "adu8x 00 00 ff 7f 00 00 99 3f"]
-                 "document"="c0\n|f32x nan 1.32|"}
-                {"events"=["v 0" "baf32" "acl 2" "adu8x 00 00 bf 7f" "adu8x 00 00 99 3f"]
-                 "document"="c0\n|f32x snan 1.32|"}
-                {"events"=["v 0" "baf32" "acm 2" "adu8x 00 00 80 7f" "adu8x 00 00 80 ff" "acl 0"]
-                 "document"="c0\n|f32x inf -inf|"}
-                {"events"=["v 0" "baf32" "acm 1" "adu8x 00 00 80 7f" "acl 1" "adu8x 00 00 80 ff"]
-                 "document"="c0\n|f32x inf -inf|"}
+            "mustSucceed" = [
+                {"events"=["baf32" "acl 0"]                    "cte"="|f32x|" "noeventoutput"=true}
+                {"events"=["baf32" "acl 1" "adf32 nan"]        "cte"="|f32x nan|" "noeventoutput"=true}
+                {"events"=["baf32" "acl 1" "adf32 snan"]       "cte"="|f32x snan|" "noeventoutput"=true}
+                {"events"=["baf32" "acl 1" "adf32 0x1.a9ee3"]  "cte"="|f32x 1.a9ee3|" "noeventoutput"=true}
+                {
+                    "events"=["baf32" "acl 2" "adf32 nan 0x1.a9ee3"]
+                    "cte"="|f32x nan 1.a9ee3|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf32" "acm 2" "adf32 inf -inf" "acl 0"]
+                    "cte"="|f32x inf -inf|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf32" "acm 1" "adf32 inf" "acl 1" "adf32 -inf"]
+                    "cte"="|f32x inf -inf|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -664,22 +768,38 @@ c0
 
         {
             "name" = "Chunked float64 array"
-            "encode" = [
-                {"events"=["v 0" "baf64" "acl 0"]  "document"="c0\n|f64x|"}
-                {"events"=["v 0" "baf64" "acl 1" "adu8x 10 00 00 00 00 00 f8 7f"]
-                 "document"="c0\n|f64x nan|"}
-                {"events"=["v 0" "baf64" "acl 1" "adu8x 10 00 00 00 00 00 f0 7f"]
-                 "document"="c0\n|f64x snan|"}
-                {"events"=["v 0" "baf64" "acl 1" "adu8x 00 00 00 00 00 00 99 bf"]
-                 "document"="c0\n|f64x -1.9p-06|"}
-                {"events"=["v 0" "baf64" "acl 2" "adu8x 10 00 00 00 00 00 f8 7f 00 00 00 00 00 00 99 bf"]
-                 "document"="c0\n|f64x nan -1.9p-06|"}
-                {"events"=["v 0" "baf64" "acl 2" "adu8x 10 00 00 00 00 00 f0 7f" "adu8x 00 00 00 00 00 00 99 bf"]
-                 "document"="c0\n|f64x snan -1.9p-06|"}
-                {"events"=["v 0" "baf64" "acm 2" "adu8x 00 00 00 00 00 00 f0 7f" "adu8x 00 00 00 00 00 00 f0 ff" "acl 0"]
-                 "document"="c0\n|f64x inf -inf|"}
-                {"events"=["v 0" "baf64" "acm 1" "adu8x 00" "adu8x 00 00 00 00 00 f0 7f" "acl 1" "adu8x 00 00 00 00 00" "adu8x 00 f0 ff"]
-                 "document"="c0\n|f64x inf -inf|"}
+            "mustSucceed" = [
+                {"events"=["baf64" "acl 0"]  "cte"="|f64x|" "noeventoutput"=true}
+                {
+                    "events"=["baf64" "acl 1" "adf64 nan"]
+                    "cte"="|f64x nan|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf64" "acl 1" "adf64 snan"]
+                    "cte"="|f64x snan|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf64" "acl 1" "adf64 -0x1.9a6638c19ff4p-20"]
+                    "cte"="|f64x -1.9a6638c19ff4p-20|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf64" "acl 2" "adf64 nan -0x1.9a6638c19ff4p-20"]
+                    "cte"="|f64x nan -1.9a6638c19ff4p-20|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf64" "acm 2" "adf64 inf -inf" "acl 0"]
+                    "cte"="|f64x inf -inf|"
+                    "noeventoutput"=true
+                }
+                {
+                    "events"=["baf64" "acm 1" "adf64 inf" "acl 1" "adf64 -inf"]
+                    "cte"="|f64x inf -inf|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -687,13 +807,17 @@ c0
 
         {
             "name" = "Chunked bit array"
-            "encode" = [
-                {"events"=["v 0" "bab" "acl 0"]         "document"="c0\n|b|"}
-                {"events"=["v 0" "bab" "acl 1" "adu8x 01"] "document"="c0\n|b 1|"}
-                {"events"=["v 0" "bab" "acl 2" "adu8x 01"] "document"="c0\n|b 10|"}
-                {"events"=["v 0" "bab" "acl 7" "adu8x 51"] "document"="c0\n|b 1000101|"}
-                {"events"=["v 0" "bab" "acl 8" "adu8x d1"] "document"="c0\n|b 10001011|"}
-                {"events"=["v 0" "bab" "acm 8" "adu8x d1" "acl 1" "adu8x 01"] "document"="c0\n|b 100010111|"}
+            "mustSucceed" = [
+                {"events"=["bab" "acl 0"]                "cte"="|b|" "noeventoutput"=true}
+                {"events"=["bab" "acl 1" "adb 1"]        "cte"="|b 1|" "noeventoutput"=true}
+                {"events"=["bab" "acl 2" "adb 10"]       "cte"="|b 10|" "noeventoutput"=true}
+                {"events"=["bab" "acl 7" "adb 1000101"]  "cte"="|b 1000101|" "noeventoutput"=true}
+                {"events"=["bab" "acl 8" "adb 10001011"] "cte"="|b 10001011|" "noeventoutput"=true}
+                {
+                    "events"=["bab" "acm 8" "adb 10001011" "acl 1" "adb 1"]
+                    "cte"="|b 100010111|"
+                    "noeventoutput"=true
+                }
             ]
         }
 
@@ -701,68 +825,66 @@ c0
 
         {
             "name" = "String"
-            "encodeDecode" = [
-                {"events"=["v 0" "s this is a string"]  "document"="c0\n\"this is a string\""}
+            "mustSucceed" = [
+                {"cte"="\"this is a string\""  "events"=["s this is a string"]}
                 {
-                    "events"=["v 0" "s \
-                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
-                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
-                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
-                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
-                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
-                    "document"="c0\n\"\
+                    "cte"="\"\
                         sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
                         ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
                         asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
                         आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
                         ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun\""
+                    "events"=["s \
+                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
+                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
+                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
+                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
+                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
                 }
+                {"cte"="\"test test\""               "events"=["s test test"]}
+                {"cte"="\"\""                        "events"=["s "]}               // Empty string
+                {"cte"="\"test/*test\""              "events"=["s test/*test"]}     // Comment initiator inside a string
+                {"cte"="\"test*/test\""              "events"=["s test*/test"]}     // Comment terminator inside a string
+                {"cte"="\.~ "test\ttest"~"           "events"=["s test\+9.test"] "nocteoutput"=true}   // Escaped tab
+                {"cte"="\.~ "test\rtest"~"           "events"=["s test\+d.test"] "nocteoutput"=true}   // Escaped CR
+                {"cte"="\.~ "test\"test"~"           "events"=["s \.~ test"test~"] "nocteoutput"=true} // Escaped quote
+                {"cte"="\.~ "test\\test"~"           "events"=["s \.~ test\test~"] "nocteoutput"=true} // Escaped backslash
+                {"cte"="\.~ "test\/test"~"           "events"=["s \.~ test/test~"] "nocteoutput"=true} // Escaped slash
+                {"cte"="\.~ "test\*test"~"           "events"=["s \.~ test*test~"] "nocteoutput"=true} // Escaped star
+                {"cte"="\.~ "test\|test"~"           "events"=["s \.~ test|test~"] "nocteoutput"=true} // Escaped pipe
+                {"cte"="\.~ "test\_test"~"           "events"=["s test\+a0.test"] "nocteoutput"=true}  // Escaped non-breaking space
+                {"cte"="\.~ "test\-test"~"           "events"=["s test\+ad.test"] "nocteoutput"=true}  // Escaped soft hyphen
+                {"cte"="\.~ "test\+a.test"~"         "events"=["s test\ntest"] "nocteoutput"=true}     // Escaped 1-digit codepoint
+                {"cte"="\.~ "test\+f7.test"~"        "events"=["s test÷test"] "nocteoutput"=true}      // Escaped 2-digit codepoint
+                {"cte"="\.~ "test\+17d.test"~"       "events"=["s testŽtest"] "nocteoutput"=true}      // Escaped 3-digit codepoint
+                {"cte"="\.~ "test\+2021.test"~"      "events"=["s test‡test"] "nocteoutput"=true}      // Escaped 4-digit codepoint
+                {"cte"="\.~ "test\+1f43a.test"~"     "events"=["s test🐺test"] "nocteoutput"=true}     // Escaped 5-digit codepoint
+                {"cte"="\.~ "test\+000020.test"~"    "events"=["s test test"] "nocteoutput"=true}      // Escaped 6-digit codepoint
+                {"cte"="\.~ "test\+0000020.test"~"   "events"=["s test test"] "nocteoutput"=true}      // Escaped 7-digit codepoint
+                {"cte"="\.~ "test\+00000020.test"~"  "events"=["s test test"] "nocteoutput"=true}      // Escaped 8-digit codepoint
+                {"cte"="\.~ "test\+000000020.test"~" "events"=["s test test"] "nocteoutput"=true}      // Escaped 9-digit codepoint
+                {"cte"="\.~ "test\ntest"~"           "events"=["s \.~ test
+test~"] "nocteoutput"=true}  // Escaped newline
+                {"cte"="\.~ "test\
+test"~"  "events"=["s testtest"] "nocteoutput"=true}     // Continuation
             ]
-            "decodeEncode" = [
-                {"document"="\.~ c0 "test test"~"            "events"=["v 0" "s test test"]}
-                {"document"="\.~ c0 ""~"                     "events"=["v 0" "s "]}               // Empty string
-                {"document"="\.~ c0 "test/*test"~"           "events"=["v 0" "s test/*test"]}     // Comment initiator inside a string
-                {"document"="\.~ c0 "test*/test"~"           "events"=["v 0" "s test*/test"]}     // Comment terminator inside a string
-                {"document"="\.~ c0 "test\ttest"~"           "events"=["v 0" "s test\+9.test"]}   // Escaped tab
-                {"document"="\.~ c0 "test\rtest"~"           "events"=["v 0" "s test\+d.test"]}   // Escaped CR
-                {"document"="\.~ c0 "test\"test"~"           "events"=["v 0" "s \.~ test"test~"]} // Escaped quote
-                {"document"="\.~ c0 "test\\test"~"           "events"=["v 0" "s \.~ test\test~"]} // Escaped backslash
-                {"document"="\.~ c0 "test\/test"~"           "events"=["v 0" "s \.~ test/test~"]} // Escaped slash
-                {"document"="\.~ c0 "test\*test"~"           "events"=["v 0" "s \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 "test\|test"~"           "events"=["v 0" "s \.~ test|test~"]} // Escaped pipe
-                {"document"="\.~ c0 "test\_test"~"           "events"=["v 0" "s test\+a0.test"]}  // Escaped non-breaking space
-                {"document"="\.~ c0 "test\-test"~"           "events"=["v 0" "s test\+ad.test"]}  // Escaped soft hyphen
-                {"document"="\.~ c0 "test\+a.test"~"         "events"=["v 0" "s test\ntest"]}     // Escaped 1-digit codepoint
-                {"document"="\.~ c0 "test\+f7.test"~"        "events"=["v 0" "s test÷test"]}      // Escaped 2-digit codepoint
-                {"document"="\.~ c0 "test\+17d.test"~"       "events"=["v 0" "s testŽtest"]}      // Escaped 3-digit codepoint
-                {"document"="\.~ c0 "test\+2021.test"~"      "events"=["v 0" "s test‡test"]}      // Escaped 4-digit codepoint
-                {"document"="\.~ c0 "test\+1f43a.test"~"     "events"=["v 0" "s test🐺test"]}     // Escaped 5-digit codepoint
-                {"document"="\.~ c0 "test\+000020.test"~"    "events"=["v 0" "s test test"]}      // Escaped 6-digit codepoint
-                {"document"="\.~ c0 "test\+0000020.test"~"   "events"=["v 0" "s test test"]}      // Escaped 7-digit codepoint
-                {"document"="\.~ c0 "test\+00000020.test"~"  "events"=["v 0" "s test test"]}      // Escaped 8-digit codepoint
-                {"document"="\.~ c0 "test\+000000020.test"~" "events"=["v 0" "s test test"]}      // Escaped 9-digit codepoint
-                {"document"="\.~ c0 "test\ntest"~"           "events"=["v 0" "s \.~ test
-test~"]}  // Escaped newline
-                {"document"="\.~ c0 "test\
-test"~"  "events"=["v 0" "s testtest"]}     // Continuation
-            ]
-            "decodeFail" = [
-                "\.~ c0 "test\1gtest"~"     // Invalid codepoint digit
-                "\.~ c0 "test\xtest"~"      // Invalid escape character
-                "\.~ c0 "test test~"        // Unterminated quotes
-                "\.~ c0 test test~"         // Missing quotes
-                "\.~ c0 "test\"~"           // Unterminated escape
-                "\.~ c0 "test\+"~"          // Unterminated escape
-                "\.~ c0 "test\+."~"         // Empty escape
-                "\.~ c0 "test\+1"~"         // Unterminated codepoint
-                "\.~ c0 "test\+21"~"        // Unterminated codepoint
-                "\.~ c0 "test\+301"~"       // Unterminated codepoint
-                "\.~ c0 "test\+4001"~"      // Unterminated codepoint
-                "\.~ c0 "test\+50001"~"     // Unterminated codepoint
-                "\.~ c0 "test\+600001"~"    // Unterminated codepoint
-                "\.~ c0 "test\+7000001"~"   // Unterminated codepoint
-                "\.~ c0 "test\+80000001"~"  // Unterminated codepoint
-                "\.~ c0 "test\+900000001"~" // Unterminated codepoint
+            "mustFail" = [
+                {"cte"="\.~ "test\1gtest"~"}     // Invalid codepoint digit
+                {"cte"="\.~ "test\xtest"~"}      // Invalid escape character
+                {"cte"="\.~ "test test~"}        // Unterminated quotes
+                {"cte"="\.~ test test~"}         // Missing quotes
+                {"cte"="\.~ "test\"~"}           // Unterminated escape
+                {"cte"="\.~ "test\+"~"}          // Unterminated escape
+                {"cte"="\.~ "test\+."~"}         // Empty escape
+                {"cte"="\.~ "test\+1"~"}         // Unterminated codepoint
+                {"cte"="\.~ "test\+21"~"}        // Unterminated codepoint
+                {"cte"="\.~ "test\+301"~"}       // Unterminated codepoint
+                {"cte"="\.~ "test\+4001"~"}      // Unterminated codepoint
+                {"cte"="\.~ "test\+50001"~"}     // Unterminated codepoint
+                {"cte"="\.~ "test\+600001"~"}    // Unterminated codepoint
+                {"cte"="\.~ "test\+7000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ "test\+80000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ "test\+900000001"~"} // Unterminated codepoint
             ]
         }
 
@@ -770,11 +892,10 @@ test"~"  "events"=["v 0" "s testtest"]}     // Continuation
 
         {
             "name" = "String with NUL character"
-            "encodeDecode" = [
+            "mustSucceed" = [
                 {
-                    "events" = ["v 0" "s test\+0.string"]
-                    "document" = "\.^ c0
-"test\+0.string"^"
+                    "cte" = "\.^ "test\+0.string"^"
+                    "events" = ["s test\+0.string"]
                 }
             ]
         }
@@ -784,51 +905,49 @@ test"~"  "events"=["v 0" "s testtest"]}     // Continuation
         {
             // Resource IDs have the same capabilities and restrictions as strings.
             "name" = "Resource ID"
-            "encodeDecode" = [
-                {"events"=["v 0" "rid https://concise-encoding.org"]  "document"="c0\n@\"https://concise-encoding.org\""}
+            "mustSucceed" = [
+                {"cte"="@\"https://concise-encoding.org\""  "events"=["rid https://concise-encoding.org"]}
+                {"cte"="\.~ @"http://x.com/a/b#1"~"   "events"=["rid http://x.com/a/b#1"]}
+                {"cte"="\.~ @""~"                     "events"=["rid"]}                // Empty string
+                {"cte"="\.~ @"test/*test"~"           "events"=["rid test/*test"]}     // Comment initiator inside a string
+                {"cte"="\.~ @"test*/test"~"           "events"=["rid test*/test"]}     // Comment terminator inside a string
+                {"cte"="\.~ @"test\ttest"~"           "events"=["rid test\+9.test"] "nocteoutput"=true}   // Escaped tab
+                {"cte"="\.~ @"test\rtest"~"           "events"=["rid test\+d.test"] "nocteoutput"=true}   // Escaped CR
+                {"cte"="\.~ @"test\"test"~"           "events"=["rid \.~ test"test~"] "nocteoutput"=true} // Escaped quote
+                {"cte"="\.~ @"test\\test"~"           "events"=["rid \.~ test\test~"] "nocteoutput"=true} // Escaped backslash
+                {"cte"="\.~ @"test\/test"~"           "events"=["rid \.~ test/test~"] "nocteoutput"=true} // Escaped slash
+                {"cte"="\.~ @"test\*test"~"           "events"=["rid \.~ test*test~"] "nocteoutput"=true} // Escaped star
+                {"cte"="\.~ @"test\|test"~"           "events"=["rid \.~ test|test~"] "nocteoutput"=true} // Escaped pipe
+                {"cte"="\.~ @"test\_test"~"           "events"=["rid test\+a0.test"] "nocteoutput"=true}  // Escaped non-breaking space
+                {"cte"="\.~ @"test\-test"~"           "events"=["rid test\+ad.test"] "nocteoutput"=true}  // Escaped soft hyphen
+                {"cte"="\.~ @"test\+a.test"~"         "events"=["rid test\ntest"] "nocteoutput"=true}     // Escaped 1-digit codepoint
+                {"cte"="\.~ @"test\+f7.test"~"        "events"=["rid test÷test"] "nocteoutput"=true}      // Escaped 2-digit codepoint
+                {"cte"="\.~ @"test\+17d.test"~"       "events"=["rid testŽtest"] "nocteoutput"=true}      // Escaped 3-digit codepoint
+                {"cte"="\.~ @"test\+2021.test"~"      "events"=["rid test‡test"] "nocteoutput"=true}      // Escaped 4-digit codepoint
+                {"cte"="\.~ @"test\+1f43a.test"~"     "events"=["rid test🐺test"] "nocteoutput"=true}     // Escaped 5-digit codepoint
+                {"cte"="\.~ @"test\+000020.test"~"    "events"=["rid test test"] "nocteoutput"=true}      // Escaped 6-digit codepoint
+                {"cte"="\.~ @"test\+000000020.test"~" "events"=["rid test test"] "nocteoutput"=true}      // Escaped 9-digit codepoint
+                {"cte"="\.~ @"test\ntest"~"           "events"=["rid \.~ test
+test~"] "nocteoutput"=true}  // Escaped newline
+                {"cte"="\.~ @"test\
+test"~"  "events"=["rid testtest"] "nocteoutput"=true}   // Continuation
             ]
-            "decodeEncode" = [
-                {"document"="\.~ c0 @"http://x.com/a/b#1"~"   "events"=["v 0" "rid http://x.com/a/b#1"]}
-                {"document"="\.~ c0 @""~"                     "events"=["v 0" "rid "]}               // Empty string
-                {"document"="\.~ c0 @"test/*test"~"           "events"=["v 0" "rid test/*test"]}     // Comment initiator inside a string
-                {"document"="\.~ c0 @"test*/test"~"           "events"=["v 0" "rid test*/test"]}     // Comment terminator inside a string
-                {"document"="\.~ c0 @"test\ttest"~"           "events"=["v 0" "rid test\+9.test"]}   // Escaped tab
-                {"document"="\.~ c0 @"test\rtest"~"           "events"=["v 0" "rid test\+d.test"]}   // Escaped CR
-                {"document"="\.~ c0 @"test\"test"~"           "events"=["v 0" "rid \.~ test"test~"]} // Escaped quote
-                {"document"="\.~ c0 @"test\\test"~"           "events"=["v 0" "rid \.~ test\test~"]} // Escaped backslash
-                {"document"="\.~ c0 @"test\/test"~"           "events"=["v 0" "rid \.~ test/test~"]} // Escaped slash
-                {"document"="\.~ c0 @"test\*test"~"           "events"=["v 0" "rid \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 @"test\|test"~"           "events"=["v 0" "rid \.~ test|test~"]} // Escaped pipe
-                {"document"="\.~ c0 @"test\_test"~"           "events"=["v 0" "rid test\+a0.test"]}  // Escaped non-breaking space
-                {"document"="\.~ c0 @"test\-test"~"           "events"=["v 0" "rid test\+ad.test"]}  // Escaped soft hyphen
-                {"document"="\.~ c0 @"test\+a.test"~"         "events"=["v 0" "rid test\ntest"]}     // Escaped 1-digit codepoint
-                {"document"="\.~ c0 @"test\+f7.test"~"        "events"=["v 0" "rid test÷test"]}      // Escaped 2-digit codepoint
-                {"document"="\.~ c0 @"test\+17d.test"~"       "events"=["v 0" "rid testŽtest"]}      // Escaped 3-digit codepoint
-                {"document"="\.~ c0 @"test\+2021.test"~"      "events"=["v 0" "rid test‡test"]}      // Escaped 4-digit codepoint
-                {"document"="\.~ c0 @"test\+1f43a.test"~"     "events"=["v 0" "rid test🐺test"]}     // Escaped 5-digit codepoint
-                {"document"="\.~ c0 @"test\+000020.test"~"    "events"=["v 0" "rid test test"]}      // Escaped 6-digit codepoint
-                {"document"="\.~ c0 @"test\+000000020.test"~" "events"=["v 0" "rid test test"]}      // Escaped 9-digit codepoint
-                {"document"="\.~ c0 @"test\ntest"~"           "events"=["v 0" "rid \.~ test
-test~"]}  // Escaped newline
-                {"document"="\.~ c0 @"test\
-test"~"  "events"=["v 0" "rid testtest"]}   // Continuation
-            ]
-            "decodeFail" = [
-                "\.~ c0 @"test\1gtest"~"    // Invalid codepoint digit
-                "\.~ c0 @"test\xtest"~"     // Invalid escape character
-                "\.~ c0 @"test test~"       // Unterminated quotes
-                "\.~ c0 @test test~"        // Missing quotes
-                "\.~ c0 @"test\"~"          // Unterminated escape
-                "\.~ c0 @"test\+"~"         // Unterminated escape
-                "\.~ c0 @"test\+."~"        // Empty escape
-                "\.~ c0 @"test\+1"~"        // Unterminated codepoint
-                "\.~ c0 @"test\+01"~"       // Unterminated codepoint
-                "\.~ c0 @"test\+001"~"      // Unterminated codepoint
-                "\.~ c0 @"test\+0001"~"     // Unterminated codepoint
-                "\.~ c0 @"test\+00001"~"    // Unterminated codepoint
-                "\.~ c0 @"test\+000001"~"   // Unterminated codepoint
-                "\.~ c0 @"test\+0000001"~"  // Unterminated codepoint
-                "\.~ c0 @"test\+00000001"~" // Unterminated codepoint
+            "mustFail" = [
+                {"cte"="\.~ @"test\1gtest"~"}    // Invalid codepoint digit
+                {"cte"="\.~ @"test\xtest"~"}     // Invalid escape character
+                {"cte"="\.~ @"test test~"}       // Unterminated quotes
+                {"cte"="\.~ @test test~"}        // Missing quotes
+                {"cte"="\.~ @"test\"~"}          // Unterminated escape
+                {"cte"="\.~ @"test\+"~"}         // Unterminated escape
+                {"cte"="\.~ @"test\+."~"}        // Empty escape
+                {"cte"="\.~ @"test\+1"~"}        // Unterminated codepoint
+                {"cte"="\.~ @"test\+01"~"}       // Unterminated codepoint
+                {"cte"="\.~ @"test\+001"~"}      // Unterminated codepoint
+                {"cte"="\.~ @"test\+0001"~"}     // Unterminated codepoint
+                {"cte"="\.~ @"test\+00001"~"}    // Unterminated codepoint
+                {"cte"="\.~ @"test\+000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ @"test\+0000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ @"test\+00000001"~"} // Unterminated codepoint
             ]
         }
 
@@ -837,48 +956,46 @@ test"~"  "events"=["v 0" "rid testtest"]}   // Continuation
         {
             // Custom text has the same capabilities and restrictions as strings.
             "name" = "Custom Text"
-            "encodeDecode" = [
-                {"events"=["v 0" "ct cplx(2.94+3i)"]  "document"="c0\n|c \"cplx(2.94+3i)\"|"}
+            "mustSucceed" = [
+                {"cte"="|c \"cplx(2.94+3i)\"|"  "events"=["ct cplx(2.94+3i)"]}
+                {"cte"="\.~ |c "something(123)"|~"       "events"=["ct something(123)"]}
+                {"cte"="\.~ |c ""|~"                     "events"=["ct"]}                // Empty String
+                {"cte"="\.~ |c "test/*test"|~"           "events"=["ct test/*test"]}     // Comment initiator inside a string
+                {"cte"="\.~ |c "test*/test"|~"           "events"=["ct test*/test"]}     // Comment terminator inside a string
+                {"cte"="\.~ |c "test\ttest"|~"           "events"=["ct test\+9.test"] "nocteoutput"=true}    // Escaped tab
+                {"cte"="\.~ |c "test\rtest"|~"           "events"=["ct test\+d.test"] "nocteoutput"=true}    // Escaped CR
+                {"cte"="\.~ |c "test\"test"|~"           "events"=["ct \.~ test"test~"] "nocteoutput"=true} // Escaped quote
+                {"cte"="\.~ |c "test\\test"|~"           "events"=["ct \.~ test\test~"] "nocteoutput"=true} // Escaped backslash
+                {"cte"="\.~ |c "test\/test"|~"           "events"=["ct \.~ test/test~"] "nocteoutput"=true} // Escaped slash
+                {"cte"="\.~ |c "test\*test"|~"           "events"=["ct \.~ test*test~"] "nocteoutput"=true} // Escaped star
+                {"cte"="\.~ |c "test\|test"|~"           "events"=["ct \.~ test|test~"] "nocteoutput"=true} // Escaped pipe
+                {"cte"="\.~ |c "test\_test"|~"           "events"=["ct test\+a0.test"] "nocteoutput"=true}   // Escaped non-breaking space
+                {"cte"="\.~ |c "test\-test"|~"           "events"=["ct test\+ad.test"] "nocteoutput"=true}   // Escaped soft hyphen
+                {"cte"="\.~ |c "test\+a.test"|~"          "events"=["ct test\ntest"] "nocteoutput"=true}     // Escaped 1-digit codepoint
+                {"cte"="\.~ |c "test\+f7.test"|~"         "events"=["ct test÷test"] "nocteoutput"=true}      // Escaped 2-digit codepoint
+                {"cte"="\.~ |c "test\+17d.test"|~"        "events"=["ct testŽtest"] "nocteoutput"=true}      // Escaped 3-digit codepoint
+                {"cte"="\.~ |c "test\+2021.test"|~"       "events"=["ct test‡test"] "nocteoutput"=true}      // Escaped 4-digit codepoint
+                {"cte"="\.~ |c "test\+1f43a.test"|~"      "events"=["ct test🐺test"] "nocteoutput"=true}     // Escaped 5-digit codepoint
+                {"cte"="\.~ |c "test\+000000020.test"|~"  "events"=["ct test test"] "nocteoutput"=true}      // Escaped 9-digit codepoint
+                {"cte"="\.~ |c "test\ntest"|~"           "events"=["ct \.~ test
+test~"] "nocteoutput"=true}  // Escaped newline
+                {"cte"="\.~ |c "test\
+                                          test"|~"               "events"=["ct testtest"] "nocteoutput"=true}  // Continuation
             ]
-            "decodeEncode" = [
-                {"document"="\.~ c0 |c "something(123)"|~"       "events"=["v 0" "ct something(123)"]}
-                {"document"="\.~ c0 |c ""|~"                     "events"=["v 0" "ct "]}               // Empty String
-                {"document"="\.~ c0 |c "test/*test"|~"           "events"=["v 0" "ct test/*test"]}     // Comment initiator inside a string
-                {"document"="\.~ c0 |c "test*/test"|~"           "events"=["v 0" "ct test*/test"]}     // Comment terminator inside a string
-                {"document"="\.~ c0 |c "test\ttest"|~"           "events"=["v 0" "ct test\+9.test"]}    // Escaped tab
-                {"document"="\.~ c0 |c "test\rtest"|~"           "events"=["v 0" "ct test\+d.test"]}    // Escaped CR
-                {"document"="\.~ c0 |c "test\"test"|~"           "events"=["v 0" "ct \.~ test"test~"]} // Escaped quote
-                {"document"="\.~ c0 |c "test\\test"|~"           "events"=["v 0" "ct \.~ test\test~"]} // Escaped backslash
-                {"document"="\.~ c0 |c "test\/test"|~"           "events"=["v 0" "ct \.~ test/test~"]} // Escaped slash
-                {"document"="\.~ c0 |c "test\*test"|~"           "events"=["v 0" "ct \.~ test*test~"]} // Escaped star
-                {"document"="\.~ c0 |c "test\|test"|~"           "events"=["v 0" "ct \.~ test|test~"]} // Escaped pipe
-                {"document"="\.~ c0 |c "test\_test"|~"           "events"=["v 0" "ct test\+a0.test"]}   // Escaped non-breaking space
-                {"document"="\.~ c0 |c "test\-test"|~"           "events"=["v 0" "ct test\+ad.test"]}   // Escaped soft hyphen
-                {"document"="\.~ c0 |c "test\+a.test"|~"          "events"=["v 0" "ct test\ntest"]}     // Escaped 1-digit codepoint
-                {"document"="\.~ c0 |c "test\+f7.test"|~"         "events"=["v 0" "ct test÷test"]}      // Escaped 2-digit codepoint
-                {"document"="\.~ c0 |c "test\+17d.test"|~"        "events"=["v 0" "ct testŽtest"]}      // Escaped 3-digit codepoint
-                {"document"="\.~ c0 |c "test\+2021.test"|~"       "events"=["v 0" "ct test‡test"]}      // Escaped 4-digit codepoint
-                {"document"="\.~ c0 |c "test\+1f43a.test"|~"      "events"=["v 0" "ct test🐺test"]}     // Escaped 5-digit codepoint
-                {"document"="\.~ c0 |c "test\+000000020.test"|~"  "events"=["v 0" "ct test test"]}      // Escaped 9-digit codepoint
-                {"document"="\.~ c0 |c "test\ntest"|~"           "events"=["v 0" "ct \.~ test
-test~"]}  // Escaped newline
-                {"document"="\.~ c0 |c "test\
-                                          test"|~"               "events"=["v 0" "ct testtest"]}  // Continuation
-            ]
-            "decodeFail" = [
-                "\.~ c0 |c "test\1gtest"|~"   // Invalid codepoint digit
-                "\.~ c0 |c "test\xtest"|~"    // Invalid escape character
-                "\.~ c0 |c "test test"~"      // Unterminated
-                "\.~ c0 test test~"           // Missing bars
-                "\.~ c0 |c "test\"|~"         // Unterminated escape
-                "\.~ c0 |c "test\1"|~"        // Unterminated codepoint
-                "\.~ c0 |c "test\01"|~"       // Unterminated codepoint
-                "\.~ c0 |c "test\001"|~"      // Unterminated codepoint
-                "\.~ c0 |c "test\0001"|~"     // Unterminated codepoint
-                "\.~ c0 |c "test\00001"|~"    // Unterminated codepoint
-                "\.~ c0 |c "test\000001"|~"   // Unterminated codepoint
-                "\.~ c0 |c "test\0000001"|~"  // Unterminated codepoint
-                "\.~ c0 |c "test\00000001"|~" // Unterminated codepoint
+            "mustFail" = [
+                {"cte"="\.~ |c "test\1gtest"|~"}   // Invalid codepoint digit
+                {"cte"="\.~ |c "test\xtest"|~"}    // Invalid escape character
+                {"cte"="\.~ |c "test test"~"}      // Unterminated
+                {"cte"="\.~ test test~"}           // Missing bars
+                {"cte"="\.~ |c "test\"|~"}         // Unterminated escape
+                {"cte"="\.~ |c "test\1"|~"}        // Unterminated codepoint
+                {"cte"="\.~ |c "test\01"|~"}       // Unterminated codepoint
+                {"cte"="\.~ |c "test\001"|~"}      // Unterminated codepoint
+                {"cte"="\.~ |c "test\0001"|~"}     // Unterminated codepoint
+                {"cte"="\.~ |c "test\00001"|~"}    // Unterminated codepoint
+                {"cte"="\.~ |c "test\000001"|~"}   // Unterminated codepoint
+                {"cte"="\.~ |c "test\0000001"|~"}  // Unterminated codepoint
+                {"cte"="\.~ |c "test\00000001"|~"} // Unterminated codepoint
             ]
         }
 
@@ -886,18 +1003,16 @@ test~"]}  // Escaped newline
 
         {
             "name" = "Custom Binary"
-            "encodeDecode" = [
-                {"events"=["v 0" "cb 04 f6 28 3c 40 00 00 40 40"]  "document"="c0\n|c 04 f6 28 3c 40 00 00 40 40|"}
+            "mustSucceed" = [
+                {"cte"="|c 04 f6 28 3c 40 00 00 40 40|"  "events"=["cb 04 f6 28 3c 40 00 00 40 40"]}
+                {"cte"="|c 1f 2e 3d 4c|"  "events"=["cb 1f 2e 3d 4c"]}
+                {"cte"="|c 1F 2E 3D 4C|"  "events"=["cb 1f 2e 3d 4c"] "nocteoutput"=true}
+                {"cte"="|c |"             "events"=["cb"] "nocteoutput"=true}
+                {"cte"="|c|"              "events"=["cb"]}
             ]
-            "decodeEncode" = [
-                {"document"="c0 |c 1f 2e 3d 4c|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
-                {"document"="c0 |c 1F 2E 3D 4C|"  "events"=["v 0" "cb 1f 2e 3d 4c"]}
-                {"document"="c0 |c |"             "events"=["v 0" "cb "]}
-                {"document"="c0 |c|"              "events"=["v 0" "cb "]}
-            ]
-            "decodeFail" = [
-                "c0 |c 00"  // Not terminated
-                "c0 |c gg|" // Non-hex characters
+            "mustFail" = [
+                {"cte"="|c 00"}  // Not terminated
+                {"cte"="|c gg|"} // Non-hex characters
             ]
         }
 
@@ -905,23 +1020,51 @@ test~"]}  // Escaped newline
 
         {
             "name" = "Verbatim sequence"
-            "decodeEncode" = [
-                {"document"="\.~ c0 "\.## ##"~"          "events"=["v 0" "s "]}
-                {"document"="\.~ c0 "\.##
-##"~"          "events"=["v 0" "s "]}
-                {"document"="\.~ c0 "\.## a##"~"         "events"=["v 0" "s a"]}
-                {"document"="\.~ c0 "\.@@
-a@@"~"         "events"=["v 0" "s a"]}
-                {"document"="c0 \"\\.^^^\r\na^^^\""        "events"=["v 0" "s a"]}
-                {"document"="\.~ c0 "\.XXX blah blah
-blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
-                {"document"="\.~ c0 "\.A \n\r\t\_\-A"~"  "events"=["v 0" "s \\n\\r\\t\\_\\-"]}
+            "mustSucceed" = [
+                {
+                    "cte"="\.~ "\.## ##"~"
+                    "events"=["s"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="\.~ "\.##
+##"~"
+                    "events"=["s "]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="\.~ "\.## a##"~"
+                    "events"=["s a"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="\.~ "\.@@
+a@@"~"
+                    "events"=["s a"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="\"\\.^^^\r\na^^^\""
+                    "events"=["s a"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="\.~ "\.XXX blah blah
+blah blahXXX"~"
+                    "events"=["s blah blah\nblah blah"]
+                    "nocteoutput"=true
+                }
+                {
+                    "cte"="\.~ "\.A \n\r\t\_\-A"~"
+                    "events"=["s \\n\\r\\t\\_\\-"]
+                    "nocteoutput"=true
+                }
             ]
-            "decodeFail" = [
-                "\.~ c0 "\."~"        // No sentinel definition
-                "\.~ c0 "\.X"~"       // Unterminated sentinel
-                "\.~ c0 "\.XblahX"~"  // Missing WS between sentinel and contents
-                "\.~ c0 "\.X blah"~"  // Missing end sentinel
+            "mustFail" = [
+                {"cte"="\.~ "\."~"}        // No sentinel definition
+                {"cte"="\.~ "\.X"~"}       // Unterminated sentinel
+                {"cte"="\.~ "\.XblahX"~"}  // Missing WS between sentinel and contents
+                {"cte"="\.~ "\.X blah"~"}  // Missing end sentinel
             ]
         }
 
@@ -929,45 +1072,29 @@ blah blahXXX"~"         "events"=["v 0" "s blah blah\nblah blah"]}
 
         {
             "name" = "Media"
-            "encodeDecode" = [
+            "mustSucceed" = [
                 {
-                    "events" = ["v 0" "bmedia" "acl 16" "adt application/x-sh" "acl 28" "adt \.^
-#!/bin/sh
-
-echo hello world
-^"]
-                    "document" = "\.^
-c0
-|m application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|^"
-                }
-            ]
-            "decodeEncode" = [
-                {
-                    "document" = "\.^
-c0
-|m application/x-sh 23 21 2F 62 69 6E 2F 73 68 0A 0A 65 63 68 6F 20 68 65 6C 6C 6F 20 77 6F 72 6C 64 0A|^"
-                    "events" = ["v 0" "bmedia" "acl 16" "adt application/x-sh" "acl 28" "adt \.^
+                    "cte" = "|m application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
+                    "events" = ["bmedia" "acl 16" "adt application/x-sh" "acl 28" "adt \.^
 #!/bin/sh
 
 echo hello world
 ^"]
                 }
-            ]
-            "decode" = [
                 {
-                    "document" = "\.^^
-c0
+                    "cte" = "\.^^
 |m application/x-sh "\.@@
 #!/bin/sh
 
 echo hello world
 @@"|
 ^^"
-                    "events" = ["v 0" "bmedia" "acl 16" "adt application/x-sh" "acl 28" "adt \.^
+                    "events" = ["bmedia" "acl 16" "adt application/x-sh" "acl 28" "adt \.^
 #!/bin/sh
 
 echo hello world
 ^"]
+                    "nocteoutput" = true
                 }
             ]
         }

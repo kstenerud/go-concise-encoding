@@ -214,12 +214,8 @@ func parseFloat32(str string) float32 {
 	case "snan":
 		return math.Float32frombits(signalingNanBits)
 	default:
-		if f, err := strconv.ParseFloat(str, 64); err == nil {
-			return float32(f)
-		}
+		return float32(parseFloat64(str))
 	}
-
-	panic(fmt.Errorf("BUG: Expected a binary float but got \"%v\"", str))
 }
 
 func parseDecimalFloat(str string) (smallFloat compact_float.DFloat, bigFloat *apd.Decimal) {

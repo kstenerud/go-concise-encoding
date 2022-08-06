@@ -515,6 +515,13 @@ func decodeArrayF32(ctx *DecoderContext, digitType string, decodeElement floatTo
 			}
 		}
 		bits := math.Float32bits(float32(v))
+		if math.IsNaN(v) {
+			if common.HasQuietNanBitSet64(v) {
+				bits = common.Float32QuietNanBits
+			} else {
+				bits = common.Float32SignalingNanBits
+			}
+		}
 		ctx.Scratch = append(ctx.Scratch, uint8(bits), uint8(bits>>8), uint8(bits>>16), uint8(bits>>24))
 	}
 	finishTypedArray(ctx)
