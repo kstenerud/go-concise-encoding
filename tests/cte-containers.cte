@@ -1,24 +1,23 @@
 c0
-// ========================
-// CTE container test cases
-// ========================
 {
-    "options" = {
-        "failFast" = false  // If true, halt tests on first error
+    "type" = {
+        "identifier" = "ce test"
+        "version" = 1
     }
-
-    "cteTests" = [
+    "ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
         {
             "name" = "List"
-            "encodeDecode" = [
-                {"events"=["v 0" "l" "e"] "document"="c0\n[]"}
+            "mustSucceed" = [
+                {"cte"="[]"  "events"=["l" "e"]}
+                {"cte"="[1]"  "events"=["l" "n 1" "e"] "nocteoutput"=true}
                 {
-                    "events" = ["v 0" "l" "null" "b false" "n -1" "n 1.5e20" "n nan" "n snan" "n inf" "n -inf"
+                    "events" = ["l" "null" "b false" "n -1" "n 1.5e20" "n nan" "n snan" "n inf" "n -inf"
                                 "s string" "rid https://concise-encoding.org" "l" "e" "m" "e" "e"]
-                    "document"="\.^ c0
+                    "cte"="\.^
 [
     null
     false
@@ -35,14 +34,10 @@ c0
 ]^"
                 }
             ]
-            "decodeEncode" = [
-                {"document"="c0 []"   "events"=["v 0" "l" "e"]}
-                {"document"="c0 [1]"  "events"=["v 0" "l" "n 1" "e"]}
-            ]
-            "decodeFail" = [
-                "c0 ["  // Missing terminator
-                "c0 [}" // Wrong terminator
-                "c0 [)" // Wrong terminator
+            "mustFail" = [
+                {"cte"="["}  // Missing terminator
+                {"cte"="[}"} // Wrong terminator
+                {"cte"="[)"} // Wrong terminator
             ]
         }
 
@@ -50,10 +45,11 @@ c0
 
         {
             "name" = "Map"
-            "encodeDecode" = [
-                {"events"=["v 0" "m" "e"] "document"="c0\n{}"}
+            "mustSucceed" = [
+                {"cte"="{}"  "events"=["m" "e"]}
+                {"cte"="{\"a\"=1}"  "events"=["m" "s a" "n 1" "e"] "nocteoutput"=true}
                 {
-                    "events" = ["v 0" "m"
+                    "events" = ["m"
                                     "s string"              "null"
                                     "n 10"                  "b false"
                                     "rid https://x.org"     "n -1"
@@ -68,7 +64,7 @@ c0
                                     "n 5"                   "m" "e"
                                     "uid cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884"  "l" "e"
                                 "e"]
-                    "document"="\.^ c0
+                    "cte"="\.^
 {
     "string" = null
     10 = false
@@ -86,39 +82,35 @@ c0
 }^"
                 }
             ]
-            "decodeEncode" = [
-                {"document"="c0 {}"         "events"=["v 0" "m" "e"]}
-                {"document"="c0 {\"a\"=1}"  "events"=["v 0" "m" "s a" "n 1" "e"]}
-            ]
-            "decodeFail" = [
-                "c0 {"            // Missing terminator
-                "c0 {]"           // Wrong terminator
-                "c0 {)"           // Wrong terminator
-                "c0 {1}"          // Missing value
-                "c0 {1=}"         // Missing value
-                "c0 {1:2}"        // Bad separator
-                "c0 {null=1}"     // Invalid key type
-                "c0 {nan=1}"      // Invalid key type
-                "c0 {snan=1}"     // Invalid key type
-                "c0 {[]=1}"       // Invalid key type
-                "c0 {{}=1}"       // Invalid key type
-                "c0 {(1)=1}"      // Invalid key type
-                "c0 {@(1 2 3)=1}" // Invalid key type
-                "c0 {|ct a|=1}"   // Invalid key type
-                "c0 {|cb 00|=1}"  // Invalid key type
-                "c0 {|b|=1}"      // Invalid key type
-                "c0 {|i8|=1}"     // Invalid key type
-                "c0 {|i16|=1}"    // Invalid key type
-                "c0 {|i32|=1}"    // Invalid key type
-                "c0 {|i64|=1}"    // Invalid key type
-                "c0 {|u8|=1}"     // Invalid key type
-                "c0 {|u16|=1}"    // Invalid key type
-                "c0 {|u32|=1}"    // Invalid key type
-                "c0 {|u64|=1}"    // Invalid key type
-                "c0 {|f16|=1}"    // Invalid key type
-                "c0 {|f32|=1}"    // Invalid key type
-                "c0 {|f64|=1}"    // Invalid key type
-                "c0 {|u|=1}"      // Invalid key type
+            "mustFail" = [
+                {"cte"="{"}            // Missing terminator
+                {"cte"="{]"}           // Wrong terminator
+                {"cte"="{)"}           // Wrong terminator
+                {"cte"="{1}"}          // Missing value
+                {"cte"="{1=}"}         // Missing value
+                {"cte"="{1:2}"}        // Bad separator
+                {"cte"="{null=1}"}     // Invalid key type
+                {"cte"="{nan=1}"}      // Invalid key type
+                {"cte"="{snan=1}"}     // Invalid key type
+                {"cte"="{[]=1}"}       // Invalid key type
+                {"cte"="{{}=1}"}       // Invalid key type
+                {"cte"="{(1)=1}"}      // Invalid key type
+                {"cte"="{@(1 2 3)=1}"} // Invalid key type
+                {"cte"="{|ct a|=1}"}   // Invalid key type
+                {"cte"="{|cb 00|=1}"}  // Invalid key type
+                {"cte"="{|b|=1}"}      // Invalid key type
+                {"cte"="{|i8|=1}"}     // Invalid key type
+                {"cte"="{|i16|=1}"}    // Invalid key type
+                {"cte"="{|i32|=1}"}    // Invalid key type
+                {"cte"="{|i64|=1}"}    // Invalid key type
+                {"cte"="{|u8|=1}"}     // Invalid key type
+                {"cte"="{|u16|=1}"}    // Invalid key type
+                {"cte"="{|u32|=1}"}    // Invalid key type
+                {"cte"="{|u64|=1}"}    // Invalid key type
+                {"cte"="{|f16|=1}"}    // Invalid key type
+                {"cte"="{|f32|=1}"}    // Invalid key type
+                {"cte"="{|f64|=1}"}    // Invalid key type
+                {"cte"="{|u|=1}"}      // Invalid key type
             ]
         }
 
@@ -126,18 +118,16 @@ c0
 
         {
             "name" = "Struct"
-            "encodeDecode" = [
+            "mustSucceed" = [
                 {
-                    "events"=["v 0" "st a" "e" "si a" "e"]
-                    "document"="\.^
-c0
+                    "events"=["st a" "e" "si a" "e"]
+                    "cte"="\.^
 @a<>
 @a()^"
                 }
                 {
-                    "events"=["v 0" "st a" "n 1" "e" "si a" "s x" "e"]
-                    "document"="\.^
-c0
+                    "events"=["st a" "n 1" "e" "si a" "s x" "e"]
+                    "cte"="\.^
 @a<
     1
 >
@@ -146,21 +136,21 @@ c0
 )^"
                 }
             ]
-            "decodeFail" = [
-                "c0 @"         // Incomplete
-                "c0 @x"        // Incomplete
-                "c0 @x<"       // Incomplete
-                "c0 @x<> @"    // Incomplete
-                "c0 @x<> @x"   // Incomplete
-                "c0 @x<> @x("  // Incomplete
-                "c0 @x<)"      // Wrong terminator
-                "c0 @x<}"      // Wrong terminator
-                "c0 @x<]"      // Wrong terminator
-                "c0 @x<> @x(>" // Wrong terminator
-                "c0 @x<> @x(}" // Wrong terminator
-                "c0 @x<> @x(]" // Wrong terminator
-                "c0 @x<1> @x()" // Contents mismatch
-                "c0 @x<> @x(1)" // Contents mismatch
+            "mustFail" = [
+                {"cte"="@"}         // Incomplete
+                {"cte"="@x"}        // Incomplete
+                {"cte"="@x<"}       // Incomplete
+                {"cte"="@x<> @"}    // Incomplete
+                {"cte"="@x<> @x"}   // Incomplete
+                {"cte"="@x<> @x("}  // Incomplete
+                {"cte"="@x<)"}      // Wrong terminator
+                {"cte"="@x<}"}      // Wrong terminator
+                {"cte"="@x<]"}      // Wrong terminator
+                {"cte"="@x<> @x(>"} // Wrong terminator
+                {"cte"="@x<> @x(}"} // Wrong terminator
+                {"cte"="@x<> @x(]"} // Wrong terminator
+                {"cte"="@x<1> @x()"} // Contents mismatch
+                {"cte"="@x<> @x(1)"} // Contents mismatch
             ]
         }
 
@@ -168,10 +158,11 @@ c0
 
         {
             "name" = "Node"
-            "encodeDecode" = [
-                {"events"=["v 0" "node" "n 1" "e"] "document"="c0\n(1\n)"}
+            "mustSucceed" = [
+                {"cte"="(1\n)" "events"=["node" "n 1" "e"]}
+                {"cte"="(1)"  "events"=["node" "n 1" "e"] "nocteoutput"=true}
                 {
-                    "events" = ["v 0" "node" "null"
+                    "events" = ["node" "null"
                                     "b false"
                                     "n -1"
                                     "node" "n 1.5e20"
@@ -187,7 +178,7 @@ c0
                                         "m" "e"
                                     "e"
                                 "e"]
-                    "document"="\.^ c0
+                    "cte"="\.^
 (null
     false
     -1
@@ -206,14 +197,11 @@ c0
 )^"
                 }
             ]
-            "decodeEncode" = [
-                {"document"="c0 (1)"  "events"=["v 0" "node" "n 1" "e"]}
-            ]
-            "decodeFail" = [
-                "c0 ("   // Missing value
-                "c0 (1"  // Missing terminator
-                "c0 (1}" // Wrong terminator
-                "c0 (1]" // Wrong terminator
+            "mustFail" = [
+                {"cte"="("}   // Missing value
+                {"cte"="(1"}  // Missing terminator
+                {"cte"="(1}"} // Wrong terminator
+                {"cte"="(1]"} // Wrong terminator
             ]
         }
 
@@ -221,52 +209,57 @@ c0
 
         {
             "name" = "Edge"
-            "encodeDecode" = [
-                {"events"=["v 0" "edge" "n 1" "n 2" "n 3" "e"] "document"="\.^
-c0
+            "mustSucceed" = [
+                {
+                    "events"=["edge" "n 1" "n 2" "n 3" "e"]
+                    "cte"="\.^
 @(
     1
     2
     3
 )^"}
-                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14" "e"] "document"="\.^
-c0
+                {
+                    "events"=["edge" "n nan" "s x" "t 2001-08-14" "e"]
+                    "cte"="\.^
 @(
     nan
     "x"
     2001-08-14
 )^"}
-            ]
-            "decodeEncode" = [
-                {"events"=["v 0" "edge" "n 1" "n 2" "n 3" "e"] "document"="\.^
-c0
+                {
+                    "events"=["edge" "n 1" "n 2" "n 3" "e"]
+                    "cte"="\.^
 @(
     1
     2
     3
 )^" }
-                {"events"=["v 0" "edge" "n nan" "s x" "t 2001-08-14" "e"] "document"="\.^
-c0
+                {
+                    "events"=["edge" "n nan" "s x" "t 2001-08-14" "e"]
+                    "cte"="\.^
 @(
     nan
     "x"
     2001-08-14
 )^"}
-                {"events"=["v 0" "edge" "rid https://x.y" "n 1.5" "l" "n 1" "e" "e"] "document"="\.^
-c0
+                {
+                    "events"=["edge" "rid https://x.y" "n 1.5" "l" "n 1" "e" "e"]
+                    "cte"="\.^
 @(
     @"https://x.y"
     1.5
-    [1]
+    [
+        1
+    ]
 )^"}
             ]
-            "decodeFail" = [
-                "c0 @("       // Missing value
-                "c0 @(1"      // Missing value
-                "c0 @(1 2"    // Missing value
-                "c0 @(1 2 3"  // Missing terminator
-                "c0 @(1 2 3}" // Wrong terminator
-                "c0 @(1 2 3]" // Wrong terminator
+            "mustFail" = [
+                {"cte"="@("}       // Missing value
+                {"cte"="@(1"}      // Missing value
+                {"cte"="@(1 2"}    // Missing value
+                {"cte"="@(1 2 3"}  // Missing terminator
+                {"cte"="@(1 2 3}"} // Wrong terminator
+                {"cte"="@(1 2 3]"} // Wrong terminator
             ]
         }
 

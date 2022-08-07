@@ -1,10 +1,10 @@
 c0
 {
-	"type" = {
-		"identifier" = "ce test"
-		"version" = 1
-	}
-	"ceversion" = 0
+    "type" = {
+        "identifier" = "ce test"
+        "version" = 1
+    }
+    "ceversion" = 0
 
     "tests" = [
 
@@ -685,10 +685,10 @@ c0
                 {
                     "cbe"=|u8x
                         94 7f
-                        a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f
+                        a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
                     |
-                    "events"=["af16 0x1.5p2 -0x1.f8p-20 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                    "events"=["af16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
                 }
             ]
             "mustFail" = [
@@ -706,10 +706,10 @@ c0
                 {
                     "cbe"=|u8x
                         94 f8 20
-                        a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f
+                        a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af16 0x1.5p2 -0x1.f8p-20 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0 0"]
+                    "events"=["af16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0 0"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f8 00|              "events"=["af16"]}
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f8 04 a8 40 fc b5|  "events"=["af16 0x1.5p2 -0x1.f8p-20"]}
@@ -717,24 +717,24 @@ c0
                     "nocbeoutput"=true
                     "cbe"=|u8x
                         94 f8 1e
-                        a8 40 fc b5 c1 ff c1 7f cf 7f 81 ff 81 7f 8a 7f
+                        a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
                     |
-                    "events"=["af16 0x1.5p2 -0x1.f8p-20 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                    "events"=["af16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
                 }
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x
                         94 f8
                         0b
-                        a8 40 fc b5 c1 ff c1 7f cf 7f
+                        a8 40 fc b5 f8 3a 88 c4 28 40
                         14
-                        81 7f 8a 7f 00 00 00 80 80 7f 80 ff 00 00 00 00 00 00 00 00
+                        b0 40 38 41 00 00 00 80 80 7f 80 ff 00 00 00 00 00 00 00 00
                     |
                     "events"=[
                         "baf16"
-                        "acm 5" "adf16 0x1.5p2 -0x1.f8p-20 nan nan nan"
-                        "acl 10" "adf16 snan snan 0 -0 inf -inf 0 0 0 0"
+                        "acm 5" "adf16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1"
+                        "acl 10" "adf16 0x1.6p2 0x1.7p3 0 -0 inf -inf 0 0 0 0"
                     ]
                 }
             ]
@@ -759,13 +759,14 @@ c0
                     "cbe"=|u8x
                         94 8f
                         00 c8 fc b5 00 b1 48 d0
-                        01 00 cf ff 01 00 cf 7f 01 ff cf ff
-                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff
+                        00 fd a7 3f 00 fe c8 35 00 08 92 3f
+                        f8 cc 2e d0 08 c8 71 2f 98 e9 d1 3b
                         00 00 00 00 00 00 00 80
                         00 00 80 7f 00 00 80 ff
                         00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]}
+                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
+                }
             ]
             "mustFail" = [
                 {"cbe"=|u8x 94|}              // Incomplete
@@ -782,14 +783,14 @@ c0
                     "cbe"=|u8x
                         94 f7 20
                         00 c8 fc b5 00 b1 48 d0
-                        01 00 cf ff 01 00 cf 7f 01 ff cf ff
-                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff
+                        00 fd a7 3f 00 fe c8 35 00 08 92 3f
+                        f8 cc 2e d0 08 c8 71 2f 98 e9 d1 3b
                         00 00 00 00 00 00 00 80
                         00 00 80 7f 00 00 80 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0 0"]
-                 }
+                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0 0"]
+                }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f7 00|              "events"=["af32"]}
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f7 04 00 c8 fc b5 00 b1 48 d0|  "events"=["af32 -0x1.f99p-20 -0xc.8b1p30"]}
                 {
@@ -797,13 +798,13 @@ c0
                     "cbe"=|u8x
                         94 f7 1e
                         00 c8 fc b5 00 b1 48 d0
-                        01 00 cf ff 01 00 cf 7f 01 ff cf ff
-                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff
+                        00 fd a7 3f 00 fe c8 35 00 08 92 3f
+                        f8 cc 2e d0 08 c8 71 2f 98 e9 d1 3b
                         00 00 00 00 00 00 00 80
                         00 00 80 7f 00 00 80 ff
                         00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
                 }
                 {
                     "nocbeoutput"=true
@@ -812,15 +813,17 @@ c0
                         03
                         00 c8 fc b5
                         1c
-                        00 b1 48 d0 01 00 cf ff 01 00 cf 7f 01 ff cf ff
-                        01 00 8f ff 01 00 8f 7f 01 ff 8f ff 00 00 00 00
-                        00 00 00 80 00 00 80 7f 00 00 80 ff 00 00 00 00
-                        00 00 00 00 00 00 00 00
+                        00 b1 48 d0
+                        00 fd a7 3f 00 fe c8 35 00 08 92 3f
+                        f8 cc 2e d0 08 c8 71 2f 98 e9 d1 3b
+                        00 00 00 00 00 00 00 80
+                        00 00 80 7f 00 00 80 ff
+                        00 00 00 00 00 00 00 00 00 00 00 00
                     |
                     "events"=[
                         "baf32"
                         "acm 1" "adf32 -0x1.f99p-20"
-                        "acl 14" "adf32 -0xc.8b1p30 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"
+                        "acl 14" "adf32 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"
                     ]
                 }
             ]
@@ -845,13 +848,13 @@ c0
                     "cbe"=|u8x
                         94 9f
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
-                        01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
-                        01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
+                        60 26 e6 4f 31 93 68 3c 00 d9 9d 9f 33 98 35 41 80 88 42 13 48 d6 15 40
+                        80 c8 93 35 f3 c7 32 bf e8 a4 8c 7c 06 d0 18 40 e0 1f fe 85 8c b2 92 bd
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
                 }
             ]
             "mustFail" = [
@@ -869,13 +872,13 @@ c0
                     "cbe"=|u8x
                         94 f6 20
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
-                        01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
-                        01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
+                        60 26 e6 4f 31 93 68 3c 00 d9 9d 9f 33 98 35 41 80 88 42 13 48 d6 15 40
+                        80 c8 93 35 f3 c7 32 bf e8 a4 8c 7c 06 d0 18 40 e0 1f fe 85 8c b2 92 bd
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0 0"]
+                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0 0"]
                  }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f6 00|              "events"=["af64"]}
                 {
@@ -888,13 +891,13 @@ c0
                     "cbe"=|u8x
                         94 f6 1e
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
-                        01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f 01 ff 00 00 00 00 f8 ff
-                        01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f 01 ff 00 00 00 00 f0 ff
+                        60 26 e6 4f 31 93 68 3c 00 d9 9d 9f 33 98 35 41 80 88 42 13 48 d6 15 40
+                        80 c8 93 35 f3 c7 32 bf e8 a4 8c 7c 06 d0 18 40 e0 1f fe 85 8c b2 92 bd
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"]
+                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
                 }
                 {
                     "nocbeoutput"=true
@@ -903,16 +906,16 @@ c0
                         03
                         00 00 cc ea f1 7f 32 be
                         1c
-                        00 10 90 ea fc 87 18 c3 01 00 00 00 00 00 f8 ff 01 00 00 00 00 00 f8 7f
-                        01 ff 00 00 00 00 f8 ff 01 00 00 00 00 00 f0 ff 01 00 00 00 00 00 f0 7f
-                        01 ff 00 00 00 00 f0 ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
+                        00 10 90 ea fc 87 18 c3 60 26 e6 4f 31 93 68 3c 00 d9 9d 9f 33 98 35 41
+                        80 88 42 13 48 d6 15 40 80 c8 93 35 f3 c7 32 bf e8 a4 8c 7c 06 d0 18 40
+                        e0 1f fe 85 8c b2 92 bd 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff 00 00 00 00 00 00 00 00
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
                     "events"=[
                         "baf64"
                         "acm 1" "adf64 -0x4.9ffc7ab3p-30"
-                        "acl 14" "adf64 -0x1.887fcea901p50 nan nan nan snan snan snan 0 -0 inf -inf 0 0 0"
+                        "acl 14" "adf64 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"
                     ]
                 }
             ]

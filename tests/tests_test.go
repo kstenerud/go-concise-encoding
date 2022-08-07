@@ -27,12 +27,13 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	// test_runner.RunTests(t, "version.cte")
-	// test_runner.RunTests(t, "cbe-basic.cte")
-	// test_runner.RunTests(t, "cbe-arrays.cte")
-	// test_runner.RunTests(t, "cbe-containers.cte")
-	// test_runner.RunTests(t, "cte-basic.cte")
+	test_runner.RunTests(t, "version.cte")
+	test_runner.RunTests(t, "cbe-basic.cte")
+	test_runner.RunTests(t, "cbe-arrays.cte")
+	test_runner.RunTests(t, "cbe-containers.cte")
+	test_runner.RunTests(t, "cte-basic.cte")
 	test_runner.RunTests(t, "cte-arrays.cte")
+	test_runner.RunTests(t, "cte-containers.cte")
 }
 
 func TestTemplates(t *testing.T) {

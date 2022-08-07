@@ -1,10 +1,10 @@
 c0
 {
-	"type" = {
-		"identifier" = "ce test"
-		"version" = 1
-	}
-	"ceversion" = 0
+    "type" = {
+        "identifier" = "ce test"
+        "version" = 1
+    }
+    "ceversion" = 0
     "tests" = [
 
         // ====================================================================
