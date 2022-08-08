@@ -1,7 +1,7 @@
 c0
 {
     "type" = {
-        "identifier" = "ce test"
+        "identifier" = "ce-test"
         "version" = 1
     }
     "ceversion" = 0
@@ -13,8 +13,8 @@ c0
         {
             "name" = "Uint8 Array"
             "mustSucceed" = [
-                //{"cbe"=|u8x 95 06 01 02 03|  "events"=["au8x 01 02 03"]}
-                {"cbe"=|u8x 95 07 01 02 03 02 04|  "events"=["bau8" "acm 3" "adu8x 01 02 03" "acl 1" "adu8x 04"]}
+                //{"cbe"=|u8x 95 06 01 02 03|  "events"=["au8x=01 02 03"]}
+                {"cbe"=|u8x 95 07 01 02 03 02 04|  "events"=["bau8" "acm=3" "adu8x=01 02 03" "acl=1" "adu8x=04"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 95 01|}        // Incomplete
@@ -27,14 +27,14 @@ c0
             "name" = "Uint16 Array (Short)"
             "mustSucceed" = [
                 {"cbe"=|u8x 94 10|                    "events"=["au16x"]}
-                {"cbe"=|u8x 94 13 02 01 04 03 06 05|  "events"=["au16x 0102 0304 0506"]}
+                {"cbe"=|u8x 94 13 02 01 04 03 06 05|  "events"=["au16x=0102 0304 0506"]}
                 {
                     "cbe"=|u8x
                         94 1f
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00
                     |
-                    "events"=["au16x 0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8"]
+                    "events"=["au16x=0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8"]
                 }
             ]
             "mustFail" = [
@@ -55,10 +55,10 @@ c0
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00
                     |
-                    "events"=["au16x 0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8 9"]
+                    "events"=["au16x=0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8 9"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 fe 00|                    "events"=["au16x"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 94 fe 06 02 01 04 03 06 05|  "events"=["au16x 0102 0304 0506"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 94 fe 06 02 01 04 03 06 05|  "events"=["au16x=0102 0304 0506"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x
@@ -66,7 +66,7 @@ c0
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00
                     |
-                    "events"=["au16x 0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8"]
+                    "events"=["au16x=0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8"]
                 }
                 {
                     "nocbeoutput"=true
@@ -78,8 +78,8 @@ c0
                     |
                     "events"=[
                         "bau16"
-                        "acm 2" "adu16x 0102 0304"
-                        "acl 13" "adu16x 0506 0708 090a 0b0c 0d0e 0001 0002 0003 0004 0005 0006 0007 0008"
+                        "acm=2" "adu16x=0102 0304"
+                        "acl=13" "adu16x=0506 0708 090a 0b0c 0d0e 0001 0002 0003 0004 0005 0006 0007 0008"
                     ]
                 }
             ]
@@ -96,7 +96,7 @@ c0
             "name" = "Uint32 Array (Short)"
             "mustSucceed" = [
                 {"cbe"=|u8x 94 30|                    "events"=["au32x"]}
-                {"cbe"=|u8x 94 33 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["au32x 01020304 05060708 090a0b0c"]}
+                {"cbe"=|u8x 94 33 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["au32x=01020304 05060708 090a0b0c"]}
                 {
                     "cbe" = |u8x
                         94 3f
@@ -106,7 +106,7 @@ c0
                         34 33 32 31 38 37 36 35 3c 3b 3a 39
                     |
                     "events" = [
-                        "au32x
+                        "au32x=
                             01020304 05060708 090a0b0c 0d0e0f00
                             11121314 15161718 191a1b1c 1d1e1f10
                             21222324 25262728 292a2b2c 2d2e2f20
@@ -136,7 +136,7 @@ c0
                         34 33 32 31 38 37 36 35 3c 3b 3a 39 30 3f 3e 3d
                     |
                     "events" = [
-                        "au32x 
+                        "au32x=
                             01020304 05060708 090a0b0c 0d0e0f00
                             11121314 15161718 191a1b1c 1d1e1f10
                             21222324 25262728 292a2b2c 2d2e2f20
@@ -145,7 +145,7 @@ c0
                     ]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 fc 00|                    "events"=["au32x"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 94 fc 06 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["au32x 01020304 05060708 090a0b0c"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 94 fc 06 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["au32x=01020304 05060708 090a0b0c"]}
                 {
                     "nocbeoutput"=true
                     "cbe" = |u8x
@@ -156,7 +156,7 @@ c0
                         34 33 32 31 38 37 36 35 3c 3b 3a 39
                     |
                     "events" = [
-                        "au32x 
+                        "au32x=
                             01020304 05060708 090a0b0c 0d0e0f00
                             11121314 15161718 191a1b1c 1d1e1f10
                             21222324 25262728 292a2b2c 2d2e2f20
@@ -177,8 +177,8 @@ c0
                     |
                     "events" = [
                         "bau32"
-                        "acm 3" "adu32x 01020304 05060708 090a0b0c"
-                        "acl 12" "adu32x
+                        "acm=3" "adu32x=01020304 05060708 090a0b0c"
+                        "acl=12" "adu32x=
                             0d0e0f00 11121314 15161718 191a1b1c
                             1d1e1f10 21222324 25262728 292a2b2c
                             2d2e2f20 31323334 35363738 393a3b3c
@@ -201,7 +201,7 @@ c0
                 {"cbe"=|u8x 94 50|  "events"=["au64x"]}
                 {
                     "cbe"=|u8x 94 52 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
-                    "events"=["au64x 0102030405060708 090a0b0c0d0e0f00"]
+                    "events"=["au64x=0102030405060708 090a0b0c0d0e0f00"]
                 }
                 {
                     "cbe" = |u8x
@@ -216,7 +216,7 @@ c0
                         78 77 76 75 74 73 72 71
                     |
                     "events" = [
-                        "au64x
+                        "au64x=
                             0102030405060708 090a0b0c0d0e0f00
                             1112131415161718 191a1b1c1d1e1f10
                             2122232425262728 292a2b2c2d2e2f20
@@ -254,7 +254,7 @@ c0
                         78 77 76 75 74 73 72 71 70 7f 7e 7d 7c 7b 7a 79
                     |
                     "events" = [
-                        "au64x
+                        "au64x=
                             0102030405060708 090a0b0c0d0e0f00
                             1112131415161718 191a1b1c1d1e1f10
                             2122232425262728 292a2b2c2d2e2f20
@@ -270,7 +270,7 @@ c0
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x 94 fa 04 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
-                    "events"=["au64x 0102030405060708 090a0b0c0d0e0f00"]
+                    "events"=["au64x=0102030405060708 090a0b0c0d0e0f00"]
                 }
                 {
                     "nocbeoutput"=true
@@ -286,7 +286,7 @@ c0
                         78 77 76 75 74 73 72 71
                     |
                     "events" = [
-                        "au64x
+                        "au64x=
                             0102030405060708 090a0b0c0d0e0f00
                             1112131415161718 191a1b1c1d1e1f10
                             2122232425262728 292a2b2c2d2e2f20
@@ -315,8 +315,8 @@ c0
                     |
                     "events" = [
                         "bau64"
-                        "acm 1" "adu64x 0102030405060708"
-                        "acl 14" "adu64x
+                        "acm=1" "adu64x=0102030405060708"
+                        "acl=14" "adu64x=
                             090a0b0c0d0e0f00 1112131415161718
                             191a1b1c1d1e1f10 2122232425262728
                             292a2b2c2d2e2f20 3132333435363738
@@ -342,10 +342,10 @@ c0
             "name" = "Int8 Array (Short)"
             "mustSucceed" = [
                 {"cbe"=|u8x 94 00|                 "events"=["ai8"]}
-                {"cbe"=|u8x 94 05 fe ff 00 01 02|  "events"=["ai8 -2 -1 0 1 2"]}
+                {"cbe"=|u8x 94 05 fe ff 00 01 02|  "events"=["ai8=-2 -1 0 1 2"]}
                 {
                     "cbe"=|u8x 94 0f f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
-                    "events"=["ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai8=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
             ]
             "mustFail" = [
@@ -362,14 +362,14 @@ c0
             "mustSucceed" = [
                 {
                     "cbe"=|u8x 94 ff 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08|
-                    "events"=["ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
+                    "events"=["ai8=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 ff 00|                 "events"=["ai8"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 94 ff 0a fe ff 00 01 02|  "events"=["ai8 -2 -1 0 1 2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 94 ff 0a fe ff 00 01 02|  "events"=["ai8=-2 -1 0 1 2"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x 94 ff 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
-                    "events"=["ai8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai8=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
                     "nocbeoutput"=true
@@ -379,21 +379,21 @@ c0
                         03 00 03 01 03 02 03 03 03 04 03 05 03 06 02 07
                     |
                     "events"=["bai8"
-                        "acm 1" "adi8 -7"
-                        "acm 1" "adi8 -6"
-                        "acm 1" "adi8 -5"
-                        "acm 1" "adi8 -4"
-                        "acm 1" "adi8 -3"
-                        "acm 1" "adi8 -2"
-                        "acm 1" "adi8 -1"
-                        "acm 1" "adi8 0"
-                        "acm 1" "adi8 1"
-                        "acm 1" "adi8 2"
-                        "acm 1" "adi8 3"
-                        "acm 1" "adi8 4"
-                        "acm 1" "adi8 5"
-                        "acm 1" "adi8 6"
-                        "acl 1" "adi8 7"
+                        "acm=1" "adi8=-7"
+                        "acm=1" "adi8=-6"
+                        "acm=1" "adi8=-5"
+                        "acm=1" "adi8=-4"
+                        "acm=1" "adi8=-3"
+                        "acm=1" "adi8=-2"
+                        "acm=1" "adi8=-1"
+                        "acm=1" "adi8=0"
+                        "acm=1" "adi8=1"
+                        "acm=1" "adi8=2"
+                        "acm=1" "adi8=3"
+                        "acm=1" "adi8=4"
+                        "acm=1" "adi8=5"
+                        "acm=1" "adi8=6"
+                        "acl=1" "adi8=7"
                     ]
                 }
             ]
@@ -412,7 +412,7 @@ c0
                 {"cbe"=|u8x 94 20|                 "events"=["ai16"]}
                 {
                     "cbe"=|u8x 94 25 fe ff ff ff 00 00 01 00 02 00|
-                    "events"=["ai16 -2 -1 0 1 2"]
+                    "events"=["ai16=-2 -1 0 1 2"]
                 }
                 {
                     "cbe"=|u8x
@@ -420,7 +420,7 @@ c0
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
                     |
-                    "events"=["ai16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
             ]
             "mustFail" = [
@@ -441,10 +441,10 @@ c0
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00
                     |
-                    "events"=["ai16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
+                    "events"=["ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 fd 00|                                "events"=["ai16"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 94 fd 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["ai16 -2 -1 0 1 2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 94 fd 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["ai16=-2 -1 0 1 2"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x
@@ -452,7 +452,7 @@ c0
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
                     |
-                    "events"=["ai16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
                     "nocbeoutput"=true
@@ -463,8 +463,8 @@ c0
                     |
                     "events"=[
                         "bai16"
-                        "acm 5" "adi16 -7 -6 -5 -4 -3"
-                        "acl 10" "adi16 -2 -1 0 1 2 3 4 5 6 7"
+                        "acm=5" "adi16=-7 -6 -5 -4 -3"
+                        "acl=10" "adi16=-2 -1 0 1 2 3 4 5 6 7"
                     ]
                 }
             ]
@@ -486,7 +486,7 @@ c0
                         94 45
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                     |
-                    "events"=["ai32 -2 -1 0 1 2"]
+                    "events"=["ai32=-2 -1 0 1 2"]
                 }
                 {
                     "cbe"=|u8x 
@@ -495,7 +495,7 @@ c0
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                         03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
                     |
-                    "events"=["ai32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
             ]
             "mustFail" = [
@@ -518,7 +518,7 @@ c0
                         03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
                         08 00 00 00
                     |
-                    "events"=["ai32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
+                    "events"=["ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 fb 00|  "events"=["ai32"]}
                 {
@@ -527,7 +527,7 @@ c0
                         94 fb 0a
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                     |
-                    "events"=["ai32 -2 -1 0 1 2"]
+                    "events"=["ai32=-2 -1 0 1 2"]
                 }
                 {
                     "nocbeoutput"=true
@@ -537,7 +537,7 @@ c0
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                         03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00
                     |
-                    "events"=["ai32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
                     "nocbeoutput"=true
@@ -552,8 +552,8 @@ c0
                     |
                     "events"=[
                         "bai32"
-                        "acm 2" "adi32 -7 -6"
-                        "acl 13" "adi32 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
+                        "acm=2" "adi32=-7 -6"
+                        "acl=13" "adi32=-5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
                     ]
                 }
             ]
@@ -577,7 +577,7 @@ c0
                         00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
                         02 00 00 00 00 00 00 00
                     |
-                    "events"=["ai64 -2 -1 0 1 2"]
+                    "events"=["ai64=-2 -1 0 1 2"]
                 }
                 {
                     "cbe"=|u8x 
@@ -591,7 +591,7 @@ c0
                         05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00
                         07 00 00 00 00 00 00 00
                     |
-                    "events"=["ai64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
             ]
             "mustFail" = [
@@ -618,7 +618,7 @@ c0
                         05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00
                         07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00
                     |
-                    "events"=["ai64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
+                    "events"=["ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f9 00|  "events"=["ai64"]}
                 {
@@ -629,7 +629,7 @@ c0
                         00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
                         02 00 00 00 00 00 00 00
                     |
-                    "events"=["ai64 -2 -1 0 1 2"]
+                    "events"=["ai64=-2 -1 0 1 2"]
                 }
                 {
                     "nocbeoutput"=true
@@ -644,7 +644,7 @@ c0
                         05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00
                         07 00 00 00 00 00 00 00
                     |
-                    "events"=["ai64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
+                    "events"=["ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
                     "nocbeoutput"=true
@@ -663,8 +663,8 @@ c0
                     |
                     "events"=[
                         "bai64"
-                        "acm 2" "adi64 -7 -6"
-                        "acl 13" "adi64 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
+                        "acm=2" "adi64=-7 -6"
+                        "acl=13" "adi64=-5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
                     ]
                 }
             ]
@@ -681,14 +681,14 @@ c0
             "name" = "Float16 Array (Short)"
             "mustSucceed" = [
                 {"cbe"=|u8x 94 70|              "events"=["af16"]}
-                {"cbe"=|u8x 94 72 a8 40 fc b5|  "events"=["af16 0x1.5p2 -0x1.f8p-20"]}
+                {"cbe"=|u8x 94 72 a8 40 fc b5|  "events"=["af16=0x1.5p2 -0x1.f8p-20"]}
                 {
                     "cbe"=|u8x
                         94 7f
                         a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
                     |
-                    "events"=["af16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
+                    "events"=["af16=0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
                 }
             ]
             "mustFail" = [
@@ -709,10 +709,10 @@ c0
                         a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0 0"]
+                    "events"=["af16=0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0 0"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f8 00|              "events"=["af16"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 94 f8 04 a8 40 fc b5|  "events"=["af16 0x1.5p2 -0x1.f8p-20"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 94 f8 04 a8 40 fc b5|  "events"=["af16=0x1.5p2 -0x1.f8p-20"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x
@@ -720,7 +720,7 @@ c0
                         a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
                     |
-                    "events"=["af16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
+                    "events"=["af16=0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
                 }
                 {
                     "nocbeoutput"=true
@@ -733,8 +733,8 @@ c0
                     |
                     "events"=[
                         "baf16"
-                        "acm 5" "adf16 0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1"
-                        "acl 10" "adf16 0x1.6p2 0x1.7p3 0 -0 inf -inf 0 0 0 0"
+                        "acm=5" "adf16=0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1"
+                        "acl=10" "adf16=0x1.6p2 0x1.7p3 0 -0 inf -inf 0 0 0 0"
                     ]
                 }
             ]
@@ -753,7 +753,7 @@ c0
                 {"cbe"=|u8x 94 80|              "events"=["af32"]}
                 {
                     "cbe"=|u8x 94 82 00 c8 fc b5 00 b1 48 d0|
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30"]
+                    "events"=["af32=-0x1.f99p-20 -0xc.8b1p30"]
                 }
                 {
                     "cbe"=|u8x
@@ -765,7 +765,7 @@ c0
                         00 00 80 7f 00 00 80 ff
                         00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
+                    "events"=["af32=-0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
                 }
             ]
             "mustFail" = [
@@ -789,10 +789,10 @@ c0
                         00 00 80 7f 00 00 80 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0 0"]
+                    "events"=["af32=-0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0 0"]
                 }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f7 00|              "events"=["af32"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 94 f7 04 00 c8 fc b5 00 b1 48 d0|  "events"=["af32 -0x1.f99p-20 -0xc.8b1p30"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 94 f7 04 00 c8 fc b5 00 b1 48 d0|  "events"=["af32=-0x1.f99p-20 -0xc.8b1p30"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x
@@ -804,7 +804,7 @@ c0
                         00 00 80 7f 00 00 80 ff
                         00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af32 -0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
+                    "events"=["af32=-0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
                 }
                 {
                     "nocbeoutput"=true
@@ -822,8 +822,8 @@ c0
                     |
                     "events"=[
                         "baf32"
-                        "acm 1" "adf32 -0x1.f99p-20"
-                        "acl 14" "adf32 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"
+                        "acm=1" "adf32=-0x1.f99p-20"
+                        "acl=14" "adf32=-0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"
                     ]
                 }
             ]
@@ -842,7 +842,7 @@ c0
                 {"cbe"=|u8x 94 90|              "events"=["af64"]}
                 {
                     "cbe"=|u8x 94 92 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
+                    "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
                 }
                 {
                     "cbe"=|u8x
@@ -854,7 +854,7 @@ c0
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
+                    "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
                 }
             ]
             "mustFail" = [
@@ -878,13 +878,13 @@ c0
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0 0"]
+                    "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0 0"]
                  }
                 {"nocbeoutput"=true  "cbe"=|u8x 94 f6 00|              "events"=["af64"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x 94 f6 04 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
+                    "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
                 }
                 {
                     "nocbeoutput"=true
@@ -897,7 +897,7 @@ c0
                         00 00 00 00 00 00 f0 7f 00 00 00 00 00 00 f0 ff
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
                     |
-                    "events"=["af64 -0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
+                    "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
                 }
                 {
                     "nocbeoutput"=true
@@ -914,8 +914,8 @@ c0
                     |
                     "events"=[
                         "baf64"
-                        "acm 1" "adf64 -0x4.9ffc7ab3p-30"
-                        "acl 14" "adf64 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"
+                        "acm=1" "adf64=-0x4.9ffc7ab3p-30"
+                        "acl=14" "adf64=-0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"
                     ]
                 }
             ]
@@ -939,7 +939,7 @@ c0
                         2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
                         2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
                     |
-                    "events"=["au
+                    "events"=["au=
                         2db68748-707f-11ec-959e-6f943cbabf82
                         2db6b6a0-707f-11ec-aca8-4fceb7fca666
                     "]
@@ -963,7 +963,7 @@ c0
                         8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
                         8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                     |
-                    "events"=["au
+                    "events"=["au=
                         8f6f3554-707f-11ec-a6a1-6f76dee406ec
                         8f6f6466-707f-11ec-a425-335b61d32dfc
                         8f6f9198-707f-11ec-a1d5-9b6bce592067
@@ -1013,7 +1013,7 @@ c0
                         8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                         e3 db 8a b4 70 7f 11 ec b9 a7 9f b7 52 e6 24 8a
                     |
-                    "events"=["au
+                    "events"=["au=
                         8f6f3554-707f-11ec-a6a1-6f76dee406ec
                         8f6f6466-707f-11ec-a425-335b61d32dfc
                         8f6f9198-707f-11ec-a1d5-9b6bce592067
@@ -1040,7 +1040,7 @@ c0
                         2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
                         2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
                     |
-                    "events"=["au
+                    "events"=["au=
                         2db68748-707f-11ec-959e-6f943cbabf82
                         2db6b6a0-707f-11ec-aca8-4fceb7fca666
                     "]}
@@ -1064,7 +1064,7 @@ c0
                         8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
                         8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
                     |
-                    "events"=["au
+                    "events"=["au=
                         8f6f3554-707f-11ec-a6a1-6f76dee406ec
                         8f6f6466-707f-11ec-a425-335b61d32dfc
                         8f6f9198-707f-11ec-a1d5-9b6bce592067
@@ -1106,8 +1106,8 @@ c0
                     |
                     "events"=[
                         "bau"
-                        "acm 1" "adu 8f6f3554-707f-11ec-a6a1-6f76dee406ec"
-                        "acl 14" "adu
+                        "acm=1" "adu=8f6f3554-707f-11ec-a6a1-6f76dee406ec"
+                        "acl=14" "adu=
                         8f6f6466-707f-11ec-a425-335b61d32dfc
                         8f6f9198-707f-11ec-a1d5-9b6bce592067
                         8f6fc032-707f-11ec-9aab-13947004ca3a
@@ -1138,10 +1138,10 @@ c0
             "name" = "Bit Array"
             "mustSucceed" = [
                 {"cbe"=|u8x 96 00|  "events"=["ab"]}
-                {"cbe"=|u8x 96 02 01|  "events"=["ab 1"]}
-                {"cbe"=|u8x 96 04 01|  "events"=["ab 10"]}
-                {"cbe"=|u8x 96 06 05|  "events"=["ab 101"]}
-                {"cbe"=|u8x 96 3e 4d 29 6b 52|  "events"=["ab 1011001010010100110101100100101"]}
+                {"cbe"=|u8x 96 02 01|  "events"=["ab=1"]}
+                {"cbe"=|u8x 96 04 01|  "events"=["ab=10"]}
+                {"cbe"=|u8x 96 06 05|  "events"=["ab=101"]}
+                {"cbe"=|u8x 96 3e 4d 29 6b 52|  "events"=["ab=1011001010010100110101100100101"]}
                 {
                     "nocbeoutput"=true
                     "cbe"=|u8x
@@ -1151,8 +1151,8 @@ c0
                     |
                     "events"=[
                         "bab"
-                        "acm 3" "adb 101"
-                        "acl 1" "adb 1"
+                        "acm=3" "adb=101"
+                        "acl=1" "adb=1"
                     ]
                 }
 
@@ -1169,22 +1169,22 @@ c0
         {
             "name" = "String (Short)"
             "mustSucceed" = [
-                {"cbe"=|u8x 80|                                               "events"=["s "]}
-                {"cbe"=|u8x 81 61|                                            "events"=["s a"]}
-                {"cbe"=|u8x 82 61 61|                                         "events"=["s aa"]}
-                {"cbe"=|u8x 83 61 61 61|                                      "events"=["s aaa"]}
-                {"cbe"=|u8x 84 61 61 61 61|                                   "events"=["s aaaa"]}
-                {"cbe"=|u8x 85 61 61 61 61 61|                                "events"=["s aaaaa"]}
-                {"cbe"=|u8x 86 61 61 61 61 61 61|                             "events"=["s aaaaaa"]}
-                {"cbe"=|u8x 87 61 61 61 61 61 61 61|                          "events"=["s aaaaaaa"]}
-                {"cbe"=|u8x 88 61 61 61 61 61 61 61 61|                       "events"=["s aaaaaaaa"]}
-                {"cbe"=|u8x 89 61 61 61 61 61 61 61 61 61|                    "events"=["s aaaaaaaaa"]}
-                {"cbe"=|u8x 8a 61 61 61 61 61 61 61 61 61 61|                 "events"=["s aaaaaaaaaa"]}
-                {"cbe"=|u8x 8b 61 61 61 61 61 61 61 61 61 61 61|              "events"=["s aaaaaaaaaaa"]}
-                {"cbe"=|u8x 8c 61 61 61 61 61 61 61 61 61 61 61 61|           "events"=["s aaaaaaaaaaaa"]}
-                {"cbe"=|u8x 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|        "events"=["s aaaaaaaaaaaaa"]}
-                {"cbe"=|u8x 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|     "events"=["s aaaaaaaaaaaaaa"]}
-                {"cbe"=|u8x 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|  "events"=["s aaaaaaaaaaaaaaa"]}
+                {"cbe"=|u8x 80|                                               "events"=["s="]}
+                {"cbe"=|u8x 81 61|                                            "events"=["s=a"]}
+                {"cbe"=|u8x 82 61 61|                                         "events"=["s=aa"]}
+                {"cbe"=|u8x 83 61 61 61|                                      "events"=["s=aaa"]}
+                {"cbe"=|u8x 84 61 61 61 61|                                   "events"=["s=aaaa"]}
+                {"cbe"=|u8x 85 61 61 61 61 61|                                "events"=["s=aaaaa"]}
+                {"cbe"=|u8x 86 61 61 61 61 61 61|                             "events"=["s=aaaaaa"]}
+                {"cbe"=|u8x 87 61 61 61 61 61 61 61|                          "events"=["s=aaaaaaa"]}
+                {"cbe"=|u8x 88 61 61 61 61 61 61 61 61|                       "events"=["s=aaaaaaaa"]}
+                {"cbe"=|u8x 89 61 61 61 61 61 61 61 61 61|                    "events"=["s=aaaaaaaaa"]}
+                {"cbe"=|u8x 8a 61 61 61 61 61 61 61 61 61 61|                 "events"=["s=aaaaaaaaaa"]}
+                {"cbe"=|u8x 8b 61 61 61 61 61 61 61 61 61 61 61|              "events"=["s=aaaaaaaaaaa"]}
+                {"cbe"=|u8x 8c 61 61 61 61 61 61 61 61 61 61 61 61|           "events"=["s=aaaaaaaaaaaa"]}
+                {"cbe"=|u8x 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|        "events"=["s=aaaaaaaaaaaaa"]}
+                {"cbe"=|u8x 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|     "events"=["s=aaaaaaaaaaaaaa"]}
+                {"cbe"=|u8x 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|  "events"=["s=aaaaaaaaaaaaaaa"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 81|}                                           // Incomplete
@@ -1211,8 +1211,8 @@ c0
             "name" = "String (Long)"
             "mustSucceed" = [
                 {"nocbeoutput"=true  "cbe"=|u8x 90 00|           "events"=["s"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 90 02 78|        "events"=["s x"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 90 06 78 79 7a|  "events"=["s xyz"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 90 02 78|        "events"=["s=x"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 90 06 78 79 7a|  "events"=["s=xyz"]}
                 {
                     "cbe"=|u8x
                         90 d8 08 73 6b 79 20 e0 ae b5 e0 ae be e0
@@ -1251,7 +1251,7 @@ c0
                         d8 a7 d9 86 20 62 e1 ba a7 75 20 74 72 e1 bb 9d
                         69 20 d7 94 d7 99 d7 9e d7 9c 20 e1 bb 8d 72 75
                         6e|
-                    "events"=["s \
+                    "events"=["s=\
                         sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 ცა \
                         ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 asûman \
                         асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် आकाश ଆକାଶ \
@@ -1270,7 +1270,7 @@ c0
                   64 6f 65 73 20 74 68 65 20 77 61 74 65 72 20 67 65 74 20 68 69
                   6d 20 69 6e 73 74 65 61 64 3f 0a 4e 6f 62 6f 64 79 20 6b 6e 6f
                   77 73 2c 20 50 61 72 74 69 63 6c 65 20 6d 61 6e|
-                "events"=["s \.#
+                "events"=["s=\.#
 Particle man, particle man
 Doing the things a particle can
 What's he like? It's not important
@@ -1282,13 +1282,13 @@ Nobody knows, Particle man#"]
                 }
                 {
                     "cbe" = |u8x 90 36 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a|
-                    "events" = ["s Particle man, particle man\n"]
+                    "events" = ["s=Particle man, particle man\n"]
                 }
                 {
                     "cbe" = |u8x 90 40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a|
-                    "events" = ["s Doing the things a particle can\n"]
+                    "events" = ["s=Doing the things a particle can\n"]
                 }
-                {"cbe"=|u8x 90 01 00|  "events"=["bs" "acm 0" "acl 0"]}
+                {"cbe"=|u8x 90 01 00|  "events"=["bs" "acm=0" "acl=0"]}
                 {
                     "cbe" = |u8x
                         90
@@ -1297,8 +1297,8 @@ Nobody knows, Particle man#"]
                     |
                     "events" = [
                         "bs"
-                        "acm 27" "adt Particle man, particle man\n"
-                        "acl 32" "adt Doing the things a particle can\n"
+                        "acm=27" "adt=Particle man, particle man\n"
+                        "acl=32" "adt=Doing the things a particle can\n"
                     ]
                 }
             ]
@@ -1315,13 +1315,13 @@ Nobody knows, Particle man#"]
         {
             "name" = "Resource ID"
             "mustSucceed" = [
-                {"cbe"=|u8x 91 00|           "events"=["rid "]}
-                {"cbe"=|u8x 91 02 61|        "events"=["rid a"]}
+                {"cbe"=|u8x 91 00|           "events"=["rid="]}
+                {"cbe"=|u8x 91 02 61|        "events"=["rid=a"]}
                 {"cbe"=|u8x 91 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
-                 "events"=["rid https://concise-encoding.org/"]}
+                 "events"=["rid=https://concise-encoding.org/"]}
                 {
                     "cbe"=|u8x 91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
-                    "events"=["brid" "acm 1" "adt h" "acl 28" "adt ttps://concise-encoding.org/"]
+                    "events"=["brid" "acm=1" "adt=h" "acl=28" "adt=ttps://concise-encoding.org/"]
                 }
             ]
             "mustFail" = [
@@ -1337,15 +1337,15 @@ Nobody knows, Particle man#"]
         {
             "name" = "Remote Reference"
             "mustSucceed" = [
-                {"cbe"=|u8x 94 e0 00|        "events"=["refr "]}
-                {"cbe"=|u8x 94 e0 02 61|     "events"=["refr a"]}
+                {"cbe"=|u8x 94 e0 00|        "events"=["refr="]}
+                {"cbe"=|u8x 94 e0 02 61|     "events"=["refr=a"]}
                 {
                     "cbe"=|u8x 94 e0 3a 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
-                    "events"=["refr https://concise-encoding.org/"]
+                    "events"=["refr=https://concise-encoding.org/"]
                 }
                 {
                     "cbe"=|u8x 94 e0 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
-                    "events"=["brefr" "acm 1" "adt h" "acl 28" "adt ttps://concise-encoding.org/"]
+                    "events"=["brefr" "acm=1" "adt=h" "acl=28" "adt=ttps://concise-encoding.org/"]
                 }
             ]
             "mustFail" = [
@@ -1361,8 +1361,8 @@ Nobody knows, Particle man#"]
         {
             "name" = "Custom Type"
             "mustSucceed" = [
-                {"cbe"=|u8x 92 06 01 02 03|  "events"=["cb 01 02 03"]}
-                {"cbe"=|u8x 92 07 01 02 03 02 04|  "events"=["bcb" "acm 3" "adu8x 01 02 03" "acl 1" "adu8x 04"]}
+                {"cbe"=|u8x 92 06 01 02 03|  "events"=["cb=01 02 03"]}
+                {"cbe"=|u8x 92 07 01 02 03 02 04|  "events"=["bcb" "acm=3" "adu8x=01 02 03" "acl=1" "adu8x=04"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 92 01|}        // Incomplete
@@ -1374,7 +1374,7 @@ Nobody knows, Particle man#"]
         {
             "name" = "Media"
             "mustSucceed" = [
-                {"cbe"=|u8x 94 e1 06 61 2f 61 00|  "events"=["bmedia" "acl 3" "adt a/a" "acl 0"]}
+                {"cbe"=|u8x 94 e1 06 61 2f 61 00|  "events"=["bmedia" "acl=3" "adt=a/a" "acl=0"]}
                 {
                     "cbe"=|u8x 94 e1 20 61 70 70 6c 69 63 61 74
                         69 6f 6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f
@@ -1383,10 +1383,10 @@ Nobody knows, Particle man#"]
                     |
                     "events"=[
                         "bmedia"
-                        "acl 16"
-                        "adt application/x-sh"
-                        "acl 28"
-                        "adu8x 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
+                        "acl=16"
+                        "adt=application/x-sh"
+                        "acl=28"
+                        "adu8x=23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
                     ]
                 }
             ]

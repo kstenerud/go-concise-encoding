@@ -1,7 +1,7 @@
 c0
 {
     "type" = {
-        "identifier" = "ce test"
+        "identifier" = "ce-test"
         "version" = 1
     }
     "ceversion" = 0
@@ -46,8 +46,8 @@ c0
         {
             "name" = "Boolean"
             "mustSucceed" = [
-                {"cbe"=|u8x 7c|  "events"=["b false"]}
-                {"cbe"=|u8x 7d|  "events"=["b true"]}
+                {"cbe"=|u8x 7c|  "events"=["b=false"]}
+                {"cbe"=|u8x 7d|  "events"=["b=true"]}
             ]
         }
 
@@ -56,26 +56,26 @@ c0
         {
             "name" = "Small Integer"
             "mustSucceed" = [
-                {"cbe"=|u8x 9c|  "events"=["n -100"]}
-                {"cbe"=|u8x 9d|  "events"=["n -99"]}
-                {"cbe"=|u8x ec|  "events"=["n -20"]}
-                {"cbe"=|u8x fa|  "events"=["n -6"]}
-                {"cbe"=|u8x fb|  "events"=["n -5"]}
-                {"cbe"=|u8x fc|  "events"=["n -4"]}
-                {"cbe"=|u8x fd|  "events"=["n -3"]}
-                {"cbe"=|u8x fe|  "events"=["n -2"]}
-                {"cbe"=|u8x ff|  "events"=["n -1"]}
-                {"cbe"=|u8x 00|  "events"=["n 0"]}
-                {"cbe"=|u8x 01|  "events"=["n 1"]}
-                {"cbe"=|u8x 02|  "events"=["n 2"]}
-                {"cbe"=|u8x 03|  "events"=["n 3"]}
-                {"cbe"=|u8x 04|  "events"=["n 4"]}
-                {"cbe"=|u8x 05|  "events"=["n 5"]}
-                {"cbe"=|u8x 06|  "events"=["n 6"]}
-                {"cbe"=|u8x 37|  "events"=["n 55"]}
-                {"cbe"=|u8x 5b|  "events"=["n 91"]}
-                {"cbe"=|u8x 63|  "events"=["n 99"]}
-                {"cbe"=|u8x 64|  "events"=["n 100"]}
+                {"cbe"=|u8x 9c|  "events"=["n=-100"]}
+                {"cbe"=|u8x 9d|  "events"=["n=-99"]}
+                {"cbe"=|u8x ec|  "events"=["n=-20"]}
+                {"cbe"=|u8x fa|  "events"=["n=-6"]}
+                {"cbe"=|u8x fb|  "events"=["n=-5"]}
+                {"cbe"=|u8x fc|  "events"=["n=-4"]}
+                {"cbe"=|u8x fd|  "events"=["n=-3"]}
+                {"cbe"=|u8x fe|  "events"=["n=-2"]}
+                {"cbe"=|u8x ff|  "events"=["n=-1"]}
+                {"cbe"=|u8x 00|  "events"=["n=0"]}
+                {"cbe"=|u8x 01|  "events"=["n=1"]}
+                {"cbe"=|u8x 02|  "events"=["n=2"]}
+                {"cbe"=|u8x 03|  "events"=["n=3"]}
+                {"cbe"=|u8x 04|  "events"=["n=4"]}
+                {"cbe"=|u8x 05|  "events"=["n=5"]}
+                {"cbe"=|u8x 06|  "events"=["n=6"]}
+                {"cbe"=|u8x 37|  "events"=["n=55"]}
+                {"cbe"=|u8x 5b|  "events"=["n=91"]}
+                {"cbe"=|u8x 63|  "events"=["n=99"]}
+                {"cbe"=|u8x 64|  "events"=["n=100"]}
             ]
         }
 
@@ -84,37 +84,37 @@ c0
         {
             "name" = "8-Bit Integer"
             "mustSucceed" = [
-                {"cbe"=|u8x 69 ff|  "events"=["n -255"]}
-                {"cbe"=|u8x 69 fe|  "events"=["n -254"]}
-                {"cbe"=|u8x 69 c8|  "events"=["n -200"]}
-                {"cbe"=|u8x 69 65|  "events"=["n -101"]}
-                {"cbe"=|u8x 68 65|  "events"=["n 101"]}
-                {"cbe"=|u8x 68 65|  "events"=["n 101"]}
-                {"cbe"=|u8x 68 c8|  "events"=["n 200"]}
-                {"cbe"=|u8x 68 fe|  "events"=["n 254"]}
-                {"cbe"=|u8x 68 ff|  "events"=["n 255"]}
+                {"cbe"=|u8x 69 ff|  "events"=["n=-255"]}
+                {"cbe"=|u8x 69 fe|  "events"=["n=-254"]}
+                {"cbe"=|u8x 69 c8|  "events"=["n=-200"]}
+                {"cbe"=|u8x 69 65|  "events"=["n=-101"]}
+                {"cbe"=|u8x 68 65|  "events"=["n=101"]}
+                {"cbe"=|u8x 68 65|  "events"=["n=101"]}
+                {"cbe"=|u8x 68 c8|  "events"=["n=200"]}
+                {"cbe"=|u8x 68 fe|  "events"=["n=254"]}
+                {"cbe"=|u8x 68 ff|  "events"=["n=255"]}
 
-                {"nocbeoutput"=true  "cbe"=|u8x 69 64|  "events"=["n -100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 63|  "events"=["n -99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 14|  "events"=["n -20"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 06|  "events"=["n -6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 05|  "events"=["n -5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 04|  "events"=["n -4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 03|  "events"=["n -3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 02|  "events"=["n -2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 01|  "events"=["n -1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 69 00|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 01|  "events"=["n 1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 02|  "events"=["n 2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 03|  "events"=["n 3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 04|  "events"=["n 4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 05|  "events"=["n 5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 06|  "events"=["n 6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 37|  "events"=["n 55"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 5b|  "events"=["n 91"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 63|  "events"=["n 99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 68 64|  "events"=["n 100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 64|  "events"=["n=-100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 63|  "events"=["n=-99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 14|  "events"=["n=-20"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 06|  "events"=["n=-6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 05|  "events"=["n=-5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 04|  "events"=["n=-4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 03|  "events"=["n=-3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 02|  "events"=["n=-2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 01|  "events"=["n=-1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 69 00|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 01|  "events"=["n=1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 02|  "events"=["n=2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 03|  "events"=["n=3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 04|  "events"=["n=4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 05|  "events"=["n=5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 06|  "events"=["n=6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 37|  "events"=["n=55"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 5b|  "events"=["n=91"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 63|  "events"=["n=99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 68 64|  "events"=["n=100"]}
             ]
         }
 
@@ -123,41 +123,41 @@ c0
         {
             "name" = "16-Bit Integer"
             "mustSucceed" = [
-                {"cbe"=|u8x 6b ff ff|  "events"=["n -65535"]}
-                {"cbe"=|u8x 6b e8 03|  "events"=["n -1000"]}
-                {"cbe"=|u8x 6a e8 03|  "events"=["n 1000"]}
-                {"cbe"=|u8x 6a ff ff|  "events"=["n 65535"]}
+                {"cbe"=|u8x 6b ff ff|  "events"=["n=-65535"]}
+                {"cbe"=|u8x 6b e8 03|  "events"=["n=-1000"]}
+                {"cbe"=|u8x 6a e8 03|  "events"=["n=1000"]}
+                {"cbe"=|u8x 6a ff ff|  "events"=["n=65535"]}
 
-                {"nocbeoutput"=true  "cbe"=|u8x 6b ff 00|  "events"=["n -255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b fe 00|  "events"=["n -254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b c8 00|  "events"=["n -200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 65 00|  "events"=["n -101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 64 00|  "events"=["n -100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 63 00|  "events"=["n -99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 14 00|  "events"=["n -20"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 06 00|  "events"=["n -6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 05 00|  "events"=["n -5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 04 00|  "events"=["n -4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 03 00|  "events"=["n -3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 02 00|  "events"=["n -2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 01 00|  "events"=["n -1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6b 00 00|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 00 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 01 00|  "events"=["n 1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 02 00|  "events"=["n 2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 03 00|  "events"=["n 3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 04 00|  "events"=["n 4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 05 00|  "events"=["n 5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 06 00|  "events"=["n 6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 37 00|  "events"=["n 55"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 5b 00|  "events"=["n 91"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 63 00|  "events"=["n 99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 64 00|  "events"=["n 100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 65 00|  "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a 65 00|  "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a c8 00|  "events"=["n 200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a fe 00|  "events"=["n 254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6a ff 00|  "events"=["n 255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b ff 00|  "events"=["n=-255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b fe 00|  "events"=["n=-254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b c8 00|  "events"=["n=-200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 65 00|  "events"=["n=-101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 64 00|  "events"=["n=-100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 63 00|  "events"=["n=-99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 14 00|  "events"=["n=-20"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 06 00|  "events"=["n=-6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 05 00|  "events"=["n=-5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 04 00|  "events"=["n=-4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 03 00|  "events"=["n=-3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 02 00|  "events"=["n=-2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 01 00|  "events"=["n=-1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6b 00 00|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 00 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 01 00|  "events"=["n=1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 02 00|  "events"=["n=2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 03 00|  "events"=["n=3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 04 00|  "events"=["n=4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 05 00|  "events"=["n=5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 06 00|  "events"=["n=6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 37 00|  "events"=["n=55"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 5b 00|  "events"=["n=91"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 63 00|  "events"=["n=99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 64 00|  "events"=["n=100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 65 00|  "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a 65 00|  "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a c8 00|  "events"=["n=200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a fe 00|  "events"=["n=254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6a ff 00|  "events"=["n=255"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 6b ff|} // Incomplete
@@ -169,45 +169,45 @@ c0
         {
             "name" = "32-Bit Integer"
             "mustSucceed" = [
-                {"cbe"=|u8x 6d ff ff ff ff|  "events"=["n -0xffffffff"]}
-                {"cbe"=|u8x 6d 00 00 01 00|  "events"=["n -65536"]}
-                {"cbe"=|u8x 6c 00 00 01 00|  "events"=["n 65536"]}
-                {"cbe"=|u8x 6c ff ff ff ff|  "events"=["n 0xffffffff"]}
+                {"cbe"=|u8x 6d ff ff ff ff|  "events"=["n=-0xffffffff"]}
+                {"cbe"=|u8x 6d 00 00 01 00|  "events"=["n=-65536"]}
+                {"cbe"=|u8x 6c 00 00 01 00|  "events"=["n=65536"]}
+                {"cbe"=|u8x 6c ff ff ff ff|  "events"=["n=0xffffffff"]}
 
-                {"nocbeoutput"=true  "cbe"=|u8x 6d ff ff 00 00|  "events"=["n -65535"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d e8 03 00 00|  "events"=["n -1000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d ff 00 00 00|  "events"=["n -255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d fe 00 00 00|  "events"=["n -254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d c8 00 00 00|  "events"=["n -200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 65 00 00 00|  "events"=["n -101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 64 00 00 00|  "events"=["n -100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 63 00 00 00|  "events"=["n -99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 14 00 00 00|  "events"=["n -20"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 06 00 00 00|  "events"=["n -6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 05 00 00 00|  "events"=["n -5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 04 00 00 00|  "events"=["n -4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 03 00 00 00|  "events"=["n -3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 02 00 00 00|  "events"=["n -2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 01 00 00 00|  "events"=["n -1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6d 00 00 00 00|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 00 00 00 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 01 00 00 00|  "events"=["n 1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 02 00 00 00|  "events"=["n 2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 03 00 00 00|  "events"=["n 3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 04 00 00 00|  "events"=["n 4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 05 00 00 00|  "events"=["n 5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 06 00 00 00|  "events"=["n 6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 37 00 00 00|  "events"=["n 55"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 5b 00 00 00|  "events"=["n 91"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 63 00 00 00|  "events"=["n 99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 64 00 00 00|  "events"=["n 100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 65 00 00 00|  "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c 65 00 00 00|  "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c c8 00 00 00|  "events"=["n 200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c fe 00 00 00|  "events"=["n 254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c ff 00 00 00|  "events"=["n 255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c e8 03 00 00|  "events"=["n 1000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6c ff ff 00 00|  "events"=["n 65535"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d ff ff 00 00|  "events"=["n=-65535"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d e8 03 00 00|  "events"=["n=-1000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d ff 00 00 00|  "events"=["n=-255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d fe 00 00 00|  "events"=["n=-254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d c8 00 00 00|  "events"=["n=-200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 65 00 00 00|  "events"=["n=-101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 64 00 00 00|  "events"=["n=-100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 63 00 00 00|  "events"=["n=-99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 14 00 00 00|  "events"=["n=-20"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 06 00 00 00|  "events"=["n=-6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 05 00 00 00|  "events"=["n=-5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 04 00 00 00|  "events"=["n=-4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 03 00 00 00|  "events"=["n=-3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 02 00 00 00|  "events"=["n=-2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 01 00 00 00|  "events"=["n=-1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6d 00 00 00 00|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 00 00 00 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 01 00 00 00|  "events"=["n=1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 02 00 00 00|  "events"=["n=2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 03 00 00 00|  "events"=["n=3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 04 00 00 00|  "events"=["n=4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 05 00 00 00|  "events"=["n=5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 06 00 00 00|  "events"=["n=6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 37 00 00 00|  "events"=["n=55"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 5b 00 00 00|  "events"=["n=91"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 63 00 00 00|  "events"=["n=99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 64 00 00 00|  "events"=["n=100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 65 00 00 00|  "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c 65 00 00 00|  "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c c8 00 00 00|  "events"=["n=200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c fe 00 00 00|  "events"=["n=254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c ff 00 00 00|  "events"=["n=255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c e8 03 00 00|  "events"=["n=1000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6c ff ff 00 00|  "events"=["n=65535"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 6d ff|}       // Incomplete
@@ -221,49 +221,49 @@ c0
         {
             "name" = "64-Bit Integer"
             "mustSucceed" = [
-                {"cbe"=|u8x 6f ff ff ff ff ff ff ff ff|  "events"=["n -0xffffffffffffffff"]}
-                {"cbe"=|u8x 6e ff ff ff ff ff ff ff ff|  "events"=["n 0xffffffffffffffff"]}
+                {"cbe"=|u8x 6f ff ff ff ff ff ff ff ff|  "events"=["n=-0xffffffffffffffff"]}
+                {"cbe"=|u8x 6e ff ff ff ff ff ff ff ff|  "events"=["n=0xffffffffffffffff"]}
 
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 00 00 00 00 01 00 00 00|  "events"=["n -0x100000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f ff ff ff ff 00 00 00 00|  "events"=["n -0xffffffff"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 00 00 01 00 00 00 00 00|  "events"=["n -65536"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f ff ff 00 00 00 00 00 00|  "events"=["n -65535"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f e8 03 00 00 00 00 00 00|  "events"=["n -1000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f ff 00 00 00 00 00 00 00|  "events"=["n -255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f fe 00 00 00 00 00 00 00|  "events"=["n -254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f c8 00 00 00 00 00 00 00|  "events"=["n -200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 65 00 00 00 00 00 00 00|  "events"=["n -101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 64 00 00 00 00 00 00 00|  "events"=["n -100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 63 00 00 00 00 00 00 00|  "events"=["n -99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 14 00 00 00 00 00 00 00|  "events"=["n -20"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 06 00 00 00 00 00 00 00|  "events"=["n -6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 05 00 00 00 00 00 00 00|  "events"=["n -5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 04 00 00 00 00 00 00 00|  "events"=["n -4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 03 00 00 00 00 00 00 00|  "events"=["n -3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 02 00 00 00 00 00 00 00|  "events"=["n -2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 01 00 00 00 00 00 00 00|  "events"=["n -1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6f 00 00 00 00 00 00 00 00|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 00 00 00 00 00 00 00 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 01 00 00 00 00 00 00 00|  "events"=["n 1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 02 00 00 00 00 00 00 00|  "events"=["n 2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 03 00 00 00 00 00 00 00|  "events"=["n 3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 04 00 00 00 00 00 00 00|  "events"=["n 4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 05 00 00 00 00 00 00 00|  "events"=["n 5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 06 00 00 00 00 00 00 00|  "events"=["n 6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 37 00 00 00 00 00 00 00|  "events"=["n 55"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 5b 00 00 00 00 00 00 00|  "events"=["n 91"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 63 00 00 00 00 00 00 00|  "events"=["n 99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 64 00 00 00 00 00 00 00|  "events"=["n 100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 65 00 00 00 00 00 00 00|  "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 65 00 00 00 00 00 00 00|  "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e c8 00 00 00 00 00 00 00|  "events"=["n 200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e fe 00 00 00 00 00 00 00|  "events"=["n 254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e ff 00 00 00 00 00 00 00|  "events"=["n 255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e e8 03 00 00 00 00 00 00|  "events"=["n 1000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e ff ff 00 00 00 00 00 00|  "events"=["n 65535"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 00 00 01 00 00 00 00 00|  "events"=["n 65536"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e ff ff ff ff 00 00 00 00|  "events"=["n 0xffffffff"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 6e 00 00 00 00 01 00 00 00|  "events"=["n 0x100000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 00 00 00 00 01 00 00 00|  "events"=["n=-0x100000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f ff ff ff ff 00 00 00 00|  "events"=["n=-0xffffffff"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 00 00 01 00 00 00 00 00|  "events"=["n=-65536"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f ff ff 00 00 00 00 00 00|  "events"=["n=-65535"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f e8 03 00 00 00 00 00 00|  "events"=["n=-1000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f ff 00 00 00 00 00 00 00|  "events"=["n=-255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f fe 00 00 00 00 00 00 00|  "events"=["n=-254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f c8 00 00 00 00 00 00 00|  "events"=["n=-200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 65 00 00 00 00 00 00 00|  "events"=["n=-101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 64 00 00 00 00 00 00 00|  "events"=["n=-100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 63 00 00 00 00 00 00 00|  "events"=["n=-99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 14 00 00 00 00 00 00 00|  "events"=["n=-20"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 06 00 00 00 00 00 00 00|  "events"=["n=-6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 05 00 00 00 00 00 00 00|  "events"=["n=-5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 04 00 00 00 00 00 00 00|  "events"=["n=-4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 03 00 00 00 00 00 00 00|  "events"=["n=-3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 02 00 00 00 00 00 00 00|  "events"=["n=-2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 01 00 00 00 00 00 00 00|  "events"=["n=-1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6f 00 00 00 00 00 00 00 00|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 00 00 00 00 00 00 00 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 01 00 00 00 00 00 00 00|  "events"=["n=1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 02 00 00 00 00 00 00 00|  "events"=["n=2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 03 00 00 00 00 00 00 00|  "events"=["n=3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 04 00 00 00 00 00 00 00|  "events"=["n=4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 05 00 00 00 00 00 00 00|  "events"=["n=5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 06 00 00 00 00 00 00 00|  "events"=["n=6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 37 00 00 00 00 00 00 00|  "events"=["n=55"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 5b 00 00 00 00 00 00 00|  "events"=["n=91"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 63 00 00 00 00 00 00 00|  "events"=["n=99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 64 00 00 00 00 00 00 00|  "events"=["n=100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 65 00 00 00 00 00 00 00|  "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 65 00 00 00 00 00 00 00|  "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e c8 00 00 00 00 00 00 00|  "events"=["n=200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e fe 00 00 00 00 00 00 00|  "events"=["n=254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e ff 00 00 00 00 00 00 00|  "events"=["n=255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e e8 03 00 00 00 00 00 00|  "events"=["n=1000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e ff ff 00 00 00 00 00 00|  "events"=["n=65535"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 00 00 01 00 00 00 00 00|  "events"=["n=65536"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e ff ff ff ff 00 00 00 00|  "events"=["n=0xffffffff"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 6e 00 00 00 00 01 00 00 00|  "events"=["n=0x100000000"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 6e ff|}                   // Incomplete
@@ -281,55 +281,55 @@ c0
         {
             "name" = "Arbitrary Integer"
             "mustSucceed" = [
-                {"cbe"=|u8x 67 10 f0 de bc 9a 78 56 34 12 f0 de bc 9a 78 56 34 12|  "events"=["n -0x123456789abcdef0123456789abcdef0"]}
-                {"cbe"=|u8x 66 10 f0 de bc 9a 78 56 34 12 f0 de bc 9a 78 56 34 12|  "events"=["n 0x123456789abcdef0123456789abcdef0"]}
+                {"cbe"=|u8x 67 10 f0 de bc 9a 78 56 34 12 f0 de bc 9a 78 56 34 12|  "events"=["n=-0x123456789abcdef0123456789abcdef0"]}
+                {"cbe"=|u8x 66 10 f0 de bc 9a 78 56 34 12 f0 de bc 9a 78 56 34 12|  "events"=["n=0x123456789abcdef0123456789abcdef0"]}
 
-                {"nocbeoutput"=true  "cbe"=|u8x 67 08 ff ff ff ff ff ff ff ff|  "events"=["n -0xffffffffffffffff"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 07 00 00 00 00 00 00 01|     "events"=["n -0x1000000000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 06 00 00 00 00 00 01|        "events"=["n -0x10000000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 05 00 00 00 00 01|           "events"=["n -0x100000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 04 ff ff ff ff|              "events"=["n -0xffffffff"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 03 00 00 01|                 "events"=["n -65536"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 02 ff ff|                    "events"=["n -65535"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 02 e8 03|                    "events"=["n -1000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 ff|                       "events"=["n -255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 fe|                       "events"=["n -254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 c8|                       "events"=["n -200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 65|                       "events"=["n -101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 64|                       "events"=["n -100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 63|                       "events"=["n -99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 14|                       "events"=["n -20"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 06|                       "events"=["n -6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 05|                       "events"=["n -5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 04|                       "events"=["n -4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 03|                       "events"=["n -3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 02|                       "events"=["n -2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 01|                       "events"=["n -1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 67 01 00|                       "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 00|                       "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 01|                       "events"=["n 1"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 02|                       "events"=["n 2"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 03|                       "events"=["n 3"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 04|                       "events"=["n 4"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 05|                       "events"=["n 5"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 06|                       "events"=["n 6"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 37|                       "events"=["n 55"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 5b|                       "events"=["n 91"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 63|                       "events"=["n 99"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 64|                       "events"=["n 100"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 65|                       "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 65|                       "events"=["n 101"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 c8|                       "events"=["n 200"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 fe|                       "events"=["n 254"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 01 ff|                       "events"=["n 255"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 02 e8 03|                    "events"=["n 1000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 02 ff ff|                    "events"=["n 65535"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 03 00 00 01|                 "events"=["n 65536"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 04 ff ff ff ff|              "events"=["n 0xffffffff"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 05 00 00 00 00 01|           "events"=["n 0x100000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 06 00 00 00 00 00 01|        "events"=["n 0x10000000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 07 00 00 00 00 00 00 01|     "events"=["n 0x1000000000000"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 66 08 ff ff ff ff ff ff ff ff|  "events"=["n 0xffffffffffffffff"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 08 ff ff ff ff ff ff ff ff|  "events"=["n=-0xffffffffffffffff"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 07 00 00 00 00 00 00 01|     "events"=["n=-0x1000000000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 06 00 00 00 00 00 01|        "events"=["n=-0x10000000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 05 00 00 00 00 01|           "events"=["n=-0x100000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 04 ff ff ff ff|              "events"=["n=-0xffffffff"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 03 00 00 01|                 "events"=["n=-65536"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 02 ff ff|                    "events"=["n=-65535"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 02 e8 03|                    "events"=["n=-1000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 ff|                       "events"=["n=-255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 fe|                       "events"=["n=-254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 c8|                       "events"=["n=-200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 65|                       "events"=["n=-101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 64|                       "events"=["n=-100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 63|                       "events"=["n=-99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 14|                       "events"=["n=-20"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 06|                       "events"=["n=-6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 05|                       "events"=["n=-5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 04|                       "events"=["n=-4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 03|                       "events"=["n=-3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 02|                       "events"=["n=-2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 01|                       "events"=["n=-1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 67 01 00|                       "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 00|                       "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 01|                       "events"=["n=1"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 02|                       "events"=["n=2"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 03|                       "events"=["n=3"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 04|                       "events"=["n=4"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 05|                       "events"=["n=5"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 06|                       "events"=["n=6"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 37|                       "events"=["n=55"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 5b|                       "events"=["n=91"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 63|                       "events"=["n=99"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 64|                       "events"=["n=100"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 65|                       "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 65|                       "events"=["n=101"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 c8|                       "events"=["n=200"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 fe|                       "events"=["n=254"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 01 ff|                       "events"=["n=255"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 02 e8 03|                    "events"=["n=1000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 02 ff ff|                    "events"=["n=65535"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 03 00 00 01|                 "events"=["n=65536"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 04 ff ff ff ff|              "events"=["n=0xffffffff"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 05 00 00 00 00 01|           "events"=["n=0x100000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 06 00 00 00 00 00 01|        "events"=["n=0x10000000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 07 00 00 00 00 00 00 01|     "events"=["n=0x1000000000000"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 66 08 ff ff ff ff ff ff ff ff|  "events"=["n=0xffffffffffffffff"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 66 02 ff|}                          // Incomplete
@@ -344,7 +344,7 @@ c0
             "mustSucceed" = [
                 {
                     "cbe" = |u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00|
-                    "events" = ["uid 123e4567-e89b-12d3-a456-426655440000"]
+                    "events" = ["uid=123e4567-e89b-12d3-a456-426655440000"]
                 }
             ]
             "mustFail" = [
@@ -373,48 +373,48 @@ c0
             "name" = "Binary Float"
             "mustSucceed" = [
                 // float16
-                {"cbe"=|u8x 70 a8 40|  "events"=["n 0x1.5p2"]}
-                {"cbe"=|u8x 70 fc b5|  "events"=["n -0x1.f8p-20"]}
+                {"cbe"=|u8x 70 a8 40|  "events"=["n=0x1.5p2"]}
+                {"cbe"=|u8x 70 fc b5|  "events"=["n=-0x1.f8p-20"]}
                 // float32
-                {"cbe"=|u8x 71 f8 c9 d4 b8|  "events"=["n -0x1.a993fp-14"]}
-                {"cbe"=|u8x 71 60 55 fa 46|  "events"=["n 0x1.f4aacp+14"]}
+                {"cbe"=|u8x 71 f8 c9 d4 b8|  "events"=["n=-0x1.a993fp-14"]}
+                {"cbe"=|u8x 71 60 55 fa 46|  "events"=["n=0x1.f4aacp+14"]}
                 // float64
-                {"cbe"=|u8x 72 00 74 89 b8 52 15 6f 37|  "events"=["n 0xf.8aa95c44bap-140"]}
-                {"cbe"=|u8x 72 48 e6 20 1f 99 f8 c4 c8|  "events"=["n -0x2.9f1323e41cc9p+140"]}
+                {"cbe"=|u8x 72 00 74 89 b8 52 15 6f 37|  "events"=["n=0xf.8aa95c44bap-140"]}
+                {"cbe"=|u8x 72 48 e6 20 1f 99 f8 c4 c8|  "events"=["n=-0x2.9f1323e41cc9p+140"]}
 
                 // float16
-                {"nocbeoutput"=true  "cbe"=|u8x 70 c1 ff|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 c1 7f|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 cf 7f|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 81 ff|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 81 7f|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 8a 7f|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 00 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 00 80|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 80 7f|  "events"=["n inf"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 70 80 ff|  "events"=["n -inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 c1 ff|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 c1 7f|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 cf 7f|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 81 ff|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 81 7f|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 8a 7f|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 00 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 00 80|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 80 7f|  "events"=["n=inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 70 80 ff|  "events"=["n=-inf"]}
 
                 // float32
-                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 c0 ff|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 c0 7f|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 01 4d c0 ff|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 80 ff|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 80 7f|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 ff ff 80 7f|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 00 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 00 80|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 80 7f|  "events"=["n inf"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 80 ff|  "events"=["n -inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 c0 ff|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 c0 7f|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 01 4d c0 ff|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 80 ff|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 01 00 80 7f|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 ff ff 80 7f|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 00 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 00 80|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 80 7f|  "events"=["n=inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 71 00 00 80 ff|  "events"=["n=-inf"]}
 
                 // float64
-                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f8 ff|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f8 7f|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f0 ff|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f0 7f|  "events"=["n snan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 00 00|  "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 00 80|  "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 f0 7f|  "events"=["n inf"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 f0 ff|  "events"=["n -inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f8 ff|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f8 7f|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f0 ff|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 01 00 00 00 00 00 f0 7f|  "events"=["n=snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 00 00|  "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 00 80|  "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 f0 7f|  "events"=["n=inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 72 00 00 00 00 00 00 f0 ff|  "events"=["n=-inf"]}
             ]
             "decodeFail" = [
                 {"cbe"=|u8x 70 a8|}                    // Incomplete
@@ -432,15 +432,15 @@ c0
         {
             "name" = "Decimal Float"
             "mustSucceed" = [
-                {"cbe"=|u8x 65 06 0c|  "events"=["n 1.2"]}
-                {"events"=["n -9.492338558234976568723e-10000"]
+                {"cbe"=|u8x 65 06 0c|  "events"=["n=1.2"]}
+                {"events"=["n=-9.492338558234976568723e-10000"]
                 "cbe"=|u8x 65 97 b9 02 93 8b ff da e4 c4 c2 d4 94 85 08|}
-                {"nocbeoutput"=true  "cbe"=|u8x 65 02|     "events"=["n 0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 65 03|     "events"=["n -0"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 65 82 00|  "events"=["n inf"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 65 83 00|  "events"=["n -inf"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 65 80 00|  "events"=["n nan"]}
-                {"nocbeoutput"=true  "cbe"=|u8x 65 81 00|  "events"=["n snan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 65 02|     "events"=["n=0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 65 03|     "events"=["n=-0"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 65 82 00|  "events"=["n=inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 65 83 00|  "events"=["n=-inf"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 65 80 00|  "events"=["n=nan"]}
+                {"nocbeoutput"=true  "cbe"=|u8x 65 81 00|  "events"=["n=snan"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 65 06|}  // Incomplete
@@ -452,7 +452,7 @@ c0
         {
             "name" = "Date"
             "mustSucceed" = [
-                {"cbe"=|u8x 99 97 55 00|  "events"=["t 2021-12-23"]}
+                {"cbe"=|u8x 99 97 55 00|  "events"=["t=2021-12-23"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 99|}           // Incomplete
@@ -468,15 +468,15 @@ c0
             "mustSucceed" = [
                 {
                     "cbe" = |u8x 9a 0e 00 00 00 76 4b fe|
-                    "events" = ["t 18:22:59.000000001"]
+                    "events" = ["t=18:22:59.000000001"]
                 }
                 {
                     "cbe" = |u8x 9a 3b 5f 5d ca 16 4d 2f 56 61 6e 63 6f 75 76 65 72|
-                    "events" = ["t 05:11:42.999/America/Vancouver"]
+                    "events" = ["t=05:11:42.999/America/Vancouver"]
                 }
                 {
                     "cbe" = |u8x 9a 0f 00 00 00 76 4b fe 00 e0 01|
-                    "events" = ["t 18:22:59.000000001+0800"]
+                    "events" = ["t=18:22:59.000000001+0800"]
                 }
             ]
             "mustFail" = [
@@ -499,11 +499,11 @@ c0
             "decodeEncode" = [
                 {
                     "cbe" = |u8x 9b 01 00 10 02 00 10 45 2f 42 65 72 6c 69 6e|
-                    "events" = ["t 2000-01-01/00:00:00/Europe/Berlin"]
+                    "events" = ["t=2000-01-01/00:00:00/Europe/Berlin"]
                 }
                 {
                     "cbe" = |u8x 9b 8d 1c b0 d7 06 1f 99 12 d5 2e 2f 04|
-                    "events" = ["t 3190-08-31/00:54:47.394129/59.94/10.71"]
+                    "events" = ["t=3190-08-31/00:54:47.394129/59.94/10.71"]
                 }
             ]
             "decodeFail" = [
@@ -537,8 +537,8 @@ c0
                     |
                     "events"=[
                         "l"
-                            "mark a" "n 1"
-                            "refl a"
+                            "mark=a" "n=1"
+                            "refl=a"
                         "e"
                     ]
                 }
@@ -551,8 +551,8 @@ c0
                     |
                     "events"=[
                         "l"
-                            "refl a"
-                            "mark a" "n 1"
+                            "refl=a"
+                            "mark=a" "n=1"
                         "e"
                     ]
                 }
@@ -564,9 +564,9 @@ c0
                         7b
                     |
                     "events"=[
-                        "mark a" "l"
-                            "n 1"
-                            "refl a"
+                        "mark=a" "l"
+                            "n=1"
+                            "refl=a"
                         "e"
                     ]
                 }

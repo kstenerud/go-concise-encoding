@@ -1,7 +1,7 @@
 c0
 {
     "type" = {
-        "identifier" = "ce test"
+        "identifier" = "ce-test"
         "version" = 1
     }
     "ceversion" = 0
@@ -13,9 +13,9 @@ c0
             "name" = "List"
             "mustSucceed" = [
                 {"cbe"=|u8x 7a 7b|           "events"=["l" "e"]}
-                {"cbe"=|u8x 7a 01 02 03 7b|  "events"=["l" "n 1" "n 2" "n 3" "e"]}
+                {"cbe"=|u8x 7a 01 02 03 7b|  "events"=["l" "n=1" "n=2" "n=3" "e"]}
                 {"cbe"=|u8x 7a 01 7a 7a 02 7a 03 7a 7b 7b 7b 7b 7b|
-                 "events"=["l" "n 1" "l" "l" "n 2" "l" "n 3" "l" "e" "e" "e" "e" "e"]}
+                 "events"=["l" "n=1" "l" "l" "n=2" "l" "n=3" "l" "e" "e" "e" "e" "e"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 7a|}              // Unterminated
@@ -31,7 +31,7 @@ c0
             "name" = "Map"
             "mustSucceed" = [
                 {"cbe"=|u8x 79 7b|        "events"=["m" "e"]}
-                {"cbe"=|u8x 79 01 02 7b|  "events"=["m" "n 1" "n 2" "e"]}
+                {"cbe"=|u8x 79 01 02 7b|  "events"=["m" "n=1" "n=2" "e"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 79|}                      // Unterminated
@@ -80,8 +80,8 @@ c0
         {
             "name" = "Edge"
             "mustSucceed" = [
-                {"cbe"=|u8x 77 00 00 00 7b|              "events"=["edge" "n 0" "n 0" "n 0" "e"]}
-                {"cbe"=|u8x 77 91 02 61 7e 91 02 62 7b|  "events"=["edge" "rid a" "null" "rid b" "e"]}
+                {"cbe"=|u8x 77 00 00 00 7b|              "events"=["edge" "n=0" "n=0" "n=0" "e"]}
+                {"cbe"=|u8x 77 91 02 61 7e 91 02 62 7b|  "events"=["edge" "rid=a" "null" "rid=b" "e"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 77|}              // Unterminated
@@ -98,8 +98,8 @@ c0
         {
             "name" = "Node"
             "mustSucceed" = [
-                {"cbe"=|u8x 78 00 7b|              "events"=["node" "n 0" "e"]}
-                {"cbe"=|u8x 78 00 78 81 61 7b 7b|  "events"=["node" "n 0" "node" "s a" "e" "e"]}
+                {"cbe"=|u8x 78 00 7b|              "events"=["node" "n=0" "e"]}
+                {"cbe"=|u8x 78 00 78 81 61 7b 7b|  "events"=["node" "n=0" "node" "s=a" "e" "e"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 78|}           // Unterminated
@@ -191,67 +191,67 @@ c0
                                 "l"
                                 "e"
                                 "m"
-                                    "s a"
-                                    "n 1"
+                                    "s=a"
+                                    "n=1"
                                 "e"
                                 "node"
-                                "n 1"
+                                "n=1"
                                 "e"
                                 "edge"
-                                    "n 1"
-                                    "n 2"
-                                    "n 3"
+                                    "n=1"
+                                    "n=2"
+                                    "n=3"
                                 "e"
                             "e"
                             "m"
-                                "n 0" "l"
+                                "n=0" "l"
                                 "e"
-                                "n 1" "m"
+                                "n=1" "m"
                                 "e"
-                                "n 3" "node"
-                                    "s a"
+                                "n=3" "node"
+                                    "s=a"
                                 "e"
-                                "n 4" "edge"
-                                    "n 1"
-                                    "n 2"
-                                    "n 3"
+                                "n=4" "edge"
+                                    "n=1"
+                                    "n=2"
+                                    "n=3"
                                 "e"
                             "e"
                             "node"
                                 "l"
                                 "e"
                                 "m"
-                                    "s a"
-                                    "n 1"
+                                    "s=a"
+                                    "n=1"
                                 "e"
                                 "node"
-                                "n 1"
+                                "n=1"
                                 "e"
                                 "edge"
-                                    "n 1"
-                                    "n 2"
-                                    "n 3"
+                                    "n=1"
+                                    "n=2"
+                                    "n=3"
                                 "e"
                             "e"
                             "edge"
                                 "l"
                                 "e"
                                 "m"
-                                    "s a"
-                                    "n 1"
+                                    "s=a"
+                                    "n=1"
                                 "e"
-                                "n 1"
+                                "n=1"
                             "e"
                             "edge"
                                 "node"
-                                "n 1"
+                                "n=1"
                                 "e"
                                 "edge"
-                                    "n 1"
-                                    "n 2"
-                                    "n 3"
+                                    "n=1"
+                                    "n=2"
+                                    "n=3"
                                 "e"
-                                "n 0"
+                                "n=0"
                             "e"
                         "e"
                     ]

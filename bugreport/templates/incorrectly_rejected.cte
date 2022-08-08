@@ -1,23 +1,21 @@
 c0
 /**
- * Unit test to demonstrate a bug in the codec (for use in bug reports).
+ * Template: Demonstrate a bug where the codec incorrectly rejects a document (CBE and/or CTE).
  *
- * For information about the "events" field, see:
- *     https://github.com/kstenerud/go-concise-encoding/blob/master/TESTING.md
+ * For information about "events", see https://github.com/kstenerud/go-concise-encoding/blob/master/TESTING.md
  *
  * Note: The "cte" field is using a verbatim sequence:
  *       https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#verbatim-sequence
- *       Make sure the end-of-sequence identifier is unique enough that your
- *       CTE document doesn't also contain it!
+ *       Make sure the end-of-sequence identifier is unique enough that your CTE document doesn't also contain it!
  *
  * Instructions:
  *
  * - Make sure your git repo is up to date.
- * - Modify this document to craft a test that demonstrates a bug in the codec.
+ * - Copy this template and overwrite "bugreport.cte" in the "bugreport" dir.
+ * - Fill in any/all of the "cbe", "cte", and "events" fields to specify what should be converted to what.
+ * - Set the "nocbeoutput", "nocteoutput", noeventoutput" if you need to suppress checking one or more of the output types.
  * - From the "bugreport" dir, run the bugreport test (`go test`) and verify that the test fails.
  * - Paste the contents of bugreport.cte into your bug report.
- *
- * Note: There are unit test templates in the "templates" dir for common classes of bugs.
  */
 {
     "type" = {
@@ -27,24 +25,21 @@ c0
     "ceversion" = 0
     "tests" = [
         {
-            "name" = "My Bug Report"
+            "name" = "Incorrectly rejected document"
             "mustSucceed" = [
                 {
+                    "cbe"    = |u8x 79 81 61 7d 7b|
                     "cte" = "\.%%%%
 {
     "a" = true
 }
 %%%%"
-                    "cbe"    = |u8x 79 81 61 7d 7b|
                     "events" = [
                         "m"
                             "s=a" "b=true"
                         "e"
                     ]
                 }
-            ]
-            "mustFail" = [
-
             ]
         }
     ]

@@ -109,7 +109,7 @@ func (_this *TestSuite) PostDecodeInit(sourceFile string) (errors []error) {
 	}
 
 	if v, ok := _this.Type["identifier"]; ok {
-		if v != "ce test" {
+		if v != "ce-test" {
 			return []error{_this.errorf("%v: unrecognized type identifier", v)}
 		}
 	} else {

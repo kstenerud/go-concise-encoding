@@ -1,7 +1,7 @@
 c1
 {
     "type" = {
-        "identifier" = "ce test"
+        "identifier" = "ce-test"
         "version" = 1
     }
     "ceversion" = 0
@@ -14,13 +14,13 @@ c1
                     "cbe" = |u8x 81 00 01|
                     "cte" = "c0
 1"
-                    "events" = ["v 0" "n 1"]
+                    "events" = ["v=0" "n=1"]
                 }
                 //{ // TODO: Uncomment when v1 released
                 //    "rawDocument" = true
                 //    "cbe" = |u8x 81 01 01|
                 //    "cte" = "c1 1"
-                //    "events" = ["v 1" "n 1"]
+                //    "events" = ["v=1" "n=1"]
                 //}
             ]
             "mustFail" = [
@@ -38,18 +38,18 @@ c1
             "name" = "Version specifier"
 
             "mustSucceed" = [
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0 1"           "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0 1"           "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0\n1"          "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0\n1"          "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0\t1"          "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0\t1"          "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0\r\n1"        "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0\r\n1"        "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="\r\n\t  c0 1"   "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="\r\n\t  C0 1"   "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0 \r\n\t   1"  "events"=["v 0" "n 1"]}
-                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0 \r\n\t   1"  "events"=["v 0" "n 1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0 1"           "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0 1"           "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0\n1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0\n1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0\t1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0\t1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0\r\n1"        "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0\r\n1"        "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="\r\n\t  c0 1"   "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="\r\n\t  C0 1"   "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="c0 \r\n\t   1"  "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "nocteoutput"=true  "cte"="C0 \r\n\t   1"  "events"=["v=0" "n=1"]}
             ]
             "mustFail" = [
                 {"cte"="c0{}"}  // Missing whitespace

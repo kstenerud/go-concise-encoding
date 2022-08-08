@@ -71,11 +71,12 @@ c0
  */
 
 {
-    "options" = {
-        "failFast" = false  // If true, halt tests on first error
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
     }
-
-    "ceTests" = [
+    "ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
@@ -86,174 +87,29 @@ c0
              * - name:   Name of this test (required)
              * - cte:    Encoded CTE data (required if "t" specified in TO or FROM)
              * - cbe:    Encoded CBE data (required if "b" specified in TO or FROM)
-             * - events: CE codec events (required if "e" specified in TO or FROM)
-             * - to:     Test converting to CTE ("t"), CBE ("b"), events ("e")
-             * - from:   Test converting from CTE ("t"), CBE ("b"), events ("e")
-             * - fail:   Expect failure? (default false)
-             * - trace:  Trace the code path on failure?? (default false)
              * - debug:  Print debug information while testing? (default false)
              * - skip:   Skip this test? (default false)
              *
              * Notes:
              * - Events are shorthand representations of events associated with CE data
              *   (see top of this file).
-             * - If "to" is empty, the data will simply run through the rules engine.
              * - CTE data is string compared (after trimming leading and trailing whitespace),
              *   so unexpected indentation will cause the comparison to fail.
              */
 
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 null
-            %%%%"
-            "cbe"      = |u8x 81 00 7e|
-            "events"   = ["v 0" "null"]
-            "from"     = ["t" "b" "e"]
-            "to"       = ["t" "b" "e"]
+                    %%%%"
+                    "cbe"      = |u8x 7e|
+                    "events"   = ["null"]
 
-            // Optional fields:
-            "mustFail" = false
-            "trace"    = false
-            "debug"    = false
-            "skip"     = false
-        }
-    ]
-
-    // ========================================================================
-
-    "cbeTests" = [
-        {
-            "name" = "CBE Test Case Template"
-
-            "encode" = [
-                /* Test the CBE encoder:
-                 * - Encodes "events" into a new document
-                 * - Expects the new document to match "document" exactly
-                 */
-                {
-                    "events" = ["v 0" "n 1"]
-                    "document" = |u8x 81 00 01|
+                    // Optional fields:
+                    "debug"    = false
+                    "skip"     = false
                 }
             ]
-
-            "decode" = [
-                /* Test the CBE decoder:
-                 * - Decodes "document" into new events
-                 * - Expects the new events to be equivalent to "events"
-                 */
-                {
-                    "document" = |u8x 81 00 01|
-                    "events" = ["v 0" "n 1"]
-                }
-            ]
-
-            "decodeFail" = [
-                /* Test that the CBE decoder fails appropriately:
-                 * - Attempts to decode the document into events and expects a failure
-                 */
-                |u8x 8c|  // Missing version specifier
-            ]
-
-            "encodeDecode" = [
-                /* Test the CBE encoder, with an additional roundtrip test:
-                 * - Encodes "events" into a new document
-                 * - Expects the new document to match "document" exactly
-                 * - Decodes the new document into new events
-                 * - Expects the new events to be equivalent to "events"
-                 */
-                {
-                    "events" = ["v 0" "n 1"]
-                    "document" = |u8x 81 00 01|
-                }
-            ]
-
-            "decodeEncode" = [
-                /* Test the CBE decoder, with an additional roundtrip test:
-                 * - Decodes "document" into new events
-                 * - Expects the new events to be equivalent to "events"
-                 * - Encodes the new events into a CBE document and then decodes them again
-                 * - Expects the resulting events to still be equivalent to "events"
-                 */
-                {
-                    "document" = |u8x 81 00 01|
-                    "events" = ["v 0" "n 1"]
-                }
-            ]
-
-
-            // Optional fields:
-            "debug" = false  // If true, print out the events as they happen
-            "trace" = false  // If true, print a stack trace when an error occurs
-            "skip" = false   // If true, skip this test
-        }
-    ]
-
-    // ========================================================================
-
-    "cteTests" = [
-        {
-            "name" = "CTE Test Case Template"
-
-            "encode" = [
-                /* Test the CTE encoder:
-                 * - Encodes "events" into a new document
-                 * - Expects the new document to match "document" exactly
-                 */
-                {
-                    "events" = ["v 0" "n 1"]
-                    "document" = "c0\n1"
-                }
-            ]
-
-            "decode" = [
-                /* Test the CTE decoder:
-                 * - Decodes "document" into new events
-                 * - Expects the new events to be equivalent to "events"
-                 */
-                {
-                    "document" = "c0 1"
-                    "events" = ["v 0" "n 1"]
-                }
-            ]
-
-            "decodeFail" = [
-                /* Test that the CTE decoder fails appropriately:
-                 * - Attempts to decode the document into events and expects a failure
-                 */
-                "c0{}"  // Missing whitespace
-            ]
-
-            "encodeDecode" = [
-                /* Test the CTE encoder, with an additional roundtrip test:
-                 * - Encodes "events" into a new document
-                 * - Expects the new document to match "document" exactly
-                 * - Decodes the new document into new events
-                 * - Expects the new events to be equivalent to "events"
-                 */
-                {
-                    "events" = ["v 0" "n 1"]
-                    "document" = "c0\n1"
-                }
-            ]
-
-            "decodeEncode" = [
-                /* Test the CTE decoder, with an additional roundtrip test:
-                 * - Decodes "document" into new events
-                 * - Expects the new events to be equivalent to "events"
-                 * - Encodes the new events into a CTE document and then decodes them again
-                 * - Expects the resulting events to still be equivalent to "events"
-                 */
-                {
-                    "document" = "c0 1"
-                    "events" = ["v 0" "n 1"]
-                }
-            ]
-
-
-            // Optional fields:
-            "debug" = false  // If true, print out the events as they happen
-            "trace" = false  // If true, print a stack trace when an error occurs
-            "skip" = false   // If true, skip this test
         }
     ]
 }

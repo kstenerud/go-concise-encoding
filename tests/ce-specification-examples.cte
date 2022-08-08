@@ -1,195 +1,199 @@
 c0
 // Examples from https://github.com/kstenerud/concise-encoding/blob/master/ce-structure.md
 {
-    "options" = {
-        "failFast" = false  // If true, halt tests on first error
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
     }
-
-    "ceTests" = [
+    "ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
         {
             "name" = "Empty Document"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 null
-            %%%%"
-            "cbe"    = |u8x 81 00 7e|
-            "events" = ["v 0" "null"]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7e|
+                    "events" = ["null"]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Top Level List"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     1
     2
     3
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 01 02 03 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "n 1"
-                                "n 2"
-                                "n 3"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 01 02 03 7b|
+                    "events" = [
+                        "l"
+                            "n=1"
+                            "n=2"
+                            "n=3"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Boolean"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     true
     false
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 7d 7c 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "b true"
-                                "b false"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 7d 7c 7b|
+                    "events" = [
+                        "l"
+                            "b=true"
+                            "b=false"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Integer"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     42
     -1000000000000000000000000000000000000000000000000000
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 2a 67 16 00 00 00 00 00 00 e8 15 e9 11 34 a8 3b 4e 01 b8 bf db 4e 3a ac 02 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "n 42"
-                                "n -1000000000000000000000000000000000000000000000000000"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 2a 67 16 00 00 00 00 00 00 e8 15 e9 11 34 a8 3b 4e 01 b8 bf db 4e 3a ac 02 7b|
+                    "events" = [
+                        "l"
+                            "n=42"
+                            "n=-1000000000000000000000000000000000000000000000000000"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Decimal Floating Point"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     -2.81
     4.195342e-10000
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 65 0b 99 02 65 da b8 02 8e 88 80 02 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "n -2.81"
-                                "n 4.195342e-10000"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 65 0b 99 02 65 da b8 02 8e 88 80 02 7b|
+                    "events" = [
+                        "l"
+                            "n=-2.81"
+                            "n=4.195342e-10000"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Binary Floating Point"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "nocteoutput" = true
+                    "cte" = "\.%%%%
 [
     0xa.3fb8p+42
     0x1.0p0
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 71 80 fb 23 56 70 80 3f 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "n 0xa.3fb8p+42"
-                                "n 0x1.0p0"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 71 80 fb 23 56 70 80 3f 7b|
+                    "events" = [
+                        "l"
+                            "n=0xa.3fb8p+42"
+                            "n=0x1.0p0"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "UID"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     123e4567-e89b-12d3-a456-426655440000
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "uid 123e4567-e89b-12d3-a456-426655440000"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00 7b|
+                    "events" = [
+                        "l"
+                            "uid=123e4567-e89b-12d3-a456-426655440000"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Date"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     2019-08-05
     5081-03-30
     -300-12-21
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 99 05 4d 00 99 7e 24 30 99 95 ef 23 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "t 2019-08-05"
-                                "t 5081-03-30"
-                                "t -300-12-21"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe"    = |u8x 7a 99 05 4d 00 99 7e 24 30 99 95 ef 23 7b|
+                    "events" = [
+                        "l"
+                            "t=2019-08-05"
+                            "t=5081-03-30"
+                            "t=-300-12-21"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Time"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     23:59:59.999999999
     12:05:50.102
@@ -197,79 +201,80 @@ c0
     17:41:03/-13.54/-172.36
     09:00:00/Local
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 9a fe 4f d6 dc f7 fd fe 9a 32 43 2e d8
+%%%%"
+                    "cbe" = |u8x 7a 9a fe 4f d6 dc f7 fd fe 9a 32 43 2e d8
                             9a 01 00 f2 0e 53 2f 54 6f 6b 79 6f 9a 19 d2 f8
                             6d f5 ac bc 9a 01 80 f4 02 4c 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "t 23:59:59.999999999"
-                                "t 12:05:50.102"
-                                "t 04:00:00/Asia/Tokyo"
-                                "t 17:41:03/-13.54/-172.36"
-                                "t 09:00:00/Local"
-                            "e"
-                        ]
-            "from"   = ["t" "e"]
-            "to"     = ["t" "b" "e"]
+                    "events" = [
+                        "l"
+                            "t=23:59:59.999999999"
+                            "t=12:05:50.102"
+                            "t=04:00:00/Asia/Tokyo"
+                            "t=17:41:03/-13.54/-172.36"
+                            "t=09:00:00/Local"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Timestamp"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     2019-01-23/14:08:51.941245
     1985-10-26/01:20:01.105/America/Los_Angeles
     5192-11-01/03:00:00/48.86/2.36
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 9b ec e5 f2 19 71 37 4c 00 9b 4b 23 a0
+%%%%"
+                    "cbe" = |u8x 7a 9b ec e5 f2 19 71 37 4c 00 9b 4b 23 a0
                             82 d6 0e 1a 4d 2f 4c 6f 73 5f 41 6e 67 65 6c 65
                             73 9b 01 80 11 16 9e 06 2d 26 ec 00 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "t 2019-01-23/14:08:51.941245"
-                                "t 1985-10-26/01:20:01.105/America/Los_Angeles"
-                                "t 5192-11-01/03:00:00/48.86/2.36"
-                            "e"
-                        ]
-            "from"   = ["t" "e"]
-            "to"     = ["t" "b" "e"]
+                    "events" = [
+                        "l"
+                            "t=2019-01-23/14:08:51.941245"
+                            "t=1985-10-26/01:20:01.105/America/Los_Angeles"
+                            "t=5192-11-01/03:00:00/48.86/2.36"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Resource Identifier"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     @"https://x.com/"
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 91 1c 68 74 74 70 73 3a 2f 2f 78 2e 63
+%%%%"
+                    "cbe" = |u8x 7a 91 1c 68 74 74 70 73 3a 2f 2f 78 2e 63
                             6f 6d 2f 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "rid https://x.com/"
-                            "e"
-                        ]
-            "from"   = ["t" "e"]
-            "to"     = ["t" "b" "e"]
+                    "events" = [
+                        "l"
+                            "rid=https://x.com/"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Typed Array"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "nocteoutput" = true
+                    "cte" = "\.%%%%
 [
     |u8x 9f 47 cb 9a 3c|
     |f32 1.5 0x4.f391p100 30 9.31e-30|
@@ -277,101 +282,101 @@ c0
     |u 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f|
     |b 1 1 0 1 0|
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 95 0a 9f 47 cb 9a 3c 94 84 00 00 c0 3f
+%%%%"
+                    "cbe" = |u8x 7a 95 0a 9f 47 cb 9a 3c 94 84 00 00 c0 3f
                             20 72 9e 72 00 00 f0 41 49 d4 3c 0f 94 24 4a 00
                             e4 01 e8 03 ff 7f 94 a2 3a 04 f6 2f ce a5 4d 2a
                             85 98 bc 15 6b 99 ea 3b 1d 4e 20 5c 5e a3 46 ea
                             92 a3 98 d9 d3 e6 33 2f 96 0a 0b 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "au8x 9f 47 cb 9a 3c"
-                                "af32 1.5 0x4.f391p100 30 9.31e-30"
-                                "ai16 0b1001010 0o744 1000 0x7fff"
-                                "au 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f"
-                                "ab 1 1 0 1 0"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+                    "events" = [
+                        "l"
+                            "au8x=9f 47 cb 9a 3c"
+                            "af32=1.5 0x4.f391p100 30 9.31e-30"
+                            "ai16=0b1001010 0o744 1000 0x7fff"
+                            "au=3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f"
+                            "ab=1 1 0 1 0"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Media"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     |m application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 94 e1 20 61 70 70 6c 69 63 61 74 69 6f
+%%%%"
+                    "cbe" = |u8x 7a 94 e1 20 61 70 70 6c 69 63 61 74 69 6f
                             6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f 73 68
                             0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72
                             6c 64 0a 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "bmedia" "acl 16" "adt application/x-sh" "acl 28" "adt \.@@
+                    "events" = [
+                        "l"
+                            "bmedia" "acl=16" "adt=application/x-sh" "acl=28" "adt=\.@@
 #!/bin/sh
 
 echo hello world
 @@"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Custom Binary"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     |c 63 70 6c 78 28 32 2e 39 34 2b 33 69 29|
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 92 1a 63 70 6c 78 28 32 2e 39 34 2b 33 69 29 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "cb 63 70 6c 78 28 32 2e 39 34 2b 33 69 29"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+%%%%"
+                    "cbe" = |u8x 7a 92 1a 63 70 6c 78 28 32 2e 39 34 2b 33 69 29 7b|
+                    "events" = [
+                        "l"
+                            "cb=63 70 6c 78 28 32 2e 39 34 2b 33 69 29"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Custom Text"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     |c "cplx(2.94+3i)"|
 ]
-            %%%%"
-            "events" = [
-                            "v 0"
-                            "l"
-                                "ct cplx(2.94+3i)"
-                            "e"
-                        ]
-            "from"   = ["t" "e"]
-            "to"     = ["t" "e"]
+%%%%"
+                    "events" = [
+                        "l"
+                            "ct=cplx(2.94+3i)"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "List"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     1
     "two"
@@ -379,61 +384,64 @@ c0
     {}
     null
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 01 83 74 77 6f 65 06 1f 79 7b 7e 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "n 1"
-                                "s two"
-                                "n 3.1"
-                                "m" "e"
-                                "null"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+%%%%"
+                    "cbe" = |u8x 7a 01 83 74 77 6f 65 06 1f 79 7b 7e 7b|
+                    "events" = [
+                        "l"
+                            "n=1"
+                            "s=two"
+                            "n=3.1"
+                            "m" "e"
+                            "null"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Map"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 {
     1 = "alpha"
     2 = "beta"
-    "a map" = {"one"=1 "two"=2}
+    "a map" = {
+        "one" = 1
+        "two" = 2
+    }
     2000-01-01 = "New millenium"
 }
-            %%%%"
-            "cbe"    = |u8x 81 00 79 01 85 61 6c 70 68 61 02 84 62 65 74 61
+%%%%"
+                    "cbe" = |u8x 79 01 85 61 6c 70 68 61 02 84 62 65 74 61
                             85 61 20 6d 61 70 79 83 6f 6e 65 01 83 74 77 6f
                             02 7b 99 21 00 00 8d 4e 65 77 20 6d 69 6c 6c 65
                             6e 69 75 6d 7b|
-            "events" = [
-                            "v 0"
-                            "m"
-                                "n 1" "s alpha"
-                                "n 2" "s beta"
-                                "s a map" "m"
-                                    "s one" "n 1"
-                                    "s two" "n 2"
-                                "e"
-                                "t 2000-01-01" "s New millenium"
+                    "events" = [
+                        "m"
+                            "n=1" "s=alpha"
+                            "n=2" "s=beta"
+                            "s=a map" "m"
+                                "s=one" "n=1"
+                                "s=two" "n=2"
                             "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+                            "t=2000-01-01" "s=New millenium"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Edge"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     @(
         @"https://springfield.gov/people#homer_simpson"
@@ -446,8 +454,8 @@ c0
         @"https://springfield.gov/employers/nuclear_power_plant"
     )
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 77 91 58 68 74 74 70 73 3a 2f 2f 73 70
+%%%%"
+                    "cbe" = |u8x 7a 77 91 58 68 74 74 70 73 3a 2f 2f 73 70
                             72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65
                             6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73
                             6f 6e 91 30 68 74 74 70 73 3a 2f 2f 65 78 61 6d
@@ -464,31 +472,31 @@ c0
                             76 2f 65 6d 70 6c 6f 79 65 72 73 2f 6e 75 63 6c
                             65 61 72 5f 70 6f 77 65 72 5f 70 6c 61 6e 74 7b
                             7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "edge"
-                                    "rid https://springfield.gov/people#homer_simpson"
-                                    "rid https://example.org/wife"
-                                    "rid https://springfield.gov/people#marge_simpson"
-                                "e"
-                                "edge"
-                                    "rid https://springfield.gov/people#homer_simpson"
-                                    "rid https://example.org/employer"
-                                    "rid https://springfield.gov/employers/nuclear_power_plant"
-                                "e"
+                    "events" = [
+                        "l"
+                            "edge"
+                                "rid=https://springfield.gov/people#homer_simpson"
+                                "rid=https://example.org/wife"
+                                "rid=https://springfield.gov/people#marge_simpson"
                             "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+                            "edge"
+                                "rid=https://springfield.gov/people#homer_simpson"
+                                "rid=https://example.org/employer"
+                                "rid=https://springfield.gov/employers/nuclear_power_plant"
+                            "e"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Edge Complex"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 {
     @"https://springfield.gov/people#homer_simpson" = {
         @"https://mypredicates.org/wife" = @"https://springfield.gov/people#marge_simpson"
@@ -498,7 +506,6 @@ c0
         ]
         @"https://mypredicates.org/troubles" = $troubles
     }
-
     "graph edges" = [
         &marge_birthday:@(
             @"https://springfield.gov/people#marge_simpson"
@@ -515,7 +522,6 @@ c0
             @"https://mypredicates.org/fired"
             @"https://springfield.gov/people#homer_simpson"
         )
-
         &troubles:@(
             [
                 $firing
@@ -526,8 +532,8 @@ c0
         )
     ]
 }
-            %%%%"
-            "cbe"    = |u8x 81 00 79 91 58 68 74 74 70 73 3a 2f 2f 73 70 72
+%%%%"
+                    "cbe" = |u8x 79 91 58 68 74 74 70 73 3a 2f 2f 73 70 72
                             69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f
                             70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f
                             6e 79 91 3a 68 74 74 70 73 3a 2f 2f 6d 79 70 72
@@ -573,55 +579,55 @@ c0
                             74 74 70 73 3a 2f 2f 6d 79 6f 62 6a 65 63 74 73
                             2e 6f 72 67 2f 6d 61 72 69 74 61 6c 5f 73 74 72
                             69 66 65 7b 7b 7b|
-            "events" = [
-                            "v 0"
-                            "m"
-                                "rid https://springfield.gov/people#homer_simpson" "m"
-                                    "rid https://mypredicates.org/wife" "rid https://springfield.gov/people#marge_simpson"
-                                    "rid https://mypredicates.org/regrets" "l"
-                                        "refl firing"
-                                        "refl forgotten_birthday"
-                                    "e"
-                                    "rid https://mypredicates.org/troubles" "refl troubles"
+                    "events" = [
+                        "m"
+                            "rid=https://springfield.gov/people#homer_simpson" "m"
+                                "rid=https://mypredicates.org/wife" "rid=https://springfield.gov/people#marge_simpson"
+                                "rid=https://mypredicates.org/regrets" "l"
+                                    "refl=firing"
+                                    "refl=forgotten_birthday"
                                 "e"
-                                "s graph edges" "l"
-                                    "mark marge_birthday" "edge"
-                                        "rid https://springfield.gov/people#marge_simpson"
-                                        "rid https://mypredicates.org/birthday"
-                                        "t 1956-10-01"
-                                    "e"
-                                    "mark forgotten_birthday" "edge"
-                                        "rid https://springfield.gov/people#homer_simpson"
-                                        "rid https://mypredicates.org/forgot"
-                                        "refl marge_birthday"
-                                    "e"
-                                    "mark firing" "edge"
-                                        "rid https://springfield.gov/people#montgomery_burns"
-                                        "rid https://mypredicates.org/fired"
-                                        "rid https://springfield.gov/people#homer_simpson"
-                                    "e"
+                                "rid=https://mypredicates.org/troubles" "refl=troubles"
+                            "e"
+                            "s=graph edges" "l"
+                                "mark=marge_birthday" "edge"
+                                    "rid=https://springfield.gov/people#marge_simpson"
+                                    "rid=https://mypredicates.org/birthday"
+                                    "t=1956-10-01"
+                                "e"
+                                "mark=forgotten_birthday" "edge"
+                                    "rid=https://springfield.gov/people#homer_simpson"
+                                    "rid=https://mypredicates.org/forgot"
+                                    "refl=marge_birthday"
+                                "e"
+                                "mark=firing" "edge"
+                                    "rid=https://springfield.gov/people#montgomery_burns"
+                                    "rid=https://mypredicates.org/fired"
+                                    "rid=https://springfield.gov/people#homer_simpson"
+                                "e"
 
-                                    "mark troubles" "edge"
-                                        "l"
-                                            "refl firing"
-                                            "refl forgotten_birthday"
-                                        "e"
-                                        "rid https://mypredicates.org/contribute"
-                                        "rid https://myobjects.org/marital_strife"
+                                "mark=troubles" "edge"
+                                    "l"
+                                        "refl=firing"
+                                        "refl=forgotten_birthday"
                                     "e"
+                                    "rid=https://mypredicates.org/contribute"
+                                    "rid=https://myobjects.org/marital_strife"
                                 "e"
                             "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["b" "e"]
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Node"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 (2
     (7
         2
@@ -637,65 +643,65 @@ c0
         )
     )
 )
-            %%%%"
-            "cbe"    = |u8x 81 00 78 02 78 07 02 01 78 06 05 08 7b 7b 78 05 78 09 04 7b 7b 7b|
-            "events" = [
-                            "v 0"
-                            "node" "n 2"
-                                "node" "n 7"
-                                    "n 2"
-                                    "n 1"
-                                    "node" "n 6"
-                                        "n 5"
-                                        "n 8"
-                                    "e"
-                                "e"
-                                "node" "n 5"
-                                    "node" "n 9"
-                                        "n 4"
-                                    "e"
+%%%%"
+                    "cbe" = |u8x 78 02 78 07 02 01 78 06 05 08 7b 7b 78 05 78 09 04 7b 7b 7b|
+                    "events" = [
+                        "node" "n=2"
+                            "node" "n=7"
+                                "n=2"
+                                "n=1"
+                                "node" "n=6"
+                                    "n=5"
+                                    "n=8"
                                 "e"
                             "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+                            "node" "n=5"
+                                "node" "n=9"
+                                    "n=4"
+                                "e"
+                            "e"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Marker"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 [
     &remember_me:"Remember this string"
     &1:{
         "a" = 1
     }
 ]
-            %%%%"
-            "cbe"    = |u8x 81 00 7a 97 0b 72 65 6d 65 6d 62 65 72 5f 6d 65
+%%%%"
+                    "cbe" = |u8x 7a 97 0b 72 65 6d 65 6d 62 65 72 5f 6d 65
                             90 28 52 65 6d 65 6d 62 65 72 20 74 68 69 73 20
                             73 74 72 69 6e 67 97 01 31 79 81 61 01 7b 7b|
-            "events" = [
-                            "v 0"
-                            "l"
-                                "mark remember_me" "s Remember this string"
-                                "mark 1" "m"
-                                    "s a" "n 1"
-                                "e"
+                    "events" = [
+                        "l"
+                            "mark=remember_me" "s=Remember this string"
+                            "mark=1" "m"
+                                "s=a" "n=1"
                             "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Local Reference"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 {
     "some object" = {
         "some string" = &my_string_ref:"This is my string"
@@ -711,8 +717,8 @@ c0
         "recursive reference" = $later_obj_ref
     }
 }
-            %%%%"
-            "cbe"    = |u8x 81 00 79 8b 73 6f 6d 65 20 6f 62 6a 65 63 74 79
+%%%%"
+                    "cbe" = |u8x 79 8b 73 6f 6d 65 20 6f 62 6a 65 63 74 79
                             8b 73 6f 6d 65 20 73 74 72 69 6e 67 97 0d 6d 79
                             5f 73 74 72 69 6e 67 5f 72 65 66 90 22 54 68 69
                             73 20 69 73 20 6d 79 20 73 74 72 69 6e 67 88 73
@@ -729,42 +735,42 @@ c0
                             26 72 65 63 75 72 73 69 76 65 20 72 65 66 65 72
                             65 6e 63 65 98 0d 6c 61 74 65 72 5f 6f 62 6a 5f
                             72 65 66 7b 7b|
-            "events" = [
-                            "v 0"
-                            "m"
-                                "s some object" "m"
-                                    "s some string" "mark my_string_ref" "s This is my string"
-                                    "s some map" "mark my_map_ref" "m"
-                                        "s a" "n 1"
-                                    "e"
-                                "e"
-                                "s forward reference" "refl later_obj_ref"
-                                "s reference to string" "refl my_string_ref"
-                                "s reference to map" "refl my_map_ref"
-                                "s a later object" "mark later_obj_ref" "m"
-                                    "s x" "n 2"
-                                    "s recursive reference" "refl later_obj_ref"
+                    "events" = [
+                        "m"
+                            "s=some object" "m"
+                                "s=some string" "mark=my_string_ref" "s=This is my string"
+                                "s=some map" "mark=my_map_ref" "m"
+                                    "s=a" "n=1"
                                 "e"
                             "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+                            "s=forward reference" "refl=later_obj_ref"
+                            "s=reference to string" "refl=my_string_ref"
+                            "s=reference to map" "refl=my_map_ref"
+                            "s=a later object" "mark=later_obj_ref" "m"
+                                "s=x" "n=2"
+                                "s=recursive reference" "refl=later_obj_ref"
+                            "e"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Remote Reference"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 {
     "ref to doc on filesystem" = $"some_document.cbe"
     "ref to marked obj in local doc" = $"some_document.cbe#widgets"
     "ref to remote doc" = $"https://somewhere.com/my_document.cbe"
     "ref to marked obj in remote doc" = $"https://somewhere.com/my_document.cbe#widgets"
 }
-            %%%%"
-            "cbe"    = |u8x 81 00 79 90 30 72 65 66 20 74 6f 20 64 6f 63 20
+%%%%"
+                    "cbe" = |u8x 79 90 30 72 65 66 20 74 6f 20 64 6f 63 20
                             6f 6e 20 66 69 6c 65 73 79 73 74 65 6d 94 e0 22
                             73 6f 6d 65 5f 64 6f 63 75 6d 65 6e 74 2e 63 62
                             65 90 3c 72 65 66 20 74 6f 20 6d 61 72 6b 65 64
@@ -780,30 +786,31 @@ c0
                             73 3a 2f 2f 73 6f 6d 65 77 68 65 72 65 2e 63 6f
                             6d 2f 6d 79 5f 64 6f 63 75 6d 65 6e 74 2e 63 62
                             65 23 77 69 64 67 65 74 73 7b|
-            "events" = [
-                            "v 0"
-                            "m"
-                                "s ref to doc on filesystem" "refr some_document.cbe"
-                                "s ref to marked obj in local doc" "refr some_document.cbe#widgets"
-                                "s ref to remote doc" "refr https://somewhere.com/my_document.cbe"
-                                "s ref to marked obj in remote doc" "refr https://somewhere.com/my_document.cbe#widgets"
-                            "e"
-                        ]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+                    "events" = [
+                        "m"
+                            "s=ref to doc on filesystem" "refr=some_document.cbe"
+                            "s=ref to marked obj in local doc" "refr=some_document.cbe#widgets"
+                            "s=ref to remote doc" "refr=https://somewhere.com/my_document.cbe"
+                            "s=ref to marked obj in remote doc" "refr=https://somewhere.com/my_document.cbe#widgets"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
 
         {
             "name" = "Comments"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 // Comment before top level object
 {
     // Comment before the "name" object.
     // And another comment.
-    "name" = "Joe Average" // Comment after the "Joe Average" object.
+    "name" = "Joe Average"
+    // Comment after the "Joe Average" object.
     "email" = // Comment after the "email" key.
     /* Multiline comment with nested comment inside
       @"mailto:joe@average.org"
@@ -812,37 +819,38 @@ c0
     */
     @"mailto:someone@somewhere.com"
     "a" = "We're inside a string, so /* this is not a comment; it's part of the string! */"
-    "data" =
-    // A comment before some binary data
-    |u8x 01 02 03 // A comment inside the binary array
-         04 05 06 07 /* Another comment inside */ 08 09 0a|
+    "data" = // A comment before some binary data
+    |u8 1 2 3
+    // A comment inside the binary array
+     4 5 6 7
+    /* Another comment inside */
+     8 9 10|
     // Comment before the end of the top-level object (the map), but not after!
 }
-            %%%%"
-            "events" = [
-                            "v 0"
-                            "cs  Comment before top level object"
-                            "m"
-                                "cs  \.## Comment before the "name" object.##"
-                                "cs  And another comment."
-                                "s name" "s Joe Average" "cs  \.## Comment after the "Joe Average" object.##"
-                                "s email" "cs  \.## Comment after the "email" key.##"
-                                "cm  \.## Multiline comment with nested comment inside
+%%%%"
+                    "events" = [
+                        "cs= Comment before top level object"
+                        "m"
+                            "cs= \.## Comment before the "name" object.##"
+                            "cs= And another comment."
+                            "s=name" "s=Joe Average" "cs= \.## Comment after the "Joe Average" object.##"
+                            "s=email" "cs= \.## Comment after the "email" key.##"
+                            "cm= \.## Multiline comment with nested comment inside
       @"mailto:joe@average.org"
       /* Nested multiline
          comments are allowed */
     ##"
-                                "rid mailto:someone@somewhere.com"
-                                "s a" "s We're inside a string, so /* this is not a comment; it's part of the string! */"
-                                "s data"
-                                "cs  A comment before some binary data"
-                                "bau8" "acm 3" "adu8x 01 02 03" "cs  A comment inside the binary array"
-                                "acm 4" "adu8x 04 05 06 07" "cm  Another comment inside " "acl 3" "adu8x 08 09 0a"
-                                "cs  Comment before the end of the top-level object (the map), but not after!"
-                            "e"
-                        ]
-            "from"   = ["t" "e"]
-            "to"     = ["e"]
+                            "rid=mailto:someone@somewhere.com"
+                            "s=a" "s=We're inside a string, so /* this is not a comment; it's part of the string! */"
+                            "s=data"
+                            "cs= A comment before some binary data"
+                            "bau8" "acm=3" "adu8x=01 02 03" "cs= A comment inside the binary array"
+                            "acm=4" "adu8x=04 05 06 07" "cm= Another comment inside " "acl=3" "adu8x=08 09 0a"
+                            "cs= Comment before the end of the top-level object (the map), but not after!"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================

@@ -19,18 +19,32 @@ c0
  * - Paste the contents of bugreport.cte into your bug report.
  */
 {
-    "ceTests" = [
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
         {
-            "name"     = "Document is wrongfully allowed"
-            "mustFail" = true
-            "from"     = ["b"]
-            "cbe"      = |u8x 81 00 74 81 61 7d 7b|
-            "cte"      = "\.%%%%
-c0
+            "name"     = "CBE is wrongfully allowed"
+            "mustFail" = [
+                {
+                    "cbe"      = |u8x 74 81 61 7d 7b 7b|
+                }
+            ]
+        }
+
+        {
+            "name"     = "CTE is wrongfully allowed"
+            "mustFail" = [
+                {
+                    "cte"      = "\.%%%%
 {
-    "a" = true
+    "a" = ttrue
 }
-            %%%%"
+%%%%"
+                }
+            ]
         }
     ]
 }

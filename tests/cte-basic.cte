@@ -1,7 +1,7 @@
 c0
 {
     "type" = {
-        "identifier" = "ce test"
+        "identifier" = "ce-test"
         "version" = 1
     }
     "ceversion" = 0
@@ -27,12 +27,12 @@ c0
         {
             "name" = "Boolean"
             "mustSucceed" = [
-                {"cte"="true"   "events"=["b true"]}
-                {"cte"="false"  "events"=["b false"]}
-                {"nocteoutput"=true  "cte"="True"   "events"=["b true"]}
-                {"nocteoutput"=true  "cte"="TRUE"   "events"=["b true"]}
-                {"nocteoutput"=true  "cte"="False"  "events"=["b false"]}
-                {"nocteoutput"=true  "cte"="FALSE"  "events"=["b false"]}
+                {"cte"="true"   "events"=["b=true"]}
+                {"cte"="false"  "events"=["b=false"]}
+                {"nocteoutput"=true  "cte"="True"   "events"=["b=true"]}
+                {"nocteoutput"=true  "cte"="TRUE"   "events"=["b=true"]}
+                {"nocteoutput"=true  "cte"="False"  "events"=["b=false"]}
+                {"nocteoutput"=true  "cte"="FALSE"  "events"=["b=false"]}
             ]
             "mustFail" = [
                 {"cte"="t"}
@@ -49,17 +49,17 @@ c0
         {
             "name" = "Decimal Integer"
             "mustSucceed" = [
-                {"cte"="0"                               "events"=["n 0"]}
-                {"cte"="-0"                              "events"=["n -0"]}
-                {"cte"="1234567890"                      "events"=["n 1234567890"]}
-                {"cte"="-1234567890"                     "events"=["n -1234567890"]}
-                {"cte"="123"                             "events"=["n 123"]}
-                {"cte"="9412504234235366"                "events"=["n 9412504234235366"]}
-                {"cte"="-49523"                          "events"=["n -49523"]}
-                {"cte"="10000000000000000000000000000"   "events"=["n 10000000000000000000000000000"]}
-                {"cte"="-10000000000000000000000000000"  "events"=["n -10000000000000000000000000000"]}
-                {"nocteoutput"=true  "cte"="100_00_0_00000000000_00000000_000_0"  "events"=["n 10000000000000000000000000000"]}
-                {"nocteoutput"=true  "cte"="-4_9_5__2___3"     "events"=["n -49523"]}
+                {"cte"="0"                               "events"=["n=0"]}
+                {"cte"="-0"                              "events"=["n=-0"]}
+                {"cte"="1234567890"                      "events"=["n=1234567890"]}
+                {"cte"="-1234567890"                     "events"=["n=-1234567890"]}
+                {"cte"="123"                             "events"=["n=123"]}
+                {"cte"="9412504234235366"                "events"=["n=9412504234235366"]}
+                {"cte"="-49523"                          "events"=["n=-49523"]}
+                {"cte"="10000000000000000000000000000"   "events"=["n=10000000000000000000000000000"]}
+                {"cte"="-10000000000000000000000000000"  "events"=["n=-10000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="100_00_0_00000000000_00000000_000_0"  "events"=["n=10000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="-4_9_5__2___3"     "events"=["n=-49523"]}
             ]
             "mustFail" = [
                 {"cte"="1f"}  // Non-decimal digit
@@ -76,32 +76,32 @@ c0
         {
             "name" = "Binary Integer"
             "mustSucceed" = [
-                {"nocteoutput"=true  "cte"="0b0"              "events"=["n 0"]}
-                {"nocteoutput"=true  "cte"="-0b0"             "events"=["n -0"]}
-                {"nocteoutput"=true  "cte"="0b1"              "events"=["n 1"]}
-                {"nocteoutput"=true  "cte"="-0b101"           "events"=["n -5"]}
-                {"nocteoutput"=true  "cte"="0b0010100"        "events"=["n 20"]}
-                {"nocteoutput"=true  "cte"="-0b1_0_0"         "events"=["n -4"]}
-                {"nocteoutput"=true  "cte"="0b0_0_1__010__1"  "events"=["n 21"]}
+                {"nocteoutput"=true  "cte"="0b0"              "events"=["n=0"]}
+                {"nocteoutput"=true  "cte"="-0b0"             "events"=["n=-0"]}
+                {"nocteoutput"=true  "cte"="0b1"              "events"=["n=1"]}
+                {"nocteoutput"=true  "cte"="-0b101"           "events"=["n=-5"]}
+                {"nocteoutput"=true  "cte"="0b0010100"        "events"=["n=20"]}
+                {"nocteoutput"=true  "cte"="-0b1_0_0"         "events"=["n=-4"]}
+                {"nocteoutput"=true  "cte"="0b0_0_1__010__1"  "events"=["n=21"]}
                 {
                     "nocteoutput"=true
                     "cte" = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                    "events" = ["n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "events" = ["n=0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
                     "nocteoutput"=true
                     "cte" = "-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                    "events" = ["n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "events" = ["n=-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
                     "nocteoutput"=true
                     "cte" = "0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
-                    "events" = ["n 0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "events" = ["n=0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
                     "nocteoutput"=true
                     "cte" = "-0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
-                    "events" = ["n -0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
+                    "events" = ["n=-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
             ]
             "mustFail" = [
@@ -123,20 +123,20 @@ c0
         {
             "name" = "Octal Integer"
             "mustSucceed" = [
-                {"nocteoutput"=true  "cte"="0o0"         "events"=["n 0"]}
-                {"nocteoutput"=true  "cte"="-0o0"        "events"=["n -0"]}
-                {"nocteoutput"=true  "cte"="0o1"         "events"=["n 1"]}
-                {"nocteoutput"=true  "cte"="0o7"         "events"=["n 7"]}
-                {"nocteoutput"=true  "cte"="-0o51"       "events"=["n -0o51"]}
-                {"nocteoutput"=true  "cte"="0o644"       "events"=["n 0o644"]}
-                {"nocteoutput"=true  "cte"="-0o777"      "events"=["n -0o777"]}
+                {"nocteoutput"=true  "cte"="0o0"         "events"=["n=0"]}
+                {"nocteoutput"=true  "cte"="-0o0"        "events"=["n=-0"]}
+                {"nocteoutput"=true  "cte"="0o1"         "events"=["n=1"]}
+                {"nocteoutput"=true  "cte"="0o7"         "events"=["n=7"]}
+                {"nocteoutput"=true  "cte"="-0o51"       "events"=["n=-0o51"]}
+                {"nocteoutput"=true  "cte"="0o644"       "events"=["n=0o644"]}
+                {"nocteoutput"=true  "cte"="-0o777"      "events"=["n=-0o777"]}
                 {"nocteoutput"=true  "cte"="0o1000000000000000000000000000000000000000000000"
-                 "events"=["n 0o1000000000000000000000000000000000000000000000"]}
+                 "events"=["n=0o1000000000000000000000000000000000000000000000"]}
                 {"nocteoutput"=true  "cte"="-0o1000000000000000000000000000000000000000000000"
-                 "events"=["n -0o1000000000000000000000000000000000000000000000"]}
+                 "events"=["n=-0o1000000000000000000000000000000000000000000000"]}
                 {"nocteoutput"=true  "cte"="0o1000000_0000000000_00000000000_000000000000_000000"
-                 "events"=["n 0o1000000000000000000000000000000000000000000000"]}
-                {"nocteoutput"=true  "cte"="0o7__7___7"  "events"=["n 0o777"]}
+                 "events"=["n=0o1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="0o7__7___7"  "events"=["n=0o777"]}
             ]
             "mustFail" = [
                 {"cte"="0o19"}  // Non-octal digit
@@ -157,20 +157,20 @@ c0
         {
             "name" = "Hexadecimal Integer"
             "mustSucceed" = [
-                {"nocteoutput"=true  "cte"="0x0"                  "events"=["n 0"]}
-                {"nocteoutput"=true  "cte"="-0x0"                 "events"=["n -0"]}
-                {"nocteoutput"=true  "cte"="0x1"                  "events"=["n 1"]}
-                {"nocteoutput"=true  "cte"="0xf"                  "events"=["n 15"]}
-                {"nocteoutput"=true  "cte"="-0xd4"                "events"=["n -0xd4"]}
-                {"nocteoutput"=true  "cte"="0xfedcba9876543210"   "events"=["n 0xfedcba9876543210"]}
-                {"nocteoutput"=true  "cte"="-0xFEDCBA9876543210"  "events"=["n -0xfedcba9876543210"]}
+                {"nocteoutput"=true  "cte"="0x0"                  "events"=["n=0"]}
+                {"nocteoutput"=true  "cte"="-0x0"                 "events"=["n=-0"]}
+                {"nocteoutput"=true  "cte"="0x1"                  "events"=["n=1"]}
+                {"nocteoutput"=true  "cte"="0xf"                  "events"=["n=15"]}
+                {"nocteoutput"=true  "cte"="-0xd4"                "events"=["n=-0xd4"]}
+                {"nocteoutput"=true  "cte"="0xfedcba9876543210"   "events"=["n=0xfedcba9876543210"]}
+                {"nocteoutput"=true  "cte"="-0xFEDCBA9876543210"  "events"=["n=-0xfedcba9876543210"]}
                 {"nocteoutput"=true  "cte"="0x1000000000000000000000000000000000000000000000"
-                 "events"=["n 0x1000000000000000000000000000000000000000000000"]}
+                 "events"=["n=0x1000000000000000000000000000000000000000000000"]}
                 {"nocteoutput"=true  "cte"="-0x1000000000000000000000000000000000000000000000"
-                 "events"=["n -0x1000000000000000000000000000000000000000000000"]}
+                 "events"=["n=-0x1000000000000000000000000000000000000000000000"]}
                 {"nocteoutput"=true  "cte"="0x100000000_000000_00000_000__000_0000000000000_0000000"
-                 "events"=["n 0x1000000000000000000000000000000000000000000000"]}
-                {"nocteoutput"=true  "cte"="0x8_8__5_a_f__d"  "events"=["n 0x885afd"]}
+                 "events"=["n=0x1000000000000000000000000000000000000000000000"]}
+                {"nocteoutput"=true  "cte"="0x8_8__5_a_f__d"  "events"=["n=0x885afd"]}
             ]
             "mustFail" = [
                 {"cte"="0x1g"}  // Non-hex digit
@@ -191,72 +191,72 @@ c0
         {
             "name" = "Decimal Float"
             "mustSucceed" = [
-                {"nocteoutput"=true  "cte"="0.0"   "events"=["n 0"]}
-                {"nocteoutput"=true  "cte"="-0.0"  "events"=["n -0"]}
-                {"cte"="1.1"           "events"=["n 1.1"]}
-                {"cte"="0.1"           "events"=["n 0.1"]}
-                {"cte"="4.7234634"     "events"=["n 4.7234634"]}
-                {"cte"="1.23456"       "events"=["n 1.23456"]}
-                {"cte"="-1.23456"      "events"=["n -1.23456"]}
-                {"cte"="1.23456e+50"   "events"=["n 1.23456e+50"]}
-                {"cte"="-1.23456e+50"  "events"=["n -1.23456e+50"]}
-                {"cte"="1.23456e-50"   "events"=["n 1.23456e-50"]}
-                {"cte"="-1.23456e-50"  "events"=["n -1.23456e-50"]}
+                {"nocteoutput"=true  "cte"="0.0"   "events"=["n=0"]}
+                {"nocteoutput"=true  "cte"="-0.0"  "events"=["n=-0"]}
+                {"cte"="1.1"           "events"=["n=1.1"]}
+                {"cte"="0.1"           "events"=["n=0.1"]}
+                {"cte"="4.7234634"     "events"=["n=4.7234634"]}
+                {"cte"="1.23456"       "events"=["n=1.23456"]}
+                {"cte"="-1.23456"      "events"=["n=-1.23456"]}
+                {"cte"="1.23456e+50"   "events"=["n=1.23456e+50"]}
+                {"cte"="-1.23456e+50"  "events"=["n=-1.23456e+50"]}
+                {"cte"="1.23456e-50"   "events"=["n=1.23456e-50"]}
+                {"cte"="-1.23456e-50"  "events"=["n=-1.23456e-50"]}
 
                 {"cte"="-9.6534634727167134523472782456223624582452671345134745694657786776"
-                 "events"=["n -9.6534634727167134523472782456223624582452671345134745694657786776"]}
+                 "events"=["n=-9.6534634727167134523472782456223624582452671345134745694657786776"]}
 
-                {"cte"="inf"                  "events"=["n inf"]}
-                {"cte"="-inf"                 "events"=["n -inf"]}
-                {"cte"="nan"                  "events"=["n nan"]}
-                {"cte"="snan"                 "events"=["n snan"]}
+                {"cte"="inf"                  "events"=["n=inf"]}
+                {"cte"="-inf"                 "events"=["n=-inf"]}
+                {"cte"="nan"                  "events"=["n=nan"]}
+                {"cte"="snan"                 "events"=["n=snan"]}
 
-                {"cte"="1.53476e80"           "events"=["n 1.53476e80"]  "nocteoutput"=true}
-                {"cte"="1.53476e93983456"     "events"=["n 1.53476e93983456"]  "nocteoutput"=true}
-                {"cte"="1.53476e+93983456"    "events"=["n 1.53476e93983456"]}
-                {"cte"="1.53476e-93983456"    "events"=["n 1.53476e-93983456"]}
-                {"cte"="1.53476E93983456"     "events"=["n 1.53476e93983456"]  "nocteoutput"=true}
-                {"cte"="1.53476E+93983456"    "events"=["n 1.53476e93983456"]  "nocteoutput"=true}
-                {"cte"="1.53476E-93983456"    "events"=["n 1.53476e-93983456"]  "nocteoutput"=true}
-                {"cte"="-1.53476e93983456"    "events"=["n -1.53476e93983456"]  "nocteoutput"=true}
-                {"cte"="-1.53476e+93983456"   "events"=["n -1.53476e93983456"]}
-                {"cte"="-1.53476e-93983456"   "events"=["n -1.53476e-93983456"]}
-                {"cte"="-1.53476E93983456"    "events"=["n -1.53476e93983456"]  "nocteoutput"=true}
-                {"cte"="-1.53476E+93983456"   "events"=["n -1.53476e93983456"]  "nocteoutput"=true}
-                {"cte"="-1.53476E-93983456"   "events"=["n -1.53476e-93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476e80"           "events"=["n=1.53476e80"]  "nocteoutput"=true}
+                {"cte"="1.53476e93983456"     "events"=["n=1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476e+93983456"    "events"=["n=1.53476e93983456"]}
+                {"cte"="1.53476e-93983456"    "events"=["n=1.53476e-93983456"]}
+                {"cte"="1.53476E93983456"     "events"=["n=1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476E+93983456"    "events"=["n=1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="1.53476E-93983456"    "events"=["n=1.53476e-93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476e93983456"    "events"=["n=-1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476e+93983456"   "events"=["n=-1.53476e93983456"]}
+                {"cte"="-1.53476e-93983456"   "events"=["n=-1.53476e-93983456"]}
+                {"cte"="-1.53476E93983456"    "events"=["n=-1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476E+93983456"   "events"=["n=-1.53476e93983456"]  "nocteoutput"=true}
+                {"cte"="-1.53476E-93983456"   "events"=["n=-1.53476e-93983456"]  "nocteoutput"=true}
 
-                {"cte"="1e80"                 "events"=["n 1e80"]  "nocteoutput"=true}
-                {"cte"="1E80"                 "events"=["n 1E80"]  "nocteoutput"=true}
-                {"cte"="-1e80"                "events"=["n -1e80"]  "nocteoutput"=true}
-                {"cte"="-1E80"                "events"=["n -1E80"]  "nocteoutput"=true}
-                {"cte"="1e+80"                "events"=["n 1e80"]}
-                {"cte"="1E+80"                "events"=["n 1E80"]  "nocteoutput"=true}
-                {"cte"="-1e+80"               "events"=["n -1e80"]}
-                {"cte"="-1E+80"               "events"=["n -1E80"]  "nocteoutput"=true}
-                {"cte"="1e-80"                "events"=["n 1e-80"]}
-                {"cte"="1E-80"                "events"=["n 1E-80"]  "nocteoutput"=true}
-                {"cte"="-1e-80"               "events"=["n -1e-80"]}
-                {"cte"="-1E-80"               "events"=["n -1E-80"]  "nocteoutput"=true}
+                {"cte"="1e80"                 "events"=["n=1e80"]  "nocteoutput"=true}
+                {"cte"="1E80"                 "events"=["n=1E80"]  "nocteoutput"=true}
+                {"cte"="-1e80"                "events"=["n=-1e80"]  "nocteoutput"=true}
+                {"cte"="-1E80"                "events"=["n=-1E80"]  "nocteoutput"=true}
+                {"cte"="1e+80"                "events"=["n=1e80"]}
+                {"cte"="1E+80"                "events"=["n=1E80"]  "nocteoutput"=true}
+                {"cte"="-1e+80"               "events"=["n=-1e80"]}
+                {"cte"="-1E+80"               "events"=["n=-1E80"]  "nocteoutput"=true}
+                {"cte"="1e-80"                "events"=["n=1e-80"]}
+                {"cte"="1E-80"                "events"=["n=1E-80"]  "nocteoutput"=true}
+                {"cte"="-1e-80"               "events"=["n=-1e-80"]}
+                {"cte"="-1E-80"               "events"=["n=-1E-80"]  "nocteoutput"=true}
 
                 {
                     "nocteoutput"=true
                     "cte"="0.1500000000000000000000000000000000000000000000000001e+10000"
-                    "events"=["n 0.1500000000000000000000000000000000000000000000000001e+10000"]
+                    "events"=["n=0.1500000000000000000000000000000000000000000000000001e+10000"]
                 }
                 {
                     "nocteoutput"=true
                     "cte"="0.1500000000000000000000000000000000000000000000000001e-10000"
-                    "events"=["n 0.1500000000000000000000000000000000000000000000000001e-10000"]
+                    "events"=["n=0.1500000000000000000000000000000000000000000000000001e-10000"]
                 }
                 {
                     "nocteoutput"=true
                     "cte"="-0.1500000000000000000000000000000000000000000000000001e+10000"
-                    "events"=["n -0.1500000000000000000000000000000000000000000000000001e+10000"]
+                    "events"=["n=-0.1500000000000000000000000000000000000000000000000001e+10000"]
                 }
                 {
                     "nocteoutput"=true
                     "cte"="-0.1500000000000000000000000000000000000000000000000001e-10000"
-                    "events"=["n -0.1500000000000000000000000000000000000000000000000001e-10000"]
+                    "events"=["n=-0.1500000000000000000000000000000000000000000000000001e-10000"]
                 }
             ]
             "mustFail" = [
@@ -277,74 +277,74 @@ c0
         {
             "name" = "Hexadecimal Float"
             "mustSucceed" = [
-                {"cte"="0x0p+00"   "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0p+00"  "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0x1.f39p+00"  "events"=["n 0x1.f39"]}
-                {"cte"="0x0.0"                  "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0.0"                 "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0x0.1"                  "events"=["n 0x0.1"] "nocteoutput"=true}
-                {"cte"="0x4.7f3cc34"            "events"=["n 0x4.7f3cc34"] "nocteoutput"=true}
+                {"cte"="0x0p+00"   "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0p+00"  "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0x1.f39p+00"  "events"=["n=0x1.f39"]}
+                {"cte"="0x0.0"                  "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0.0"                 "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0x0.1"                  "events"=["n=0x0.1"] "nocteoutput"=true}
+                {"cte"="0x4.7f3cc34"            "events"=["n=0x4.7f3cc34"] "nocteoutput"=true}
                 {"cte"="-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
-                 "events"=["n -0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
+                 "events"=["n=-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]}
 
-                {"cte"="0x0.0p0"                  "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0.0p0"                 "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0x0.0p+0"                 "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0.0p+0"                "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0x0.0p-0"                 "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0.0p-0"                "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0xf.1p10"                 "events"=["n 0xf.1p10"] "nocteoutput"=true}
-                {"cte"="-0xf.1p10"                "events"=["n -0xf.1p10"] "nocteoutput"=true}
-                {"cte"="0xf.1p+10"                "events"=["n 0xf.1p10"] "nocteoutput"=true}
-                {"cte"="-0xf.1p+10"               "events"=["n -0xf.1p10"] "nocteoutput"=true}
-                {"cte"="0xf.1p-10"                "events"=["n 0xf.1p-10"] "nocteoutput"=true}
-                {"cte"="-0xf.1p-10"               "events"=["n -0xf.1p-10"] "nocteoutput"=true}
+                {"cte"="0x0.0p0"                  "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0.0p0"                 "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0x0.0p+0"                 "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0.0p+0"                "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0x0.0p-0"                 "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0.0p-0"                "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0xf.1p10"                 "events"=["n=0xf.1p10"] "nocteoutput"=true}
+                {"cte"="-0xf.1p10"                "events"=["n=-0xf.1p10"] "nocteoutput"=true}
+                {"cte"="0xf.1p+10"                "events"=["n=0xf.1p10"] "nocteoutput"=true}
+                {"cte"="-0xf.1p+10"               "events"=["n=-0xf.1p10"] "nocteoutput"=true}
+                {"cte"="0xf.1p-10"                "events"=["n=0xf.1p-10"] "nocteoutput"=true}
+                {"cte"="-0xf.1p-10"               "events"=["n=-0xf.1p-10"] "nocteoutput"=true}
 
-                {"cte"="0x0p0"                  "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0p0"                 "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0x0p+0"                 "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0p+0"                "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0x0p-0"                 "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0x0p-0"                "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0xfp10"                 "events"=["n 0xfp10"] "nocteoutput"=true}
-                {"cte"="-0xfp10"                "events"=["n -0xfp10"] "nocteoutput"=true}
-                {"cte"="0xfp+10"                "events"=["n 0xfp10"] "nocteoutput"=true}
-                {"cte"="-0xfp+10"               "events"=["n -0xfp10"] "nocteoutput"=true}
-                {"cte"="0xfp-10"                "events"=["n 0xfp-10"] "nocteoutput"=true}
-                {"cte"="-0xfp-10"               "events"=["n -0xfp-10"] "nocteoutput"=true}
+                {"cte"="0x0p0"                  "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0p0"                 "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0x0p+0"                 "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0p+0"                "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0x0p-0"                 "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0x0p-0"                "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0xfp10"                 "events"=["n=0xfp10"] "nocteoutput"=true}
+                {"cte"="-0xfp10"                "events"=["n=-0xfp10"] "nocteoutput"=true}
+                {"cte"="0xfp+10"                "events"=["n=0xfp10"] "nocteoutput"=true}
+                {"cte"="-0xfp+10"               "events"=["n=-0xfp10"] "nocteoutput"=true}
+                {"cte"="0xfp-10"                "events"=["n=0xfp-10"] "nocteoutput"=true}
+                {"cte"="-0xfp-10"               "events"=["n=-0xfp-10"] "nocteoutput"=true}
 
-                {"cte"="0X0P0"                  "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0X0P0"                 "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0X0P+0"                 "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0X0P+0"                "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0X0P-0"                 "events"=["n 0"] "nocteoutput"=true}
-                {"cte"="-0X0P-0"                "events"=["n -0"] "nocteoutput"=true}
-                {"cte"="0XFP10"                 "events"=["n 0xfp10"] "nocteoutput"=true}
-                {"cte"="-0XFP10"                "events"=["n -0xfp10"] "nocteoutput"=true}
-                {"cte"="0XFP+10"                "events"=["n 0xfp10"] "nocteoutput"=true}
-                {"cte"="-0XFP+10"               "events"=["n -0xfp10"] "nocteoutput"=true}
-                {"cte"="0XFP-10"                "events"=["n 0xfp-10"] "nocteoutput"=true}
-                {"cte"="-0XFP-10"               "events"=["n -0xfp-10"] "nocteoutput"=true}
+                {"cte"="0X0P0"                  "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0X0P0"                 "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0X0P+0"                 "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0X0P+0"                "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0X0P-0"                 "events"=["n=0"] "nocteoutput"=true}
+                {"cte"="-0X0P-0"                "events"=["n=-0"] "nocteoutput"=true}
+                {"cte"="0XFP10"                 "events"=["n=0xfp10"] "nocteoutput"=true}
+                {"cte"="-0XFP10"                "events"=["n=-0xfp10"] "nocteoutput"=true}
+                {"cte"="0XFP+10"                "events"=["n=0xfp10"] "nocteoutput"=true}
+                {"cte"="-0XFP+10"               "events"=["n=-0xfp10"] "nocteoutput"=true}
+                {"cte"="0XFP-10"                "events"=["n=0xfp-10"] "nocteoutput"=true}
+                {"cte"="-0XFP-10"               "events"=["n=-0xfp-10"] "nocteoutput"=true}
 
-                {"cte"="0xc.4_45__3p8"            "events"=["n 0xc.4453p8"] "nocteoutput"=true}
+                {"cte"="0xc.4_45__3p8"            "events"=["n=0xc.4453p8"] "nocteoutput"=true}
 
                 // Coefficient too big for float64
-                {"cte"="0x1.54fffe2ac00592375b427ap+100" "events"=["n 0x1.54fffe2ac00592375b427ap100"]}
-                {"cte"="-0x1.54fffe2ac00592375b427ap+100" "events"=["n -0x1.54fffe2ac00592375b427ap100"]}
-                {"cte"="0x1.54fffe2ac00592375b427ap-100" "events"=["n 0x1.54fffe2ac00592375b427ap-100"]}
-                {"cte"="-0x1.54fffe2ac00592375b427ap-100" "events"=["n -0x1.54fffe2ac00592375b427ap-100"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap+100" "events"=["n=0x1.54fffe2ac00592375b427ap100"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap+100" "events"=["n=-0x1.54fffe2ac00592375b427ap100"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap-100" "events"=["n=0x1.54fffe2ac00592375b427ap-100"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap-100" "events"=["n=-0x1.54fffe2ac00592375b427ap-100"]}
 
                 // Exponent too big for float64
-                {"cte"="0x1.8p+10000"             "events"=["n 0x1.8p10000"]}
-                {"cte"="-0x1.8p+10000"            "events"=["n -0x1.8p10000"]}
-                {"cte"="0x1.8p-10000"            "events"=["n 0x1.8p-10000"]}
-                {"cte"="-0x1.8p-10000"           "events"=["n -0x1.8p-10000"]}
+                {"cte"="0x1.8p+10000"             "events"=["n=0x1.8p10000"]}
+                {"cte"="-0x1.8p+10000"            "events"=["n=-0x1.8p10000"]}
+                {"cte"="0x1.8p-10000"            "events"=["n=0x1.8p-10000"]}
+                {"cte"="-0x1.8p-10000"           "events"=["n=-0x1.8p-10000"]}
 
                 // Everything too big for float64
-                {"cte"="0x1.54fffe2ac00592375b427ap+10000"    "events"=["n 0x1.54fffe2ac00592375b427ap10000"]}
-                {"cte"="-0x1.54fffe2ac00592375b427ap+10000"   "events"=["n -0x1.54fffe2ac00592375b427ap10000"]}
-                {"cte"="0x1.54fffe2ac00592375b427ap-10000"   "events"=["n 0x1.54fffe2ac00592375b427ap-10000"]}
-                {"cte"="-0x1.54fffe2ac00592375b427ap-10000"  "events"=["n -0x1.54fffe2ac00592375b427ap-10000"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap+10000"    "events"=["n=0x1.54fffe2ac00592375b427ap10000"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap+10000"   "events"=["n=-0x1.54fffe2ac00592375b427ap10000"]}
+                {"cte"="0x1.54fffe2ac00592375b427ap-10000"   "events"=["n=0x1.54fffe2ac00592375b427ap-10000"]}
+                {"cte"="-0x1.54fffe2ac00592375b427ap-10000"  "events"=["n=-0x1.54fffe2ac00592375b427ap-10000"]}
             ]
             "mustFail" = [
                 {"cte"="0x1."}      // Missing right digit
@@ -368,109 +368,109 @@ c0
             "mustSucceed" = [
                 {
                     "cte"="00000000-0000-0000-0000-000000000000"
-                    "events"=["uid 00000000-0000-0000-0000-000000000000"]
+                    "events"=["uid=00000000-0000-0000-0000-000000000000"]
                 }
                 {
                     "cte"="fedbca98-1111-2222-cccc-723b87d4546a"
-                    "events"=["uid fedbca98-1111-2222-cccc-723b87d4546a"]
+                    "events"=["uid=fedbca98-1111-2222-cccc-723b87d4546a"]
                 }
                 {
                     "cte"="00000000-0000-0000-0000-000000000000"
-                    "events"=["uid 00000000-0000-0000-0000-000000000000"]
+                    "events"=["uid=00000000-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="123456af-0000-0000-0000-000000000000"
-                    "events"=["uid 123456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=123456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="223456af-0000-0000-0000-000000000000"
-                    "events"=["uid 223456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=223456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="323456af-0000-0000-0000-000000000000"
-                    "events"=["uid 323456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=323456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="423456af-0000-0000-0000-000000000000"
-                    "events"=["uid 423456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=423456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="523456af-0000-0000-0000-000000000000"
-                    "events"=["uid 523456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=523456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="623456af-0000-0000-0000-000000000000"
-                    "events"=["uid 623456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=623456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="723456af-0000-0000-0000-000000000000"
-                    "events"=["uid 723456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=723456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="823456af-0000-0000-0000-000000000000"
-                    "events"=["uid 823456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=823456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="923456af-0000-0000-0000-000000000000"
-                    "events"=["uid 923456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=923456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="a23456af-0000-0000-0000-000000000000"
-                    "events"=["uid a23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=a23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="b23456af-0000-0000-0000-000000000000"
-                    "events"=["uid b23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=b23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="c23456af-0000-0000-0000-000000000000"
-                    "events"=["uid c23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=c23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="d23456af-0000-0000-0000-000000000000"
-                    "events"=["uid d23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=d23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="e23456af-0000-0000-0000-000000000000"
-                    "events"=["uid e23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=e23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="f23456af-0000-0000-0000-000000000000"
-                    "events"=["uid f23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=f23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "nocteoutput"=true
                     "cte"="A23456af-0000-0000-0000-000000000000"
-                    "events"=["uid a23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=a23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "nocteoutput"=true
                     "cte"="B23456af-0000-0000-0000-000000000000"
-                    "events"=["uid b23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=b23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "nocteoutput"=true
                     "cte"="C23456af-0000-0000-0000-000000000000"
-                    "events"=["uid c23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=c23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "nocteoutput"=true
                     "cte"="D23456af-0000-0000-0000-000000000000"
-                    "events"=["uid d23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=d23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "nocteoutput"=true
                     "cte"="E23456af-0000-0000-0000-000000000000"
-                    "events"=["uid e23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=e23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "nocteoutput"=true
                     "cte"="F23456af-0000-0000-0000-000000000000"
-                    "events"=["uid f23456af-0000-0000-0000-000000000000"]
+                    "events"=["uid=f23456af-0000-0000-0000-000000000000"]
                     }
                 {
                     "cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"
-                    "events"=["uid fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]
+                    "events"=["uid=fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]
                     }
             ]
             "mustFail" = [
@@ -491,15 +491,15 @@ c0
         {
             "name" = "Date"
             "mustSucceed" = [
-                {"cte"="2050-11-15"      "events"=["t 2050-11-15"]}
-                {"cte"="-9000-01-01"     "events"=["t -9000-01-01"]}
-                {"cte"="2000-01-01"      "events"=["t 2000-01-01"]}
-                {"cte"="-2000-01-01"     "events"=["t -2000-01-01"]}
-                {"cte"="2000-1-1"        "events"=["t 2000-01-01"] "nocteoutput"=true}
-                {"cte"="9412351-12-31"   "events"=["t 9412351-12-31"]}
-                {"cte"="-9412351-12-31"  "events"=["t -9412351-12-31"]}
-                {"cte"="1-01-01"         "events"=["t 1-01-01"]}
-                {"cte"="-1-01-01"        "events"=["t -1-01-01"]}
+                {"cte"="2050-11-15"      "events"=["t=2050-11-15"]}
+                {"cte"="-9000-01-01"     "events"=["t=-9000-01-01"]}
+                {"cte"="2000-01-01"      "events"=["t=2000-01-01"]}
+                {"cte"="-2000-01-01"     "events"=["t=-2000-01-01"]}
+                {"cte"="2000-1-1"        "events"=["t=2000-01-01"] "nocteoutput"=true}
+                {"cte"="9412351-12-31"   "events"=["t=9412351-12-31"]}
+                {"cte"="-9412351-12-31"  "events"=["t=-9412351-12-31"]}
+                {"cte"="1-01-01"         "events"=["t=1-01-01"]}
+                {"cte"="-1-01-01"        "events"=["t=-1-01-01"]}
             ]
             "mustFail" = [
                 {"cte"="0-01-01"}     // Year 0 is invalid
@@ -522,54 +522,54 @@ c0
         {
             "name" = "Time"
             "mustSucceed" = [
-                {"cte"="00:00:00"                          "events"=["t 00:00:00"]}
-                {"cte"="14:21:09.583454111/Europe/Berlin"  "events"=["t 14:21:09.583454111/Europe/Berlin"]}
-                {"cte"="23:59:60.999999999/-21.04/86.99"   "events"=["t 23:59:60.999999999/-21.04/86.99"]}
-                {"cte"="22:01:15.9015-1300"                "events"=["t 22:01:15.9015-1300"]}
-                {"cte"="22:01:15.9015+1001"                "events"=["t 22:01:15.9015+1001"]}
+                {"cte"="00:00:00"                          "events"=["t=00:00:00"]}
+                {"cte"="14:21:09.583454111/Europe/Berlin"  "events"=["t=14:21:09.583454111/Europe/Berlin"]}
+                {"cte"="23:59:60.999999999/-21.04/86.99"   "events"=["t=23:59:60.999999999/-21.04/86.99"]}
+                {"cte"="22:01:15.9015-1300"                "events"=["t=22:01:15.9015-1300"]}
+                {"cte"="22:01:15.9015+1001"                "events"=["t=22:01:15.9015+1001"]}
 
-                {"cte"="0:00:00"                          "events"=["t 0:00:00"]  "nocteoutput"=true}
-                {"cte"="00:00:00"                         "events"=["t 0:00:00"]}
-                {"cte"="1:45:00"                          "events"=["t 1:45:00"]  "nocteoutput"=true}
-                {"cte"="01:45:00"                         "events"=["t 1:45:00"]}
-                {"cte"="23:59:59"                         "events"=["t 23:59:59"]}
-                {"cte"="23:59:60"                         "events"=["t 23:59:60"]}
+                {"cte"="0:00:00"                          "events"=["t=0:00:00"]  "nocteoutput"=true}
+                {"cte"="00:00:00"                         "events"=["t=0:00:00"]}
+                {"cte"="1:45:00"                          "events"=["t=1:45:00"]  "nocteoutput"=true}
+                {"cte"="01:45:00"                         "events"=["t=1:45:00"]}
+                {"cte"="23:59:59"                         "events"=["t=23:59:59"]}
+                {"cte"="23:59:60"                         "events"=["t=23:59:60"]}
 
-                {"cte"="00:00:00.000000000"               "events"=["t 0:00:00"]  "nocteoutput"=true}
-                {"cte"="00:00:00.000000001"               "events"=["t 0:00:00.000000001"]}
-                {"cte"="00:00:00.00000001"                "events"=["t 0:00:00.00000001"]}
-                {"cte"="00:00:00.0000001"                 "events"=["t 0:00:00.0000001"]}
-                {"cte"="00:00:00.000001"                  "events"=["t 0:00:00.000001"]}
-                {"cte"="00:00:00.00001"                   "events"=["t 0:00:00.00001"]}
-                {"cte"="00:00:00.0001"                    "events"=["t 0:00:00.0001"]}
-                {"cte"="00:00:00.001"                     "events"=["t 0:00:00.001"]}
-                {"cte"="00:00:00.01"                      "events"=["t 0:00:00.01"]}
-                {"cte"="00:00:00.1"                       "events"=["t 0:00:00.1"]}
-                {"cte"="00:00:00.100000000"               "events"=["t 0:00:00.1"] "nocteoutput"=true}
-                {"cte"="23:59:60.000000000"               "events"=["t 23:59:60"] "nocteoutput"=true}
-                {"cte"="23:59:60.999999999"               "events"=["t 23:59:60.999999999"]}
+                {"cte"="00:00:00.000000000"               "events"=["t=0:00:00"]  "nocteoutput"=true}
+                {"cte"="00:00:00.000000001"               "events"=["t=0:00:00.000000001"]}
+                {"cte"="00:00:00.00000001"                "events"=["t=0:00:00.00000001"]}
+                {"cte"="00:00:00.0000001"                 "events"=["t=0:00:00.0000001"]}
+                {"cte"="00:00:00.000001"                  "events"=["t=0:00:00.000001"]}
+                {"cte"="00:00:00.00001"                   "events"=["t=0:00:00.00001"]}
+                {"cte"="00:00:00.0001"                    "events"=["t=0:00:00.0001"]}
+                {"cte"="00:00:00.001"                     "events"=["t=0:00:00.001"]}
+                {"cte"="00:00:00.01"                      "events"=["t=0:00:00.01"]}
+                {"cte"="00:00:00.1"                       "events"=["t=0:00:00.1"]}
+                {"cte"="00:00:00.100000000"               "events"=["t=0:00:00.1"] "nocteoutput"=true}
+                {"cte"="23:59:60.000000000"               "events"=["t=23:59:60"] "nocteoutput"=true}
+                {"cte"="23:59:60.999999999"               "events"=["t=23:59:60.999999999"]}
 
-                {"cte"="23:59:59.101"                     "events"=["t 23:59:59.101"]}
+                {"cte"="23:59:59.101"                     "events"=["t=23:59:59.101"]}
 
-                {"cte"="10:00:01.93/America/Los_Angeles"  "events"=["t 10:00:01.93/America/Los_Angeles"]}
+                {"cte"="10:00:01.93/America/Los_Angeles"  "events"=["t=10:00:01.93/America/Los_Angeles"]}
                 {
                     "cte" = "20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
-                    "events" = ["t 20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
+                    "events" = ["t=20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
                 }
 
-                {"cte"="10:00:01.93/0.00/0.00"            "events"=["t 10:00:01.93/0/0"]}
-                {"cte"="10:00:01.93/89.92/1.10"           "events"=["t 10:00:01.93/89.92/1.10"]}
-                {"cte"="10:00:01.93/0/0"                  "events"=["t 10:00:01.93/0/0"] "nocteoutput"=true}
-                {"cte"="10:00:01.93/00/00.00"             "events"=["t 10:00:01.93/0/0"] "nocteoutput"=true}
-                {"cte"="10:00:01.93/1/1"                  "events"=["t 10:00:01.93/1/1"] "nocteoutput"=true}
-                {"cte"="10:00:01.93/90/-180"              "events"=["t 10:00:01.93/90/-180"] "nocteoutput"=true}
-                {"cte"="10:00:01.93/-90/180"              "events"=["t 10:00:01.93/-90/180"] "nocteoutput"=true}
-                {"cte"="10:00:01.93+0000"                 "events"=["t 10:00:01.93"] "nocteoutput"=true}
-                {"cte"="10:00:01.93+0001"                 "events"=["t 10:00:01.93+0001"]}
-                {"cte"="10:00:01.93-0030"                 "events"=["t 10:00:01.93-0030"]}
-                {"cte"="10:00:01.93-1259"                 "events"=["t 10:00:01.93-1259"]}
-                {"cte"="10:00:01.93-2359"                 "events"=["t 10:00:01.93-2359"]}
-                {"cte"="10:00:01.93+2359"                 "events"=["t 10:00:01.93+2359"]}
+                {"cte"="10:00:01.93/0.00/0.00"            "events"=["t=10:00:01.93/0/0"]}
+                {"cte"="10:00:01.93/89.92/1.10"           "events"=["t=10:00:01.93/89.92/1.10"]}
+                {"cte"="10:00:01.93/0/0"                  "events"=["t=10:00:01.93/0/0"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/00/00.00"             "events"=["t=10:00:01.93/0/0"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/1/1"                  "events"=["t=10:00:01.93/1/1"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/90/-180"              "events"=["t=10:00:01.93/90/-180"] "nocteoutput"=true}
+                {"cte"="10:00:01.93/-90/180"              "events"=["t=10:00:01.93/-90/180"] "nocteoutput"=true}
+                {"cte"="10:00:01.93+0000"                 "events"=["t=10:00:01.93"] "nocteoutput"=true}
+                {"cte"="10:00:01.93+0001"                 "events"=["t=10:00:01.93+0001"]}
+                {"cte"="10:00:01.93-0030"                 "events"=["t=10:00:01.93-0030"]}
+                {"cte"="10:00:01.93-1259"                 "events"=["t=10:00:01.93-1259"]}
+                {"cte"="10:00:01.93-2359"                 "events"=["t=10:00:01.93-2359"]}
+                {"cte"="10:00:01.93+2359"                 "events"=["t=10:00:01.93+2359"]}
             ]
             "mustFail" = [
                 {"cte"="012:00:00"}           // Too many hour digits
@@ -615,24 +615,24 @@ c0
         {
             "name" = "Timestamp"
             "mustSucceed" = [
-                {"cte"="10233-01-01/09:31:44.901554"  "events"=["t 10233-01-01/09:31:44.901554/Z"]}
-                {"cte"="2000-01-01/09:31:44.9+0100"   "events"=["t 2000-01-01/09:31:44.9+0100"]}
+                {"cte"="10233-01-01/09:31:44.901554"  "events"=["t=10233-01-01/09:31:44.901554/Z"]}
+                {"cte"="2000-01-01/09:31:44.9+0100"   "events"=["t=2000-01-01/09:31:44.9+0100"]}
                 {
-                    "events"=["t 2000-01-01/09:31:44.901554212/Europe/Prague"]
+                    "events"=["t=2000-01-01/09:31:44.901554212/Europe/Prague"]
                     "cte"="2000-01-01/09:31:44.901554212/Europe/Prague"
                 }
-                {"cte"="2000-01-01/9:31:44.901554/Z"          "events"=["t 2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
-                {"cte"="02000-01-01/9:31:44.901554/Z"         "events"=["t 2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
-                {"cte"="-02000-01-01/9:31:44.901554/Z"        "events"=["t -2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
-                {"cte"="2020-01-15/13:41:00.000599"           "events"=["t 2020-01-15/13:41:00.000599"]}
-                {"cte"="2020-01-15/10:00:01.93/89.92/1.10"    "events"=["t 2020-01-15/10:00:01.93/89.92/1.10"]}
-                {"cte"="2020-01-15/10:00:01.93/89.92/-1.10"   "events"=["t 2020-01-15/10:00:01.93/89.92/-1.10"]}
-                {"cte"="2020-01-15/10:00:01.93/-89.92/1.10"   "events"=["t 2020-01-15/10:00:01.93/-89.92/1.10"]}
-                {"cte"="2020-01-15/10:00:01.93/-89.92/-1.10"  "events"=["t 2020-01-15/10:00:01.93/-89.92/-1.10"]}
-                {"cte"="2000-01-01/9:31:44.9+0100"            "events"=["t 2000-01-01/9:31:44.9+0100"] "nocteoutput"=true}
+                {"cte"="2000-01-01/9:31:44.901554/Z"          "events"=["t=2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
+                {"cte"="02000-01-01/9:31:44.901554/Z"         "events"=["t=2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
+                {"cte"="-02000-01-01/9:31:44.901554/Z"        "events"=["t=-2000-01-01/9:31:44.901554/Z"]  "nocteoutput"=true}
+                {"cte"="2020-01-15/13:41:00.000599"           "events"=["t=2020-01-15/13:41:00.000599"]}
+                {"cte"="2020-01-15/10:00:01.93/89.92/1.10"    "events"=["t=2020-01-15/10:00:01.93/89.92/1.10"]}
+                {"cte"="2020-01-15/10:00:01.93/89.92/-1.10"   "events"=["t=2020-01-15/10:00:01.93/89.92/-1.10"]}
+                {"cte"="2020-01-15/10:00:01.93/-89.92/1.10"   "events"=["t=2020-01-15/10:00:01.93/-89.92/1.10"]}
+                {"cte"="2020-01-15/10:00:01.93/-89.92/-1.10"  "events"=["t=2020-01-15/10:00:01.93/-89.92/-1.10"]}
+                {"cte"="2000-01-01/9:31:44.9+0100"            "events"=["t=2000-01-01/9:31:44.9+0100"] "nocteoutput"=true}
                 {
                     "cte"="2000-01-01/9:31:44.901554212/Europe/Prague"
-                    "events"=["t 2000-01-01/9:31:44.901554212/Europe/Prague"]
+                    "events"=["t=2000-01-01/9:31:44.901554212/Europe/Prague"]
                     "nocteoutput"=true
                 }
             ]
@@ -662,8 +662,8 @@ c0
         {
             "name" = "Marker"
             "mustSucceed" = [
-                {"cte"="&1:2"      "events"=["mark 1" "n 2"]}
-                {"cte"="&1:\"x\""  "events"=["mark 1" "s x"]}
+                {"cte"="&1:2"      "events"=["mark=1" "n=2"]}
+                {"cte"="&1:\"x\""  "events"=["mark=1" "s=x"]}
             ]
             "mustFail" = [
                 {"cte"="& 1:2"}    // Bad whitespace
@@ -686,8 +686,7 @@ c0
             "name" = "Reference"
             "mustSucceed" = [
                 {
-                    "debug"=true
-                    "events" = ["l" "mark x" "n 2" "refl x" "e"]
+                    "events" = ["l" "mark=x" "n=2" "refl=x" "e"]
                     "cte" = "\.^
 [
     &x:2
@@ -695,7 +694,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["l" "refl x" "mark x" "n 2" "e"]
+                    "events" = ["l" "refl=x" "mark=x" "n=2" "e"]
                     "cte" = "\.^
 [
     $x
@@ -703,7 +702,7 @@ c0
 ]^"
                 }
                 {
-                    "events" = ["m" "s My key" "mark mykey" "s Blah blah" "refl mykey" "n 1000" "e"]
+                    "events" = ["m" "s=My key" "mark=mykey" "s=Blah blah" "refl=mykey" "n=1000" "e"]
                     "cte" = "\.^
 {
     "My key" = &mykey:"Blah blah"
@@ -711,7 +710,7 @@ c0
 }^"
                 }
                 {
-                    "events" = ["m" "refl mykey" "n 1000" "s My key" "mark mykey" "s Blah blah" "e"]
+                    "events" = ["m" "refl=mykey" "n=1000" "s=My key" "mark=mykey" "s=Blah blah" "e"]
                     "cte" = "\.^
 {
     $mykey = 1000

@@ -1,19 +1,26 @@
 c0
-// Test cases from raised issues
 {
-    "ceTests" = [
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
 
         // ====================================================================
 
         {
             "name" = "Comments in arrays"
             "issue link" = @"https://github.com/kstenerud/concise-encoding/issues/36"
-            "cte" = "\.%%%%
-c0 |u8x /* foo */ 1 2 3|
-            %%%%"
-            "events" = ["v 0" "bau8" "cm  foo " "acl 3" "adu8 1 2 3"]
-            "from"   = ["t"]
-            "to"     = ["e"]
+            "mustSucceed" = [
+                {
+                    "nocteoutput" = true
+                    "cte" = "\.%%%%
+|u8x /* foo */ 1 2 3|
+%%%%"
+                    "events" = ["bau8" "cm= foo " "acl=3" "adu8=1 2 3"]
+                }
+            ]
         }
 
         // ====================================================================
@@ -21,12 +28,15 @@ c0 |u8x /* foo */ 1 2 3|
         {
             "name" = "Whitespace before an edge closure"
             "issue link" = @"https://github.com/kstenerud/enctool/issues/27"
-            "cte" = "\.%%%%
-c0 @(@"homer" @"married-to" @"marge" )
-            %%%%"
-            "events" = ["v 0" "edge" "rid homer" "rid married-to" "rid marge" "e"]
-            "from"   = ["t"]
-            "to"     = ["e"]
+            "mustSucceed" = [
+                {
+                    "nocteoutput" = true
+                    "cte" = "\.%%%%
+@(@"homer" @"married-to" @"marge" )
+%%%%"
+                    "events" = ["edge" "rid=homer" "rid=married-to" "rid=marge" "e"]
+                }
+            ]
         }
 
         // ====================================================================
@@ -34,26 +44,28 @@ c0 @(@"homer" @"married-to" @"marge" )
         {
             "name" = "Date issues"
             "issue link" = @"https://github.com/kstenerud/enctool/issues/10"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "nocteoutput" = true
+                    "cte" = "\.%%%%
 [
     17:41:03/-13.54/-172.36
     9:04:21
     0:15:00
     0:15:00/-13.54/-172.36
 ]
-            %%%%"
-            "cbe" = |u8x 81 00 7a 9a 19 d2 f8 6d f5 ac bc 9a a8 88 f4 9a 00 1e f0 9a 01 1e f0 6d f5 ac bc 7b|
-            "events" = [
-                            "v 0" "l"
-                                "t 17:41:03/-13.54/-172.36"
-                                "t 9:04:21"
-                                "t 0:15:00"
-                                "t 0:15:00/-13.54/-172.36"
-                            "e"
-                        ]
-            "from"   = ["t" "e"]
-            "to"     = ["b" "e"]
+%%%%"
+                    "cbe" = |u8x 7a 9a 19 d2 f8 6d f5 ac bc 9a a8 88 f4 9a 00 1e f0 9a 01 1e f0 6d f5 ac bc 7b|
+                    "events" = [
+                        "l"
+                            "t=17:41:03/-13.54/-172.36"
+                            "t=9:04:21"
+                            "t=0:15:00"
+                            "t=0:15:00/-13.54/-172.36"
+                        "e"
+                    ]
+                }
+            ]
         }
 
         // ====================================================================
@@ -61,11 +73,13 @@ c0
         {
             "name" = "Date issues pt 2"
             "issue link" = @"https://github.com/kstenerud/enctool/issues/10"
-            "cte" = "\.%%%%
-c0 0:hello world
-            %%%%"
-            "from"   = ["t"]
-            "mustFail" = true
+            "mustFail" = [
+                {
+                    "cte" = "\.%%%%
+0:hello world
+%%%%"
+                }
+            ]
         }
 
         // ====================================================================
@@ -73,14 +87,15 @@ c0 0:hello world
         {
             "name" = "-0"
             "issue link" = @"https://github.com/kstenerud/enctool/issues/22"
-            "cte" = "\.%%%%
-c0
+            "mustSucceed" = [
+                {
+                    "cte" = "\.%%%%
 -0
-            %%%%"
-            "cbe" = |u8x 81 00 69 00|
-            "events" = ["v 0" "n -0"]
-            "from"   = ["t" "b" "e"]
-            "to"     = ["t" "b" "e"]
+%%%%"
+                    "cbe" = |u8x 69 00|
+                    "events" = ["n=-0"]
+                }
+            ]
         }
 
         // ====================================================================

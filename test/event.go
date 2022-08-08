@@ -86,29 +86,29 @@ func ConstructEventWithValue(shortName string, value interface{}, invocation Eve
 		case float32:
 			asInt := int(v)
 			if float32(asInt) == v {
-				comparable = fmt.Sprintf("%v %v", shortName, asInt)
+				comparable = fmt.Sprintf("%v=%v", shortName, asInt)
 			} else {
-				comparable = fmt.Sprintf("%v %x", shortName, v)
+				comparable = fmt.Sprintf("%v=%x", shortName, v)
 			}
 		case float64:
 			asInt := int(v)
 			if float64(asInt) == v {
-				comparable = fmt.Sprintf("%v %v", shortName, asInt)
+				comparable = fmt.Sprintf("%v=%v", shortName, asInt)
 			} else {
-				comparable = fmt.Sprintf("%v %x", shortName, v)
+				comparable = fmt.Sprintf("%v=%x", shortName, v)
 			}
 		case *big.Float:
 			if v.IsInt() {
 				bi := &big.Int{}
 				v.Int(bi)
-				comparable = fmt.Sprintf("%v %v", shortName, bi)
+				comparable = fmt.Sprintf("%v=%v", shortName, bi)
 			} else {
-				comparable = fmt.Sprintf("%v %v", shortName, v.Text('x', -1))
+				comparable = fmt.Sprintf("%v=%v", shortName, v.Text('x', -1))
 			}
 		default:
-			comparable = fmt.Sprintf("%v %v", shortName, value)
+			comparable = fmt.Sprintf("%v=%v", shortName, value)
 		}
-		// stringified = fmt.Sprintf("%v %v", shortName, stringifyParam(value))
+		// stringified = fmt.Sprintf("%v=%v", shortName, stringifyParam(value))
 		stringified = comparable
 	}
 
@@ -131,7 +131,7 @@ func (_this *EventUID) String() string {
 	if _this.value == NoValue {
 		return _this.shortName
 	}
-	return fmt.Sprintf("%v %v", _this.shortName, stringifyUID(_this.value.([]byte)))
+	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUID(_this.value.([]byte)))
 }
 func (_this *EventUID) IsEquivalentTo(that Event) bool {
 	return _this.Comparable() == that.Comparable()
@@ -141,14 +141,14 @@ func (_this *EventArrayUID) String() string {
 	if _this.value == NoValue {
 		return _this.shortName
 	}
-	return fmt.Sprintf("%v %v", _this.shortName, stringifyUIDArray(_this.value.([][]byte)))
+	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUIDArray(_this.value.([][]byte)))
 }
 
 func (_this *EventArrayDataUID) String() string {
 	if _this.value == NoValue {
 		return _this.shortName
 	}
-	return fmt.Sprintf("%v %v", _this.shortName, stringifyUIDArray(_this.value.([][]byte)))
+	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUIDArray(_this.value.([][]byte)))
 }
 
 func (_this *EventArrayDataText) IsEquivalentTo(that Event) bool {
@@ -277,13 +277,13 @@ func (_this *EventNumeric) String() string {
 	if v, ok := _this.value.(compact_float.DFloat); ok {
 		switch v {
 		case compact_float.Infinity():
-			return fmt.Sprintf("%v inf", _this.shortName)
+			return fmt.Sprintf("%v=inf", _this.shortName)
 		case compact_float.NegativeInfinity():
-			return fmt.Sprintf("%v -inf", _this.shortName)
+			return fmt.Sprintf("%v=-inf", _this.shortName)
 		case compact_float.QuietNaN():
-			return fmt.Sprintf("%v nan", _this.shortName)
+			return fmt.Sprintf("%v=nan", _this.shortName)
 		case compact_float.SignalingNaN():
-			return fmt.Sprintf("%v snan", _this.shortName)
+			return fmt.Sprintf("%v=snan", _this.shortName)
 		}
 	}
 	return _this.EventWithValue.String()

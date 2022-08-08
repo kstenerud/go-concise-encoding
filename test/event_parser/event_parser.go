@@ -693,22 +693,10 @@ func (_this *eventListener) ExitEventBoolean(ctx *parser.EventBooleanContext) {
 	_this.setEvents(test.B(ttype == parser.CEEventLexerTRUE))
 }
 func (_this *eventListener) ExitEventCommentMultiline(ctx *parser.EventCommentMultilineContext) {
-	str := getTokenText(ctx.GetChild(0))
-	if len(str) < 3 {
-		str = ""
-	} else {
-		str = str[3:]
-	}
-	_this.setEvents(test.CM(str))
+	_this.setEvents(test.CM(getStringArg(ctx.GetChildren())))
 }
 func (_this *eventListener) ExitEventCommentSingleLine(ctx *parser.EventCommentSingleLineContext) {
-	str := getTokenText(ctx.GetChild(0))
-	if len(str) < 3 {
-		str = ""
-	} else {
-		str = str[3:]
-	}
-	_this.setEvents(test.CS(str))
+	_this.setEvents(test.CS(getStringArg(ctx.GetChildren())))
 }
 func (_this *eventListener) ExitEventCustomBinary(ctx *parser.EventCustomBinaryContext) {
 	_this.setEvents(test.CB(parseArrayElementsUint8X(ctx.GetChildren())))

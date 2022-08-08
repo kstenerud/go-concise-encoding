@@ -1,7 +1,7 @@
 c0
 {
     "type" = {
-        "identifier" = "ce test"
+        "identifier" = "ce-test"
         "version" = 1
     }
     "ceversion" = 0
@@ -13,10 +13,10 @@ c0
             "name" = "List"
             "mustSucceed" = [
                 {"cte"="[]"  "events"=["l" "e"]}
-                {"cte"="[1]"  "events"=["l" "n 1" "e"] "nocteoutput"=true}
+                {"cte"="[1]"  "events"=["l" "n=1" "e"] "nocteoutput"=true}
                 {
-                    "events" = ["l" "null" "b false" "n -1" "n 1.5e20" "n nan" "n snan" "n inf" "n -inf"
-                                "s string" "rid https://concise-encoding.org" "l" "e" "m" "e" "e"]
+                    "events" = ["l" "null" "b=false" "n=-1" "n=1.5e20" "n=nan" "n=snan" "n=inf" "n=-inf"
+                                "s=string" "rid=https://concise-encoding.org" "l" "e" "m" "e" "e"]
                     "cte"="\.^
 [
     null
@@ -47,22 +47,22 @@ c0
             "name" = "Map"
             "mustSucceed" = [
                 {"cte"="{}"  "events"=["m" "e"]}
-                {"cte"="{\"a\"=1}"  "events"=["m" "s a" "n 1" "e"] "nocteoutput"=true}
+                {"cte"="{\"a\"=1}"  "events"=["m" "s=a" "n=1" "e"] "nocteoutput"=true}
                 {
                     "events" = ["m"
-                                    "s string"              "null"
-                                    "n 10"                  "b false"
-                                    "rid https://x.org"     "n -1"
-                                    "n 1.6444453466e1000"   "n 1.5e20"
-                                    "b true"                "n nan"
-                                    "t 2050-12-31"          "n snan"
-                                    "t 2123-01-01/12:04:54" "n inf"
-                                    "n 1"                   "n -inf"
-                                    "n 2"                   "s string"
-                                    "n 3"                   "rid https://concise-encoding.org"
-                                    "n 4"                   "l" "e"
-                                    "n 5"                   "m" "e"
-                                    "uid cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884"  "l" "e"
+                                    "s=string"              "null"
+                                    "n=10"                  "b=false"
+                                    "rid=https://x.org"     "n=-1"
+                                    "n=1.6444453466e1000"   "n=1.5e20"
+                                    "b=true"                "n=nan"
+                                    "t=2050-12-31"          "n=snan"
+                                    "t=2123-01-01/12:04:54" "n=inf"
+                                    "n=1"                   "n=-inf"
+                                    "n=2"                   "s=string"
+                                    "n=3"                   "rid=https://concise-encoding.org"
+                                    "n=4"                   "l" "e"
+                                    "n=5"                   "m" "e"
+                                    "uid=cbf49eb8-c24d-4a4a-bebc-cd2a1ae4d884"  "l" "e"
                                 "e"]
                     "cte"="\.^
 {
@@ -120,13 +120,13 @@ c0
             "name" = "Struct"
             "mustSucceed" = [
                 {
-                    "events"=["st a" "e" "si a" "e"]
+                    "events"=["st=a" "e" "si=a" "e"]
                     "cte"="\.^
 @a<>
 @a()^"
                 }
                 {
-                    "events"=["st a" "n 1" "e" "si a" "s x" "e"]
+                    "events"=["st=a" "n=1" "e" "si=a" "s=x" "e"]
                     "cte"="\.^
 @a<
     1
@@ -159,20 +159,20 @@ c0
         {
             "name" = "Node"
             "mustSucceed" = [
-                {"cte"="(1\n)" "events"=["node" "n 1" "e"]}
-                {"cte"="(1)"  "events"=["node" "n 1" "e"] "nocteoutput"=true}
+                {"cte"="(1\n)" "events"=["node" "n=1" "e"]}
+                {"cte"="(1)"  "events"=["node" "n=1" "e"] "nocteoutput"=true}
                 {
                     "events" = ["node" "null"
-                                    "b false"
-                                    "n -1"
-                                    "node" "n 1.5e20"
-                                        "n nan"
-                                        "n snan"
+                                    "b=false"
+                                    "n=-1"
+                                    "node" "n=1.5e20"
+                                        "n=nan"
+                                        "n=snan"
                                     "e"
-                                    "node" "n inf"
-                                        "n -inf"
-                                        "s string"
-                                        "rid https://concise-encoding.org"
+                                    "node" "n=inf"
+                                        "n=-inf"
+                                        "s=string"
+                                        "rid=https://concise-encoding.org"
                                     "e"
                                     "node" "l" "e"
                                         "m" "e"
@@ -211,7 +211,7 @@ c0
             "name" = "Edge"
             "mustSucceed" = [
                 {
-                    "events"=["edge" "n 1" "n 2" "n 3" "e"]
+                    "events"=["edge" "n=1" "n=2" "n=3" "e"]
                     "cte"="\.^
 @(
     1
@@ -219,7 +219,7 @@ c0
     3
 )^"}
                 {
-                    "events"=["edge" "n nan" "s x" "t 2001-08-14" "e"]
+                    "events"=["edge" "n=nan" "s=x" "t=2001-08-14" "e"]
                     "cte"="\.^
 @(
     nan
@@ -227,7 +227,7 @@ c0
     2001-08-14
 )^"}
                 {
-                    "events"=["edge" "n 1" "n 2" "n 3" "e"]
+                    "events"=["edge" "n=1" "n=2" "n=3" "e"]
                     "cte"="\.^
 @(
     1
@@ -235,7 +235,7 @@ c0
     3
 )^" }
                 {
-                    "events"=["edge" "n nan" "s x" "t 2001-08-14" "e"]
+                    "events"=["edge" "n=nan" "s=x" "t=2001-08-14" "e"]
                     "cte"="\.^
 @(
     nan
@@ -243,7 +243,7 @@ c0
     2001-08-14
 )^"}
                 {
-                    "events"=["edge" "rid https://x.y" "n 1.5" "l" "n 1" "e" "e"]
+                    "events"=["edge" "rid=https://x.y" "n=1.5" "l" "n=1" "e" "e"]
                     "cte"="\.^
 @(
     @"https://x.y"
