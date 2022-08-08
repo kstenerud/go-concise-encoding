@@ -219,14 +219,6 @@ func NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset 
 	return t
 }
 
-func AsGoTime(t compact_time.Time) time.Time {
-	gt, err := t.AsGoTime()
-	if err != nil {
-		panic(err)
-	}
-	return gt
-}
-
 func AsCompactTime(t time.Time) compact_time.Time {
 	ct := compact_time.AsCompactTime(t)
 	err := ct.Validate()
@@ -275,24 +267,6 @@ func AssertPanics(t *testing.T, name interface{}, function func()) bool {
 }
 
 // ----------------------------------------------------------------------------
-// Utilities
-// ----------------------------------------------------------------------------
-
-func BytesToString(bytes []byte) string {
-	var builder strings.Builder
-	builder.WriteByte('[')
-	for i, c := range bytes {
-		if i > 0 {
-			builder.WriteString(", ")
-		}
-		builder.WriteByte(hexChar(c >> 4))
-		builder.WriteByte(hexChar(c & 15))
-	}
-	builder.WriteByte(']')
-	return builder.String()
-}
-
-// ----------------------------------------------------------------------------
 // Generators
 // ----------------------------------------------------------------------------
 
@@ -310,28 +284,12 @@ func GenerateBytes(length int, startIndex int) []byte {
 	return []byte(GenerateString(length, startIndex))
 }
 
-func GenerateArrayElements(elemSize, length int) []byte {
-	var result []byte
-	for i := 0; i < length; i++ {
-		for e := 0; e < elemSize; e++ {
-			result = append(result, 1)
-		}
-	}
-	return result
-}
-
 func InvokeEventsAsCompleteDocument(receiver events.DataEventReceiver, events ...Event) {
 	BD().Invoke(receiver)
 	for _, event := range events {
 		event.Invoke(receiver)
 	}
 	ED().Invoke(receiver)
-}
-
-func CloneBytes(bytes []byte) []byte {
-	bytesCopy := make([]byte, len(bytes))
-	copy(bytesCopy, bytes)
-	return bytesCopy
 }
 
 // ----------------------------------------------------------------------------
@@ -422,80 +380,6 @@ var allEvents = Events{
 	EvBAU16, EvAU32, EvBAU32, EvAU64, EvBAU64, EvAI8, EvBAI8, EvAI16, EvBAI16,
 	EvAI32, EvBAI32, EvAI64, EvBAI64, EvAF16, EvBAF16, EvAF32, EvBAF32, EvAF64,
 	EvBAF64, EvAUU, EvBAUU, EvBMEDIA,
-}
-
-func FilterAllEvents(events Events, filter func(Event) Events) Events {
-	filtered := Events{}
-	for _, event := range events {
-		filtered = append(filtered, filter(event)...)
-	}
-	return filtered
-}
-
-func FilterCTE(event Event) Events {
-	switch event.(type) {
-	case *EventPadding:
-		return Events{}
-	case *EventBeginArrayBit, *EventBeginArrayFloat16,
-		*EventBeginArrayFloat32, *EventBeginArrayFloat64,
-		*EventBeginArrayInt8, *EventBeginArrayInt16, *EventBeginArrayInt32,
-		*EventBeginArrayInt64, *EventBeginArrayUint8, *EventBeginArrayUint16,
-		*EventBeginArrayUint32, *EventBeginArrayUint64, *EventBeginArrayUID,
-		*EventBeginCustomBinary, *EventBeginCustomText, *EventBeginResourceID,
-		*EventBeginReferenceRemote, *EventBeginString:
-		return Events{S("x")}
-	case *EventArrayChunkMore, *EventArrayChunkLast, *EventArrayDataBit,
-		*EventArrayDataFloat16, *EventArrayDataFloat32, *EventArrayDataFloat64,
-		*EventArrayDataInt16, *EventArrayDataInt32, *EventArrayDataInt64, *EventArrayDataInt8,
-		*EventArrayDataText, *EventArrayDataUID, *EventArrayDataUint16,
-		*EventArrayDataUint32, *EventArrayDataUint64, *EventArrayDataUint8:
-		return Events{}
-	default:
-		return Events{event}
-	}
-}
-
-func FilterContainer(event Event) Events {
-	switch event.(type) {
-	case *EventEnd:
-		return Events{}
-	default:
-		return Events{event}
-	}
-}
-
-func FilterKey(event Event) Events {
-	switch event.(type) {
-	case *EventEnd, *EventReferenceLocal:
-		return Events{}
-	default:
-		return Events{event}
-	}
-}
-
-func FilterMarker(event Event) Events {
-	switch event.(type) {
-	case *EventCommentSingleLine, *EventCommentMultiline, *EventMarker, *EventReferenceLocal:
-		return Events{}
-	default:
-		return Events{event}
-	}
-}
-
-func FilterEventsForCTE(events Events) Events {
-	return FilterAllEvents(events, FilterCTE)
-}
-
-func FilterEventsForMarker(events Events) Events {
-	return FilterAllEvents(events, FilterMarker)
-}
-
-func FilterEventsForContainer(events Events) Events {
-	return FilterAllEvents(events, FilterContainer)
-}
-
-func FilterEventsForKey(events Events) Events {
-	return FilterAllEvents(events, FilterKey)
 }
 
 func ComplementaryEvents(events Events) Events {
@@ -626,7 +510,7 @@ var basicCompletions = map[reflect.Type]Events{
 	reflect.TypeOf(BAF16()):  {ACL(1), ADF16([]float32{0})},
 	reflect.TypeOf(BAF32()):  {ACL(1), ADF32([]float32{0})},
 	reflect.TypeOf(BAF64()):  {ACL(1), ADF64([]float64{0})},
-	reflect.TypeOf(BAU()):    {ACL(1), ADU([][]byte{[]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})},
+	reflect.TypeOf(BAU()):    {ACL(1), ADU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})},
 	reflect.TypeOf(BMEDIA()): {ACL(1), ADT("a"), ACL(0)},
 }
 
@@ -1010,14 +894,6 @@ func (_this *TestingOuterStruct) GetRepresentativeEvents(includeFakes bool) (eve
 func NewTestingOuterStruct(baseValue int) *TestingOuterStruct {
 	_this := new(TestingOuterStruct)
 	_this.Init(baseValue)
-	return _this
-}
-
-func NewBlankTestingOuterStruct() *TestingOuterStruct {
-	_this := new(TestingOuterStruct)
-	_this.CTime.Year = 1
-	_this.CTime.Month = 1
-	_this.CTime.Day = 1
 	return _this
 }
 

@@ -90,10 +90,6 @@ var (
 	EvV = test.EvV
 )
 
-func ComplementaryEvents(events test.Events) test.Events {
-	return test.ComplementaryEvents(events)
-}
-
 func AB(v []bool) test.Event           { return test.AB(v) }
 func ACL(l uint64) test.Event          { return test.ACL(l) }
 func ACM(l uint64) test.Event          { return test.ACM(l) }
@@ -172,7 +168,7 @@ func V(v uint64) test.Event            { return test.V(v) }
 
 var DebugPrintEvents = false
 
-func InvokeEvents(receiver events.DataEventReceiver, events ...test.Event) {
+func invokeEvents(receiver events.DataEventReceiver, events ...test.Event) {
 	if DebugPrintEvents {
 		receiver = test.NewEventPrinter(receiver)
 	}
@@ -190,7 +186,7 @@ func assertEvents(t *testing.T, allEvents ...test.Event) {
 
 func assertEventsSucceed(t *testing.T, receiver events.DataEventReceiver, events ...test.Event) {
 	test.AssertNoPanic(t, events, func() {
-		InvokeEvents(receiver, events...)
+		invokeEvents(receiver, events...)
 	})
 }
 
@@ -198,7 +194,7 @@ func assertEventStreamsSucceed(t *testing.T, eventStreams []test.Events) {
 	for _, stream := range eventStreams {
 		rules := NewRules(events.NewNullEventReceiver(), nil)
 		test.AssertNoPanic(t, stream, func() {
-			InvokeEvents(rules, stream...)
+			invokeEvents(rules, stream...)
 		})
 	}
 }
@@ -207,14 +203,14 @@ func assertEventStreamsFail(t *testing.T, eventStreams []test.Events) {
 	for _, stream := range eventStreams {
 		rules := NewRules(events.NewNullEventReceiver(), nil)
 		test.AssertPanics(t, stream, func() {
-			InvokeEvents(rules, stream...)
+			invokeEvents(rules, stream...)
 		})
 	}
 }
 
 func assertEventsFail(t *testing.T, receiver events.DataEventReceiver, events ...test.Event) {
 	test.AssertPanics(t, events, func() {
-		InvokeEvents(receiver, events...)
+		invokeEvents(receiver, events...)
 	})
 }
 
