@@ -27,5 +27,5 @@ import (
 )
 
 func TestCE(t *testing.T) {
-	test_runner.RunCEUnitTests(t, "bugreport.cte")
+	test_runner.RunTests(t, "bugreport.cte")
 }

@@ -73,6 +73,19 @@ func reportTestFailures(errors []error) {
 	}
 }
 
+func wrapPanic(recovery interface{}, format string, args ...interface{}) {
+	if recovery != nil {
+		message := fmt.Sprintf(format, args...)
+
+		switch e := recovery.(type) {
+		case error:
+			panic(fmt.Errorf("%v: %w", message, e))
+		default:
+			panic(fmt.Errorf("%v: %v", message, e))
+		}
+	}
+}
+
 func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error) {
 	defer func() { wrapPanic(recover(), "while loading test suite from %v", testDescriptorFile) }()
 
@@ -81,7 +94,6 @@ func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error)
 		panic(fmt.Errorf("unexpected error opening test suite file %v: %w", testDescriptorFile, err))
 	}
 
-	// debug.DebugOptions.PassThroughPanics = true
 	loadedTest, err := ce.UnmarshalCTE(file, suite, nil)
 	if err != nil {
 		panic(fmt.Errorf("malformed unit test: Unexpected CTE decode error in test suite file %v: %w", testDescriptorFile, err))
