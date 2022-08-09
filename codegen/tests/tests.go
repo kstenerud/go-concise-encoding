@@ -87,8 +87,8 @@ func generateAntlrCode(projectDir string) {
 }
 
 func generateEvents(writer io.Writer) {
-	generateEventWithValue(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), ArrayBitsToBytes(safeArg))")
-	generateEventWithValue(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(ArrayBitsToBytes(safeArg))")
+	generateEventWithValue(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))")
+	generateEventWithValue(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(arrayBitsToBytes(safeArg))")
 
 	generateEventWithValue(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(safeArg)")
 	generateEventWithValue(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(safeArg)")
@@ -170,13 +170,13 @@ func generateEvents(writer io.Writer) {
 func generateArrayDataEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
 	generateEventWithValue(writer, "ArrayData"+eventName, functionName, argName, elementType,
-		fmt.Sprintf("receiver.OnArrayData(Array%vToBytes(safeArg))", eventName))
+		fmt.Sprintf("receiver.OnArrayData(array%vToBytes(safeArg))", eventName))
 }
 
 func generateArrayEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
 	generateEventWithValue(writer, "Array"+eventName, functionName, argName, "[]"+elementType,
-		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), Array%vToBytes(safeArg))", eventName, eventName))
+		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), array%vToBytes(safeArg))", eventName, eventName))
 }
 
 func generateStringArrayEvent(writer io.Writer, arrayType string, functionName string) {

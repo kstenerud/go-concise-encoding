@@ -1,4 +1,4 @@
-// Copyright 2019 Karl Stenerud
+// Copyright 2022 Karl Stenerud
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -181,31 +181,31 @@ func (_this *EventReceiver) OnArray(arrayType events.ArrayType, elementCount uin
 	case events.ArrayTypeCustomBinary:
 		_this.iterate(CB(value))
 	case events.ArrayTypeBit:
-		_this.iterate(AB(BytesToArrayBits(elementCount, value)))
+		_this.iterate(AB(bytesToArrayBits(elementCount, value)))
 	case events.ArrayTypeUint8:
 		_this.iterate(AU8(value))
 	case events.ArrayTypeUint16:
-		_this.iterate(AU16(BytesToArrayUint16(value)))
+		_this.iterate(AU16(bytesToArrayUint16(value)))
 	case events.ArrayTypeUint32:
-		_this.iterate(AU32(BytesToArrayUint32(value)))
+		_this.iterate(AU32(bytesToArrayUint32(value)))
 	case events.ArrayTypeUint64:
-		_this.iterate(AU64(BytesToArrayUint64(value)))
+		_this.iterate(AU64(bytesToArrayUint64(value)))
 	case events.ArrayTypeInt8:
-		_this.iterate(AI8(BytesToArrayInt8(value)))
+		_this.iterate(AI8(bytesToArrayInt8(value)))
 	case events.ArrayTypeInt16:
-		_this.iterate(AI16(BytesToArrayInt16(value)))
+		_this.iterate(AI16(bytesToArrayInt16(value)))
 	case events.ArrayTypeInt32:
-		_this.iterate(AI32(BytesToArrayInt32(value)))
+		_this.iterate(AI32(bytesToArrayInt32(value)))
 	case events.ArrayTypeInt64:
-		_this.iterate(AI64(BytesToArrayInt64(value)))
+		_this.iterate(AI64(bytesToArrayInt64(value)))
 	case events.ArrayTypeFloat16:
-		_this.iterate(AF16(BytesToArrayFloat16(value)))
+		_this.iterate(AF16(bytesToArrayFloat16(value)))
 	case events.ArrayTypeFloat32:
-		_this.iterate(AF32(BytesToArrayFloat32(value)))
+		_this.iterate(AF32(bytesToArrayFloat32(value)))
 	case events.ArrayTypeFloat64:
-		_this.iterate(AF64(BytesToArrayFloat64(value)))
+		_this.iterate(AF64(bytesToArrayFloat64(value)))
 	case events.ArrayTypeUID:
-		_this.iterate(AU(BytesToArrayUID(value)))
+		_this.iterate(AU(bytesToArrayUID(value)))
 	default:
 		panic(fmt.Errorf("unknown array type %v", arrayType))
 	}
@@ -297,52 +297,52 @@ func (_this *EventReceiver) OnArrayData(data []byte) {
 		if elementCount > _this.arrayElementsRemaining {
 			elementCount = _this.arrayElementsRemaining
 		}
-		_this.iterate(ADB(BytesToArrayBits(elementCount, data)))
+		_this.iterate(ADB(bytesToArrayBits(elementCount, data)))
 		_this.arrayElementsRemaining -= elementCount
 	case events.ArrayTypeUint8:
 		_this.iterate(ADU8(data))
 		_this.arrayElementsRemaining -= uint64(len(data))
 	case events.ArrayTypeUint16:
-		elements := BytesToArrayUint16(data)
+		elements := bytesToArrayUint16(data)
 		_this.iterate(ADU16(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeUint32:
-		elements := BytesToArrayUint32(data)
+		elements := bytesToArrayUint32(data)
 		_this.iterate(ADU32(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeUint64:
-		elements := BytesToArrayUint64(data)
+		elements := bytesToArrayUint64(data)
 		_this.iterate(ADU64(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeInt8:
-		_this.iterate(ADI8(BytesToArrayInt8(data)))
+		_this.iterate(ADI8(bytesToArrayInt8(data)))
 		_this.arrayElementsRemaining -= uint64(len(data))
 	case events.ArrayTypeInt16:
-		elements := BytesToArrayInt16(data)
+		elements := bytesToArrayInt16(data)
 		_this.iterate(ADI16(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeInt32:
-		elements := BytesToArrayInt32(data)
+		elements := bytesToArrayInt32(data)
 		_this.iterate(ADI32(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeInt64:
-		elements := BytesToArrayInt64(data)
+		elements := bytesToArrayInt64(data)
 		_this.iterate(ADI64(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeFloat16:
-		elements := BytesToArrayFloat16(data)
+		elements := bytesToArrayFloat16(data)
 		_this.iterate(ADF16(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeFloat32:
-		elements := BytesToArrayFloat32(data)
+		elements := bytesToArrayFloat32(data)
 		_this.iterate(ADF32(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeFloat64:
-		elements := BytesToArrayFloat64(data)
+		elements := bytesToArrayFloat64(data)
 		_this.iterate(ADF64(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeUID:
-		elements := BytesToArrayUID(data)
+		elements := bytesToArrayUID(data)
 		_this.iterate(ADU(elements))
 		_this.arrayElementsRemaining -= uint64(len(elements))
 	case events.ArrayTypeMedia:

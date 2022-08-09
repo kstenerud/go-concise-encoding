@@ -42,7 +42,7 @@ func AB(elements []bool) Event {
 
 	return &EventArrayBit{
 		EventWithValue: ConstructEventWithValue("ab", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), ArrayBitsToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))
 		}),
 	}
 }
@@ -61,7 +61,7 @@ func ADB(elements []bool) Event {
 
 	return &EventArrayDataBit{
 		EventWithValue: ConstructEventWithValue("adb", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayBitsToBytes(safeArg))
+			receiver.OnArrayData(arrayBitsToBytes(safeArg))
 		}),
 	}
 }
@@ -313,7 +313,7 @@ func ADI8(elements []int8) Event {
 
 	return &EventArrayDataInt8{
 		EventWithValue: ConstructEventWithValue("adi8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt8ToBytes(safeArg))
+			receiver.OnArrayData(arrayInt8ToBytes(safeArg))
 		}),
 	}
 }
@@ -332,7 +332,7 @@ func ADI16(elements []int16) Event {
 
 	return &EventArrayDataInt16{
 		EventWithValue: ConstructEventWithValue("adi16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt16ToBytes(safeArg))
+			receiver.OnArrayData(arrayInt16ToBytes(safeArg))
 		}),
 	}
 }
@@ -351,7 +351,7 @@ func ADI32(elements []int32) Event {
 
 	return &EventArrayDataInt32{
 		EventWithValue: ConstructEventWithValue("adi32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt32ToBytes(safeArg))
+			receiver.OnArrayData(arrayInt32ToBytes(safeArg))
 		}),
 	}
 }
@@ -370,7 +370,7 @@ func ADI64(elements []int64) Event {
 
 	return &EventArrayDataInt64{
 		EventWithValue: ConstructEventWithValue("adi64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayInt64ToBytes(safeArg))
+			receiver.OnArrayData(arrayInt64ToBytes(safeArg))
 		}),
 	}
 }
@@ -389,7 +389,7 @@ func ADF16(elements []float32) Event {
 
 	return &EventArrayDataFloat16{
 		EventWithValue: ConstructEventWithValue("adf16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayFloat16ToBytes(safeArg))
+			receiver.OnArrayData(arrayFloat16ToBytes(safeArg))
 		}),
 	}
 }
@@ -408,7 +408,7 @@ func ADF32(elements []float32) Event {
 
 	return &EventArrayDataFloat32{
 		EventWithValue: ConstructEventWithValue("adf32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayFloat32ToBytes(safeArg))
+			receiver.OnArrayData(arrayFloat32ToBytes(safeArg))
 		}),
 	}
 }
@@ -427,7 +427,7 @@ func ADF64(elements []float64) Event {
 
 	return &EventArrayDataFloat64{
 		EventWithValue: ConstructEventWithValue("adf64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayFloat64ToBytes(safeArg))
+			receiver.OnArrayData(arrayFloat64ToBytes(safeArg))
 		}),
 	}
 }
@@ -446,7 +446,7 @@ func ADU8(elements []uint8) Event {
 
 	return &EventArrayDataUint8{
 		EventWithValue: ConstructEventWithValue("adu8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint8ToBytes(safeArg))
+			receiver.OnArrayData(arrayUint8ToBytes(safeArg))
 		}),
 	}
 }
@@ -465,7 +465,7 @@ func ADU16(elements []uint16) Event {
 
 	return &EventArrayDataUint16{
 		EventWithValue: ConstructEventWithValue("adu16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint16ToBytes(safeArg))
+			receiver.OnArrayData(arrayUint16ToBytes(safeArg))
 		}),
 	}
 }
@@ -484,7 +484,7 @@ func ADU32(elements []uint32) Event {
 
 	return &EventArrayDataUint32{
 		EventWithValue: ConstructEventWithValue("adu32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint32ToBytes(safeArg))
+			receiver.OnArrayData(arrayUint32ToBytes(safeArg))
 		}),
 	}
 }
@@ -503,7 +503,7 @@ func ADU64(elements []uint64) Event {
 
 	return &EventArrayDataUint64{
 		EventWithValue: ConstructEventWithValue("adu64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUint64ToBytes(safeArg))
+			receiver.OnArrayData(arrayUint64ToBytes(safeArg))
 		}),
 	}
 }
@@ -522,7 +522,7 @@ func ADU(elements [][]byte) Event {
 
 	return &EventArrayDataUID{
 		EventWithValue: ConstructEventWithValue("adu", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayUIDToBytes(safeArg))
+			receiver.OnArrayData(arrayUIDToBytes(safeArg))
 		}),
 	}
 }
@@ -535,7 +535,7 @@ func ADT(elements string) Event {
 
 	return &EventArrayDataText{
 		EventWithValue: ConstructEventWithValue("adt", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayData(ArrayTextToBytes(safeArg))
+			receiver.OnArrayData(arrayTextToBytes(safeArg))
 		}),
 	}
 }
@@ -554,7 +554,7 @@ func AI8(elements []int8) Event {
 
 	return &EventArrayInt8{
 		EventWithValue: ConstructEventWithValue("ai8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt8, uint64(len(safeArg)), ArrayInt8ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeInt8, uint64(len(safeArg)), arrayInt8ToBytes(safeArg))
 		}),
 	}
 }
@@ -573,7 +573,7 @@ func AI16(elements []int16) Event {
 
 	return &EventArrayInt16{
 		EventWithValue: ConstructEventWithValue("ai16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt16, uint64(len(safeArg)), ArrayInt16ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeInt16, uint64(len(safeArg)), arrayInt16ToBytes(safeArg))
 		}),
 	}
 }
@@ -592,7 +592,7 @@ func AI32(elements []int32) Event {
 
 	return &EventArrayInt32{
 		EventWithValue: ConstructEventWithValue("ai32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt32, uint64(len(safeArg)), ArrayInt32ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeInt32, uint64(len(safeArg)), arrayInt32ToBytes(safeArg))
 		}),
 	}
 }
@@ -611,7 +611,7 @@ func AI64(elements []int64) Event {
 
 	return &EventArrayInt64{
 		EventWithValue: ConstructEventWithValue("ai64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeInt64, uint64(len(safeArg)), ArrayInt64ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeInt64, uint64(len(safeArg)), arrayInt64ToBytes(safeArg))
 		}),
 	}
 }
@@ -630,7 +630,7 @@ func AF16(elements []float32) Event {
 
 	return &EventArrayFloat16{
 		EventWithValue: ConstructEventWithValue("af16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeFloat16, uint64(len(safeArg)), ArrayFloat16ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeFloat16, uint64(len(safeArg)), arrayFloat16ToBytes(safeArg))
 		}),
 	}
 }
@@ -649,7 +649,7 @@ func AF32(elements []float32) Event {
 
 	return &EventArrayFloat32{
 		EventWithValue: ConstructEventWithValue("af32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeFloat32, uint64(len(safeArg)), ArrayFloat32ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeFloat32, uint64(len(safeArg)), arrayFloat32ToBytes(safeArg))
 		}),
 	}
 }
@@ -668,7 +668,7 @@ func AF64(elements []float64) Event {
 
 	return &EventArrayFloat64{
 		EventWithValue: ConstructEventWithValue("af64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeFloat64, uint64(len(safeArg)), ArrayFloat64ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeFloat64, uint64(len(safeArg)), arrayFloat64ToBytes(safeArg))
 		}),
 	}
 }
@@ -687,7 +687,7 @@ func AU8(elements []uint8) Event {
 
 	return &EventArrayUint8{
 		EventWithValue: ConstructEventWithValue("au8", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint8, uint64(len(safeArg)), ArrayUint8ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeUint8, uint64(len(safeArg)), arrayUint8ToBytes(safeArg))
 		}),
 	}
 }
@@ -706,7 +706,7 @@ func AU16(elements []uint16) Event {
 
 	return &EventArrayUint16{
 		EventWithValue: ConstructEventWithValue("au16", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint16, uint64(len(safeArg)), ArrayUint16ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeUint16, uint64(len(safeArg)), arrayUint16ToBytes(safeArg))
 		}),
 	}
 }
@@ -725,7 +725,7 @@ func AU32(elements []uint32) Event {
 
 	return &EventArrayUint32{
 		EventWithValue: ConstructEventWithValue("au32", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint32, uint64(len(safeArg)), ArrayUint32ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeUint32, uint64(len(safeArg)), arrayUint32ToBytes(safeArg))
 		}),
 	}
 }
@@ -744,7 +744,7 @@ func AU64(elements []uint64) Event {
 
 	return &EventArrayUint64{
 		EventWithValue: ConstructEventWithValue("au64", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUint64, uint64(len(safeArg)), ArrayUint64ToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeUint64, uint64(len(safeArg)), arrayUint64ToBytes(safeArg))
 		}),
 	}
 }
@@ -763,7 +763,7 @@ func AU(elements [][]byte) Event {
 
 	return &EventArrayUID{
 		EventWithValue: ConstructEventWithValue("au", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeUID, uint64(len(safeArg)), ArrayUIDToBytes(safeArg))
+			receiver.OnArray(events.ArrayTypeUID, uint64(len(safeArg)), arrayUIDToBytes(safeArg))
 		}),
 	}
 }

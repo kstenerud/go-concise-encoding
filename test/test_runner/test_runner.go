@@ -329,7 +329,7 @@ func (_this *MustSucceedTest) runCbe() error {
 	hasEvents := len(_this.events) > 0
 
 	if _this.Debug {
-		fmt.Printf("%v: Convert CBE to events: [%v]", _this.context, _this.Cbe)
+		fmt.Printf("%v: Convert CBE to events: [%v]", _this.context, asHex(_this.Cbe))
 	}
 	events, err := _this.cbeToEvents(_this.Cbe)
 	if err != nil {
@@ -338,7 +338,7 @@ func (_this *MustSucceedTest) runCbe() error {
 	if hasEvents && !_this.NoEventOutput {
 		if !_this.events.AreEquivalentTo(events) {
 			return _this.errorf("expected CBE [%v] to produce events [%v] but got [%v]",
-				_this.Cbe, _this.events, events)
+				asHex(_this.Cbe), _this.events, events)
 		}
 	}
 	if !_this.NoCbeOutput {
