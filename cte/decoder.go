@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -59,7 +58,7 @@ func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
 
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
+		if !_this.opts.DebugPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:

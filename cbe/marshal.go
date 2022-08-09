@@ -26,7 +26,6 @@ import (
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/builder"
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/iterator"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -67,7 +66,7 @@ func (_this *Marshaler) Init(opts *options.CBEMarshalerOptions) {
 
 // Marshal a go object into a CBE document, written to writer.
 func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error) {
-	if !debug.DebugOptions.PassThroughPanics {
+	if !_this.opts.DebugPanics {
 		defer func() {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
@@ -132,7 +131,7 @@ func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
 // Unmarshal a CBE document, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
 func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
-	if !debug.DebugOptions.PassThroughPanics {
+	if !_this.opts.DebugPanics {
 		defer func() {
 			if r := recover(); r != nil {
 				switch v := r.(type) {

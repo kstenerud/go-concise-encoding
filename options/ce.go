@@ -88,6 +88,7 @@ type CEDecoderOptions struct {
 	CompleteTruncatedDocument     bool
 	AllowNulCharacter             bool
 	DocumentLimits                DocumentLimits
+	DebugPanics                   bool
 }
 
 var defaultDecoderOptions = CEDecoderOptions{
@@ -96,6 +97,7 @@ var defaultDecoderOptions = CEDecoderOptions{
 	CompleteTruncatedDocument:     false,
 	AllowNulCharacter:             false,
 	DocumentLimits:                defaultDocumentLimits,
+	DebugPanics:                   false,
 }
 
 func DefaultCEDecoderOptions() CEDecoderOptions {
@@ -121,6 +123,7 @@ type CEUnmarshalerOptions struct {
 
 	// If false, do not wrap a Rules object around the builder, disabling all rule checks.
 	EnforceRules bool
+	DebugPanics  bool
 }
 
 func DefaultCEUnmarshalerOptions() CEUnmarshalerOptions {

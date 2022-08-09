@@ -43,9 +43,10 @@ func (_this *CBEEncoderOptions) Validate() error {
 // CBE Marshaler
 
 type CBEMarshalerOptions struct {
-	Encoder  CBEEncoderOptions
-	Iterator IteratorOptions
-	Session  IteratorSessionOptions
+	Encoder     CBEEncoderOptions
+	Iterator    IteratorOptions
+	Session     IteratorSessionOptions
+	DebugPanics bool
 }
 
 func DefaultCBEMarshalerOptions() CBEMarshalerOptions {
@@ -53,9 +54,10 @@ func DefaultCBEMarshalerOptions() CBEMarshalerOptions {
 }
 
 var defaultCBEMarshalerOptions = CBEMarshalerOptions{
-	Encoder:  DefaultCBEEncoderOptions(),
-	Iterator: DefaultIteratorOptions(),
-	Session:  DefaultIteratorSessionOptions(),
+	Encoder:     DefaultCBEEncoderOptions(),
+	Iterator:    DefaultIteratorOptions(),
+	Session:     DefaultIteratorSessionOptions(),
+	DebugPanics: false,
 }
 
 func (_this *CBEMarshalerOptions) ApplyDefaults() {

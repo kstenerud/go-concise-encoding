@@ -225,9 +225,10 @@ func (_this *CTEEncoderOptions) Validate() (err error) {
 // CTE Marshaler
 
 type CTEMarshalerOptions struct {
-	Encoder  CTEEncoderOptions
-	Iterator IteratorOptions
-	Session  IteratorSessionOptions
+	Encoder     CTEEncoderOptions
+	Iterator    IteratorOptions
+	Session     IteratorSessionOptions
+	DebugPanics bool
 }
 
 func DefaultCTEMarshalerOptions() CTEMarshalerOptions {

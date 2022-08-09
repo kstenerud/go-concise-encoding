@@ -26,7 +26,6 @@ import (
 	"io"
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
@@ -65,7 +64,7 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 // Read and decode a document from reader, sending all decoded events to eventReceiver.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !debug.DebugOptions.PassThroughPanics {
+		if !_this.opts.DebugPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:

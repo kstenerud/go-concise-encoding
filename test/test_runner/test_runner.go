@@ -31,7 +31,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/debug"
+	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/event_parser"
@@ -216,6 +216,7 @@ type BaseTest struct {
 	ceVersion   int
 	Cbe         []byte
 	Cte         string
+	Debug       bool // When true, don't convert panics to errors.
 	context     string
 }
 
@@ -264,7 +265,6 @@ type MustSucceedTest struct {
 	NoCteOutput   bool
 	NoCbeOutput   bool
 	NoEventOutput bool
-	Debug         bool
 	Events        []string
 	events        test.Events
 }
@@ -298,7 +298,7 @@ func (_this *MustSucceedTest) runCte() error {
 	if _this.Debug {
 		fmt.Printf("%v: Convert CTE to events: [%v]", _this.context, _this.Cte)
 	}
-	events, err := cteToEvents(_this.Cte)
+	events, err := _this.cteToEvents(_this.Cte)
 	if err != nil {
 		return _this.wrapError(err, "decoding CTE [%v]", _this.Cte)
 	}
@@ -312,7 +312,7 @@ func (_this *MustSucceedTest) runCte() error {
 		if _this.Debug {
 			fmt.Printf("%v: Convert events to CTE: [%v]", _this.context, _this.events)
 		}
-		document, err := eventsToCte(_this.events)
+		document, err := _this.eventsToCte(_this.events)
 		if err != nil {
 			return _this.wrapError(err, "Encoding events [%v] to CTE", _this.events)
 		}
@@ -331,7 +331,7 @@ func (_this *MustSucceedTest) runCbe() error {
 	if _this.Debug {
 		fmt.Printf("%v: Convert CBE to events: [%v]", _this.context, _this.Cbe)
 	}
-	events, err := cbeToEvents(_this.Cbe)
+	events, err := _this.cbeToEvents(_this.Cbe)
 	if err != nil {
 		return _this.wrapError(err, "decoding CBE [%v]", asHex(_this.Cbe))
 	}
@@ -345,7 +345,7 @@ func (_this *MustSucceedTest) runCbe() error {
 		if _this.Debug {
 			fmt.Printf("%v: Convert events to CBE: [%v]", _this.context, _this.events)
 		}
-		document, err := eventsToCbe(_this.events)
+		document, err := _this.eventsToCbe(_this.events)
 		if err != nil {
 			return _this.wrapError(err, "Encoding events [%v] to CBE", _this.events)
 		}
@@ -361,13 +361,6 @@ func (_this *MustSucceedTest) runCbe() error {
 func (_this *MustSucceedTest) Run() error {
 	if _this.Skip {
 		return nil
-	}
-
-	if _this.Debug {
-		debug.DebugOptions.PassThroughPanics = true
-		defer func() {
-			debug.DebugOptions.PassThroughPanics = false
-		}()
 	}
 
 	defer func() {
@@ -404,6 +397,10 @@ func (_this *MustFailTest) PostDecodeInit(ceVersion int, context string, index i
 	if _this.Skip {
 		return nil
 	}
+
+	// A bit hacky, but it makes things easier to have Debug in the base class.
+	_this.Debug = false
+
 	context = fmt.Sprintf(`%v, "must fail" test #%v`, context, index+1)
 	if err := _this.BaseTest.PostDecodeInit(ceVersion, context); err != nil {
 		return err
@@ -434,12 +431,12 @@ func (_this *MustFailTest) Run() error {
 	}()
 
 	if len(_this.Cte) > 0 {
-		if events, err := cteToEvents(_this.Cte); err == nil {
+		if events, err := _this.cteToEvents(_this.Cte); err == nil {
 			return _this.errorf("expected CTE document [%v] to fail but it produced [%v]",
 				_this.Cte, events)
 		}
 	} else {
-		if events, err := cbeToEvents(_this.Cbe); err == nil {
+		if events, err := _this.cbeToEvents(_this.Cbe); err == nil {
 			return _this.errorf("expected CBE document [%v] to fail but it produced [%v]",
 				asHex(_this.Cbe), events)
 		}
@@ -458,8 +455,10 @@ func asHex(data []byte) string {
 	return sb.String()
 }
 
-func cteToEvents(document string) (result test.Events, err error) {
-	decoder := cte.NewDecoder(nil)
+func (_this *BaseTest) cteToEvents(document string) (result test.Events, err error) {
+	opts := options.DefaultCEDecoderOptions()
+	opts.DebugPanics = _this.Debug
+	decoder := cte.NewDecoder(&opts)
 	buffer := bytes.NewBuffer([]byte(document))
 	receiver, collection := test.NewEventCollector(nil)
 	receiver = rules.NewRules(receiver, nil)
@@ -470,8 +469,10 @@ func cteToEvents(document string) (result test.Events, err error) {
 	return
 }
 
-func cbeToEvents(document []byte) (result test.Events, err error) {
-	decoder := cbe.NewDecoder(nil)
+func (_this *BaseTest) cbeToEvents(document []byte) (result test.Events, err error) {
+	opts := options.DefaultCEDecoderOptions()
+	opts.DebugPanics = _this.Debug
+	decoder := cbe.NewDecoder(&opts)
 	buffer := bytes.NewBuffer(document)
 	receiver, collection := test.NewEventCollector(nil)
 	receiver = rules.NewRules(receiver, nil)
@@ -482,7 +483,20 @@ func cbeToEvents(document []byte) (result test.Events, err error) {
 	return
 }
 
-func eventsToCte(events test.Events) (result string, err error) {
+func (_this *BaseTest) eventsToCte(events test.Events) (result string, err error) {
+	if !_this.Debug {
+		defer func() {
+			if r := recover(); r != nil {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
+			}
+		}()
+	}
+
 	encoder := cte.NewEncoder(nil)
 	outBuffer := &bytes.Buffer{}
 	encoder.PrepareToEncode(outBuffer)
@@ -496,7 +510,20 @@ func eventsToCte(events test.Events) (result string, err error) {
 	return
 }
 
-func eventsToCbe(events test.Events) (result []byte, err error) {
+func (_this *BaseTest) eventsToCbe(events test.Events) (result []byte, err error) {
+	if !_this.Debug {
+		defer func() {
+			if r := recover(); r != nil {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
+			}
+		}()
+	}
+
 	encoder := cbe.NewEncoder(nil)
 	outBuffer := &bytes.Buffer{}
 	encoder.PrepareToEncode(outBuffer)

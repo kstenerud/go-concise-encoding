@@ -36,29 +36,11 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/debug"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
-
-// ----------------------------------------------------------------------------
-// Pass through panics
-// ----------------------------------------------------------------------------
-
-// Causes the library to pass through all panics for the duration of the current
-// function instead of converting them to error objects. This can be useful for
-// tracking down the ultimate cause.
-//
-// Usage: defer test.PassThroughPanics(true)()
-func PassThroughPanics(shouldPassThrough bool) func() {
-	oldValue := debug.DebugOptions.PassThroughPanics
-	debug.DebugOptions.PassThroughPanics = shouldPassThrough
-	return func() {
-		debug.DebugOptions.PassThroughPanics = oldValue
-	}
-}
 
 // ----------------------------------------------------------------------------
 // Constructors for common data types
@@ -249,12 +231,8 @@ func ReportPanic(function func()) (err error) {
 }
 
 func AssertNoPanic(t *testing.T, name interface{}, function func()) {
-	if debug.DebugOptions.PassThroughPanics {
-		function()
-	} else {
-		if err := ReportPanic(function); err != nil {
-			t.Errorf("Error [%v] in %v", err, name)
-		}
+	if err := ReportPanic(function); err != nil {
+		t.Errorf("Error [%v] in %v", err, name)
 	}
 }
 
