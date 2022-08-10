@@ -23,76 +23,18 @@ package concise_encoding
 import (
 	"bytes"
 	"fmt"
-	"math/big"
-	"net/url"
 	"testing"
 
-	"github.com/cockroachdb/apd/v2"
-	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
-	"github.com/kstenerud/go-concise-encoding/version"
 	"github.com/kstenerud/go-describe"
-	"github.com/kstenerud/go-equivalence"
 )
 
 var EvV = test.EvV
-
-const (
-	ceVer = version.ConciseEncodingVersion
-)
-
-func NewBigInt(str string) *big.Int {
-	return test.NewBigInt(str)
-}
-
-func NewBigFloat(str string) *big.Float {
-	return test.NewBigFloat(str)
-}
-
-func NewDFloat(str string) compact_float.DFloat {
-	return test.NewDFloat(str)
-}
-
-func NewBDF(str string) *apd.Decimal {
-	return test.NewBDF(str)
-}
-
-func NewRID(RIDString string) *url.URL {
-	return test.NewRID(RIDString)
-}
-
-func NewDate(year, month, day int) compact_time.Time {
-	return test.NewDate(year, month, day)
-}
-
-func NewTime(hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
-	return test.NewTime(hour, minute, second, nanosecond, areaLocation)
-}
-
-func NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
-	return test.NewTimeLL(hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
-}
-
-func NewTimeOff(hour, minute, second, nanosecond, minutesOffset int) compact_time.Time {
-	return test.NewTimeOff(hour, minute, second, nanosecond, minutesOffset)
-}
-
-func NewTS(year, month, day, hour, minute, second, nanosecond int, areaLocation string) compact_time.Time {
-	return test.NewTS(year, month, day, hour, minute, second, nanosecond, areaLocation)
-}
-
-func NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths int) compact_time.Time {
-	return test.NewTSLL(year, month, day, hour, minute, second, nanosecond, latitudeHundredths, longitudeHundredths)
-}
-
-func NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset int) compact_time.Time {
-	return test.NewTSOff(year, month, day, hour, minute, second, nanosecond, minutesOffset)
-}
 
 func AB(v []bool) test.Event           { return test.AB(v) }
 func ACL(l uint64) test.Event          { return test.ACL(l) }
@@ -243,10 +185,6 @@ func assertEncodeDecodeCBEOpts(t *testing.T,
 	}
 }
 
-func assertEncodeDecodeCBE(t *testing.T, expected ...test.Event) {
-	assertEncodeDecodeCBEOpts(t, nil, nil, expected...)
-}
-
 func assertEncodeDecodeCTEOpts(t *testing.T,
 	encodeOpts *options.CTEEncoderOptions,
 	decodeOpts *options.CEDecoderOptions,
@@ -273,10 +211,6 @@ func assertEncodeDecodeCTEOpts(t *testing.T,
 	}
 }
 
-func assertEncodeDecodeCTE(t *testing.T, expected ...test.Event) {
-	assertEncodeDecodeCTEOpts(t, nil, nil, expected...)
-}
-
 func assertEncodeDecodeOpts(t *testing.T,
 	cbeEncodeOpts *options.CBEEncoderOptions,
 	cbeDecodeOpts *options.CEDecoderOptions,
@@ -290,108 +224,6 @@ func assertEncodeDecodeOpts(t *testing.T,
 
 func assertEncodeDecode(t *testing.T, expected ...test.Event) {
 	assertEncodeDecodeOpts(t, nil, nil, nil, nil, expected...)
-}
-
-func assertDecodeEncode(t *testing.T,
-	cteEncodeOpts *options.CTEEncoderOptions,
-	cteDecodeOpts *options.CEDecoderOptions,
-	cbeEncodeOpts *options.CBEEncoderOptions,
-	cbeDecodeOpts *options.CEDecoderOptions,
-	cteExpectedDocument string,
-	cbeExpectedDocument []byte,
-	expectedEvents ...test.Event) {
-
-	var receiver events.DataEventReceiver
-	var events *test.EventCollection
-
-	textDecoder := ce.NewCTEDecoder(cteDecodeOpts)
-	textEncoder := ce.NewCTEEncoder(cteEncodeOpts)
-	textRules := ce.NewRules(textEncoder, nil)
-	var cteActualDocument *bytes.Buffer
-
-	binDecoder := ce.NewCBEDecoder(cbeDecodeOpts)
-	binEncoder := ce.NewCBEEncoder(cbeEncodeOpts)
-	binRules := ce.NewRules(binEncoder, nil)
-
-	cbeActualDocument := &bytes.Buffer{}
-	binEncoder.PrepareToEncode(cbeActualDocument)
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), binRules); err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(cbeExpectedDocument, cbeActualDocument.Bytes()) {
-		t.Errorf("Expected CBE document %v but got %v", describe.D(cbeExpectedDocument), describe.D(cbeActualDocument.Bytes()))
-	}
-
-	receiver, events = test.NewEventCollector(nil)
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(receiver, nil)); err != nil {
-		t.Error(err)
-		return
-	}
-	if !events.IsEquivalentTo(expectedEvents) {
-		t.Errorf("Expected CBE document %v to produce events [%v] but got [%v]", describe.D(cbeActualDocument.Bytes()), test.Events(expectedEvents), events.Events)
-	}
-
-	cteActualDocument = &bytes.Buffer{}
-	textEncoder.PrepareToEncode(cteActualDocument)
-	if err := binDecoder.DecodeDocument(cbeExpectedDocument, textRules); err != nil {
-		t.Error(err)
-		return
-	}
-	if !equivalence.IsEquivalent(cteExpectedDocument, cteActualDocument.String()) {
-		t.Errorf("Expected CTE document [%v] but got [%v]", cteExpectedDocument, cteActualDocument.String())
-	}
-
-	receiver, events = test.NewEventCollector(nil)
-	binEncoder.PrepareToEncode(cbeActualDocument)
-	if err := textDecoder.DecodeDocument([]byte(cteExpectedDocument), ce.NewRules(receiver, nil)); err != nil {
-		t.Error(err)
-		return
-	}
-	if !events.IsEquivalentTo(expectedEvents) {
-		t.Errorf("Expected CTE document %v to produce events [%v] but got [%v]", cbeActualDocument, test.Events(expectedEvents), events.Events)
-	}
-}
-
-// ============================================================================
-// Marshal/Unmarshal
-
-func assertCBEMarshalUnmarshal(t *testing.T, expected interface{}) {
-	marshalOptions := options.DefaultCBEMarshalerOptions()
-	unmarshalOptions := options.DefaultCEUnmarshalerOptions()
-	assertCBEMarshalUnmarshalWithOptions(t, &marshalOptions, &unmarshalOptions, expected)
-	// marshalOptions.Iterator.RecursionSupport = true
-	// assertCBEMarshalUnmarshalWithOptions(t, marshalOptions, unmarshalOptions, expected)
-}
-
-func assertCBEMarshalUnmarshalWithOptions(t *testing.T,
-	marshalOptions *options.CBEMarshalerOptions,
-	unmarshalOptions *options.CEUnmarshalerOptions,
-	expected interface{}) {
-
-	buffer := &bytes.Buffer{}
-	err := ce.MarshalCBE(expected, buffer, marshalOptions)
-	if err != nil {
-		t.Errorf("CBE Marshal error: %v", err)
-		return
-	}
-	document := buffer.Bytes()
-
-	var actual interface{}
-	actual, err = ce.UnmarshalCBE(buffer, expected, unmarshalOptions)
-	if err != nil {
-		t.Errorf("CBE Unmarshal error: %v\n- While unmarshaling %v", err, describe.D(document))
-		return
-	}
-
-	if !equivalence.IsEquivalent(expected, actual) {
-		t.Errorf("CBE Unmarshal: Expected %v but got %v", describe.D(expected), describe.D(actual))
-	}
-}
-
-func assertMarshalUnmarshal(t *testing.T, expected interface{}) {
-	assertCBEMarshalUnmarshal(t, expected)
-	// assertCTEMarshalUnmarshal(t, expected)
 }
 
 func assertEncodeDecodeEventStreams(t *testing.T, eventStreams []test.Events) {

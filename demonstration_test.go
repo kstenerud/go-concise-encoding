@@ -27,9 +27,10 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/version"
 )
 
-func demonstrateCTEMarshal() {
+func demonstrateCTEMarshal() error {
 	dict := map[interface{}]interface{}{
 		"a key": 2.5,
 		900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
@@ -38,25 +39,29 @@ func demonstrateCTEMarshal() {
 	err := ce.MarshalCTE(dict, &buffer, nil)
 	if err != nil {
 		fmt.Printf("Error marshaling: %v", err)
-		return
+		return err
 	}
 	fmt.Printf("Marshaled CTE: %v\n", buffer.String())
 	// Prints: Marshaled CTE: c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}
+
+	return nil
 }
 
-func demonstrateCTEUnmarshal() {
+func demonstrateCTEUnmarshal() error {
 	data := bytes.NewBuffer([]byte(`c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}`))
 
 	value, err := ce.UnmarshalCTE(data, nil, nil)
 	if err != nil {
 		fmt.Printf("Error unmarshaling: %v", err)
-		return
+		return err
 	}
 	fmt.Printf("Unmarshaled CTE: %v\n", value)
 	// Prints: Unmarshaled CTE: map[a key:2.5 900:2020-01-15/13:41:00.000599]
+
+	return nil
 }
 
-func demonstrateCBEMarshal() {
+func demonstrateCBEMarshal() error {
 	dict := map[interface{}]interface{}{
 		"a key": 2.5,
 		900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
@@ -65,13 +70,17 @@ func demonstrateCBEMarshal() {
 	err := ce.MarshalCBE(dict, &buffer, nil)
 	if err != nil {
 		fmt.Printf("Error marshaling: %v", err)
-		return
+		return err
 	}
 	fmt.Printf("Marshaled CBE: %v\n", buffer.Bytes())
 	// Prints: Marshaled CBE: [131 0 121 106 132 3 155 188 18 0 32 109 47 80 0 133 97 32 107 101 121 112 32 64 123]
+
+	return nil
 }
 
-func demonstrateCBEUnmarshal() {
+const ceVer = version.ConciseEncodingVersion
+
+func demonstrateCBEUnmarshal() error {
 	data := bytes.NewBuffer([]byte{0x81, ceVer, 0x79, 0x85, 0x61, 0x20, 0x6b, 0x65,
 		0x79, 0x70, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x9b, 0xbc, 0x12,
 		0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x7b})
@@ -79,15 +88,66 @@ func demonstrateCBEUnmarshal() {
 	value, err := ce.UnmarshalCBE(data, nil, nil)
 	if err != nil {
 		fmt.Printf("Error unmarshaling: %v", err)
-		return
+		return err
 	}
 	fmt.Printf("Unmarshaled CBE: %v\n", value)
 	// Prints: Unmarshaled CBE: map[a key:2.5 900:2020-01-15/13:41:00.000599]
+
+	return nil
+}
+
+type SomeStruct struct {
+	A int
+	B string
+	C *SomeStruct
+}
+
+func demonstrateRecursiveStructInMap() error {
+	document := `c0 {"my-value" = &1:{"a"=100 "b"="test" "c"=$1}}`
+	template := map[string]*SomeStruct{}
+	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, nil)
+	if err != nil {
+		fmt.Printf("Error unmarshaling CTE document: %v", err)
+		return err
+	}
+	v := result.(map[string]*SomeStruct)
+	s := v["my-value"]
+	// Can't naively print a recursive structure in go (Printf will stack overflow), so we print each piece manually.
+	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
+	// Prints: A: 100, B: test, Ptr to C: 0xc0001f4600, ptr to s: 0xc0001f4600
+
+	encodedDocument, err := ce.MarshalToCTEDocument(v, nil)
+	if err != nil {
+		fmt.Printf("Error marshaling CTE document: %v", err)
+		return err
+	}
+	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
+	// Prints: Re-encoded CTE: c0 {my-value=&0:{A=100 B=test C=$0}}
+
+	encodedDocument, err = ce.MarshalToCBEDocument(v, nil)
+	if err != nil {
+		fmt.Printf("Error marshaling CBE document: %v", err)
+		return err
+	}
+	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
+	// Prints: Re-encoded CBE: [131 0 121 136 109 121 45 118 97 108 117 101 151 1 48 121 129 97 100 129 98 132 116 101 115 116 129 99 152 1 48 123 123]
+	return nil
 }
 
 func TestDemonstrate(t *testing.T) {
-	demonstrateCTEMarshal()
-	demonstrateCTEUnmarshal()
-	demonstrateCBEMarshal()
-	demonstrateCBEUnmarshal()
+	if err := demonstrateCTEMarshal(); err != nil {
+		t.Error(err)
+	}
+	if err := demonstrateCTEUnmarshal(); err != nil {
+		t.Error(err)
+	}
+	if err := demonstrateCBEMarshal(); err != nil {
+		t.Error(err)
+	}
+	if err := demonstrateCBEUnmarshal(); err != nil {
+		t.Error(err)
+	}
+	if err := demonstrateRecursiveStructInMap(); err != nil {
+		t.Error(err)
+	}
 }

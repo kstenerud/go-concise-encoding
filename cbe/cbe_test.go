@@ -26,17 +26,19 @@ import (
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-describe"
+	"github.com/kstenerud/go-equivalence"
 )
 
 func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	encoder := NewEncoder(nil)
 	encoder.PrepareToEncode(buffer)
-	test.InvokeEventsAsCompleteDocument(encoder, EvV, M(), E())
+	test.InvokeEventsAsCompleteDocument(encoder, test.EvV, test.M(), test.E())
 
 	buffer2 := &bytes.Buffer{}
 	encoder.PrepareToEncode(buffer2)
-	test.InvokeEventsAsCompleteDocument(encoder, EvV, M(), E())
+	test.InvokeEventsAsCompleteDocument(encoder, test.EvV, test.M(), test.E())
 
 	expected := []byte{0x81, 0x00, 0x79, 0x7b}
 	if !reflect.DeepEqual(buffer.Bytes(), expected) {
@@ -51,4 +53,42 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
 	v := []interface{}{sl, sl, sl}
 	assertMarshalUnmarshal(t, v, []byte{0x81, 0x00, 0x7a, 0x7a, 0x7b, 0x7a, 0x7b, 0x7a, 0x7b, 0x7b})
+}
+
+// ===========================================================================
+
+func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (successful bool) {
+	document, err := NewMarshaler(nil).MarshalToDocument(value)
+	if err != nil {
+		t.Errorf("Error [%v] while marshaling %v", err, describe.D(value))
+		return
+	}
+	if !equivalence.IsEquivalent(document, expectedDocument) {
+		t.Errorf("Expected encoded document %v but got %v while marshaling %v", describe.D(expectedDocument), describe.D(document), describe.D(value))
+		return
+	}
+	successful = true
+	return
+}
+
+func assertUnmarshal(t *testing.T, expectedValue interface{}, document []byte) (successful bool) {
+	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
+	if err != nil {
+		t.Errorf("Error [%v] while unmarshaling %v", err, describe.D(document))
+		return
+	}
+
+	if !equivalence.IsEquivalent(actualValue, expectedValue) {
+		t.Errorf("Expected unmarshaled [%v] but got [%v] while unmarshaling %v", describe.D(expectedValue), describe.D(actualValue), describe.D(document))
+		return
+	}
+	successful = true
+	return
+}
+
+func assertMarshalUnmarshal(t *testing.T, expectedValue interface{}, expectedDocument []byte) (successful bool) {
+	if !assertMarshal(t, expectedValue, expectedDocument) {
+		return
+	}
+	return assertUnmarshal(t, expectedValue, expectedDocument)
 }

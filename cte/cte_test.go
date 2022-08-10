@@ -22,6 +22,9 @@ package cte
 
 import (
 	"testing"
+
+	"github.com/kstenerud/go-describe"
+	"github.com/kstenerud/go-equivalence"
 )
 
 func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
@@ -33,4 +36,43 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
     []
     []
 ]`)
+}
+
+// ===========================================================================
+
+func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
+	document, err := NewMarshaler(nil).MarshalToDocument(value)
+	if err != nil {
+		t.Errorf("Error [%v] while marshaling object %v", err, describe.D(value))
+		return
+	}
+	actualDocument := string(document)
+	if !equivalence.IsEquivalent(actualDocument, expectedDocument) {
+		t.Errorf("Expected marshal of %v to produce document [%v] but got [%v]", describe.D(value), expectedDocument, actualDocument)
+		return
+	}
+	successful = true
+	return
+}
+
+func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
+	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
+	if err != nil {
+		t.Errorf("Error [%v] while unmarshaling document [%v]", err, document)
+		return
+	}
+
+	if !equivalence.IsEquivalent(actualValue, expectedValue) {
+		t.Errorf("Expected document [%v] to unmarshal to [%v] but got [%v]", document, describe.D(expectedValue), describe.D(actualValue))
+		return
+	}
+	successful = true
+	return
+}
+
+func assertMarshalUnmarshal(t *testing.T, expectedValue interface{}, expectedDocument string) (successful bool) {
+	if !assertMarshal(t, expectedValue, expectedDocument) {
+		return
+	}
+	return assertUnmarshal(t, expectedValue, expectedDocument)
 }
