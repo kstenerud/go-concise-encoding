@@ -1,0 +1,46 @@
+c0
+{
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
+        {
+            "name" = "Spacing"
+            "mustSucceed" = [
+                {
+                    "cte" = "\.#
+[
+    "a"
+    /* comment */
+    "b"
+]#"
+                    "events" = ["l" "s=a" "cm= comment " "s=b" "e"]
+                }
+//                { // TODO: Should this succeed?
+//                    "nocteoutput" = true
+//                    "cte" = "\.# ["a"/* comment */ "b"]#"
+//                    "events" = ["l" "s=a" "cm= comment " "s=b" "e"]
+//                }
+            ]
+            "mustFail" = [
+                {
+                    "rawdocument" = true
+                    "cte"="c1[]"
+                }
+                {"cte"="\.# ["a""b"]#"}
+                {"cte"="\.# ["a"[]]#"}
+                {"cte"="\.# [[]"a"]#"}
+                {"cte"="\.# [[][]]#"}
+                {"cte"="\.# [{}"a"]#"}
+                {"cte"="\.# [{}{}]#"}
+                {"cte"="\.# [<a>"a"]#"}
+                {"cte"="\.# [<a><a>]#"}
+                {"cte"="\.# [(@"a" @"a" 1)"a"]#"}
+                {"cte"="\.# [(@"a" @"a" 1)(@"a" @"a" 1)]#"}
+
+            ]
+        }
+    ]
+}

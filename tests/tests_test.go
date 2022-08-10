@@ -36,6 +36,9 @@ func TestPrimary(t *testing.T) {
 	test_runner.RunTests(t, "cte-containers.cte")
 	test_runner.RunTests(t, "cte-comment.cte")
 	test_runner.RunTests(t, "cte-complex.cte")
+	test_runner.RunTests(t, "cte-spacing.cte")
+	test_runner.RunTests(t, "cte-generated-do-not-edit.cte")
+	test_runner.RunTests(t, "rules-generated-do-not-edit.cte")
 }
 
 func TestTemplates(t *testing.T) {
