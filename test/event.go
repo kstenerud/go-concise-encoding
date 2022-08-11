@@ -40,6 +40,7 @@ import (
 type EventInvocation func(receiver events.DataEventReceiver)
 
 type Event interface {
+	Name() string
 	String() string
 	Invoke(events.DataEventReceiver)
 	IsEquivalentTo(Event) bool
@@ -117,6 +118,7 @@ func ConstructEventWithValue(shortName string, value interface{}, invocation Eve
 	}
 }
 func (_this *EventWithValue) Invoke(receiver events.DataEventReceiver) { _this.invocation(receiver) }
+func (_this *EventWithValue) Name() string                             { return _this.shortName }
 func (_this *EventWithValue) String() string                           { return _this.stringified }
 func (_this *EventWithValue) Comparable() string                       { return _this.comparable }
 func (_this *EventWithValue) IsEquivalentTo(that Event) bool {
