@@ -45,33 +45,54 @@ func generateTestFiles(projectDir string) {
 func generateEncodeDecodeTests(path string) {
 	writeTestFile(path,
 		generateTLOTests(),
+		generateListTests(),
 	)
 }
 
 func generateTLOTests() interface{} {
-	tloInvalid := test.Events{EvV, EvE, EvACL, EvACM, EvREFL, EvSI}
-	tloValid := complementaryEvents(tloInvalid)
+	prefix := test.Events{}
+	suffix := test.Events{}
+	invalidEvents := test.Events{EvV, EvE, EvACL, EvACM, EvREFL, EvSI}
+	validEvents := complementaryEvents(invalidEvents)
 
+	return generateEncodeDecodeTest("TLO", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateListTests() interface{} {
+	prefix := test.Events{test.EvL}
+	suffix := test.Events{test.EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvSI, EvE}
+	validEvents := complementaryEvents(invalidEvents)
+	invalidEvents = invalidEvents[:len(invalidEvents)-2]
+
+	return generateEncodeDecodeTest("List", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) interface{} {
 	var mustSucceed []interface{}
 	var mustFail []interface{}
 
-	for _, eventSet := range generateEventPrefixesAndFollowups(tloValid...) {
+	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
+		events := append(prefix, eventSet...)
+		events = append(events, suffix...)
 		generateTypes := testTypeCbe | testTypeCte | testTypeEvents
 		suppressOutputTypes := testType(0)
-		if hasLossyCTE(eventSet...) {
+		if hasLossyCTE(events...) {
 			suppressOutputTypes |= testTypeCte
 		}
-		if hasLossyCBE(eventSet...) {
+		if hasLossyCBE(events...) {
 			suppressOutputTypes |= testTypeCbe
 		}
-		mustSucceed = append(mustSucceed, generateMustSucceedTest(generateTypes, suppressOutputTypes, eventSet...))
+		mustSucceed = append(mustSucceed, generateMustSucceedTest(generateTypes, suppressOutputTypes, events...))
 	}
 
-	for _, event := range tloInvalid {
-		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, event))
+	for _, event := range invalidEvents {
+		events := append(prefix, event)
+		events = append(events, suffix...)
+		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, events...))
 	}
 
-	return generateTest("TLO", mustSucceed, mustFail)
+	return generateTest(name, mustSucceed, mustFail)
 }
 
 func generateCteHeaderTests(path string) {
