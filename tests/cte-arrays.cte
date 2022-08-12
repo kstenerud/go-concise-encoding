@@ -14,22 +14,22 @@ c0
             "mustSucceed" = [
                 {"cte"="|i8 1 2 3 127|"  "events"=["ai8=1 2 3 127"]}
                 {"cte"="|i8|"                 "events"=["ai8"]}
-                {"cte"="|i8 |"                "events"=["ai8"] "nocteoutput"=true}
+                {"cte"="|i8 |"                "events"=["ai8"] "lossyCTE"=true}
                 {
                     "cte"="|i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                     "events"=["ai8=0 1 127 -128 5 -5 63 -63 27 -27"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i8b|"                "events"=["ai8"] "nocteoutput"=true}
+                {"cte"="|i8b|"                "events"=["ai8"] "lossyCTE"=true}
                 {
                     "cte"="|i8b 0 1 1011 -1001101 1111111 -10000000|"
                     "events"=["ai8=0 1 11 -77 127 -128"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i8o|"                "events"=["ai8"] "nocteoutput"=true}
-                {"cte"="|i8o 177 -200 76|"    "events"=["ai8=127 -128 62"] "nocteoutput"=true}
-                {"cte"="|i8x|"                "events"=["ai8"] "nocteoutput"=true}
-                {"cte"="|i8x 7f -80 1c -29|"  "events"=["ai8=127 -128 28 -41"] "nocteoutput"=true}
+                {"cte"="|i8o|"                "events"=["ai8"] "lossyCTE"=true}
+                {"cte"="|i8o 177 -200 76|"    "events"=["ai8=127 -128 62"] "lossyCTE"=true}
+                {"cte"="|i8x|"                "events"=["ai8"] "lossyCTE"=true}
+                {"cte"="|i8x 7f -80 1c -29|"  "events"=["ai8=127 -128 28 -41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|i8 nan|"}         // Non-int digit
@@ -64,22 +64,22 @@ c0
             "mustSucceed" = [
                 {"cte"="|i16 1 2 3 32767|"         "events"=["ai16=1 2 3 32767"]}
                 {"cte"="|i16|"                     "events"=["ai16"]}
-                {"cte"="|i16 |"                    "events"=["ai16"] "nocteoutput"=true}
+                {"cte"="|i16 |"                    "events"=["ai16"] "lossyCTE"=true}
                 {
                     "cte"="|i16 0 1 32767 -32768 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                     "events"=["ai16=0 1 32767 -32768 5 -5 63 -63 27 -27"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i16b|"                    "events"=["ai16"] "nocteoutput"=true}
+                {"cte"="|i16b|"                    "events"=["ai16"] "lossyCTE"=true}
                 {
                     "cte"="|i16b 0 1 1011 -1001101 111111111111111 -1000000000000000|"
                     "events"=["ai16=0 1 11 -77 32767 -32768"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i16o|"                    "events"=["ai16"] "nocteoutput"=true}
-                {"cte"="|i16o 77777 -100000 76|"   "events"=["ai16=32767 -32768 62"] "nocteoutput"=true}
-                {"cte"="|i16x|"                    "events"=["ai16"] "nocteoutput"=true}
-                {"cte"="|i16x 7fff -8000 1c -29|"  "events"=["ai16=32767 -32768 28 -41"] "nocteoutput"=true}
+                {"cte"="|i16o|"                    "events"=["ai16"] "lossyCTE"=true}
+                {"cte"="|i16o 77777 -100000 76|"   "events"=["ai16=32767 -32768 62"] "lossyCTE"=true}
+                {"cte"="|i16x|"                    "events"=["ai16"] "lossyCTE"=true}
+                {"cte"="|i16x 7fff -8000 1c -29|"  "events"=["ai16=32767 -32768 28 -41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|i16 nan|"}                 // Non-int digit
@@ -114,22 +114,22 @@ c0
             "mustSucceed" = [
                 {"cte"="|i32 1 2 3 2147483647|"    "events"=["ai32=1 2 3 2147483647"]}
                 {"cte"="|i32|"                     "events"=["ai32"]}
-                {"cte"="|i32 |"                    "events"=["ai32"] "nocteoutput"=true}
+                {"cte"="|i32 |"                    "events"=["ai32"] "lossyCTE"=true}
                 {
                     "cte"="|i32 0 1 2147483647 -2147483648 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                     "events"=["ai32=0 1 2147483647 -2147483648 5 -5 63 -63 27 -27"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i32b|"                    "events"=["ai32"] "nocteoutput"=true}
+                {"cte"="|i32b|"                    "events"=["ai32"] "lossyCTE"=true}
                 {
                     "cte"="|i32b 0 1 1011 -1001101 1111111111111111111111111111111 -10000000000000000000000000000000|"
                     "events"=["ai32=0 1 11 -77 2147483647 -2147483648"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i32o|"                    "events"=["ai32"] "nocteoutput"=true}
-                {"cte"="|i32o 17777777777 -20000000000 76|"  "events"=["ai32=2147483647 -2147483648 62"] "nocteoutput"=true}
-                {"cte"="|i32x|"                    "events"=["ai32"] "nocteoutput"=true}
-                {"cte"="|i32x 7fffffff -80000000 1c -29|"  "events"=["ai32=2147483647 -2147483648 28 -41"] "nocteoutput"=true}
+                {"cte"="|i32o|"                    "events"=["ai32"] "lossyCTE"=true}
+                {"cte"="|i32o 17777777777 -20000000000 76|"  "events"=["ai32=2147483647 -2147483648 62"] "lossyCTE"=true}
+                {"cte"="|i32x|"                    "events"=["ai32"] "lossyCTE"=true}
+                {"cte"="|i32x 7fffffff -80000000 1c -29|"  "events"=["ai32=2147483647 -2147483648 28 -41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|i32 nan|"}                                 // Non-int digit
@@ -164,30 +164,30 @@ c0
             "mustSucceed" = [
                 {"cte"="|i64 1 2 3 9223372036854775807|"  "events"=["ai64=1 2 3 9223372036854775807"]}
                 {"cte"="|i64|"                                "events"=["ai64"]}
-                {"cte"="|i64 |"                               "events"=["ai64"] "nocteoutput"=true}
+                {"cte"="|i64 |"                               "events"=["ai64"] "lossyCTE"=true}
                 {
                     "cte"="|i64 0 1 9223372036854775807 -9223372036854775808 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
                     "events"=["ai64=0 1 9223372036854775807 -9223372036854775808 5 -5 63 -63 27 -27"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i64b|"                               "events"=["ai64"] "nocteoutput"=true}
+                {"cte"="|i64b|"                               "events"=["ai64"] "lossyCTE"=true}
                 {
                     "cte"="|i64b 0 1 1011 -1001101 111111111111111111111111111111111111111111111111111111111111111
                                       -1000000000000000000000000000000000000000000000000000000000000000|"
                     "events"=["ai64=0 1 11 -77 9223372036854775807 -9223372036854775808"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i64o|"                               "events"=["ai64"] "nocteoutput"=true}
+                {"cte"="|i64o|"                               "events"=["ai64"] "lossyCTE"=true}
                 {
                     "cte"="|i64o 777777777777777777777 -1000000000000000000000 76|"
                     "events"=["ai64=9223372036854775807 -9223372036854775808 62"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|i64x|"                               "events"=["ai64"] "nocteoutput"=true}
+                {"cte"="|i64x|"                               "events"=["ai64"] "lossyCTE"=true}
                 {
                     "cte"="|i64x 7fffffffffffffff -8000000000000000 1c -29|"
                     "events"=["ai64=9223372036854775807 -9223372036854775808 28 -41"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
             ]
             "mustFail" = [
@@ -223,14 +223,14 @@ c0
             "mustSucceed" = [
                 {"cte"="|u8 1 2 3 255|"       "events"=["au8=1 2 3 255"]}
                 {"cte"="|u8|"                 "events"=["au8"]}
-                {"cte"="|u8 |"                "events"=["au8"]  "nocteoutput"=true}
-                {"cte"="|u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["au8=0 1 255 128 5 63 27"] "nocteoutput"=true}
-                {"cte"="|u8b|"                "events"=["au8"] "nocteoutput"=true}
-                {"cte"="|u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["au8=0 1 11 77 255 128"] "nocteoutput"=true}
-                {"cte"="|u8o|"                "events"=["au8"] "nocteoutput"=true}
-                {"cte"="|u8o 377 22 76|"      "events"=["au8=255 18 62"] "nocteoutput"=true}
-                {"cte"="|u8x|"                "events"=["au8"] "nocteoutput"=true}
-                {"cte"="|u8x ff 80 1c 29|"    "events"=["au8=255 128 28 41"] "nocteoutput"=true}
+                {"cte"="|u8 |"                "events"=["au8"]  "lossyCTE"=true}
+                {"cte"="|u8 0 1 255 128 0b101 0o77 0x1b|"  "events"=["au8=0 1 255 128 5 63 27"] "lossyCTE"=true}
+                {"cte"="|u8b|"                "events"=["au8"] "lossyCTE"=true}
+                {"cte"="|u8b 0 1 1011 1001101 11111111 10000000|"  "events"=["au8=0 1 11 77 255 128"] "lossyCTE"=true}
+                {"cte"="|u8o|"                "events"=["au8"] "lossyCTE"=true}
+                {"cte"="|u8o 377 22 76|"      "events"=["au8=255 18 62"] "lossyCTE"=true}
+                {"cte"="|u8x|"                "events"=["au8"] "lossyCTE"=true}
+                {"cte"="|u8x ff 80 1c 29|"    "events"=["au8=255 128 28 41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|u8 nan|"}         // Non-uint digit
@@ -258,14 +258,14 @@ c0
             "mustSucceed" = [
                 {"cte"="|u16 1 2 3 65535|"     "events"=["au16=1 2 3 65535"]}
                 {"cte"="|u16|"                 "events"=["au16"]}
-                {"cte"="|u16 |"                "events"=["au16"] "nocteoutput"=true}
-                {"cte"="|u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["au16=0 1 65535 128 5 63 27"] "nocteoutput"=true}
-                {"cte"="|u16b|"                "events"=["au16"] "nocteoutput"=true}
-                {"cte"="|u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["au16=0 1 11 77 65535 128"] "nocteoutput"=true}
-                {"cte"="|u16o|"                "events"=["au16"] "nocteoutput"=true}
-                {"cte"="|u16o 177777 22 76|"   "events"=["au16=65535 18 62"] "nocteoutput"=true}
-                {"cte"="|u16x|"                "events"=["au16"] "nocteoutput"=true}
-                {"cte"="|u16x ffff 80 1c 29|"  "events"=["au16=65535 128 28 41"] "nocteoutput"=true}
+                {"cte"="|u16 |"                "events"=["au16"] "lossyCTE"=true}
+                {"cte"="|u16 0 1 65535 128 0b101 0o77 0x1b|"  "events"=["au16=0 1 65535 128 5 63 27"] "lossyCTE"=true}
+                {"cte"="|u16b|"                "events"=["au16"] "lossyCTE"=true}
+                {"cte"="|u16b 0 1 1011 1001101 1111111111111111 10000000|"  "events"=["au16=0 1 11 77 65535 128"] "lossyCTE"=true}
+                {"cte"="|u16o|"                "events"=["au16"] "lossyCTE"=true}
+                {"cte"="|u16o 177777 22 76|"   "events"=["au16=65535 18 62"] "lossyCTE"=true}
+                {"cte"="|u16x|"                "events"=["au16"] "lossyCTE"=true}
+                {"cte"="|u16x ffff 80 1c 29|"  "events"=["au16=65535 128 28 41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|u16 nan|"}                 // Non-uint digit
@@ -293,22 +293,22 @@ c0
             "mustSucceed" = [
                 {"cte"="|u32 1 2 3 4294967295|" "events"=["au32=1 2 3 0xffffffff"]}
                 {"cte"="|u32|"                     "events"=["au32"]}
-                {"cte"="|u32 |"                    "events"=["au32"] "nocteoutput"=true}
+                {"cte"="|u32 |"                    "events"=["au32"] "lossyCTE"=true}
                 {
                     "cte"="|u32 0 1 4294967295 128 0b101 0o77 0x1b|"
                     "events"=["au32=0 1 4294967295 128 5 63 27"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|u32b|"                    "events"=["au32"] "nocteoutput"=true}
+                {"cte"="|u32b|"                    "events"=["au32"] "lossyCTE"=true}
                 {
                     "cte"="|u32b 0 1 1011 1001101 11111111111111111111111111111111 10000000|"
                     "events"=["au32=0 1 11 77 4294967295 128"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|u32o|"                    "events"=["au32"] "nocteoutput"=true}
-                {"cte"="|u32o 37777777777 22 76|"  "events"=["au32=4294967295 18 62"] "nocteoutput"=true}
-                {"cte"="|u32x|"                    "events"=["au32"] "nocteoutput"=true}
-                {"cte"="|u32x ffffffff 80 1c 29|"  "events"=["au32=4294967295 128 28 41"] "nocteoutput"=true}
+                {"cte"="|u32o|"                    "events"=["au32"] "lossyCTE"=true}
+                {"cte"="|u32o 37777777777 22 76|"  "events"=["au32=4294967295 18 62"] "lossyCTE"=true}
+                {"cte"="|u32x|"                    "events"=["au32"] "lossyCTE"=true}
+                {"cte"="|u32x ffffffff 80 1c 29|"  "events"=["au32=4294967295 128 28 41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|u32 nan|"}                 // Non-uint digit
@@ -339,22 +339,22 @@ c0
                     "events"=["au64=1 2 3 0xffffffffffffffff"] 
                 }
                 {"cte"="|u64|"                                "events"=["au64"]}
-                {"cte"="|u64 |"                               "events"=["au64"] "nocteoutput"=true}
+                {"cte"="|u64 |"                               "events"=["au64"] "lossyCTE"=true}
                 {
                     "cte"="|u64 0 1 18446744073709551615 128 0b101 0o77 0x1b|"
                     "events"=["au64=0 1 18446744073709551615 128 5 63 27"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|u64b|"                               "events"=["au64"] "nocteoutput"=true}
+                {"cte"="|u64b|"                               "events"=["au64"] "lossyCTE"=true}
                 {
                     "cte"="|u64b 0 1 1011 1001101 1111111111111111111111111111111111111111111111111111111111111111 10000000|"
                     "events"=["au64=0 1 11 77 18446744073709551615 128"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
-                {"cte"="|u64o|"                               "events"=["au64"] "nocteoutput"=true}
-                {"cte"="|u64o 1777777777777777777777 22 76|"  "events"=["au64=18446744073709551615 18 62"] "nocteoutput"=true}
-                {"cte"="|u64x|"                               "events"=["au64"] "nocteoutput"=true}
-                {"cte"="|u64x ffffffffffffffff 80 1c 29|"     "events"=["au64=18446744073709551615 128 28 41"] "nocteoutput"=true}
+                {"cte"="|u64o|"                               "events"=["au64"] "lossyCTE"=true}
+                {"cte"="|u64o 1777777777777777777777 22 76|"  "events"=["au64=18446744073709551615 18 62"] "lossyCTE"=true}
+                {"cte"="|u64x|"                               "events"=["au64"] "lossyCTE"=true}
+                {"cte"="|u64x ffffffffffffffff 80 1c 29|"     "events"=["au64=18446744073709551615 128 28 41"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|u64 nan|"}                      // Non-uint digit
@@ -381,14 +381,14 @@ c0
             "name" = "Float16 array"
             // 8 sig bits, 8 exp bits
             "mustSucceed" = [
-                {"cte"="|f16|"                      "events"=["af16"] "nocteoutput"=true}
+                {"cte"="|f16|"                      "events"=["af16"] "lossyCTE"=true}
                 {"cte"="|f16x|"                     "events"=["af16"]}
-                {"cte"="|f16 0x1.5p2 -0x1.f8p-20|"  "events"=["af16=0x1.5p2 -0x1.f8p-20"] "nocteoutput"=true}
+                {"cte"="|f16 0x1.5p2 -0x1.f8p-20|"  "events"=["af16=0x1.5p2 -0x1.f8p-20"] "lossyCTE"=true}
 // TODO: printing as 1.5p+02                {"cte"="|f16x 1.5p+2 -1.f8p-20|"    "events"=["af16=0x1.5p2 -0x1.f8p-20"]}
-                {"cte"="|f16 nan snan inf -inf|"    "events"=["af16=nan snan inf -inf"] "nocteoutput"=true}
-                {"cte"="|f16 NAN SNAN INF -INF|"    "events"=["af16=nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f16 nan snan inf -inf|"    "events"=["af16=nan snan inf -inf"] "lossyCTE"=true}
+                {"cte"="|f16 NAN SNAN INF -INF|"    "events"=["af16=nan snan inf -inf"] "lossyCTE"=true}
                 {"cte"="|f16x nan snan inf -inf|"   "events"=["af16=nan snan inf -inf"]}
-                {"cte"="|f16x NAN SNAN INF -INF|"   "events"=["af16=nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f16x NAN SNAN INF -INF|"   "events"=["af16=nan snan inf -inf"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|f16 -|"}           // Incomplete value
@@ -411,22 +411,22 @@ c0
                     "cte"="|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
                     "events"=["af32=0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
                 }
-                {"cte"="|f32|"                                "events"=["af32"] "nocteoutput"=true}
+                {"cte"="|f32|"                                "events"=["af32"] "lossyCTE"=true}
                 {"cte"="|f32x|"                               "events"=["af32"]}
-                {"cte"="|f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["af32=1.4512e+20 9.41e-15 944523.55"] "nocteoutput"=true}
+                {"cte"="|f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["af32=1.4512e+20 9.41e-15 944523.55"] "lossyCTE"=true}
                 {
                     "cte"="|f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"
                     "events"=["af32=0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
                     "events"=["af32=0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
                 }
-                {"cte"="|f32 nan snan inf -inf|"              "events"=["af32=nan snan inf -inf"] "nocteoutput"=true}
-                {"cte"="|f32 NAN SNAN INF -INF|"              "events"=["af32=nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f32 nan snan inf -inf|"              "events"=["af32=nan snan inf -inf"] "lossyCTE"=true}
+                {"cte"="|f32 NAN SNAN INF -INF|"              "events"=["af32=nan snan inf -inf"] "lossyCTE"=true}
                 {"cte"="|f32x nan snan inf -inf|"             "events"=["af32=nan snan inf -inf"]}
-                {"cte"="|f32x NAN SNAN INF -INF|"             "events"=["af32=nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f32x NAN SNAN INF -INF|"             "events"=["af32=nan snan inf -inf"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|f32 -|"}                              // Incomplete value
@@ -449,22 +449,22 @@ c0
                     "cte"="|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
                     "events"=["af64=0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
                 }
-                {"cte"="|f64|"                                "events"=["af64"] "nocteoutput"=true}
+                {"cte"="|f64|"                                "events"=["af64"] "lossyCTE"=true}
                 {"cte"="|f64x|"                               "events"=["af64"]}
-                {"cte"="|f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["af64=1.4512e+20 9.41e-15 944523.55"] "nocteoutput"=true}
+                {"cte"="|f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["af64=1.4512e+20 9.41e-15 944523.55"] "lossyCTE"=true}
                 {
                     "cte"="|f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"
                     "events"=["af64=0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
                     "events"=["af64=0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
                 }
-                {"cte"="|f64 nan snan inf -inf|"              "events"=["af64=nan snan inf -inf"] "nocteoutput"=true}
-                {"cte"="|f64 NAN SNAN INF -INF|"              "events"=["af64=nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f64 nan snan inf -inf|"              "events"=["af64=nan snan inf -inf"] "lossyCTE"=true}
+                {"cte"="|f64 NAN SNAN INF -INF|"              "events"=["af64=nan snan inf -inf"] "lossyCTE"=true}
                 {"cte"="|f64x nan snan inf -inf|"             "events"=["af64=nan snan inf -inf"]}
-                {"cte"="|f64x NAN SNAN INF -INF|"             "events"=["af64=nan snan inf -inf"] "nocteoutput"=true}
+                {"cte"="|f64x NAN SNAN INF -INF|"             "events"=["af64=nan snan inf -inf"] "lossyCTE"=true}
             ]
             "mustFail" = [
                 {"cte"="|f64 -|"}                              // Incomplete value
@@ -490,7 +490,7 @@ c0
                 {
                     "cte"="|u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
                     "events"=["au=00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
             ]
             "mustFail" = [
@@ -510,10 +510,10 @@ c0
                 {"cte"="|b|"                "events"=["ab"]}
                 {"cte"="|b 0|"              "events"=["ab=0"]}
                 {"cte"="|b 1|"              "events"=["ab=1"]}
-                {"cte"="|b 1 0 1 1 0 1|"    "events"=["ab=101101"] "nocteoutput"=true}
-                {"cte"="|b 101101 |"        "events"=["ab=101101"] "nocteoutput"=true}
+                {"cte"="|b 1 0 1 1 0 1|"    "events"=["ab=101101"] "lossyCTE"=true}
+                {"cte"="|b 101101 |"        "events"=["ab=101101"] "lossyCTE"=true}
                 {"cte"="|b 10110111|"       "events"=["ab=10110111"]}
-                {"cte"="|b 1  0 110 1 11|"  "events"=["ab=10110111"] "nocteoutput"=true}
+                {"cte"="|b 1  0 110 1 11|"  "events"=["ab=10110111"] "lossyCTE"=true}
                 {
                     "cte"="|b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
                     "events"=["ab=1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011"]
@@ -532,12 +532,12 @@ c0
         {
             "name" = "Chunked uint8 array"
             "mustSucceed" = [
-                {"events"=["bau8" "acl=0"]                               "cte"="|u8|" "noeventoutput"=true}
-                {"events"=["bau8" "acl=1" "adu8=255"]                    "cte"="|u8 255|" "noeventoutput"=true}
-                {"events"=["bau8" "acl=2" "adu8=255 212"]                "cte"="|u8 255 212|" "noeventoutput"=true}
-                {"events"=["bau8" "acl=2" "adu8=255" "adu8=212"]         "cte"="|u8 255 212|" "noeventoutput"=true}
-                {"events"=["bau8" "acm=2" "adu8=255" "adu8=212" "acl=0"] "cte"="|u8 255 212|" "noeventoutput"=true}
-                {"events"=["bau8" "acm=1" "adu8=255" "acl=1" "adu8=212"] "cte"="|u8 255 212|" "noeventoutput"=true}
+                {"events"=["bau8" "acl=0"]                               "cte"="|u8|" "lossyCTE"=true}
+                {"events"=["bau8" "acl=1" "adu8=255"]                    "cte"="|u8 255|" "lossyCTE"=true}
+                {"events"=["bau8" "acl=2" "adu8=255 212"]                "cte"="|u8 255 212|" "lossyCTE"=true}
+                {"events"=["bau8" "acl=2" "adu8=255" "adu8=212"]         "cte"="|u8 255 212|" "lossyCTE"=true}
+                {"events"=["bau8" "acm=2" "adu8=255" "adu8=212" "acl=0"] "cte"="|u8 255 212|" "lossyCTE"=true}
+                {"events"=["bau8" "acm=1" "adu8=255" "acl=1" "adu8=212"] "cte"="|u8 255 212|" "lossyCTE"=true}
             ]
         }
 
@@ -546,23 +546,23 @@ c0
         {
             "name" = "Chunked uint16 array"
             "mustSucceed" = [
-                {"events"=["bau16" "acl=0"]                    "cte"="|u16|" "noeventoutput"=true}
-                {"events"=["bau16" "acl=1" "adu16=256"]        "cte"="|u16 256|" "noeventoutput"=true}
-                {"events"=["bau16" "acl=2" "adu16=256 20000"]  "cte"="|u16 256 20000|" "noeventoutput"=true}
+                {"events"=["bau16" "acl=0"]                    "cte"="|u16|" "lossyCTE"=true}
+                {"events"=["bau16" "acl=1" "adu16=256"]        "cte"="|u16 256|" "lossyCTE"=true}
+                {"events"=["bau16" "acl=2" "adu16=256 20000"]  "cte"="|u16 256 20000|" "lossyCTE"=true}
                 {
                     "events"=["bau16" "acl=2" "adu16=256" "adu16=20000"]
                     "cte"="|u16 256 20000|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau16" "acm=2" "adu16=256 20000" "acl=0"]
                     "cte"="|u16 256 20000|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau16" "acm=1" "adu16=256" "acl=1" "adu16=20000"]
                     "cte"="|u16 256 20000|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -572,22 +572,22 @@ c0
         {
             "name" = "Chunked uint32 array"
             "mustSucceed" = [
-                {"events"=["bau32" "acl=0"]                   "cte"="|u32|" "noeventoutput"=true}
-                {"events"=["bau32" "acl=1" "adu32=12345678"]  "cte"="|u32 12345678|" "noeventoutput"=true}
+                {"events"=["bau32" "acl=0"]                   "cte"="|u32|" "lossyCTE"=true}
+                {"events"=["bau32" "acl=1" "adu32=12345678"]  "cte"="|u32 12345678|" "lossyCTE"=true}
                 {
                     "events"=["bau32" "acl=2" "adu32=12345678 87654321"]
                     "cte"="|u32 12345678 87654321|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau32" "acm=2" "adu32=12345678 87654321" "acl=0"]
                     "cte"="|u32 12345678 87654321|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau32" "acm=1" "adu32=12345678" "acl=1" "adu32=87654321"]
                     "cte"="|u32 12345678 87654321|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -597,26 +597,26 @@ c0
         {
             "name" = "Chunked uint64 array"
             "mustSucceed" = [
-                {"events"=["bau64" "acl=0"]  "cte"="|u64|" "noeventoutput"=true}
+                {"events"=["bau64" "acl=0"]  "cte"="|u64|" "lossyCTE"=true}
                 {
                     "events"=["bau64" "acl=1" "adu64=1234567890123456789"]
                     "cte"="|u64 1234567890123456789|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau64" "acl=2" "adu64=1234567890123456789 9876543210987654321"]
                     "cte"="|u64 1234567890123456789 9876543210987654321|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau64" "acm=2" "adu64=1234567890123456789 9876543210987654321" "acl=0"]
                     "cte"="|u64 1234567890123456789 9876543210987654321|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bau64" "acm=1" "adu64=1234567890123456789" "acl=1" "adu64=9876543210987654321"]
                     "cte"="|u64 1234567890123456789 9876543210987654321|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -626,12 +626,12 @@ c0
         {
             "name" = "Chunked int8 array"
             "mustSucceed" = [
-                {"events"=["bai8" "acl=0"]                               "cte"="|i8|" "noeventoutput"=true}
-                {"events"=["bai8" "acl=1" "adu8x=7f"]                    "cte"="|i8 127|" "noeventoutput"=true}
-                {"events"=["bai8" "acl=2" "adu8x=7f 9f"]                 "cte"="|i8 127 -97|" "noeventoutput"=true}
-                {"events"=["bai8" "acl=2" "adu8x=7f" "adu8x=9f"]         "cte"="|i8 127 -97|" "noeventoutput"=true}
-                {"events"=["bai8" "acm=2" "adu8x=7f" "adu8x=9f" "acl=0"] "cte"="|i8 127 -97|" "noeventoutput"=true}
-                {"events"=["bai8" "acm=1" "adu8x=7f" "acl=1" "adu8x=9f"] "cte"="|i8 127 -97|" "noeventoutput"=true}
+                {"events"=["bai8" "acl=0"]                               "cte"="|i8|" "lossyCTE"=true}
+                {"events"=["bai8" "acl=1" "adu8x=7f"]                    "cte"="|i8 127|" "lossyCTE"=true}
+                {"events"=["bai8" "acl=2" "adu8x=7f 9f"]                 "cte"="|i8 127 -97|" "lossyCTE"=true}
+                {"events"=["bai8" "acl=2" "adu8x=7f" "adu8x=9f"]         "cte"="|i8 127 -97|" "lossyCTE"=true}
+                {"events"=["bai8" "acm=2" "adu8x=7f" "adu8x=9f" "acl=0"] "cte"="|i8 127 -97|" "lossyCTE"=true}
+                {"events"=["bai8" "acm=1" "adu8x=7f" "acl=1" "adu8x=9f"] "cte"="|i8 127 -97|" "lossyCTE"=true}
             ]
         }
 
@@ -640,18 +640,18 @@ c0
         {
             "name" = "Chunked int16 array"
             "mustSucceed" = [
-                {"events"=["bai16" "acl=0"]                    "cte"="|i16|" "noeventoutput"=true}
-                {"events"=["bai16" "acl=1" "adi16=32767"]      "cte"="|i16 32767|" "noeventoutput"=true}
-                {"events"=["bai16" "acl=2" "adi16=32767 -97"]  "cte"="|i16 32767 -97|" "noeventoutput"=true}
+                {"events"=["bai16" "acl=0"]                    "cte"="|i16|" "lossyCTE"=true}
+                {"events"=["bai16" "acl=1" "adi16=32767"]      "cte"="|i16 32767|" "lossyCTE"=true}
+                {"events"=["bai16" "acl=2" "adi16=32767 -97"]  "cte"="|i16 32767 -97|" "lossyCTE"=true}
                 {
                     "events"=["bai16" "acm=2" "adi16=32767 -97" "acl=0"]
                     "cte"="|i16 32767 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai16" "acm=1" "adi16=32767" "acl=1" "adi16=-97"]
                     "cte"="|i16 32767 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -661,26 +661,26 @@ c0
         {
             "name" = "Chunked int32 array"
             "mustSucceed" = [
-                {"events"=["bai32" "acl=0"] "cte"="|i32|" "noeventoutput"=true}
+                {"events"=["bai32" "acl=0"] "cte"="|i32|" "lossyCTE"=true}
                 {
                     "events"=["bai32" "acl=1" "adi32=2147483647"]
                     "cte"="|i32 2147483647|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai32" "acl=2" "adi32=2147483647 -97"]
                     "cte"="|i32 2147483647 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai32" "acm=2" "adi32=2147483647 -97" "acl=0"]
                     "cte"="|i32 2147483647 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai32" "acm=1" "adi32=2147483647" "acl=1" "adi32=-97"]
                     "cte"="|i32 2147483647 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -690,26 +690,26 @@ c0
         {
             "name" = "Chunked int64 array"
             "mustSucceed" = [
-                {"events"=["bai64" "acl=0"]  "cte"="|i64|" "noeventoutput"=true}
+                {"events"=["bai64" "acl=0"]  "cte"="|i64|" "lossyCTE"=true}
                 {
                     "events"=["bai64" "acl=1" "adi64=9223372036854775807"]
                     "cte"="|i64 9223372036854775807|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai64" "acl=2" "adi64=9223372036854775807 -97"]
                     "cte"="|i64 9223372036854775807 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai64" "acm=2" "adi64=9223372036854775807 -97" "acl=0"]
                     "cte"="|i64 9223372036854775807 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["bai64" "acm=1" "adi64=9223372036854775807" "acl=1" "adi64=-97"]
                     "cte"="|i64 9223372036854775807 -97|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -719,20 +719,20 @@ c0
         {
             "name" = "Chunked float16 array"
             "mustSucceed" = [
-                {"events"=["baf16" "acl=0"]                     "cte"="|f16x|" "noeventoutput"=true}
-                {"events"=["baf16" "acl=1" "adf16=nan"]         "cte"="|f16x nan|" "noeventoutput"=true}
-                {"events"=["baf16" "acl=1" "adf16=snan"]        "cte"="|f16x snan|" "noeventoutput"=true}
-                {"events"=["baf16" "acl=1" "adf16=0x1.a2"]      "cte"="|f16x 1.a2|" "noeventoutput"=true}
-                {"events"=["baf16" "acl=2" "adf16=nan 0x1.a2"]  "cte"="|f16x nan 1.a2|" "noeventoutput"=true}
+                {"events"=["baf16" "acl=0"]                     "cte"="|f16x|" "lossyCTE"=true}
+                {"events"=["baf16" "acl=1" "adf16=nan"]         "cte"="|f16x nan|" "lossyCTE"=true}
+                {"events"=["baf16" "acl=1" "adf16=snan"]        "cte"="|f16x snan|" "lossyCTE"=true}
+                {"events"=["baf16" "acl=1" "adf16=0x1.a2"]      "cte"="|f16x 1.a2|" "lossyCTE"=true}
+                {"events"=["baf16" "acl=2" "adf16=nan 0x1.a2"]  "cte"="|f16x nan 1.a2|" "lossyCTE"=true}
                 {
                     "events"=["baf16" "acm=2" "adf16=inf -inf" "acl=0"]
                     "cte"="|f16x inf -inf|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf16" "acm=1" "adf16=inf" "acl=1" "adf16=-inf"]
                     "cte"="|f16x inf -inf|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -742,24 +742,24 @@ c0
         {
             "name" = "Chunked float32 array"
             "mustSucceed" = [
-                {"events"=["baf32" "acl=0"]                    "cte"="|f32x|" "noeventoutput"=true}
-                {"events"=["baf32" "acl=1" "adf32=nan"]        "cte"="|f32x nan|" "noeventoutput"=true}
-                {"events"=["baf32" "acl=1" "adf32=snan"]       "cte"="|f32x snan|" "noeventoutput"=true}
-                {"events"=["baf32" "acl=1" "adf32=0x1.a9ee3"]  "cte"="|f32x 1.a9ee3|" "noeventoutput"=true}
+                {"events"=["baf32" "acl=0"]                    "cte"="|f32x|" "lossyCTE"=true}
+                {"events"=["baf32" "acl=1" "adf32=nan"]        "cte"="|f32x nan|" "lossyCTE"=true}
+                {"events"=["baf32" "acl=1" "adf32=snan"]       "cte"="|f32x snan|" "lossyCTE"=true}
+                {"events"=["baf32" "acl=1" "adf32=0x1.a9ee3"]  "cte"="|f32x 1.a9ee3|" "lossyCTE"=true}
                 {
                     "events"=["baf32" "acl=2" "adf32=nan 0x1.a9ee3"]
                     "cte"="|f32x nan 1.a9ee3|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf32" "acm=2" "adf32=inf -inf" "acl=0"]
                     "cte"="|f32x inf -inf|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf32" "acm=1" "adf32=inf" "acl=1" "adf32=-inf"]
                     "cte"="|f32x inf -inf|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -769,36 +769,36 @@ c0
         {
             "name" = "Chunked float64 array"
             "mustSucceed" = [
-                {"events"=["baf64" "acl=0"]  "cte"="|f64x|" "noeventoutput"=true}
+                {"events"=["baf64" "acl=0"]  "cte"="|f64x|" "lossyCTE"=true}
                 {
                     "events"=["baf64" "acl=1" "adf64=nan"]
                     "cte"="|f64x nan|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf64" "acl=1" "adf64=snan"]
                     "cte"="|f64x snan|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf64" "acl=1" "adf64=-0x1.9a6638c19ff4p-20"]
                     "cte"="|f64x -1.9a6638c19ff4p-20|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf64" "acl=2" "adf64=nan -0x1.9a6638c19ff4p-20"]
                     "cte"="|f64x nan -1.9a6638c19ff4p-20|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf64" "acm=2" "adf64=inf -inf" "acl=0"]
                     "cte"="|f64x inf -inf|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "events"=["baf64" "acm=1" "adf64=inf" "acl=1" "adf64=-inf"]
                     "cte"="|f64x inf -inf|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -808,15 +808,15 @@ c0
         {
             "name" = "Chunked bit array"
             "mustSucceed" = [
-                {"events"=["bab" "acl=0"]                "cte"="|b|" "noeventoutput"=true}
-                {"events"=["bab" "acl=1" "adb=1"]        "cte"="|b 1|" "noeventoutput"=true}
-                {"events"=["bab" "acl=2" "adb=10"]       "cte"="|b 10|" "noeventoutput"=true}
-                {"events"=["bab" "acl=7" "adb=1000101"]  "cte"="|b 1000101|" "noeventoutput"=true}
-                {"events"=["bab" "acl=8" "adb=10001011"] "cte"="|b 10001011|" "noeventoutput"=true}
+                {"events"=["bab" "acl=0"]                "cte"="|b|" "lossyCTE"=true}
+                {"events"=["bab" "acl=1" "adb=1"]        "cte"="|b 1|" "lossyCTE"=true}
+                {"events"=["bab" "acl=2" "adb=10"]       "cte"="|b 10|" "lossyCTE"=true}
+                {"events"=["bab" "acl=7" "adb=1000101"]  "cte"="|b 1000101|" "lossyCTE"=true}
+                {"events"=["bab" "acl=8" "adb=10001011"] "cte"="|b 10001011|" "lossyCTE"=true}
                 {
                     "events"=["bab" "acm=8" "adb=10001011" "acl=1" "adb=1"]
                     "cte"="|b 100010111|"
-                    "noeventoutput"=true
+                    "lossyCTE"=true
                 }
             ]
         }
@@ -845,28 +845,28 @@ c0
                 {"cte"="\"\""                        "events"=["s="]}               // Empty string
                 {"cte"="\"test/*test\""              "events"=["s=test/*test"]}     // Comment initiator inside a string
                 {"cte"="\"test*/test\""              "events"=["s=test*/test"]}     // Comment terminator inside a string
-                {"cte"="\.~ "test\ttest"~"           "events"=["s=test\+9.test"] "nocteoutput"=true}   // Escaped tab
-                {"cte"="\.~ "test\rtest"~"           "events"=["s=test\+d.test"] "nocteoutput"=true}   // Escaped CR
-                {"cte"="\.~ "test\"test"~"           "events"=["s=\.~ test"test~"] "nocteoutput"=true} // Escaped quote
-                {"cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"] "nocteoutput"=true} // Escaped backslash
-                {"cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"] "nocteoutput"=true} // Escaped slash
-                {"cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"] "nocteoutput"=true} // Escaped star
-                {"cte"="\.~ "test\|test"~"           "events"=["s=\.~ test|test~"] "nocteoutput"=true} // Escaped pipe
-                {"cte"="\.~ "test\_test"~"           "events"=["s=test\+a0.test"] "nocteoutput"=true}  // Escaped non-breaking space
-                {"cte"="\.~ "test\-test"~"           "events"=["s=test\+ad.test"] "nocteoutput"=true}  // Escaped soft hyphen
-                {"cte"="\.~ "test\+a.test"~"         "events"=["s=test\ntest"] "nocteoutput"=true}     // Escaped 1-digit codepoint
-                {"cte"="\.~ "test\+f7.test"~"        "events"=["s=test÷test"] "nocteoutput"=true}      // Escaped 2-digit codepoint
-                {"cte"="\.~ "test\+17d.test"~"       "events"=["s=testŽtest"] "nocteoutput"=true}      // Escaped 3-digit codepoint
-                {"cte"="\.~ "test\+2021.test"~"      "events"=["s=test‡test"] "nocteoutput"=true}      // Escaped 4-digit codepoint
-                {"cte"="\.~ "test\+1f43a.test"~"     "events"=["s=test🐺test"] "nocteoutput"=true}     // Escaped 5-digit codepoint
-                {"cte"="\.~ "test\+000020.test"~"    "events"=["s=test test"] "nocteoutput"=true}      // Escaped 6-digit codepoint
-                {"cte"="\.~ "test\+0000020.test"~"   "events"=["s=test test"] "nocteoutput"=true}      // Escaped 7-digit codepoint
-                {"cte"="\.~ "test\+00000020.test"~"  "events"=["s=test test"] "nocteoutput"=true}      // Escaped 8-digit codepoint
-                {"cte"="\.~ "test\+000000020.test"~" "events"=["s=test test"] "nocteoutput"=true}      // Escaped 9-digit codepoint
+                {"cte"="\.~ "test\ttest"~"           "events"=["s=test\+9.test"] "lossyCTE"=true}   // Escaped tab
+                {"cte"="\.~ "test\rtest"~"           "events"=["s=test\+d.test"] "lossyCTE"=true}   // Escaped CR
+                {"cte"="\.~ "test\"test"~"           "events"=["s=\.~ test"test~"] "lossyCTE"=true} // Escaped quote
+                {"cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"] "lossyCTE"=true} // Escaped backslash
+                {"cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"] "lossyCTE"=true} // Escaped slash
+                {"cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"] "lossyCTE"=true} // Escaped star
+                {"cte"="\.~ "test\|test"~"           "events"=["s=\.~ test|test~"] "lossyCTE"=true} // Escaped pipe
+                {"cte"="\.~ "test\_test"~"           "events"=["s=test\+a0.test"] "lossyCTE"=true}  // Escaped non-breaking space
+                {"cte"="\.~ "test\-test"~"           "events"=["s=test\+ad.test"] "lossyCTE"=true}  // Escaped soft hyphen
+                {"cte"="\.~ "test\+a.test"~"         "events"=["s=test\ntest"] "lossyCTE"=true}     // Escaped 1-digit codepoint
+                {"cte"="\.~ "test\+f7.test"~"        "events"=["s=test÷test"] "lossyCTE"=true}      // Escaped 2-digit codepoint
+                {"cte"="\.~ "test\+17d.test"~"       "events"=["s=testŽtest"] "lossyCTE"=true}      // Escaped 3-digit codepoint
+                {"cte"="\.~ "test\+2021.test"~"      "events"=["s=test‡test"] "lossyCTE"=true}      // Escaped 4-digit codepoint
+                {"cte"="\.~ "test\+1f43a.test"~"     "events"=["s=test🐺test"] "lossyCTE"=true}     // Escaped 5-digit codepoint
+                {"cte"="\.~ "test\+000020.test"~"    "events"=["s=test test"] "lossyCTE"=true}      // Escaped 6-digit codepoint
+                {"cte"="\.~ "test\+0000020.test"~"   "events"=["s=test test"] "lossyCTE"=true}      // Escaped 7-digit codepoint
+                {"cte"="\.~ "test\+00000020.test"~"  "events"=["s=test test"] "lossyCTE"=true}      // Escaped 8-digit codepoint
+                {"cte"="\.~ "test\+000000020.test"~" "events"=["s=test test"] "lossyCTE"=true}      // Escaped 9-digit codepoint
                 {"cte"="\.~ "test\ntest"~"           "events"=["s=\.~ test
-test~"] "nocteoutput"=true}  // Escaped newline
+test~"] "lossyCTE"=true}  // Escaped newline
                 {"cte"="\.~ "test\
-test"~"  "events"=["s=testtest"] "nocteoutput"=true}     // Continuation
+test"~"  "events"=["s=testtest"] "lossyCTE"=true}     // Continuation
             ]
             "mustFail" = [
                 {"cte"="\.~ "test\1gtest"~"}     // Invalid codepoint digit
@@ -911,26 +911,26 @@ test"~"  "events"=["s=testtest"] "nocteoutput"=true}     // Continuation
                 {"cte"="\.~ @""~"                     "events"=["rid"]}                // Empty string
                 {"cte"="\.~ @"test/*test"~"           "events"=["rid=test/*test"]}     // Comment initiator inside a string
                 {"cte"="\.~ @"test*/test"~"           "events"=["rid=test*/test"]}     // Comment terminator inside a string
-                {"cte"="\.~ @"test\ttest"~"           "events"=["rid=test\+9.test"] "nocteoutput"=true}   // Escaped tab
-                {"cte"="\.~ @"test\rtest"~"           "events"=["rid=test\+d.test"] "nocteoutput"=true}   // Escaped CR
-                {"cte"="\.~ @"test\"test"~"           "events"=["rid=\.~ test"test~"] "nocteoutput"=true} // Escaped quote
-                {"cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"] "nocteoutput"=true} // Escaped backslash
-                {"cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"] "nocteoutput"=true} // Escaped slash
-                {"cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"] "nocteoutput"=true} // Escaped star
-                {"cte"="\.~ @"test\|test"~"           "events"=["rid=\.~ test|test~"] "nocteoutput"=true} // Escaped pipe
-                {"cte"="\.~ @"test\_test"~"           "events"=["rid=test\+a0.test"] "nocteoutput"=true}  // Escaped non-breaking space
-                {"cte"="\.~ @"test\-test"~"           "events"=["rid=test\+ad.test"] "nocteoutput"=true}  // Escaped soft hyphen
-                {"cte"="\.~ @"test\+a.test"~"         "events"=["rid=test\ntest"] "nocteoutput"=true}     // Escaped 1-digit codepoint
-                {"cte"="\.~ @"test\+f7.test"~"        "events"=["rid=test÷test"] "nocteoutput"=true}      // Escaped 2-digit codepoint
-                {"cte"="\.~ @"test\+17d.test"~"       "events"=["rid=testŽtest"] "nocteoutput"=true}      // Escaped 3-digit codepoint
-                {"cte"="\.~ @"test\+2021.test"~"      "events"=["rid=test‡test"] "nocteoutput"=true}      // Escaped 4-digit codepoint
-                {"cte"="\.~ @"test\+1f43a.test"~"     "events"=["rid=test🐺test"] "nocteoutput"=true}     // Escaped 5-digit codepoint
-                {"cte"="\.~ @"test\+000020.test"~"    "events"=["rid=test test"] "nocteoutput"=true}      // Escaped 6-digit codepoint
-                {"cte"="\.~ @"test\+000000020.test"~" "events"=["rid=test test"] "nocteoutput"=true}      // Escaped 9-digit codepoint
+                {"cte"="\.~ @"test\ttest"~"           "events"=["rid=test\+9.test"] "lossyCTE"=true}   // Escaped tab
+                {"cte"="\.~ @"test\rtest"~"           "events"=["rid=test\+d.test"] "lossyCTE"=true}   // Escaped CR
+                {"cte"="\.~ @"test\"test"~"           "events"=["rid=\.~ test"test~"] "lossyCTE"=true} // Escaped quote
+                {"cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"] "lossyCTE"=true} // Escaped backslash
+                {"cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"] "lossyCTE"=true} // Escaped slash
+                {"cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"] "lossyCTE"=true} // Escaped star
+                {"cte"="\.~ @"test\|test"~"           "events"=["rid=\.~ test|test~"] "lossyCTE"=true} // Escaped pipe
+                {"cte"="\.~ @"test\_test"~"           "events"=["rid=test\+a0.test"] "lossyCTE"=true}  // Escaped non-breaking space
+                {"cte"="\.~ @"test\-test"~"           "events"=["rid=test\+ad.test"] "lossyCTE"=true}  // Escaped soft hyphen
+                {"cte"="\.~ @"test\+a.test"~"         "events"=["rid=test\ntest"] "lossyCTE"=true}     // Escaped 1-digit codepoint
+                {"cte"="\.~ @"test\+f7.test"~"        "events"=["rid=test÷test"] "lossyCTE"=true}      // Escaped 2-digit codepoint
+                {"cte"="\.~ @"test\+17d.test"~"       "events"=["rid=testŽtest"] "lossyCTE"=true}      // Escaped 3-digit codepoint
+                {"cte"="\.~ @"test\+2021.test"~"      "events"=["rid=test‡test"] "lossyCTE"=true}      // Escaped 4-digit codepoint
+                {"cte"="\.~ @"test\+1f43a.test"~"     "events"=["rid=test🐺test"] "lossyCTE"=true}     // Escaped 5-digit codepoint
+                {"cte"="\.~ @"test\+000020.test"~"    "events"=["rid=test test"] "lossyCTE"=true}      // Escaped 6-digit codepoint
+                {"cte"="\.~ @"test\+000000020.test"~" "events"=["rid=test test"] "lossyCTE"=true}      // Escaped 9-digit codepoint
                 {"cte"="\.~ @"test\ntest"~"           "events"=["rid=\.~ test
-test~"] "nocteoutput"=true}  // Escaped newline
+test~"] "lossyCTE"=true}  // Escaped newline
                 {"cte"="\.~ @"test\
-test"~"  "events"=["rid=testtest"] "nocteoutput"=true}   // Continuation
+test"~"  "events"=["rid=testtest"] "lossyCTE"=true}   // Continuation
             ]
             "mustFail" = [
                 {"cte"="\.~ @"test\1gtest"~"}    // Invalid codepoint digit
@@ -962,25 +962,25 @@ test"~"  "events"=["rid=testtest"] "nocteoutput"=true}   // Continuation
                 {"cte"="\.~ |c ""|~"                     "events"=["ct"]}                // Empty String
                 {"cte"="\.~ |c "test/*test"|~"           "events"=["ct=test/*test"]}     // Comment initiator inside a string
                 {"cte"="\.~ |c "test*/test"|~"           "events"=["ct=test*/test"]}     // Comment terminator inside a string
-                {"cte"="\.~ |c "test\ttest"|~"           "events"=["ct=test\+9.test"] "nocteoutput"=true}    // Escaped tab
-                {"cte"="\.~ |c "test\rtest"|~"           "events"=["ct=test\+d.test"] "nocteoutput"=true}    // Escaped CR
-                {"cte"="\.~ |c "test\"test"|~"           "events"=["ct=\.~ test"test~"] "nocteoutput"=true} // Escaped quote
-                {"cte"="\.~ |c "test\\test"|~"           "events"=["ct=\.~ test\test~"] "nocteoutput"=true} // Escaped backslash
-                {"cte"="\.~ |c "test\/test"|~"           "events"=["ct=\.~ test/test~"] "nocteoutput"=true} // Escaped slash
-                {"cte"="\.~ |c "test\*test"|~"           "events"=["ct=\.~ test*test~"] "nocteoutput"=true} // Escaped star
-                {"cte"="\.~ |c "test\|test"|~"           "events"=["ct=\.~ test|test~"] "nocteoutput"=true} // Escaped pipe
-                {"cte"="\.~ |c "test\_test"|~"           "events"=["ct=test\+a0.test"] "nocteoutput"=true}   // Escaped non-breaking space
-                {"cte"="\.~ |c "test\-test"|~"           "events"=["ct=test\+ad.test"] "nocteoutput"=true}   // Escaped soft hyphen
-                {"cte"="\.~ |c "test\+a.test"|~"          "events"=["ct=test\ntest"] "nocteoutput"=true}     // Escaped 1-digit codepoint
-                {"cte"="\.~ |c "test\+f7.test"|~"         "events"=["ct=test÷test"] "nocteoutput"=true}      // Escaped 2-digit codepoint
-                {"cte"="\.~ |c "test\+17d.test"|~"        "events"=["ct=testŽtest"] "nocteoutput"=true}      // Escaped 3-digit codepoint
-                {"cte"="\.~ |c "test\+2021.test"|~"       "events"=["ct=test‡test"] "nocteoutput"=true}      // Escaped 4-digit codepoint
-                {"cte"="\.~ |c "test\+1f43a.test"|~"      "events"=["ct=test🐺test"] "nocteoutput"=true}     // Escaped 5-digit codepoint
-                {"cte"="\.~ |c "test\+000000020.test"|~"  "events"=["ct=test test"] "nocteoutput"=true}      // Escaped 9-digit codepoint
+                {"cte"="\.~ |c "test\ttest"|~"           "events"=["ct=test\+9.test"] "lossyCTE"=true}    // Escaped tab
+                {"cte"="\.~ |c "test\rtest"|~"           "events"=["ct=test\+d.test"] "lossyCTE"=true}    // Escaped CR
+                {"cte"="\.~ |c "test\"test"|~"           "events"=["ct=\.~ test"test~"] "lossyCTE"=true} // Escaped quote
+                {"cte"="\.~ |c "test\\test"|~"           "events"=["ct=\.~ test\test~"] "lossyCTE"=true} // Escaped backslash
+                {"cte"="\.~ |c "test\/test"|~"           "events"=["ct=\.~ test/test~"] "lossyCTE"=true} // Escaped slash
+                {"cte"="\.~ |c "test\*test"|~"           "events"=["ct=\.~ test*test~"] "lossyCTE"=true} // Escaped star
+                {"cte"="\.~ |c "test\|test"|~"           "events"=["ct=\.~ test|test~"] "lossyCTE"=true} // Escaped pipe
+                {"cte"="\.~ |c "test\_test"|~"           "events"=["ct=test\+a0.test"] "lossyCTE"=true}   // Escaped non-breaking space
+                {"cte"="\.~ |c "test\-test"|~"           "events"=["ct=test\+ad.test"] "lossyCTE"=true}   // Escaped soft hyphen
+                {"cte"="\.~ |c "test\+a.test"|~"          "events"=["ct=test\ntest"] "lossyCTE"=true}     // Escaped 1-digit codepoint
+                {"cte"="\.~ |c "test\+f7.test"|~"         "events"=["ct=test÷test"] "lossyCTE"=true}      // Escaped 2-digit codepoint
+                {"cte"="\.~ |c "test\+17d.test"|~"        "events"=["ct=testŽtest"] "lossyCTE"=true}      // Escaped 3-digit codepoint
+                {"cte"="\.~ |c "test\+2021.test"|~"       "events"=["ct=test‡test"] "lossyCTE"=true}      // Escaped 4-digit codepoint
+                {"cte"="\.~ |c "test\+1f43a.test"|~"      "events"=["ct=test🐺test"] "lossyCTE"=true}     // Escaped 5-digit codepoint
+                {"cte"="\.~ |c "test\+000000020.test"|~"  "events"=["ct=test test"] "lossyCTE"=true}      // Escaped 9-digit codepoint
                 {"cte"="\.~ |c "test\ntest"|~"           "events"=["ct=\.~ test
-test~"] "nocteoutput"=true}  // Escaped newline
+test~"] "lossyCTE"=true}  // Escaped newline
                 {"cte"="\.~ |c "test\
-                                          test"|~"               "events"=["ct=testtest"] "nocteoutput"=true}  // Continuation
+                                          test"|~"               "events"=["ct=testtest"] "lossyCTE"=true}  // Continuation
             ]
             "mustFail" = [
                 {"cte"="\.~ |c "test\1gtest"|~"}   // Invalid codepoint digit
@@ -1006,8 +1006,8 @@ test~"] "nocteoutput"=true}  // Escaped newline
             "mustSucceed" = [
                 {"cte"="|c 04 f6 28 3c 40 00 00 40 40|"  "events"=["cb=04 f6 28 3c 40 00 00 40 40"]}
                 {"cte"="|c 1f 2e 3d 4c|"  "events"=["cb=1f 2e 3d 4c"]}
-                {"cte"="|c 1F 2E 3D 4C|"  "events"=["cb=1f 2e 3d 4c"] "nocteoutput"=true}
-                {"cte"="|c |"             "events"=["cb"] "nocteoutput"=true}
+                {"cte"="|c 1F 2E 3D 4C|"  "events"=["cb=1f 2e 3d 4c"] "lossyCTE"=true}
+                {"cte"="|c |"             "events"=["cb"] "lossyCTE"=true}
                 {"cte"="|c|"              "events"=["cb"]}
             ]
             "mustFail" = [
@@ -1024,40 +1024,40 @@ test~"] "nocteoutput"=true}  // Escaped newline
                 {
                     "cte"="\.~ "\.## ##"~"
                     "events"=["s"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="\.~ "\.##
 ##"~"
                     "events"=["s="]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="\.~ "\.## a##"~"
                     "events"=["s=a"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="\.~ "\.@@
 a@@"~"
                     "events"=["s=a"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="\"\\.^^^\r\na^^^\""
                     "events"=["s=a"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="\.~ "\.XXX blah blah
 blah blahXXX"~"
                     "events"=["s=blah blah\nblah blah"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
                 {
                     "cte"="\.~ "\.A \n\r\t\_\-A"~"
                     "events"=["s=\\n\\r\\t\\_\\-"]
-                    "nocteoutput"=true
+                    "lossyCTE"=true
                 }
             ]
             "mustFail" = [
@@ -1094,7 +1094,7 @@ echo hello world
 
 echo hello world
 ^"]
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                 }
             ]
         }

@@ -272,9 +272,9 @@ func (_this *BaseTest) wrapError(err error, format string, args ...interface{}) 
 
 type MustSucceedTest struct {
 	BaseTest
-	NoCteOutput   bool
-	NoCbeOutput   bool
-	NoEventOutput bool
+	LossyCTE    bool
+	LossyCBE    bool
+	LossyEvents bool
 }
 
 func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, index int) error {
@@ -303,20 +303,20 @@ func (_this *MustSucceedTest) runCte() error {
 	if err != nil {
 		return _this.wrapError(err, "decoding CTE [%v]", _this.Cte)
 	}
-	if hasEvents && !_this.NoEventOutput {
+	if hasEvents && !_this.LossyCTE {
 		if !_this.events.AreEquivalentTo(events) {
 			return _this.errorf("expected CTE [%v] to produce events [%v] but got [%v]",
 				_this.Cte, _this.events, events)
 		}
 	}
-	if !_this.NoCteOutput {
-		if _this.Debug {
-			fmt.Printf("%v: Convert events to CTE: [%v]", _this.context, _this.events)
-		}
-		document, err := _this.eventsToCte(_this.events)
-		if err != nil {
-			return _this.wrapError(err, "Encoding events [%v] to CTE", _this.events)
-		}
+	if _this.Debug {
+		fmt.Printf("%v: Convert events to CTE: [%v]", _this.context, _this.events)
+	}
+	document, err := _this.eventsToCte(_this.events)
+	if err != nil {
+		return _this.wrapError(err, "Encoding events [%v] to CTE", _this.events)
+	}
+	if !_this.LossyCTE {
 		if _this.Cte != document {
 			return _this.errorf("re-encoding events [%v] from CTE [%v] produced unexpected CTE [%v]",
 				_this.events, _this.Cte, document)
@@ -336,20 +336,20 @@ func (_this *MustSucceedTest) runCbe() error {
 	if err != nil {
 		return _this.wrapError(err, "decoding CBE [%v]", asHex(_this.Cbe))
 	}
-	if hasEvents && !_this.NoEventOutput {
+	if hasEvents && !_this.LossyCBE {
 		if !_this.events.AreEquivalentTo(events) {
 			return _this.errorf("expected CBE [%v] to produce events [%v] but got [%v]",
 				asHex(_this.Cbe), _this.events, events)
 		}
 	}
-	if !_this.NoCbeOutput {
-		if _this.Debug {
-			fmt.Printf("%v: Convert events to CBE: [%v]", _this.context, _this.events)
-		}
-		document, err := _this.eventsToCbe(_this.events)
-		if err != nil {
-			return _this.wrapError(err, "Encoding events [%v] to CBE", _this.events)
-		}
+	if _this.Debug {
+		fmt.Printf("%v: Convert events to CBE: [%v]", _this.context, _this.events)
+	}
+	document, err := _this.eventsToCbe(_this.events)
+	if err != nil {
+		return _this.wrapError(err, "Encoding events [%v] to CBE", _this.events)
+	}
+	if !_this.LossyCBE {
 		if !bytes.Equal(_this.Cbe, document) {
 			return _this.errorf("re-encoding events [%v] from CBE [%v] produced unexpected CBE [%v]",
 				_this.events, asHex(_this.Cbe), asHex(document))

@@ -13,7 +13,7 @@ c0
             "name" = "List"
             "mustSucceed" = [
                 {"cte"="[]"  "events"=["l" "e"]}
-                {"cte"="[1]"  "events"=["l" "n=1" "e"] "nocteoutput"=true}
+                {"cte"="[1]"  "events"=["l" "n=1" "e"] "lossyCTE"=true}
                 {
                     "events" = ["l" "null" "b=false" "n=-1" "n=1.5e20" "n=nan" "n=snan" "n=inf" "n=-inf"
                                 "s=string" "rid=https://concise-encoding.org" "l" "e" "m" "e" "e"]
@@ -47,7 +47,7 @@ c0
             "name" = "Map"
             "mustSucceed" = [
                 {"cte"="{}"  "events"=["m" "e"]}
-                {"cte"="{\"a\"=1}"  "events"=["m" "s=a" "n=1" "e"] "nocteoutput"=true}
+                {"cte"="{\"a\"=1}"  "events"=["m" "s=a" "n=1" "e"] "lossyCTE"=true}
                 {
                     "events" = ["m"
                                     "s=string"              "null"
@@ -160,7 +160,7 @@ c0
             "name" = "Node"
             "mustSucceed" = [
                 {"cte"="(1\n)" "events"=["node" "n=1" "e"]}
-                {"cte"="(1)"  "events"=["node" "n=1" "e"] "nocteoutput"=true}
+                {"cte"="(1)"  "events"=["node" "n=1" "e"] "lossyCTE"=true}
                 {
                     "events" = ["node" "null"
                                     "b=false"

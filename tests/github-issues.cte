@@ -14,7 +14,7 @@ c0
             "issue link" = @"https://github.com/kstenerud/concise-encoding/issues/36"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 |u8x /* foo */ 1 2 3|
 %%%%"
@@ -30,7 +30,7 @@ c0
             "issue link" = @"https://github.com/kstenerud/enctool/issues/27"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 @(@"homer" @"married-to" @"marge" )
 %%%%"
@@ -46,7 +46,7 @@ c0
             "issue link" = @"https://github.com/kstenerud/enctool/issues/10"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 [
     17:41:03/-13.54/-172.36

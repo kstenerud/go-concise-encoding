@@ -13,7 +13,7 @@ c0
             "name" = "Numeric Types"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 {
     "boolean"       = true
@@ -70,7 +70,7 @@ c0
             "name" = "String Types"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 {
     "string" = "Strings support escape sequences: \n \t \+1f415."
@@ -145,7 +145,7 @@ c0
             "name" = "Containers"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 {
     "list"          = [1 2.5 "a string"]
@@ -221,7 +221,7 @@ c0
             "name" = "Graphs"
             "mustSucceed" = [
                 {
-                    "nocteoutput" = true
+                    "lossyCTE" = true
                     "cte" = "\.%%%%
 {
     "vertices" = [

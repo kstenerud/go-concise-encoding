@@ -247,7 +247,7 @@ var (
 		EvM.Name():      test.Events{EvE},
 		EvST.Name():     test.Events{EvE, EvN},
 		EvNODE.Name():   test.Events{EvN, EvE},
-		EvEDGE.Name():   test.Events{EvRID, EvRID, EvN},
+		EvEDGE.Name():   test.Events{EvRID, EvRID, EvN, EvE},
 		EvBAB.Name():    test.Events{EvACL, EvADB},
 		EvBAF16.Name():  test.Events{EvACL, EvADF16},
 		EvBAF32.Name():  test.Events{EvACL, EvADF32},
@@ -256,20 +256,95 @@ var (
 		EvBAI32.Name():  test.Events{EvACL, EvADI32},
 		EvBAI64.Name():  test.Events{EvACL, EvADI64},
 		EvBAI8.Name():   test.Events{EvACL, EvADI8},
-		EvBAU16.Name():  test.Events{EvACL, EvAU16},
-		EvBAU32.Name():  test.Events{EvACL, EvAU32},
-		EvBAU64.Name():  test.Events{EvACL, EvAU64},
-		EvBAU8.Name():   test.Events{EvACL, EvAU8},
-		EvBAU.Name():    test.Events{EvACL, EvAU},
+		EvBAU16.Name():  test.Events{EvACL, EvADU16},
+		EvBAU32.Name():  test.Events{EvACL, EvADU32},
+		EvBAU64.Name():  test.Events{EvACL, EvADU64},
+		EvBAU8.Name():   test.Events{EvACL, EvADU8},
+		EvBAU.Name():    test.Events{EvACL, EvADU},
 		EvBCB.Name():    test.Events{EvACL, EvADU8},
 		EvBCT.Name():    test.Events{EvACL, EvADT},
-		EvBMEDIA.Name(): test.Events{EvACL, EvADT, EvACL, EvAU8},
+		EvBMEDIA.Name(): test.Events{EvACL, EvADT, EvACL, EvADU8},
 		EvBRID.Name():   test.Events{EvACL, EvADT},
 		EvBS.Name():     test.Events{EvACL, EvADT},
+		EvCM.Name():     test.Events{EvN},
+		EvCS.Name():     test.Events{EvN},
 		EvMARK.Name():   test.Events{EvN},
 		EvPAD.Name():    test.Events{EvN},
 	}
+
+	lossyCTE = map[string]bool{
+		EvACL.Name():    true,
+		EvACM.Name():    true,
+		EvBAB.Name():    true,
+		EvBAF16.Name():  true,
+		EvBAF32.Name():  true,
+		EvBAF64.Name():  true,
+		EvBAI16.Name():  true,
+		EvBAI32.Name():  true,
+		EvBAI64.Name():  true,
+		EvBAI8.Name():   true,
+		EvBAU16.Name():  true,
+		EvBAU32.Name():  true,
+		EvBAU64.Name():  true,
+		EvBAU8.Name():   true,
+		EvBAU.Name():    true,
+		EvBCB.Name():    true,
+		EvBCT.Name():    true,
+		EvBMEDIA.Name(): true,
+		EvBRID.Name():   true,
+		EvBS.Name():     true,
+
+		// CTE doesn't have this
+		EvPAD.Name(): true,
+	}
+
+	lossyCBE = map[string]bool{
+		// Chunked arrays may have been optimized
+		EvACL.Name():    true,
+		EvACM.Name():    true,
+		EvBAB.Name():    true,
+		EvBAF16.Name():  true,
+		EvBAF32.Name():  true,
+		EvBAF64.Name():  true,
+		EvBAI16.Name():  true,
+		EvBAI32.Name():  true,
+		EvBAI64.Name():  true,
+		EvBAI8.Name():   true,
+		EvBAU16.Name():  true,
+		EvBAU32.Name():  true,
+		EvBAU64.Name():  true,
+		EvBAU8.Name():   true,
+		EvBAU.Name():    true,
+		EvBCB.Name():    true,
+		EvBCT.Name():    true,
+		EvBMEDIA.Name(): true,
+		EvBRID.Name():   true,
+		EvBS.Name():     true,
+
+		// CBE doesn't have these
+		EvCM.Name(): true,
+		EvCS.Name(): true,
+		EvCT.Name(): true,
+	}
 )
+
+func hasLossyCTE(events ...test.Event) bool {
+	for _, event := range events {
+		if lossyCTE[event.Name()] {
+			return true
+		}
+	}
+	return false
+}
+
+func hasLossyCBE(events ...test.Event) bool {
+	for _, event := range events {
+		if lossyCBE[event.Name()] {
+			return true
+		}
+	}
+	return false
+}
 
 func generateEventPrefixesAndFollowups(events ...test.Event) (eventSets []test.Events) {
 	for _, event := range events {

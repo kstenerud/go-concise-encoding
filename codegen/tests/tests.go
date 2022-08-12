@@ -56,7 +56,15 @@ func generateTLOTests() interface{} {
 	var mustFail []interface{}
 
 	for _, eventSet := range generateEventPrefixesAndFollowups(tloValid...) {
-		mustSucceed = append(mustSucceed, generateMustSucceedTest(testTypeCbe|testTypeCte|testTypeEvents, eventSet...))
+		generateTypes := testTypeCbe | testTypeCte | testTypeEvents
+		suppressOutputTypes := testType(0)
+		if hasLossyCTE(eventSet...) {
+			suppressOutputTypes |= testTypeCte
+		}
+		if hasLossyCBE(eventSet...) {
+			suppressOutputTypes |= testTypeCbe
+		}
+		mustSucceed = append(mustSucceed, generateMustSucceedTest(generateTypes, suppressOutputTypes, eventSet...))
 	}
 
 	for _, event := range tloInvalid {
@@ -120,16 +128,25 @@ func generateTest(name string, mustSucceed []interface{}, mustFail []interface{}
 	return m
 }
 
-func generateMustSucceedTest(testType testType, events ...test.Event) map[string]interface{} {
+func generateMustSucceedTest(testType testType, suppressOutput testType, events ...test.Event) map[string]interface{} {
 	test := map[string]interface{}{}
 	if (testType & testTypeCbe) != 0 {
 		test["cbe"] = generateCbe(events...)
+		if (suppressOutput & testTypeCbe) != 0 {
+			test["lossyCBE"] = true
+		}
 	}
 	if (testType & testTypeCte) != 0 {
 		test["cte"] = generateCte(events...)
+		if (suppressOutput & testTypeCte) != 0 {
+			test["lossyCTE"] = true
+		}
 	}
 	if (testType & testTypeEvents) != 0 {
 		test["events"] = stringifyEvents(events...)
+		if (suppressOutput & testTypeEvents) != 0 {
+			test["lossyEvents"] = true
+		}
 	}
 	return test
 }

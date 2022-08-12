@@ -13,7 +13,7 @@ c0
  * - Make sure your git repo is up to date.
  * - Copy this template and overwrite "bugreport.cte" in the "bugreport" dir.
  * - Fill in any/all of the "cbe", "cte", and "events" fields to specify what should be converted to what.
- * - Set the "nocbeoutput", "nocteoutput", noeventoutput" if you need to suppress checking one or more of the output types.
+ * - Set the "lossyCBE", "lossyCTE", lossyEvents" if you need to suppress checking one or more of the output types.
  * - From the "bugreport" dir, run the bugreport test (`go test`) and verify that the test fails.
  * - Paste the contents of bugreport.cte into your bug report.
  */
