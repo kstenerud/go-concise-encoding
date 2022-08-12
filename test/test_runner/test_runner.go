@@ -216,6 +216,8 @@ type BaseTest struct {
 	ceVersion   int
 	Cbe         []byte
 	Cte         string
+	Events      []string
+	events      test.Events
 	Debug       bool // When true, don't convert panics to errors.
 	context     string
 }
@@ -239,6 +241,14 @@ func (_this *BaseTest) PostDecodeInit(ceVersion int, context string) error {
 			copy(b[2:], _this.Cbe)
 			_this.Cbe = b
 		}
+	}
+
+	_this.events = event_parser.ParseEvents(_this.Events...)
+	if !_this.RawDocument && len(_this.events) > 0 {
+		newEvents := make(test.Events, 0, len(_this.events)+1)
+		newEvents = append(newEvents, test.V(uint64(_this.ceVersion)))
+		newEvents = append(newEvents, _this.events...)
+		_this.events = newEvents
 	}
 
 	return nil
@@ -265,8 +275,6 @@ type MustSucceedTest struct {
 	NoCteOutput   bool
 	NoCbeOutput   bool
 	NoEventOutput bool
-	Events        []string
-	events        test.Events
 }
 
 func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, index int) error {
@@ -282,13 +290,6 @@ func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, inde
 		return _this.errorf("must have cbe and/or cte")
 	}
 
-	_this.events = event_parser.ParseEvents(_this.Events...)
-	if !_this.RawDocument && len(_this.events) > 0 {
-		newEvents := make(test.Events, 0, len(_this.events)+1)
-		newEvents = append(newEvents, test.V(uint64(_this.ceVersion)))
-		newEvents = append(newEvents, _this.events...)
-		_this.events = newEvents
-	}
 	return nil
 }
 
@@ -406,11 +407,19 @@ func (_this *MustFailTest) PostDecodeInit(ceVersion int, context string, index i
 		return err
 	}
 
-	hasCte := len(_this.Cte) > 0
-	hasCbe := len(_this.Cbe) > 0
+	total := 0
+	if len(_this.Cte) > 0 {
+		total++
+	}
+	if len(_this.Cbe) > 0 {
+		total++
+	}
+	if len(_this.Events) > 0 {
+		total++
+	}
 
-	if (hasCte && hasCbe) || (!hasCte && !hasCbe) {
-		return _this.errorf("must have either cbe or cte (not both)")
+	if total != 1 {
+		return _this.errorf("must have one and only one of: cbe, cte, events")
 	}
 	return nil
 }

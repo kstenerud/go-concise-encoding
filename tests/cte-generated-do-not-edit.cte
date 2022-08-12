@@ -1,10 +1,5 @@
 c0
 {
-    "type" = {
-        "identifier" = "ce-test"
-        "version" = 1
-    }
-    "ceversion" = 0
     "tests" = [
         {
             "name" = "Wrong sentinel"
@@ -26,12 +21,12 @@ c0
                     "cte" = "\+3.0 0"
                 }
                 {
-                    "cte" = "\+4.0 0"
                     "rawdocument" = true
+                    "cte" = "\+4.0 0"
                 }
                 {
-                    "cte" = "\+5.0 0"
                     "rawdocument" = true
+                    "cte" = "\+5.0 0"
                 }
                 {
                     "rawdocument" = true
@@ -59,8 +54,8 @@ c0
                     "cte" = "\+b.0 0"
                 }
                 {
-                    "cte" = "\+c.0 0"
                     "rawdocument" = true
+                    "cte" = "\+c.0 0"
                 }
                 {
                     "rawdocument" = true
@@ -83,8 +78,8 @@ c0
                     "cte" = "\+11.0 0"
                 }
                 {
-                    "cte" = "\+12.0 0"
                     "rawdocument" = true
+                    "cte" = "\+12.0 0"
                 }
                 {
                     "rawdocument" = true
@@ -119,8 +114,8 @@ c0
                     "cte" = "\+1a.0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "\+1b.0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -131,8 +126,8 @@ c0
                     "cte" = "\+1d.0 0"
                 }
                 {
-                    "cte" = "\+1e.0 0"
                     "rawdocument" = true
+                    "cte" = "\+1e.0 0"
                 }
                 {
                     "rawdocument" = true
@@ -143,24 +138,24 @@ c0
                     "cte" = " 0 0"
                 }
                 {
-                    "cte" = "!0 0"
                     "rawdocument" = true
+                    "cte" = "!0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "\"0 0"
                 }
                 {
-                    "cte" = "#0 0"
                     "rawdocument" = true
+                    "cte" = "#0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "$0 0"
                 }
                 {
-                    "cte" = "%0 0"
                     "rawdocument" = true
+                    "cte" = "%0 0"
                 }
                 {
                     "rawdocument" = true
@@ -187,20 +182,20 @@ c0
                     "cte" = "+0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = ",0 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "-0 0"
                     "rawdocument" = true
+                    "cte" = "-0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = ".0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "/0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -215,20 +210,20 @@ c0
                     "cte" = "20 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "30 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "40 0"
                 }
                 {
-                    "cte" = "50 0"
                     "rawdocument" = true
+                    "cte" = "50 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "60 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -251,8 +246,8 @@ c0
                     "cte" = ";0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "<0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -287,8 +282,8 @@ c0
                     "cte" = "E0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "F0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -315,24 +310,24 @@ c0
                     "cte" = "L0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "M0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "N0 0"
                 }
                 {
-                    "cte" = "O0 0"
                     "rawdocument" = true
+                    "cte" = "O0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "P0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "Q0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -347,32 +342,32 @@ c0
                     "cte" = "T0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "U0 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "V0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "W0 0"
                 }
                 {
-                    "cte" = "X0 0"
                     "rawdocument" = true
+                    "cte" = "X0 0"
                 }
                 {
-                    "cte" = "Y0 0"
                     "rawdocument" = true
+                    "cte" = "Y0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "Z0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "[0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -395,8 +390,8 @@ c0
                     "cte" = "`0 0"
                 }
                 {
-                    "cte" = "a0 0"
                     "rawdocument" = true
+                    "cte" = "a0 0"
                 }
                 {
                     "rawdocument" = true
@@ -407,8 +402,8 @@ c0
                     "cte" = "d0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "e0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -439,8 +434,8 @@ c0
                     "cte" = "l0 0"
                 }
                 {
-                    "cte" = "m0 0"
                     "rawdocument" = true
+                    "cte" = "m0 0"
                 }
                 {
                     "rawdocument" = true
@@ -479,12 +474,12 @@ c0
                     "cte" = "v0 0"
                 }
                 {
-                    "cte" = "w0 0"
                     "rawdocument" = true
+                    "cte" = "w0 0"
                 }
                 {
-                    "cte" = "x0 0"
                     "rawdocument" = true
+                    "cte" = "x0 0"
                 }
                 {
                     "rawdocument" = true
@@ -495,8 +490,8 @@ c0
                     "cte" = "z0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "{0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -535,12 +530,12 @@ c0
                     "cte" = "\+84.0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "\+85.0 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "\+86.0 0"
                     "rawdocument" = true
+                    "cte" = "\+86.0 0"
                 }
                 {
                     "rawdocument" = true
@@ -559,8 +554,8 @@ c0
                     "cte" = "\+8a.0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "\+8b.0 0"
+                    "rawdocument" = true
                 }
                 {
                     "cte" = "\+8c.0 0"
@@ -671,8 +666,8 @@ c0
                     "cte" = "¦0 0"
                 }
                 {
-                    "cte" = "§0 0"
                     "rawdocument" = true
+                    "cte" = "§0 0"
                 }
                 {
                     "rawdocument" = true
@@ -683,16 +678,16 @@ c0
                     "cte" = "©0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "ª0 0"
+                    "rawdocument" = true
                 }
                 {
+                    "rawdocument" = true
                     "cte" = "«0 0"
-                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "¬0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -703,16 +698,16 @@ c0
                     "cte" = "®0 0"
                 }
                 {
-                    "cte" = "¯0 0"
                     "rawdocument" = true
+                    "cte" = "¯0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "°0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "±0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -735,8 +730,8 @@ c0
                     "cte" = "¶0 0"
                 }
                 {
-                    "cte" = "·0 0"
                     "rawdocument" = true
+                    "cte" = "·0 0"
                 }
                 {
                     "rawdocument" = true
@@ -847,20 +842,20 @@ c0
                     "cte" = "Ò0 0"
                 }
                 {
+                    "rawdocument" = true
                     "cte" = "Ó0 0"
-                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "Ô0 0"
+                    "rawdocument" = true
                 }
                 {
+                    "rawdocument" = true
                     "cte" = "Õ0 0"
-                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "Ö0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -871,20 +866,20 @@ c0
                     "cte" = "Ø0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "Ù0 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "Ú0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "Û0 0"
                 }
                 {
-                    "cte" = "Ü0 0"
                     "rawdocument" = true
+                    "cte" = "Ü0 0"
                 }
                 {
                     "rawdocument" = true
@@ -915,24 +910,24 @@ c0
                     "cte" = "ã0 0"
                 }
                 {
-                    "cte" = "ä0 0"
                     "rawdocument" = true
+                    "cte" = "ä0 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "å0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "æ0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "ç0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "è0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -963,8 +958,8 @@ c0
                     "cte" = "ï0 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "ð0 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1036,8 +1031,8 @@ c0
                     "cte" = "c\+0. 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c\+1. 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1056,8 +1051,8 @@ c0
                     "cte" = "c\+5. 0"
                 }
                 {
-                    "cte" = "c\+6. 0"
                     "rawdocument" = true
+                    "cte" = "c\+6. 0"
                 }
                 {
                     "rawdocument" = true
@@ -1097,8 +1092,8 @@ c0
                     "cte" = "c\+f. 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c\+10. 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1177,24 +1172,24 @@ c0
                     "cte" = "c# 0"
                 }
                 {
-                    "cte" = "c$ 0"
                     "rawdocument" = true
+                    "cte" = "c$ 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c% 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c& 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c' 0"
                 }
                 {
-                    "cte" = "c( 0"
                     "rawdocument" = true
+                    "cte" = "c( 0"
                 }
                 {
                     "rawdocument" = true
@@ -1209,12 +1204,12 @@ c0
                     "cte" = "c+ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c, 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c- 0"
                     "rawdocument" = true
+                    "cte" = "c- 0"
                 }
                 {
                     "rawdocument" = true
@@ -1233,24 +1228,24 @@ c0
                     "cte" = "c; 0"
                 }
                 {
-                    "cte" = "c< 0"
                     "rawdocument" = true
+                    "cte" = "c< 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c= 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c> 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c? 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c@ 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1261,12 +1256,12 @@ c0
                     "cte" = "cB 0"
                 }
                 {
-                    "cte" = "cC 0"
                     "rawdocument" = true
+                    "cte" = "cC 0"
                 }
                 {
-                    "cte" = "cD 0"
                     "rawdocument" = true
+                    "cte" = "cD 0"
                 }
                 {
                     "rawdocument" = true
@@ -1297,32 +1292,32 @@ c0
                     "cte" = "cK 0"
                 }
                 {
-                    "cte" = "cL 0"
                     "rawdocument" = true
+                    "cte" = "cL 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cM 0"
                 }
                 {
+                    "rawdocument" = true
                     "cte" = "cN 0"
-                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cO 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cP 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cQ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cR 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1345,16 +1340,16 @@ c0
                     "cte" = "cW 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cX 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cY 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "cZ 0"
                     "rawdocument" = true
+                    "cte" = "cZ 0"
                 }
                 {
                     "rawdocument" = true
@@ -1381,8 +1376,8 @@ c0
                     "cte" = "c` 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "ca 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1409,20 +1404,20 @@ c0
                     "cte" = "cg 0"
                 }
                 {
-                    "cte" = "ch 0"
                     "rawdocument" = true
+                    "cte" = "ch 0"
                 }
                 {
-                    "cte" = "ci 0"
                     "rawdocument" = true
+                    "cte" = "ci 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cj 0"
                 }
                 {
-                    "cte" = "ck 0"
                     "rawdocument" = true
+                    "cte" = "ck 0"
                 }
                 {
                     "rawdocument" = true
@@ -1437,24 +1432,24 @@ c0
                     "cte" = "cn 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "co 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "cp 0"
                     "rawdocument" = true
+                    "cte" = "cp 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cq 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cr 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "cs 0"
                     "rawdocument" = true
+                    "cte" = "cs 0"
                 }
                 {
                     "rawdocument" = true
@@ -1477,8 +1472,8 @@ c0
                     "cte" = "cx 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cy 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1489,8 +1484,8 @@ c0
                     "cte" = "c{ 0"
                 }
                 {
-                    "cte" = "c| 0"
                     "rawdocument" = true
+                    "cte" = "c| 0"
                 }
                 {
                     "rawdocument" = true
@@ -1509,8 +1504,8 @@ c0
                     "cte" = "c\+80. 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c\+81. 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1521,24 +1516,24 @@ c0
                     "cte" = "c\+83. 0"
                 }
                 {
-                    "cte" = "c\+84. 0"
                     "rawdocument" = true
+                    "cte" = "c\+84. 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c\+85. 0"
                 }
                 {
-                    "cte" = "c\+86. 0"
                     "rawdocument" = true
+                    "cte" = "c\+86. 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c\+87. 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c\+88. 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1593,8 +1588,8 @@ c0
                     "cte" = "c\+95. 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c\+96. 0"
+                    "rawdocument" = true
                 }
                 {
                     "cte" = "c\+97. 0"
@@ -1605,8 +1600,8 @@ c0
                     "cte" = "c\+98. 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c\+99. 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1637,8 +1632,8 @@ c0
                     "cte" = "c  0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c¡ 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1649,20 +1644,20 @@ c0
                     "cte" = "c£ 0"
                 }
                 {
-                    "cte" = "c¤ 0"
                     "rawdocument" = true
+                    "cte" = "c¤ 0"
                 }
                 {
-                    "cte" = "c¥ 0"
                     "rawdocument" = true
+                    "cte" = "c¥ 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c¦ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c§ 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1701,8 +1696,8 @@ c0
                     "cte" = "c° 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c± 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1717,8 +1712,8 @@ c0
                     "cte" = "c´ 0"
                 }
                 {
-                    "cte" = "cµ 0"
                     "rawdocument" = true
+                    "cte" = "cµ 0"
                 }
                 {
                     "rawdocument" = true
@@ -1737,12 +1732,12 @@ c0
                     "cte" = "c¹ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cº 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c» 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1793,8 +1788,8 @@ c0
                     "cte" = "cÇ 0"
                 }
                 {
-                    "cte" = "cÈ 0"
                     "rawdocument" = true
+                    "cte" = "cÈ 0"
                 }
                 {
                     "rawdocument" = true
@@ -1833,8 +1828,8 @@ c0
                     "cte" = "cÑ 0"
                 }
                 {
-                    "cte" = "cÒ 0"
                     "rawdocument" = true
+                    "cte" = "cÒ 0"
                 }
                 {
                     "rawdocument" = true
@@ -1845,8 +1840,8 @@ c0
                     "cte" = "cÔ 0"
                 }
                 {
-                    "cte" = "cÕ 0"
                     "rawdocument" = true
+                    "cte" = "cÕ 0"
                 }
                 {
                     "rawdocument" = true
@@ -1857,24 +1852,24 @@ c0
                     "cte" = "c× 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cØ 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cÙ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cÚ 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cÛ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cÜ 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1893,24 +1888,24 @@ c0
                     "cte" = "cà 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cá 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "câ 0"
                 }
                 {
-                    "cte" = "cã 0"
                     "rawdocument" = true
+                    "cte" = "cã 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "cä 0"
                 }
                 {
-                    "cte" = "cå 0"
                     "rawdocument" = true
+                    "cte" = "cå 0"
                 }
                 {
                     "rawdocument" = true
@@ -1949,8 +1944,8 @@ c0
                     "cte" = "cî 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cï 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1985,8 +1980,8 @@ c0
                     "cte" = "c÷ 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cø 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -1997,12 +1992,12 @@ c0
                     "cte" = "cú 0"
                 }
                 {
-                    "cte" = "cû 0"
                     "rawdocument" = true
+                    "cte" = "cû 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "cü 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2019,7 +2014,6 @@ c0
             ]
         }
         {
-            "name" = "Wrong version"
             "mustFail" = [
                 {
                     "rawdocument" = true
@@ -2034,12 +2028,12 @@ c0
                     "cte" = "c4 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c5 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c6 0"
                     "rawdocument" = true
+                    "cte" = "c6 0"
                 }
                 {
                     "rawdocument" = true
@@ -2050,8 +2044,8 @@ c0
                     "cte" = "c8 0"
                 }
                 {
-                    "cte" = "c9 0"
                     "rawdocument" = true
+                    "cte" = "c9 0"
                 }
                 {
                     "rawdocument" = true
@@ -2078,12 +2072,12 @@ c0
                     "cte" = "c15 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c16 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c17 0"
                     "rawdocument" = true
+                    "cte" = "c17 0"
                 }
                 {
                     "rawdocument" = true
@@ -2094,16 +2088,16 @@ c0
                     "cte" = "c19 0"
                 }
                 {
-                    "cte" = "c20 0"
                     "rawdocument" = true
+                    "cte" = "c20 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c21 0"
                 }
                 {
-                    "cte" = "c22 0"
                     "rawdocument" = true
+                    "cte" = "c22 0"
                 }
                 {
                     "rawdocument" = true
@@ -2142,12 +2136,12 @@ c0
                     "cte" = "c31 0"
                 }
                 {
-                    "cte" = "c32 0"
                     "rawdocument" = true
+                    "cte" = "c32 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c33 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2198,8 +2192,8 @@ c0
                     "cte" = "c45 0"
                 }
                 {
-                    "cte" = "c46 0"
                     "rawdocument" = true
+                    "cte" = "c46 0"
                 }
                 {
                     "rawdocument" = true
@@ -2230,12 +2224,12 @@ c0
                     "cte" = "c53 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c54 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c55 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2262,12 +2256,12 @@ c0
                     "cte" = "c61 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c62 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c63 0"
                     "rawdocument" = true
+                    "cte" = "c63 0"
                 }
                 {
                     "rawdocument" = true
@@ -2282,8 +2276,8 @@ c0
                     "cte" = "c66 0"
                 }
                 {
-                    "cte" = "c67 0"
                     "rawdocument" = true
+                    "cte" = "c67 0"
                 }
                 {
                     "rawdocument" = true
@@ -2326,16 +2320,16 @@ c0
                     "cte" = "c77 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c78 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c79 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c80 0"
                     "rawdocument" = true
+                    "cte" = "c80 0"
                 }
                 {
                     "rawdocument" = true
@@ -2362,24 +2356,24 @@ c0
                     "cte" = "c86 0"
                 }
                 {
-                    "cte" = "c87 0"
                     "rawdocument" = true
+                    "cte" = "c87 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c88 0"
                 }
                 {
+                    "rawdocument" = true
                     "cte" = "c89 0"
-                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c90 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c91 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2390,8 +2384,8 @@ c0
                     "cte" = "c93 0"
                 }
                 {
-                    "cte" = "c94 0"
                     "rawdocument" = true
+                    "cte" = "c94 0"
                 }
                 {
                     "rawdocument" = true
@@ -2402,24 +2396,24 @@ c0
                     "cte" = "c96 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c97 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c98 0"
                 }
                 {
-                    "cte" = "c99 0"
                     "rawdocument" = true
+                    "cte" = "c99 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c100 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c101 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2454,24 +2448,24 @@ c0
                     "cte" = "c109 0"
                 }
                 {
+                    "rawdocument" = true
                     "cte" = "c110 0"
-                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c111 0"
+                    "rawdocument" = true
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c112 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c113 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c114 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2494,8 +2488,8 @@ c0
                     "cte" = "c119 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c120 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2506,8 +2500,8 @@ c0
                     "cte" = "c122 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c123 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2534,8 +2528,8 @@ c0
                     "cte" = "c129 0"
                 }
                 {
-                    "cte" = "c130 0"
                     "rawdocument" = true
+                    "cte" = "c130 0"
                 }
                 {
                     "rawdocument" = true
@@ -2598,8 +2592,8 @@ c0
                     "cte" = "c145 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c146 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2618,8 +2612,8 @@ c0
                     "cte" = "c150 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c151 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2662,8 +2656,8 @@ c0
                     "cte" = "c161 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c162 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2678,12 +2672,12 @@ c0
                     "cte" = "c165 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c166 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c167 0"
                     "rawdocument" = true
+                    "cte" = "c167 0"
                 }
                 {
                     "rawdocument" = true
@@ -2726,12 +2720,12 @@ c0
                     "cte" = "c177 0"
                 }
                 {
-                    "cte" = "c178 0"
                     "rawdocument" = true
+                    "cte" = "c178 0"
                 }
                 {
-                    "cte" = "c179 0"
                     "rawdocument" = true
+                    "cte" = "c179 0"
                 }
                 {
                     "rawdocument" = true
@@ -2758,8 +2752,8 @@ c0
                     "cte" = "c185 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c186 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2798,8 +2792,8 @@ c0
                     "cte" = "c195 0"
                 }
                 {
-                    "cte" = "c196 0"
                     "rawdocument" = true
+                    "cte" = "c196 0"
                 }
                 {
                     "rawdocument" = true
@@ -2818,8 +2812,8 @@ c0
                     "cte" = "c200 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c201 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2830,16 +2824,16 @@ c0
                     "cte" = "c203 0"
                 }
                 {
-                    "cte" = "c204 0"
                     "rawdocument" = true
+                    "cte" = "c204 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c205 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c206 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2854,8 +2848,8 @@ c0
                     "cte" = "c209 0"
                 }
                 {
-                    "cte" = "c210 0"
                     "rawdocument" = true
+                    "cte" = "c210 0"
                 }
                 {
                     "rawdocument" = true
@@ -2874,8 +2868,8 @@ c0
                     "cte" = "c214 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c215 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2906,28 +2900,28 @@ c0
                     "cte" = "c222 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c223 0"
+                    "rawdocument" = true
                 }
                 {
-                    "cte" = "c224 0"
                     "rawdocument" = true
+                    "cte" = "c224 0"
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c225 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c226 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
                     "cte" = "c227 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c228 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -2970,8 +2964,8 @@ c0
                     "cte" = "c238 0"
                 }
                 {
-                    "rawdocument" = true
                     "cte" = "c239 0"
+                    "rawdocument" = true
                 }
                 {
                     "rawdocument" = true
@@ -3038,6 +3032,12 @@ c0
                     "cte" = "c255 0"
                 }
             ]
+            "name" = "Wrong version"
         }
     ]
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
 }

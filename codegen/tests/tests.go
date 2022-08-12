@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
@@ -40,6 +39,31 @@ func generateTestFiles(projectDir string) {
 
 	generateCteHeaderTests(filepath.Join(testsDir, "cte-generated-do-not-edit.cte"))
 	generateRulesTests(filepath.Join(testsDir, "rules-generated-do-not-edit.cte"))
+	generateEncodeDecodeTests(filepath.Join(testsDir, "enc-dec-generated-do-not-edit.cte"))
+}
+
+func generateEncodeDecodeTests(path string) {
+	writeTestFile(path,
+		generateTLOTests(),
+	)
+}
+
+func generateTLOTests() interface{} {
+	tloInvalid := test.Events{EvV, EvE, EvACL, EvACM, EvREFL, EvSI}
+	tloValid := complementaryEvents(tloInvalid)
+
+	var mustSucceed []interface{}
+	var mustFail []interface{}
+
+	for _, eventSet := range generateEventPrefixesAndFollowups(tloValid...) {
+		mustSucceed = append(mustSucceed, generateMustSucceedTest(testTypeCbe|testTypeCte|testTypeEvents, eventSet...))
+	}
+
+	for _, event := range tloInvalid {
+		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, event))
+	}
+
+	return generateTest("TLO", mustSucceed, mustFail)
 }
 
 func generateCteHeaderTests(path string) {
@@ -96,14 +120,28 @@ func generateTest(name string, mustSucceed []interface{}, mustFail []interface{}
 	return m
 }
 
-func generateMustFailTest(testType string, events ...test.Event) map[string]interface{} {
+func generateMustSucceedTest(testType testType, events ...test.Event) map[string]interface{} {
+	test := map[string]interface{}{}
+	if (testType & testTypeCbe) != 0 {
+		test["cbe"] = generateCbe(events...)
+	}
+	if (testType & testTypeCte) != 0 {
+		test["cte"] = generateCte(events...)
+	}
+	if (testType & testTypeEvents) != 0 {
+		test["events"] = stringifyEvents(events...)
+	}
+	return test
+}
+
+func generateMustFailTest(testType testType, events ...test.Event) map[string]interface{} {
 	switch testType {
 	case testTypeCbe:
-		return map[string]interface{}{testType: generateCbe(events...)}
+		return map[string]interface{}{"cbe": generateCbe(events...)}
 	case testTypeCte:
-		return map[string]interface{}{testType: generateCte(events...)}
+		return map[string]interface{}{"cte": generateCte(events...)}
 	case testTypeEvents:
-		return map[string]interface{}{testType: stringifyEvents(events...)}
+		return map[string]interface{}{"events": stringifyEvents(events...)}
 	default:
 		panic(fmt.Errorf("%v: unknown mustFail test type", testType))
 	}
@@ -112,7 +150,7 @@ func generateMustFailTest(testType string, events ...test.Event) map[string]inte
 func generateCustomMustFailTest(cteContents string) map[string]interface{} {
 	return map[string]interface{}{
 		"rawdocument": true,
-		testTypeCte:   cteContents,
+		"cte":         cteContents,
 	}
 }
 
@@ -144,21 +182,19 @@ func generateCte(events ...test.Event) string {
 	return result[3:]
 }
 
+type testType int
+
 const (
-	testTypeCbe    = "cbe"
-	testTypeCte    = "cte"
-	testTypeEvents = "events"
+	testTypeCbe testType = 1 << iota
+	testTypeCte
+	testTypeEvents
 )
 
-func stringifyEvents(events ...test.Event) string {
-	sb := strings.Builder{}
-	for i, event := range events {
-		if i > 0 {
-			sb.WriteRune(' ')
-		}
-		sb.WriteString(event.String())
+func stringifyEvents(events ...test.Event) (stringified []string) {
+	for _, event := range events {
+		stringified = append(stringified, event.String())
 	}
-	return sb.String()
+	return
 }
 
 func writeTestFile(path string, tests ...interface{}) {

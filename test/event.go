@@ -27,6 +27,7 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"strings"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -169,6 +170,21 @@ func (_this *EventArrayDataUint8) IsEquivalentTo(that Event) bool {
 	default:
 		return false
 	}
+}
+
+func (_this *EventCustomBinary) String() string {
+	if _this.value == NoValue {
+		return _this.shortName
+	}
+	sb := strings.Builder{}
+	for i, b := range _this.value.([]byte) {
+		if i > 0 {
+			sb.WriteByte(' ')
+		}
+		sb.WriteString(fmt.Sprintf("%02x", b))
+	}
+
+	return fmt.Sprintf("%v=%v", _this.shortName, sb.String())
 }
 
 type EventNumeric struct{ EventWithValue }

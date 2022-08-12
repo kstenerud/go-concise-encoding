@@ -114,6 +114,7 @@ func makeGeneratorDescs(
 			path[len(currentPath)] = i
 
 			if reflectField.Anonymous {
+				// Treat the embedded struct as if it were part of the parent struct
 				makeGeneratorDescs(getBuilderGeneratorForType, reflectField.Type, path, generatorDescs)
 			} else {
 				builderGenerator := getBuilderGeneratorForType(reflectField.Type)

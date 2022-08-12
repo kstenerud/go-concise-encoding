@@ -2,4 +2,9 @@ module github.com/kstenerud/go-concise-encoding/codegen
 
 go 1.14
 
-require github.com/kstenerud/go-concise-encoding v0.0.0-20220809074451-321e88ea60d7
+require (
+	github.com/cockroachdb/apd/v2 v2.0.2
+	github.com/kstenerud/go-compact-float v1.6.1
+	github.com/kstenerud/go-compact-time v1.8.3
+	github.com/kstenerud/go-concise-encoding v0.0.0-20220811103747-a16bbb4b24d8
+)
