@@ -47,6 +47,14 @@ func generateEncodeDecodeTests(path string) {
 		generateTLOTests(),
 		generateListTests(),
 		generateMapKeyTests(),
+		generateMapValueTests(),
+		generateEdgeSourceTests(),
+		generateEdgeDescriptionTests(),
+		generateEdgeDestinationTests(),
+		generateNodeValueTests(),
+		generateNodeChildTests(),
+		generateStructTemplateTests(),
+		generateStructInstanceTests(),
 	)
 }
 
@@ -60,8 +68,8 @@ func generateTLOTests() interface{} {
 }
 
 func generateListTests() interface{} {
-	prefix := test.Events{test.EvL}
-	suffix := test.Events{test.EvE}
+	prefix := test.Events{EvL}
+	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
@@ -75,6 +83,78 @@ func generateMapKeyTests() interface{} {
 	invalidEvents := complementaryEvents(validEvents)
 
 	return generateEncodeDecodeTest("Map Key", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateMapValueTests() interface{} {
+	prefix := test.Events{EvM, EvN}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Map Value", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEdgeSourceTests() interface{} {
+	prefix := test.Events{EvEDGE}
+	suffix := test.Events{EvN, EvN, EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Edge Source", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEdgeDescriptionTests() interface{} {
+	prefix := test.Events{EvEDGE, EvN}
+	suffix := test.Events{EvN, EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Edge Description", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEdgeDestinationTests() interface{} {
+	prefix := test.Events{EvEDGE, EvN, EvN}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Edge Destination", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateNodeValueTests() interface{} {
+	prefix := test.Events{EvNODE}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Node Value", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateNodeChildTests() interface{} {
+	prefix := test.Events{EvNODE, EvNULL}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Node Child", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateStructTemplateTests() interface{} {
+	prefix := test.Events{EvST}
+	suffix := test.Events{EvE, EvN}
+	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
+	invalidEvents := complementaryEvents(validEvents)
+
+	return generateEncodeDecodeTest("Struct Template", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateStructInstanceTests() interface{} {
+	prefix := test.Events{EvST, EvS, EvE, EvSI}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Struct Instance", prefix, suffix, validEvents, invalidEvents)
 }
 
 func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) interface{} {
