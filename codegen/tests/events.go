@@ -240,13 +240,14 @@ var allEvents = test.Events{
 
 var (
 	prefixes = map[string]test.Events{
-		EvSI.Name():   test.Events{EvST},
+		EvSI.Name():   test.Events{EvST, EvS, EvE},
 		EvREFL.Name(): test.Events{EvMARK, EvN},
 	}
 	followups = map[string]test.Events{
 		EvL.Name():      test.Events{EvE},
 		EvM.Name():      test.Events{EvE},
-		EvST.Name():     test.Events{EvE, EvN},
+		EvSI.Name():     test.Events{EvS, EvE},
+		EvST.Name():     test.Events{EvS, EvE, EvN},
 		EvNODE.Name():   test.Events{EvN, EvE},
 		EvEDGE.Name():   test.Events{EvRID, EvRID, EvN, EvE},
 		EvBAB.Name():    test.Events{EvACL, EvADB},

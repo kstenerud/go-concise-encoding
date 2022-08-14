@@ -46,6 +46,7 @@ func generateEncodeDecodeTests(path string) {
 	writeTestFile(path,
 		generateTLOTests(),
 		generateListTests(),
+		generateMapKeyTests(),
 	)
 }
 
@@ -61,11 +62,19 @@ func generateTLOTests() interface{} {
 func generateListTests() interface{} {
 	prefix := test.Events{test.EvL}
 	suffix := test.Events{test.EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvSI, EvE}
-	validEvents := complementaryEvents(invalidEvents)
-	invalidEvents = invalidEvents[:len(invalidEvents)-2]
+	invalidEvents := test.Events{EvV, EvACL, EvACM}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("List", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateMapKeyTests() interface{} {
+	prefix := test.Events{EvM}
+	suffix := test.Events{EvN, EvE}
+	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
+	invalidEvents := complementaryEvents(validEvents)
+
+	return generateEncodeDecodeTest("Map Key", prefix, suffix, validEvents, invalidEvents)
 }
 
 func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) interface{} {
@@ -193,6 +202,17 @@ func generateCustomMustFailTest(cteContents string) map[string]interface{} {
 }
 
 func generateCbe(events ...test.Event) []byte {
+	defer func() {
+		if r := recover(); r != nil {
+			switch v := r.(type) {
+			case error:
+				panic(fmt.Errorf("in events [%v]: %w", test.Events(events), v))
+			default:
+				panic(fmt.Errorf("in events [%v]: %v", test.Events(events), v))
+			}
+		}
+	}()
+
 	buffer := bytes.Buffer{}
 	encoder := cbe.NewEncoder(nil)
 	encoder.PrepareToEncode(&buffer)
@@ -207,6 +227,17 @@ func generateCbe(events ...test.Event) []byte {
 }
 
 func generateCte(events ...test.Event) string {
+	defer func() {
+		if r := recover(); r != nil {
+			switch v := r.(type) {
+			case error:
+				panic(fmt.Errorf("in events [%v]: %w", test.Events(events), v))
+			default:
+				panic(fmt.Errorf("in events [%v]: %v", test.Events(events), v))
+			}
+		}
+	}()
+
 	buffer := bytes.Buffer{}
 	encoder := cte.NewEncoder(nil)
 	encoder.PrepareToEncode(&buffer)
