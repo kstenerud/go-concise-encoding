@@ -151,7 +151,7 @@ func generateStructTemplateTests() interface{} {
 func generateStructInstanceTests() interface{} {
 	prefix := test.Events{EvST, EvS, EvE, EvSI}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvSI, EvST}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Struct Instance", prefix, suffix, validEvents, invalidEvents)

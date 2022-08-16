@@ -168,10 +168,18 @@ func (_this *Context) EndContainer(notifyParent bool) {
 		panic(fmt.Errorf("container has %v objects but expected object count of %d", _this.CurrentEntry.CurrentObjectCount, _this.CurrentEntry.ExpectedObjectCount))
 	}
 	if _this.CurrentEntry.DataType == DataTypeStructTemplate {
-		_this.structTemplates[_this.structTemplateName] = _this.CurrentEntry.CurrentObjectCount
+		_this.addTemplate(_this.structTemplateName, _this.CurrentEntry.CurrentObjectCount)
 	}
 	_this.containerDepth--
 	_this.endContainerLike(notifyParent)
+}
+
+func (_this *Context) addTemplate(id string, objectCount int) {
+	if _, exists := _this.structTemplates[id]; exists {
+		panic(fmt.Errorf("struct template ID [%v] already exists", id))
+	}
+
+	_this.structTemplates[id] = objectCount
 }
 
 func (_this *Context) BeginList() {

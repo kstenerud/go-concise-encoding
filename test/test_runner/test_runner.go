@@ -312,14 +312,17 @@ func (_this *MustSucceedTest) runCte() error {
 	if _this.Debug {
 		fmt.Printf("%v: Convert events to CTE: [%v]", _this.context, _this.events)
 	}
-	document, err := _this.eventsToCte(_this.events)
+	if hasEvents {
+		events = _this.events
+	}
+	document, err := _this.eventsToCte(events)
 	if err != nil {
-		return _this.wrapError(err, "Encoding events [%v] to CTE", _this.events)
+		return _this.wrapError(err, "Encoding events [%v] to CTE", events)
 	}
 	if !_this.LossyCTE {
 		if _this.Cte != document {
 			return _this.errorf("re-encoding events [%v] from CTE [%v] produced unexpected CTE [%v]",
-				_this.events, _this.Cte, document)
+				events, _this.Cte, document)
 		}
 	}
 
@@ -345,14 +348,17 @@ func (_this *MustSucceedTest) runCbe() error {
 	if _this.Debug {
 		fmt.Printf("%v: Convert events to CBE: [%v]", _this.context, _this.events)
 	}
-	document, err := _this.eventsToCbe(_this.events)
+	if hasEvents {
+		events = _this.events
+	}
+	document, err := _this.eventsToCbe(events)
 	if err != nil {
-		return _this.wrapError(err, "Encoding events [%v] to CBE", _this.events)
+		return _this.wrapError(err, "Encoding events [%v] to CBE", events)
 	}
 	if !_this.LossyCBE {
 		if !bytes.Equal(_this.Cbe, document) {
 			return _this.errorf("re-encoding events [%v] from CBE [%v] produced unexpected CBE [%v]",
-				_this.events, asHex(_this.Cbe), asHex(document))
+				events, asHex(_this.Cbe), asHex(document))
 		}
 	}
 
