@@ -28,10 +28,13 @@ import (
 
 func TestPrimary(t *testing.T) {
 	test_runner.RunTests(t, "version.cte")
-	test_runner.RunTests(t, "cbe-basic.cte")
+	test_runner.RunTests(t, "other.cte")
+	test_runner.RunTests(t, "integer.cte")
+	test_runner.RunTests(t, "float.cte")
+	test_runner.RunTests(t, "time.cte")
+
 	test_runner.RunTests(t, "cbe-arrays.cte")
 	test_runner.RunTests(t, "cbe-containers.cte")
-	test_runner.RunTests(t, "cte-basic.cte")
 	test_runner.RunTests(t, "cte-arrays.cte")
 	test_runner.RunTests(t, "cte-containers.cte")
 	test_runner.RunTests(t, "cte-comment.cte")

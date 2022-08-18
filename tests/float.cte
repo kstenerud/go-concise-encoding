@@ -1,0 +1,799 @@
+c0
+{
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
+        {
+            "name" = "CBE Binary Float 16"
+            "mustSucceed" = [
+                {
+                    "cbe"      = |u8x 70 a8 40|
+                    "cte"      = "0x1.5p+02"
+                    "events"   = ["n=0x1.5p2"]
+                }
+                {
+                    "cbe"      = |u8x 70 fc b5|
+                    "cte"      = "-0x1.f8p-20"
+                    "events"   = ["n=-0x1.f8p-20"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 c1 ff|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 c1 7f|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 cf 7f|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 81 ff|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 81 7f|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 8a 7f|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 00 00|
+                    "cte"      = "0"
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 00 80|
+                    "cte"      = "-0"
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 80 7f|
+                    "cte"      = "inf"
+                    "events"   = ["n=inf"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 70 80 ff|
+                    "cte"      = "-inf"
+                    "events"   = ["n=-inf"]
+                }
+            ]
+            "mustFail" = [
+                {"cbe"=|u8x 70 a8|}                    // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "CBE Binary Float 32"
+            "mustSucceed" = [
+                {
+                    "cbe"      = |u8x 71 f8 c9 d4 b8|
+                    "cte"      = "-0x1.a993fp-14"
+                    "events"   = ["n=-0x1.a993fp-14"]
+                }
+                {
+                    "cbe"      = |u8x 71 60 55 fa 46|
+                    "cte"      = "0x1.f4aacp+14"
+                    "events"   = ["n=0x1.f4aacp+14"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 01 00 c0 ff|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 01 00 c0 7f|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 01 4d c0 ff|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 01 00 80 ff|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 01 00 80 7f|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 ff ff 80 7f|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 00 00 00 00|
+                    "cte"      = "0"
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 00 00 00 80|
+                    "cte"      = "-0"
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 00 00 80 7f|
+                    "cte"      = "inf"
+                    "events"   = ["n=inf"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 71 00 00 80 ff|
+                    "cte"      = "-inf"
+                    "events"   = ["n=-inf"]
+                }
+            ]
+            "mustFail" = [
+                {"cbe"=|u8x 71 f8 c9|}                 // Incomplete
+                {"cbe"=|u8x 71 f8 c9 d4|}              // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "CBE Binary Float 64"
+            "mustSucceed" = [
+                {
+                    "cbe"      = |u8x 72 00 74 89 b8 52 15 6f 37|
+                    "cte"      = "0x1.f1552b88974p-137"
+                    "events"   = ["n=0xf.8aa95c44bap-140"]
+                }
+                {
+                    "cbe"      = |u8x 72 48 e6 20 1f 99 f8 c4 c8|
+                    "cte"      = "-0x1.4f8991f20e648p+141"
+                    "events"   = ["n=-0x2.9f1323e41cc9p+140"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 01 00 00 00 00 00 f8 ff|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 01 00 00 00 00 00 f8 7f|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 01 00 00 00 00 00 f0 ff|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 01 00 00 00 00 00 f0 7f|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 00 00 00 00 00 00 00 00|
+                    "cte"      = "0"
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 00 00 00 00 00 00 00 80|
+                    "cte"      = "-0"
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 00 00 00 00 00 00 f0 7f|
+                    "cte"      = "inf"
+                    "events"   = ["n=inf"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 72 00 00 00 00 00 00 f0 ff|
+                    "cte"      = "-inf"
+                    "events"   = ["n=-inf"]
+                }
+            ]
+            "mustFail" = [
+                {"cbe"=|u8x 72 00 74 89 b8|}           // Incomplete
+                {"cbe"=|u8x 72 00 74 89 b8 52|}        // Incomplete
+                {"cbe"=|u8x 72 00 74 89 b8 52 15|}     // Incomplete
+                {"cbe"=|u8x 72 00 74 89 b8 52 15 6f|}  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Decimal Float"
+            "mustSucceed" = [
+                {
+                    "cte"      = "1.2"
+                    "cbe"      = |u8x 65 06 0c|
+                    "events"   = ["n=1.2"]
+                }
+                {
+                    "cte"      = "1.1"
+                    "cbe"      = |u8x 65 06 0b|
+                    "events"   = ["n=1.1"]
+                }
+                {
+                    "cte"      = "0.1"
+                    "cbe"      = |u8x 65 06 01|
+                    "events"   = ["n=0.1"]
+                }
+                {
+                    "cte"      = "4.7234634"
+                    "cbe"      = |u8x 65 1e ca fc c2 16|
+                    "events"   = ["n=4.7234634"]
+                }
+                {
+                    "cte"      = "1.23456"
+                    "cbe"      = |u8x 65 16 c0 c4 07|
+                    "events"   = ["n=1.23456"]
+                }
+                {
+                    "cte"      = "-1.23456"
+                    "cbe"      = |u8x 65 17 c0 c4 07|
+                    "events"   = ["n=-1.23456"]
+                }
+                {
+                    "cte"      = "1.23456e+50"
+                    "cbe"      = |u8x 65 b4 01 c0 c4 07|
+                    "events"   = ["n=1.23456e+50"]
+                }
+                {
+                    "cte"      = "-1.23456e+50"
+                    "cbe"      = |u8x 65 b5 01 c0 c4 07|
+                    "events"   = ["n=-1.23456e+50"]
+                }
+                {
+                    "cte"      = "1.23456e-50"
+                    "cbe"      = |u8x 65 de 01 c0 c4 07|
+                    "events"   = ["n=1.23456e-50"]
+                }
+                {
+                    "cte"      = "-1.23456e-50"
+                    "cbe"      = |u8x 65 df 01 c0 c4 07|
+                    "events"   = ["n=-1.23456e-50"]
+                }
+                {
+                    "cte"      = "-9.6534634727167134523472782456223624582452671345134745694657786776"
+                    "cbe"      = |u8x 65 83 02 98 e7 ec 81 fa ce f3 e1 c9 e1 df 91 e3 ad b8 cc b9 b7 85 db 96 d7 94 ef dc c5 ca b4 9a d5 3a|
+                    "events"   = ["n=-9.6534634727167134523472782456223624582452671345134745694657786776"]
+                }
+                {
+                    "cte"      = "-9.492338558234976568723e-10000"
+                    "cbe"      = |u8x 65 97 b9 02 93 8b ff da e4 c4 c2 d4 94 85 08|
+                    "events"   = ["n=-9.492338558234976568723e-10000"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1.53476e80"
+                    "cbe"      = |u8x 65 ac 02 84 af 09|
+                    "events"   = ["n=1.53476e80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1.53476e93983456"
+                    "cbe"      = |u8x 65 ec 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=1.53476e93983456"]
+                }
+                {
+                    "cte"      = "1.53476e+93983456"
+                    "cbe"      = |u8x 65 ec 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=1.53476e93983456"]
+                }
+                {
+                    "cte"      = "1.53476e-93983456"
+                    "cbe"      = |u8x 65 96 97 a1 b3 01 84 af 09|
+                    "events"   = ["n=1.53476e-93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1.53476E93983456"
+                    "cbe"      = |u8x 65 ec 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=1.53476e93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1.53476E+93983456"
+                    "cbe"      = |u8x 65 ec 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=1.53476e93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1.53476E-93983456"
+                    "cbe"      = |u8x 65 96 97 a1 b3 01 84 af 09|
+                    "events"   = ["n=1.53476e-93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1.53476e93983456"
+                    "cbe"      = |u8x 65 ed 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=-1.53476e93983456"]
+                }
+                {
+                    "cte"      = "-1.53476e+93983456"
+                    "cbe"      = |u8x 65 ed 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=-1.53476e93983456"]
+                }
+                {
+                    "cte"      = "-1.53476e-93983456"
+                    "cbe"      = |u8x 65 97 97 a1 b3 01 84 af 09|
+                    "events"   = ["n=-1.53476e-93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1.53476E93983456"
+                    "cbe"      = |u8x 65 ed 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=-1.53476e93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1.53476E+93983456"
+                    "cbe"      = |u8x 65 ed 96 a1 b3 01 84 af 09|
+                    "events"   = ["n=-1.53476e93983456"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1.53476E-93983456"
+                    "cbe"      = |u8x 65 97 97 a1 b3 01 84 af 09|
+                    "events"   = ["n=-1.53476e-93983456"]
+                }
+
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1e80"
+                    "cbe"      = |u8x 65 c0 02 01|
+                    "events"   = ["n=1e80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1E80"
+                    "cbe"      = |u8x 65 c0 02 01|
+                    "events"   = ["n=1E80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1e80"
+                    "cbe"      = |u8x 65 c1 02 01|
+                    "events"   = ["n=-1e80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1E80"
+                    "cbe"      = |u8x 65 c1 02 01|
+                    "events"   = ["n=-1E80"]
+                }
+                {
+                    "cte"      = "1e+80"
+                    "cbe"      = |u8x 65 c0 02 01|
+                    "events"   = ["n=1e80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1E+80"
+                    "cbe"      = |u8x 65 c0 02 01|
+                    "events"   = ["n=1E80"]
+                }
+                {
+                    "cte"      = "-1e+80"
+                    "cbe"      = |u8x 65 c1 02 01|
+                    "events"   = ["n=-1e80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1E+80"
+                    "cbe"      = |u8x 65 c1 02 01|
+                    "events"   = ["n=-1E80"]
+                }
+                {
+                    "cte"      = "1e-80"
+                    "cbe"      = |u8x 65 c2 02 01|
+                    "events"   = ["n=1e-80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1E-80"
+                    "cbe"      = |u8x 65 c2 02 01|
+                    "events"   = ["n=1E-80"]
+                }
+                {
+                    "cte"      = "-1e-80"
+                    "cbe"      = |u8x 65 c3 02 01|
+                    "events"   = ["n=-1e-80"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-1E-80"
+                    "cbe"      = |u8x 65 c3 02 01|
+                    "events"   = ["n=-1E-80"]
+                }
+
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0.1500000000000000000000000000000000000000000000000001e+10000"
+                    "cbe"      = |u8x 65 f0 b6 02 81 80 80 80 80 80 80 ee a0 bb eb f0 c4 af d6 fa 81 a8 fe cc e4 ee 95 81 04|
+                    "events"   = ["n=0.1500000000000000000000000000000000000000000000000001e+10000"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0.1500000000000000000000000000000000000000000000000001e-10000"
+                    "cbe"      = |u8x 65 92 ba 02 81 80 80 80 80 80 80 ee a0 bb eb f0 c4 af d6 fa 81 a8 fe cc e4 ee 95 81 04|
+                    "events"   = ["n=0.1500000000000000000000000000000000000000000000000001e-10000"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0.1500000000000000000000000000000000000000000000000001e+10000"
+                    "cbe"      = |u8x 65 f1 b6 02 81 80 80 80 80 80 80 ee a0 bb eb f0 c4 af d6 fa 81 a8 fe cc e4 ee 95 81 04|
+                    "events"   = ["n=-0.1500000000000000000000000000000000000000000000000001e+10000"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0.1500000000000000000000000000000000000000000000000001e-10000"
+                    "cbe"      = |u8x 65 93 ba 02 81 80 80 80 80 80 80 ee a0 bb eb f0 c4 af d6 fa 81 a8 fe cc e4 ee 95 81 04|
+                    "events"   = ["n=-0.1500000000000000000000000000000000000000000000000001e-10000"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 65 02|
+                    "cte"      = "0"
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 65 03|
+                    "cte"      = "-0"
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 65 82 00|
+                    "cte"      = "inf"
+                    "events"   = ["n=inf"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 65 83 00|
+                    "cte"      = "-inf"
+                    "events"   = ["n=-inf"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 65 80 00|
+                    "cte"      = "nan"
+                    "events"   = ["n=nan"]
+                }
+                {
+                    "lossyCBE" = true
+                    "cbe"      = |u8x 65 81 00|
+                    "cte"      = "snan"
+                    "events"   = ["n=snan"]
+                }
+            ]
+            "mustFail" = [
+                {"cbe"=|u8x 65 06|}  // Incomplete
+                {"cte"="1."}         // Missing right digit
+                {"cte"=".1"}         // Missing left digit
+                {"cte"="_1.1"}       // Bad whitespace placement
+                {"cte"="1_.1"}       // Bad whitespace placement
+                {"cte"="1._1"}       // Bad whitespace placement
+                {"cte"="1.1_"}       // Bad whitespace placement
+                {"cte"="1.1.1"}      // Too many radices
+                {"cte"="1.1e1e2"}    // Too many exponent markers
+                {"cte"="1.a"}        // Not a digit
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Hexadecimal Float"
+            "mustSucceed" = [
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0p+00"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0p+00"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "cte"      = "0x1.f39p+00"
+                    "cbe"      = |u8x 71 00 c8 f9 3f|
+                    "events"   = ["n=0x1.f39"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0.0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0.0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0.1"
+                    "cbe"      = |u8x 70 80 3d|
+                    "events"   = ["n=0x0.1"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x4.7f3cc34"
+                    "cbe"      = |u8x 72 00 00 00 0d f3 fc 11 40|
+                    "events"   = ["n=0x4.7f3cc34"]
+                }
+//                {
+//                    "cte"      = "-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776"
+//                    "cbe"      = |u8x 65 b3 02 e7 86 ed 8e fd e4 d2 ce 81 b4 d3 ac c9 ea ec b1 d7 cf d9 a6 ff f1 fb e4 99 94 dc a6 85 80 f4 d7 90 97 e5 f6 01|
+//                    "events"   = ["n=-0x1.65346e47aa16713452c47278245e22362458d4526713a513474c694657786776p0"]
+//                }
+
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0.0p0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0.0p0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0.0p+0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0.0p+0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0.0p-0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0.0p-0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0xf.1p10"
+                    "cbe"      = |u8x 70 71 46|
+                    "events"   = ["n=0xf.1p10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0xf.1p10"
+                    "cbe"      = |u8x 70 71 c6|
+                    "events"   = ["n=-0xf.1p10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0xf.1p+10"
+                    "cbe"      = |u8x 70 71 46|
+                    "events"   = ["n=0xf.1p10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0xf.1p+10"
+                    "cbe"      = |u8x 70 71 c6|
+                    "events"   = ["n=-0xf.1p10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0xf.1p-10"
+                    "cbe"      = |u8x 70 71 3c|
+                    "events"   = ["n=0xf.1p-10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0xf.1p-10"
+                    "cbe"      = |u8x 70 71 bc|
+                    "events"   = ["n=-0xf.1p-10"]
+                }
+
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0p0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0p0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0p+0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0p+0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0x0p-0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0x0p-0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0X0P0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0X0P0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0X0P+0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0X0P+0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0X0P-0"
+                    "cbe"      = |u8x 00|
+                    "events"   = ["n=0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-0X0P-0"
+                    "cbe"      = |u8x 69 00|
+                    "events"   = ["n=-0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0xc.4_45__3p8"
+                    "cbe"      = |u8x 71 30 45 44 45|
+                    "events"   = ["n=0xc.4453p8"]
+                }
+
+                // Coefficient too big for float64
+                {
+                    "cte"      = "0x1.54fffe2ac00592375b427ap+100"
+                    "events"   = ["n=0x1.54fffe2ac00592375b427ap100"]
+                }
+                {
+                    "cte"      = "-0x1.54fffe2ac00592375b427ap+100"
+                    "events"   = ["n=-0x1.54fffe2ac00592375b427ap100"]
+                }
+                {
+                    "cte"      = "0x1.54fffe2ac00592375b427ap-100"
+                    "events"   = ["n=0x1.54fffe2ac00592375b427ap-100"]
+                }
+                {
+                    "cte"      = "-0x1.54fffe2ac00592375b427ap-100"
+                    "events"   = ["n=-0x1.54fffe2ac00592375b427ap-100"]
+                }
+
+                // Exponent too big for float64
+                {
+                    "cte"      = "0x1.8p+10000"
+                    "events"   = ["n=0x1.8p10000"]
+                }
+                {
+                    "cte"      = "-0x1.8p+10000"
+                    "events"   = ["n=-0x1.8p10000"]
+                }
+                {
+                    "cte"      = "0x1.8p-10000"
+                    "events"   = ["n=0x1.8p-10000"]
+                }
+                {
+                    "cte"      = "-0x1.8p-10000"
+                    "events"   = ["n=-0x1.8p-10000"]
+                }
+
+                // Everything too big for float64
+                {
+                    "cte"      = "0x1.54fffe2ac00592375b427ap+10000"
+                    "events"   = ["n=0x1.54fffe2ac00592375b427ap10000"]
+                }
+                {
+                    "cte"      = "-0x1.54fffe2ac00592375b427ap+10000"
+                    "events"   = ["n=-0x1.54fffe2ac00592375b427ap10000"]
+                }
+                {
+                    "cte"      = "0x1.54fffe2ac00592375b427ap-10000"
+                    "events"   = ["n=0x1.54fffe2ac00592375b427ap-10000"]
+                }
+                {
+                    "cte"      = "-0x1.54fffe2ac00592375b427ap-10000"
+                    "events"   = ["n=-0x1.54fffe2ac00592375b427ap-10000"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="0x1."}      // Missing right digit
+                {"cte"="0x.1"}      // Missing left digit
+                {"cte"="_0x1.1"}    // Bad whitespace placement
+                {"cte"="0x1_.1"}    // Bad whitespace placement
+                {"cte"="0x1._1"}    // Bad whitespace placement
+                {"cte"="0x1.1_"}    // Bad whitespace placement
+                {"cte"="0x_1.1"}    // Bad whitespace placement
+                {"cte"="0_x1.1"}    // Bad whitespace placement
+                {"cte"="0x1.1.1"}   // Too many radices
+                {"cte"="0x1.1p1p2"} // Too many exponent markers
+                {"cte"="0x1.l"}     // Not a digit
+            ]
+        }
+    ]
+}

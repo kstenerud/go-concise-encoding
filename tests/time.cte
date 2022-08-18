@@ -1,0 +1,453 @@
+c0
+{
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
+        {
+            "name" = "Date"
+            "mustSucceed" = [
+                {
+                    "cte"      = "2050-11-15"
+                    "cbe"      = |u8x 99 6f c9 00|
+                    "events"   = ["t=2050-11-15"]
+                }
+                {
+                    "cte"      = "-9000-01-01"
+                    "cbe"      = |u8x 99 21 de ab 01|
+                    "events"   = ["t=-9000-01-01"]
+                }
+                {
+                    "cte"      = "2000-01-01"
+                    "cbe"      = |u8x 99 21 00 00|
+                    "events"   = ["t=2000-01-01"]
+                }
+                {
+                    "cte"      = "-2000-01-01"
+                    "cbe"      = |u8x 99 21 7e 3e|
+                    "events"   = ["t=-2000-01-01"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "2000-1-1"
+                    "cbe"      = |u8x 99 21 00 00|
+                    "events"   = ["t=2000-01-01"]
+                }
+                {
+                    "cte"      = "9412351-12-31"
+                    "cbe"      = |u8x 99 9f bd dc fc 08|
+                    "events"   = ["t=9412351-12-31"]
+                }
+                {
+                    "cte"      = "-9412351-12-31"
+                    "cbe"      = |u8x 99 9f 3b 9b fd 08|
+                    "events"   = ["t=-9412351-12-31"]
+                }
+                {
+                    "cte"      = "1-01-01"
+                    "cbe"      = |u8x 99 21 3a 1f|
+                    "events"   = ["t=1-01-01"]
+                }
+                {
+                    "cte"      = "-1-01-01"
+                    "cbe"      = |u8x 99 21 42 1f|
+                    "events"   = ["t=-1-01-01"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="0-01-01"}       // Year 0 is invalid
+                {"cte"="-0-01-01"}      // Year -0 is invalid
+                {"cte"="2000-0-01"}     // Month 0 is invalid
+                {"cte"="2000-13-01"}    // Month 13 is invalid
+                {"cte"="2000-01-0"}     // Day 0 is invalid
+                {"cte"="2000-01-32"}    // Day 32 is invalid
+                {"cte"="2000-001-01"}   // Too many digits
+                {"cte"="2000-01-001"}   // Too many digits
+                {"cte"="2000-01-0a"}    // Bad digits
+                {"cte"="2000-0b-01"}    // Bad digits
+                {"cte"="2000-01-"}      // Incomplete
+                {"cte"="2000-01"}       // Incomplete
+                {"cbe"=|u8x 99|}        // Incomplete
+                {"cbe"=|u8x 99 97|}     // Incomplete
+                {"cbe"=|u8x 99 97 55|}  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Time"
+            "mustSucceed" = [
+                {
+                    "cte"      = "00:00:00"
+                    "cbe"      = |u8x 9a 00 00 f0|
+                    "events"   = ["t=00:00:00"]
+                }
+                {
+                    "cte"      = "14:21:09.583454111/Europe/Berlin"
+                    "cbe"      = |u8x 9a ff 6c 36 16 93 ca fd 10 45 2f 42 65 72 6c 69 6e|
+                    "events"   = ["t=14:21:09.583454111/Europe/Berlin"]
+                }
+                {
+                    "cte"      = "23:59:60.999999999/-21.04/86.99"
+                    "cbe"      = |u8x 9a ff 4f d6 dc f9 fd fe 91 ef fb 21|
+                    "events"   = ["t=23:59:60.999999999/-21.04/86.99"]
+                }
+                {
+                    "cte"      = "22:01:15.9015-1300"
+                    "cbe"      = |u8x 9a e5 0b ee 27 b0 00 f4 fc|
+                    "events"   = ["t=22:01:15.9015-1300"]
+                }
+                {
+                    "cte"      = "22:01:15.9015+1001"
+                    "cbe"      = |u8x 9a e5 0b ee 27 b0 00 59 02|
+                    "events"   = ["t=22:01:15.9015+1001"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "0:00:00"
+                    "cbe"      = |u8x 9a 00 00 f0|
+                    "events"   = ["t=0:00:00"]
+                }
+                {
+                    "cte"      = "00:00:00"
+                    "cbe"      = |u8x 9a 00 00 f0|
+                    "events"   = ["t=0:00:00"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "1:45:00"
+                    "cbe"      = |u8x 9a 00 da f0|
+                    "events"   = ["t=1:45:00"]
+                }
+                {
+                    "cte"      = "01:45:00"
+                    "cbe"      = |u8x 9a 00 da f0|
+                    "events"   = ["t=1:45:00"]
+                }
+                {
+                    "cte"      = "23:59:59"
+                    "cbe"      = |u8x 9a d8 f7 fb|
+                    "events"   = ["t=23:59:59"]
+                }
+                {
+                    "cte"      = "23:59:60"
+                    "cbe"      = |u8x 9a e0 f7 fb|
+                    "events"   = ["t=23:59:60"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "00:00:00.000000000"
+                    "cbe"      = |u8x 9a 00 00 f0|
+                    "events"   = ["t=0:00:00"]
+                }
+                {
+                    "cte"      = "00:00:00.000000001"
+                    "cbe"      = |u8x 9a 0e 00 00 00 00 00 fc|
+                    "events"   = ["t=0:00:00.000000001"]
+                }
+                {
+                    "cte"      = "00:00:00.00000001"
+                    "cbe"      = |u8x 9a 56 00 00 00 00 00 fc|
+                    "events"   = ["t=0:00:00.00000001"]
+                }
+                {
+                    "cte"      = "00:00:00.0000001"
+                    "cbe"      = |u8x 9a 26 03 00 00 00 00 fc|
+                    "events"   = ["t=0:00:00.0000001"]
+                }
+                {
+                    "cte"      = "00:00:00.000001"
+                    "cbe"      = |u8x 9a 0c 00 00 00 00|
+                    "events"   = ["t=0:00:00.000001"]
+                }
+                {
+                    "cte"      = "00:00:00.00001"
+                    "cbe"      = |u8x 9a 54 00 00 00 00|
+                    "events"   = ["t=0:00:00.00001"]
+                }
+                {
+                    "cte"      = "00:00:00.0001"
+                    "cbe"      = |u8x 9a 24 03 00 00 00|
+                    "events"   = ["t=0:00:00.0001"]
+                }
+                {
+                    "cte"      = "00:00:00.001"
+                    "cbe"      = |u8x 9a 0a 00 00 c0|
+                    "events"   = ["t=0:00:00.001"]
+                }
+                {
+                    "cte"      = "00:00:00.01"
+                    "cbe"      = |u8x 9a 52 00 00 c0|
+                    "events"   = ["t=0:00:00.01"]
+                }
+                {
+                    "cte"      = "00:00:00.1"
+                    "cbe"      = |u8x 9a 22 03 00 c0|
+                    "events"   = ["t=0:00:00.1"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "00:00:00.100000000"
+                    "cbe"      = |u8x 9a 22 03 00 c0|
+                    "events"   = ["t=0:00:00.1"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "23:59:60.000000000"
+                    "cbe"      = |u8x 9a e0 f7 fb|
+                    "events"   = ["t=23:59:60"]
+                }
+                {
+                    "cte"      = "23:59:60.999999999"
+                    "cbe"      = |u8x 9a fe 4f d6 dc f9 fd fe|
+                    "events"   = ["t=23:59:60.999999999"]
+                }
+                {
+                    "cte"      = "23:59:59.101"
+                    "cbe"      = |u8x 9a 2a 63 df ef|
+                    "events"   = ["t=23:59:59.101"]
+                }
+                {
+                    "cte"      = "10:00:01.93/America/Los_Angeles"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 1a 4d 2f 4c 6f 73 5f 41 6e 67 65 6c 65 73|
+                    "events"   = ["t=10:00:01.93/America/Los_Angeles"]
+                }
+                {
+                    "cte"      = "20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"
+                    "cbe"      = |u8x 9a 01 00 fa fa 43 2f 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 36 37 38 39 30 31 32 33|
+                    "events"   = ["t=20:00:00/Etc/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"]
+                }
+                {
+                    "cte"      = "10:00:01.93/0.00/0.00"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 01 00 00 00|
+                    "events"   = ["t=10:00:01.93/0/0"]
+                }
+                {
+                    "cte"      = "10:00:01.93/89.92/1.10"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 41 46 6e 00|
+                    "events"   = ["t=10:00:01.93/89.92/1.10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "10:00:01.93/0/0"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 01 00 00 00|
+                    "events"   = ["t=10:00:01.93/0/0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "10:00:01.93/00/00.00"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 01 00 00 00|
+                    "events"   = ["t=10:00:01.93/0/0"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "10:00:01.93/1/1"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 c9 00 64 00|
+                    "events"   = ["t=10:00:01.93/1/1"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "10:00:01.93/90/-180"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 51 46 b0 b9|
+                    "events"   = ["t=10:00:01.93/90/-180"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "10:00:01.93/-90/180"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 b1 b9 50 46|
+                    "events"   = ["t=10:00:01.93/-90/180"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "10:00:01.93+0000"
+                    "cbe"      = |u8x 9a 12 3d 00 d4|
+                    "events"   = ["t=10:00:01.93"]
+                }
+                {
+                    "cte"      = "10:00:01.93+0001"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 00 01 00|
+                    "events"   = ["t=10:00:01.93+0001"]
+                }
+                {
+                    "cte"      = "10:00:01.93-0030"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 00 e2 ff|
+                    "events"   = ["t=10:00:01.93-0030"]
+                }
+                {
+                    "cte"      = "10:00:01.93-1259"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 00 f5 fc|
+                    "events"   = ["t=10:00:01.93-1259"]
+                }
+                {
+                    "cte"      = "10:00:01.93-2359"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 00 61 fa|
+                    "events"   = ["t=10:00:01.93-2359"]
+                }
+                {
+                    "cte"      = "10:00:01.93+2359"
+                    "cbe"      = |u8x 9a 13 3d 00 d4 00 9f 05|
+                    "events"   = ["t=10:00:01.93+2359"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="012:00:00"}           // Too many hour digits
+                {"cte"="12:000:00"}           // Too many minute digits
+                {"cte"="12:00:000"}           // Too many second digits
+                {"cte"="12:00:00.0000000000"} // Too many subsecond digits
+                {"cte"="24:00:00"}            // Hour too high
+                {"cte"="23:60:00"}            // Minute too high
+                {"cte"="23:00:61"}            // Second too high
+                {"cte"="2a:00:00"}            // Invalid hour digit
+                {"cte"="20:0a:00"}            // Invalid minute digit
+                {"cte"="20:00:0a"}            // Invalid second digit
+                {"cte"="20:00:00.00a"}        // Invalid subsecond digit
+                {"cte"="20:00:00/"}           // Missing timezone after marker
+                {"cte"="20:00:00/Etc/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234"} // Max area/location length is 127
+                {"cte"="20:00:00/0/"}         // Missing longitude
+                {"cte"="20:00:00/90.01/0"}    // Latitude max is 90
+                {"cte"="20:00:00/-90.01/0"}   // Latitude min is -90
+                {"cte"="20:00:00/0/180.01"}   // Longitude max is 180
+                {"cte"="20:00:00/0/-180.01"}  // Longitude min is -180
+                {"cte"="20:00:00/0/0.011"}    // Too much precision
+                {"cte"="20:00:00/0.011/0"}    // Too much precision
+                {"cte"="20:00:00/0a/0"}       // Invalid character
+                {"cte"="20:00:00/0/0a"}       // Invalid character
+                {"cte"="20:00:00+0"}          // Not enough digits
+                {"cte"="20:00:00-0"}          // Not enough digits
+                {"cte"="20:00:00+00"}         // Not enough digits
+                {"cte"="20:00:00-00"}         // Not enough digits
+                {"cte"="20:00:00+000"}        // Not enough digits
+                {"cte"="20:00:00-000"}        // Not enough digits
+                {"cte"="20:00:00+00000"}      // Too many digits
+                {"cte"="20:00:00-00000"}      // Too many digits
+                {"cte"="20:00:00+2400"}       // Too high
+                {"cte"="20:00:00-2400"}       // Too low
+                {"cte"="20:00:00+230a"}       // Invalid digits
+                {"cte"="20:00:00-230a"}       // Invalid digits
+                {"cbe"=|u8x 9a 0e 00 00 00 76 4b|}  // Incomplete
+                {"cbe"=|u8x 9a 0e 00 00 00 76|}     // Incomplete
+                {"cbe"=|u8x 9a 0e 00 00 00|}        // Incomplete
+                {"cbe"=|u8x 9a 0e 00 00|}           // Incomplete
+                {"cbe"=|u8x 9a 0e 00|}              // Incomplete
+                {"cbe"=|u8x 9a 0e|}                 // Incomplete
+                {"cbe"=|u8x 9a|}                    // Incomplete
+                {"cbe"=|u8x 9a 3b 5f 5d ca 16 4d 2f 56 61 6e 63 6f 75 76 65|} // Incomplete
+                {"cbe"=|u8x 9a 0f 00 00 00 76 4b fe 00 e0|} // Incomplete
+            ]
+        }
+
+
+        // ====================================================================
+
+        {
+            "name" = "Timestamp"
+            "mustSucceed" = [
+                {
+                    "cte"      = "10233-01-01/09:31:44.901554"
+                    "cbe"      = |u8x 9b 94 0d 6e f6 4b 21 a4 80 01|
+                    "events"   = ["t=10233-01-01/09:31:44.901554/Z"]
+                }
+                {
+                    "cte"      = "2000-01-01/09:31:44.9+0100"
+                    "cbe"      = |u8x 9b 23 9c fd 52 08 00 00 3c 00|
+                    "events"   = ["t=2000-01-01/09:31:44.9+0100"]
+                }
+                {
+                    "cte"      = "2000-01-01/09:31:44.901554212/Europe/Prague"
+                    "cbe"      = |u8x 9b 27 01 e5 ad d9 2f 85 00 00 10 45 2f 50 72 61 67 75 65|
+                    "events"   = ["t=2000-01-01/09:31:44.901554212/Europe/Prague"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "2000-01-01/9:31:44.901554/Z"
+                    "cbe"      = |u8x 9b 94 0d 6e f6 4b 21 00 00|
+                    "events"   = ["t=2000-01-01/9:31:44.901554/Z"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "02000-01-01/9:31:44.901554/Z"
+                    "cbe"      = |u8x 9b 94 0d 6e f6 4b 21 00 00|
+                    "events"   = ["t=2000-01-01/9:31:44.901554/Z"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "-02000-01-01/9:31:44.901554/Z"
+                    "cbe"      = |u8x 9b 94 0d 6e f6 4b 21 7e 3e|
+                    "events"   = ["t=-2000-01-01/9:31:44.901554/Z"]
+                }
+                {
+                    "cte"      = "2020-01-15/13:41:00.000599"
+                    "cbe"      = |u8x 9b bc 12 00 20 6d 2f 50 00|
+                    "events"   = ["t=2020-01-15/13:41:00.000599"]
+                }
+                {
+                    "cte"      = "2020-01-15/10:00:01.93/89.92/1.10"
+                    "cbe"      = |u8x 9b 13 3d 00 d4 0b 14 41 46 6e 00|
+                    "events"   = ["t=2020-01-15/10:00:01.93/89.92/1.10"]
+                }
+                {
+                    "cte"      = "2020-01-15/10:00:01.93/89.92/-1.10"
+                    "cbe"      = |u8x 9b 13 3d 00 d4 0b 14 41 46 92 ff|
+                    "events"   = ["t=2020-01-15/10:00:01.93/89.92/-1.10"]
+                }
+                {
+                    "cte"      = "2020-01-15/10:00:01.93/-89.92/1.10"
+                    "cbe"      = |u8x 9b 13 3d 00 d4 0b 14 c1 b9 6e 00|
+                    "events"   = ["t=2020-01-15/10:00:01.93/-89.92/1.10"]
+                }
+                {
+                    "cte"      = "2020-01-15/10:00:01.93/-89.92/-1.10"
+                    "cbe"      = |u8x 9b 13 3d 00 d4 0b 14 c1 b9 92 ff|
+                    "events"   = ["t=2020-01-15/10:00:01.93/-89.92/-1.10"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "2000-01-01/9:31:44.9+0100"
+                    "cbe"      = |u8x 9b 23 9c fd 52 08 00 00 3c 00|
+                    "events"   = ["t=2000-01-01/9:31:44.9+0100"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "2000-01-01/9:31:44.901554212/Europe/Prague"
+                    "cbe"      = |u8x 9b 27 01 e5 ad d9 2f 85 00 00 10 45 2f 50 72 61 67 75 65|
+                    "events"   = ["t=2000-01-01/9:31:44.901554212/Europe/Prague"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="0-01-01/9:31:44.901554"}            // Year 0 is invalid
+                {"cte"="0000-01-01/9:31:44.901554"}         // Year 0 is invalid
+                {"cte"="2000-00-01/9:31:44.901554"}         // Month 0 is invalid
+                {"cte"="2000-13-01/9:31:44.901554"}         // Month 13 is invalid
+                {"cte"="2000-01-00/9:31:44.901554"}         // Day 0 is invalid
+                {"cte"="2000-01-32/9:31:44.901554"}         // Day 32 is invalid
+                {"cte"="2000-01-01/24:31:44.901554"}        // Hour 24 is invalid
+                {"cte"="2000-01-01/9:60:44.901554"}         // Minute 60 is invalid
+                {"cte"="2000-01-01/9:31:61.901554"}         // Second 61 is invalid
+                {"cte"="2000-01-01/9:31:44.-901554"}        // Subseconds cannot be negative
+                {"cte"="2000-01-01/9:31:44.9015549343"}     // Subseconds too long
+                {"cte"="2000-01-01/9:31:44.901554/91/0"}    // Latitude 91 is invalid
+                {"cte"="2000-01-01/9:31:44.901554/-91/0"}   // Latitude -91 is invalid
+                {"cte"="2000-01-01/9:31:44.901554/0/181"}   // Longitude 181 is invalid
+                {"cte"="2000-01-01/9:31:44.901554/0/-181"}  // Longitude -181 is invalid
+                {"cte"="2000-01-01/9:31:44.901554+2400"}    // Offset 2400 is invalid
+                {"cte"="2000-01-01/9:31:44.901554-2400"}    // Offset -2400 is invalid
+                {"cbe"=|u8x 9b 01 00 10 02 00 10 45 2f 42 65 72 6c 69|} // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06 1f 99 12 d5 2e 2f|}       // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06 1f 99 12 d5 2e|}          // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06 1f 99 12 d5|}             // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06 1f 99 12|}                // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06 1f 99|}                   // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06 1f|}                      // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7 06|}                         // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0 d7|}                            // Incomplete
+                {"cbe"=|u8x 9b 8d 1c b0|}                               // Incomplete
+                {"cbe"=|u8x 9b 8d 1c|}                                  // Incomplete
+                {"cbe"=|u8x 9b 8d|}                                     // Incomplete
+                {"cbe"=|u8x 9b|}                                        // Incomplete
+            ]
+        }
+    ]
+}

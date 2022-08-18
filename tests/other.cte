@@ -1,0 +1,406 @@
+c0
+{
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
+        {
+            "name" = "Incomplete document"
+            "mustFail" = [
+                {
+                    "rawDocument" = true
+                    "cbe" = |u8x 81|
+                }
+                {
+                    "rawDocument" = true
+                    "cbe" = |u8x 81 01|
+                }
+                {
+                    "rawDocument" = true
+                    "cte" = "c"
+                }
+                {
+                    "rawDocument" = true
+                    "cte" = "c1"
+                }
+                {
+                    "rawDocument" = true
+                    "cte" = "c1 "
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Padding"
+            "mustSucceed" = [
+                {
+                    "cbe" = |u8x 7f 7f 7f 7e|
+                    "lossyCTE" = true
+                    "cte" = "null"
+                    "events" = ["pad" "pad" "pad" "null"]
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Null"
+            "mustSucceed" = [
+                {
+                    "cte" = "null"
+                    "cbe" = |u8x 7e|
+                    "events" = ["null"]
+                }
+                {
+                    "lossyCTE"=true
+                    "cte"="Null"
+                    "cbe" = |u8x 7e|
+                    "events"=["null"]
+                }
+                {
+                    "lossyCTE"=true
+                    "cte"="NULL"
+                    "cbe" = |u8x 7e|
+                    "events"=["null"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="nulled"}
+                {"cte"="-null"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Boolean"
+            "mustSucceed" = [
+                {
+                    "cte"      = "false"
+                    "cbe"      = |u8x 7c|
+                    "events"   = ["b=false"]
+                }
+                {
+                    "cte"      = "true"
+                    "cbe"      = |u8x 7d|
+                    "events"   = ["b=true"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "True"
+                    "cbe"      = |u8x 7d|
+                    "events"   = ["b=true"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "TRUE"
+                    "cbe"      = |u8x 7d|
+                    "events"   = ["b=true"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "False"
+                    "cbe"      = |u8x 7c|
+                    "events"   = ["b=false"]
+                }
+                {
+                    "lossyCTE" = true
+                    "cte"      = "FALSE"
+                    "cbe"      = |u8x 7c|
+                    "events"   = ["b=false"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="t"}
+                {"cte"="truer"}
+                {"cte"="-true"}
+                {"cte"="f"}
+                {"cte"="falser"}
+                {"cte"="-false"}
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "UID"
+            "mustSucceed" = [
+                {
+                    "cbe"      = |u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00|
+                    "cte"      = "123e4567-e89b-12d3-a456-426655440000"
+                    "events"   = ["uid=123e4567-e89b-12d3-a456-426655440000"]
+                }
+                {
+                    "cbe"      = |u8x 73 fe db ca 98 11 11 22 22 cc cc 72 3b 87 d4 54 6a|
+                    "cte"      = "fedbca98-1111-2222-cccc-723b87d4546a"
+                    "events"   = ["uid=fedbca98-1111-2222-cccc-723b87d4546a"]
+                }
+                {
+                    "cbe"      = |u8x 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "00000000-0000-0000-0000-000000000000"
+                    "events"   = ["uid=00000000-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 12 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "123456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=123456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 22 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "223456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=223456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 32 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "323456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=323456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 42 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "423456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=423456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 52 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "523456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=523456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 62 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "623456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=623456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 72 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "723456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=723456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 82 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "823456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=823456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 92 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "923456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=923456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 a2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "a23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=a23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 b2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "b23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=b23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 c2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "c23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=c23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 d2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "d23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=d23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 e2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "e23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=e23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 f2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "cte"      = "f23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=f23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 a2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "lossyCTE" = true
+                    "cte"      = "A23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=a23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 b2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "lossyCTE" = true
+                    "cte"      = "B23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=b23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 c2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "lossyCTE" = true
+                    "cte"      = "C23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=c23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 d2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "lossyCTE" = true
+                    "cte"      = "D23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=d23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 e2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "lossyCTE" = true
+                    "cte"      = "E23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=e23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 f2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "lossyCTE" = true
+                    "cte"      = "F23456af-0000-0000-0000-000000000000"
+                    "events"   = ["uid=f23456af-0000-0000-0000-000000000000"]
+                }
+                {
+                    "cbe"      = |u8x 73 fb dc ba 98 76 54 32 10 aa aa bb bb bb bb bb bb|
+                    "cte"      = "fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"
+                    "events"   = ["uid=fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"]
+                }
+            ]
+            "mustFail" = [
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00|}  // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44|}     // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55|}        // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42 66|}           // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56 42|}              // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4 56|}                 // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3 a4|}                    // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12 d3|}                       // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b 12|}                          // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8 9b|}                             // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67 e8|}                                // Incomplete
+                {"cbe"=|u8x 73 12 3e 45 67|}                                   // Incomplete
+                {"cbe"=|u8x 73 12 3e 45|}                                      // Incomplete
+                {"cbe"=|u8x 73 12 3e|}                                         // Incomplete
+                {"cbe"=|u8x 73 12|}                                            // Incomplete
+                {"cbe"=|u8x 73|}                                               // Incomplete
+                {"cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbbbb"}    // Too short
+                {"cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbbbbbb"}  // Too long
+                {"cte"="fbdcba987654-3210-aaaa-bbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba98-76543210-aaaa-bbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba98-7654-3210aaaa-bbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba98-7654-3210-aaaabbbbbbbbbbbb"}    // Malformed
+                {"cte"="fbdcba9876543210aaaabbbbbbbbbbbb"}       // Malformed
+                {"cte"="fbdcba98-7654-3210-aaaa-bbbbbbbbgbbb"}   // Bad chars
+                {"cte"="-fbdcba98-7654-3210-aaaa-bbbbbbbbbbbb"}  // Negative UID is not a thing
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Marker"
+            "mustSucceed" = [
+                {
+                    "cte"      = "&1:2"
+                    "cbe"      = |u8x 97 01 31 02|
+                    "events"   = ["mark=1" "n=2"]
+                }
+                {
+                    "cte"      = "&1:\"x\""
+                    "cbe"      = |u8x 97 01 31 81 78|
+                    "events"   = ["mark=1" "s=x"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="& 1:2"}    // Bad whitespace
+                {"cte"="& 1: 2"}   // Bad whitespace
+                {"cte"="& 1 :2"}   // Bad whitespace
+                {"cte"="& 1 : 2"}  // Bad whitespace
+                {"cte"="&1: 2"}    // Bad whitespace
+                {"cte"="&1 :2"}    // Bad whitespace
+                {"cte"="&1 : 2"}   // Bad whitespace
+                {"cte"="&1\"x\""}  // Missing separator
+                {"cte"="&1 \"x\""} // Missing separator
+                // Identifier too long:
+                {"cte"="&abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh:1"}
+                {"cbe"=|u8x 97|}       // Incomplete
+                {"cbe"=|u8x 97 00|}    // Zero length ID
+                {"cbe"=|u8x 97 01|}    // Incomplete
+                {"cbe"=|u8x 97 02 61|} // Incomplete
+                // Identifier too long:
+                {"cbe"=|u8x 97 80 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68|}
+                {"cte"="[&a:1 &a:1]"}                    // Duplicate ID
+                {"cbe"=|u8x 7a 97 01 61 01 97 01 61 7b|} // Duplicate ID
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Reference"
+            "mustSucceed" = [
+                {
+                    "events" = ["l" "mark=x" "n=2" "refl=x" "e"]
+                    "cbe" = |u8x 7a 97 01 78 02 98 01 78 7b|
+                    "cte" = "\.^
+[
+    &x:2
+    $x
+]^"
+                }
+                {
+                    "events" = ["l" "refl=x" "mark=x" "n=2" "e"]
+                    "cbe" = |u8x 7a 98 01 78 97 01 78 02 7b|
+                    "cte" = "\.^
+[
+    $x
+    &x:2
+]^"
+                }
+                {
+                    "events" = ["m" "s=My key" "mark=mykey" "s=Blah blah" "refl=mykey" "n=1000" "e"]
+                    "cbe" = |u8x 79 86 4d 79 20 6b 65 79 97 05 6d 79 6b 65 79 89 42 6c 61 68 20 62 6c 61 68 98 05 6d 79 6b 65 79 6a e8 03 7b|
+                    "cte" = "\.^
+{
+    "My key" = &mykey:"Blah blah"
+    $mykey = 1000
+}^"
+                }
+                {
+                    "events" = ["m" "refl=mykey" "n=1000" "s=My key" "mark=mykey" "s=Blah blah" "e"]
+                    "cbe" = |u8x 79 98 05 6d 79 6b 65 79 6a e8 03 86 4d 79 20 6b 65 79 97 05 6d 79 6b 65 79 89 42 6c 61 68 20 62 6c 61 68 7b|
+                    "cte" = "\.^
+{
+    $mykey = 1000
+    "My key" = &mykey:"Blah blah"
+}^"
+                }
+            ]
+            "mustFail" = [
+                {"cte"="[&x:2 $y]"}                                      // Unknown ID
+                {"cte"="[$y &x:2]"}                                      // Unknown ID
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:null}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:nan}^"}      // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:snan}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:[]}^"}       // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:{}}^"}       // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:(1)}^"}      // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:@(1 2 3)}^"} // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|ct a|}^"}   // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|cb 00|}^"}  // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|b|}^"}      // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i8|}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i16|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i32|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i64|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u8|}^"}     // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u16|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u32|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u64|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|f16|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|f32|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|f64|}^"}    // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|u|}^"}      // Referenced object not keyable type
+                {"cbe"=|u8x 97|}          // Incomplete
+                {"cbe"=|u8x 97 01|}       // Incomplete
+                {"cbe"=|u8x 97 01 61|}    // ID not found
+            ]
+        }
+    ]
+}
