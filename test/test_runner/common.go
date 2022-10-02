@@ -22,36 +22,29 @@ package test_runner
 
 import (
 	"fmt"
-	"testing"
+	"strings"
 )
 
-func RunTests(t *testing.T, sourceFile string) {
-	suite, errors := loadTestSuite(sourceFile)
-	if len(errors) > 0 {
-		fmt.Printf("❌ %v\n", sourceFile)
-		reportFailedTestLoad(errors)
-		t.Fail()
-		return
-	}
+func wrapPanic(recovery interface{}, format string, args ...interface{}) {
+	if recovery != nil {
+		message := fmt.Sprintf(format, args...)
 
-	errors = suite.Run()
-	if len(errors) > 0 {
-		fmt.Printf("❌ %v\n", sourceFile)
-		reportTestFailures(errors)
-		t.Fail()
-		return
-	}
-	fmt.Printf("✅ %v\n", sourceFile)
-}
-
-func reportFailedTestLoad(errors []error) {
-	for _, err := range errors {
-		fmt.Printf("  ❗ %v\n", err)
+		switch e := recovery.(type) {
+		case error:
+			panic(fmt.Errorf("%v: %w", message, e))
+		default:
+			panic(fmt.Errorf("%v: %v", message, e))
+		}
 	}
 }
 
-func reportTestFailures(errors []error) {
-	for _, err := range errors {
-		fmt.Printf("  💣 %v\n", err)
+func asHex(data []byte) string {
+	sb := strings.Builder{}
+	for i, b := range data {
+		if i > 0 {
+			sb.WriteByte(' ')
+		}
+		sb.WriteString(fmt.Sprintf("%02x", b))
 	}
+	return sb.String()
 }
