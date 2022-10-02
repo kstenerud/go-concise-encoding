@@ -146,25 +146,24 @@ func CloneBytes(bytes []byte) []byte {
 	return bytesCopy
 }
 
-var requiresLowercaseAdjust [256]bool
+var lowercaseAdjustAmounts [256]byte
 
 func init() {
 	for i := 'A'; i <= 'Z'; i++ {
-		requiresLowercaseAdjust[i] = true
+		lowercaseAdjustAmounts[i] = byte('a' - 'A')
 	}
 }
 
 // Convert ASCII characters A-Z to a-z, ignoring locale.
 func ASCIIBytesToLower(bytes []byte) (didChange bool) {
-	const lowercaseAdjust = byte('a' - 'A')
+	adjustedBits := byte(0)
 
 	for i, b := range bytes {
-		if requiresLowercaseAdjust[b] {
-			bytes[i] += lowercaseAdjust
-			didChange = true
-		}
+		adjustAmount := lowercaseAdjustAmounts[b]
+		bytes[i] += adjustAmount
+		adjustedBits |= adjustAmount
 	}
-	return
+	return adjustedBits != 0
 }
 
 func ASCIIToLower(s string) string {
