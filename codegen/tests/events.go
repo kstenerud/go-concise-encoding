@@ -24,17 +24,13 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"math/big"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
-	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
@@ -42,8 +38,8 @@ import (
 const codePath = "test"
 
 var imports = []*standard.Import{
-	&standard.Import{LocalName: "compact_time", Import: "github.com/kstenerud/go-compact-time"},
-	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/events"},
+	{LocalName: "compact_time", Import: "github.com/kstenerud/go-compact-time"},
+	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/events"},
 }
 
 func generateEvents(projectDir string) {
@@ -240,38 +236,38 @@ var allEvents = test.Events{
 
 var (
 	prefixes = map[string]test.Events{
-		EvSI.Name():   test.Events{EvST, EvS, EvE},
-		EvREFL.Name(): test.Events{EvMARK, EvN},
+		EvSI.Name():   {EvST, EvS, EvE},
+		EvREFL.Name(): {EvMARK, EvN},
 	}
 	followups = map[string]test.Events{
-		EvL.Name():      test.Events{EvE},
-		EvM.Name():      test.Events{EvE},
-		EvSI.Name():     test.Events{EvS, EvE},
-		EvST.Name():     test.Events{EvS, EvE, EvN},
-		EvNODE.Name():   test.Events{EvN, EvE},
-		EvEDGE.Name():   test.Events{EvRID, EvRID, EvN, EvE},
-		EvBAB.Name():    test.Events{EvACL, EvADB},
-		EvBAF16.Name():  test.Events{EvACL, EvADF16},
-		EvBAF32.Name():  test.Events{EvACL, EvADF32},
-		EvBAF64.Name():  test.Events{EvACL, EvADF64},
-		EvBAI16.Name():  test.Events{EvACL, EvADI16},
-		EvBAI32.Name():  test.Events{EvACL, EvADI32},
-		EvBAI64.Name():  test.Events{EvACL, EvADI64},
-		EvBAI8.Name():   test.Events{EvACL, EvADI8},
-		EvBAU16.Name():  test.Events{EvACL, EvADU16},
-		EvBAU32.Name():  test.Events{EvACL, EvADU32},
-		EvBAU64.Name():  test.Events{EvACL, EvADU64},
-		EvBAU8.Name():   test.Events{EvACL, EvADU8},
-		EvBAU.Name():    test.Events{EvACL, EvADU},
-		EvBCB.Name():    test.Events{EvACL, EvADU8},
-		EvBCT.Name():    test.Events{EvACL, EvADT},
-		EvBMEDIA.Name(): test.Events{EvACL, EvADT, EvACL, EvADU8},
-		EvBRID.Name():   test.Events{EvACL, EvADT},
-		EvBS.Name():     test.Events{EvACL, EvADT},
-		EvCM.Name():     test.Events{EvN},
-		EvCS.Name():     test.Events{EvN},
-		EvMARK.Name():   test.Events{EvN},
-		EvPAD.Name():    test.Events{EvN},
+		EvL.Name():      {EvE},
+		EvM.Name():      {EvE},
+		EvSI.Name():     {EvS, EvE},
+		EvST.Name():     {EvS, EvE, EvN},
+		EvNODE.Name():   {EvN, EvE},
+		EvEDGE.Name():   {EvRID, EvRID, EvN, EvE},
+		EvBAB.Name():    {EvACL, EvADB},
+		EvBAF16.Name():  {EvACL, EvADF16},
+		EvBAF32.Name():  {EvACL, EvADF32},
+		EvBAF64.Name():  {EvACL, EvADF64},
+		EvBAI16.Name():  {EvACL, EvADI16},
+		EvBAI32.Name():  {EvACL, EvADI32},
+		EvBAI64.Name():  {EvACL, EvADI64},
+		EvBAI8.Name():   {EvACL, EvADI8},
+		EvBAU16.Name():  {EvACL, EvADU16},
+		EvBAU32.Name():  {EvACL, EvADU32},
+		EvBAU64.Name():  {EvACL, EvADU64},
+		EvBAU8.Name():   {EvACL, EvADU8},
+		EvBAU.Name():    {EvACL, EvADU},
+		EvBCB.Name():    {EvACL, EvADU8},
+		EvBCT.Name():    {EvACL, EvADT},
+		EvBMEDIA.Name(): {EvACL, EvADT, EvACL, EvADU8},
+		EvBRID.Name():   {EvACL, EvADT},
+		EvBS.Name():     {EvACL, EvADT},
+		EvCM.Name():     {EvN},
+		EvCS.Name():     {EvN},
+		EvMARK.Name():   {EvN},
+		EvPAD.Name():    {EvN},
 	}
 
 	lossyCTE = map[string]bool{
@@ -453,85 +449,3 @@ var (
 	EvUID    = test.UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvV      = test.V(version.ConciseEncodingVersion)
 )
-
-// ----------------------------------------------------------------------------
-// Constructors for common data types
-// ----------------------------------------------------------------------------
-
-func newBigInt(str string) *big.Int {
-	bi := new(big.Int)
-	_, success := bi.SetString(str, 0)
-	if !success {
-		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to big.Int", str))
-	}
-	return bi
-}
-
-func countDecimalSigDigits(str string) int {
-	for len(str) > 1 && str[0] == '0' {
-		str = str[1:]
-	}
-	sigDigits := 0
-	for _, b := range str {
-		switch {
-		case b >= '0' && b <= '9':
-			sigDigits++
-		case b == '.':
-			// Ignore
-		default:
-			return sigDigits
-		}
-	}
-	return sigDigits
-}
-
-var bfHexMatcher = regexp.MustCompile(`0[xX]([0-9a-fA-F]+)(\.[0-9a-fA-F]+)?[pP]?.*`)
-
-func newBigFloat(str string) *big.Float {
-	match := bfHexMatcher.FindStringSubmatch(str)
-	if len(match) > 1 {
-		sigDigits := len(match[1])
-		if len(match) > 2 {
-			sigDigits += len(match[2]) - 1
-		}
-		bf := &big.Float{}
-		bf.SetPrec(uint(common.HexDigitsToBits(sigDigits)))
-		if _, success := bf.SetString(str); success {
-			return bf
-		} else {
-			panic(fmt.Errorf("could not convert [%v] to big float", str))
-		}
-	}
-
-	sigDigits := countDecimalSigDigits(str)
-	f, _, err := big.ParseFloat(str, 10, uint(common.DecimalDigitsToBits(sigDigits)), big.ToNearestEven)
-	if err != nil {
-		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to big.Float: %w", str, err))
-	}
-	return f
-}
-
-func newDFloat(str string) compact_float.DFloat {
-	df, err := compact_float.DFloatFromString(str)
-	if err != nil {
-		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to compact_float.DFloat: %w", str, err))
-	}
-	return df
-}
-
-func newBDF(str string) *apd.Decimal {
-	v, _, err := apd.NewFromString(str)
-	if err != nil {
-		panic(fmt.Errorf("malformed unit test: Cannot convert [%v] to apd.Decimal: %w", str, err))
-	}
-	return v
-}
-
-func newDate(year, month, day int) compact_time.Time {
-	t := compact_time.NewDate(year, month, day)
-	err := t.Validate()
-	if err != nil {
-		panic(err)
-	}
-	return t
-}

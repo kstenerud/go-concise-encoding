@@ -164,15 +164,7 @@ func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Event
 	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
 		events := append(prefix, eventSet...)
 		events = append(events, suffix...)
-		generateTypes := testTypeCbe | testTypeCte | testTypeEvents
-		suppressOutputTypes := testType(0)
-		if hasLossyCTE(events...) {
-			suppressOutputTypes |= testTypeCte
-		}
-		if hasLossyCBE(events...) {
-			suppressOutputTypes |= testTypeCbe
-		}
-		mustSucceed = append(mustSucceed, generateMustSucceedTest(generateTypes, suppressOutputTypes, events...))
+		mustSucceed = append(mustSucceed, generateMustSucceedTest(events...))
 	}
 
 	for _, event := range invalidEvents {
@@ -238,26 +230,21 @@ func generateTest(name string, mustSucceed []interface{}, mustFail []interface{}
 	return m
 }
 
-func generateMustSucceedTest(testType testType, suppressOutput testType, events ...test.Event) map[string]interface{} {
+func generateMustSucceedTest(events ...test.Event) map[string]interface{} {
 	test := map[string]interface{}{}
-	if (testType & testTypeCbe) != 0 {
-		test["cbe"] = generateCbe(events...)
-		if (suppressOutput & testTypeCbe) != 0 {
-			test["lossyCBE"] = true
-		}
+
+	test["cbe"] = generateCbe(events...)
+	if hasLossyCBE(events...) {
+		test["lossyCBE"] = true
 	}
-	if (testType & testTypeCte) != 0 {
-		test["cte"] = generateCte(events...)
-		if (suppressOutput & testTypeCte) != 0 {
-			test["lossyCTE"] = true
-		}
+
+	test["cte"] = generateCte(events...)
+	if hasLossyCTE(events...) {
+		test["lossyCTE"] = true
 	}
-	if (testType & testTypeEvents) != 0 {
-		test["events"] = stringifyEvents(events...)
-		if (suppressOutput & testTypeEvents) != 0 {
-			test["lossyEvents"] = true
-		}
-	}
+
+	test["events"] = stringifyEvents(events...)
+
 	return test
 }
 
