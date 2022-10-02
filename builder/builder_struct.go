@@ -140,7 +140,7 @@ func newStructBuilderGenerator(getBuilderGeneratorForType BuilderGeneratorGetter
 
 	// Make lowercase mappings as well in case we later do case-insensitive field name matching
 	for _, desc := range generatorDescs {
-		lowerName := common.ASCIIToLower(desc.field.Name)
+		lowerName := common.ToStructFieldIdentifier(desc.field.Name)
 		if _, exists := generatorDescs[lowerName]; !exists {
 			generatorDescs[lowerName] = desc
 		}
@@ -242,7 +242,7 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
 			if ctx.opts.CaseInsensitiveStructFieldNames {
-				common.ASCIIBytesToLower(value)
+				value = []byte(common.ToStructFieldIdentifier(string(value)))
 			}
 
 			if generatorDesc, ok := _this.generatorDescs[string(value)]; ok {
@@ -268,9 +268,7 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
 			if ctx.opts.CaseInsensitiveStructFieldNames {
-				bytes := []byte(value)
-				common.ASCIIBytesToLower(bytes)
-				value = string(bytes)
+				value = common.ToStructFieldIdentifier(value)
 			}
 
 			if generatorDesc, ok := _this.generatorDescs[value]; ok {

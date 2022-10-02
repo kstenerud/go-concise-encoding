@@ -342,7 +342,7 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 			}
 			field.applyTags(reflectField.Tag.Get("ce"))
 			if ctx.LowercaseStructFieldNames {
-				field.Name = common.ASCIIToLower(field.Name)
+				field.Name = common.ToStructFieldIdentifier(field.Name)
 			}
 
 			if !field.Omit {

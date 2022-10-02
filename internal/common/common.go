@@ -25,6 +25,7 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 )
@@ -154,24 +155,27 @@ func init() {
 	}
 }
 
-// Convert ASCII characters A-Z to a-z, ignoring locale.
-func ASCIIBytesToLower(bytes []byte) (didChange bool) {
-	adjustedBits := byte(0)
+func ToStructFieldIdentifier(fieldIdentifier string) string {
+	asBytes := []byte(strings.ToLower(fieldIdentifier))
 
-	for i, b := range bytes {
-		adjustAmount := lowercaseAdjustAmounts[b]
-		bytes[i] += adjustAmount
-		adjustedBits |= adjustAmount
+	offset := 0
+	for _, b := range asBytes {
+		switch b {
+		case ' ', '_':
+		default:
+			asBytes[offset] = b
+			offset++
+		}
 	}
-	return adjustedBits != 0
+
+	return string(asBytes[:offset])
 }
 
-func ASCIIToLower(s string) string {
-	asBytes := []byte(s)
-	if ASCIIBytesToLower(asBytes) {
-		return string(asBytes)
+// Convert ASCII characters A-Z to a-z, ignoring locale and multibyte runes.
+func ASCIIBytesToLower(bytes []byte) {
+	for i, b := range bytes {
+		bytes[i] += lowercaseAdjustAmounts[b]
 	}
-	return s
 }
 
 func ByteCountToElementCount(elementBitWidth int, byteCount uint64) uint64 {
