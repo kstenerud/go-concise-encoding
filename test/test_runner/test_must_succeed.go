@@ -33,9 +33,9 @@ import (
 
 type MustSucceedTest struct {
 	BaseTest
-	LossyCTE    bool
-	LossyCBE    bool
-	LossyEvents bool
+	LossyCTE    bool `ce:"order=101"`
+	LossyCBE    bool `ce:"order=102"`
+	LossyEvents bool `ce:"order=103"`
 }
 
 func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, index int) error {

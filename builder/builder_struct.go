@@ -79,6 +79,8 @@ func (_this *structBuilderField) applyTags(tags string) {
 		case "name":
 			requiresValue(kv, "name")
 			_this.Name = strings.TrimSpace(kv[1])
+		case "order":
+			// Nothing to do here
 		default:
 			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
 		}

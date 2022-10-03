@@ -27,6 +27,8 @@ import (
 	"math/big"
 	"net/url"
 	"reflect"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -277,8 +279,8 @@ type structField struct {
 	IncludeName bool
 	Omit        bool
 	OmitEmpty   bool
-	// TODO: OmitValue
-	OmitValue string
+	OmitValue   string // TODO
+	Order       uint32
 }
 
 func (_this *structField) applyTags(tags string) {
@@ -313,6 +315,12 @@ func (_this *structField) applyTags(tags string) {
 		case "name":
 			requiresValue(kv, "name")
 			_this.Name = strings.TrimSpace(kv[1])
+		case "order":
+			order, err := strconv.ParseUint(kv[1], 10, 32)
+			if err != nil {
+				panic(err)
+			}
+			_this.Order = uint32(order)
 		default:
 			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
 		}
@@ -339,6 +347,7 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 				Name:  reflectField.Name,
 				Type:  reflectField.Type,
 				Index: i,
+				Order: 0xffffffff,
 			}
 			field.applyTags(reflectField.Tag.Get("ce"))
 			if ctx.LowercaseStructFieldNames {
@@ -356,6 +365,11 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 			}
 		}
 	}
+
+	sort.SliceStable(fields, func(i, j int) bool {
+		return fields[i].Order < fields[j].Order
+	})
+
 	return fields
 }
 

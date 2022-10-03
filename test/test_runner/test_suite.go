@@ -32,9 +32,9 @@ import (
 const TestSuiteVersion = 1
 
 type TestSuite struct {
-	Type      map[string]interface{}
-	CEVersion *int
-	Tests     []UnitTest
+	Type      map[string]interface{} `ce:"order=1"`
+	CEVersion *int                   `ce:"order=2"`
+	Tests     []UnitTest             `ce:"order=3"`
 	context   string
 }
 
