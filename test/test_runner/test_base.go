@@ -41,8 +41,8 @@ import (
 
 type BaseTest struct {
 	ceVersion   int
-	Cbe         []byte   `ce:"order=1,omitempty"`
-	Cte         string   `ce:"order=2,omitempty"`
+	CBE         []byte   `ce:"order=1,omitempty"`
+	CTE         string   `ce:"order=2,omitempty"`
 	Events      []string `ce:"order=3,omitempty"`
 	RawDocument bool     `ce:"order=4,omitempty"`
 	Skip        bool     `ce:"order=5,omitempty"`
@@ -58,17 +58,17 @@ func (_this *BaseTest) PostDecodeInit(ceVersion int, context string) error {
 
 	_this.ceVersion = ceVersion
 	_this.context = context
-	_this.Cte = strings.TrimSpace(_this.Cte)
+	_this.CTE = strings.TrimSpace(_this.CTE)
 	if !_this.RawDocument {
-		if len(_this.Cte) > 0 {
-			_this.Cte = fmt.Sprintf("c%v\n%v", _this.ceVersion, _this.Cte)
+		if len(_this.CTE) > 0 {
+			_this.CTE = fmt.Sprintf("c%v\n%v", _this.ceVersion, _this.CTE)
 		}
-		if len(_this.Cbe) > 0 {
-			b := make([]byte, len(_this.Cbe)+2)
+		if len(_this.CBE) > 0 {
+			b := make([]byte, len(_this.CBE)+2)
 			b[0] = 0x81
 			b[1] = byte(_this.ceVersion)
-			copy(b[2:], _this.Cbe)
-			_this.Cbe = b
+			copy(b[2:], _this.CBE)
+			_this.CBE = b
 		}
 	}
 

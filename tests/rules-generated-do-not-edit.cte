@@ -1,13 +1,13 @@
 c0
 {
-    "type" = {
-        "identifier" = "ce-test"
-        "version" = 1
+    "Type" = {
+        "Identifier" = "ce-test"
+        "Version" = 1
     }
-    "ceversion" = 0
-    "tests" = [
+    "CEVersion" = 0
+    "Tests" = [
         {
-            "name" = "No tests"
+            "Name" = "No tests"
         }
     ]
 }

@@ -48,10 +48,10 @@ func (_this *MustFailTest) PostDecodeInit(ceVersion int, context string, index i
 	}
 
 	total := 0
-	if len(_this.Cte) > 0 {
+	if len(_this.CTE) > 0 {
 		total++
 	}
-	if len(_this.Cbe) > 0 {
+	if len(_this.CBE) > 0 {
 		total++
 	}
 	if len(_this.Events) > 0 {
@@ -79,15 +79,15 @@ func (_this *MustFailTest) Run() error {
 		}
 	}()
 
-	if len(_this.Cte) > 0 {
-		if events, err := _this.cteToEvents(_this.Cte); err == nil {
+	if len(_this.CTE) > 0 {
+		if events, err := _this.cteToEvents(_this.CTE); err == nil {
 			return _this.errorf("expected CTE document [%v] to fail but it produced [%v]",
-				_this.Cte, events)
+				_this.CTE, events)
 		}
 	} else {
-		if events, err := _this.cbeToEvents(_this.Cbe); err == nil {
+		if events, err := _this.cbeToEvents(_this.CBE); err == nil {
 			return _this.errorf("expected CBE document [%v] to fail but it produced [%v]",
-				asHex(_this.Cbe), events)
+				asHex(_this.CBE), events)
 		}
 	}
 	return nil

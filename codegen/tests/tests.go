@@ -235,8 +235,8 @@ func generateTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustF
 func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest {
 	return &test_runner.MustSucceedTest{
 		BaseTest: test_runner.BaseTest{
-			Cbe:    generateCbe(events...),
-			Cte:    generateCte(events...),
+			CBE:    generateCbe(events...),
+			CTE:    generateCte(events...),
 			Events: stringifyEvents(events...),
 		},
 		LossyCBE: hasLossyCBE(events...),
@@ -247,9 +247,9 @@ func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest 
 func generateMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
 	switch testType {
 	case testTypeCbe:
-		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Cbe: generateCbe(events...)}}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCbe(events...)}}
 	case testTypeCte:
-		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Cte: generateCte(events...)}}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCte(events...)}}
 	case testTypeEvents:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
 	default:
@@ -260,7 +260,7 @@ func generateMustFailTest(testType testType, events ...test.Event) *test_runner.
 func generateCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 	return &test_runner.MustFailTest{
 		BaseTest: test_runner.BaseTest{
-			Cte:         cteContents,
+			CTE:         cteContents,
 			RawDocument: true,
 		},
 	}
@@ -349,6 +349,7 @@ func writeTestFile(path string, tests ...*test_runner.UnitTest) {
 	defer f.Close()
 
 	opts := options.DefaultCTEMarshalerOptions()
+	opts.Session.LowercaseStructFieldNames = false
 	opts.Encoder.DefaultNumericFormats.Array.Uint8 = options.CTEEncodingFormatHexadecimalZeroFilled
 	if err := ce.MarshalCTE(suite, f, &opts); err != nil {
 		panic(err)
