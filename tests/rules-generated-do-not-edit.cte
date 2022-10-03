@@ -7,8 +7,8 @@ c0
     "ceversion" = 0
     "tests" = [
         {
-            "name" = "No tests"
             "mustFail" = []
+            "name" = "No tests"
         }
     ]
 }

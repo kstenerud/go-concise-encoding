@@ -328,6 +328,7 @@ func (_this *structField) applyTags(tags string) {
 }
 
 func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFunction {
+	fmt.Printf("### getEmbeddedFieldIterator %v\n", structType)
 	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
 	return func(context *Context, value reflect.Value) {
 		for _, field := range fields {
@@ -340,6 +341,7 @@ func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFun
 }
 
 func extractFields(ctx *Context, structType reflect.Type, fields []structField) []structField {
+	fmt.Printf("### extractFields %v\n", structType)
 	for i := 0; i < structType.NumField(); i++ {
 		reflectField := structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {
@@ -374,6 +376,7 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 }
 
 func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
+	fmt.Printf("### newStructIterator %v\n", structType)
 	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
 
 	return func(context *Context, v reflect.Value) {
