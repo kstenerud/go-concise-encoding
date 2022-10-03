@@ -8,7 +8,7 @@ c0
     "tests" = [
         {
             "name" = "TLO"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
                     "cbe" = |u8x 96 02 01|
                     "cte" = "|b 1|"
@@ -73,11 +73,11 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 94 11 01 00|
+                    "cte" = "|u16 1|"
                     "events" = [
                         "au16=1"
                     ]
-                    "cbe" = |u8x 94 11 01 00|
-                    "cte" = "|u16 1|"
                 }
                 {
                     "cbe" = |u8x 94 31 01 00 00 00|
@@ -94,11 +94,11 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 95 02 01|
                     "cte" = "|u8 1|"
                     "events" = [
                         "au8=0x01"
                     ]
-                    "cbe" = |u8x 95 02 01|
                 }
                 {
                     "cbe" = |u8x 7d|
@@ -108,10 +108,10 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 96 02 01|
-                    "lossyCBE" = true
                     "cte" = "|b 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bab"
                         "acl=1"
@@ -119,21 +119,21 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 94 f8 02 80 3f|
                     "cte" = "|f16x 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "baf16"
                         "acl=1"
                         "adf16=1"
                     ]
-                    "cbe" = |u8x 94 f8 02 80 3f|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 94 f7 02 00 00 80 3f|
-                    "lossyCBE" = true
                     "cte" = "|f32x 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "baf32"
                         "acl=1"
@@ -141,10 +141,10 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 94 f6 02 00 00 00 00 00 00 f0 3f|
-                    "lossyCBE" = true
                     "cte" = "|f64x 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "baf64"
                         "acl=1"
@@ -152,54 +152,54 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 94 fd 02 01 00|
                     "cte" = "|i16 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bai16"
                         "acl=1"
                         "adi16=1"
                     ]
-                    "cbe" = |u8x 94 fd 02 01 00|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 94 fb 02 01 00 00 00|
                     "cte" = "|i32 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bai32"
                         "acl=1"
                         "adi32=1"
                     ]
-                    "cbe" = |u8x 94 fb 02 01 00 00 00|
-                    "lossyCBE" = true
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 94 f9 02 01 00 00 00 00 00 00 00|
                     "cte" = "|i64 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bai64"
                         "acl=1"
                         "adi64=1"
                     ]
-                    "cbe" = |u8x 94 f9 02 01 00 00 00 00 00 00 00|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 94 ff 02 01|
+                    "cte" = "|i8 1|"
                     "events" = [
                         "bai8"
                         "acl=1"
                         "adi8=1"
                     ]
-                    "cbe" = |u8x 94 ff 02 01|
-                    "lossyCBE" = true
-                    "cte" = "|i8 1|"
-                    "lossyCTE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCBE" = true
                     "cte" = "|u 00000000-0000-0000-0000-000000000000|"
-                    "lossyCTE" = true
                     "events" = [
                         "bau"
                         "acl=1"
@@ -207,21 +207,21 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 94 fe 02 01 00|
                     "cte" = "|u16 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bau16"
                         "acl=1"
                         "adu16=1"
                     ]
-                    "cbe" = |u8x 94 fe 02 01 00|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 94 fc 02 01 00 00 00|
-                    "lossyCBE" = true
                     "cte" = "|u32 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bau32"
                         "acl=1"
@@ -229,10 +229,10 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 94 fa 02 01 00 00 00 00 00 00 00|
-                    "lossyCBE" = true
                     "cte" = "|u64 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bau64"
                         "acl=1"
@@ -240,10 +240,10 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 95 02 01|
-                    "lossyCBE" = true
                     "cte" = "|u8 1|"
-                    "lossyCTE" = true
                     "events" = [
                         "bau8"
                         "acl=1"
@@ -251,10 +251,10 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 92 02 01|
-                    "lossyCBE" = true
                     "cte" = "|c 01|"
-                    "lossyCTE" = true
                     "events" = [
                         "bcb"
                         "acl=1"
@@ -262,21 +262,21 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 92 02 61|
+                    "cte" = "|c  \"a\"|"
                     "events" = [
                         "bct"
                         "acl=1"
                         "adt=a"
                     ]
-                    "cbe" = |u8x 92 02 61|
-                    "lossyCBE" = true
-                    "cte" = "|c  \"a\"|"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 94 e1 02 61 02 01|
-                    "lossyCBE" = true
                     "cte" = "|m a 01|"
-                    "lossyCTE" = true
                     "events" = [
                         "bmedia"
                         "acl=1"
@@ -286,21 +286,21 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 91 02 61|
+                    "cte" = "@\"a\""
                     "events" = [
                         "brid"
                         "acl=1"
                         "adt=a"
                     ]
-                    "cbe" = |u8x 91 02 61|
-                    "lossyCBE" = true
-                    "cte" = "@\"a\""
-                    "lossyCTE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 90 02 61|
-                    "lossyCBE" = true
                     "cte" = "\"a\""
-                    "lossyCTE" = true
                     "events" = [
                         "bs"
                         "acl=1"
@@ -315,8 +315,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x ff|
-                    "lossyCBE" = true
                     "cte" = "/*a*/
 -1"
                     "events" = [
@@ -325,8 +325,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x ff|
-                    "lossyCBE" = true
                     "cte" = "//a
 -1"
                     "events" = [
@@ -335,14 +335,20 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 92 02 61|
-                    "lossyCBE" = true
                     "cte" = "|c \"a\"|"
                     "events" = [
                         "ct=a"
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b|
+                    "cte" = "@(
+    @\"http://z.com\"
+    @\"http://z.com\"
+    -1
+)"
                     "events" = [
                         "edge"
                         "rid=http://z.com"
@@ -350,12 +356,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b|
-                    "cte" = "@(
-    @\"http://z.com\"
-    @\"http://z.com\"
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 65 82 00|
@@ -381,12 +381,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 97 01 61 ff|
                     "cte" = "&a:-1"
                     "events" = [
                         "mark=a"
                         "n=-1"
                     ]
-                    "cbe" = |u8x 97 01 61 ff|
                 }
                 {
                     "cbe" = |u8x ff|
@@ -403,11 +403,11 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 65 83 00|
+                    "cte" = "-inf"
                     "events" = [
                         "n=-inf"
                     ]
-                    "cbe" = |u8x 65 83 00|
-                    "cte" = "-inf"
                 }
                 {
                     "cbe" = |u8x 78 ff 7b|
@@ -427,20 +427,20 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
                     "cbe" = |u8x 7f ff|
                     "cte" = "-1"
-                    "lossyCTE" = true
                     "events" = [
                         "pad"
                         "n=-1"
                     ]
                 }
                 {
+                    "cbe" = |u8x 94 e0 02 61|
+                    "cte" = "$\"a\""
                     "events" = [
                         "refr=a"
                     ]
-                    "cbe" = |u8x 94 e0 02 61|
-                    "cte" = "$\"a\""
                 }
                 {
                     "cbe" = |u8x 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d|
@@ -457,11 +457,11 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 65 81 00|
                     "cte" = "snan"
                     "events" = [
                         "n=snan"
                     ]
-                    "cbe" = |u8x 65 81 00|
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b ff|
@@ -477,11 +477,11 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 9b 0e 00 00 00 82 20 84 40 01|
                     "cte" = "2020-01-01/01:01:01.000000001"
                     "events" = [
                         "t=2020-01-01/01:01:01.000000001"
                     ]
-                    "cbe" = |u8x 9b 0e 00 00 00 82 20 84 40 01|
                 }
                 {
                     "cbe" = |u8x 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
@@ -491,7 +491,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "v=0"
@@ -525,7 +525,8 @@ c0
             ]
         }
         {
-            "mustSucceed" = [
+            "name" = "List"
+            "mustsucceed" = [
                 {
                     "cbe" = |u8x 7a 96 02 01 7b|
                     "cte" = "[
@@ -549,26 +550,26 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7a 94 81 00 00 80 3f 7b|
+                    "cte" = "[
+    |f32x 1|
+]"
                     "events" = [
                         "l"
                         "af32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 81 00 00 80 3f 7b|
-                    "cte" = "[
-    |f32x 1|
-]"
                 }
                 {
+                    "cbe" = |u8x 7a 94 91 00 00 00 00 00 00 f0 3f 7b|
+                    "cte" = "[
+    |f64x 1|
+]"
                     "events" = [
                         "l"
                         "af64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 91 00 00 00 00 00 00 f0 3f 7b|
-                    "cte" = "[
-    |f64x 1|
-]"
                 }
                 {
                     "cbe" = |u8x 7a 94 21 01 00 7b|
@@ -582,6 +583,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7a 94 41 01 00 00 00 7b|
                     "cte" = "[
     |i32 1|
 ]"
@@ -590,7 +592,6 @@ c0
                         "ai32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 41 01 00 00 00 7b|
                 }
                 {
                     "cbe" = |u8x 7a 94 61 01 00 00 00 00 00 00 00 7b|
@@ -648,6 +649,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7a 94 51 01 00 00 00 00 00 00 00 7b|
                     "cte" = "[
     |u64 1|
 ]"
@@ -656,7 +658,6 @@ c0
                         "au64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 51 01 00 00 00 00 00 00 00 7b|
                 }
                 {
                     "cbe" = |u8x 7a 95 02 01 7b|
@@ -681,7 +682,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 96 02 01 7b|
+                    "cte" = "[
+    |b 1|
+]"
                     "events" = [
                         "l"
                         "bab"
@@ -689,19 +695,14 @@ c0
                         "adb=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 96 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "[
-    |b 1|
-]"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 94 f8 02 80 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     |f16x 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "baf16"
@@ -711,10 +712,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 94 f7 02 00 00 80 3f 7b|
                     "cte" = "[
     |f32x 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "baf32"
@@ -722,16 +725,14 @@ c0
                         "adf32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 f7 02 00 00 80 3f 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     |f64x 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "baf64"
@@ -741,11 +742,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 94 fd 02 01 00 7b|
                     "cte" = "[
     |i16 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bai16"
@@ -753,13 +755,14 @@ c0
                         "adi16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 fd 02 01 00 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 94 fb 02 01 00 00 00 7b|
                     "cte" = "[
     |i32 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bai32"
@@ -767,11 +770,14 @@ c0
                         "adi32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 fb 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 94 f9 02 01 00 00 00 00 00 00 00 7b|
+                    "cte" = "[
+    |i64 1|
+]"
                     "events" = [
                         "l"
                         "bai64"
@@ -779,17 +785,14 @@ c0
                         "adi64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 f9 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "[
-    |i64 1|
-]"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 94 ff 02 01 7b|
                     "cte" = "[
     |i8 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bai8"
@@ -797,16 +800,14 @@ c0
                         "adi8=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 ff 02 01 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     |u 00000000-0000-0000-0000-000000000000|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bau"
@@ -816,12 +817,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 94 fe 02 01 00 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     |u16 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bau16"
@@ -831,11 +832,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 94 fc 02 01 00 00 00 7b|
                     "cte" = "[
     |u32 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bau32"
@@ -843,15 +845,14 @@ c0
                         "adu32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 94 fc 02 01 00 00 00 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 94 fa 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     |u64 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bau64"
@@ -861,10 +862,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 95 02 01 7b|
                     "cte" = "[
     |u8 1|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bau8"
@@ -872,11 +875,14 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 95 02 01 7b|
-                    "lossyCBE" = true
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 92 02 01 7b|
+                    "cte" = "[
+    |c 01|
+]"
                     "events" = [
                         "l"
                         "bcb"
@@ -884,17 +890,14 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 92 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "[
-    |c 01|
-]"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 92 02 61 7b|
                     "cte" = "[
     |c  \"a\"|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bct"
@@ -902,16 +905,14 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 92 02 61 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 94 e1 02 61 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     |m a 01|
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bmedia"
@@ -923,12 +924,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 7a 91 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     @\"a\"
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "brid"
@@ -938,11 +939,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 90 02 61 7b|
                     "cte" = "[
     \"a\"
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "bs"
@@ -950,7 +952,6 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 90 02 61 7b|
                 }
                 {
                     "cbe" = |u8x 7a 92 02 01 7b|
@@ -964,8 +965,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 7a ff 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     /*a*/
     -1
@@ -978,8 +979,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 7a ff 7b|
-                    "lossyCBE" = true
                     "cte" = "[
     //a
     -1
@@ -992,6 +993,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
+                    "cbe" = |u8x 7a 92 02 61 7b|
                     "cte" = "[
     |c \"a\"|
 ]"
@@ -1000,10 +1003,16 @@ c0
                         "ct=a"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 92 02 61 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "cbe" = |u8x 7a 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b 7b|
+                    "cte" = "[
+    @(
+        @\"http://z.com\"
+        @\"http://z.com\"
+        -1
+    )
+]"
                     "events" = [
                         "l"
                         "edge"
@@ -1013,14 +1022,6 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b 7b|
-                    "cte" = "[
-    @(
-        @\"http://z.com\"
-        @\"http://z.com\"
-        -1
-    )
-]"
                 }
                 {
                     "cbe" = |u8x 7a 65 82 00 7b|
@@ -1034,6 +1035,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7a 7a 7b 7b|
                     "cte" = "[
     []
 ]"
@@ -1043,7 +1045,6 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 7a 7b 7b|
                 }
                 {
                     "cbe" = |u8x 7a 79 7b 7b|
@@ -1058,6 +1059,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7a 97 01 61 ff 7b|
                     "cte" = "[
     &a:-1
 ]"
@@ -1067,7 +1069,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 7a 97 01 61 ff 7b|
                 }
                 {
                     "cbe" = |u8x 7a ff 7b|
@@ -1128,11 +1129,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
                     "cbe" = |u8x 7a 7f ff 7b|
                     "cte" = "[
     -1
 ]"
-                    "lossyCTE" = true
                     "events" = [
                         "l"
                         "pad"
@@ -1261,7 +1262,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "l"
@@ -1284,10 +1285,184 @@ c0
                     ]
                 }
             ]
-            "name" = "List"
         }
         {
-            "mustFail" = [
+            "name" = "Map Key"
+            "mustsucceed" = [
+                {
+                    "cbe" = |u8x 79 7d ff 7b|
+                    "cte" = "{
+    true = -1
+}"
+                    "events" = [
+                        "m"
+                        "b=true"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 91 02 61 ff 7b|
+                    "cte" = "{
+    @\"a\" = -1
+}"
+                    "events" = [
+                        "m"
+                        "brid"
+                        "acl=1"
+                        "adt=a"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 90 02 61 ff 7b|
+                    "cte" = "{
+    \"a\" = -1
+}"
+                    "events" = [
+                        "m"
+                        "bs"
+                        "acl=1"
+                        "adt=a"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff ff 7b|
+                    "cte" = "{
+    /*a*/
+    -1 = -1
+}"
+                    "events" = [
+                        "m"
+                        "cm=a"
+                        "n=-1"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff ff 7b|
+                    "cte" = "{
+    //a
+    -1 = -1
+}"
+                    "events" = [
+                        "m"
+                        "cs=a"
+                        "n=-1"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 65 82 00 ff 7b|
+                    "cte" = "{
+    inf = -1
+}"
+                    "events" = [
+                        "m"
+                        "n=inf"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 ff ff 7b|
+                    "cte" = "{
+    -1 = -1
+}"
+                    "events" = [
+                        "m"
+                        "n=-1"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 65 83 00 ff 7b|
+                    "cte" = "{
+    -inf = -1
+}"
+                    "events" = [
+                        "m"
+                        "n=-inf"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "lossycte" = true
+                    "cbe" = |u8x 79 7f ff ff 7b|
+                    "cte" = "{
+    -1 = -1
+}"
+                    "events" = [
+                        "m"
+                        "pad"
+                        "n=-1"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b|
+                    "cte" = "{
+    @\"http://z.com\" = -1
+}"
+                    "events" = [
+                        "m"
+                        "rid=http://z.com"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 81 61 ff 7b|
+                    "cte" = "{
+    \"a\" = -1
+}"
+                    "events" = [
+                        "m"
+                        "s=a"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 9b 0e 00 00 00 82 20 84 40 01 ff 7b|
+                    "cte" = "{
+    2020-01-01/01:01:01.000000001 = -1
+}"
+                    "events" = [
+                        "m"
+                        "t=2020-01-01/01:01:01.000000001"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 79 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 7b|
+                    "cte" = "{
+    00000000-0000-0000-0000-000000000000 = -1
+}"
+                    "events" = [
+                        "m"
+                        "uid=00000000-0000-0000-0000-000000000000"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+            ]
+            "mustfail" = [
                 {
                     "events" = [
                         "m"
@@ -1665,185 +1840,10 @@ c0
                     ]
                 }
             ]
-            "name" = "Map Key"
-            "mustSucceed" = [
-                {
-                    "cbe" = |u8x 79 7d ff 7b|
-                    "cte" = "{
-    true = -1
-}"
-                    "events" = [
-                        "m"
-                        "b=true"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 91 02 61 ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    @\"a\" = -1
-}"
-                    "lossyCTE" = true
-                    "events" = [
-                        "m"
-                        "brid"
-                        "acl=1"
-                        "adt=a"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "lossyCBE" = true
-                    "cte" = "{
-    \"a\" = -1
-}"
-                    "lossyCTE" = true
-                    "events" = [
-                        "m"
-                        "bs"
-                        "acl=1"
-                        "adt=a"
-                        "n=-1"
-                        "e"
-                    ]
-                    "cbe" = |u8x 79 90 02 61 ff 7b|
-                }
-                {
-                    "events" = [
-                        "m"
-                        "cm=a"
-                        "n=-1"
-                        "n=-1"
-                        "e"
-                    ]
-                    "cbe" = |u8x 79 ff ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    /*a*/
-    -1 = -1
-}"
-                }
-                {
-                    "cbe" = |u8x 79 ff ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    //a
-    -1 = -1
-}"
-                    "events" = [
-                        "m"
-                        "cs=a"
-                        "n=-1"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 65 82 00 ff 7b|
-                    "cte" = "{
-    inf = -1
-}"
-                    "events" = [
-                        "m"
-                        "n=inf"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 ff ff 7b|
-                    "cte" = "{
-    -1 = -1
-}"
-                    "events" = [
-                        "m"
-                        "n=-1"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 65 83 00 ff 7b|
-                    "cte" = "{
-    -inf = -1
-}"
-                    "events" = [
-                        "m"
-                        "n=-inf"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 7f ff ff 7b|
-                    "cte" = "{
-    -1 = -1
-}"
-                    "lossyCTE" = true
-                    "events" = [
-                        "m"
-                        "pad"
-                        "n=-1"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cte" = "{
-    @\"http://z.com\" = -1
-}"
-                    "events" = [
-                        "m"
-                        "rid=http://z.com"
-                        "n=-1"
-                        "e"
-                    ]
-                    "cbe" = |u8x 79 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b|
-                }
-                {
-                    "cbe" = |u8x 79 81 61 ff 7b|
-                    "cte" = "{
-    \"a\" = -1
-}"
-                    "events" = [
-                        "m"
-                        "s=a"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 9b 0e 00 00 00 82 20 84 40 01 ff 7b|
-                    "cte" = "{
-    2020-01-01/01:01:01.000000001 = -1
-}"
-                    "events" = [
-                        "m"
-                        "t=2020-01-01/01:01:01.000000001"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 79 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 7b|
-                    "cte" = "{
-    00000000-0000-0000-0000-000000000000 = -1
-}"
-                    "events" = [
-                        "m"
-                        "uid=00000000-0000-0000-0000-000000000000"
-                        "n=-1"
-                        "e"
-                    ]
-                }
-            ]
         }
         {
             "name" = "Map Value"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
                     "cbe" = |u8x 79 ff 96 02 01 7b|
                     "cte" = "{
@@ -1905,6 +1905,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 94 41 01 00 00 00 7b|
                     "cte" = "{
     -1 = |i32 1|
 }"
@@ -1914,7 +1915,6 @@ c0
                         "ai32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 41 01 00 00 00 7b|
                 }
                 {
                     "cbe" = |u8x 79 ff 94 61 01 00 00 00 00 00 00 00 7b|
@@ -1953,6 +1953,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 94 11 01 00 7b|
                     "cte" = "{
     -1 = |u16 1|
 }"
@@ -1962,7 +1963,6 @@ c0
                         "au16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 11 01 00 7b|
                 }
                 {
                     "cbe" = |u8x 79 ff 94 31 01 00 00 00 7b|
@@ -1977,6 +1977,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 94 51 01 00 00 00 00 00 00 00 7b|
                     "cte" = "{
     -1 = |u64 1|
 }"
@@ -1986,7 +1987,6 @@ c0
                         "au64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 51 01 00 00 00 00 00 00 00 7b|
                 }
                 {
                     "cbe" = |u8x 79 ff 95 02 01 7b|
@@ -2013,12 +2013,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 96 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |b 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2029,7 +2029,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 94 f8 02 80 3f 7b|
+                    "cte" = "{
+    -1 = |f16x 1|
+}"
                     "events" = [
                         "m"
                         "n=-1"
@@ -2038,19 +2043,14 @@ c0
                         "adf16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 f8 02 80 3f 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    -1 = |f16x 1|
-}"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 94 f7 02 00 00 80 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |f32x 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2061,12 +2061,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |f64x 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2077,7 +2077,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 94 fd 02 01 00 7b|
+                    "cte" = "{
+    -1 = |i16 1|
+}"
                     "events" = [
                         "m"
                         "n=-1"
@@ -2086,14 +2091,14 @@ c0
                         "adi16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 fd 02 01 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    -1 = |i16 1|
-}"
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 94 fb 02 01 00 00 00 7b|
+                    "cte" = "{
+    -1 = |i32 1|
+}"
                     "events" = [
                         "m"
                         "n=-1"
@@ -2102,17 +2107,14 @@ c0
                         "adi32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 fb 02 01 00 00 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    -1 = |i32 1|
-}"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 94 f9 02 01 00 00 00 00 00 00 00 7b|
                     "cte" = "{
     -1 = |i64 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2121,15 +2123,14 @@ c0
                         "adi64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 f9 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 94 ff 02 01 7b|
                     "cte" = "{
     -1 = |i8 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2138,15 +2139,14 @@ c0
                         "adi8=1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 ff 02 01 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |u 00000000-0000-0000-0000-000000000000|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2157,12 +2157,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 94 fe 02 01 00 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |u16 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2173,12 +2173,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 94 fc 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |u32 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2189,12 +2189,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 94 fa 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |u64 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2205,12 +2205,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 95 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |u8 1|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2221,12 +2221,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 92 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |c 01|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2237,12 +2237,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |c  \"a\"|
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2253,7 +2253,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 94 e1 02 61 02 01 7b|
+                    "cte" = "{
+    -1 = |m a 01|
+}"
                     "events" = [
                         "m"
                         "n=-1"
@@ -2264,18 +2269,14 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 e1 02 61 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "{
-    -1 = |m a 01|
-}"
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 79 ff 91 02 61 7b|
                     "cte" = "{
     -1 = @\"a\"
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2284,15 +2285,14 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 91 02 61 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 90 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = \"a\"
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2315,8 +2315,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = /*a*/
     -1
@@ -2330,8 +2330,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = //a
     -1
@@ -2345,8 +2345,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 79 ff 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "{
     -1 = |c \"a\"|
 }"
@@ -2403,6 +2403,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 79 7b 7b|
+                    "cte" = "{
+    -1 = {}
+}"
                     "events" = [
                         "m"
                         "n=-1"
@@ -2410,10 +2414,6 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 79 7b 7b|
-                    "cte" = "{
-    -1 = {}
-}"
                 }
                 {
                     "cbe" = |u8x 79 ff 97 01 61 ff 7b|
@@ -2429,6 +2429,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff ff 7b|
                     "cte" = "{
     -1 = -1
 }"
@@ -2438,7 +2439,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff ff 7b|
                 }
                 {
                     "cbe" = |u8x 79 ff 65 80 00 7b|
@@ -2453,6 +2453,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 65 83 00 7b|
                     "cte" = "{
     -1 = -inf
 }"
@@ -2462,9 +2463,9 @@ c0
                         "n=-inf"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 65 83 00 7b|
                 }
                 {
+                    "cbe" = |u8x 79 ff 78 ff 7b 7b|
                     "cte" = "{
     -1 = (-1
     )
@@ -2477,7 +2478,6 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 78 ff 7b 7b|
                 }
                 {
                     "cbe" = |u8x 79 ff 7e 7b|
@@ -2492,11 +2492,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
                     "cbe" = |u8x 79 ff 7f ff 7b|
                     "cte" = "{
     -1 = -1
 }"
-                    "lossyCTE" = true
                     "events" = [
                         "m"
                         "n=-1"
@@ -2506,18 +2506,19 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 94 e0 02 61 7b|
+                    "cte" = "{
+    -1 = $\"a\"
+}"
                     "events" = [
                         "m"
                         "n=-1"
                         "refr=a"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 94 e0 02 61 7b|
-                    "cte" = "{
-    -1 = $\"a\"
-}"
                 }
                 {
+                    "cbe" = |u8x 79 ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 7b|
                     "cte" = "{
     -1 = @\"http://z.com\"
 }"
@@ -2527,7 +2528,6 @@ c0
                         "rid=http://z.com"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 7b|
                 }
                 {
                     "cbe" = |u8x 79 ff 81 61 7b|
@@ -2542,6 +2542,15 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 79 ff 76 01 61 81 61 7b 75 01 61 81 61 7b 7b|
+                    "cte" = "{
+    -1 = @a<
+        \"a\"
+    >
+    @a(
+        \"a\"
+    )
+}"
                     "events" = [
                         "m"
                         "n=-1"
@@ -2553,15 +2562,6 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 79 ff 76 01 61 81 61 7b 75 01 61 81 61 7b 7b|
-                    "cte" = "{
-    -1 = @a<
-        \"a\"
-    >
-    @a(
-        \"a\"
-    )
-}"
                 }
                 {
                     "cbe" = |u8x 79 ff 65 81 00 7b|
@@ -2618,7 +2618,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "m"
@@ -2655,8 +2655,9 @@ c0
         }
         {
             "name" = "Edge Source"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
+                    "cbe" = |u8x 77 96 02 01 ff ff 7b|
                     "cte" = "@(
     |b 1|
     -1
@@ -2669,7 +2670,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 96 02 01 ff ff 7b|
                 }
                 {
                     "cbe" = |u8x 77 94 71 80 3f ff ff 7b|
@@ -2702,6 +2702,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 94 91 00 00 00 00 00 00 f0 3f ff ff 7b|
                     "cte" = "@(
     |f64x 1|
     -1
@@ -2714,9 +2715,9 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 91 00 00 00 00 00 00 f0 3f ff ff 7b|
                 }
                 {
+                    "cbe" = |u8x 77 94 21 01 00 ff ff 7b|
                     "cte" = "@(
     |i16 1|
     -1
@@ -2729,7 +2730,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 21 01 00 ff ff 7b|
                 }
                 {
                     "cbe" = |u8x 77 94 41 01 00 00 00 ff ff 7b|
@@ -2792,6 +2792,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 94 11 01 00 ff ff 7b|
                     "cte" = "@(
     |u16 1|
     -1
@@ -2804,7 +2805,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 11 01 00 ff ff 7b|
                 }
                 {
                     "cbe" = |u8x 77 94 31 01 00 00 00 ff ff 7b|
@@ -2822,6 +2822,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 94 51 01 00 00 00 00 00 00 00 ff ff 7b|
                     "cte" = "@(
     |u64 1|
     -1
@@ -2834,9 +2835,14 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 51 01 00 00 00 00 00 00 00 ff ff 7b|
                 }
                 {
+                    "cbe" = |u8x 77 95 02 01 ff ff 7b|
+                    "cte" = "@(
+    |u8 1|
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "au8=0x01"
@@ -2844,14 +2850,9 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 95 02 01 ff ff 7b|
-                    "cte" = "@(
-    |u8 1|
-    -1
-    -1
-)"
                 }
                 {
+                    "cbe" = |u8x 77 7d ff ff 7b|
                     "cte" = "@(
     true
     -1
@@ -2864,17 +2865,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 7d ff ff 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 96 02 01 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |b 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bab"
@@ -2886,14 +2886,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 94 f8 02 80 3f ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |f16x 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "baf16"
@@ -2905,14 +2905,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 94 f7 02 00 00 80 3f ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |f32x 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "baf32"
@@ -2924,14 +2924,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 94 f6 02 00 00 00 00 00 00 f0 3f ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |f64x 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "baf64"
@@ -2943,13 +2943,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 94 fd 02 01 00 ff ff 7b|
                     "cte" = "@(
     |i16 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bai16"
@@ -2959,17 +2960,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 fd 02 01 00 ff ff 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 94 fb 02 01 00 00 00 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |i32 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bai32"
@@ -2981,6 +2981,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 94 f9 02 01 00 00 00 00 00 00 00 ff ff 7b|
+                    "cte" = "@(
+    |i64 1|
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "bai64"
@@ -2990,22 +2998,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 f9 02 01 00 00 00 00 00 00 00 ff ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    |i64 1|
-    -1
-    -1
-)"
-                    "lossyCTE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 94 ff 02 01 ff ff 7b|
                     "cte" = "@(
     |i8 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bai8"
@@ -3015,18 +3017,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 ff 02 01 ff ff 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |u 00000000-0000-0000-0000-000000000000|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bau"
@@ -3038,12 +3038,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 94 fe 02 01 00 ff ff 7b|
                     "cte" = "@(
     |u16 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bau16"
@@ -3053,18 +3055,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 fe 02 01 00 ff ff 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 94 fc 02 01 00 00 00 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |u32 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bau32"
@@ -3076,6 +3076,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 94 fa 02 01 00 00 00 00 00 00 00 ff ff 7b|
+                    "cte" = "@(
+    |u64 1|
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "bau64"
@@ -3085,17 +3093,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 fa 02 01 00 00 00 00 00 00 00 ff ff 7b|
-                    "lossyCBE" = true
+                }
+                {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 95 02 01 ff ff 7b|
                     "cte" = "@(
-    |u64 1|
+    |u8 1|
     -1
     -1
 )"
-                    "lossyCTE" = true
-                }
-                {
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bau8"
@@ -3105,23 +3112,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 95 02 01 ff ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    |u8 1|
-    -1
-    -1
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 92 02 01 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |c 01|
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bcb"
@@ -3133,6 +3133,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 92 02 61 ff ff 7b|
+                    "cte" = "@(
+    |c  \"a\"|
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "bct"
@@ -3142,17 +3150,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 92 02 61 ff ff 7b|
-                    "lossyCBE" = true
+                }
+                {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 94 e1 02 61 02 01 ff ff 7b|
                     "cte" = "@(
-    |c  \"a\"|
+    |m a 01|
     -1
     -1
 )"
-                    "lossyCTE" = true
-                }
-                {
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "bmedia"
@@ -3164,23 +3171,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 94 e1 02 61 02 01 ff ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    |m a 01|
-    -1
-    -1
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 91 02 61 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     @\"a\"
     -1
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "brid"
@@ -3192,7 +3192,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 90 02 61 ff ff 7b|
+                    "cte" = "@(
+    \"a\"
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "bs"
@@ -3202,13 +3209,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 90 02 61 ff ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    \"a\"
-    -1
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 92 02 01 ff ff 7b|
@@ -3226,8 +3226,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     /*a*/
     -1
@@ -3244,8 +3244,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     //a
     -1
@@ -3262,8 +3262,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 92 02 61 ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     |c \"a\"|
     -1
@@ -3332,6 +3332,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 79 7b ff ff 7b|
+                    "cte" = "@(
+    {}
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "m"
@@ -3340,12 +3346,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 79 7b ff ff 7b|
-                    "cte" = "@(
-    {}
-    -1
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 97 01 61 ff ff ff 7b|
@@ -3379,6 +3379,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 65 80 00 ff ff 7b|
+                    "cte" = "@(
+    nan
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=nan"
@@ -3386,14 +3392,14 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 65 80 00 ff ff 7b|
+                }
+                {
+                    "cbe" = |u8x 77 65 83 00 ff ff 7b|
                     "cte" = "@(
-    nan
+    -inf
     -1
     -1
 )"
-                }
-                {
                     "events" = [
                         "edge"
                         "n=-inf"
@@ -3401,12 +3407,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 65 83 00 ff ff 7b|
-                    "cte" = "@(
-    -inf
-    -1
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 78 ff 7b ff ff 7b|
@@ -3427,7 +3427,13 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "cbe" = |u8x 77 7f ff ff ff 7b|
+                    "cte" = "@(
+    -1
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "pad"
@@ -3436,12 +3442,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 7f ff ff ff 7b|
-                    "cte" = "@(
-    -1
-    -1
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 94 e0 02 61 ff ff 7b|
@@ -3582,7 +3582,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "edge"
@@ -3632,7 +3632,7 @@ c0
         }
         {
             "name" = "Edge Description"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
                     "cbe" = |u8x 77 ff 96 02 01 ff 7b|
                     "cte" = "@(
@@ -3679,6 +3679,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff 94 91 00 00 00 00 00 00 f0 3f ff 7b|
+                    "cte" = "@(
+    -1
+    |f64x 1|
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3686,12 +3692,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 91 00 00 00 00 00 00 f0 3f ff 7b|
-                    "cte" = "@(
-    -1
-    |f64x 1|
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 ff 94 21 01 00 ff 7b|
@@ -3724,6 +3724,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff 94 61 01 00 00 00 00 00 00 00 ff 7b|
                     "cte" = "@(
     -1
     |i64 1|
@@ -3736,7 +3737,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 61 01 00 00 00 00 00 00 00 ff 7b|
                 }
                 {
                     "cbe" = |u8x 77 ff 94 01 01 ff 7b|
@@ -3814,6 +3814,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff 95 02 01 ff 7b|
                     "cte" = "@(
     -1
     |u8 1|
@@ -3826,7 +3827,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 95 02 01 ff 7b|
                 }
                 {
                     "cbe" = |u8x 77 ff 7d ff 7b|
@@ -3844,13 +3844,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 96 02 01 ff 7b|
                     "cte" = "@(
     -1
     |b 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3860,16 +3861,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 96 02 01 ff 7b|
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 94 f8 02 80 3f ff 7b|
                     "cte" = "@(
     -1
     |f16x 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3879,16 +3880,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 f8 02 80 3f ff 7b|
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 94 f7 02 00 00 80 3f ff 7b|
                     "cte" = "@(
     -1
     |f32x 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3898,10 +3899,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 f7 02 00 00 80 3f ff 7b|
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 94 f6 02 00 00 00 00 00 00 f0 3f ff 7b|
+                    "cte" = "@(
+    -1
+    |f64x 1|
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3911,23 +3918,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 f6 02 00 00 00 00 00 00 f0 3f ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    -1
-    |f64x 1|
-    -1
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 94 fd 02 01 00 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |i16 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3939,14 +3939,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 94 fb 02 01 00 00 00 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |i32 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3958,14 +3958,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 94 f9 02 01 00 00 00 00 00 00 00 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |i64 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3977,12 +3977,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 94 ff 02 01 ff 7b|
                     "cte" = "@(
     -1
     |i8 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -3992,18 +3994,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 ff 02 01 ff 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |u 00000000-0000-0000-0000-000000000000|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4015,14 +4015,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 94 fe 02 01 00 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |u16 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4034,13 +4034,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 94 fc 02 01 00 00 00 ff 7b|
                     "cte" = "@(
     -1
     |u32 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4050,9 +4051,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 fc 02 01 00 00 00 ff 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 94 fa 02 01 00 00 00 00 00 00 00 ff 7b|
+                    "cte" = "@(
+    -1
+    |u64 1|
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4062,23 +4070,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 94 fa 02 01 00 00 00 00 00 00 00 ff 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    -1
-    |u64 1|
-    -1
-)"
-                    "lossyCTE" = true
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 95 02 01 ff 7b|
                     "cte" = "@(
     -1
     |u8 1|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4088,17 +4089,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 95 02 01 ff 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 92 02 01 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |c 01|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4110,13 +4110,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 92 02 61 ff 7b|
                     "cte" = "@(
     -1
     |c  \"a\"|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4126,17 +4127,16 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 92 02 61 ff 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 94 e1 02 61 02 01 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |m a 01|
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4150,14 +4150,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 91 02 61 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     @\"a\"
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4169,12 +4169,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff 90 02 61 ff 7b|
                     "cte" = "@(
     -1
     \"a\"
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4184,10 +4186,14 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 90 02 61 ff 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "cbe" = |u8x 77 ff 92 02 01 ff 7b|
+                    "cte" = "@(
+    -1
+    |c 01|
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4195,15 +4201,10 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 92 02 01 ff 7b|
-                    "cte" = "@(
-    -1
-    |c 01|
-    -1
-)"
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff ff 7b|
                     "cte" = "@(
     -1
     /*a*/
@@ -4218,10 +4219,10 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff ff 7b|
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff ff 7b|
                     "cte" = "@(
     -1
     //a
@@ -4236,11 +4237,10 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff ff 7b|
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff 92 02 61 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     |c \"a\"|
@@ -4255,6 +4255,16 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b ff 7b|
+                    "cte" = "@(
+    -1
+    @(
+        @\"http://z.com\"
+        @\"http://z.com\"
+        -1
+    )
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4266,16 +4276,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b ff 7b|
-                    "cte" = "@(
-    -1
-    @(
-        @\"http://z.com\"
-        @\"http://z.com\"
-        -1
-    )
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 ff 65 82 00 ff 7b|
@@ -4386,6 +4386,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff 78 ff 7b ff 7b|
                     "cte" = "@(
     -1
     (-1
@@ -4401,9 +4402,14 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 78 ff 7b ff 7b|
                 }
                 {
+                    "cbe" = |u8x 77 ff 7e ff 7b|
+                    "cte" = "@(
+    -1
+    null
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4411,14 +4417,15 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 7e ff 7b|
-                    "cte" = "@(
-    -1
-    null
-    -1
-)"
                 }
                 {
+                    "lossycte" = true
+                    "cbe" = |u8x 77 ff 7f ff ff 7b|
+                    "cte" = "@(
+    -1
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4427,13 +4434,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 7f ff ff 7b|
-                    "cte" = "@(
-    -1
-    -1
-    -1
-)"
-                    "lossyCTE" = true
                 }
                 {
                     "cbe" = |u8x 77 ff 94 e0 02 61 ff 7b|
@@ -4559,6 +4559,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 7b|
+                    "cte" = "@(
+    -1
+    00000000-0000-0000-0000-000000000000
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4566,15 +4572,9 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 7b|
-                    "cte" = "@(
-    -1
-    00000000-0000-0000-0000-000000000000
-    -1
-)"
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "edge"
@@ -4615,7 +4615,7 @@ c0
         }
         {
             "name" = "Edge Destination"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
                     "cbe" = |u8x 77 ff ff 96 02 01 7b|
                     "cte" = "@(
@@ -4737,6 +4737,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff ff 94 a1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
+                    "cte" = "@(
+    -1
+    -1
+    |u 00000000-0000-0000-0000-000000000000|
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4744,12 +4750,6 @@ c0
                         "au=00000000-0000-0000-0000-000000000000"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 94 a1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "cte" = "@(
-    -1
-    -1
-    |u 00000000-0000-0000-0000-000000000000|
-)"
                 }
                 {
                     "cbe" = |u8x 77 ff ff 94 11 01 00 7b|
@@ -4812,6 +4812,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff ff 7d 7b|
+                    "cte" = "@(
+    -1
+    -1
+    true
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4819,22 +4825,16 @@ c0
                         "b=true"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 7d 7b|
-                    "cte" = "@(
-    -1
-    -1
-    true
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 96 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |b 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4846,14 +4846,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 f8 02 80 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |f16x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4865,12 +4865,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 94 f7 02 00 00 80 3f 7b|
                     "cte" = "@(
     -1
     -1
     |f32x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4880,18 +4882,16 @@ c0
                         "adf32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 94 f7 02 00 00 80 3f 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |f64x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4903,14 +4903,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 fd 02 01 00 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |i16 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4922,14 +4922,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 fb 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |i32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4941,14 +4941,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 f9 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |i64 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4960,13 +4960,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 94 ff 02 01 7b|
                     "cte" = "@(
     -1
     -1
     |i8 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4976,17 +4977,16 @@ c0
                         "adi8=1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 94 ff 02 01 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |u 00000000-0000-0000-0000-000000000000|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -4998,7 +4998,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 94 fe 02 01 00 7b|
+                    "cte" = "@(
+    -1
+    -1
+    |u16 1|
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5008,23 +5015,16 @@ c0
                         "adu16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 94 fe 02 01 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    -1
-    -1
-    |u16 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 fc 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |u32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5036,12 +5036,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 94 fa 02 01 00 00 00 00 00 00 00 7b|
                     "cte" = "@(
     -1
     -1
     |u64 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5051,18 +5053,16 @@ c0
                         "adu64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 94 fa 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 95 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |u8 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5074,7 +5074,14 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 92 02 01 7b|
+                    "cte" = "@(
+    -1
+    -1
+    |c 01|
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5084,16 +5091,16 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 92 02 01 7b|
-                    "lossyCBE" = true
+                }
+                {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 92 02 61 7b|
                     "cte" = "@(
     -1
     -1
-    |c 01|
+    |c  \"a\"|
 )"
-                }
-                {
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5103,23 +5110,16 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 92 02 61 7b|
-                    "lossyCBE" = true
-                    "cte" = "@(
-    -1
-    -1
-    |c  \"a\"|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 94 e1 02 61 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     |m a 01|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5133,14 +5133,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 91 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
     @\"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5152,12 +5152,14 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 77 ff ff 90 02 61 7b|
                     "cte" = "@(
     -1
     -1
     \"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5167,8 +5169,6 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 90 02 61 7b|
-                    "lossyCBE" = true
                 }
                 {
                     "cbe" = |u8x 77 ff ff 92 02 01 7b|
@@ -5186,8 +5186,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
@@ -5204,8 +5204,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
@@ -5222,8 +5222,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 77 ff ff 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "@(
     -1
     -1
@@ -5276,6 +5276,12 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff ff 7a 7b 7b|
+                    "cte" = "@(
+    -1
+    -1
+    []
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5284,14 +5290,14 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 7a 7b 7b|
+                }
+                {
+                    "cbe" = |u8x 77 ff ff 79 7b 7b|
                     "cte" = "@(
     -1
     -1
-    []
+    {}
 )"
-                }
-                {
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5300,12 +5306,6 @@ c0
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 79 7b 7b|
-                    "cte" = "@(
-    -1
-    -1
-    {}
-)"
                 }
                 {
                     "cbe" = |u8x 77 ff ff 97 01 61 ff 7b|
@@ -5354,6 +5354,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff ff 65 83 00 7b|
                     "cte" = "@(
     -1
     -1
@@ -5366,7 +5367,6 @@ c0
                         "n=-inf"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 65 83 00 7b|
                 }
                 {
                     "cbe" = |u8x 77 ff ff 78 ff 7b 7b|
@@ -5387,7 +5387,13 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "cbe" = |u8x 77 ff ff 7f ff 7b|
+                    "cte" = "@(
+    -1
+    -1
+    -1
+)"
                     "events" = [
                         "edge"
                         "n=-1"
@@ -5396,12 +5402,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 7f ff 7b|
-                    "cte" = "@(
-    -1
-    -1
-    -1
-)"
                 }
                 {
                     "cbe" = |u8x 77 ff ff 94 e0 02 61 7b|
@@ -5490,6 +5490,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 77 ff ff 76 01 61 81 61 7b ff 7b|
                     "cte" = "@(
     -1
     -1
@@ -5509,9 +5510,9 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 76 01 61 81 61 7b ff 7b|
                 }
                 {
+                    "cbe" = |u8x 77 ff ff 9b 0e 00 00 00 82 20 84 40 01 7b|
                     "cte" = "@(
     -1
     -1
@@ -5524,7 +5525,6 @@ c0
                         "t=2020-01-01/01:01:01.000000001"
                         "e"
                     ]
-                    "cbe" = |u8x 77 ff ff 9b 0e 00 00 00 82 20 84 40 01 7b|
                 }
                 {
                     "cbe" = |u8x 77 ff ff 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
@@ -5542,7 +5542,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "edge"
@@ -5592,7 +5592,7 @@ c0
         }
         {
             "name" = "Node Value"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
                     "cbe" = |u8x 78 96 02 01 7b|
                     "cte" = "(|b 1|
@@ -5604,14 +5604,14 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 94 71 80 3f 7b|
+                    "cte" = "(|f16x 1|
+)"
                     "events" = [
                         "node"
                         "af16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 71 80 3f 7b|
-                    "cte" = "(|f16x 1|
-)"
                 }
                 {
                     "cbe" = |u8x 78 94 81 00 00 80 3f 7b|
@@ -5624,14 +5624,14 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 94 91 00 00 00 00 00 00 f0 3f 7b|
+                    "cte" = "(|f64x 1|
+)"
                     "events" = [
                         "node"
                         "af64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 91 00 00 00 00 00 00 f0 3f 7b|
-                    "cte" = "(|f64x 1|
-)"
                 }
                 {
                     "cbe" = |u8x 78 94 21 01 00 7b|
@@ -5664,6 +5664,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 94 01 01 7b|
                     "cte" = "(|i8 1|
 )"
                     "events" = [
@@ -5671,7 +5672,6 @@ c0
                         "ai8=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 01 01 7b|
                 }
                 {
                     "cbe" = |u8x 78 94 a1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
@@ -5694,6 +5694,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 94 31 01 00 00 00 7b|
                     "cte" = "(|u32 1|
 )"
                     "events" = [
@@ -5701,7 +5702,6 @@ c0
                         "au32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 31 01 00 00 00 7b|
                 }
                 {
                     "cbe" = |u8x 78 94 51 01 00 00 00 00 00 00 00 7b|
@@ -5734,11 +5734,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 96 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "(|b 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bab"
@@ -5748,10 +5748,11 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 f8 02 80 3f 7b|
                     "cte" = "(|f16x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "baf16"
@@ -5759,10 +5760,13 @@ c0
                         "adf16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 f8 02 80 3f 7b|
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 f7 02 00 00 80 3f 7b|
+                    "cte" = "(|f32x 1|
+)"
                     "events" = [
                         "node"
                         "baf32"
@@ -5770,15 +5774,13 @@ c0
                         "adf32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 f7 02 00 00 80 3f 7b|
-                    "lossyCBE" = true
-                    "cte" = "(|f32x 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
                     "cte" = "(|f64x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "baf64"
@@ -5786,15 +5788,13 @@ c0
                         "adf64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 94 fd 02 01 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(|i16 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bai16"
@@ -5804,11 +5804,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 94 fb 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(|i32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bai32"
@@ -5818,7 +5818,11 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 f9 02 01 00 00 00 00 00 00 00 7b|
+                    "cte" = "(|i64 1|
+)"
                     "events" = [
                         "node"
                         "bai64"
@@ -5826,16 +5830,13 @@ c0
                         "adi64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 f9 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "(|i64 1|
-)"
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 ff 02 01 7b|
                     "cte" = "(|i8 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bai8"
@@ -5843,14 +5844,13 @@ c0
                         "adi8=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 ff 02 01 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(|u 00000000-0000-0000-0000-000000000000|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bau"
@@ -5860,11 +5860,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 94 fe 02 01 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(|u16 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bau16"
@@ -5874,10 +5874,11 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 fc 02 01 00 00 00 7b|
                     "cte" = "(|u32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bau32"
@@ -5885,9 +5886,13 @@ c0
                         "adu32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 fc 02 01 00 00 00 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 94 fa 02 01 00 00 00 00 00 00 00 7b|
+                    "cte" = "(|u64 1|
+)"
                     "events" = [
                         "node"
                         "bau64"
@@ -5895,14 +5900,13 @@ c0
                         "adu64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 94 fa 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "(|u64 1|
-)"
-                    "lossyCTE" = true
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 95 02 01 7b|
+                    "cte" = "(|u8 1|
+)"
                     "events" = [
                         "node"
                         "bau8"
@@ -5910,15 +5914,13 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 78 95 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "(|u8 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 92 02 01 7b|
                     "cte" = "(|c 01|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bcb"
@@ -5926,15 +5928,13 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 78 92 02 01 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "(|c  \"a\"|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bct"
@@ -5944,11 +5944,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 94 e1 02 61 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "(|m a 01|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "bmedia"
@@ -5960,11 +5960,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 91 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "(@\"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "brid"
@@ -5974,6 +5974,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 90 02 61 7b|
+                    "cte" = "(\"a\"
+)"
                     "events" = [
                         "node"
                         "bs"
@@ -5981,11 +5986,6 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 78 90 02 61 7b|
-                    "lossyCBE" = true
-                    "cte" = "(\"a\"
-)"
-                    "lossyCTE" = true
                 }
                 {
                     "cbe" = |u8x 78 92 02 01 7b|
@@ -5998,8 +5998,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 78 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "(/*a*/
     -1
 )"
@@ -6011,8 +6011,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 78 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "(//a
     -1
 )"
@@ -6024,8 +6024,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 78 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "(|c \"a\"|
 )"
                     "events" = [
@@ -6074,15 +6074,15 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 79 7b 7b|
+                    "cte" = "({}
+)"
                     "events" = [
                         "node"
                         "m"
                         "e"
                         "e"
                     ]
-                    "cbe" = |u8x 78 79 7b 7b|
-                    "cte" = "({}
-)"
                 }
                 {
                     "cbe" = |u8x 78 97 01 61 ff 7b|
@@ -6106,6 +6106,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 65 80 00 7b|
                     "cte" = "(nan
 )"
                     "events" = [
@@ -6113,17 +6114,16 @@ c0
                         "n=nan"
                         "e"
                     ]
-                    "cbe" = |u8x 78 65 80 00 7b|
                 }
                 {
+                    "cbe" = |u8x 78 65 83 00 7b|
+                    "cte" = "(-inf
+)"
                     "events" = [
                         "node"
                         "n=-inf"
                         "e"
                     ]
-                    "cbe" = |u8x 78 65 83 00 7b|
-                    "cte" = "(-inf
-)"
                 }
                 {
                     "cbe" = |u8x 78 78 ff 7b 7b|
@@ -6149,16 +6149,16 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "cbe" = |u8x 78 7f ff 7b|
+                    "cte" = "(-1
+)"
                     "events" = [
                         "node"
                         "pad"
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7f ff 7b|
-                    "cte" = "(-1
-)"
                 }
                 {
                     "cbe" = |u8x 78 97 01 61 ff 98 01 61 7b|
@@ -6270,7 +6270,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "node"
@@ -6296,30 +6296,30 @@ c0
         }
         {
             "name" = "Node Child"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
+                    "cbe" = |u8x 78 7e 96 02 01 7b|
+                    "cte" = "(null
+    |b 1|
+)"
                     "events" = [
                         "node"
                         "null"
                         "ab=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 96 02 01 7b|
-                    "cte" = "(null
-    |b 1|
-)"
                 }
                 {
+                    "cbe" = |u8x 78 7e 94 71 80 3f 7b|
+                    "cte" = "(null
+    |f16x 1|
+)"
                     "events" = [
                         "node"
                         "null"
                         "af16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 71 80 3f 7b|
-                    "cte" = "(null
-    |f16x 1|
-)"
                 }
                 {
                     "cbe" = |u8x 78 7e 94 81 00 00 80 3f 7b|
@@ -6334,16 +6334,16 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 7e 94 91 00 00 00 00 00 00 f0 3f 7b|
+                    "cte" = "(null
+    |f64x 1|
+)"
                     "events" = [
                         "node"
                         "null"
                         "af64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 91 00 00 00 00 00 00 f0 3f 7b|
-                    "cte" = "(null
-    |f64x 1|
-)"
                 }
                 {
                     "cbe" = |u8x 78 7e 94 21 01 00 7b|
@@ -6418,16 +6418,16 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 7e 94 31 01 00 00 00 7b|
+                    "cte" = "(null
+    |u32 1|
+)"
                     "events" = [
                         "node"
                         "null"
                         "au32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 31 01 00 00 00 7b|
-                    "cte" = "(null
-    |u32 1|
-)"
                 }
                 {
                     "cbe" = |u8x 78 7e 94 51 01 00 00 00 00 00 00 00 7b|
@@ -6454,6 +6454,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 7e 7d 7b|
                     "cte" = "(null
     true
 )"
@@ -6463,14 +6464,14 @@ c0
                         "b=true"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 7d 7b|
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 96 02 01 7b|
                     "cte" = "(null
     |b 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6479,9 +6480,14 @@ c0
                         "adb=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 96 02 01 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 94 f8 02 80 3f 7b|
+                    "cte" = "(null
+    |f16x 1|
+)"
                     "events" = [
                         "node"
                         "null"
@@ -6490,20 +6496,14 @@ c0
                         "adf16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 f8 02 80 3f 7b|
-                    "lossyCBE" = true
-                    "cte" = "(null
-    |f16x 1|
-)"
-                    "lossyCTE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 94 f7 02 00 00 80 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |f32x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6514,11 +6514,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
                     "cte" = "(null
     |f64x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6527,15 +6528,14 @@ c0
                         "adf64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 94 fd 02 01 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |i16 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6546,12 +6546,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 94 fb 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |i32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6562,7 +6562,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 94 f9 02 01 00 00 00 00 00 00 00 7b|
+                    "cte" = "(null
+    |i64 1|
+)"
                     "events" = [
                         "node"
                         "null"
@@ -6571,13 +6576,14 @@ c0
                         "adi64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 f9 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "(null
-    |i64 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 94 ff 02 01 7b|
+                    "cte" = "(null
+    |i8 1|
+)"
                     "events" = [
                         "node"
                         "null"
@@ -6586,20 +6592,14 @@ c0
                         "adi8=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 ff 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "(null
-    |i8 1|
-)"
-                    "lossyCTE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |u 00000000-0000-0000-0000-000000000000|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6610,7 +6610,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 94 fe 02 01 00 7b|
+                    "cte" = "(null
+    |u16 1|
+)"
                     "events" = [
                         "node"
                         "null"
@@ -6619,19 +6624,14 @@ c0
                         "adu16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 fe 02 01 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "(null
-    |u16 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 94 fc 02 01 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |u32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6642,11 +6642,12 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 94 fa 02 01 00 00 00 00 00 00 00 7b|
                     "cte" = "(null
     |u64 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6655,15 +6656,14 @@ c0
                         "adu64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 94 fa 02 01 00 00 00 00 00 00 00 7b|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 95 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |u8 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6674,12 +6674,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 92 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |c 01|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6690,12 +6690,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |c  \"a\"|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6706,12 +6706,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 94 e1 02 61 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     |m a 01|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6724,10 +6724,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 91 02 61 7b|
                     "cte" = "(null
     @\"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6736,16 +6738,14 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 91 02 61 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e 90 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     \"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6768,8 +6768,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e ff 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     /*a*/
     -1
@@ -6783,8 +6783,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 78 7e ff 7b|
-                    "lossyCBE" = true
                     "cte" = "(null
     //a
     -1
@@ -6798,6 +6798,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
+                    "cbe" = |u8x 78 7e 92 02 61 7b|
                     "cte" = "(null
     |c \"a\"|
 )"
@@ -6807,8 +6809,6 @@ c0
                         "ct=a"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 92 02 61 7b|
-                    "lossyCBE" = true
                 }
                 {
                     "cbe" = |u8x 78 7e 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b 7b|
@@ -6906,6 +6906,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 7e 65 83 00 7b|
                     "cte" = "(null
     -inf
 )"
@@ -6915,7 +6916,6 @@ c0
                         "n=-inf"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 65 83 00 7b|
                 }
                 {
                     "cbe" = |u8x 78 7e 78 ff 7b 7b|
@@ -6945,10 +6945,11 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "cbe" = |u8x 78 7e 7f ff 7b|
                     "cte" = "(null
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "node"
                         "null"
@@ -6956,7 +6957,6 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 7f ff 7b|
                 }
                 {
                     "cbe" = |u8x 78 7e 97 01 61 ff 98 01 61 7b|
@@ -7033,6 +7033,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 78 7e 65 81 00 7b|
                     "cte" = "(null
     snan
 )"
@@ -7042,7 +7043,6 @@ c0
                         "n=snan"
                         "e"
                     ]
-                    "cbe" = |u8x 78 7e 65 81 00 7b|
                 }
                 {
                     "cbe" = |u8x 78 7e 76 01 61 81 61 7b ff 7b|
@@ -7088,7 +7088,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "node"
@@ -7117,27 +7117,28 @@ c0
         }
         {
             "name" = "Struct Template"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
+                    "cbe" = |u8x 76 01 61 7d 7b ff|
+                    "cte" = "@a<
+    true
+>
+-1"
                     "events" = [
                         "st=a"
                         "b=true"
                         "e"
                         "n=-1"
                     ]
-                    "cbe" = |u8x 76 01 61 7d 7b ff|
-                    "cte" = "@a<
-    true
->
--1"
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 91 02 61 7b ff|
                     "cte" = "@a<
     @\"a\"
 >
 -1"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "brid"
@@ -7146,16 +7147,15 @@ c0
                         "e"
                         "n=-1"
                     ]
-                    "cbe" = |u8x 76 01 61 91 02 61 7b ff|
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 90 02 61 7b ff|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 -1"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "bs"
@@ -7166,8 +7166,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 ff 7b ff|
-                    "lossyCBE" = true
                     "cte" = "@a<
     /*a*/
     -1
@@ -7182,6 +7182,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 ff 7b ff|
                     "cte" = "@a<
     //a
     -1
@@ -7194,21 +7196,19 @@ c0
                         "e"
                         "n=-1"
                     ]
-                    "cbe" = |u8x 76 01 61 ff 7b ff|
-                    "lossyCBE" = true
                 }
                 {
+                    "cbe" = |u8x 76 01 61 65 82 00 7b ff|
+                    "cte" = "@a<
+    inf
+>
+-1"
                     "events" = [
                         "st=a"
                         "n=inf"
                         "e"
                         "n=-1"
                     ]
-                    "cbe" = |u8x 76 01 61 65 82 00 7b ff|
-                    "cte" = "@a<
-    inf
->
--1"
                 }
                 {
                     "cbe" = |u8x 76 01 61 ff 7b ff|
@@ -7237,12 +7237,12 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
                     "cbe" = |u8x 76 01 61 7f ff 7b ff|
                     "cte" = "@a<
     -1
 >
 -1"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "pad"
@@ -7278,17 +7278,17 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 9b 0e 00 00 00 82 20 84 40 01 7b ff|
+                    "cte" = "@a<
+    2020-01-01/01:01:01.000000001
+>
+-1"
                     "events" = [
                         "st=a"
                         "t=2020-01-01/01:01:01.000000001"
                         "e"
                         "n=-1"
                     ]
-                    "cbe" = |u8x 76 01 61 9b 0e 00 00 00 82 20 84 40 01 7b ff|
-                    "cte" = "@a<
-    2020-01-01/01:01:01.000000001
->
--1"
                 }
                 {
                     "cbe" = |u8x 76 01 61 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b ff|
@@ -7304,7 +7304,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "st=a"
@@ -7685,8 +7685,9 @@ c0
         }
         {
             "name" = "Struct Instance"
-            "mustSucceed" = [
+            "mustsucceed" = [
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 96 02 01 7b|
                     "cte" = "@a<
     \"a\"
 >
@@ -7701,7 +7702,6 @@ c0
                         "ab=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 96 02 01 7b|
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 71 80 3f 7b|
@@ -7789,6 +7789,13 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 61 01 00 00 00 00 00 00 00 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |i64 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7797,13 +7804,6 @@ c0
                         "ai64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 61 01 00 00 00 00 00 00 00 7b|
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |i64 1|
-)"
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 01 01 7b|
@@ -7857,6 +7857,13 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 31 01 00 00 00 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |u32 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7865,13 +7872,6 @@ c0
                         "au32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 31 01 00 00 00 7b|
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |u32 1|
-)"
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 51 01 00 00 00 00 00 00 00 7b|
@@ -7891,6 +7891,13 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 95 02 01 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |u8 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7899,13 +7906,6 @@ c0
                         "au8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 95 02 01 7b|
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |u8 1|
-)"
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 7d 7b|
@@ -7925,13 +7925,15 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 96 02 01 7b|
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |b 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7942,19 +7944,17 @@ c0
                         "adb=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 96 02 01 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f8 02 80 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |f16x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7967,15 +7967,15 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f7 02 00 00 80 3f 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |f32x 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7988,6 +7988,15 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |f64x 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -7998,25 +8007,17 @@ c0
                         "adf64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f6 02 00 00 00 00 00 00 f0 3f 7b|
-                    "lossyCBE" = true
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |f64x 1|
-)"
-                    "lossyCTE" = true
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fd 02 01 00 7b|
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |i16 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8027,10 +8028,17 @@ c0
                         "adi16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fd 02 01 00 7b|
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fb 02 01 00 00 00 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |i32 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8041,23 +8049,17 @@ c0
                         "adi32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fb 02 01 00 00 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |i32 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f9 02 01 00 00 00 00 00 00 00 7b|
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |i64 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8068,19 +8070,17 @@ c0
                         "adi64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f9 02 01 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 ff 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |i8 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8093,15 +8093,15 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 f5 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |u 00000000-0000-0000-0000-000000000000|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8114,7 +8114,15 @@ c0
                     ]
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fe 02 01 00 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |u16 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8125,24 +8133,17 @@ c0
                         "adu16=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fe 02 01 00 7b|
-                    "lossyCBE" = true
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |u16 1|
-)"
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fc 02 01 00 00 00 7b|
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |u32 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8153,17 +8154,17 @@ c0
                         "adu32=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fc 02 01 00 00 00 7b|
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fa 02 01 00 00 00 00 00 00 00 7b|
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |u64 1|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8174,10 +8175,17 @@ c0
                         "adu64=1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 fa 02 01 00 00 00 00 00 00 00 7b|
                 }
                 {
-                    "lossyCTE" = true
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 95 02 01 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |u8 1|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8188,25 +8196,17 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 95 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |u8 1|
-)"
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 92 02 01 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |c 01|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8219,15 +8219,15 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 92 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     |c  \"a\"|
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8240,6 +8240,15 @@ c0
                     ]
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 e1 02 61 02 01 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    |m a 01|
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8252,24 +8261,17 @@ c0
                         "adu8=0x01"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 e1 02 61 02 01 7b|
-                    "lossyCBE" = true
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    |m a 01|
-)"
-                    "lossyCTE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 91 02 61 7b|
                     "cte" = "@a<
     \"a\"
 >
 @a(
     @\"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8280,19 +8282,17 @@ c0
                         "adt=a"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 91 02 61 7b|
-                    "lossyCBE" = true
                 }
                 {
+                    "lossycte" = true
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 90 02 61 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
 @a(
     \"a\"
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8322,8 +8322,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 ff 7b|
-                    "lossyCBE" = true
                     "cte" = "@a<
     \"a\"
 >
@@ -8342,6 +8342,8 @@ c0
                     ]
                 }
                 {
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 ff 7b|
                     "cte" = "@a<
     \"a\"
 >
@@ -8358,11 +8360,10 @@ c0
                         "n=-1"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 ff 7b|
-                    "lossyCBE" = true
                 }
                 {
-                    "lossyCBE" = true
+                    "lossycbe" = true
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 92 02 61 7b|
                     "cte" = "@a<
     \"a\"
 >
@@ -8377,7 +8378,6 @@ c0
                         "ct=a"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 92 02 61 7b|
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 77 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 7b 7b|
@@ -8510,6 +8510,13 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 65 83 00 7b|
+                    "cte" = "@a<
+    \"a\"
+>
+@a(
+    -inf
+)"
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8518,13 +8525,6 @@ c0
                         "n=-inf"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 65 83 00 7b|
-                    "cte" = "@a<
-    \"a\"
->
-@a(
-    -inf
-)"
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 78 ff 7b 7b|
@@ -8547,6 +8547,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 7e 7b|
                     "cte" = "@a<
     \"a\"
 >
@@ -8561,9 +8562,9 @@ c0
                         "null"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 7e 7b|
                 }
                 {
+                    "lossycte" = true
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 7f ff 7b|
                     "cte" = "@a<
     \"a\"
@@ -8571,7 +8572,6 @@ c0
 @a(
     -1
 )"
-                    "lossyCTE" = true
                     "events" = [
                         "st=a"
                         "s=a"
@@ -8583,6 +8583,7 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 e0 02 61 7b|
                     "cte" = "@a<
     \"a\"
 >
@@ -8597,7 +8598,6 @@ c0
                         "refr=a"
                         "e"
                     ]
-                    "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 94 e0 02 61 7b|
                 }
                 {
                     "cbe" = |u8x 76 01 61 81 61 7b 75 01 61 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 7b|
@@ -8685,7 +8685,7 @@ c0
                     ]
                 }
             ]
-            "mustFail" = [
+            "mustfail" = [
                 {
                     "events" = [
                         "st=a"

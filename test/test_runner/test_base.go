@@ -40,14 +40,14 @@ import (
 )
 
 type BaseTest struct {
-	RawDocument bool
-	Skip        bool
 	ceVersion   int
-	Cbe         []byte
-	Cte         string
-	Events      []string
+	Cbe         []byte   `ce:"order=1,omitempty"`
+	Cte         string   `ce:"order=2,omitempty"`
+	Events      []string `ce:"order=3,omitempty"`
+	RawDocument bool     `ce:"order=4,omitempty"`
+	Skip        bool     `ce:"order=5,omitempty"`
+	Debug       bool     `ce:"order=6,omitempty"` // When true, don't convert panics to errors.
 	events      test.Events
-	Debug       bool // When true, don't convert panics to errors.
 	context     string
 }
 

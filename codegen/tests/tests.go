@@ -31,6 +31,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
@@ -58,7 +59,7 @@ func generateEncodeDecodeTests(path string) {
 	)
 }
 
-func generateTLOTests() interface{} {
+func generateTLOTests() *test_runner.UnitTest {
 	prefix := test.Events{}
 	suffix := test.Events{}
 	invalidEvents := test.Events{EvV, EvE, EvACL, EvACM, EvREFL, EvSI}
@@ -67,7 +68,7 @@ func generateTLOTests() interface{} {
 	return generateEncodeDecodeTest("TLO", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateListTests() interface{} {
+func generateListTests() *test_runner.UnitTest {
 	prefix := test.Events{EvL}
 	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM}
@@ -76,7 +77,7 @@ func generateListTests() interface{} {
 	return generateEncodeDecodeTest("List", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateMapKeyTests() interface{} {
+func generateMapKeyTests() *test_runner.UnitTest {
 	prefix := test.Events{EvM}
 	suffix := test.Events{EvN, EvE}
 	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
@@ -85,7 +86,7 @@ func generateMapKeyTests() interface{} {
 	return generateEncodeDecodeTest("Map Key", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateMapValueTests() interface{} {
+func generateMapValueTests() *test_runner.UnitTest {
 	prefix := test.Events{EvM, EvN}
 	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
@@ -94,7 +95,7 @@ func generateMapValueTests() interface{} {
 	return generateEncodeDecodeTest("Map Value", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateEdgeSourceTests() interface{} {
+func generateEdgeSourceTests() *test_runner.UnitTest {
 	prefix := test.Events{EvEDGE}
 	suffix := test.Events{EvN, EvN, EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL}
@@ -103,7 +104,7 @@ func generateEdgeSourceTests() interface{} {
 	return generateEncodeDecodeTest("Edge Source", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateEdgeDescriptionTests() interface{} {
+func generateEdgeDescriptionTests() *test_runner.UnitTest {
 	prefix := test.Events{EvEDGE, EvN}
 	suffix := test.Events{EvN, EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
@@ -112,7 +113,7 @@ func generateEdgeDescriptionTests() interface{} {
 	return generateEncodeDecodeTest("Edge Description", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateEdgeDestinationTests() interface{} {
+func generateEdgeDestinationTests() *test_runner.UnitTest {
 	prefix := test.Events{EvEDGE, EvN, EvN}
 	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL}
@@ -121,7 +122,7 @@ func generateEdgeDestinationTests() interface{} {
 	return generateEncodeDecodeTest("Edge Destination", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateNodeValueTests() interface{} {
+func generateNodeValueTests() *test_runner.UnitTest {
 	prefix := test.Events{EvNODE}
 	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM}
@@ -130,7 +131,7 @@ func generateNodeValueTests() interface{} {
 	return generateEncodeDecodeTest("Node Value", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateNodeChildTests() interface{} {
+func generateNodeChildTests() *test_runner.UnitTest {
 	prefix := test.Events{EvNODE, EvNULL}
 	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM}
@@ -139,7 +140,7 @@ func generateNodeChildTests() interface{} {
 	return generateEncodeDecodeTest("Node Child", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateStructTemplateTests() interface{} {
+func generateStructTemplateTests() *test_runner.UnitTest {
 	prefix := test.Events{EvST}
 	suffix := test.Events{EvE, EvN}
 	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
@@ -148,7 +149,7 @@ func generateStructTemplateTests() interface{} {
 	return generateEncodeDecodeTest("Struct Template", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateStructInstanceTests() interface{} {
+func generateStructInstanceTests() *test_runner.UnitTest {
 	prefix := test.Events{EvST, EvS, EvE, EvSI}
 	suffix := test.Events{EvE}
 	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvSI, EvST}
@@ -157,9 +158,9 @@ func generateStructInstanceTests() interface{} {
 	return generateEncodeDecodeTest("Struct Instance", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) interface{} {
-	var mustSucceed []interface{}
-	var mustFail []interface{}
+func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) *test_runner.UnitTest {
+	mustSucceed := []*test_runner.MustSucceedTest{}
+	mustFail := []*test_runner.MustFailTest{}
 
 	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
 		events := append(prefix, eventSet...)
@@ -177,7 +178,7 @@ func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Event
 }
 
 func generateCteHeaderTests(path string) {
-	wrongSentinelFailureTests := []interface{}{}
+	wrongSentinelFailureTests := []*test_runner.MustFailTest{}
 	for i := 0; i < 0x100; i++ {
 		if i == 'c' || i == 'C' {
 			continue
@@ -186,7 +187,7 @@ func generateCteHeaderTests(path string) {
 	}
 	wrongSentinelTest := generateTest("Wrong sentinel", nil, wrongSentinelFailureTests)
 
-	wrongVersionCharFailureTests := []interface{}{}
+	wrongVersionCharFailureTests := []*test_runner.MustFailTest{}
 	for i := 0; i < 0x100; i++ {
 		if i >= '0' && i <= '9' {
 			continue
@@ -195,7 +196,7 @@ func generateCteHeaderTests(path string) {
 	}
 	wrongVersionCharTest := generateTest("Wrong version character", nil, wrongVersionCharFailureTests)
 
-	wrongVersionFailureTests := []interface{}{}
+	wrongVersionFailureTests := []*test_runner.MustFailTest{}
 	for i := 0; i < 0x100; i++ {
 		// TODO: Remove i == 1 upon release
 		if i == version.ConciseEncodingVersion || i == 1 {
@@ -209,62 +210,59 @@ func generateCteHeaderTests(path string) {
 }
 
 func generateRulesTests(path string) {
-	noTests := generateTest("No tests", nil, []interface{}{})
+	noTests := generateTest("No tests", nil, nil)
 
 	writeTestFile(path, noTests)
 }
 
 // ===========================================================================
 
-func generateTest(name string, mustSucceed []interface{}, mustFail []interface{}) interface{} {
-	m := map[string]interface{}{
-		"name": name,
+func generateTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustFail []*test_runner.MustFailTest) *test_runner.UnitTest {
+	unitTest := &test_runner.UnitTest{
+		Name: name,
 	}
 
 	if mustSucceed != nil {
-		m["mustSucceed"] = mustSucceed
+		unitTest.MustSucceed = mustSucceed
 	}
 	if mustFail != nil {
-		m["mustFail"] = mustFail
+		unitTest.MustFail = mustFail
 	}
-	return m
+
+	return unitTest
 }
 
-func generateMustSucceedTest(events ...test.Event) map[string]interface{} {
-	test := map[string]interface{}{}
-
-	test["cbe"] = generateCbe(events...)
-	if hasLossyCBE(events...) {
-		test["lossyCBE"] = true
+func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest {
+	return &test_runner.MustSucceedTest{
+		BaseTest: test_runner.BaseTest{
+			Cbe:    generateCbe(events...),
+			Cte:    generateCte(events...),
+			Events: stringifyEvents(events...),
+		},
+		LossyCBE: hasLossyCBE(events...),
+		LossyCTE: hasLossyCTE(events...),
 	}
-
-	test["cte"] = generateCte(events...)
-	if hasLossyCTE(events...) {
-		test["lossyCTE"] = true
-	}
-
-	test["events"] = stringifyEvents(events...)
-
-	return test
 }
 
-func generateMustFailTest(testType testType, events ...test.Event) map[string]interface{} {
+func generateMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
 	switch testType {
 	case testTypeCbe:
-		return map[string]interface{}{"cbe": generateCbe(events...)}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Cbe: generateCbe(events...)}}
 	case testTypeCte:
-		return map[string]interface{}{"cte": generateCte(events...)}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Cte: generateCte(events...)}}
 	case testTypeEvents:
-		return map[string]interface{}{"events": stringifyEvents(events...)}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
 	default:
 		panic(fmt.Errorf("%v: unknown mustFail test type", testType))
 	}
 }
 
-func generateCustomMustFailTest(cteContents string) map[string]interface{} {
-	return map[string]interface{}{
-		"rawdocument": true,
-		"cte":         cteContents,
+func generateCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
+	return &test_runner.MustFailTest{
+		BaseTest: test_runner.BaseTest{
+			Cte:         cteContents,
+			RawDocument: true,
+		},
 	}
 }
 
@@ -333,15 +331,17 @@ func stringifyEvents(events ...test.Event) (stringified []string) {
 	return
 }
 
-func writeTestFile(path string, tests ...interface{}) {
-	m := map[string]interface{}{
-		"type": map[string]interface{}{
-			"identifier": "ce-test",
-			"version":    1,
+func writeTestFile(path string, tests ...*test_runner.UnitTest) {
+	ceVersion := version.ConciseEncodingVersion
+	suite := &test_runner.TestSuite{
+		Type: test_runner.TestSuiteType{
+			Identifier: "ce-test",
+			Version:    1,
 		},
-		"ceversion": version.ConciseEncodingVersion,
-		"tests":     tests,
+		CEVersion: &ceVersion,
+		Tests:     tests,
 	}
+
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		panic(err)
@@ -350,7 +350,7 @@ func writeTestFile(path string, tests ...interface{}) {
 
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Encoder.DefaultNumericFormats.Array.Uint8 = options.CTEEncodingFormatHexadecimalZeroFilled
-	if err := ce.MarshalCTE(m, f, &opts); err != nil {
+	if err := ce.MarshalCTE(suite, f, &opts); err != nil {
 		panic(err)
 	}
 }

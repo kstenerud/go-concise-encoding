@@ -27,6 +27,8 @@ import (
 	"math/big"
 	"net/url"
 	"reflect"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -277,8 +279,8 @@ type structField struct {
 	IncludeName bool
 	Omit        bool
 	OmitEmpty   bool
-	// TODO: OmitValue
-	OmitValue string
+	OmitValue   string // TODO
+	Order       uint32
 }
 
 func (_this *structField) applyTags(tags string) {
@@ -308,11 +310,16 @@ func (_this *structField) applyTags(tags string) {
 				_this.OmitValue = strings.TrimSpace(kv[1])
 			}
 		case "omitempty":
-			// TODO: Implement omitempty
 			_this.OmitEmpty = true
 		case "name":
 			requiresValue(kv, "name")
 			_this.Name = strings.TrimSpace(kv[1])
+		case "order":
+			order, err := strconv.ParseUint(kv[1], 10, 32)
+			if err != nil {
+				panic(err)
+			}
+			_this.Order = uint32(order)
 		default:
 			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
 		}
@@ -323,11 +330,33 @@ func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFun
 	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
 	return func(context *Context, value reflect.Value) {
 		for _, field := range fields {
-			if field.IncludeName {
-				context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+			fieldValue := value.Field(field.Index)
+			if !(field.OmitEmpty && isValueEmpty(fieldValue)) {
+				if field.IncludeName {
+					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+				}
+				field.Iterate(context, fieldValue)
 			}
-			field.Iterate(context, value.Field(field.Index))
 		}
+	}
+}
+
+func isValueEmpty(value reflect.Value) bool {
+	if !value.IsValid() {
+		return false
+	}
+
+	switch value.Kind() {
+	case reflect.Bool:
+		return !value.Bool()
+	case reflect.Interface, reflect.Pointer:
+		return value.IsNil()
+	case reflect.Map, reflect.Slice:
+		return value.IsNil() || value.Len() == 0
+	case reflect.Array, reflect.String:
+		return value.Len() == 0
+	default:
+		return true
 	}
 }
 
@@ -339,6 +368,7 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 				Name:  reflectField.Name,
 				Type:  reflectField.Type,
 				Index: i,
+				Order: 0xffffffff,
 			}
 			field.applyTags(reflectField.Tag.Get("ce"))
 			if ctx.LowercaseStructFieldNames {
@@ -356,6 +386,11 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 			}
 		}
 	}
+
+	sort.SliceStable(fields, func(i, j int) bool {
+		return fields[i].Order < fields[j].Order
+	})
+
 	return fields
 }
 
@@ -366,10 +401,13 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 		context.EventReceiver.OnMap()
 
 		for _, field := range fields {
-			if field.IncludeName {
-				context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+			fieldValue := v.Field(field.Index)
+			if !(field.OmitEmpty && isValueEmpty(fieldValue)) {
+				if field.IncludeName {
+					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+				}
+				field.Iterate(context, fieldValue)
 			}
-			field.Iterate(context, v.Field(field.Index))
 		}
 
 		context.EventReceiver.OnEnd()

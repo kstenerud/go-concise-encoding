@@ -23,7 +23,6 @@ package test_runner
 import (
 	"fmt"
 	"os"
-	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/version"
@@ -31,37 +30,31 @@ import (
 
 const TestSuiteVersion = 1
 
+type TestSuiteType struct {
+	Identifier string `ce:"order=1"`
+	Version    int    `ce:"order=2"`
+}
+
 type TestSuite struct {
-	Type      map[string]interface{}
-	CEVersion *int
-	Tests     []UnitTest
+	Type      TestSuiteType `ce:"order=1"`
+	CEVersion *int          `ce:"order=2"`
+	Tests     []*UnitTest   `ce:"order=3"`
 	context   string
 }
 
 func (_this *TestSuite) PostDecodeInit(sourceFile string) (errors []error) {
 	_this.context = sourceFile
 
-	if _this.Type == nil {
-		return []error{_this.errorf("missing type field")}
-	}
-
-	if v, ok := _this.Type["identifier"]; ok {
-		if v != "ce-test" {
-			return []error{_this.errorf("%v: unrecognized type identifier", v)}
-		}
-	} else {
+	if len(_this.Type.Identifier) == 0 {
 		return []error{_this.errorf("missing type identifier field")}
 	}
 
-	if v, ok := _this.Type["version"]; ok {
-		if v != uint64(TestSuiteVersion) {
-			if reflect.TypeOf(v).Kind() != reflect.Uint64 {
-				return []error{_this.errorf("type version must be an unsigned integer")}
-			}
-			return []error{_this.errorf("ce test format version %v runner cannot load from version %v file", TestSuiteVersion, v)}
-		}
-	} else {
-		return []error{_this.errorf("missing type version field")}
+	if _this.Type.Identifier != "ce-test" {
+		return []error{_this.errorf("%v: unrecognized type identifier", _this.Type.Identifier)}
+	}
+
+	if _this.Type.Version != TestSuiteVersion {
+		return []error{_this.errorf("ce test format version %v runner cannot load from version %v file", TestSuiteVersion, _this.Type.Version)}
 	}
 
 	if _this.CEVersion == nil {

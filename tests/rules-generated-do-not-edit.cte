@@ -8,7 +8,6 @@ c0
     "tests" = [
         {
             "name" = "No tests"
-            "mustFail" = []
         }
     ]
 }
