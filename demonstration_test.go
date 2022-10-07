@@ -42,7 +42,7 @@ func demonstrateCTEMarshal() error {
 		return err
 	}
 	fmt.Printf("Marshaled CTE: %v\n", buffer.String())
-	// Prints: Marshaled CTE: c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}
+	// Prints: Marshaled CTE: c0 {"a key"=0x1.4p+01 900=2020-01-15/13:41:00.000599}
 
 	return nil
 }
@@ -73,7 +73,7 @@ func demonstrateCBEMarshal() error {
 		return err
 	}
 	fmt.Printf("Marshaled CBE: %v\n", buffer.Bytes())
-	// Prints: Marshaled CBE: [131 0 121 106 132 3 155 188 18 0 32 109 47 80 0 133 97 32 107 101 121 112 32 64 123]
+	// Prints: Marshaled CBE: [129 0 153 106 132 3 124 188 18 0 32 109 47 80 0 133 97 32 107 101 121 112 32 64 155]
 
 	return nil
 }
@@ -81,9 +81,9 @@ func demonstrateCBEMarshal() error {
 const ceVer = version.ConciseEncodingVersion
 
 func demonstrateCBEUnmarshal() error {
-	data := bytes.NewBuffer([]byte{0x81, ceVer, 0x79, 0x85, 0x61, 0x20, 0x6b, 0x65,
-		0x79, 0x70, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x9b, 0xbc, 0x12,
-		0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x7b})
+	data := bytes.NewBuffer([]byte{0x81, ceVer, 0x99, 0x85, 0x61, 0x20, 0x6b, 0x65,
+		0x79, 0x70, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x7c, 0xbc, 0x12,
+		0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x9b})
 
 	value, err := ce.UnmarshalCBE(data, nil, nil)
 	if err != nil {
@@ -130,7 +130,8 @@ func demonstrateRecursiveStructInMap() error {
 		return err
 	}
 	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)
-	// Prints: Re-encoded CBE: [131 0 121 136 109 121 45 118 97 108 117 101 151 1 48 121 129 97 100 129 98 132 116 101 115 116 129 99 152 1 48 123 123]
+	// Prints: Re-encoded CBE: [129 0 153 136 109 121 45 118 97 108 117 101 127 240 1 48 153 129 97 100 129 98 132 116 101 115 116 129 99 124 1 48 155 155]
+
 	return nil
 }
 

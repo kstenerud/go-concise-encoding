@@ -104,6 +104,8 @@ func ConstructEventWithValue(shortName string, value interface{}, invocation Eve
 			} else {
 				comparable = fmt.Sprintf("%v=%v", shortName, v.Text('x', -1))
 			}
+		case *apd.Decimal:
+			comparable = fmt.Sprintf("%v=%v", shortName, v.Text('g'))
 		default:
 			comparable = fmt.Sprintf("%v=%v", shortName, value)
 		}
@@ -229,6 +231,8 @@ func N(value interface{}) Event {
 			} else {
 				value = compact_float.NegativeInfinity()
 			}
+		} else {
+			value = v.Copy(v)
 		}
 	case *apd.Decimal:
 		switch v.Form {
@@ -242,7 +246,17 @@ func N(value interface{}) Event {
 			} else {
 				value = compact_float.Infinity()
 			}
+
+		default:
+			value = &apd.Decimal{
+				Form:     v.Form,
+				Negative: v.Negative,
+				Exponent: v.Exponent,
+				Coeff:    v.Coeff,
+			}
 		}
+	case *big.Int:
+		value = big.NewInt(0).Set(v)
 	}
 
 	return &EventNumeric{

@@ -58,11 +58,14 @@ func (_this *MustSucceedTest) runCte() error {
 	hasEvents := len(_this.events) > 0
 
 	if _this.Debug {
-		fmt.Printf("%v: Convert CTE to events: [%v]", _this.context, _this.CTE)
+		fmt.Printf("%v: Convert CTE to events: [%v]\n", _this.context, _this.CTE)
 	}
 	events, err := _this.cteToEvents(_this.CTE)
 	if err != nil {
 		return _this.wrapError(err, "decoding CTE [%v]", _this.CTE)
+	}
+	if _this.Debug {
+		fmt.Printf("%v: Produced events: [%v]\n", _this.context, events)
 	}
 	if hasEvents && !_this.LossyCTE {
 		if !_this.events.AreEquivalentTo(events) {
@@ -71,7 +74,7 @@ func (_this *MustSucceedTest) runCte() error {
 		}
 	}
 	if _this.Debug {
-		fmt.Printf("%v: Convert events to CTE: [%v]", _this.context, _this.events)
+		fmt.Printf("%v: Convert events to CTE: [%v]\n", _this.context, _this.events)
 	}
 	if hasEvents {
 		events = _this.events
@@ -79,6 +82,9 @@ func (_this *MustSucceedTest) runCte() error {
 	document, err := _this.eventsToCte(events)
 	if err != nil {
 		return _this.wrapError(err, "Encoding events [%v] to CTE", events)
+	}
+	if _this.Debug {
+		fmt.Printf("%v: Produced CTE: [%v]\n", _this.context, document)
 	}
 	if !_this.LossyCTE {
 		if _this.CTE != document {
@@ -93,12 +99,33 @@ func (_this *MustSucceedTest) runCte() error {
 func (_this *MustSucceedTest) runCbe() error {
 	hasEvents := len(_this.events) > 0
 
+	// Disabled for now because calling _this.eventsToCbe(_this.events) twice with an event of -0xffffffffffffffff turns it positive
+	// if !_this.LossyCBE {
+	// 	if _this.Debug {
+	// 		fmt.Printf("%v: Initial convert events to CBE: [%v]\n", _this.context, _this.events)
+	// 	}
+	// 	document, err := _this.eventsToCbe(_this.events)
+	// 	if err != nil {
+	// 		return _this.wrapError(err, "Encoding events [%v] to CBE", _this.events)
+	// 	}
+	// 	if _this.Debug {
+	// 		fmt.Printf("%v: Produced CBE: [%v]\n", _this.context, asHex(document))
+	// 	}
+	// 	if !bytes.Equal(_this.CBE, document) {
+	// 		return _this.errorf("expected events [%v] to produce CBE [%v] but got [%v]",
+	// 			_this.events, asHex(_this.CBE), asHex(document))
+	// 	}
+	// }
+
 	if _this.Debug {
-		fmt.Printf("%v: Convert CBE to events: [%v]", _this.context, asHex(_this.CBE))
+		fmt.Printf("%v: Convert CBE to events: [%v]\n", _this.context, asHex(_this.CBE))
 	}
 	events, err := _this.cbeToEvents(_this.CBE)
 	if err != nil {
 		return _this.wrapError(err, "decoding CBE [%v]", asHex(_this.CBE))
+	}
+	if _this.Debug {
+		fmt.Printf("%v: Produced events: [%v]\n", _this.context, events)
 	}
 	if hasEvents && !_this.LossyCBE {
 		if !_this.events.AreEquivalentTo(events) {
@@ -106,15 +133,19 @@ func (_this *MustSucceedTest) runCbe() error {
 				asHex(_this.CBE), _this.events, events)
 		}
 	}
-	if _this.Debug {
-		fmt.Printf("%v: Convert events to CBE: [%v]", _this.context, _this.events)
-	}
+
 	if hasEvents {
 		events = _this.events
+	}
+	if _this.Debug {
+		fmt.Printf("%v: Convert events to CBE: [%v]\n", _this.context, events)
 	}
 	document, err := _this.eventsToCbe(events)
 	if err != nil {
 		return _this.wrapError(err, "Encoding events [%v] to CBE", events)
+	}
+	if _this.Debug {
+		fmt.Printf("%v: Produced CBE: [%v]\n", _this.context, asHex(document))
 	}
 	if !_this.LossyCBE {
 		if !bytes.Equal(_this.CBE, document) {

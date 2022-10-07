@@ -296,69 +296,69 @@ const maxSmallArrayLength = 15
 type arrayTypeInfo struct {
 	shortArrayType       cbeTypeField
 	hasSmallArraySupport bool
-	isPlane2             bool
+	isPlane7f            bool
 }
 
 var arrayInfo = [events.NumArrayTypes]arrayTypeInfo{
 	events.ArrayTypeString: {
 		shortArrayType:       cbeTypeString0,
 		hasSmallArraySupport: true,
-		isPlane2:             false,
+		isPlane7f:            false,
 	},
 	events.ArrayTypeUint16: {
 		shortArrayType:       cbeTypeShortArrayUint16,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeUint32: {
 		shortArrayType:       cbeTypeShortArrayUint32,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeUint64: {
 		shortArrayType:       cbeTypeShortArrayUint64,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeInt8: {
 		shortArrayType:       cbeTypeShortArrayInt8,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeInt16: {
 		shortArrayType:       cbeTypeShortArrayInt16,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeInt32: {
 		shortArrayType:       cbeTypeShortArrayInt32,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeInt64: {
 		shortArrayType:       cbeTypeShortArrayInt64,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeFloat16: {
 		shortArrayType:       cbeTypeShortArrayFloat16,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeFloat32: {
 		shortArrayType:       cbeTypeShortArrayFloat32,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeFloat64: {
 		shortArrayType:       cbeTypeShortArrayFloat64,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 	events.ArrayTypeUID: {
 		shortArrayType:       cbeTypeShortArrayUID,
 		hasSmallArraySupport: true,
-		isPlane2:             true,
+		isPlane7f:            true,
 	},
 }
 
@@ -366,8 +366,8 @@ func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, v
 	if elementCount <= maxSmallArrayLength {
 		info := arrayInfo[arrayType]
 		if info.hasSmallArraySupport {
-			if info.isPlane2 {
-				_this.writer.WriteType(cbeTypePlane2)
+			if info.isPlane7f {
+				_this.writer.WriteType(cbeTypePlane7f)
 			}
 			_this.writer.WriteSingleByte(byte(info.shortArrayType) | byte(elementCount))
 			_this.writer.WriteBytes(value)
@@ -418,6 +418,7 @@ func (_this *Encoder) OnMap() {
 }
 
 func (_this *Encoder) OnStructTemplate(id []byte) {
+	_this.writer.WriteType(cbeTypePlane7f)
 	_this.writer.WriteType(cbeTypeStructTemplate)
 	_this.writer.WriteIdentifier(id)
 }
@@ -440,6 +441,7 @@ func (_this *Encoder) OnEnd() {
 }
 
 func (_this *Encoder) OnMarker(id []byte) {
+	_this.writer.WriteType(cbeTypePlane7f)
 	_this.writer.WriteType(cbeTypeMarker)
 	_this.writer.WriteIdentifier(id)
 }
@@ -450,7 +452,7 @@ func (_this *Encoder) OnReferenceLocal(id []byte) {
 }
 
 func (_this *Encoder) OnRemoteReference() {
-	_this.writer.WriteType(cbeTypePlane2)
+	_this.writer.WriteType(cbeTypePlane7f)
 	_this.writer.WriteType(cbeTypeRemoteReference)
 }
 

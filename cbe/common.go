@@ -38,7 +38,7 @@ const CBESignatureByte = byte(0x81)
 type cbeTypeField uint16
 
 const (
-	cbeTypeDecimal        cbeTypeField = 0x65
+	cbeTypeUID            cbeTypeField = 0x65
 	cbeTypePosInt         cbeTypeField = 0x66
 	cbeTypeNegInt         cbeTypeField = 0x67
 	cbeTypePosInt8        cbeTypeField = 0x68
@@ -52,19 +52,19 @@ const (
 	cbeTypeFloat16        cbeTypeField = 0x70
 	cbeTypeFloat32        cbeTypeField = 0x71
 	cbeTypeFloat64        cbeTypeField = 0x72
-	cbeTypeUID            cbeTypeField = 0x73
+	cbeTypeReserved73     cbeTypeField = 0x73 //nolint
 	cbeTypeReserved74     cbeTypeField = 0x74 //nolint
-	cbeTypeStructInstance cbeTypeField = 0x75
-	cbeTypeStructTemplate cbeTypeField = 0x76
-	cbeTypeEdge           cbeTypeField = 0x77
-	cbeTypeNode           cbeTypeField = 0x78
-	cbeTypeMap            cbeTypeField = 0x79
-	cbeTypeList           cbeTypeField = 0x7a
-	cbeTypeEndContainer   cbeTypeField = 0x7b
-	cbeTypeFalse          cbeTypeField = 0x7c
-	cbeTypeTrue           cbeTypeField = 0x7d
-	cbeTypeNull           cbeTypeField = 0x7e
-	cbeTypePadding        cbeTypeField = 0x7f
+	cbeTypeReserved75     cbeTypeField = 0x75 //nolint
+	cbeTypeDecimal        cbeTypeField = 0x76
+	cbeTypeLocalReference cbeTypeField = 0x77
+	cbeTypeFalse          cbeTypeField = 0x78
+	cbeTypeTrue           cbeTypeField = 0x79
+	cbeTypeDate           cbeTypeField = 0x7a
+	cbeTypeTime           cbeTypeField = 0x7b
+	cbeTypeTimestamp      cbeTypeField = 0x7c
+	cbeTypeNull           cbeTypeField = 0x7d
+	cbeTypeReserved7e     cbeTypeField = 0x7e //nolint
+	cbeTypePlane7f        cbeTypeField = 0x7f
 	cbeTypeString0        cbeTypeField = 0x80
 	cbeTypeString1        cbeTypeField = 0x81
 	cbeTypeString2        cbeTypeField = 0x82
@@ -84,43 +84,43 @@ const (
 	cbeTypeString         cbeTypeField = 0x90
 	cbeTypeRID            cbeTypeField = 0x91
 	cbeTypeCustomType     cbeTypeField = 0x92
-	cbeTypeReserved93     cbeTypeField = 0x93 //nolint
-	cbeTypePlane2         cbeTypeField = 0x94
-	cbeTypeArrayUint8     cbeTypeField = 0x95
-	cbeTypeArrayBit       cbeTypeField = 0x96
-	cbeTypeMarker         cbeTypeField = 0x97
-	cbeTypeLocalReference cbeTypeField = 0x98
-	cbeTypeDate           cbeTypeField = 0x99
-	cbeTypeTime           cbeTypeField = 0x9a
-	cbeTypeTimestamp      cbeTypeField = 0x9b
+	cbeTypeArrayUint8     cbeTypeField = 0x93
+	cbeTypeArrayBit       cbeTypeField = 0x94
+	cbeTypePadding        cbeTypeField = 0x95
+	cbeTypeStructInstance cbeTypeField = 0x96
+	cbeTypeEdge           cbeTypeField = 0x97
+	cbeTypeNode           cbeTypeField = 0x98
+	cbeTypeMap            cbeTypeField = 0x99
+	cbeTypeList           cbeTypeField = 0x9a
+	cbeTypeEndContainer   cbeTypeField = 0x9b
 
 	// Plane 2 types
-	cbeTypeShortArrayInt8    cbeTypeField = 0x00
-	cbeTypeShortArrayUint16  cbeTypeField = 0x10
-	cbeTypeShortArrayInt16   cbeTypeField = 0x20
-	cbeTypeShortArrayUint32  cbeTypeField = 0x30
-	cbeTypeShortArrayInt32   cbeTypeField = 0x40
-	cbeTypeShortArrayUint64  cbeTypeField = 0x50
-	cbeTypeShortArrayInt64   cbeTypeField = 0x60
-	cbeTypeShortArrayFloat16 cbeTypeField = 0x70
-	cbeTypeShortArrayFloat32 cbeTypeField = 0x80
-	cbeTypeShortArrayFloat64 cbeTypeField = 0x90
-	cbeTypeShortArrayUID     cbeTypeField = 0xa0
-
-	cbeTypeRemoteReference cbeTypeField = 0xe0
-	cbeTypeMedia           cbeTypeField = 0xe1
-
-	cbeTypeArrayUID     cbeTypeField = 0xf5
-	cbeTypeArrayFloat64 cbeTypeField = 0xf6
-	cbeTypeArrayFloat32 cbeTypeField = 0xf7
-	cbeTypeArrayFloat16 cbeTypeField = 0xf8
-	cbeTypeArrayInt64   cbeTypeField = 0xf9
-	cbeTypeArrayUint64  cbeTypeField = 0xfa
-	cbeTypeArrayInt32   cbeTypeField = 0xfb
-	cbeTypeArrayUint32  cbeTypeField = 0xfc
-	cbeTypeArrayInt16   cbeTypeField = 0xfd
-	cbeTypeArrayUint16  cbeTypeField = 0xfe
-	cbeTypeArrayInt8    cbeTypeField = 0xff
+	cbeTypeShortArrayUID     cbeTypeField = 0x00
+	cbeTypeShortArrayInt8    cbeTypeField = 0x10
+	cbeTypeShortArrayUint16  cbeTypeField = 0x20
+	cbeTypeShortArrayInt16   cbeTypeField = 0x30
+	cbeTypeShortArrayUint32  cbeTypeField = 0x40
+	cbeTypeShortArrayInt32   cbeTypeField = 0x50
+	cbeTypeShortArrayUint64  cbeTypeField = 0x60
+	cbeTypeShortArrayInt64   cbeTypeField = 0x70
+	cbeTypeShortArrayFloat16 cbeTypeField = 0x80
+	cbeTypeShortArrayFloat32 cbeTypeField = 0x90
+	cbeTypeShortArrayFloat64 cbeTypeField = 0xa0
+	cbeTypeArrayUID          cbeTypeField = 0xe0
+	cbeTypeArrayInt8         cbeTypeField = 0xe1
+	cbeTypeArrayUint16       cbeTypeField = 0xe2
+	cbeTypeArrayInt16        cbeTypeField = 0xe3
+	cbeTypeArrayUint32       cbeTypeField = 0xe4
+	cbeTypeArrayInt32        cbeTypeField = 0xe5
+	cbeTypeArrayUint64       cbeTypeField = 0xe6
+	cbeTypeArrayInt64        cbeTypeField = 0xe7
+	cbeTypeArrayFloat16      cbeTypeField = 0xe8
+	cbeTypeArrayFloat32      cbeTypeField = 0xe9
+	cbeTypeArrayFloat64      cbeTypeField = 0xea
+	cbeTypeMarker            cbeTypeField = 0xf0
+	cbeTypeStructTemplate    cbeTypeField = 0xf1
+	cbeTypeRemoteReference   cbeTypeField = 0xf2
+	cbeTypeMedia             cbeTypeField = 0xf3
 
 	// Special code to mark EOF
 	cbeTypeEOF cbeTypeField = 0x100
@@ -131,7 +131,7 @@ const (
 	cbeSmallIntMax int64 = 100
 )
 
-var isPlane2Array = []bool{
+var isPlane7fArray = []bool{
 	events.ArrayTypeBit:             false,
 	events.ArrayTypeUint8:           false,
 	events.ArrayTypeUint16:          true,
@@ -175,7 +175,7 @@ var arrayTypeToCBEType = []cbeTypeField{
 	events.ArrayTypeMedia:           cbeTypeMedia,
 }
 
-var cbePlane2TypeToArrayType = [256]events.ArrayType{
+var cbePlane7fTypeToArrayType = [256]events.ArrayType{
 	cbeTypeArrayBit:     events.ArrayTypeBit,
 	cbeTypeArrayUint8:   events.ArrayTypeUint8,
 	cbeTypeArrayUint16:  events.ArrayTypeUint16,

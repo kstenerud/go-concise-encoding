@@ -102,7 +102,7 @@ c0
                     "cte" = "\.%%%%
 null
                     %%%%"
-                    "cbe"      = |u8x 7e|
+                    "cbe"      = |u8x 7d|
                     "events"   = ["null"]
 
                     // Optional fields:

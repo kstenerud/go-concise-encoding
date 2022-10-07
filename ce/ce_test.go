@@ -80,7 +80,7 @@ func TestCEDecodeCTE(t *testing.T) {
 }
 
 func TestCEUnmarshalCBE(t *testing.T) {
-	document := []byte{0x81, 0x00, 0x7a, 0x01, 0x02, 0x03, 0x7b}
+	document := []byte{0x81, 0x00, 0x9a, 0x01, 0x02, 0x03, 0x9b}
 	expected := []interface{}{1, 2, 3}
 	actual, err := UnmarshalFromCEDocument([]byte(document), nil, nil)
 	if err != nil {
@@ -101,7 +101,7 @@ func TestCEUnmarshalCBE(t *testing.T) {
 }
 
 func TestCEDecodeCBE(t *testing.T) {
-	document := []byte{0x81, 0x00, 0x7a, 0x01, 0x02, 0x03, 0x7b}
+	document := []byte{0x81, 0x00, 0x9a, 0x01, 0x02, 0x03, 0x9b}
 	expected := []interface{}{1, 2, 3}
 
 	decoder := NewCEDecoder(nil)

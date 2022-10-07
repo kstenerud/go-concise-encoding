@@ -275,6 +275,7 @@ func BenchmarkRules(b *testing.B) {
 	for _, obj := range objs {
 		iter.Iterate(obj)
 		documents = append(documents, store.Events)
+		store.Clear()
 	}
 
 	b.ReportAllocs()

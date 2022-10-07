@@ -359,7 +359,7 @@ func stringify(value interface{}) string {
 		case apd.NaN:
 			return "nan"
 		default:
-			return v.String()
+			return v.Text('g')
 		}
 	case uint, uint64, uint32, uint16, uint8:
 		return fmt.Sprintf("%v", value)

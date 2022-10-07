@@ -167,8 +167,6 @@ EOF:
 			eventReceiver.OnMap()
 		case cbeTypeList:
 			eventReceiver.OnList()
-		case cbeTypeStructTemplate:
-			eventReceiver.OnStructTemplate(_this.reader.ReadIdentifier())
 		case cbeTypeStructInstance:
 			eventReceiver.OnStructInstance(_this.reader.ReadIdentifier())
 		case cbeTypeEdge:
@@ -201,14 +199,12 @@ EOF:
 			_this.decodeArray(events.ArrayTypeCustomBinary, eventReceiver)
 		case cbeTypeEOF:
 			break EOF
-		case cbeTypePlane2:
-			_this.decodePlane2(eventReceiver)
+		case cbeTypePlane7f:
+			_this.decodePlane7f(eventReceiver)
 		case cbeTypeArrayBit:
 			_this.decodeArray(events.ArrayTypeBit, eventReceiver)
 		case cbeTypeArrayUint8:
 			_this.decodeArray(events.ArrayTypeUint8, eventReceiver)
-		case cbeTypeMarker:
-			eventReceiver.OnMarker(_this.reader.ReadIdentifier())
 		case cbeTypeLocalReference:
 			eventReceiver.OnReferenceLocal(_this.reader.ReadIdentifier())
 		case cbeTypeDate:
@@ -230,7 +226,7 @@ EOF:
 	return
 }
 
-func (_this *Decoder) decodePlane2(eventReceiver events.DataEventReceiver) {
+func (_this *Decoder) decodePlane7f(eventReceiver events.DataEventReceiver) {
 	cbeType := _this.reader.ReadType()
 	const lengthMask = 0x0f
 	const shortTypeMask = 0xf0
@@ -284,12 +280,16 @@ func (_this *Decoder) decodePlane2(eventReceiver events.DataEventReceiver) {
 	}
 
 	switch cbeType {
+	case cbeTypeMarker:
+		eventReceiver.OnMarker(_this.reader.ReadIdentifier())
+	case cbeTypeStructTemplate:
+		eventReceiver.OnStructTemplate(_this.reader.ReadIdentifier())
 	case cbeTypeRemoteReference:
 		_this.decodeArray(events.ArrayTypeReferenceRemote, eventReceiver)
 	case cbeTypeMedia:
 		_this.decodeMedia(eventReceiver)
 	default:
-		arrayType := cbePlane2TypeToArrayType[cbeType]
+		arrayType := cbePlane7fTypeToArrayType[cbeType]
 		if arrayType == events.ArrayTypeInvalid {
 			panic(fmt.Errorf("0x%02x: Unsupported plane 2 type", cbeType))
 		}

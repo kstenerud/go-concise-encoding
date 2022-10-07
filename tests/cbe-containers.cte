@@ -12,16 +12,16 @@ c0
         {
             "name" = "List"
             "mustSucceed" = [
-                {"cbe"=|u8x 7a 7b|           "events"=["l" "e"]}
-                {"cbe"=|u8x 7a 01 02 03 7b|  "events"=["l" "n=1" "n=2" "n=3" "e"]}
-                {"cbe"=|u8x 7a 01 7a 7a 02 7a 03 7a 7b 7b 7b 7b 7b|
+                {"cbe"=|u8x 9a 9b|           "events"=["l" "e"]}
+                {"cbe"=|u8x 9a 01 02 03 9b|  "events"=["l" "n=1" "n=2" "n=3" "e"]}
+                {"cbe"=|u8x 9a 01 9a 9a 02 9a 03 9a 9b 9b 9b 9b 9b|
                  "events"=["l" "n=1" "l" "l" "n=2" "l" "n=3" "l" "e" "e" "e" "e" "e"]}
             ]
             "mustFail" = [
-                {"cbe"=|u8x 7a|}              // Unterminated
-                {"cbe"=|u8x 7a 01 02|}        // Unterminated
-                {"cbe"=|u8x 7a 7a 7b|}        // Unterminated
-                {"cbe"=|u8x 7a 7b 7b|}        // Terminated too many times
+                {"cbe"=|u8x 9a|}              // Unterminated
+                {"cbe"=|u8x 9a 01 02|}        // Unterminated
+                {"cbe"=|u8x 9a 9a 9b|}        // Unterminated
+                {"cbe"=|u8x 9a 9b 9b|}        // Terminated too many times
             ]
         }
 
@@ -30,48 +30,48 @@ c0
         {
             "name" = "Map"
             "mustSucceed" = [
-                {"cbe"=|u8x 79 7b|        "events"=["m" "e"]}
-                {"cbe"=|u8x 79 01 02 7b|  "events"=["m" "n=1" "n=2" "e"]}
+                {"cbe"=|u8x 99 9b|        "events"=["m" "e"]}
+                {"cbe"=|u8x 99 01 02 9b|  "events"=["m" "n=1" "n=2" "e"]}
             ]
             "mustFail" = [
-                {"cbe"=|u8x 79|}                      // Unterminated
-                {"cbe"=|u8x 79 01|}                   // Unterminated
-                {"cbe"=|u8x 79 01 02|}                // Unterminated
-                {"cbe"=|u8x 79 7b 7b|}                // Terminated too many times
-                {"cbe"=|u8x 79 01 7b|}                // Missing value
-                {"cbe"=|u8x 79 7a 7b 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 79 7b 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 78 01 61 7b 7b 01 7b|} // Invalid key type
-                {"cbe"=|u8x 79 77 01 7b 01 7b|}       // Invalid key type
-                {"cbe"=|u8x 79 76 01 02 03 01 7b|}    // Invalid key type
-                {"cbe"=|u8x 79 92 00 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 93 00 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 95 00 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 96 00 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 00 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 10 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 20 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 30 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 40 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 50 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 60 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 70 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 80 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 90 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 a0 01 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 e0 02 61 7b|}       // Invalid key type
-                {"cbe"=|u8x 79 94 e1 02 61 00 7b|}    // Invalid key type
-                {"cbe"=|u8x 79 94 f5 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 f6 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 f7 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 f8 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 f9 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 fa 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 fb 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 fc 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 fd 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 fe 00 7b|}          // Invalid key type
-                {"cbe"=|u8x 79 94 ff 00 7b|}          // Invalid key type
+                {"cbe"=|u8x 99|}                      // Unterminated
+                {"cbe"=|u8x 99 01|}                   // Unterminated
+                {"cbe"=|u8x 99 01 02|}                // Unterminated
+                {"cbe"=|u8x 99 9b 9b|}                // Terminated too many times
+                {"cbe"=|u8x 99 01 9b|}                // Missing value
+                {"cbe"=|u8x 99 9a 9b 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 99 9b 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 98 01 61 9b 9b 01 9b|} // Invalid key type
+                {"cbe"=|u8x 99 97 01 9b 01 9b|}       // Invalid key type
+                {"cbe"=|u8x 99 96 01 02 03 01 9b|}    // Invalid key type
+                {"cbe"=|u8x 99 92 00 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 93 00 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 7f f1 00 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 96 00 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 00 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 10 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 20 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 30 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 40 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 50 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 60 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 70 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 80 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 90 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 a0 01 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 e0 02 61 9b|}       // Invalid key type
+                {"cbe"=|u8x 99 94 e1 02 61 00 9b|}    // Invalid key type
+                {"cbe"=|u8x 99 94 f5 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 f6 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 f7 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 f8 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 f9 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 fa 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 fb 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 fc 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 fd 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 fe 00 9b|}          // Invalid key type
+                {"cbe"=|u8x 99 94 ff 00 9b|}          // Invalid key type
             ]
         }
 
@@ -80,21 +80,21 @@ c0
         {
             "name" = "Struct"
             "mustSucceed" = [
-                {"cbe"=|u8x 76 01 61 7b 75 01 61 7b| "events"=["st=a" "e" "si=a" "e"]}
-                {"cbe"=|u8x 76 01 61 01 7b 75 01 61 01 7b| "events"=["st=a" "n=1" "e" "si=a" "n=1" "e"]}
+                {"cbe"=|u8x 7f f1 01 61 9b 96 01 61 9b| "events"=["st=a" "e" "si=a" "e"]}
+                {"cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 9b| "events"=["st=a" "n=1" "e" "si=a" "n=1" "e"]}
             ]
             "mustFail" = [
                 // Incomplete
-                {"cbe"=|u8x 75|}
-                {"cbe"=|u8x 75 01|}
-                {"cbe"=|u8x 76|}
-                {"cbe"=|u8x 76 01|}
-                {"cbe"=|u8x 76 01 61|}
-                {"cbe"=|u8x 76 01 61 7b 75 01 61|}
-                {"cbe"=|u8x 75 01 61 7b|} // Unknown ID
-                {"cbe"=|u8x 76 01 61 7b 76 01 61 7b 01|} // Duplicate ID
+                {"cbe"=|u8x 96|}
+                {"cbe"=|u8x 96 01|}
+                {"cbe"=|u8x 7f f1|}
+                {"cbe"=|u8x 7f f1 01|}
+                {"cbe"=|u8x 7f f1 01 61|}
+                {"cbe"=|u8x 7f f1 01 61 7b 96 01 61|}
+                {"cbe"=|u8x 96 01 61 7b|} // Unknown ID
+                {"cbe"=|u8x 7f f1 01 61 7b 7f f1 01 61 7b 01|} // Duplicate ID
                 { // ID too long
-                    "cbe"=|u8x 76 80
+                    "cbe"=|u8x 7f f1 80
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
@@ -114,16 +114,16 @@ c0
         {
             "name" = "Edge"
             "mustSucceed" = [
-                {"cbe"=|u8x 77 00 00 00 7b|              "events"=["edge" "n=0" "n=0" "n=0" "e"]}
-                {"cbe"=|u8x 77 91 02 61 7e 91 02 62 7b|  "events"=["edge" "rid=a" "null" "rid=b" "e"]}
+                {"cbe"=|u8x 97 00 00 00 9b|              "events"=["edge" "n=0" "n=0" "n=0" "e"]}
+                {"cbe"=|u8x 97 91 02 61 7d 91 02 62 9b|  "events"=["edge" "rid=a" "null" "rid=b" "e"]}
             ]
             "mustFail" = [
-                {"cbe"=|u8x 77|}              // Unterminated
-                {"cbe"=|u8x 77 00|}           // Unterminated
-                {"cbe"=|u8x 77 00 00|}        // Unterminated
-                {"cbe"=|u8x 77 00 00 00|}     // Unterminated
-                {"cbe"=|u8x 77 7e 00 00 7b|}  // Invalid source
-                {"cbe"=|u8x 77 00 00 7e 7b|}  // Invalid destination
+                {"cbe"=|u8x 97|}              // Unterminated
+                {"cbe"=|u8x 97 00|}           // Unterminated
+                {"cbe"=|u8x 97 00 00|}        // Unterminated
+                {"cbe"=|u8x 97 00 00 00|}     // Unterminated
+                {"cbe"=|u8x 97 7d 00 00 9b|}  // Invalid source
+                {"cbe"=|u8x 97 00 00 7d 9b|}  // Invalid destination
             ]
         }
 
@@ -132,14 +132,14 @@ c0
         {
             "name" = "Node"
             "mustSucceed" = [
-                {"cbe"=|u8x 78 00 7b|              "events"=["node" "n=0" "e"]}
-                {"cbe"=|u8x 78 00 78 81 61 7b 7b|  "events"=["node" "n=0" "node" "s=a" "e" "e"]}
+                {"cbe"=|u8x 98 00 9b|              "events"=["node" "n=0" "e"]}
+                {"cbe"=|u8x 98 00 98 81 61 9b 9b|  "events"=["node" "n=0" "node" "s=a" "e" "e"]}
             ]
             "mustFail" = [
-                {"cbe"=|u8x 78|}           // Unterminated
-                {"cbe"=|u8x 78 01|}        // Unterminated
-                {"cbe"=|u8x 78 01 7b 7b|}  // Terminated too many times
-                {"cbe"=|u8x 78 7b|}        // Missing value
+                {"cbe"=|u8x 98|}           // Unterminated
+                {"cbe"=|u8x 98 01|}        // Unterminated
+                {"cbe"=|u8x 98 01 9b 9b|}  // Terminated too many times
+                {"cbe"=|u8x 98 9b|}        // Missing value
             ]
         }
 
@@ -150,74 +150,74 @@ c0
             "mustSucceed" = [
                 {
                     "cbe"=|u8x
-                        7a
-                            7a
-                                7a
-                                7b
-                                79
+                        9a
+                            9a
+                                9a
+                                9b
+                                99
                                     81 61
                                     01
-                                7b
-                                78
+                                9b
+                                98
                                     01
-                                7b
-                                77
+                                9b
+                                97
                                     01
                                     02
                                     03
-                                7b
-                            7b
-                            79
-                                00 7a
-                                7b
-                                01 79
-                                7b
-                                03 78
+                                9b
+                            9b
+                            99
+                                00 9a
+                                9b
+                                01 99
+                                9b
+                                03 98
                                     81 61
-                                7b
-                                04 77
+                                9b
+                                04 97
                                     01
                                     02
                                     03
-                                7b
-                            7b
-                            78
-                                7a
-                                7b
-                                79
+                                9b
+                            9b
+                            98
+                                9a
+                                9b
+                                99
                                     81 61
                                     01
-                                7b
-                                78
+                                9b
+                                98
                                     01
-                                7b
-                                77
+                                9b
+                                97
                                     01
                                     02
                                     03
-                                7b
-                            7b
-                            77
-                                7a
-                                7b
-                                79
+                                9b
+                            9b
+                            97
+                                9a
+                                9b
+                                99
                                     81 61
                                     01
-                                7b
+                                9b
                                 01
-                            7b
-                            77
-                                78
+                            9b
+                            97
+                                98
                                     01
-                                7b
-                                77
+                                9b
+                                97
                                     01
                                     02
                                     03
-                                7b
+                                9b
                                 00
-                            7b
-                        7b
+                            9b
+                        9b
                     |
                     "events"=[
                         "l"

@@ -35,6 +35,10 @@ type EventCollection struct {
 	Events Events
 }
 
+func (_this *EventCollection) Clear() {
+	_this.Events = _this.Events[:0]
+}
+
 func (_this *EventCollection) IsEquivalentTo(events Events) bool {
 	return AreEventsEquivalent(_this.Events, events)
 }

@@ -270,8 +270,8 @@ func (_this *Writer) WriteArrayAndChunkHeader(arrayType events.ArrayType, elemen
 }
 
 func (_this *Writer) WriteArrayHeaderToBytes(arrayType events.ArrayType, buffer []byte) int {
-	if isPlane2Array[arrayType] {
-		_this.Buffer[0] = byte(cbeTypePlane2)
+	if isPlane7fArray[arrayType] {
+		_this.Buffer[0] = byte(cbeTypePlane7f)
 		_this.Buffer[1] = byte(arrayTypeToCBEType[arrayType])
 		return 2
 	} else {

@@ -28,7 +28,7 @@ c0
             "name" = "Incorrectly rejected document"
             "mustSucceed" = [
                 {
-                    "cbe"    = |u8x 79 81 61 7d 7b|
+                    "cbe"    = |u8x 99 81 61 79 9b|
                     "cte" = "\.%%%%
 {
     "a" = true
