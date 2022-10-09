@@ -28,6 +28,7 @@ type RuleOptions struct {
 	MaxArrayByteLength      uint64
 	MaxStringByteLength     uint64
 	MaxResourceIDByteLength uint64
+	MaxIdentifierLength     uint64
 	MaxContainerDepth       uint64
 	MaxObjectCount          uint64
 	MaxLocalReferenceCount  uint64
@@ -44,6 +45,7 @@ var defaultRuleOptions = RuleOptions{
 	MaxArrayByteLength:      1000000000,
 	MaxStringByteLength:     100000000,
 	MaxResourceIDByteLength: 10000,
+	MaxIdentifierLength:     1000,
 	MaxContainerDepth:       1000,
 	MaxObjectCount:          10000000,
 	MaxLocalReferenceCount:  100000,

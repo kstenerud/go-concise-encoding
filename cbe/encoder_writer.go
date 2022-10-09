@@ -250,7 +250,7 @@ func (_this *Writer) WriteNaN(signaling bool) {
 }
 
 func (_this *Writer) WriteIdentifier(b []byte) {
-	_this.WriteSingleByte(byte(len(b)))
+	_this.WriteULEB(uint64(len(b)))
 	_this.WriteBytes(b)
 }
 

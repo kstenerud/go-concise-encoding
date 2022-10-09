@@ -135,6 +135,10 @@ c0
     "x"
 )^"
                 }
+                {
+                    "cte"="@abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh<>
+1"
+                }
             ]
             "mustFail" = [
                 {"cte"="@"}         // Incomplete
@@ -151,8 +155,6 @@ c0
                 {"cte"="@x<> @x(]"} // Wrong terminator
                 {"cte"="@x<1> @x()"} // Contents mismatch
                 {"cte"="@x<> @x(1)"} // Contents mismatch
-                { // ID too long
-                    "cte"="@abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh<> 1"}
             ]
         }
 

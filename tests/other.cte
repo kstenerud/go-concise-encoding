@@ -306,6 +306,24 @@ c0
                     "cbe"      = |u8x 7f f0 01 31 81 78|
                     "events"   = ["mark=1" "s=x"]
                 }
+                {
+                    "cte" = "&abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh:1"
+                    "cbe" = |u8x
+                        7f f0 80 01
+                        61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66
+                        67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62
+                        63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68
+                        69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64
+                        65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a
+                        61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66
+                        67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62
+                        63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68
+                        01|
+                    "events" = [
+                        "mark=abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh"
+                        "n=1"
+                    ]
+                }
             ]
             "mustFail" = [
                 {"cte"="& 1:2"}    // Bad whitespace
@@ -317,14 +335,10 @@ c0
                 {"cte"="&1 : 2"}   // Bad whitespace
                 {"cte"="&1\"x\""}  // Missing separator
                 {"cte"="&1 \"x\""} // Missing separator
-                // Identifier too long:
-                {"cte"="&abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh:1"}
                 {"cbe"=|u8x 97|}       // Incomplete
                 {"cbe"=|u8x 97 00|}    // Zero length ID
                 {"cbe"=|u8x 97 01|}    // Incomplete
                 {"cbe"=|u8x 97 02 61|} // Incomplete
-                // Identifier too long:
-                {"cbe"=|u8x 97 80 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68 69 6a 61 62 63 64 65 66 67 68|}
                 {"cte"="[&a:1 &a:1]"}                    // Duplicate ID
                 {"cbe"=|u8x 7a 97 01 61 01 97 01 61 7b|} // Duplicate ID
             ]

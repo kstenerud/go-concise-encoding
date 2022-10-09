@@ -469,13 +469,21 @@ func TestRulesMaxResourceIDLength(t *testing.T) {
 }
 
 func TestRulesMaxIDLength(t *testing.T) {
-	maxIDLength := 127
+	maxIDLength := 200
 	opts := options.DefaultRuleOptions()
+	opts.MaxIdentifierLength = uint64(maxIDLength)
+
 	rules := newRulesAfterVersion(&opts)
 	assertEventsFail(t, rules, MARK(string(NewString(maxIDLength+1, 0))))
 
 	rules = newRulesAfterVersion(&opts)
-	assertEventsFail(t, rules, REFL(string(NewString(maxIDLength+1, 0))))
+	assertEventsSucceed(t, rules,
+		L(),
+		MARK(string(NewString(maxIDLength, 0))),
+		N(1),
+		REFL(string(NewString(maxIDLength, 0))),
+		E(),
+	)
 }
 
 func TestRulesMaxContainerDepth(t *testing.T) {

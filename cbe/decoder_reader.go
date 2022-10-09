@@ -184,11 +184,7 @@ func (_this *Reader) ReadBytes(byteCount int) []byte {
 }
 
 func (_this *Reader) ReadIdentifier() []byte {
-	_this.readIntoBuffer(1)
-	length := int(_this.buffer[0])
-	if length > 127 {
-		panic(fmt.Errorf("identifier is too long (%v)", length))
-	}
+	length := int(_this.readSmallULEB128("identifier length", 100000))
 	if length == 0 {
 		panic(fmt.Errorf("identifier cannot be empty"))
 	}

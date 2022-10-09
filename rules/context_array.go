@@ -256,7 +256,7 @@ func (_this *Context) ValidateIdentifier(data []uint8) {
 	if len(data) == 0 {
 		panic(fmt.Errorf("identifier cannot be empty"))
 	}
-	if len(data) > 127 {
+	if len(data) > int(_this.opts.MaxIdentifierLength) {
 		panic(fmt.Errorf("identifier is too long (%v bytes)", len(data)))
 	}
 	if !chars.IsIdentifierSafe(data) {
