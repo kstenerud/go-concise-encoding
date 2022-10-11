@@ -267,15 +267,12 @@ func (_this *Context) ValidateIdentifier(data []uint8) {
 func (_this *Context) ValidateFullArrayAnyType(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthString(uint64(len(data)))
 		_this.ValidateContentsString(data)
 	case events.ArrayTypeResourceID:
-		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthRID(uint64(len(data)))
 		_this.ValidateContentsRID(data)
 	case events.ArrayTypeCustomText:
-		_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 		_this.ValidateLengthAnyType(uint64(len(data)))
 		_this.ValidateContentsString(data)
 	default:
@@ -312,7 +309,6 @@ func (_this *Context) ValidateFullArrayKeyable(contextDesc string, arrayType eve
 
 func (_this *Context) ValidateFullArrayComment(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.AssertArrayType("comment", arrayType, AllowString)
-	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthAnyType(uint64(len(data)))
 	_this.ValidateContentsComment(data)
 }
@@ -325,14 +321,12 @@ func (_this *Context) ValidateFullArrayCommentString(arrayType events.ArrayType,
 
 func (_this *Context) ValidateFullArrayRID(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.AssertArrayType("resource ID", arrayType, AllowResourceID)
-	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthRID(uint64(len(data)))
 	_this.ValidateContentsRID(data)
 }
 
 func (_this *Context) ValidateFullArrayMarkerID(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	_this.AssertArrayType("marker ID", arrayType, AllowString)
-	_this.ValidateByteCount1BPE(elementCount, uint64(len(data)))
 	_this.ValidateLengthMarkerID(uint64(len(data)))
 	_this.ValidateContentsMarkerID(data)
 }
@@ -341,13 +335,6 @@ func (_this *Context) ValidateFullArrayMarkerIDString(arrayType events.ArrayType
 	_this.AssertArrayType("marker ID", arrayType, AllowString)
 	_this.ValidateLengthMarkerID(uint64(len(data)))
 	_this.ValidateContentsMarkerIDString(data)
-}
-
-func (_this *Context) ValidateByteCount1BPE(elementCount uint64, byteCount uint64) {
-	if byteCount != elementCount {
-		panic(fmt.Errorf("expected string length of %d bytes but got %d bytes",
-			elementCount, byteCount))
-	}
 }
 
 func (_this *Context) ValidateByteCountForType(arrayType events.ArrayType, elementCount uint64, byteCount uint64) {
