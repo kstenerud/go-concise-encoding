@@ -39,22 +39,22 @@ import (
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom
 
 // ============================================================================
+// Implementation Code
+// ============================================================================
 
 // Assume the following custom serialized formats for complex64 and 128:
 //
 // | Offset | Size | Description                                             |
 // | ------ | ---- | ------------------------------------------------------- |
-// |      0 |    1 | Data type code (so we can have multiple custom types)   |
-// |      1 |    4 | Real portion (float32, little endian)                   |
-// |      5 |    4 | Imaginary portion (float32, little endian)              |
+// |      0 |    4 | Real portion (float32, little endian)                   |
+// |      4 |    4 | Imaginary portion (float32, little endian)              |
 //
 // | Offset | Size | Description                                             |
 // | ------ | ---- | ------------------------------------------------------- |
-// |      0 |    1 | Data type code (so we can have multiple custom types)   |
-// |      1 |    8 | Real portion (float64, little endian)                   |
-// |      9 |    8 | Imaginary portion (float64, little endian)              |
+// |      0 |    8 | Real portion (float64, little endian)                   |
+// |      8 |    8 | Imaginary portion (float64, little endian)              |
 
-// Simple type mechanism: The first byte of the data is the type field
+// We'll assign the following custom type codes:
 const (
 	typeCodeComplex64  = 0
 	typeCodeComplex128 = 1
@@ -62,46 +62,41 @@ const (
 
 // First piece: functions to convert from complex type to custom bytes.
 // These functions each handle a single type only.
-func convertComplex64ToCustomBinary(rv reflect.Value) (asBytes []byte, err error) {
+func convertComplex64ToCustomBinary(rv reflect.Value) (customType uint64, asBytes []byte, err error) {
 	cplx := complex64(rv.Complex())
 
 	buff := bytes.Buffer{}
-
-	buff.WriteByte(typeCodeComplex64)
 	if err = binary.Write(&buff, binary.LittleEndian, real(cplx)); err != nil {
 		return
 	}
 	if err = binary.Write(&buff, binary.LittleEndian, imag(cplx)); err != nil {
 		return
 	}
-
+	customType = typeCodeComplex64
 	asBytes = buff.Bytes()
 	return
 }
 
-func convertComplex128ToCustomBinary(rv reflect.Value) (asBytes []byte, err error) {
+func convertComplex128ToCustomBinary(rv reflect.Value) (customType uint64, asBytes []byte, err error) {
 	cplx := rv.Complex()
 
 	buff := bytes.Buffer{}
-
-	buff.WriteByte(typeCodeComplex128)
 	if err = binary.Write(&buff, binary.LittleEndian, real(cplx)); err != nil {
 		return
 	}
 	if err = binary.Write(&buff, binary.LittleEndian, imag(cplx)); err != nil {
 		return
 	}
-
+	customType = typeCodeComplex128
 	asBytes = buff.Bytes()
 	return
 }
 
 // Second piece: converter function to fill in an object from custom data.
 // This same function will be used for ALL custom types.
-func convertFromCustomBinary(src []byte, dst reflect.Value) error {
+func convertFromCustomBinary(customType uint64, src []byte, dst reflect.Value) error {
 	buff := bytes.NewBuffer(src)
 
-	customType, _ := buff.ReadByte()
 	switch customType {
 	case typeCodeComplex64:
 		var realPart float32
@@ -130,6 +125,8 @@ func convertFromCustomBinary(src []byte, dst reflect.Value) error {
 	}
 }
 
+// ============================================================================
+// Test Code
 // ============================================================================
 
 func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
@@ -195,16 +192,23 @@ func assertMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
 
 // ============================================================================
 
-func convertComplexToCustomText(rv reflect.Value) (asString []byte, err error) {
+func convertComplexToCustomText(rv reflect.Value) (customType uint64, asString []byte, err error) {
 	cplx := rv.Complex()
+	switch rv.Kind() {
+	case reflect.Complex64:
+		customType = typeCodeComplex64
+	case reflect.Complex128:
+		customType = typeCodeComplex128
+	}
 	builder := strings.Builder{}
-	builder.WriteString(fmt.Sprintf("cplx(%g+%gi)", real(cplx), imag(cplx)))
-	return []byte(builder.String()), nil
+	builder.WriteString(fmt.Sprintf("%g+%gi", real(cplx), imag(cplx)))
+	asString = []byte(builder.String())
+	return
 }
 
-func convertFromCustomText(src []byte, dst reflect.Value) error {
+func convertFromCustomText(customType uint64, src string, dst reflect.Value) error {
 	var r, i float64
-	if _, err := fmt.Sscanf(string(src), "cplx(%f+%fi)", &r, &i); err != nil {
+	if _, err := fmt.Sscanf(src, "%f+%fi", &r, &i); err != nil {
 		return err
 	}
 

@@ -22,8 +22,6 @@ package builder
 
 import (
 	"reflect"
-
-	"github.com/kstenerud/go-concise-encoding/events"
 )
 
 type customBuilder struct{}
@@ -33,9 +31,13 @@ var globalCustomBuilder = &customBuilder{}
 func generateCustomBuilder(ctx *Context) Builder { return globalCustomBuilder }
 func (_this *customBuilder) String() string      { return reflect.TypeOf(_this).String() }
 
-func (_this *customBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
-	if !ctx.TryBuildFromCustom(_this, arrayType, value, dst) {
-		PanicBadEvent(_this, "TypedArray(%v)", arrayType)
-	}
+func (_this *customBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	ctx.TryBuildFromCustomBinary(_this, customType, data, dst)
+
+	return dst
+}
+
+func (_this *customBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	ctx.TryBuildFromCustomText(_this, customType, data, dst)
 	return dst
 }

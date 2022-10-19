@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 type markerObjectBuilder struct {
@@ -124,6 +124,18 @@ func (_this *markerObjectBuilder) BuildFromArray(ctx *Context, arrayType events.
 
 func (_this *markerObjectBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	object := _this.child.BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	_this.onObjectFinished(ctx, object)
+	return object
+}
+
+func (_this *markerObjectBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromCustomBinary(ctx, customType, value, dst)
+	_this.onObjectFinished(ctx, object)
+	return object
+}
+
+func (_this *markerObjectBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, dst reflect.Value) reflect.Value {
+	object := _this.child.BuildFromCustomText(ctx, customType, value, dst)
 	_this.onObjectFinished(ctx, object)
 	return object
 }

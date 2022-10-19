@@ -33,7 +33,8 @@ import (
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
-type CustomBuildFunction func(src []byte, dst reflect.Value) error
+type CustomBinaryBuildFunction func(customType uint64, src []byte, dst reflect.Value) error
+type CustomTextBuildFunction func(customType uint64, src string, dst reflect.Value) error
 
 type BuilderSessionOptions struct {
 	// Specifies which types will be built using custom text/binary build
@@ -45,10 +46,10 @@ type BuilderSessionOptions struct {
 	CustomBuiltTypes []reflect.Type
 
 	// Build function to use when building from a custom binary source.
-	CustomBinaryBuildFunction CustomBuildFunction
+	CustomBinaryBuildFunction CustomBinaryBuildFunction
 
 	// Build function to use when building from a custom text source.
-	CustomTextBuildFunction CustomBuildFunction
+	CustomTextBuildFunction CustomTextBuildFunction
 }
 
 func DefaultBuilderSessionOptions() BuilderSessionOptions {
@@ -56,10 +57,10 @@ func DefaultBuilderSessionOptions() BuilderSessionOptions {
 }
 
 var defaultBuilderSessionOptions = BuilderSessionOptions{
-	CustomBinaryBuildFunction: func(src []byte, dst reflect.Value) error {
+	CustomBinaryBuildFunction: func(customType uint64, src []byte, dst reflect.Value) error {
 		return fmt.Errorf("no builder has been registered to handle custom binary data")
 	},
-	CustomTextBuildFunction: func(src []byte, dst reflect.Value) error {
+	CustomTextBuildFunction: func(customType uint64, src string, dst reflect.Value) error {
 		return fmt.Errorf("no builder has been registered to handle custom text data")
 	},
 	CustomBuiltTypes: []reflect.Type{},

@@ -1,8 +1,6 @@
 lexer grammar CEEventLexer;
 
-// WS: F_WHITESPACE -> skip;
-
-EVENT_AB:          'ab';
+EVENT_AB:          'ab';                               // Array: Bits
 EVENT_AB_ARGS:     'ab='     -> pushMode(MODE_BITS);   // Array: Bits
 EVENT_ACL:         'acl='    -> pushMode(MODE_UINT);   // Array Chunk (last chunk)
 EVENT_ACM:         'acm='    -> pushMode(MODE_UINT);   // Array Chunk (more chunks follow)
@@ -24,37 +22,37 @@ EVENT_ADU64X:      'adu64x=' -> pushMode(MODE_UINTX);  // Array Data: Uint64 (he
 EVENT_ADU8:        'adu8='   -> pushMode(MODE_UINT);   // Array Data: Uint8
 EVENT_ADU8X:       'adu8x='  -> pushMode(MODE_UINTX);  // Array Data: Uint8 (hex)
 EVENT_ADU:         'adu='    -> pushMode(MODE_UID);    // Array Data: UID
-EVENT_AF16:        'af16';
+EVENT_AF16:        'af16';                             // Array: Float16
 EVENT_AF16_ARGS:   'af16='   -> pushMode(MODE_FLOAT);  // Array: Float16
-EVENT_AF32:        'af32';
+EVENT_AF32:        'af32';                             // Array: Float32
 EVENT_AF32_ARGS:   'af32='   -> pushMode(MODE_FLOAT);  // Array: Float32
-EVENT_AF64:        'af64';
+EVENT_AF64:        'af64';                             // Array: Float64
 EVENT_AF64_ARGS:   'af64='   -> pushMode(MODE_FLOAT);  // Array: Float64
-EVENT_AI16:        'ai16';
+EVENT_AI16:        'ai16';                             // Array: Int16
 EVENT_AI16_ARGS:   'ai16='   -> pushMode(MODE_INT);    // Array: Int16
-EVENT_AI32:        'ai32';
+EVENT_AI32:        'ai32';                             // Array: Int32
 EVENT_AI32_ARGS:   'ai32='   -> pushMode(MODE_INT);    // Array: Int32
-EVENT_AI64:        'ai64';
+EVENT_AI64:        'ai64';                             // Array: Int64
 EVENT_AI64_ARGS:   'ai64='   -> pushMode(MODE_INT);    // Array: Int64
-EVENT_AI8:         'ai8';
+EVENT_AI8:         'ai8';                              // Array: Int8
 EVENT_AI8_ARGS:    'ai8='    -> pushMode(MODE_INT);    // Array: Int8
-EVENT_AU16:        'au16';
+EVENT_AU16:        'au16';                             // Array: Uint16
 EVENT_AU16_ARGS:   'au16='   -> pushMode(MODE_UINT);   // Array: Uint16
-EVENT_AU16X:       'au16x';
+EVENT_AU16X:       'au16x';                            // Array: Uint16 (hex)
 EVENT_AU16X_ARGS:  'au16x='  -> pushMode(MODE_UINTX);  // Array: Uint16 (hex)
-EVENT_AU32:        'au32';
+EVENT_AU32:        'au32';                             // Array: Uint32
 EVENT_AU32_ARGS:   'au32='   -> pushMode(MODE_UINT);   // Array: Uint32
-EVENT_AU32X:       'au32x';
+EVENT_AU32X:       'au32x';                            // Array: Uint32 (hex)
 EVENT_AU32X_ARGS:  'au32x='  -> pushMode(MODE_UINTX);  // Array: Uint32 (hex)
-EVENT_AU64:        'au64';
+EVENT_AU64:        'au64';                             // Array: Uint64
 EVENT_AU64_ARGS:   'au64='   -> pushMode(MODE_UINT);   // Array: Uint64
-EVENT_AU64X:       'au64x';
+EVENT_AU64X:       'au64x';                            // Array: Uint64 (hex)
 EVENT_AU64X_ARGS:  'au64x='  -> pushMode(MODE_UINTX);  // Array: Uint64 (hex)
-EVENT_AU8:         'au8';
+EVENT_AU8:         'au8';                              // Array: Uint8
 EVENT_AU8_ARGS:    'au8='    -> pushMode(MODE_UINT);   // Array: Uint8
-EVENT_AU8X:        'au8x';
+EVENT_AU8X:        'au8x';                             // Array: Uint8 (hex)
 EVENT_AU8X_ARGS:   'au8x='   -> pushMode(MODE_UINTX);  // Array: Uint8 (hex)
-EVENT_AU:          'au';
+EVENT_AU:          'au';                               // Array: UID
 EVENT_AU_ARGS:     'au='     -> pushMode(MODE_UID);    // Array: UID
 EVENT_B:           'b=';                               // Boolean
 EVENT_BAB:         'bab';                              // Begin Array: Bits
@@ -70,20 +68,18 @@ EVENT_BAU32:       'bau32';                            // Begin Array: Uint32
 EVENT_BAU64:       'bau64';                            // Begin Array: Uint64
 EVENT_BAU8:        'bau8';                             // Begin Array: Uint8
 EVENT_BAU:         'bau';                              // Begin Array: UID
-EVENT_BCB:         'bcb';                              // Begin Custom Binary
-EVENT_BCT:         'bct';                              // Begin Custom Text
-EVENT_BMEDIA:      'bmedia';                           // Begin Media
+EVENT_BCB:         'bcb='    -> pushMode(MODE_UINT);   // Begin Custom Binary
+EVENT_BCT:         'bct='    -> pushMode(MODE_UINT);   // Begin Custom Text
+EVENT_BMEDIA:      'bmedia=' -> pushMode(MODE_STRING); // Begin Media
 EVENT_BREFR:       'brefr';                            // Begin Reference: Remote
 EVENT_BRID:        'brid';                             // Begin Resource ID
 EVENT_BS:          'bs';                               // Begin String
-EVENT_CB:          'cb';
-EVENT_CB_ARGS:     'cb='     -> pushMode(MODE_UINTX);  // Custom Binary
-EVENT_CM:          'cm';
+EVENT_CB:          'cb='     -> pushMode(MODE_CUSTOM_BINARY); // Custom Binary
+EVENT_CM:          'cm';                               // Comment: Multiline
 EVENT_CM_ARGS:     'cm='     -> pushMode(MODE_STRING); // Comment: Multiline
-EVENT_CS:          'cs';
+EVENT_CS:          'cs';                               // Comment: Single Line
 EVENT_CS_ARGS:     'cs='     -> pushMode(MODE_STRING); // Comment: Single Line
-EVENT_CT:          'ct';
-EVENT_CT_ARGS:     'ct='     -> pushMode(MODE_STRING); // Custom Text
+EVENT_CT:          'ct='     -> pushMode(MODE_CUSTOM_TEXT); // Custom Text
 EVENT_E:           'e';                                // End Container
 EVENT_EDGE:        'edge';                             // Edge
 EVENT_L:           'l';                                // List
@@ -95,13 +91,13 @@ EVENT_NODE:        'node';                             // Node
 EVENT_NULL:        'null';                             // Null
 EVENT_PAD:         'pad';                              // Padding
 EVENT_REFL:        'refl='   -> pushMode(MODE_STRING); // Reference: Local
-EVENT_REFR:        'refr';
+EVENT_REFR:        'refr';                             // Reference: Remote
 EVENT_REFR_ARGS:   'refr='   -> pushMode(MODE_STRING); // Reference: Remote
-EVENT_RID:         'rid';
+EVENT_RID:         'rid';                              // Resource ID
 EVENT_RID_ARGS:    'rid='    -> pushMode(MODE_STRING); // Resource ID
 EVENT_SI:          'si='     -> pushMode(MODE_STRING); // Struct Instance
 EVENT_ST:          'st='     -> pushMode(MODE_STRING); // Struct Template
-EVENT_S:           's';
+EVENT_S:           's';                                // String
 EVENT_S_ARGS:      's='      -> pushMode(MODE_STRING); // String
 EVENT_T:           't='      -> pushMode(MODE_TIME);   // Time
 EVENT_UID:         'uid=';                             // UID
@@ -187,8 +183,13 @@ MODE_TIME_WS: F_WHITESPACE -> skip;
 // ===========================================================================
 
 mode MODE_STRING;
-STRING: .+;
-MODE_STRING_WS: F_WHITESPACE -> skip;
+STRING: F_STRING;
+
+// ===========================================================================
+
+mode MODE_BYTES;
+MODE_BYTES_WS: F_WHITESPACE -> skip;
+BYTE: F_BYTE;
 
 // ===========================================================================
 
@@ -198,15 +199,19 @@ MODE_BITS_WS: F_WHITESPACE -> skip;
 
 // ===========================================================================
 
-mode MODE_MEDIA;
-MEDIA_TYPE: F_CHAR_NON_WS+ -> pushMode(MODE_MEDIA_DATA);
-MODE_MEDIA_WS: F_WHITESPACE -> skip;
+mode MODE_CUSTOM_BINARY;
+CUSTOM_BINARY_TYPE: F_DIGITS_DEC+ -> pushMode(MODE_BYTES);
 
 // ===========================================================================
 
-mode MODE_MEDIA_DATA;
-MEDIA_DATA: F_HEX F_HEX;
-MODE_MEDIA_DATA_WS: F_WHITESPACE -> skip;
+mode MODE_CUSTOM_TEXT;
+CUSTOM_TEXT_TYPE: F_DIGITS_DEC+;
+CUSTOM_TEXT_SEPARATOR: ' ' -> skip, pushMode(MODE_STRING);
+
+// ===========================================================================
+
+mode MODE_MEDIA;
+MEDIA_TYPE: F_CHAR_NON_WS+ -> pushMode(MODE_BYTES);
 
 // ===========================================================================
 
@@ -215,6 +220,8 @@ fragment F_CHAR_NON_WS: ~[ \n\r\t];
 fragment F_CHAR_NONNUL: ~[\u0000];
 
 fragment F_WHITESPACE: F_CHAR_WS+;
+fragment F_STRING: .*;
+fragment F_BYTE: F_HEX F_HEX;
 
 fragment F_PREFIX_BIN:    '0' [bB];
 fragment F_PREFIX_OCT:    '0' [oO];

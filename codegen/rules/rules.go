@@ -34,7 +34,7 @@ const path = "rules"
 var imports = []*standard.Import{
 	&standard.Import{LocalName: "", Import: "fmt"},
 	&standard.Import{LocalName: "", Import: "strings"},
-	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/events"},
+	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
 }
 
 func GenerateCode(projectDir string) {
@@ -644,17 +644,6 @@ var allRules = []Rule{
 		FriendlyName:   "string chunk",
 		AllowedTypes:   DataTypesNone,
 		IncludeMethods: []*Method{AData},
-	},
-	{
-		Name:           "MediaTypeRule",
-		FriendlyName:   "media type",
-		AllowedTypes:   DataTypesNone,
-		IncludeMethods: []*Method{AChunk, Comment},
-	},
-	{
-		Name:           "MediaTypeChunkRule",
-		IncludeMethods: []*Method{AData},
-		FriendlyName:   "media type chunk",
 	},
 	{
 		Name:           "MarkedObjectKeyableRule",

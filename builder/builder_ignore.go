@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 type ignoreBuilder struct{}
@@ -94,6 +94,16 @@ func (_this *ignoreBuilder) BuildFromArray(ctx *Context, _ events.ArrayType, _ [
 }
 
 func (_this *ignoreBuilder) BuildFromStringlikeArray(ctx *Context, _ events.ArrayType, _ string, dst reflect.Value) reflect.Value {
+	ctx.UnstackBuilder()
+	return dst
+}
+
+func (_this *ignoreBuilder) BuildFromCustomBinary(ctx *Context, _ uint64, _ []byte, dst reflect.Value) reflect.Value {
+	ctx.UnstackBuilder()
+	return dst
+}
+
+func (_this *ignoreBuilder) BuildFromCustomText(ctx *Context, _ uint64, _ string, dst reflect.Value) reflect.Value {
 	ctx.UnstackBuilder()
 	return dst
 }
@@ -223,6 +233,16 @@ func (_this *ignoreXTimesBuilder) BuildFromStringlikeArray(ctx *Context, arrayTy
 	return dst
 }
 
+func (_this *ignoreXTimesBuilder) BuildFromCustomBinary(ctx *Context, _ uint64, _ []byte, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
+func (_this *ignoreXTimesBuilder) BuildFromCustomText(ctx *Context, _ uint64, _ string, dst reflect.Value) reflect.Value {
+	_this.tryFinish(ctx)
+	return dst
+}
+
 func (_this *ignoreXTimesBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	_this.tryFinish(ctx)
 	return dst
@@ -311,6 +331,14 @@ func (_this *ignoreContainerBuilder) BuildFromArray(ctx *Context, _ events.Array
 }
 
 func (_this *ignoreContainerBuilder) BuildFromStringlikeArray(ctx *Context, _ events.ArrayType, _ string, dst reflect.Value) reflect.Value {
+	return dst
+}
+
+func (_this *ignoreContainerBuilder) BuildFromCustomBinary(ctx *Context, _ uint64, _ []byte, dst reflect.Value) reflect.Value {
+	return dst
+}
+
+func (_this *ignoreContainerBuilder) BuildFromCustomText(ctx *Context, _ uint64, _ string, dst reflect.Value) reflect.Value {
 	return dst
 }
 

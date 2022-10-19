@@ -352,22 +352,18 @@ null
                 {
                     "cte" = "\.%%%%
 [
-    |m application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
+    |application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
 ]
 %%%%"
                     "cbe" = |u8x
                                 9a
                                     7f f3
-                                        20 61 70 70 6c 69 63 61 74 69 6f 6e 2f 78 2d 73 68 38
+                                        10 61 70 70 6c 69 63 61 74 69 6f 6e 2f 78 2d 73 68 38
                                         23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a
                                 9b|
                     "events" = [
                         "l"
-                            "bmedia" "acl=16" "adt=application/x-sh" "acl=28" "adt=\.@@
-#!/bin/sh
-
-echo hello world
-@@"
+                            "media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
                         "e"
                     ]
                 }
@@ -382,16 +378,16 @@ echo hello world
                 {
                     "cte" = "\.%%%%
 [
-    |c 63 70 6c 78 28 32 2e 39 34 2b 33 69 29|
+    |c99 f6 28 3c 40 00 00 40 40|
 ]
 %%%%"
                     "cbe" = |u8x
                                 9a
-                                    92 1a 63 70 6c 78 28 32 2e 39 34 2b 33 69 29
+                                    92 63 10 f6 28 3c 40 00 00 40 40
                                 9b|
                     "events" = [
                         "l"
-                            "cb=63 70 6c 78 28 32 2e 39 34 2b 33 69 29"
+                            "cb=99 f6 28 3c 40 00 00 40 40"
                         "e"
                     ]
                 }
@@ -406,12 +402,12 @@ echo hello world
                 {
                     "cte" = "\.%%%%
 [
-    |c "cplx(2.94+3i)"|
+    |c99 "2.94+3i"|
 ]
 %%%%"
                     "events" = [
                         "l"
-                            "ct=cplx(2.94+3i)"
+                            "ct=99 2.94+3i"
                         "e"
                     ]
                 }

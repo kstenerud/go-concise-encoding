@@ -27,7 +27,6 @@ package builder
 import (
 	"reflect"
 
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -40,8 +39,8 @@ type Context struct {
 	dstType         reflect.Type
 	referenceFiller ReferenceFiller
 
-	CustomBinaryBuildFunction  options.CustomBuildFunction
-	CustomTextBuildFunction    options.CustomBuildFunction
+	CustomBinaryBuildFunction  options.CustomBinaryBuildFunction
+	CustomTextBuildFunction    options.CustomTextBuildFunction
 	CurrentBuilder             Builder
 	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
 	builderStack               []Builder
@@ -58,8 +57,8 @@ type Context struct {
 
 func (_this *Context) Init(opts *options.BuilderOptions,
 	dstType reflect.Type,
-	customBinaryBuildFunction options.CustomBuildFunction,
-	customTextBuildFunction options.CustomBuildFunction,
+	customBinaryBuildFunction options.CustomBinaryBuildFunction,
+	customTextBuildFunction options.CustomTextBuildFunction,
 	getBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator,
 ) {
 	if opts == nil {
@@ -147,20 +146,15 @@ func (_this *Context) BeginMarkerObject(id []byte) {
 	_this.StackBuilder(marker)
 }
 
-func (_this *Context) TryBuildFromCustom(builder Builder, arrayType events.ArrayType, value []byte, dst reflect.Value) bool {
-	switch arrayType {
-	case events.ArrayTypeCustomBinary:
-		if err := _this.CustomBinaryBuildFunction(value, dst); err != nil {
-			PanicBuildFromCustomBinary(builder, value, dst.Type(), err)
-		}
-		return true
-	case events.ArrayTypeCustomText:
-		if err := _this.CustomTextBuildFunction(value, dst); err != nil {
-			PanicBuildFromCustomText(builder, value, dst.Type(), err)
-		}
-		return true
-	default:
-		return false
+func (_this *Context) TryBuildFromCustomBinary(builder Builder, customType uint64, data []byte, dst reflect.Value) {
+	if err := _this.CustomBinaryBuildFunction(customType, data, dst); err != nil {
+		PanicBuildFromCustomBinary(builder, customType, data, dst.Type(), err)
+	}
+}
+
+func (_this *Context) TryBuildFromCustomText(builder Builder, customType uint64, data string, dst reflect.Value) {
+	if err := _this.CustomTextBuildFunction(customType, data, dst); err != nil {
+		PanicBuildFromCustomText(builder, customType, data, dst.Type(), err)
 	}
 }
 

@@ -36,7 +36,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-concise-encoding/version"
@@ -312,13 +312,13 @@ var (
 	EvBF      = N(0x1.0p-1)
 	EvBI      = N(NewBigInt("1"))
 	EvBINull  = N(nil)
-	EvCBB     = BCB()
+	EvBCB     = BCB(1)
+	EvBCT     = BCT(1)
 	EvCS      = CS("a")
 	EvCM      = CM("a")
 	EvCT      = T(NewDate(2020, 1, 1))
-	EvCTB     = BCT()
-	EvCUB     = CB([]byte{1})
-	EvCUT     = CT("a")
+	EvCB      = CB(1, []byte{1})
+	EvCUT     = CT(1, "a")
 	EvDF      = N(NewDFloat("0.1"))
 	EvDFNAN   = N(compact_float.SignalingNaN())
 	EvE       = E()
@@ -329,7 +329,7 @@ var (
 	EvL       = L()
 	EvM       = M()
 	EvMARK    = MARK("a")
-	EvBMEDIA  = BMEDIA()
+	EvBMEDIA  = BMEDIA("a/b")
 	EvNAN     = N(compact_float.QuietNaN())
 	EvNI      = N(-1)
 	EvNODE    = NODE()
@@ -354,7 +354,7 @@ var allEvents = Events{
 	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvST, /*EvSI, TODO: Some way to handle this */
 	EvNODE, EvEDGE, EvE,
 	EvMARK, EvREFL, EvREFR, EvAC, EvAD, EvS, EvSB, EvRID, EvBRID,
-	EvCUB, EvCBB, EvCUT, EvCTB, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
+	EvCB, EvBCB, EvCUT, EvBCT, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
 	EvBAU16, EvAU32, EvBAU32, EvAU64, EvBAU64, EvAI8, EvBAI8, EvAI16, EvBAI16,
 	EvAI32, EvBAI32, EvAI64, EvBAI64, EvAF16, EvBAF16, EvAF32, EvBAF32, EvAF64,
 	EvBAF64, EvAUU, EvBAUU, EvBMEDIA,
@@ -376,16 +376,16 @@ func ComplementaryEvents(events Events) Events {
 
 var (
 	ArrayBeginTypes = Events{
-		EvSB, EvBRID, EvCBB, EvCTB, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
+		EvSB, EvBRID, EvBCB, EvBCT, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
 		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAUU, EvBMEDIA,
 	}
 
 	StringArrayBeginTypes = Events{
-		EvSB, EvBRID, EvCTB,
+		EvSB, EvBRID, EvBCT,
 	}
 
 	NonStringArrayBeginTypes = Events{
-		EvCBB, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
+		EvBCB, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
 		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAUU, EvBMEDIA,
 	}
 
@@ -465,31 +465,31 @@ func copyEvents(events Events) Events {
 }
 
 var basicCompletions = map[reflect.Type]Events{
-	reflect.TypeOf(L()):      {E()},
-	reflect.TypeOf(M()):      {E()},
-	reflect.TypeOf(ST("a")):  {E(), N(1)},
-	reflect.TypeOf(SI("a")):  {E()},
-	reflect.TypeOf(NODE()):   {N(1), E()},
-	reflect.TypeOf(EDGE()):   {RID("a"), RID("b"), N(1), E()},
-	reflect.TypeOf(BS()):     {ACL(1), ADT("a")},
-	reflect.TypeOf(BRID()):   {ACL(1), ADT("a")},
-	reflect.TypeOf(BREFR()):  {ACL(1), ADT("a")},
-	reflect.TypeOf(BCB()):    {ACL(1), ADU8([]byte{1})},
-	reflect.TypeOf(BCT()):    {ACL(1), ADT("a")},
-	reflect.TypeOf(BAB()):    {ACL(1), ADB([]bool{true})},
-	reflect.TypeOf(BAU8()):   {ACL(1), ADU8([]uint8{0})},
-	reflect.TypeOf(BAU16()):  {ACL(1), ADU16([]uint16{0})},
-	reflect.TypeOf(BAU32()):  {ACL(1), ADU32([]uint32{0})},
-	reflect.TypeOf(BAU64()):  {ACL(1), ADU64([]uint64{0})},
-	reflect.TypeOf(BAI8()):   {ACL(1), ADI8([]int8{0})},
-	reflect.TypeOf(BAI16()):  {ACL(1), ADI16([]int16{0})},
-	reflect.TypeOf(BAI32()):  {ACL(1), ADI32([]int32{0})},
-	reflect.TypeOf(BAI64()):  {ACL(1), ADI64([]int64{0})},
-	reflect.TypeOf(BAF16()):  {ACL(1), ADF16([]float32{0})},
-	reflect.TypeOf(BAF32()):  {ACL(1), ADF32([]float32{0})},
-	reflect.TypeOf(BAF64()):  {ACL(1), ADF64([]float64{0})},
-	reflect.TypeOf(BAU()):    {ACL(1), ADU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})},
-	reflect.TypeOf(BMEDIA()): {ACL(1), ADT("a"), ACL(0)},
+	reflect.TypeOf(L()):           {E()},
+	reflect.TypeOf(M()):           {E()},
+	reflect.TypeOf(ST("a")):       {E(), N(1)},
+	reflect.TypeOf(SI("a")):       {E()},
+	reflect.TypeOf(NODE()):        {N(1), E()},
+	reflect.TypeOf(EDGE()):        {RID("a"), RID("b"), N(1), E()},
+	reflect.TypeOf(BS()):          {ACL(1), ADT("a")},
+	reflect.TypeOf(BRID()):        {ACL(1), ADT("a")},
+	reflect.TypeOf(BREFR()):       {ACL(1), ADT("a")},
+	reflect.TypeOf(BCB(0)):        {ACL(1), ADU8([]byte{1})},
+	reflect.TypeOf(BCT(0)):        {ACL(1), ADT("a")},
+	reflect.TypeOf(BAB()):         {ACL(1), ADB([]bool{true})},
+	reflect.TypeOf(BAU8()):        {ACL(1), ADU8([]uint8{0})},
+	reflect.TypeOf(BAU16()):       {ACL(1), ADU16([]uint16{0})},
+	reflect.TypeOf(BAU32()):       {ACL(1), ADU32([]uint32{0})},
+	reflect.TypeOf(BAU64()):       {ACL(1), ADU64([]uint64{0})},
+	reflect.TypeOf(BAI8()):        {ACL(1), ADI8([]int8{0})},
+	reflect.TypeOf(BAI16()):       {ACL(1), ADI16([]int16{0})},
+	reflect.TypeOf(BAI32()):       {ACL(1), ADI32([]int32{0})},
+	reflect.TypeOf(BAI64()):       {ACL(1), ADI64([]int64{0})},
+	reflect.TypeOf(BAF16()):       {ACL(1), ADF16([]float32{0})},
+	reflect.TypeOf(BAF32()):       {ACL(1), ADF32([]float32{0})},
+	reflect.TypeOf(BAF64()):       {ACL(1), ADF64([]float64{0})},
+	reflect.TypeOf(BAU()):         {ACL(1), ADU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})},
+	reflect.TypeOf(BMEDIA("e/b")): {ACL(0)},
 }
 
 func getBasicCompletion(stream Events) Events {
@@ -573,7 +573,7 @@ func allPossibleEventStreams(
 		newStream = append(newStream, suffix...)
 		newStream = append(newStream, docEnd...)
 		allEvents = append(allEvents, newStream)
-	case *EventEnd, *EventCommentSingleLine, *EventCommentMultiline:
+	case *EventEndContainer, *EventCommentSingleLine, *EventCommentMultiline:
 		// Skip
 	default:
 		newStream := copyEvents(docBegin)

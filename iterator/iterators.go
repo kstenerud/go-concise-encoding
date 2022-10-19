@@ -35,7 +35,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/types"
@@ -156,13 +156,7 @@ func iterateMedia(context *Context, v reflect.Value) {
 		panic(fmt.Errorf("media cannot have an empty media type"))
 	}
 
-	context.EventReceiver.OnArrayBegin(events.ArrayTypeMedia)
-	context.EventReceiver.OnArrayChunk(uint64(len(vCopy.MediaType)), false)
-	context.EventReceiver.OnArrayData([]byte(vCopy.MediaType))
-	context.EventReceiver.OnArrayChunk(uint64(len(vCopy.Data)), false)
-	if len(vCopy.Data) > 0 {
-		context.EventReceiver.OnArrayData(vCopy.Data)
-	}
+	context.EventReceiver.OnMedia(vCopy.MediaType, vCopy.Data)
 }
 
 func iterateNode(context *Context, v reflect.Value) {
@@ -172,7 +166,7 @@ func iterateNode(context *Context, v reflect.Value) {
 	for i := 0; i < children.Len(); i++ {
 		iterateInterface(context, children.Index(i))
 	}
-	context.EventReceiver.OnEnd()
+	context.EventReceiver.OnEndContainer()
 }
 
 func iterateEdge(context *Context, v reflect.Value) {
@@ -224,7 +218,7 @@ func newSliceOrArrayAsListIterator(ctx *Context, sliceType reflect.Type) Iterato
 		for i := 0; i < length; i++ {
 			iterate(context, v.Index(i))
 		}
-		context.EventReceiver.OnEnd()
+		context.EventReceiver.OnEndContainer()
 	}
 }
 
@@ -247,27 +241,27 @@ func newMapIterator(ctx *Context, mapType reflect.Type) IteratorFunction {
 			iterateKey(context, iter.Key())
 			iterateValue(context, iter.Value())
 		}
-		context.EventReceiver.OnEnd()
+		context.EventReceiver.OnEndContainer()
 	}
 }
 
 func newCustomBinaryIterator(convert options.ConvertToCustomFunction) IteratorFunction {
 	return func(context *Context, v reflect.Value) {
-		asBytes, err := convert(v)
+		customType, asBytes, err := convert(v)
 		if err != nil {
 			panic(fmt.Errorf("error converting type %v to custom bytes: %v", v.Type(), err))
 		}
-		context.EventReceiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(asBytes)), asBytes)
+		context.EventReceiver.OnCustomBinary(customType, asBytes)
 	}
 }
 
 func newCustomTextIterator(convert options.ConvertToCustomFunction) IteratorFunction {
 	return func(context *Context, v reflect.Value) {
-		asBytes, err := convert(v)
+		customType, asBytes, err := convert(v)
 		if err != nil {
 			panic(fmt.Errorf("error converting type %v to custom text: %v", v.Type(), err))
 		}
-		context.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(asBytes)), asBytes)
+		context.EventReceiver.OnCustomText(customType, string(asBytes))
 	}
 }
 
@@ -410,7 +404,7 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 			}
 		}
 
-		context.EventReceiver.OnEnd()
+		context.EventReceiver.OnEndContainer()
 	}
 }
 

@@ -27,7 +27,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 // topLevelContainerBuilder proxies the first build instruction to make sure containers
@@ -103,6 +103,16 @@ func (_this *topLevelBuilder) BuildFromArray(ctx *Context, arrayType events.Arra
 
 func (_this *topLevelBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	_this.builderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, dst)
+	return dst
+}
+
+func (_this *topLevelBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromCustomBinary(ctx, customType, value, dst)
+	return dst
+}
+
+func (_this *topLevelBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, dst reflect.Value) reflect.Value {
+	_this.builderGenerator(ctx).BuildFromCustomText(ctx, customType, value, dst)
 	return dst
 }
 

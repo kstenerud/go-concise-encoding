@@ -124,9 +124,8 @@ var arrayTypeElementSizes = [...]int{
 // actions based on those events. Generally, this is used to drive complex
 // object builders, and also the encoders.
 //
-// WARNING: Do not directly store slice data! The underlying contents should be
-// considered volatile and likely to change after the method returns (the
-// decoders re-use the memory buffer).
+// WARNING: All []byte data MUST be considered volatile, and likely to be modified!
+// If you need to store the data, copy it first.
 //
 // IMPORTANT: DataEventReceiver's methods signal errors via panics, NOT as returned errors.
 // You must use recover() in code that calls DataEventReceiver methods. The
@@ -187,20 +186,25 @@ type DataEventReceiver interface {
 
 	OnNode()
 
-	// Ends the current container (list, map, or node).
-	// Note: Edge does NOT use end; it terminates automatically after three objects.
-	OnEnd()
+	OnEndContainer()
 
 	OnMarker(identifier []byte)
 
 	OnReferenceLocal(identifier []byte)
 
-	OnArray(arrayType ArrayType, elementCount uint64, data []uint8)
+	// Regarding array contents:
+	// - Byte data must be copied if you plan to store it.
+	// - String data is safe to store without copying.
 
-	// Stringlike array contents are safe to store directly.
+	OnArray(arrayType ArrayType, elementCount uint64, data []byte)
 	OnStringlikeArray(arrayType ArrayType, data string)
+	OnMedia(mediaType string, data []byte)
+	OnCustomBinary(customType uint64, data []byte)
+	OnCustomText(customType uint64, data string)
 
 	OnArrayBegin(arrayType ArrayType)
+	OnMediaBegin(mediaType string)
+	OnCustomBegin(arrayType ArrayType, customType uint64)
 
 	OnArrayChunk(length uint64, moreChunksFollow bool)
 

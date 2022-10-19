@@ -32,7 +32,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-describe"
 )
 
@@ -52,6 +52,8 @@ type Builder interface {
 	BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value
 	BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value
 	BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value
+	BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value
+	BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value
 	BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value
 	BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value
 	BuildFromLocalReference(ctx *Context, id []byte)
@@ -118,12 +120,12 @@ func PanicErrorConverting(value interface{}, dstType reflect.Type, err error) {
 
 // Report that an error occurred while building from custom binary data.
 // This normally indicates a bug in your custom builder.
-func PanicBuildFromCustomBinary(builder Builder, src []byte, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("error converting custom binary data %v to type %v (via %v): %v", describe.D(src), dstType, reflect.TypeOf(builder), err))
+func PanicBuildFromCustomBinary(builder Builder, customType uint64, src []byte, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("error converting custom binary type %v, data %v to type %v (via %v): %v", customType, describe.D(src), dstType, reflect.TypeOf(builder), err))
 }
 
 // Report that an error occurred while building from custom text data.
 // This normally indicates a bug in your custom builder.
-func PanicBuildFromCustomText(builder Builder, src []byte, dstType reflect.Type, err error) {
-	panic(fmt.Errorf("error converting custom text data [%v] to type %v (via %v): %v", string(src), dstType, reflect.TypeOf(builder), err))
+func PanicBuildFromCustomText(builder Builder, customType uint64, src string, dstType reflect.Type, err error) {
+	panic(fmt.Errorf("error converting custom text type %v, data [%v] to type %v (via %v): %v", customType, src, dstType, reflect.TypeOf(builder), err))
 }

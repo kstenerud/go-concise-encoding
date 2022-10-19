@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 const defaultSliceCap = 4
@@ -149,6 +149,20 @@ func (_this *sliceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 func (_this *sliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, object)
+	_this.storeValue(object)
+	return object
+}
+
+func (_this *sliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromCustomBinary(ctx, customType, value, object)
+	_this.storeValue(object)
+	return object
+}
+
+func (_this *sliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromCustomText(ctx, customType, value, object)
 	_this.storeValue(object)
 	return object
 }

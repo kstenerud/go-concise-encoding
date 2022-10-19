@@ -1358,49 +1358,5 @@ Nobody knows, Particle man#"]
 
         // ====================================================================
 
-        {
-            "name" = "Custom Type"
-            "mustSucceed" = [
-                {"cbe"=|u8x 92 06 01 02 03|  "events"=["cb=01 02 03"]}
-                {"cbe"=|u8x 92 07 01 02 03 02 04|  "events"=["bcb" "acm=3" "adu8x=01 02 03" "acl=1" "adu8x=04"]}
-            ]
-            "mustFail" = [
-                {"cbe"=|u8x 92 01|}        // Incomplete
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "Media"
-            "mustSucceed" = [
-                {"cbe"=|u8x 7f f3 06 61 2f 61 00|  "events"=["bmedia" "acl=3" "adt=a/a" "acl=0"]}
-                {
-                    "cbe"=|u8x 7f f3 20 61 70 70 6c 69 63 61 74
-                        69 6f 6e 2f 78 2d 73 68 38 23 21 2f 62 69 6e 2f
-                        73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77
-                        6f 72 6c 64 0a
-                    |
-                    "events"=[
-                        "bmedia"
-                        "acl=16"
-                        "adt=application/x-sh"
-                        "acl=28"
-                        "adu8x=23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
-                    ]
-                }
-            ]
-            "mustFail" = [
-                {"cbe"=|u8x 7f f3|}              // Incomplete
-                {"cbe"=|u8x 7f f3 06|}           // Incomplete
-                {"cbe"=|u8x 7f f3 06 61|}        // Incomplete
-                {"cbe"=|u8x 7f f3 06 61 2f|}     // Incomplete
-                {"cbe"=|u8x 7f f3 06 61 2f 61|}  // Incomplete
-                // TODO: Naming rules. Must be in the form "a/b"
-            ]
-        }
-
-        // ====================================================================
-
     ]
 }

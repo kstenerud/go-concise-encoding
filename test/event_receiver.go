@@ -28,7 +28,8 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/nullevent"
 )
 
 type EventCollection struct {
@@ -74,7 +75,7 @@ func NewEventReceiver(next events.DataEventReceiver, iterate func(Event)) events
 		iterate = func(Event) {}
 	}
 	if next == nil {
-		next = events.NewNullEventReceiver()
+		next = nullevent.NewNullEventReceiver()
 	}
 	return &EventReceiver{
 		next:    next,
@@ -180,10 +181,6 @@ func (_this *EventReceiver) OnArray(arrayType events.ArrayType, elementCount uin
 		_this.iterate(RID(string(value)))
 	case events.ArrayTypeReferenceRemote:
 		_this.iterate(REFR(string(value)))
-	case events.ArrayTypeCustomText:
-		_this.iterate(CT(string(value)))
-	case events.ArrayTypeCustomBinary:
-		_this.iterate(CB(value))
 	case events.ArrayTypeBit:
 		_this.iterate(AB(bytesToArrayBits(elementCount, value)))
 	case events.ArrayTypeUint8:
@@ -223,12 +220,19 @@ func (_this *EventReceiver) OnStringlikeArray(arrayType events.ArrayType, value 
 		_this.iterate(RID(value))
 	case events.ArrayTypeReferenceRemote:
 		_this.iterate(REFR(value))
-	case events.ArrayTypeCustomText:
-		_this.iterate(CT(value))
 	default:
 		panic(fmt.Errorf("unknown array type %v", arrayType))
 	}
 	_this.next.OnStringlikeArray(arrayType, value)
+}
+func (_this *EventReceiver) OnMedia(mediaType string, value []byte) {
+	_this.iterate(MEDIA(mediaType, value))
+}
+func (_this *EventReceiver) OnCustomText(customType uint64, value string) {
+	_this.iterate(CT(customType, value))
+}
+func (_this *EventReceiver) OnCustomBinary(customType uint64, value []byte) {
+	_this.iterate(CB(customType, value))
 }
 func (_this *EventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
@@ -238,10 +242,6 @@ func (_this *EventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 		_this.iterate(BRID())
 	case events.ArrayTypeReferenceRemote:
 		_this.iterate(BREFR())
-	case events.ArrayTypeCustomText:
-		_this.iterate(BCT())
-	case events.ArrayTypeCustomBinary:
-		_this.iterate(BCB())
 	case events.ArrayTypeBit:
 		_this.iterate(BAB())
 	case events.ArrayTypeUint8:
@@ -268,13 +268,24 @@ func (_this *EventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 		_this.iterate(BAF64())
 	case events.ArrayTypeUID:
 		_this.iterate(BAU())
-	case events.ArrayTypeMedia:
-		_this.iterate(BMEDIA())
 	default:
 		panic(fmt.Errorf("unknown array type %v", arrayType))
 	}
 	_this.arrayType = arrayType
 	_this.next.OnArrayBegin(arrayType)
+}
+func (_this *EventReceiver) OnMediaBegin(mediaType string) {
+	_this.iterate(BMEDIA(mediaType))
+}
+func (_this *EventReceiver) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	switch arrayType {
+	case events.ArrayTypeCustomText:
+		_this.iterate(BCT(customType))
+	case events.ArrayTypeCustomBinary:
+		_this.iterate(BCB(customType))
+	default:
+		panic(fmt.Errorf("unknown custom type %v", arrayType))
+	}
 }
 func (_this *EventReceiver) OnArrayChunk(length uint64, moreChunks bool) {
 	if moreChunks {
@@ -379,9 +390,9 @@ func (_this *EventReceiver) OnStructInstance(id []byte) {
 	_this.iterate(SI(string(id)))
 	_this.next.OnStructInstance(id)
 }
-func (_this *EventReceiver) OnEnd() {
+func (_this *EventReceiver) OnEndContainer() {
 	_this.iterate(E())
-	_this.next.OnEnd()
+	_this.next.OnEndContainer()
 }
 func (_this *EventReceiver) OnNode() {
 	_this.iterate(NODE())

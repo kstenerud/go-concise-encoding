@@ -26,7 +26,7 @@ import (
 	"io"
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
@@ -174,7 +174,7 @@ EOF:
 		case cbeTypeNode:
 			eventReceiver.OnNode()
 		case cbeTypeEndContainer:
-			eventReceiver.OnEnd()
+			eventReceiver.OnEndContainer()
 		case cbeTypeFalse:
 			eventReceiver.OnFalse()
 		case cbeTypeTrue:
@@ -196,7 +196,7 @@ EOF:
 		case cbeTypeRID:
 			_this.decodeArray(events.ArrayTypeResourceID, eventReceiver)
 		case cbeTypeCustomType:
-			_this.decodeArray(events.ArrayTypeCustomBinary, eventReceiver)
+			_this.decodeCustomType(eventReceiver)
 		case cbeTypeEOF:
 			break EOF
 		case cbeTypePlane7f:
@@ -297,36 +297,12 @@ func (_this *Decoder) decodePlane7f(eventReceiver events.DataEventReceiver) {
 	}
 }
 
-func (_this *Decoder) decodeMedia(eventReceiver events.DataEventReceiver) {
-	eventReceiver.OnArrayBegin(events.ArrayTypeMedia)
-
-	for i := 0; i < 2; i++ {
-		for {
-			elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
-			validateLength(elementCount)
-			eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)
-
-			if elementCount > 0 {
-				nextBytes := _this.reader.ReadBytes(int(elementCount))
-				eventReceiver.OnArrayData(nextBytes)
-			}
-			if !moreChunksFollow {
-				break
-			}
-		}
-	}
-}
-
 func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver events.DataEventReceiver) {
 	elementBitWidth := arrayType.ElementSize()
 	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
 	validateLength(elementCount)
 
 	if !moreChunksFollow {
-		if elementCount == 0 {
-			eventReceiver.OnArray(arrayType, 0, []byte{})
-			return
-		}
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
 		bytes := _this.reader.ReadBytes(int(byteCount))
 		eventReceiver.OnArray(arrayType, elementCount, bytes)
@@ -334,6 +310,45 @@ func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver even
 	}
 
 	eventReceiver.OnArrayBegin(arrayType)
+	_this.decodeArrayChunks(eventReceiver, elementBitWidth, elementCount, moreChunksFollow)
+}
+
+func (_this *Decoder) decodeMedia(eventReceiver events.DataEventReceiver) {
+	mediaTypeLength := _this.reader.readSmallULEB128("media type length", 0xffffffff)
+	mediaType := string(_this.reader.ReadBytes(int(mediaTypeLength)))
+
+	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
+	validateLength(elementCount)
+
+	if !moreChunksFollow {
+		bytes := _this.reader.ReadBytes(int(elementCount))
+		eventReceiver.OnMedia(mediaType, bytes)
+		return
+	}
+
+	eventReceiver.OnMediaBegin(mediaType)
+	elementBitWidth := 8
+	_this.decodeArrayChunks(eventReceiver, elementBitWidth, elementCount, moreChunksFollow)
+}
+
+func (_this *Decoder) decodeCustomType(eventReceiver events.DataEventReceiver) {
+	customType := _this.reader.readSmallULEB128("custom type code", 0xffffffff)
+	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
+	validateLength(elementCount)
+
+	if !moreChunksFollow {
+		bytes := _this.reader.ReadBytes(int(elementCount))
+		eventReceiver.OnCustomBinary(customType, bytes)
+		return
+	}
+
+	eventReceiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)
+	elementBitWidth := 8
+	_this.decodeArrayChunks(eventReceiver, elementBitWidth, elementCount, moreChunksFollow)
+}
+
+func (_this *Decoder) decodeArrayChunks(eventReceiver events.DataEventReceiver, elementBitWidth int, initialElementCount uint64, moreChunksFollow bool) {
+	elementCount := initialElementCount
 
 	for {
 		eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)

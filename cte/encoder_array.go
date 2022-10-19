@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
@@ -60,51 +60,33 @@ func (_this *arrayEncoderEngine) setElementByteWidth(width int) {
 	_this.arrayElementByteWidth = width
 }
 
-func (_this *arrayEncoderEngine) EncodeStringlikeArray(stringContext stringContext, arrayType events.ArrayType, data string) {
+func (_this *arrayEncoderEngine) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		switch stringContext {
-		case stringContextDefault:
-			_this.stream.WriteQuotedString(true, data)
-		case stringContextComment:
-			_this.stream.WriteStringPossibleLF(data)
-		}
+		_this.stream.WriteQuotedString(true, data)
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByteNotLF('@')
 		_this.stream.WriteQuotedString(false, data)
 	case events.ArrayTypeReferenceRemote:
 		_this.stream.WriteByteNotLF('$')
 		_this.stream.WriteQuotedString(false, data)
-	case events.ArrayTypeCustomText:
-		_this.stream.WriteStringNotLF("|c ")
-		_this.stream.WriteQuotedString(true, data)
-		_this.stream.WriteArrayEnd()
 	default:
 		panic(fmt.Errorf("BUG: EncodeStringlikeArray passed unhandled array type %v", arrayType))
 	}
 }
 
-func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	switch arrayType {
 	case events.ArrayTypeString:
-		switch stringContext {
-		case stringContextDefault:
-			_this.stream.WriteQuotedStringBytes(true, data)
-		case stringContextComment:
-			_this.stream.WriteBytesPossibleLF(data)
-		}
+		_this.stream.WriteQuotedStringBytes(true, data)
 	case events.ArrayTypeResourceID:
 		_this.stream.WriteByteNotLF('@')
 		_this.stream.WriteQuotedStringBytes(false, data)
 	case events.ArrayTypeReferenceRemote:
 		_this.stream.WriteByteNotLF('$')
 		_this.stream.WriteQuotedStringBytes(false, data)
-	case events.ArrayTypeCustomText:
-		_this.stream.WriteStringNotLF("|c ")
-		_this.stream.WriteQuotedStringBytes(true, data)
-		_this.stream.WriteArrayEnd()
 	default:
-		_this.BeginArray(stringContext, arrayType, func() {})
+		_this.BeginArray(arrayType, func() {})
 		_this.BeginChunk(elementCount, false)
 		if elementCount > 0 {
 			_this.AddArrayData(data)
@@ -112,7 +94,25 @@ func (_this *arrayEncoderEngine) EncodeArray(stringContext stringContext, arrayT
 	}
 }
 
-func (_this *arrayEncoderEngine) BeginArray(stringContext stringContext, arrayType events.ArrayType, onComplete func()) {
+func (_this *arrayEncoderEngine) EncodeMedia(mediaType string, data []byte) {
+	_this.stream.WriteFmtNotLF("|%v", mediaType)
+	_this.stream.WriteHexBytes(data)
+	_this.stream.WriteArrayEnd()
+}
+
+func (_this *arrayEncoderEngine) EncodeCustomBinary(customType uint64, data []byte) {
+	_this.stream.WriteFmtNotLF("|c%v", customType)
+	_this.stream.WriteHexBytes(data)
+	_this.stream.WriteArrayEnd()
+}
+
+func (_this *arrayEncoderEngine) EncodeCustomText(customType uint64, data string) {
+	_this.stream.WriteFmtNotLF("|c%v ", customType)
+	_this.stream.WriteQuotedString(true, data)
+	_this.stream.WriteArrayEnd()
+}
+
+func (_this *arrayEncoderEngine) BeginArray(arrayType events.ArrayType, onComplete func()) {
 	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
 	_this.stringBuffer = _this.stringBuffer[:0]
 	_this.remainingChunkElements = 0
@@ -126,6 +126,55 @@ func (_this *arrayEncoderEngine) BeginArray(stringContext stringContext, arrayTy
 
 	beginOp := arrayEncodeBeginOps[arrayType]
 	beginOp(_this, onComplete)
+}
+
+func (_this *arrayEncoderEngine) BeginMedia(mediaType string, onComplete func()) {
+	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
+	_this.stringBuffer = _this.stringBuffer[:0]
+	_this.remainingChunkElements = 0
+	_this.hasWrittenElements = false
+
+	_this.setElementByteWidth(1)
+	_this.stream.WriteFmtNotLF("|%v", mediaType)
+	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
+	_this.onComplete = func() {
+		_this.stream.WriteArrayEnd()
+		onComplete()
+	}
+}
+
+func (_this *arrayEncoderEngine) BeginCustomText(customType uint64, onComplete func()) {
+	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
+	_this.stringBuffer = _this.stringBuffer[:0]
+	_this.remainingChunkElements = 0
+	_this.hasWrittenElements = false
+
+	_this.setElementByteWidth(1)
+	_this.stream.WriteFmtNotLF("|c%v ", customType)
+	_this.addElementsFunc = func(data []byte) {
+		_this.handleFirstElement(data)
+		_this.appendStringbuffer(data)
+	}
+	_this.onComplete = func() {
+		_this.stream.WriteQuotedStringBytes(true, _this.stringBuffer)
+		_this.stream.WriteArrayEnd()
+		onComplete()
+	}
+}
+
+func (_this *arrayEncoderEngine) BeginCustomBinary(customType uint64, onComplete func()) {
+	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
+	_this.stringBuffer = _this.stringBuffer[:0]
+	_this.remainingChunkElements = 0
+	_this.hasWrittenElements = false
+
+	_this.setElementByteWidth(1)
+	_this.stream.WriteFmtNotLF("|c%v", customType)
+	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
+	_this.onComplete = func() {
+		_this.stream.WriteArrayEnd()
+		onComplete()
+	}
 }
 
 func (_this *arrayEncoderEngine) endArray() {
@@ -242,26 +291,6 @@ func (_this *arrayEncoderEngine) beginArrayResourceID(onComplete func()) {
 		_this.stream.WriteQuotedStringBytes(false, _this.stringBuffer)
 		onComplete()
 	}
-}
-
-func (_this *arrayEncoderEngine) beginArrayCustomText(onComplete func()) {
-	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF("|c ")
-	_this.addElementsFunc = func(data []byte) {
-		_this.handleFirstElement(data)
-		_this.appendStringbuffer(data)
-	}
-	_this.onComplete = func() {
-		_this.stream.WriteQuotedStringBytes(true, _this.stringBuffer)
-		_this.stream.WriteArrayEnd()
-		onComplete()
-	}
-}
-
-func (_this *arrayEncoderEngine) beginArrayCustomBinary(onComplete func()) {
-	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF("|c")
-	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
 }
 
 func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
@@ -494,24 +523,22 @@ func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
 // Data
 
 var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
-	events.ArrayTypeBit:          (*arrayEncoderEngine).beginArrayBoolean,
-	events.ArrayTypeString:       (*arrayEncoderEngine).beginArrayString,
-	events.ArrayTypeResourceID:   (*arrayEncoderEngine).beginArrayResourceID,
-	events.ArrayTypeCustomText:   (*arrayEncoderEngine).beginArrayCustomText,
-	events.ArrayTypeCustomBinary: (*arrayEncoderEngine).beginArrayCustomBinary,
-	events.ArrayTypeUint8:        (*arrayEncoderEngine).beginArrayUint8,
-	events.ArrayTypeUint16:       (*arrayEncoderEngine).beginArrayUint16,
-	events.ArrayTypeUint32:       (*arrayEncoderEngine).beginArrayUint32,
-	events.ArrayTypeUint64:       (*arrayEncoderEngine).beginArrayUint64,
-	events.ArrayTypeInt8:         (*arrayEncoderEngine).beginArrayInt8,
-	events.ArrayTypeInt16:        (*arrayEncoderEngine).beginArrayInt16,
-	events.ArrayTypeInt32:        (*arrayEncoderEngine).beginArrayInt32,
-	events.ArrayTypeInt64:        (*arrayEncoderEngine).beginArrayInt64,
-	events.ArrayTypeFloat16:      (*arrayEncoderEngine).beginArrayFloat16,
-	events.ArrayTypeFloat32:      (*arrayEncoderEngine).beginArrayFloat32,
-	events.ArrayTypeFloat64:      (*arrayEncoderEngine).beginArrayFloat64,
-	events.ArrayTypeUID:          (*arrayEncoderEngine).beginArrayUID,
-	events.ArrayTypeMedia:        (*arrayEncoderEngine).beginArrayMedia,
+	events.ArrayTypeBit:        (*arrayEncoderEngine).beginArrayBoolean,
+	events.ArrayTypeString:     (*arrayEncoderEngine).beginArrayString,
+	events.ArrayTypeResourceID: (*arrayEncoderEngine).beginArrayResourceID,
+	events.ArrayTypeUint8:      (*arrayEncoderEngine).beginArrayUint8,
+	events.ArrayTypeUint16:     (*arrayEncoderEngine).beginArrayUint16,
+	events.ArrayTypeUint32:     (*arrayEncoderEngine).beginArrayUint32,
+	events.ArrayTypeUint64:     (*arrayEncoderEngine).beginArrayUint64,
+	events.ArrayTypeInt8:       (*arrayEncoderEngine).beginArrayInt8,
+	events.ArrayTypeInt16:      (*arrayEncoderEngine).beginArrayInt16,
+	events.ArrayTypeInt32:      (*arrayEncoderEngine).beginArrayInt32,
+	events.ArrayTypeInt64:      (*arrayEncoderEngine).beginArrayInt64,
+	events.ArrayTypeFloat16:    (*arrayEncoderEngine).beginArrayFloat16,
+	events.ArrayTypeFloat32:    (*arrayEncoderEngine).beginArrayFloat32,
+	events.ArrayTypeFloat64:    (*arrayEncoderEngine).beginArrayFloat64,
+	events.ArrayTypeUID:        (*arrayEncoderEngine).beginArrayUID,
+	events.ArrayTypeMedia:      (*arrayEncoderEngine).beginArrayMedia,
 }
 
 var arrayFormatsGeneral = []string{

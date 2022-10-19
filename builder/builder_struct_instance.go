@@ -27,7 +27,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 type structInstanceBuilder struct {
@@ -107,6 +107,16 @@ func (_this *structInstanceBuilder) BuildFromArray(ctx *Context, arrayType event
 func (_this *structInstanceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	_this.sendKey(ctx)
 	return _this.builder.BuildFromStringlikeArray(ctx, arrayType, value, dst)
+}
+
+func (_this *structInstanceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, dst reflect.Value) reflect.Value {
+	_this.sendKey(ctx)
+	return _this.builder.BuildFromCustomBinary(ctx, customType, value, dst)
+}
+
+func (_this *structInstanceBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, dst reflect.Value) reflect.Value {
+	_this.sendKey(ctx)
+	return _this.builder.BuildFromCustomText(ctx, customType, value, dst)
 }
 
 func (_this *structInstanceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {

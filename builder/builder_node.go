@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 )
@@ -125,6 +125,18 @@ func (_this *nodeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 
 func (_this *nodeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
 	globalInterfaceBuilder.BuildFromStringlikeArray(ctx, arrayType, value, _this.value)
+	_this.stackChildrenBuilder(ctx)
+	return _this.value
+}
+
+func (_this *nodeBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, _ reflect.Value) reflect.Value {
+	globalInterfaceBuilder.BuildFromCustomBinary(ctx, customType, value, _this.value)
+	_this.stackChildrenBuilder(ctx)
+	return _this.value
+}
+
+func (_this *nodeBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, _ reflect.Value) reflect.Value {
+	globalInterfaceBuilder.BuildFromCustomText(ctx, customType, value, _this.value)
 	_this.stackChildrenBuilder(ctx)
 	return _this.value
 }

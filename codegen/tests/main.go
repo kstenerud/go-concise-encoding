@@ -22,6 +22,6 @@ package tests
 
 func GenerateCode(projectDir string) {
 	generateAntlrCode(projectDir)
-	generateTestFiles(projectDir)
 	generateEvents(projectDir)
+	generateTestFiles(projectDir)
 }

@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/version"
 	"github.com/kstenerud/go-duplicates"

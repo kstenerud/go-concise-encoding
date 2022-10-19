@@ -30,8 +30,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/ce"
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/iterator"
+	"github.com/kstenerud/go-concise-encoding/nullevent"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -167,7 +167,7 @@ func benchmarkDecode(b *testing.B, marshaler ce.Marshaler, decoder ce.Decoder) {
 		}
 		documents = append(documents, bytes)
 	}
-	nullReceiver := events.NewNullEventReceiver()
+	nullReceiver := nullevent.NewNullEventReceiver()
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -280,7 +280,7 @@ func BenchmarkRules(b *testing.B) {
 
 	b.ReportAllocs()
 	b.ResetTimer()
-	r := rules.NewRules(events.NewNullEventReceiver(), nil)
+	r := rules.NewRules(nullevent.NewNullEventReceiver(), nil)
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		r.Reset()
@@ -325,7 +325,7 @@ func BenchmarkIterator(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(events.NewNullEventReceiver(), &iterOptions)
+	iter := iterSession.NewIterator(nullevent.NewNullEventReceiver(), &iterOptions)
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		iter.Iterate(objs[index])

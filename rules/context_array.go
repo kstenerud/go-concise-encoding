@@ -26,7 +26,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
@@ -86,11 +86,11 @@ func (_this *Context) GetBuiltArrayAsString() string {
 // This function performs no allocations.
 //
 // Return:
-// - firstRuneBytes will contain either a single complete rune (the next in
-//   order in the stream) or an empty slice.
-// - nextRunesBytes will contain the remaining complete runes. The last
-//   incomplete rune, if any, will be stripped out and buffered for the next
-//   call.
+//   - firstRuneBytes will contain either a single complete rune (the next in
+//     order in the stream) or an empty slice.
+//   - nextRunesBytes will contain the remaining complete runes. The last
+//     incomplete rune, if any, will be stripped out and buffered for the next
+//     call.
 func (_this Context) StreamStringData(data []byte) (firstRuneBytes []byte, nextRunesBytes []byte) {
 	nextRunesBytes = data
 
@@ -129,8 +129,6 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
 		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
-	case events.ArrayTypeMedia:
-		_this.beginArray(arrayType, &mediaTypeRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
 	default:
 		_this.beginArray(arrayType, &arrayRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
 	}
@@ -201,18 +199,6 @@ func (_this *Context) EndChunkString() {
 	}
 	if !_this.tryEndArray(_this.moreChunksFollow, nil) {
 		_this.ChangeRule(&stringRule)
-	}
-}
-
-func (_this *Context) BeginChunkMediaType(elemCount uint64, moreChunksFollow bool) {
-	_this.chunkExpectedByteCount = elemCount
-	_this.markUpcomingChunkByteCount(_this.chunkExpectedByteCount)
-	_this.chunkActualByteCount = 0
-	_this.moreChunksFollow = moreChunksFollow
-	if elemCount > 0 {
-		_this.ChangeRule(&mediaTypeChunkRule)
-	} else {
-		_this.EndChunkMediaType()
 	}
 }
 

@@ -24,17 +24,9 @@ import (
 	"fmt"
 )
 
-type stringContext int
-
-const (
-	stringContextDefault stringContext = iota
-	stringContextComment
-)
-
 // Encoder decorators take care of indentation and other pretty-printing details.
 type EncoderDecorator interface {
 	String() string
-	GetStringContext() stringContext
 	BeforeValue(ctx *EncoderContext)
 	AfterValue(ctx *EncoderContext)
 	BeforeComment(ctx *EncoderContext)
@@ -53,7 +45,6 @@ type TopLevelDecorator struct{}
 var topLevelDecorator TopLevelDecorator
 
 func (_this TopLevelDecorator) String() string                    { return "TopLevelDecorator" }
-func (_this TopLevelDecorator) GetStringContext() stringContext   { return stringContextDefault }
 func (_this TopLevelDecorator) BeforeValue(ctx *EncoderContext)   {}
 func (_this TopLevelDecorator) AfterValue(ctx *EncoderContext)    {}
 func (_this TopLevelDecorator) BeforeComment(ctx *EncoderContext) {}
@@ -68,8 +59,7 @@ type ListDecorator struct{}
 
 var listDecorator ListDecorator
 
-func (_this ListDecorator) String() string                  { return "ListDecorator" }
-func (_this ListDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this ListDecorator) String() string { return "ListDecorator" }
 func (_this ListDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
@@ -94,8 +84,7 @@ type MapKeyDecorator struct{}
 
 var mapKeyDecorator MapKeyDecorator
 
-func (_this MapKeyDecorator) String() string                  { return "MapKeyDecorator" }
-func (_this MapKeyDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this MapKeyDecorator) String() string { return "MapKeyDecorator" }
 func (_this MapKeyDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
@@ -124,7 +113,6 @@ type MapValueDecorator struct{}
 var mapValueDecorator MapValueDecorator
 
 func (_this MapValueDecorator) String() string                  { return "MapValueDecorator" }
-func (_this MapValueDecorator) GetStringContext() stringContext { return stringContextDefault }
 func (_this MapValueDecorator) BeforeValue(ctx *EncoderContext) {}
 func (_this MapValueDecorator) AfterValue(ctx *EncoderContext) {
 	ctx.Switch(mapKeyDecorator)
@@ -141,8 +129,7 @@ type StructTemplateDecorator struct{}
 
 var structTemplateDecorator StructTemplateDecorator
 
-func (_this StructTemplateDecorator) String() string                  { return "StructTemplateDecorator" }
-func (_this StructTemplateDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this StructTemplateDecorator) String() string { return "StructTemplateDecorator" }
 func (_this StructTemplateDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
@@ -167,8 +154,7 @@ type StructInstanceDecorator struct{}
 
 var structInstanceDecorator StructInstanceDecorator
 
-func (_this StructInstanceDecorator) String() string                  { return "StructInstanceDecorator" }
-func (_this StructInstanceDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this StructInstanceDecorator) String() string { return "StructInstanceDecorator" }
 func (_this StructInstanceDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
@@ -196,7 +182,6 @@ type ConcatDecorator struct{}
 var concatDecorator ConcatDecorator
 
 func (_this ConcatDecorator) String() string                  { return "ConcatDecorator" }
-func (_this ConcatDecorator) GetStringContext() stringContext { return stringContextDefault }
 func (_this ConcatDecorator) BeforeValue(ctx *EncoderContext) {}
 func (_this ConcatDecorator) AfterValue(ctx *EncoderContext) {
 	ctx.Unstack()
@@ -212,8 +197,7 @@ type EdgeDecorator struct{}
 
 var edgeDecorator EdgeDecorator
 
-func (_this EdgeDecorator) String() string                  { return "EdgeDecorator" }
-func (_this EdgeDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this EdgeDecorator) String() string { return "EdgeDecorator" }
 func (_this EdgeDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
@@ -238,8 +222,7 @@ type NodeValueDecorator struct{}
 
 var nodeValueDecorator NodeValueDecorator
 
-func (_this NodeValueDecorator) String() string                  { return "NodeValueDecorator" }
-func (_this NodeValueDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this NodeValueDecorator) String() string { return "NodeValueDecorator" }
 func (_this NodeValueDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteIndentIfOrigin()
 }
@@ -258,8 +241,7 @@ type NodeChildrenDecorator struct{}
 
 var nodeChildrenDecorator NodeChildrenDecorator
 
-func (_this NodeChildrenDecorator) String() string                  { return "NodeChildrenDecorator" }
-func (_this NodeChildrenDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this NodeChildrenDecorator) String() string { return "NodeChildrenDecorator" }
 func (_this NodeChildrenDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
@@ -284,8 +266,7 @@ type NonStringArrayDecorator struct{}
 
 var nonStringArrayDecorator NonStringArrayDecorator
 
-func (_this NonStringArrayDecorator) String() string                  { return "NonStringArrayDecorator" }
-func (_this NonStringArrayDecorator) GetStringContext() stringContext { return stringContextDefault }
+func (_this NonStringArrayDecorator) String() string { return "NonStringArrayDecorator" }
 func (_this NonStringArrayDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }

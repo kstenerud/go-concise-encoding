@@ -29,7 +29,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
@@ -181,20 +181,38 @@ func (_this *BuilderEventReceiver) OnArray(arrayType events.ArrayType, elementCo
 func (_this *BuilderEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
 	_this.context.CurrentBuilder.BuildFromStringlikeArray(&_this.context, arrayType, value, _this.object)
 }
+func (_this *BuilderEventReceiver) OnMedia(mediaType string, value []byte) {
+	_this.context.CurrentBuilder.BuildFromMedia(&_this.context, mediaType, value, _this.object)
+}
+func (_this *BuilderEventReceiver) OnCustomBinary(customType uint64, value []byte) {
+	_this.context.CurrentBuilder.BuildFromCustomBinary(&_this.context, customType, value, _this.object)
+}
+func (_this *BuilderEventReceiver) OnCustomText(customType uint64, value string) {
+	_this.context.CurrentBuilder.BuildFromCustomText(&_this.context, customType, value, _this.object)
+}
 func (_this *BuilderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.BeginArray(func(ctx *Context) {
+		bytes := ctx.chunkedData
+		elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
+		_this.OnArray(arrayType, elementCount, bytes)
+	})
+}
+func (_this *BuilderEventReceiver) OnMediaBegin(mediaType string) {
+	_this.context.BeginArray(func(ctx *Context) {
+		bytes := ctx.chunkedData
+		ctx.CurrentBuilder.BuildFromMedia(ctx, mediaType, bytes, _this.object)
+	})
+}
+func (_this *BuilderEventReceiver) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	_this.context.BeginArray(func(ctx *Context) {
+		bytes := ctx.chunkedData
 		switch arrayType {
-		case events.ArrayTypeMedia:
-			mediaType := string(ctx.chunkedData)
-			ctx.chunkedData = ctx.chunkedData[:0]
-			ctx.ContinueMultiComponentArray(func(ctx *Context) {
-				data := ctx.chunkedData
-				ctx.CurrentBuilder.BuildFromMedia(ctx, mediaType, data, _this.object)
-			})
+		case events.ArrayTypeCustomBinary:
+			ctx.CurrentBuilder.BuildFromCustomBinary(ctx, customType, bytes, _this.object)
+		case events.ArrayTypeCustomText:
+			ctx.CurrentBuilder.BuildFromCustomText(ctx, customType, string(bytes), _this.object)
 		default:
-			bytes := ctx.chunkedData
-			elementCount := common.ByteCountToElementCount(arrayType.ElementSize(), uint64(len(bytes)))
-			_this.OnArray(arrayType, elementCount, bytes)
+			panic(fmt.Errorf("BUG: Cannot handle type %v in OnCustomBegin", arrayType))
 		}
 	})
 }
@@ -222,7 +240,7 @@ func (_this *BuilderEventReceiver) OnNode() {
 func (_this *BuilderEventReceiver) OnEdge() {
 	_this.context.CurrentBuilder.BuildNewEdge(&_this.context)
 }
-func (_this *BuilderEventReceiver) OnEnd() {
+func (_this *BuilderEventReceiver) OnEndContainer() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnMarker(id []byte) {

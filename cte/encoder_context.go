@@ -21,7 +21,7 @@
 package cte
 
 import (
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -185,11 +185,23 @@ func (_this *EncoderContext) WriteIdentifier(data []byte) {
 }
 
 func (_this *EncoderContext) EncodeStringlikeArray(arrayType events.ArrayType, data string) {
-	_this.ArrayEngine.EncodeStringlikeArray(_this.Decorator.GetStringContext(), arrayType, data)
+	_this.ArrayEngine.EncodeStringlikeArray(arrayType, data)
 }
 
 func (_this *EncoderContext) EncodeArray(arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	_this.ArrayEngine.EncodeArray(_this.Decorator.GetStringContext(), arrayType, elementCount, data)
+	_this.ArrayEngine.EncodeArray(arrayType, elementCount, data)
+}
+
+func (_this *EncoderContext) EncodeMedia(mediaType string, data []byte) {
+	_this.ArrayEngine.EncodeMedia(mediaType, data)
+}
+
+func (_this *EncoderContext) EncodeCustomBinary(customType uint64, data []byte) {
+	_this.ArrayEngine.EncodeCustomBinary(customType, data)
+}
+
+func (_this *EncoderContext) EncodeCustomText(customType uint64, data string) {
+	_this.ArrayEngine.EncodeCustomText(customType, data)
 }
 
 func (_this *EncoderContext) BeginArray(arrayType events.ArrayType, completion func()) {
@@ -205,7 +217,27 @@ func (_this *EncoderContext) BeginArray(arrayType events.ArrayType, completion f
 		}
 	}
 
-	_this.ArrayEngine.BeginArray(_this.Decorator.GetStringContext(), arrayType, finalCompletion)
+	_this.ArrayEngine.BeginArray(arrayType, finalCompletion)
+}
+
+func (_this *EncoderContext) BeginMedia(mediaType string, completion func()) {
+	_this.Stack(nonStringArrayDecorator)
+	_this.ArrayEngine.BeginMedia(mediaType, func() {
+		_this.Unstack()
+		completion()
+	})
+}
+
+func (_this *EncoderContext) BeginCustomBinary(customType uint64, completion func()) {
+	_this.Stack(nonStringArrayDecorator)
+	_this.ArrayEngine.BeginCustomBinary(customType, func() {
+		_this.Unstack()
+		completion()
+	})
+}
+
+func (_this *EncoderContext) BeginCustomText(customType uint64, completion func()) {
+	_this.ArrayEngine.BeginCustomText(customType, completion)
 }
 
 func (_this *EncoderContext) BeginArrayChunk(elementCount uint64, moreChunksFollow bool) {

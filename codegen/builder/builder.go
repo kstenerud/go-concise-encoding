@@ -32,12 +32,12 @@ import (
 const path = "builder"
 
 var imports = []*standard.Import{
-	&standard.Import{LocalName: "", Import: "math/big"},
-	&standard.Import{LocalName: "", Import: "reflect"},
-	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/events"},
-	&standard.Import{LocalName: "", Import: "github.com/cockroachdb/apd/v2"},
-	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-compact-float"},
-	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-compact-time"},
+	{LocalName: "", Import: "math/big"},
+	{LocalName: "", Import: "reflect"},
+	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
+	{LocalName: "", Import: "github.com/cockroachdb/apd/v2"},
+	{LocalName: "", Import: "github.com/kstenerud/go-compact-float"},
+	{LocalName: "", Import: "github.com/kstenerud/go-compact-time"},
 }
 
 var (
@@ -53,6 +53,8 @@ var (
 	UID            = "BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value"
 	Array          = "BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value"
 	SArray         = "BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value"
+	CustomBinary   = "BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value"
+	CustomText     = "BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value"
 	Media          = "BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value"
 	Time           = "BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value"
 	Ref            = "BuildFromLocalReference(ctx *Context, id []byte)"
@@ -68,7 +70,7 @@ var (
 	NotifyFinished = "NotifyChildContainerFinished(ctx *Context, container reflect.Value)"
 
 	allMethods = []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-		BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+		BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 		Node, Edge, ListContents, MapContents, NodeContents,
 		EdgeContents, End, Ref, NotifyFinished}
 )
@@ -107,7 +109,7 @@ var builders = []Builder{
 	},
 	{
 		Name:    "custom",
-		Methods: []string{Array},
+		Methods: []string{CustomBinary, CustomText},
 	},
 	{
 		Name:    "decimalFloat",
@@ -136,19 +138,19 @@ var builders = []Builder{
 	{
 		Name: "ignore",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, Ref, NotifyFinished},
 	},
 	{
 		Name: "ignoreXTimes",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, Ref, NotifyFinished},
 	},
 	{
 		Name: "ignoreContainer",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, End, ListContents, MapContents,
 			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
@@ -191,14 +193,14 @@ var builders = []Builder{
 	{
 		Name: "interface",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, MapContents, ListContents,
 			NodeContents, EdgeContents, Ref, NotifyFinished},
 	},
 	{
 		Name: "map",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
@@ -209,13 +211,13 @@ var builders = []Builder{
 	{
 		Name: "structInstance",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, End, Ref, NotifyFinished},
 	},
 	{
 		Name: "markerObject",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, Map,
 			Node, Edge, List, End, NotifyFinished},
 	},
 	{
@@ -237,7 +239,7 @@ var builders = []Builder{
 	{
 		Name: "ptr",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, ListContents,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, ListContents,
 			MapContents, NodeContents, EdgeContents, NotifyFinished},
 	},
 	{
@@ -247,7 +249,7 @@ var builders = []Builder{
 	{
 		Name: "slice",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, ListContents, End, Ref, NotifyFinished},
 	},
 	{
@@ -257,7 +259,7 @@ var builders = []Builder{
 	{
 		Name: "struct",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
@@ -267,7 +269,7 @@ var builders = []Builder{
 	{
 		Name: "topLevel",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, NotifyFinished},
 	},
 	{
@@ -321,13 +323,13 @@ var builders = []Builder{
 	{
 		Name: "edge",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, EdgeContents, Ref, NotifyFinished},
 	},
 	{
 		Name: "node",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
-			BigDFloat, UID, Array, SArray, Media, Time, List, Map,
+			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, NodeContents, Ref, NotifyFinished},
 	},
 }

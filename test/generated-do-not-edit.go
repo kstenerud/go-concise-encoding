@@ -25,1024 +25,1197 @@ package test
 
 import (
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
-type EventArrayBit struct{ EventWithValue }
+type EventArrayBit struct{ BaseEvent }
 
 func AB(elements []bool) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayBit{
+			BaseEvent: ConstructEvent("ab", func(receiver events.DataEventReceiver) {
+				var safeArg []bool
+				receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []bool
 	if v != nil {
 		safeArg = v.([]bool)
 	}
 
 	return &EventArrayBit{
-		EventWithValue: ConstructEventWithValue("ab", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("ab", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataBit struct{ EventWithValue }
+type EventArrayDataBit struct{ BaseEvent }
 
 func ADB(elements []bool) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataBit{
+			BaseEvent: ConstructEvent("adb", func(receiver events.DataEventReceiver) {
+				var safeArg []bool
+				receiver.OnArrayData(arrayBitsToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []bool
 	if v != nil {
 		safeArg = v.([]bool)
 	}
 
 	return &EventArrayDataBit{
-		EventWithValue: ConstructEventWithValue("adb", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adb", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayBitsToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventVersion struct{ EventWithValue }
+type EventVersion struct{ BaseEvent }
 
 func V(version uint64) Event {
 	v := version
 	safeArg := v
 
 	return &EventVersion{
-		EventWithValue: ConstructEventWithValue("v", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("v", func(receiver events.DataEventReceiver) {
 			receiver.OnVersion(safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventBoolean struct{ EventWithValue }
+type EventBoolean struct{ BaseEvent }
 
 func B(value bool) Event {
 	v := value
 	safeArg := v
 
 	return &EventBoolean{
-		EventWithValue: ConstructEventWithValue("b", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("b", func(receiver events.DataEventReceiver) {
 			receiver.OnBoolean(safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventTime struct{ EventWithValue }
+type EventTime struct{ BaseEvent }
 
 func T(value compact_time.Time) Event {
 	v := value
 	safeArg := v
 
 	return &EventTime{
-		EventWithValue: ConstructEventWithValue("t", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("t", func(receiver events.DataEventReceiver) {
 			receiver.OnTime(safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventUID struct{ EventWithValue }
+type EventUID struct{ BaseEvent }
 
 func UID(value []byte) Event {
-	v := copyOf(value)
 	if len(value) == 0 {
-		v = NoValue
+		return &EventUID{
+			BaseEvent: ConstructEvent("uid", func(receiver events.DataEventReceiver) {
+				var safeArg []byte
+				receiver.OnUID(safeArg)
+			}),
+		}
 	}
+	v := copyOf(value)
 	var safeArg []byte
 	if v != nil {
 		safeArg = v.([]byte)
 	}
 
 	return &EventUID{
-		EventWithValue: ConstructEventWithValue("uid", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("uid", func(receiver events.DataEventReceiver) {
 			receiver.OnUID(safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayChunkMore struct{ EventWithValue }
+type EventArrayChunkMore struct{ BaseEvent }
 
 func ACM(length uint64) Event {
 	v := length
 	safeArg := v
 
 	return &EventArrayChunkMore{
-		EventWithValue: ConstructEventWithValue("acm", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("acm", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayChunk(safeArg, true)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayChunkLast struct{ EventWithValue }
+type EventArrayChunkLast struct{ BaseEvent }
 
 func ACL(length uint64) Event {
 	v := length
 	safeArg := v
 
 	return &EventArrayChunkLast{
-		EventWithValue: ConstructEventWithValue("acl", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("acl", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayChunk(safeArg, false)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventCommentMultiline struct{ EventWithValue }
+type EventCommentMultiline struct{ BaseEvent }
 
 func CM(comment string) Event {
 	v := comment
 	safeArg := v
 
 	return &EventCommentMultiline{
-		EventWithValue: ConstructEventWithValue("cm", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("cm", func(receiver events.DataEventReceiver) {
 			receiver.OnComment(true, []byte(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventCommentSingleLine struct{ EventWithValue }
+type EventCommentSingleLine struct{ BaseEvent }
 
 func CS(comment string) Event {
 	v := comment
 	safeArg := v
 
 	return &EventCommentSingleLine{
-		EventWithValue: ConstructEventWithValue("cs", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("cs", func(receiver events.DataEventReceiver) {
 			receiver.OnComment(false, []byte(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventCustomBinary struct{ EventWithValue }
+type EventCustomBinary struct{ BaseEvent }
 
-func CB(elements []byte) Event {
-	v := copyOf(elements)
-	if len(elements) == 0 {
-		v = NoValue
+func CB(customType uint64, data []byte) Event {
+	if len(data) == 0 {
+		return &EventCustomBinary{
+			BaseEvent: ConstructEvent("cb", func(receiver events.DataEventReceiver) {
+				var safeArg []byte
+				receiver.OnCustomBinary(customType, safeArg)
+			}, customType),
+		}
 	}
+	v := copyOf(data)
 	var safeArg []byte
 	if v != nil {
 		safeArg = v.([]byte)
 	}
 
 	return &EventCustomBinary{
-		EventWithValue: ConstructEventWithValue("cb", v, func(receiver events.DataEventReceiver) {
-			receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(safeArg)), safeArg)
-		}),
+		BaseEvent: ConstructEvent("cb", func(receiver events.DataEventReceiver) {
+			receiver.OnCustomBinary(customType, safeArg)
+		}, customType, safeArg),
 	}
 }
 
-type EventMarker struct{ EventWithValue }
+type EventCustomText struct{ BaseEvent }
+
+func CT(customType uint64, data string) Event {
+	v := data
+	safeArg := v
+
+	return &EventCustomText{
+		BaseEvent: ConstructEvent("ct", func(receiver events.DataEventReceiver) {
+			receiver.OnCustomText(customType, safeArg)
+		}, customType, safeArg),
+	}
+}
+
+type EventMedia struct{ BaseEvent }
+
+func MEDIA(mediaType string, data []byte) Event {
+	if len(data) == 0 {
+		return &EventMedia{
+			BaseEvent: ConstructEvent("media", func(receiver events.DataEventReceiver) {
+				var safeArg []byte
+				receiver.OnMedia(mediaType, safeArg)
+			}, mediaType),
+		}
+	}
+	v := copyOf(data)
+	var safeArg []byte
+	if v != nil {
+		safeArg = v.([]byte)
+	}
+
+	return &EventMedia{
+		BaseEvent: ConstructEvent("media", func(receiver events.DataEventReceiver) {
+			receiver.OnMedia(mediaType, safeArg)
+		}, mediaType, safeArg),
+	}
+}
+
+type EventMarker struct{ BaseEvent }
 
 func MARK(id string) Event {
 	v := id
 	safeArg := v
 
 	return &EventMarker{
-		EventWithValue: ConstructEventWithValue("mark", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("mark", func(receiver events.DataEventReceiver) {
 			receiver.OnMarker([]byte(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventReferenceLocal struct{ EventWithValue }
+type EventReferenceLocal struct{ BaseEvent }
 
 func REFL(id string) Event {
 	v := id
 	safeArg := v
 
 	return &EventReferenceLocal{
-		EventWithValue: ConstructEventWithValue("refl", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("refl", func(receiver events.DataEventReceiver) {
 			receiver.OnReferenceLocal([]byte(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventStructInstance struct{ EventWithValue }
+type EventStructInstance struct{ BaseEvent }
 
 func SI(id string) Event {
 	v := id
 	safeArg := v
 
 	return &EventStructInstance{
-		EventWithValue: ConstructEventWithValue("si", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("si", func(receiver events.DataEventReceiver) {
 			receiver.OnStructInstance([]byte(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventStructTemplate struct{ EventWithValue }
+type EventStructTemplate struct{ BaseEvent }
 
 func ST(id string) Event {
 	v := id
 	safeArg := v
 
 	return &EventStructTemplate{
-		EventWithValue: ConstructEventWithValue("st", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("st", func(receiver events.DataEventReceiver) {
 			receiver.OnStructTemplate([]byte(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventString struct{ EventWithValue }
+type EventString struct{ BaseEvent }
 
 func S(str string) Event {
 	v := str
 	safeArg := v
 
 	return &EventString{
-		EventWithValue: ConstructEventWithValue("s", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("s", func(receiver events.DataEventReceiver) {
 			receiver.OnStringlikeArray(events.ArrayTypeString, safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventCustomText struct{ EventWithValue }
-
-func CT(str string) Event {
-	v := str
-	safeArg := v
-
-	return &EventCustomText{
-		EventWithValue: ConstructEventWithValue("ct", v, func(receiver events.DataEventReceiver) {
-			receiver.OnStringlikeArray(events.ArrayTypeCustomText, safeArg)
-		}),
-	}
-}
-
-type EventReferenceRemote struct{ EventWithValue }
+type EventReferenceRemote struct{ BaseEvent }
 
 func REFR(str string) Event {
 	v := str
 	safeArg := v
 
 	return &EventReferenceRemote{
-		EventWithValue: ConstructEventWithValue("refr", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("refr", func(receiver events.DataEventReceiver) {
 			receiver.OnStringlikeArray(events.ArrayTypeReferenceRemote, safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventResourceID struct{ EventWithValue }
+type EventResourceID struct{ BaseEvent }
 
 func RID(str string) Event {
 	v := str
 	safeArg := v
 
 	return &EventResourceID{
-		EventWithValue: ConstructEventWithValue("rid", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("rid", func(receiver events.DataEventReceiver) {
 			receiver.OnStringlikeArray(events.ArrayTypeResourceID, safeArg)
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataInt8 struct{ EventWithValue }
+type EventArrayDataInt8 struct{ BaseEvent }
 
 func ADI8(elements []int8) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataInt8{
+			BaseEvent: ConstructEvent("adi8", func(receiver events.DataEventReceiver) {
+				var safeArg []int8
+				receiver.OnArrayData(arrayInt8ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int8
 	if v != nil {
 		safeArg = v.([]int8)
 	}
 
 	return &EventArrayDataInt8{
-		EventWithValue: ConstructEventWithValue("adi8", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adi8", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayInt8ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataInt16 struct{ EventWithValue }
+type EventArrayDataInt16 struct{ BaseEvent }
 
 func ADI16(elements []int16) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataInt16{
+			BaseEvent: ConstructEvent("adi16", func(receiver events.DataEventReceiver) {
+				var safeArg []int16
+				receiver.OnArrayData(arrayInt16ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int16
 	if v != nil {
 		safeArg = v.([]int16)
 	}
 
 	return &EventArrayDataInt16{
-		EventWithValue: ConstructEventWithValue("adi16", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adi16", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayInt16ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataInt32 struct{ EventWithValue }
+type EventArrayDataInt32 struct{ BaseEvent }
 
 func ADI32(elements []int32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataInt32{
+			BaseEvent: ConstructEvent("adi32", func(receiver events.DataEventReceiver) {
+				var safeArg []int32
+				receiver.OnArrayData(arrayInt32ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int32
 	if v != nil {
 		safeArg = v.([]int32)
 	}
 
 	return &EventArrayDataInt32{
-		EventWithValue: ConstructEventWithValue("adi32", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adi32", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayInt32ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataInt64 struct{ EventWithValue }
+type EventArrayDataInt64 struct{ BaseEvent }
 
 func ADI64(elements []int64) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataInt64{
+			BaseEvent: ConstructEvent("adi64", func(receiver events.DataEventReceiver) {
+				var safeArg []int64
+				receiver.OnArrayData(arrayInt64ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int64
 	if v != nil {
 		safeArg = v.([]int64)
 	}
 
 	return &EventArrayDataInt64{
-		EventWithValue: ConstructEventWithValue("adi64", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adi64", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayInt64ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataFloat16 struct{ EventWithValue }
+type EventArrayDataFloat16 struct{ BaseEvent }
 
 func ADF16(elements []float32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataFloat16{
+			BaseEvent: ConstructEvent("adf16", func(receiver events.DataEventReceiver) {
+				var safeArg []float32
+				receiver.OnArrayData(arrayFloat16ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []float32
 	if v != nil {
 		safeArg = v.([]float32)
 	}
 
 	return &EventArrayDataFloat16{
-		EventWithValue: ConstructEventWithValue("adf16", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adf16", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayFloat16ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataFloat32 struct{ EventWithValue }
+type EventArrayDataFloat32 struct{ BaseEvent }
 
 func ADF32(elements []float32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataFloat32{
+			BaseEvent: ConstructEvent("adf32", func(receiver events.DataEventReceiver) {
+				var safeArg []float32
+				receiver.OnArrayData(arrayFloat32ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []float32
 	if v != nil {
 		safeArg = v.([]float32)
 	}
 
 	return &EventArrayDataFloat32{
-		EventWithValue: ConstructEventWithValue("adf32", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adf32", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayFloat32ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataFloat64 struct{ EventWithValue }
+type EventArrayDataFloat64 struct{ BaseEvent }
 
 func ADF64(elements []float64) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataFloat64{
+			BaseEvent: ConstructEvent("adf64", func(receiver events.DataEventReceiver) {
+				var safeArg []float64
+				receiver.OnArrayData(arrayFloat64ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []float64
 	if v != nil {
 		safeArg = v.([]float64)
 	}
 
 	return &EventArrayDataFloat64{
-		EventWithValue: ConstructEventWithValue("adf64", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adf64", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayFloat64ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataUint8 struct{ EventWithValue }
+type EventArrayDataUint8 struct{ BaseEvent }
 
 func ADU8(elements []uint8) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataUint8{
+			BaseEvent: ConstructEvent("adu8", func(receiver events.DataEventReceiver) {
+				var safeArg []uint8
+				receiver.OnArrayData(arrayUint8ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint8
 	if v != nil {
 		safeArg = v.([]uint8)
 	}
 
 	return &EventArrayDataUint8{
-		EventWithValue: ConstructEventWithValue("adu8", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adu8", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayUint8ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataUint16 struct{ EventWithValue }
+type EventArrayDataUint16 struct{ BaseEvent }
 
 func ADU16(elements []uint16) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataUint16{
+			BaseEvent: ConstructEvent("adu16", func(receiver events.DataEventReceiver) {
+				var safeArg []uint16
+				receiver.OnArrayData(arrayUint16ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint16
 	if v != nil {
 		safeArg = v.([]uint16)
 	}
 
 	return &EventArrayDataUint16{
-		EventWithValue: ConstructEventWithValue("adu16", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adu16", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayUint16ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataUint32 struct{ EventWithValue }
+type EventArrayDataUint32 struct{ BaseEvent }
 
 func ADU32(elements []uint32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataUint32{
+			BaseEvent: ConstructEvent("adu32", func(receiver events.DataEventReceiver) {
+				var safeArg []uint32
+				receiver.OnArrayData(arrayUint32ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint32
 	if v != nil {
 		safeArg = v.([]uint32)
 	}
 
 	return &EventArrayDataUint32{
-		EventWithValue: ConstructEventWithValue("adu32", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adu32", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayUint32ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataUint64 struct{ EventWithValue }
+type EventArrayDataUint64 struct{ BaseEvent }
 
 func ADU64(elements []uint64) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataUint64{
+			BaseEvent: ConstructEvent("adu64", func(receiver events.DataEventReceiver) {
+				var safeArg []uint64
+				receiver.OnArrayData(arrayUint64ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint64
 	if v != nil {
 		safeArg = v.([]uint64)
 	}
 
 	return &EventArrayDataUint64{
-		EventWithValue: ConstructEventWithValue("adu64", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adu64", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayUint64ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataUID struct{ EventWithValue }
+type EventArrayDataUID struct{ BaseEvent }
 
 func ADU(elements [][]byte) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayDataUID{
+			BaseEvent: ConstructEvent("adu", func(receiver events.DataEventReceiver) {
+				var safeArg [][]byte
+				receiver.OnArrayData(arrayUIDToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg [][]byte
 	if v != nil {
 		safeArg = v.([][]byte)
 	}
 
 	return &EventArrayDataUID{
-		EventWithValue: ConstructEventWithValue("adu", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adu", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayUIDToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayDataText struct{ EventWithValue }
+type EventArrayDataText struct{ BaseEvent }
 
 func ADT(elements string) Event {
 	v := elements
 	safeArg := v
 
 	return &EventArrayDataText{
-		EventWithValue: ConstructEventWithValue("adt", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("adt", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayData(arrayTextToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayInt8 struct{ EventWithValue }
+type EventArrayInt8 struct{ BaseEvent }
 
 func AI8(elements []int8) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayInt8{
+			BaseEvent: ConstructEvent("ai8", func(receiver events.DataEventReceiver) {
+				var safeArg []int8
+				receiver.OnArray(events.ArrayTypeInt8, uint64(len(safeArg)), arrayInt8ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int8
 	if v != nil {
 		safeArg = v.([]int8)
 	}
 
 	return &EventArrayInt8{
-		EventWithValue: ConstructEventWithValue("ai8", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("ai8", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeInt8, uint64(len(safeArg)), arrayInt8ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayInt16 struct{ EventWithValue }
+type EventArrayInt16 struct{ BaseEvent }
 
 func AI16(elements []int16) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayInt16{
+			BaseEvent: ConstructEvent("ai16", func(receiver events.DataEventReceiver) {
+				var safeArg []int16
+				receiver.OnArray(events.ArrayTypeInt16, uint64(len(safeArg)), arrayInt16ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int16
 	if v != nil {
 		safeArg = v.([]int16)
 	}
 
 	return &EventArrayInt16{
-		EventWithValue: ConstructEventWithValue("ai16", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("ai16", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeInt16, uint64(len(safeArg)), arrayInt16ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayInt32 struct{ EventWithValue }
+type EventArrayInt32 struct{ BaseEvent }
 
 func AI32(elements []int32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayInt32{
+			BaseEvent: ConstructEvent("ai32", func(receiver events.DataEventReceiver) {
+				var safeArg []int32
+				receiver.OnArray(events.ArrayTypeInt32, uint64(len(safeArg)), arrayInt32ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int32
 	if v != nil {
 		safeArg = v.([]int32)
 	}
 
 	return &EventArrayInt32{
-		EventWithValue: ConstructEventWithValue("ai32", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("ai32", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeInt32, uint64(len(safeArg)), arrayInt32ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayInt64 struct{ EventWithValue }
+type EventArrayInt64 struct{ BaseEvent }
 
 func AI64(elements []int64) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayInt64{
+			BaseEvent: ConstructEvent("ai64", func(receiver events.DataEventReceiver) {
+				var safeArg []int64
+				receiver.OnArray(events.ArrayTypeInt64, uint64(len(safeArg)), arrayInt64ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []int64
 	if v != nil {
 		safeArg = v.([]int64)
 	}
 
 	return &EventArrayInt64{
-		EventWithValue: ConstructEventWithValue("ai64", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("ai64", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeInt64, uint64(len(safeArg)), arrayInt64ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayFloat16 struct{ EventWithValue }
+type EventArrayFloat16 struct{ BaseEvent }
 
 func AF16(elements []float32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayFloat16{
+			BaseEvent: ConstructEvent("af16", func(receiver events.DataEventReceiver) {
+				var safeArg []float32
+				receiver.OnArray(events.ArrayTypeFloat16, uint64(len(safeArg)), arrayFloat16ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []float32
 	if v != nil {
 		safeArg = v.([]float32)
 	}
 
 	return &EventArrayFloat16{
-		EventWithValue: ConstructEventWithValue("af16", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("af16", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeFloat16, uint64(len(safeArg)), arrayFloat16ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayFloat32 struct{ EventWithValue }
+type EventArrayFloat32 struct{ BaseEvent }
 
 func AF32(elements []float32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayFloat32{
+			BaseEvent: ConstructEvent("af32", func(receiver events.DataEventReceiver) {
+				var safeArg []float32
+				receiver.OnArray(events.ArrayTypeFloat32, uint64(len(safeArg)), arrayFloat32ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []float32
 	if v != nil {
 		safeArg = v.([]float32)
 	}
 
 	return &EventArrayFloat32{
-		EventWithValue: ConstructEventWithValue("af32", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("af32", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeFloat32, uint64(len(safeArg)), arrayFloat32ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayFloat64 struct{ EventWithValue }
+type EventArrayFloat64 struct{ BaseEvent }
 
 func AF64(elements []float64) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayFloat64{
+			BaseEvent: ConstructEvent("af64", func(receiver events.DataEventReceiver) {
+				var safeArg []float64
+				receiver.OnArray(events.ArrayTypeFloat64, uint64(len(safeArg)), arrayFloat64ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []float64
 	if v != nil {
 		safeArg = v.([]float64)
 	}
 
 	return &EventArrayFloat64{
-		EventWithValue: ConstructEventWithValue("af64", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("af64", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeFloat64, uint64(len(safeArg)), arrayFloat64ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayUint8 struct{ EventWithValue }
+type EventArrayUint8 struct{ BaseEvent }
 
 func AU8(elements []uint8) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayUint8{
+			BaseEvent: ConstructEvent("au8", func(receiver events.DataEventReceiver) {
+				var safeArg []uint8
+				receiver.OnArray(events.ArrayTypeUint8, uint64(len(safeArg)), arrayUint8ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint8
 	if v != nil {
 		safeArg = v.([]uint8)
 	}
 
 	return &EventArrayUint8{
-		EventWithValue: ConstructEventWithValue("au8", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("au8", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeUint8, uint64(len(safeArg)), arrayUint8ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayUint16 struct{ EventWithValue }
+type EventArrayUint16 struct{ BaseEvent }
 
 func AU16(elements []uint16) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayUint16{
+			BaseEvent: ConstructEvent("au16", func(receiver events.DataEventReceiver) {
+				var safeArg []uint16
+				receiver.OnArray(events.ArrayTypeUint16, uint64(len(safeArg)), arrayUint16ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint16
 	if v != nil {
 		safeArg = v.([]uint16)
 	}
 
 	return &EventArrayUint16{
-		EventWithValue: ConstructEventWithValue("au16", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("au16", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeUint16, uint64(len(safeArg)), arrayUint16ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayUint32 struct{ EventWithValue }
+type EventArrayUint32 struct{ BaseEvent }
 
 func AU32(elements []uint32) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayUint32{
+			BaseEvent: ConstructEvent("au32", func(receiver events.DataEventReceiver) {
+				var safeArg []uint32
+				receiver.OnArray(events.ArrayTypeUint32, uint64(len(safeArg)), arrayUint32ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint32
 	if v != nil {
 		safeArg = v.([]uint32)
 	}
 
 	return &EventArrayUint32{
-		EventWithValue: ConstructEventWithValue("au32", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("au32", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeUint32, uint64(len(safeArg)), arrayUint32ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayUint64 struct{ EventWithValue }
+type EventArrayUint64 struct{ BaseEvent }
 
 func AU64(elements []uint64) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayUint64{
+			BaseEvent: ConstructEvent("au64", func(receiver events.DataEventReceiver) {
+				var safeArg []uint64
+				receiver.OnArray(events.ArrayTypeUint64, uint64(len(safeArg)), arrayUint64ToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg []uint64
 	if v != nil {
 		safeArg = v.([]uint64)
 	}
 
 	return &EventArrayUint64{
-		EventWithValue: ConstructEventWithValue("au64", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("au64", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeUint64, uint64(len(safeArg)), arrayUint64ToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventArrayUID struct{ EventWithValue }
+type EventArrayUID struct{ BaseEvent }
 
 func AU(elements [][]byte) Event {
-	v := copyOf(elements)
 	if len(elements) == 0 {
-		v = NoValue
+		return &EventArrayUID{
+			BaseEvent: ConstructEvent("au", func(receiver events.DataEventReceiver) {
+				var safeArg [][]byte
+				receiver.OnArray(events.ArrayTypeUID, uint64(len(safeArg)), arrayUIDToBytes(safeArg))
+			}),
+		}
 	}
+	v := copyOf(elements)
 	var safeArg [][]byte
 	if v != nil {
 		safeArg = v.([][]byte)
 	}
 
 	return &EventArrayUID{
-		EventWithValue: ConstructEventWithValue("au", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("au", func(receiver events.DataEventReceiver) {
 			receiver.OnArray(events.ArrayTypeUID, uint64(len(safeArg)), arrayUIDToBytes(safeArg))
-		}),
+		}, safeArg),
 	}
 }
 
-type EventBeginArrayBit struct{ EventWithValue }
+type EventBeginArrayBit struct{ BaseEvent }
 
 func BAB() Event {
 	return &EventBeginArrayBit{
-		EventWithValue: ConstructEventWithValue("bab", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bab", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeBit)
 		}),
 	}
 }
 
-type EventBeginArrayFloat16 struct{ EventWithValue }
+type EventBeginArrayFloat16 struct{ BaseEvent }
 
 func BAF16() Event {
 	return &EventBeginArrayFloat16{
-		EventWithValue: ConstructEventWithValue("baf16", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("baf16", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeFloat16)
 		}),
 	}
 }
 
-type EventBeginArrayFloat32 struct{ EventWithValue }
+type EventBeginArrayFloat32 struct{ BaseEvent }
 
 func BAF32() Event {
 	return &EventBeginArrayFloat32{
-		EventWithValue: ConstructEventWithValue("baf32", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("baf32", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeFloat32)
 		}),
 	}
 }
 
-type EventBeginArrayFloat64 struct{ EventWithValue }
+type EventBeginArrayFloat64 struct{ BaseEvent }
 
 func BAF64() Event {
 	return &EventBeginArrayFloat64{
-		EventWithValue: ConstructEventWithValue("baf64", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("baf64", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeFloat64)
 		}),
 	}
 }
 
-type EventBeginArrayInt8 struct{ EventWithValue }
+type EventBeginArrayInt8 struct{ BaseEvent }
 
 func BAI8() Event {
 	return &EventBeginArrayInt8{
-		EventWithValue: ConstructEventWithValue("bai8", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bai8", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeInt8)
 		}),
 	}
 }
 
-type EventBeginArrayInt16 struct{ EventWithValue }
+type EventBeginArrayInt16 struct{ BaseEvent }
 
 func BAI16() Event {
 	return &EventBeginArrayInt16{
-		EventWithValue: ConstructEventWithValue("bai16", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bai16", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeInt16)
 		}),
 	}
 }
 
-type EventBeginArrayInt32 struct{ EventWithValue }
+type EventBeginArrayInt32 struct{ BaseEvent }
 
 func BAI32() Event {
 	return &EventBeginArrayInt32{
-		EventWithValue: ConstructEventWithValue("bai32", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bai32", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeInt32)
 		}),
 	}
 }
 
-type EventBeginArrayInt64 struct{ EventWithValue }
+type EventBeginArrayInt64 struct{ BaseEvent }
 
 func BAI64() Event {
 	return &EventBeginArrayInt64{
-		EventWithValue: ConstructEventWithValue("bai64", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bai64", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeInt64)
 		}),
 	}
 }
 
-type EventBeginArrayUID struct{ EventWithValue }
+type EventBeginArrayUID struct{ BaseEvent }
 
 func BAU() Event {
 	return &EventBeginArrayUID{
-		EventWithValue: ConstructEventWithValue("bau", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bau", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeUID)
 		}),
 	}
 }
 
-type EventBeginArrayUint8 struct{ EventWithValue }
+type EventBeginArrayUint8 struct{ BaseEvent }
 
 func BAU8() Event {
 	return &EventBeginArrayUint8{
-		EventWithValue: ConstructEventWithValue("bau8", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bau8", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeUint8)
 		}),
 	}
 }
 
-type EventBeginArrayUint16 struct{ EventWithValue }
+type EventBeginArrayUint16 struct{ BaseEvent }
 
 func BAU16() Event {
 	return &EventBeginArrayUint16{
-		EventWithValue: ConstructEventWithValue("bau16", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bau16", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeUint16)
 		}),
 	}
 }
 
-type EventBeginArrayUint32 struct{ EventWithValue }
+type EventBeginArrayUint32 struct{ BaseEvent }
 
 func BAU32() Event {
 	return &EventBeginArrayUint32{
-		EventWithValue: ConstructEventWithValue("bau32", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bau32", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeUint32)
 		}),
 	}
 }
 
-type EventBeginArrayUint64 struct{ EventWithValue }
+type EventBeginArrayUint64 struct{ BaseEvent }
 
 func BAU64() Event {
 	return &EventBeginArrayUint64{
-		EventWithValue: ConstructEventWithValue("bau64", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bau64", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeUint64)
 		}),
 	}
 }
 
-type EventBeginCustomBinary struct{ EventWithValue }
-
-func BCB() Event {
-	return &EventBeginCustomBinary{
-		EventWithValue: ConstructEventWithValue("bcb", NoValue, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayBegin(events.ArrayTypeCustomBinary)
-		}),
-	}
-}
-
-type EventBeginCustomText struct{ EventWithValue }
-
-func BCT() Event {
-	return &EventBeginCustomText{
-		EventWithValue: ConstructEventWithValue("bct", NoValue, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayBegin(events.ArrayTypeCustomText)
-		}),
-	}
-}
-
-type EventBeginMedia struct{ EventWithValue }
-
-func BMEDIA() Event {
-	return &EventBeginMedia{
-		EventWithValue: ConstructEventWithValue("bmedia", NoValue, func(receiver events.DataEventReceiver) {
-			receiver.OnArrayBegin(events.ArrayTypeMedia)
-		}),
-	}
-}
-
-type EventBeginReferenceRemote struct{ EventWithValue }
+type EventBeginReferenceRemote struct{ BaseEvent }
 
 func BREFR() Event {
 	return &EventBeginReferenceRemote{
-		EventWithValue: ConstructEventWithValue("brefr", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("brefr", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeReferenceRemote)
 		}),
 	}
 }
 
-type EventBeginResourceID struct{ EventWithValue }
+type EventBeginResourceID struct{ BaseEvent }
 
 func BRID() Event {
 	return &EventBeginResourceID{
-		EventWithValue: ConstructEventWithValue("brid", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("brid", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeResourceID)
 		}),
 	}
 }
 
-type EventBeginString struct{ EventWithValue }
+type EventBeginString struct{ BaseEvent }
 
 func BS() Event {
 	return &EventBeginString{
-		EventWithValue: ConstructEventWithValue("bs", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bs", func(receiver events.DataEventReceiver) {
 			receiver.OnArrayBegin(events.ArrayTypeString)
 		}),
 	}
 }
 
-type EventEdge struct{ EventWithValue }
+type EventBeginCustomBinary struct{ BaseEvent }
+
+func BCB(customType uint64) Event {
+	v := customType
+	safeArg := v
+
+	return &EventBeginCustomBinary{
+		BaseEvent: ConstructEvent("bcb", func(receiver events.DataEventReceiver) {
+			receiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)
+		}, safeArg),
+	}
+}
+
+type EventBeginCustomText struct{ BaseEvent }
+
+func BCT(customType uint64) Event {
+	v := customType
+	safeArg := v
+
+	return &EventBeginCustomText{
+		BaseEvent: ConstructEvent("bct", func(receiver events.DataEventReceiver) {
+			receiver.OnCustomBegin(events.ArrayTypeCustomText, customType)
+		}, safeArg),
+	}
+}
+
+type EventBeginMedia struct{ BaseEvent }
+
+func BMEDIA(mediaType string) Event {
+	v := mediaType
+	safeArg := v
+
+	return &EventBeginMedia{
+		BaseEvent: ConstructEvent("bmedia", func(receiver events.DataEventReceiver) {
+			receiver.OnMediaBegin(mediaType)
+		}, safeArg),
+	}
+}
+
+type EventEdge struct{ BaseEvent }
 
 func EDGE() Event {
 	return &EventEdge{
-		EventWithValue: ConstructEventWithValue("edge", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("edge", func(receiver events.DataEventReceiver) {
 			receiver.OnEdge()
 		}),
 	}
 }
 
-type EventEnd struct{ EventWithValue }
+type EventEndContainer struct{ BaseEvent }
 
 func E() Event {
-	return &EventEnd{
-		EventWithValue: ConstructEventWithValue("e", NoValue, func(receiver events.DataEventReceiver) {
-			receiver.OnEnd()
+	return &EventEndContainer{
+		BaseEvent: ConstructEvent("e", func(receiver events.DataEventReceiver) {
+			receiver.OnEndContainer()
 		}),
 	}
 }
 
-type EventList struct{ EventWithValue }
+type EventList struct{ BaseEvent }
 
 func L() Event {
 	return &EventList{
-		EventWithValue: ConstructEventWithValue("l", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("l", func(receiver events.DataEventReceiver) {
 			receiver.OnList()
 		}),
 	}
 }
 
-type EventMap struct{ EventWithValue }
+type EventMap struct{ BaseEvent }
 
 func M() Event {
 	return &EventMap{
-		EventWithValue: ConstructEventWithValue("m", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("m", func(receiver events.DataEventReceiver) {
 			receiver.OnMap()
 		}),
 	}
 }
 
-type EventNode struct{ EventWithValue }
+type EventNode struct{ BaseEvent }
 
 func NODE() Event {
 	return &EventNode{
-		EventWithValue: ConstructEventWithValue("node", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("node", func(receiver events.DataEventReceiver) {
 			receiver.OnNode()
 		}),
 	}
 }
 
-type EventNull struct{ EventWithValue }
+type EventNull struct{ BaseEvent }
 
 func NULL() Event {
 	return &EventNull{
-		EventWithValue: ConstructEventWithValue("null", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("null", func(receiver events.DataEventReceiver) {
 			receiver.OnNull()
 		}),
 	}
 }
 
-type EventPadding struct{ EventWithValue }
+type EventPadding struct{ BaseEvent }
 
 func PAD() Event {
 	return &EventPadding{
-		EventWithValue: ConstructEventWithValue("pad", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("pad", func(receiver events.DataEventReceiver) {
 			receiver.OnPadding()
 		}),
 	}
 }
 
-type EventBeginDocument struct{ EventWithValue }
+type EventBeginDocument struct{ BaseEvent }
 
 func BD() Event {
 	return &EventBeginDocument{
-		EventWithValue: ConstructEventWithValue("bd", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("bd", func(receiver events.DataEventReceiver) {
 			receiver.OnBeginDocument()
 		}),
 	}
 }
 
-type EventEndDocument struct{ EventWithValue }
+type EventEndDocument struct{ BaseEvent }
 
 func ED() Event {
 	return &EventEndDocument{
-		EventWithValue: ConstructEventWithValue("ed", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("ed", func(receiver events.DataEventReceiver) {
 			receiver.OnEndDocument()
 		}),
 	}

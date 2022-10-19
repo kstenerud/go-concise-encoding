@@ -29,7 +29,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
@@ -286,6 +286,20 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	default:
 		_this.nextBuilderGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, _this.nextValue)
 	}
+	object := _this.nextValue
+	_this.swapKeyValue()
+	return object
+}
+
+func (_this *structBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, dst reflect.Value) reflect.Value {
+	_this.nextBuilderGenerator(ctx).BuildFromCustomBinary(ctx, customType, value, _this.nextValue)
+	object := _this.nextValue
+	_this.swapKeyValue()
+	return object
+}
+
+func (_this *structBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, dst reflect.Value) reflect.Value {
+	_this.nextBuilderGenerator(ctx).BuildFromCustomText(ctx, customType, value, _this.nextValue)
 	object := _this.nextValue
 	_this.swapKeyValue()
 	return object

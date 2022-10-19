@@ -21,14 +21,16 @@
 package rules
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
+	"github.com/kstenerud/go-concise-encoding/nullevent"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -56,7 +58,7 @@ func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) 
 	return _this
 }
 
-var nullReceiver = &events.NullEventReceiver{}
+var nullReceiver = &nullevent.NullEventReceiver{}
 
 // Initialize a rules set.
 // If opts = nil, defaults are used.
@@ -228,22 +230,77 @@ func (_this *RulesEventReceiver) OnTime(value compact_time.Time) {
 	_this.receiver.OnTime(value)
 }
 
+func (_this *RulesEventReceiver) validateArrayAPICall(arrayType events.ArrayType) {
+	switch arrayType {
+	case events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
+		panic(fmt.Errorf("BUG: %v is not allowed in the array API. Use the custom type API instead", arrayType))
+	case events.ArrayTypeMedia:
+		panic(fmt.Errorf("BUG: %v is not allowed in the array API. Use the media API instead", arrayType))
+	default:
+	}
+}
+
+func (_this *RulesEventReceiver) validateCustomTypeAPICall(arrayType events.ArrayType) {
+	switch arrayType {
+	case events.ArrayTypeCustomBinary, events.ArrayTypeCustomText:
+	default:
+		panic(fmt.Errorf("BUG: %v is not allowed in the custom type API. Use the array API instead", arrayType))
+	}
+}
+
 func (_this *RulesEventReceiver) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	_this.validateArrayAPICall(arrayType)
 	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnArray(&_this.context, arrayType, elementCount, value)
 	_this.receiver.OnArray(arrayType, elementCount, value)
 }
 
 func (_this *RulesEventReceiver) OnStringlikeArray(arrayType events.ArrayType, value string) {
+	_this.validateArrayAPICall(arrayType)
 	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnStringlikeArray(&_this.context, arrayType, value)
 	_this.receiver.OnStringlikeArray(arrayType, value)
 }
 
+func (_this *RulesEventReceiver) OnMedia(mediaType string, value []byte) {
+	if len(mediaType) > 0xffffffff {
+		panic(fmt.Errorf("media type is too long (%v bytes)", len(mediaType)))
+	}
+	_this.context.NotifyNewObject(true)
+	_this.context.CurrentEntry.Rule.OnArray(&_this.context, events.ArrayTypeMedia, uint64(len(value)), value)
+	_this.receiver.OnMedia(mediaType, value)
+}
+
+func (_this *RulesEventReceiver) OnCustomBinary(customType uint64, value []byte) {
+	_this.context.NotifyNewObject(true)
+	_this.context.CurrentEntry.Rule.OnArray(&_this.context, events.ArrayTypeCustomBinary, uint64(len(value)), value)
+	_this.receiver.OnCustomBinary(customType, value)
+}
+
+func (_this *RulesEventReceiver) OnCustomText(customType uint64, value string) {
+	_this.context.NotifyNewObject(true)
+	_this.context.CurrentEntry.Rule.OnStringlikeArray(&_this.context, events.ArrayTypeCustomText, value)
+	_this.receiver.OnCustomText(customType, value)
+}
+
 func (_this *RulesEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
+	_this.validateArrayAPICall(arrayType)
 	_this.context.NotifyNewObject(true)
 	_this.context.CurrentEntry.Rule.OnArrayBegin(&_this.context, arrayType)
 	_this.receiver.OnArrayBegin(arrayType)
+}
+
+func (_this *RulesEventReceiver) OnMediaBegin(mediaType string) {
+	_this.context.NotifyNewObject(true)
+	_this.context.CurrentEntry.Rule.OnArrayBegin(&_this.context, events.ArrayTypeMedia)
+	_this.receiver.OnMediaBegin(mediaType)
+}
+
+func (_this *RulesEventReceiver) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	_this.validateCustomTypeAPICall(arrayType)
+	_this.context.NotifyNewObject(true)
+	_this.context.CurrentEntry.Rule.OnArrayBegin(&_this.context, arrayType)
+	_this.receiver.OnCustomBegin(arrayType, customType)
 }
 
 func (_this *RulesEventReceiver) OnArrayChunk(length uint64, moreChunksFollow bool) {
@@ -268,9 +325,9 @@ func (_this *RulesEventReceiver) OnMap() {
 	_this.receiver.OnMap()
 }
 
-func (_this *RulesEventReceiver) OnEnd() {
+func (_this *RulesEventReceiver) OnEndContainer() {
 	_this.context.CurrentEntry.Rule.OnEnd(&_this.context)
-	_this.receiver.OnEnd()
+	_this.receiver.OnEndContainer()
 }
 
 func (_this *RulesEventReceiver) OnStructTemplate(identifier []byte) {

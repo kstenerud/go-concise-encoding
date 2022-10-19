@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 const (
@@ -179,6 +179,20 @@ func (_this *mapBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 func (_this *mapBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, _ reflect.Value) reflect.Value {
 	object := _this.newElem()
 	_this.nextGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, object)
+	_this.store(object)
+	return object
+}
+
+func (_this *mapBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.nextGenerator(ctx).BuildFromCustomBinary(ctx, customType, value, object)
+	_this.store(object)
+	return object
+}
+
+func (_this *mapBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, _ reflect.Value) reflect.Value {
+	object := _this.newElem()
+	_this.nextGenerator(ctx).BuildFromCustomText(ctx, customType, value, object)
 	_this.store(object)
 	return object
 }

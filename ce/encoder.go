@@ -22,12 +22,8 @@ package ce
 
 import (
 	"io"
-	"math/big"
 
-	"github.com/cockroachdb/apd/v2"
-	compact_float "github.com/kstenerud/go-compact-float"
-	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 // Encoder accepts events and encodes them to a byte stream.
@@ -36,45 +32,5 @@ type Encoder interface {
 	// PrepareToEncode MUST be called before using the encoder.
 	PrepareToEncode(writer io.Writer)
 
-	// Events
-
-	OnBeginDocument()
-	OnEndDocument()
-
-	OnVersion(version uint64)
-	OnPadding()
-	OnComment(isMultiline bool, contents []byte)
-	OnNull()
-	OnBoolean(value bool)
-	OnTrue()
-	OnFalse()
-	OnPositiveInt(value uint64)
-	OnNegativeInt(value uint64)
-	OnInt(value int64)
-	OnBigInt(value *big.Int)
-	OnFloat(value float64)
-	OnBigFloat(value *big.Float)
-	OnDecimalFloat(value compact_float.DFloat)
-	OnBigDecimalFloat(value *apd.Decimal)
-	OnNan(signaling bool)
-	OnUID(value []byte)
-	OnTime(value compact_time.Time)
-	// Warning: Do not store a pointer to the data! Either use it right away or copy it.
-	// The underlying contents should be considered volatile and likely to change after this method returns!
-	OnArray(arrayType events.ArrayType, elementCount uint64, data []byte)
-	OnStringlikeArray(arrayType events.ArrayType, data string)
-	OnArrayBegin(arrayType events.ArrayType)
-	OnArrayChunk(length uint64, moreChunksFollow bool)
-	// Warning: Do not store a pointer to the data! Either use it right away or copy it.
-	// The underlying contents should be considered volatile and likely to change after this method returns!
-	OnArrayData(data []byte)
-	OnList()
-	OnMap()
-	OnStructTemplate(id []byte)
-	OnStructInstance(id []byte)
-	OnEdge()
-	OnNode()
-	OnEnd()
-	OnMarker(id []byte)
-	OnReferenceLocal(id []byte)
+	events.DataEventReceiver
 }

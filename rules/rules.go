@@ -25,7 +25,7 @@ package rules
 import (
 	"fmt"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 const maxMarkerIDRuneCount = 50
@@ -72,8 +72,6 @@ var (
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule
 	stringChunkRule         StringChunkRule
-	mediaTypeRule           MediaTypeRule
-	mediaTypeChunkRule      MediaTypeChunkRule
 	markedObjectKeyableRule MarkedObjectKeyableRule
 	markedObjectAnyTypeRule MarkedObjectAnyTypeRule
 	stringBuilderRule       StringBuilderRule

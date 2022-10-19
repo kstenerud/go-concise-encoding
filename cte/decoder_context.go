@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -80,11 +80,11 @@ type DecoderContext struct {
 	Scratch               []byte
 }
 
-func (_this *DecoderContext) BeginArray(digitType string, arrayType events.ArrayType, elementWidth int) {
+func (_this *DecoderContext) BeginArray(digitType string, arrayType events.ArrayType, bytesPerElement int) {
 	_this.Scratch = _this.Scratch[:0]
 	_this.ArrayDigitType = digitType
 	_this.ArrayType = arrayType
-	_this.ArrayBytesPerElement = elementWidth
+	_this.ArrayBytesPerElement = bytesPerElement
 	_this.ArrayContainsComments = false
 }
 

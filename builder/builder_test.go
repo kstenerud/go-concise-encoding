@@ -588,11 +588,11 @@ func TestBuilderChunkedRID(t *testing.T) {
 	assertBuild(t, expected, BRID(), ACM(2), ADT("te"), ACM(2), ADT("st"), ACL(0))
 }
 
-type CustomBinaryExampleType uint32
+type CustomBinaryExampleType uint64
 
 func TestBuilderChunkedCustomBinary(t *testing.T) {
 	opts := options.DefaultBuilderSessionOptions()
-	opts.CustomBinaryBuildFunction = func(src []byte, dst reflect.Value) error {
+	opts.CustomBinaryBuildFunction = func(customType uint64, src []byte, dst reflect.Value) error {
 		var accum CustomBinaryExampleType
 		for _, b := range src {
 			accum = (accum << 8) | CustomBinaryExampleType(b)
@@ -603,15 +603,15 @@ func TestBuilderChunkedCustomBinary(t *testing.T) {
 	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
 	session := NewSession(nil, &opts)
 	expected := CustomBinaryExampleType(0x01020304)
-	assertBuildWithSession(t, session, expected, BCB(), ACM(2), ADU8([]byte{1, 2}), ACL(2), ADU8([]byte{3, 4}))
-	assertBuildWithSession(t, session, expected, BCB(), ACM(2), ADU8([]byte{1, 2}), ACM(2), ADU8([]byte{3, 4}), ACL(0))
+	assertBuildWithSession(t, session, expected, BCB(1), ACM(2), ADU8([]byte{1, 2}), ACL(2), ADU8([]byte{3, 4}))
+	assertBuildWithSession(t, session, expected, BCB(1), ACM(2), ADU8([]byte{1, 2}), ACM(2), ADU8([]byte{3, 4}), ACL(0))
 }
 
-type CustomTextExampleType uint32
+type CustomTextExampleType uint64
 
 func TestBuilderChunkedCustomText(t *testing.T) {
 	opts := options.DefaultBuilderSessionOptions()
-	opts.CustomTextBuildFunction = func(src []byte, dst reflect.Value) error {
+	opts.CustomTextBuildFunction = func(customType uint64, src string, dst reflect.Value) error {
 		v, err := strconv.ParseUint(string(src), 16, 64)
 		if err != nil {
 			return err
@@ -622,8 +622,8 @@ func TestBuilderChunkedCustomText(t *testing.T) {
 	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
 	session := NewSession(nil, &opts)
 	expected := CustomTextExampleType(0x1234)
-	assertBuildWithSession(t, session, expected, BCT(), ACM(2), ADU8([]byte{'1', '2'}), ACL(2), ADU8([]byte{'3', '4'}))
-	assertBuildWithSession(t, session, expected, BCT(), ACM(2), ADU8([]byte{'1', '2'}), ACM(2), ADU8([]byte{'3', '4'}), ACL(0))
+	assertBuildWithSession(t, session, expected, BCT(1), ACM(2), ADU8([]byte{'1', '2'}), ACL(2), ADU8([]byte{'3', '4'}))
+	assertBuildWithSession(t, session, expected, BCT(1), ACM(2), ADU8([]byte{'1', '2'}), ACM(2), ADU8([]byte{'3', '4'}), ACL(0))
 }
 
 func TestBuilderGoTime(t *testing.T) {
@@ -1341,15 +1341,15 @@ func TestBuilderUID(t *testing.T) {
 
 func TestBuilderMedia(t *testing.T) {
 	media := types.Media{
-		MediaType: "a",
+		MediaType: "a/b",
 		Data:      []byte{1},
 	}
 
-	assertBuild(t, media, BMEDIA(), ACL(1), ADT("a"), ACL(1), ADU8([]byte{1}))
+	assertBuild(t, media, BMEDIA("a/b"), ACL(1), ADU8([]byte{1}))
 	list := []types.Media{media}
-	assertBuild(t, list, L(), BMEDIA(), ACL(1), ADT("a"), ACL(1), ADU8([]byte{1}), E())
+	assertBuild(t, list, L(), BMEDIA("a/b"), ACL(1), ADU8([]byte{1}), E())
 	m := map[int]types.Media{1: media}
-	assertBuild(t, m, M(), N(1), BMEDIA(), ACL(1), ADT("a"), ACL(1), ADU8([]byte{1}), E())
+	assertBuild(t, m, M(), N(1), BMEDIA("a/b"), ACL(1), ADU8([]byte{1}), E())
 }
 
 func TestBuilderEdge(t *testing.T) {

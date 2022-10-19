@@ -39,7 +39,7 @@ const codePath = "test"
 
 var imports = []*standard.Import{
 	{LocalName: "compact_time", Import: "github.com/kstenerud/go-compact-time"},
-	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/events"},
+	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
 }
 
 func generateEvents(projectDir string) {
@@ -55,19 +55,22 @@ func generateEvents(projectDir string) {
 
 	standard.WriteHeader(writer, codePath, imports)
 
-	generateEventWithValue(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))")
-	generateEventWithValue(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(arrayBitsToBytes(safeArg))")
+	generateOneArgEvent(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))")
+	generateOneArgEvent(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(arrayBitsToBytes(safeArg))")
 
-	generateEventWithValue(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(safeArg)")
-	generateEventWithValue(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(safeArg)")
-	generateEventWithValue(writer, "Time", "t", "value", "compact_time.Time", "receiver.OnTime(safeArg)")
-	generateEventWithValue(writer, "UID", "uid", "value", "[]byte", "receiver.OnUID(safeArg)")
+	generateOneArgEvent(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(safeArg)")
+	generateOneArgEvent(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(safeArg)")
+	generateOneArgEvent(writer, "Time", "t", "value", "compact_time.Time", "receiver.OnTime(safeArg)")
+	generateOneArgEvent(writer, "UID", "uid", "value", "[]byte", "receiver.OnUID(safeArg)")
 
-	generateEventWithValue(writer, "ArrayChunkMore", "acm", "length", "uint64", "receiver.OnArrayChunk(safeArg, true)")
-	generateEventWithValue(writer, "ArrayChunkLast", "acl", "length", "uint64", "receiver.OnArrayChunk(safeArg, false)")
-	generateEventWithValue(writer, "CommentMultiline", "cm", "comment", "string", "receiver.OnComment(true, []byte(safeArg))")
-	generateEventWithValue(writer, "CommentSingleLine", "cs", "comment", "string", "receiver.OnComment(false, []byte(safeArg))")
-	generateEventWithValue(writer, "CustomBinary", "cb", "elements", "[]byte", "receiver.OnArray(events.ArrayTypeCustomBinary, uint64(len(safeArg)), safeArg)")
+	generateOneArgEvent(writer, "ArrayChunkMore", "acm", "length", "uint64", "receiver.OnArrayChunk(safeArg, true)")
+	generateOneArgEvent(writer, "ArrayChunkLast", "acl", "length", "uint64", "receiver.OnArrayChunk(safeArg, false)")
+	generateOneArgEvent(writer, "CommentMultiline", "cm", "comment", "string", "receiver.OnComment(true, []byte(safeArg))")
+	generateOneArgEvent(writer, "CommentSingleLine", "cs", "comment", "string", "receiver.OnComment(false, []byte(safeArg))")
+
+	generateTwoArgEvent(writer, "CustomBinary", "cb", "customType", "uint64", "data", "[]byte", "receiver.OnCustomBinary(customType, safeArg)")
+	generateTwoArgEvent(writer, "CustomText", "ct", "customType", "uint64", "data", "string", "receiver.OnCustomText(customType, safeArg)")
+	generateTwoArgEvent(writer, "Media", "media", "mediaType", "string", "data", "[]byte", "receiver.OnMedia(mediaType, safeArg)")
 
 	generateIDEvent(writer, "Marker", "mark")
 	generateIDEvent(writer, "ReferenceLocal", "refl")
@@ -75,7 +78,6 @@ func generateEvents(projectDir string) {
 	generateIDEvent(writer, "StructTemplate", "st")
 
 	generateStringArrayEvent(writer, "String", "s")
-	generateStringArrayEvent(writer, "CustomText", "ct")
 	generateStringArrayEvent(writer, "ReferenceRemote", "refr")
 	generateStringArrayEvent(writer, "ResourceID", "rid")
 
@@ -117,15 +119,16 @@ func generateEvents(projectDir string) {
 	generateArrayBeginEvent(writer, "ArrayUint16", "Uint16", "bau16")
 	generateArrayBeginEvent(writer, "ArrayUint32", "Uint32", "bau32")
 	generateArrayBeginEvent(writer, "ArrayUint64", "Uint64", "bau64")
-	generateArrayBeginEvent(writer, "CustomBinary", "CustomBinary", "bcb")
-	generateArrayBeginEvent(writer, "CustomText", "CustomText", "bct")
-	generateArrayBeginEvent(writer, "Media", "Media", "bmedia")
 	generateArrayBeginEvent(writer, "ReferenceRemote", "ReferenceRemote", "brefr")
 	generateArrayBeginEvent(writer, "ResourceID", "ResourceID", "brid")
 	generateArrayBeginEvent(writer, "String", "String", "bs")
 
+	generateOneArgEvent(writer, "BeginCustomBinary", "bcb", "customType", "uint64", "receiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)")
+	generateOneArgEvent(writer, "BeginCustomText", "bct", "customType", "uint64", "receiver.OnCustomBegin(events.ArrayTypeCustomText, customType)")
+	generateOneArgEvent(writer, "BeginMedia", "bmedia", "mediaType", "string", "receiver.OnMediaBegin(mediaType)")
+
 	generateBasicEvent(writer, "Edge", "edge")
-	generateBasicEvent(writer, "End", "e")
+	generateBasicEvent(writer, "EndContainer", "e")
 	generateBasicEvent(writer, "List", "l")
 	generateBasicEvent(writer, "Map", "m")
 	generateBasicEvent(writer, "Node", "node")
@@ -137,20 +140,20 @@ func generateEvents(projectDir string) {
 
 func generateArrayDataEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
-	generateEventWithValue(writer, "ArrayData"+eventName, functionName, argName, elementType,
+	generateOneArgEvent(writer, "ArrayData"+eventName, functionName, argName, elementType,
 		fmt.Sprintf("receiver.OnArrayData(array%vToBytes(safeArg))", eventName))
 }
 
 func generateArrayEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
-	generateEventWithValue(writer, "Array"+eventName, functionName, argName, "[]"+elementType,
+	generateOneArgEvent(writer, "Array"+eventName, functionName, argName, "[]"+elementType,
 		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), array%vToBytes(safeArg))", eventName, eventName))
 }
 
 func generateStringArrayEvent(writer io.Writer, arrayType string, functionName string) {
 	eventName := arrayType
 	argName := "str"
-	generateEventWithValue(writer, eventName, functionName, argName, "string",
+	generateOneArgEvent(writer, eventName, functionName, argName, "string",
 		fmt.Sprintf("receiver.OnStringlikeArray(events.ArrayType%v, safeArg)", arrayType))
 }
 
@@ -160,7 +163,7 @@ func generateArrayBeginEvent(writer io.Writer, eventName string, arrayType strin
 
 func generateIDEvent(writer io.Writer, eventName string, functionName string) {
 	argName := "id"
-	generateEventWithValue(writer, eventName, functionName, argName, "string",
+	generateOneArgEvent(writer, eventName, functionName, argName, "string",
 		fmt.Sprintf("receiver.On%v([]byte(safeArg))", eventName))
 }
 
@@ -172,10 +175,10 @@ func generateZeroArgEvent(writer io.Writer, eventName string, functionName strin
 	functionUpper := strings.ToUpper(functionName)
 	functionLower := strings.ToLower(functionName)
 
-	writer.Write([]byte(fmt.Sprintf("type Event%v struct{ EventWithValue }\n\n", eventName)))
+	writer.Write([]byte(fmt.Sprintf("type Event%v struct{ BaseEvent }\n\n", eventName)))
 	writer.Write([]byte(fmt.Sprintf(`func %v() Event {
 	return &Event%v{
-		EventWithValue: ConstructEventWithValue("%v", NoValue, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("%v", func(receiver events.DataEventReceiver) {
 			%v
 		}),
 	}
@@ -184,23 +187,28 @@ func generateZeroArgEvent(writer io.Writer, eventName string, functionName strin
 `, functionUpper, eventName, functionLower, invocation)))
 }
 
-func generateEventWithValue(writer io.Writer, eventName string, functionName string, argName string, argType string, invocation string) {
+func generateOneArgEvent(writer io.Writer, eventName string, functionName string, argName string, argType string, invocation string) {
 	functionUpper := strings.ToUpper(functionName)
 	functionLower := strings.ToLower(functionName)
 
-	writer.Write([]byte(fmt.Sprintf("type Event%v struct{ EventWithValue }\n\n", eventName)))
+	writer.Write([]byte(fmt.Sprintf("type Event%v struct{ BaseEvent }\n\n", eventName)))
 	writer.Write([]byte(fmt.Sprintf("func %v(%v %v) Event {", functionUpper, argName, argType)))
 	if isArrayType(argType) {
 		writer.Write([]byte(fmt.Sprintf(`
-	v := copyOf(%v)
 	if len(%v) == 0 {
-		v = NoValue
+		return &Event%v{
+			BaseEvent: ConstructEvent("%v", func(receiver events.DataEventReceiver) {
+				var safeArg %v
+				%v
+			}),
+		}
 	}
+	v := copyOf(%v)
 	var safeArg %v
 	if v != nil {
 		safeArg = v.(%v)
 	}
-`, argName, argName, argType, argType)))
+`, argName, eventName, functionLower, argType, invocation, argName, argType, argType)))
 	} else {
 		writer.Write([]byte(fmt.Sprintf(`
 	v := %v
@@ -210,13 +218,53 @@ func generateEventWithValue(writer io.Writer, eventName string, functionName str
 
 	writer.Write([]byte(fmt.Sprintf(`
 	return &Event%v{
-		EventWithValue: ConstructEventWithValue("%v", v, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("%v", func(receiver events.DataEventReceiver) {
 			%v
-		}),
+		}, safeArg),
 	}
 }
 
 `, eventName, functionLower, invocation)))
+}
+
+func generateTwoArgEvent(writer io.Writer, eventName string, functionName string, arg1Name string, arg1Type string, arg2Name string, arg2Type string, invocation string) {
+	functionUpper := strings.ToUpper(functionName)
+	functionLower := strings.ToLower(functionName)
+
+	writer.Write([]byte(fmt.Sprintf("type Event%v struct{ BaseEvent }\n\n", eventName)))
+	writer.Write([]byte(fmt.Sprintf("func %v(%v %v, %v %v) Event {", functionUpper, arg1Name, arg1Type, arg2Name, arg2Type)))
+	if isArrayType(arg2Type) {
+		writer.Write([]byte(fmt.Sprintf(`
+	if len(%v) == 0 {
+		return &Event%v{
+			BaseEvent: ConstructEvent("%v", func(receiver events.DataEventReceiver) {
+				var safeArg %v
+				%v
+			}, %v),
+		}
+	}
+	v := copyOf(%v)
+	var safeArg %v
+	if v != nil {
+		safeArg = v.(%v)
+	}
+`, arg2Name, eventName, functionLower, arg2Type, invocation, arg1Name, arg2Name, arg2Type, arg2Type)))
+	} else {
+		writer.Write([]byte(fmt.Sprintf(`
+	v := %v
+	safeArg := v
+`, arg2Name)))
+	}
+
+	writer.Write([]byte(fmt.Sprintf(`
+	return &Event%v{
+		BaseEvent: ConstructEvent("%v", func(receiver events.DataEventReceiver) {
+			%v
+		}, %v, safeArg),
+	}
+}
+
+`, eventName, functionLower, invocation, arg1Name)))
 }
 
 func isArrayType(argType string) bool {
@@ -229,9 +277,9 @@ var allEvents = test.Events{
 	EvAB, EvACL, EvACM, EvAF16, EvAF32, EvAF64, EvAI16, EvAI32, EvAI64, EvAI8,
 	EvAU, EvAU16, EvAU32, EvAU64, EvAU8, EvB, EvBAB, EvBAF16, EvBAF32, EvBAF64,
 	EvBAI16, EvBAI32, EvBAI64, EvBAI8, EvBAU, EvBAU16, EvBAU32, EvBAU64, EvBAU8,
-	EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS, EvCB, EvCM, EvCS, EvCT, EvE, EvEDGE, EvINF,
-	EvL, EvM, EvMARK, EvN, EvNAN, EvNINF, EvNODE, EvNULL, EvPAD, EvREFL, EvREFR, EvRID,
-	EvS, EvSI, EvSNAN, EvST, EvT, EvUID, EvV,
+	EvBCB /*EvBCT,*/, EvBMEDIA, EvBRID, EvBS, EvCB, EvCM, EvCS /*EvCT,*/, EvE,
+	EvEDGE, EvINF, EvL, EvM, EvMARK, EvMEDIA, EvN, EvNAN, EvNINF, EvNODE, EvNULL,
+	EvPAD, EvREFL, EvREFR, EvRID, EvS, EvSI, EvSNAN, EvST, EvT, EvUID, EvV,
 }
 
 var (
@@ -261,7 +309,7 @@ var (
 		EvBAU.Name():    {EvACL, EvADU},
 		EvBCB.Name():    {EvACL, EvADU8},
 		EvBCT.Name():    {EvACL, EvADT},
-		EvBMEDIA.Name(): {EvACL, EvADT, EvACL, EvADU8},
+		EvBMEDIA.Name(): {EvACL, EvADU8},
 		EvBRID.Name():   {EvACL, EvADT},
 		EvBS.Name():     {EvACL, EvADT},
 		EvCM.Name():     {EvN},
@@ -417,21 +465,22 @@ var (
 	EvBAU32  = test.BAU32()
 	EvBAU64  = test.BAU64()
 	EvBAU8   = test.BAU8()
-	EvBCB    = test.BCB()
-	EvBCT    = test.BCT()
-	EvBMEDIA = test.BMEDIA()
+	EvBCB    = test.BCB(0)
+	EvBCT    = test.BCT(0)
+	EvBMEDIA = test.BMEDIA("a/b")
 	EvBRID   = test.BRID()
 	EvBS     = test.BS()
-	EvCB     = test.CB([]byte{1})
+	EvCB     = test.CB(0, []byte{1})
 	EvCM     = test.CM("a")
 	EvCS     = test.CS("a")
-	EvCT     = test.CT("a")
+	EvCT     = test.CT(0, "a")
 	EvE      = test.E()
 	EvEDGE   = test.EDGE()
 	EvINF    = test.N(math.Inf(1))
 	EvL      = test.L()
 	EvM      = test.M()
 	EvMARK   = test.MARK("a")
+	EvMEDIA  = test.MEDIA("a/b", []byte{1})
 	EvN      = test.N(-1)
 	EvNAN    = test.N(compact_float.QuietNaN())
 	EvNINF   = test.N(math.Inf(-1))

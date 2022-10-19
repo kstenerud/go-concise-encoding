@@ -954,71 +954,6 @@ test"~"  "events"=["rid=testtest"] "lossyCTE"=true}   // Continuation
         // ====================================================================
 
         {
-            // Custom text has the same capabilities and restrictions as strings.
-            "name" = "Custom Text"
-            "mustSucceed" = [
-                {"cte"="|c \"cplx(2.94+3i)\"|"  "events"=["ct=cplx(2.94+3i)"]}
-                {"cte"="\.~ |c "something(123)"|~"       "events"=["ct=something(123)"]}
-                {"cte"="\.~ |c ""|~"                     "events"=["ct"]}                // Empty String
-                {"cte"="\.~ |c "test/*test"|~"           "events"=["ct=test/*test"]}     // Comment initiator inside a string
-                {"cte"="\.~ |c "test*/test"|~"           "events"=["ct=test*/test"]}     // Comment terminator inside a string
-                {"cte"="\.~ |c "test\ttest"|~"           "events"=["ct=test\+9.test"] "lossyCTE"=true}    // Escaped tab
-                {"cte"="\.~ |c "test\rtest"|~"           "events"=["ct=test\+d.test"] "lossyCTE"=true}    // Escaped CR
-                {"cte"="\.~ |c "test\"test"|~"           "events"=["ct=\.~ test"test~"] "lossyCTE"=true} // Escaped quote
-                {"cte"="\.~ |c "test\\test"|~"           "events"=["ct=\.~ test\test~"] "lossyCTE"=true} // Escaped backslash
-                {"cte"="\.~ |c "test\/test"|~"           "events"=["ct=\.~ test/test~"] "lossyCTE"=true} // Escaped slash
-                {"cte"="\.~ |c "test\*test"|~"           "events"=["ct=\.~ test*test~"] "lossyCTE"=true} // Escaped star
-                {"cte"="\.~ |c "test\|test"|~"           "events"=["ct=\.~ test|test~"] "lossyCTE"=true} // Escaped pipe
-                {"cte"="\.~ |c "test\_test"|~"           "events"=["ct=test\+a0.test"] "lossyCTE"=true}   // Escaped non-breaking space
-                {"cte"="\.~ |c "test\-test"|~"           "events"=["ct=test\+ad.test"] "lossyCTE"=true}   // Escaped soft hyphen
-                {"cte"="\.~ |c "test\+a.test"|~"          "events"=["ct=test\ntest"] "lossyCTE"=true}     // Escaped 1-digit codepoint
-                {"cte"="\.~ |c "test\+f7.test"|~"         "events"=["ct=test÷test"] "lossyCTE"=true}      // Escaped 2-digit codepoint
-                {"cte"="\.~ |c "test\+17d.test"|~"        "events"=["ct=testŽtest"] "lossyCTE"=true}      // Escaped 3-digit codepoint
-                {"cte"="\.~ |c "test\+2021.test"|~"       "events"=["ct=test‡test"] "lossyCTE"=true}      // Escaped 4-digit codepoint
-                {"cte"="\.~ |c "test\+1f43a.test"|~"      "events"=["ct=test🐺test"] "lossyCTE"=true}     // Escaped 5-digit codepoint
-                {"cte"="\.~ |c "test\+000000020.test"|~"  "events"=["ct=test test"] "lossyCTE"=true}      // Escaped 9-digit codepoint
-                {"cte"="\.~ |c "test\ntest"|~"           "events"=["ct=\.~ test
-test~"] "lossyCTE"=true}  // Escaped newline
-                {"cte"="\.~ |c "test\
-                                          test"|~"               "events"=["ct=testtest"] "lossyCTE"=true}  // Continuation
-            ]
-            "mustFail" = [
-                {"cte"="\.~ |c "test\1gtest"|~"}   // Invalid codepoint digit
-                {"cte"="\.~ |c "test\xtest"|~"}    // Invalid escape character
-                {"cte"="\.~ |c "test=test"~"}      // Unterminated
-                {"cte"="\.~ test test~"}           // Missing bars
-                {"cte"="\.~ |c "test\"|~"}         // Unterminated escape
-                {"cte"="\.~ |c "test\1"|~"}        // Unterminated codepoint
-                {"cte"="\.~ |c "test\01"|~"}       // Unterminated codepoint
-                {"cte"="\.~ |c "test\001"|~"}      // Unterminated codepoint
-                {"cte"="\.~ |c "test\0001"|~"}     // Unterminated codepoint
-                {"cte"="\.~ |c "test\00001"|~"}    // Unterminated codepoint
-                {"cte"="\.~ |c "test\000001"|~"}   // Unterminated codepoint
-                {"cte"="\.~ |c "test\0000001"|~"}  // Unterminated codepoint
-                {"cte"="\.~ |c "test\00000001"|~"} // Unterminated codepoint
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "Custom Binary"
-            "mustSucceed" = [
-                {"cte"="|c 04 f6 28 3c 40 00 00 40 40|"  "events"=["cb=04 f6 28 3c 40 00 00 40 40"]}
-                {"cte"="|c 1f 2e 3d 4c|"  "events"=["cb=1f 2e 3d 4c"]}
-                {"cte"="|c 1F 2E 3D 4C|"  "events"=["cb=1f 2e 3d 4c"] "lossyCTE"=true}
-                {"cte"="|c |"             "events"=["cb"] "lossyCTE"=true}
-                {"cte"="|c|"              "events"=["cb"]}
-            ]
-            "mustFail" = [
-                {"cte"="|c 00"}  // Not terminated
-                {"cte"="|c gg|"} // Non-hex characters
-            ]
-        }
-
-        // ====================================================================
-
-        {
             "name" = "Verbatim sequence"
             "mustSucceed" = [
                 {
@@ -1067,39 +1002,6 @@ blah blahXXX"~"
                 {"cte"="\.~ "\.X blah"~"}  // Missing end sentinel
             ]
         }
-
-        // ====================================================================
-
-        {
-            "name" = "Media"
-            "mustSucceed" = [
-                {
-                    "cte" = "|m application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
-                    "events" = ["bmedia" "acl=16" "adt=application/x-sh" "acl=28" "adt=\.^
-#!/bin/sh
-
-echo hello world
-^"]
-                }
-                {
-                    "cte" = "\.^^
-|m application/x-sh "\.@@
-#!/bin/sh
-
-echo hello world
-@@"|
-^^"
-                    "events" = ["bmedia" "acl=16" "adt=application/x-sh" "acl=28" "adt=\.^
-#!/bin/sh
-
-echo hello world
-^"]
-                    "lossyCTE" = true
-                }
-            ]
-        }
-
-        // ====================================================================
 
     ]
 }

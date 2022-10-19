@@ -45,7 +45,7 @@ func TestIterateBasic(t *testing.T) {
 	pURL := NewRID("http://x.com")
 	uid := types.UID{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 	media := types.Media{
-		MediaType: "a",
+		MediaType: "a/b",
 		Data:      []byte{0x00},
 	}
 	pNode := NewNode("test", []interface{}{"a"})
@@ -91,7 +91,7 @@ func TestIterateBasic(t *testing.T) {
 	assertIterate(t, (*url.URL)(nil), NULL())
 	assertIterate(t, uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
 	assertIterate(t, &uid, UID([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}))
-	assertIterate(t, media, BMEDIA(), ACL(1), ADT("a"), ACL(1), ADU8([]byte{0}))
+	assertIterate(t, media, MEDIA("a/b", []byte{0}))
 	assertIterate(t, pNode, NODE(), S("test"), S("a"), E())
 	assertIterate(t, *pNode, NODE(), S("test"), S("a"), E())
 	assertIterate(t, pEdge, EDGE(), S("a"), S("b"), S("c"))

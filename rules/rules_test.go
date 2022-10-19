@@ -25,7 +25,8 @@ import (
 	"time"
 
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/nullevent"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 )
@@ -123,7 +124,7 @@ func TestRulesResourceIDMultiChunk(t *testing.T) {
 
 func testRulesCustomBinary(t *testing.T, length int, byteCount ...int) {
 	rules := newRulesWithMaxDepth(1)
-	assertEventsSucceed(t, rules, BCB())
+	assertEventsSucceed(t, rules, BCB(1))
 	lastIndex := len(byteCount) - 1
 	if lastIndex < 0 {
 		assertEventsSucceed(t, rules, ACL(0))
@@ -151,12 +152,12 @@ func TestRulesCustomBinary(t *testing.T) {
 }
 
 func TestRulesCustomBinaryMultiChunk(t *testing.T) {
-	assertEventsMaxDepth(t, 1, BCB(), ACL(10), ADU8(NewBytes(5, 0)), ADU8(NewBytes(3, 0)), ADU8(NewBytes(2, 0)), ED())
+	assertEventsMaxDepth(t, 1, BCB(1), ACL(10), ADU8(NewBytes(5, 0)), ADU8(NewBytes(3, 0)), ADU8(NewBytes(2, 0)), ED())
 }
 
 func testRulesCustomText(t *testing.T, length int, byteCount ...int) {
 	rules := newRulesWithMaxDepth(1)
-	assertEventsSucceed(t, rules, BCT())
+	assertEventsSucceed(t, rules, BCT(1))
 	lastIndex := len(byteCount) - 1
 	if lastIndex < 0 {
 		assertEventsSucceed(t, rules, ACL(0))
@@ -184,7 +185,7 @@ func TestRulesCustomText(t *testing.T) {
 }
 
 func TestRulesCustomTextMultiChunk(t *testing.T) {
-	assertEventsMaxDepth(t, 1, BCT(), ACL(10), ADT(NewString(5, 0)), ADT(NewString(3, 0)), ADT(NewString(2, 0)), ED())
+	assertEventsMaxDepth(t, 1, BCT(1), ACL(10), ADT(NewString(5, 0)), ADT(NewString(3, 0)), ADT(NewString(2, 0)), ED())
 }
 
 func TestRulesInArrayBasic(t *testing.T) {
@@ -528,7 +529,7 @@ func TestRulesReset(t *testing.T) {
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
 	opts := options.DefaultRuleOptions()
-	rules := NewRules(events.NewNullEventReceiver(), &opts)
+	rules := NewRules(nullevent.NewNullEventReceiver(), &opts)
 	assertEventsSucceed(t, rules, BD(), EvV, REFR("http://x.y"), ED())
 }
 
@@ -876,8 +877,8 @@ func TestRulesAllowedTypesEdgeDestination(t *testing.T) {
 }
 
 func TestMedia(t *testing.T) {
-	rules := NewRules(events.NewNullEventReceiver(), nil)
-	assertEventsSucceed(t, rules, BD(), V(0), BMEDIA(), ACL(1), ADT("a"), ACL(0), ED())
+	rules := NewRules(nullevent.NewNullEventReceiver(), nil)
+	assertEventsSucceed(t, rules, BD(), V(0), BMEDIA("a/b"), ACL(0), ED())
 }
 
 func TestComment(t *testing.T) {

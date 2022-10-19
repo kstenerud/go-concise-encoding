@@ -671,13 +671,15 @@ func (_this *eventListener) ExitEventBeginArrayUint8(ctx *parser.EventBeginArray
 	_this.setEvents(test.BAU8())
 }
 func (_this *eventListener) ExitEventBeginCustomBinary(ctx *parser.EventBeginCustomBinaryContext) {
-	_this.setEvents(test.BCB())
+	customType := parseSmallUint(getTokenText(ctx.GetChild(1)))
+	_this.setEvents(test.BCB(customType))
 }
 func (_this *eventListener) ExitEventBeginCustomText(ctx *parser.EventBeginCustomTextContext) {
-	_this.setEvents(test.BCT())
+	customType := parseSmallUint(getTokenText(ctx.GetChild(1)))
+	_this.setEvents(test.BCT(customType))
 }
 func (_this *eventListener) ExitEventBeginMedia(ctx *parser.EventBeginMediaContext) {
-	_this.setEvents(test.BMEDIA())
+	_this.setEvents(test.BMEDIA(getStringArg(ctx.GetChildren())))
 }
 func (_this *eventListener) ExitEventBeginResourceId(ctx *parser.EventBeginResourceIdContext) {
 	_this.setEvents(test.BRID())
@@ -699,10 +701,14 @@ func (_this *eventListener) ExitEventCommentSingleLine(ctx *parser.EventCommentS
 	_this.setEvents(test.CS(getStringArg(ctx.GetChildren())))
 }
 func (_this *eventListener) ExitEventCustomBinary(ctx *parser.EventCustomBinaryContext) {
-	_this.setEvents(test.CB(parseArrayElementsUint8X(ctx.GetChildren())))
+	customType := parseSmallUint(getTokenText(ctx.GetChild(1)))
+	children := ctx.GetChildren()[1:]
+	_this.setEvents(test.CB(customType, parseArrayElementsUint8X(children)))
 }
 func (_this *eventListener) ExitEventCustomText(ctx *parser.EventCustomTextContext) {
-	_this.setEvents(test.CT(getStringArg(ctx.GetChildren())))
+	customType := parseSmallUint(getTokenText(ctx.GetChild(1)))
+	children := ctx.GetChildren()[1:]
+	_this.setEvents(test.CT(customType, getStringArg(children)))
 }
 func (_this *eventListener) ExitEventEdge(ctx *parser.EventEdgeContext) {
 	_this.setEvents(test.EDGE())
@@ -726,15 +732,11 @@ func (_this *eventListener) ExitEventMedia(ctx *parser.EventMediaContext) {
 	for j := 2; j < len(children); j++ {
 		child := children[j]
 		if c2, ok := child.(antlr.TerminalNode); ok {
-			elements = append(elements, uint8(parseSmallUint(c2.GetText())))
+			elements = append(elements, uint8(parseSmallUintX(c2.GetText())))
 		}
 	}
 	_this.setEvents(
-		test.BMEDIA(),
-		test.ACL(uint64(len(mediaType))),
-		test.ADT(mediaType),
-		test.ACL(uint64(len(elements))),
-		test.ADU8(elements),
+		test.MEDIA(mediaType, elements),
 	)
 }
 func (_this *eventListener) ExitEventNode(ctx *parser.EventNodeContext) {

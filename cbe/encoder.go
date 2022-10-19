@@ -29,8 +29,8 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/conversions"
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
@@ -393,8 +393,37 @@ func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string
 	}
 }
 
+func (_this *Encoder) OnMedia(mediaType string, value []byte) {
+	_this.OnMediaBegin(mediaType)
+	_this.writer.WriteArrayChunkHeader(uint64(len(value)), 0)
+	_this.writer.WriteBytes(value)
+}
+
+func (_this *Encoder) OnCustomBinary(customType uint64, value []byte) {
+	_this.writer.WriteType(cbeTypeCustomType)
+	_this.writer.WriteULEB(uint64(customType))
+	_this.writer.WriteArrayChunkHeader(uint64(len(value)), 0)
+	_this.writer.WriteBytes(value)
+}
+
+func (_this *Encoder) OnCustomText(customType uint64, value string) {
+	panic(fmt.Errorf("CBE encoder cannot encode custom text"))
+}
+
 func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
 	_this.writer.WriteArrayHeader(arrayType)
+}
+
+func (_this *Encoder) OnMediaBegin(mediaType string) {
+	_this.writer.WriteType(cbeTypePlane7f)
+	_this.writer.WriteType(cbeTypeMedia)
+	_this.writer.WriteULEB(uint64(len(mediaType)))
+	_this.writer.WriteString(mediaType)
+}
+
+func (_this *Encoder) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	_this.writer.WriteType(cbeTypeCustomType)
+	_this.writer.WriteULEB(uint64(customType))
 }
 
 func (_this *Encoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
@@ -436,7 +465,7 @@ func (_this *Encoder) OnEdge() {
 	_this.writer.WriteType(cbeTypeEdge)
 }
 
-func (_this *Encoder) OnEnd() {
+func (_this *Encoder) OnEndContainer() {
 	_this.writer.WriteType(cbeTypeEndContainer)
 }
 

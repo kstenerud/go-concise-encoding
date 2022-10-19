@@ -22,8 +22,9 @@ package cte
 
 import (
 	"math"
+	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
@@ -87,8 +88,6 @@ func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 	arrayTypeAsString := string(arrayType)
 	ctx.Stream.SkipWhitespace()
 	switch arrayTypeAsString {
-	case "c":
-		decodeCustom(ctx)
 	case "u":
 		decodeArrayUID(ctx)
 	case "b":
@@ -169,81 +168,86 @@ func advanceAndDecodeTypedArrayBegin(ctx *DecoderContext) {
 		decodeArrayF64(ctx, "float", Token.DecodeSmallFloat)
 	case "f64x":
 		decodeArrayF64(ctx, "hex", Token.DecodeSmallHexFloat)
-	case "m":
-		decodeMedia(ctx)
+	case "", "c":
+		ctx.Errorf("%v: Malformed array type", arrayType)
 	default:
+		if arrayTypeAsString[0] == 'c' {
+			decodeCustomType(ctx, arrayTypeAsString)
+			break
+		}
+		if strings.ContainsRune(arrayTypeAsString, '/') {
+			decodeMedia(ctx, arrayTypeAsString)
+			break
+		}
 		ctx.Errorf("%v: Unknown array type", arrayType)
 	}
 	ctx.AwaitStructuralWS()
 }
 
-func decodeMedia(ctx *DecoderContext) {
-	token := ctx.Stream.ReadWhitespaceSeparatedToken()
-	if len(token) == 0 {
-		ctx.Errorf("missing media type")
+func decodeMedia(ctx *DecoderContext, mediaType string) {
+	// TODO: Better media type validation
+
+	ctx.BeginArray("string", events.ArrayTypeMedia, 1)
+	if contents, ok := tryReadStringlikeArray(ctx, "media"); ok {
+		ctx.EventReceiver.OnMedia(mediaType, contents)
+		return
 	}
 
 	ctx.BeginArray("hex", events.ArrayTypeMedia, 1)
-	ctx.EventReceiver.OnArrayBegin(ctx.ArrayType)
-	ctx.EventReceiver.OnArrayChunk(uint64(len(token)), false)
-	ctx.EventReceiver.OnArrayData(token)
-
-	ctx.Stream.SkipWhitespace()
-	if ctx.Stream.PeekByteAllowEOF() == '"' {
-		ctx.Stream.AdvanceByte()
-		bytes := ctx.Stream.ReadQuotedString()
-		ctx.Stream.SkipWhitespace()
-		if ch := ctx.Stream.ReadByteNoEOF(); ch != '|' {
-			ctx.Errorf("Expected '|' but got '%c'", ch)
-		}
-		ctx.EventReceiver.OnArrayChunk(uint64(len(bytes)), false)
-		ctx.EventReceiver.OnArrayData(bytes)
-		return
-	}
-
-	// TODO: Buffered read of media data
-	for {
-		ctx.Stream.SkipWhitespace()
-		if tryDecodeCommentInArray(ctx) {
-			continue
-		}
-		token := ctx.Stream.ReadToken()
-		if len(token) == 0 {
-			break
-		}
-		v, _, decodedCount := token.DecodeSmallHexUint(ctx.TextPos)
-		token[decodedCount:].AssertAtEnd(ctx.TextPos, ctx.ArrayDigitType)
-		if v > common.Uint8Max {
-			ctx.Errorf("%v value too big for array type", ctx.ArrayDigitType)
-		}
-		ctx.Scratch = append(ctx.Scratch, uint8(v))
-	}
-
-	switch ctx.Stream.ReadByteNoEOF() {
-	case '|':
-		ctx.EventReceiver.OnArrayChunk(uint64(len(ctx.Scratch)), false)
-		if len(ctx.Scratch) > 0 {
-			ctx.EventReceiver.OnArrayData(ctx.Scratch)
-		}
-	default:
-		ctx.Errorf("Expected %v digits", ctx.ArrayDigitType)
-	}
+	contents := readHexByteArray(ctx, events.ArrayTypeMedia, "media")
+	ctx.EventReceiver.OnMedia(mediaType, contents)
 }
 
-func decodeCustom(ctx *DecoderContext) {
-	ctx.Stream.SkipWhitespace()
-	if ctx.Stream.PeekByteNoEOF() == '"' {
-		ctx.Stream.AdvanceByte()
-		bytes := ctx.Stream.ReadQuotedString()
-		ctx.Stream.SkipWhitespace()
-		if ctx.Stream.ReadByteNoEOF() != '|' {
-			ctx.UnexpectedChar("custom text")
-		}
-		ctx.EventReceiver.OnArray(events.ArrayTypeCustomText, uint64(len(bytes)), bytes)
+func decodeCustomType(ctx *DecoderContext, arrayTypeAsString string) {
+	if len(arrayTypeAsString) == 1 {
+		ctx.Errorf("%v: Missing custom type", arrayTypeAsString)
+	}
+	customType := stringToPlainUint(ctx, arrayTypeAsString[1:])
+
+	if stringContents, ok := tryReadStringlikeArray(ctx, "custom text"); ok {
+		ctx.EventReceiver.OnCustomText(customType, string(stringContents))
 		return
 	}
 
-	ctx.BeginArray("hex", events.ArrayTypeCustomBinary, 1)
+	byteContents := readHexByteArray(ctx, events.ArrayTypeCustomBinary, "custom binary")
+	ctx.EventReceiver.OnCustomBinary(customType, byteContents)
+}
+
+func stringToPlainUint(ctx *DecoderContext, str string) uint64 {
+	accum := uint64(0)
+	for _, c := range str {
+		if c < '0' || c > '9' {
+			ctx.Errorf("%v: Non-numeric digit encountered", str)
+		}
+		accum = accum*10 + uint64(c-'0')
+		if accum > 0xffffffff {
+			ctx.Errorf("%v: Value out of range", str)
+		}
+	}
+	return accum
+}
+
+func tryReadStringlikeArray(ctx *DecoderContext, decoding string) (contents []byte, ok bool) {
+	ctx.Stream.SkipWhitespace()
+	if ctx.Stream.PeekByteNoEOF() != '"' {
+		return []byte{}, false
+	}
+	ctx.Stream.AdvanceByte()
+	return readStringlikeArray(ctx, decoding), true
+}
+
+func readStringlikeArray(ctx *DecoderContext, decoding string) []byte {
+	// Assumption: Last byte read was the opening double-quote
+	bytes := ctx.Stream.ReadQuotedString()
+	ctx.Stream.SkipWhitespace()
+	if ctx.Stream.ReadByteNoEOF() != '|' {
+		ctx.UnexpectedChar(decoding)
+	}
+	return bytes
+}
+
+func readHexByteArray(ctx *DecoderContext, arrayType events.ArrayType, decoding string) []byte {
+	ctx.BeginArray("hex", arrayType, 1)
 	for {
 		ctx.Stream.SkipWhitespace()
 		if tryDecodeCommentInArray(ctx) {
@@ -260,7 +264,10 @@ func decodeCustom(ctx *DecoderContext) {
 		}
 		ctx.Scratch = append(ctx.Scratch, uint8(v))
 	}
-	finishTypedArray(ctx)
+	if ctx.Stream.ReadByteNoEOF() != '|' {
+		ctx.UnexpectedChar(decoding)
+	}
+	return ctx.Scratch
 }
 
 func decodeArrayBoolean(ctx *DecoderContext) {

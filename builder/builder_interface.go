@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 )
@@ -92,14 +92,6 @@ func (_this *interfaceBuilder) BuildFromUID(ctx *Context, value []byte, dst refl
 
 func (_this *interfaceBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
 	switch arrayType {
-	case events.ArrayTypeCustomBinary:
-		if err := ctx.CustomBinaryBuildFunction(value, dst); err != nil {
-			PanicBuildFromCustomBinary(_this, value, dst.Type(), err)
-		}
-	case events.ArrayTypeCustomText:
-		if err := ctx.CustomTextBuildFunction(value, dst); err != nil {
-			PanicBuildFromCustomText(_this, value, dst.Type(), err)
-		}
 	case events.ArrayTypeUint8:
 		dst.Set(reflect.ValueOf(common.CloneBytes(value)))
 	case events.ArrayTypeString:
@@ -114,10 +106,6 @@ func (_this *interfaceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 
 func (_this *interfaceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	switch arrayType {
-	case events.ArrayTypeCustomText:
-		if err := ctx.CustomTextBuildFunction([]byte(value), dst); err != nil {
-			PanicBuildFromCustomText(_this, []byte(value), dst.Type(), err)
-		}
 	case events.ArrayTypeString:
 		dst.Set(reflect.ValueOf(value))
 	case events.ArrayTypeResourceID:
@@ -125,6 +113,17 @@ func (_this *interfaceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType 
 	default:
 		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))
 	}
+	return dst
+}
+
+func (_this *interfaceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	ctx.TryBuildFromCustomBinary(_this, customType, data, dst)
+
+	return dst
+}
+
+func (_this *interfaceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	ctx.TryBuildFromCustomText(_this, customType, data, dst)
 	return dst
 }
 

@@ -25,9 +25,7 @@
 // consumes data events to produce a document.
 package cbe
 
-import (
-	"github.com/kstenerud/go-concise-encoding/events"
-)
+import "github.com/kstenerud/go-concise-encoding/ce/events"
 
 // ============================================================================
 

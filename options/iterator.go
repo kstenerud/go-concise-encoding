@@ -32,7 +32,7 @@ import (
 // See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
-type ConvertToCustomFunction func(v reflect.Value) (asBytes []byte, err error)
+type ConvertToCustomFunction func(v reflect.Value) (customType uint64, asBytes []byte, err error)
 
 type IteratorSessionOptions struct {
 

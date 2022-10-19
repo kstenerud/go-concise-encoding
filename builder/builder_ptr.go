@@ -28,7 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 type ptrBuilder struct {
@@ -133,6 +133,20 @@ func (_this *ptrBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 func (_this *ptrBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	ptr := _this.newElem()
 	_this.elemGenerator(ctx).BuildFromStringlikeArray(ctx, arrayType, value, ptr.Elem())
+	dst.Set(ptr)
+	return dst
+}
+
+func (_this *ptrBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, value []byte, dst reflect.Value) reflect.Value {
+	ptr := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromCustomBinary(ctx, customType, value, ptr.Elem())
+	dst.Set(ptr)
+	return dst
+}
+
+func (_this *ptrBuilder) BuildFromCustomText(ctx *Context, customType uint64, value string, dst reflect.Value) reflect.Value {
+	ptr := _this.newElem()
+	_this.elemGenerator(ctx).BuildFromCustomText(ctx, customType, value, ptr.Elem())
 	dst.Set(ptr)
 	return dst
 }

@@ -23,7 +23,7 @@
 package rules
 
 import (
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 type MarkedObjectKeyableRule struct{}

@@ -27,11 +27,12 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 // ----------------------------------------------------------------------------
@@ -67,97 +68,119 @@ func (_this Events) AreEquivalentTo(that Events) bool {
 	return AreEventsEquivalent(_this, that)
 }
 
-var NoValue interface{}
-
-type EventWithValue struct {
+type BaseEvent struct {
 	shortName   string
 	invocation  EventInvocation
-	value       interface{}
+	values      []interface{}
 	comparable  string
 	stringified string
 }
 
-func ConstructEventWithValue(shortName string, value interface{}, invocation EventInvocation) EventWithValue {
-	comparable := shortName
-	stringified := shortName
-	if value != NoValue {
-		switch v := value.(type) {
-		case float32:
-			asInt := int(v)
-			if float32(asInt) == v {
-				comparable = fmt.Sprintf("%v=%v", shortName, asInt)
-			} else {
-				comparable = fmt.Sprintf("%v=%x", shortName, v)
-			}
-		case float64:
-			asInt := int(v)
-			if float64(asInt) == v {
-				comparable = fmt.Sprintf("%v=%v", shortName, asInt)
-			} else {
-				comparable = fmt.Sprintf("%v=%x", shortName, v)
-			}
-		case *big.Float:
-			if v.IsInt() {
-				bi := &big.Int{}
-				v.Int(bi)
-				comparable = fmt.Sprintf("%v=%v", shortName, bi)
-			} else {
-				comparable = fmt.Sprintf("%v=%v", shortName, v.Text('x', -1))
-			}
-		case *apd.Decimal:
-			comparable = fmt.Sprintf("%v=%v", shortName, v.Text('g'))
-		default:
-			comparable = fmt.Sprintf("%v=%v", shortName, value)
-		}
-		stringified = fmt.Sprintf("%v=%v", shortName, stringifyParam(value))
-	}
-
-	return EventWithValue{
-		shortName:   shortName,
-		invocation:  invocation,
-		value:       value,
-		comparable:  comparable,
-		stringified: stringified,
-	}
-}
-func (_this *EventWithValue) Invoke(receiver events.DataEventReceiver) { _this.invocation(receiver) }
-func (_this *EventWithValue) Name() string                             { return _this.shortName }
-func (_this *EventWithValue) String() string                           { return _this.stringified }
-func (_this *EventWithValue) Comparable() string                       { return _this.comparable }
-func (_this *EventWithValue) IsEquivalentTo(that Event) bool {
+func (_this *BaseEvent) Invoke(receiver events.DataEventReceiver) { _this.invocation(receiver) }
+func (_this *BaseEvent) Name() string                             { return _this.shortName }
+func (_this *BaseEvent) String() string                           { return _this.stringified }
+func (_this *BaseEvent) Comparable() string                       { return _this.comparable }
+func (_this *BaseEvent) IsEquivalentTo(that Event) bool {
 	return _this.Comparable() == that.Comparable()
 }
 
+func ConstructEvent(shortName string, invocation EventInvocation, values ...interface{}) BaseEvent {
+	return BaseEvent{
+		shortName:   shortName,
+		invocation:  invocation,
+		values:      values,
+		comparable:  constructComparable(shortName, values...),
+		stringified: constructStringified(shortName, values...),
+	}
+}
+
+func constructComparable(shortName string, values ...interface{}) string {
+	switch len(values) {
+	case 0:
+		return shortName
+	case 1:
+		return fmt.Sprintf("%v=%v", shortName, paramToComparable(values[0]))
+	case 2:
+		return fmt.Sprintf("%v=%v %v", shortName, paramToComparable(values[0]), paramToComparable(values[1]))
+	default:
+		panic(fmt.Errorf("expected 0, 1, or 2 values but got %v", len(values)))
+	}
+}
+
+func constructStringified(shortName string, values ...interface{}) string {
+	switch len(values) {
+	case 0:
+		return shortName
+	case 1:
+		return fmt.Sprintf("%v=%v", shortName, stringifyParam(values[0]))
+	case 2:
+		return fmt.Sprintf("%v=%v %v", shortName, stringifyParam(values[0]), stringifyParam(values[1]))
+	default:
+		panic(fmt.Errorf("expected 0, 1, or 2 values but got %v", len(values)))
+	}
+}
+
+func paramToComparable(value interface{}) string {
+	switch v := value.(type) {
+	case float32:
+		asInt := int64(v)
+		if float32(asInt) == v {
+			return strconv.FormatInt(asInt, 10)
+		} else {
+			return strconv.FormatFloat(float64(v), 'x', -1, 32)
+		}
+	case float64:
+		asInt := int64(v)
+		if float64(asInt) == v {
+			return strconv.FormatInt(asInt, 10)
+		} else {
+			return strconv.FormatFloat(float64(v), 'x', -1, 64)
+		}
+	case *big.Float:
+		if v.IsInt() {
+			bi := &big.Int{}
+			v.Int(bi)
+			return bi.String()
+		} else {
+			return v.Text('x', -1)
+		}
+	case *apd.Decimal:
+		return v.Text('g')
+	default:
+		return fmt.Sprintf("%v", value)
+	}
+}
+
 func (_this *EventUID) String() string {
-	if _this.value == NoValue {
+	if len(_this.values) == 0 {
 		return _this.shortName
 	}
-	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUID(_this.value.([]byte)))
+	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUID(_this.values[0].([]byte)))
 }
 func (_this *EventUID) IsEquivalentTo(that Event) bool {
 	return _this.Comparable() == that.Comparable()
 }
 
 func (_this *EventArrayUID) String() string {
-	if _this.value == NoValue {
+	if len(_this.values) == 0 {
 		return _this.shortName
 	}
-	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUIDArray(_this.value.([][]byte)))
+	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUIDArray(_this.values[0].([][]byte)))
 }
 
 func (_this *EventArrayDataUID) String() string {
-	if _this.value == NoValue {
+	if len(_this.values) == 0 {
 		return _this.shortName
 	}
-	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUIDArray(_this.value.([][]byte)))
+	return fmt.Sprintf("%v=%v", _this.shortName, stringifyUIDArray(_this.values[0].([][]byte)))
 }
 
 func (_this *EventArrayDataText) IsEquivalentTo(that Event) bool {
 	switch v := that.(type) {
 	case *EventArrayDataText:
-		return bytes.Equal([]byte(_this.value.(string)), []byte(v.value.(string)))
+		return bytes.Equal([]byte(_this.values[0].(string)), []byte(v.values[0].(string)))
 	case *EventArrayDataUint8:
-		return bytes.Equal([]byte(_this.value.(string)), v.value.([]byte))
+		return bytes.Equal([]byte(_this.values[0].(string)), v.values[0].([]byte))
 	default:
 		return false
 	}
@@ -166,30 +189,53 @@ func (_this *EventArrayDataText) IsEquivalentTo(that Event) bool {
 func (_this *EventArrayDataUint8) IsEquivalentTo(that Event) bool {
 	switch v := that.(type) {
 	case *EventArrayDataText:
-		return bytes.Equal(_this.value.([]byte), []byte(v.value.(string)))
+		return bytes.Equal(_this.values[0].([]byte), []byte(v.values[0].(string)))
 	case *EventArrayDataUint8:
-		return bytes.Equal(_this.value.([]byte), v.value.([]byte))
+		return bytes.Equal(_this.values[0].([]byte), v.values[0].([]byte))
 	default:
 		return false
 	}
 }
 
 func (_this *EventCustomBinary) String() string {
-	if _this.value == NoValue {
-		return _this.shortName
-	}
-	sb := strings.Builder{}
-	for i, b := range _this.value.([]byte) {
-		if i > 0 {
-			sb.WriteByte(' ')
+	switch len(_this.values) {
+	case 1:
+		return fmt.Sprintf("%v=%v", _this.shortName, _this.values[0])
+	case 2:
+		sb := strings.Builder{}
+		for i, b := range _this.values[1].([]byte) {
+			if i > 0 {
+				sb.WriteByte(' ')
+			}
+			sb.WriteString(fmt.Sprintf("%02x", b))
 		}
-		sb.WriteString(fmt.Sprintf("%02x", b))
-	}
 
-	return fmt.Sprintf("%v=%v", _this.shortName, sb.String())
+		return fmt.Sprintf("%v=%v %v", _this.shortName, _this.values[0], sb.String())
+	default:
+		panic(fmt.Errorf("expected 1 or 2 values but got %v", len(_this.values)))
+	}
 }
 
-type EventNumeric struct{ EventWithValue }
+func (_this *EventMedia) String() string {
+	switch len(_this.values) {
+	case 1:
+		return fmt.Sprintf("%v=%v", _this.shortName, _this.values[0])
+	case 2:
+		sb := strings.Builder{}
+		for i, b := range _this.values[1].([]byte) {
+			if i > 0 {
+				sb.WriteByte(' ')
+			}
+			sb.WriteString(fmt.Sprintf("%02x", b))
+		}
+
+		return fmt.Sprintf("%v=%v %v", _this.shortName, _this.values[0], sb.String())
+	default:
+		panic(fmt.Errorf("expected 1 or 2 values but got %v", len(_this.values)))
+	}
+}
+
+type EventNumeric struct{ BaseEvent }
 
 func N(value interface{}) Event {
 	if value == nil {
@@ -260,7 +306,7 @@ func N(value interface{}) Event {
 	}
 
 	return &EventNumeric{
-		EventWithValue: ConstructEventWithValue("n", value, func(receiver events.DataEventReceiver) {
+		BaseEvent: ConstructEvent("n", func(receiver events.DataEventReceiver) {
 			switch v := value.(type) {
 			case int:
 				receiver.OnInt(int64(v))
@@ -297,12 +343,12 @@ func N(value interface{}) Event {
 			default:
 				panic(fmt.Errorf("unexpected numeric type %v for value %v", reflect.TypeOf(value), value))
 			}
-		}),
+		}, value),
 	}
 }
 
 func (_this *EventNumeric) String() string {
-	if v, ok := _this.value.(compact_float.DFloat); ok {
+	if v, ok := _this.values[0].(compact_float.DFloat); ok {
 		switch v {
 		case compact_float.Infinity():
 			return fmt.Sprintf("%v=inf", _this.shortName)
@@ -314,7 +360,7 @@ func (_this *EventNumeric) String() string {
 			return fmt.Sprintf("%v=snan", _this.shortName)
 		}
 	}
-	return _this.EventWithValue.String()
+	return _this.BaseEvent.String()
 }
 
 func NAN() Event  { return N(compact_float.QuietNaN()) }

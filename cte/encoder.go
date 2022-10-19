@@ -21,13 +21,14 @@
 package cte
 
 import (
+	"fmt"
 	"io"
 	"math/big"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -189,9 +190,44 @@ func (_this *EncoderEventReceiver) OnStringlikeArray(arrayType events.ArrayType,
 	_this.context.AfterValue()
 }
 
+func (_this *EncoderEventReceiver) OnMedia(mediaType string, data []byte) {
+	_this.context.BeforeValue()
+	_this.context.EncodeMedia(mediaType, data)
+	_this.context.AfterValue()
+}
+
+func (_this *EncoderEventReceiver) OnCustomBinary(customType uint64, data []byte) {
+	_this.context.BeforeValue()
+	_this.context.EncodeCustomBinary(customType, data)
+	_this.context.AfterValue()
+}
+
+func (_this *EncoderEventReceiver) OnCustomText(customType uint64, data string) {
+	_this.context.BeforeValue()
+	_this.context.EncodeCustomText(customType, data)
+	_this.context.AfterValue()
+}
+
 func (_this *EncoderEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	_this.context.BeforeValue()
 	_this.context.BeginArray(arrayType, func() { _this.context.AfterValue() })
+}
+
+func (_this *EncoderEventReceiver) OnMediaBegin(mediaType string) {
+	_this.context.BeforeValue()
+	_this.context.BeginMedia(mediaType, func() { _this.context.AfterValue() })
+}
+
+func (_this *EncoderEventReceiver) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	_this.context.BeforeValue()
+	switch arrayType {
+	case events.ArrayTypeCustomBinary:
+		_this.context.BeginCustomBinary(customType, func() { _this.context.AfterValue() })
+	case events.ArrayTypeCustomText:
+		_this.context.BeginCustomText(customType, func() { _this.context.AfterValue() })
+	default:
+		panic(fmt.Errorf("BUG: EncoderEventReceiver.OnCustomBegin: Cannot handle type %v", arrayType))
+	}
 }
 
 func (_this *EncoderEventReceiver) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
@@ -249,7 +285,7 @@ func (_this *EncoderEventReceiver) OnNode() {
 	_this.context.Stack(nodeValueDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnEnd() {
+func (_this *EncoderEventReceiver) OnEndContainer() {
 	_this.context.EndContainer()
 }
 

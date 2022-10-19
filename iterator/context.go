@@ -23,7 +23,7 @@ package iterator
 import (
 	"reflect"
 
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
 // Common function signatures

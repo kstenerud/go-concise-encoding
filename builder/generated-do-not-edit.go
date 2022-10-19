@@ -26,12 +26,18 @@ package builder
 import (
 	"math/big"
 	"reflect"
-	"github.com/kstenerud/go-concise-encoding/events"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/cockroachdb/apd/v2"
 	"github.com/kstenerud/go-compact-float"
 	"github.com/kstenerud/go-compact-time"
 )
 
+func (_this *arrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *arrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *arrayBuilder) BuildBeginMapContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginMapContents")
 }
@@ -55,6 +61,12 @@ func (_this *bigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType even
 }
 func (_this *bigDecimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *bigDecimalFloatBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *bigDecimalFloatBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *bigDecimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -110,6 +122,12 @@ func (_this *bigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.Arra
 func (_this *bigFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *bigFloatBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *bigFloatBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *bigFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -163,6 +181,12 @@ func (_this *bigIntBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 }
 func (_this *bigIntBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *bigIntBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *bigIntBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *bigIntBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -236,6 +260,12 @@ func (_this *boolBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 func (_this *boolBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *boolBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *boolBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *boolBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -308,6 +338,12 @@ func (_this *compactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.A
 func (_this *compactTimeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *compactTimeBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *compactTimeBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *compactTimeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -374,6 +410,9 @@ func (_this *customBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.De
 func (_this *customBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
+func (_this *customBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType, value []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromArray")
+}
 func (_this *customBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
@@ -431,6 +470,12 @@ func (_this *decimalFloatBuilder) BuildFromArray(ctx *Context, arrayType events.
 func (_this *decimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *decimalFloatBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *decimalFloatBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *decimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -484,6 +529,12 @@ func (_this *floatBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 }
 func (_this *floatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *floatBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *floatBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *floatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -557,6 +608,12 @@ func (_this *float32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst r
 func (_this *float32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *float32ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *float32ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *float32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -622,6 +679,12 @@ func (_this *float32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst r
 }
 func (_this *float32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *float32SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *float32SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *float32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -692,6 +755,12 @@ func (_this *float64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst r
 func (_this *float64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *float64ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *float64ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *float64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -757,6 +826,12 @@ func (_this *float64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst r
 }
 func (_this *float64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *float64SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *float64SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *float64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -839,6 +914,12 @@ func (_this *intBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 func (_this *intBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *intBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *intBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *intBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -911,6 +992,12 @@ func (_this *int8ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst refl
 func (_this *int8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *int8ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int8ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *int8ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -976,6 +1063,12 @@ func (_this *int8SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst refl
 }
 func (_this *int8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *int8SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int8SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *int8SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1046,6 +1139,12 @@ func (_this *int16ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 func (_this *int16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *int16ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int16ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *int16ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1111,6 +1210,12 @@ func (_this *int16SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 }
 func (_this *int16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *int16SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int16SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *int16SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1181,6 +1286,12 @@ func (_this *int32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 func (_this *int32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *int32ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int32ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *int32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1246,6 +1357,12 @@ func (_this *int32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 }
 func (_this *int32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *int32SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int32SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *int32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1316,6 +1433,12 @@ func (_this *int64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 func (_this *int64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *int64ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int64ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *int64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1382,6 +1505,12 @@ func (_this *int64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 func (_this *int64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *int64SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *int64SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *int64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1432,6 +1561,12 @@ func (_this *mapBuilder) BuildBeginEdgeContents(ctx *Context) {
 }
 func (_this *structTemplateBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
+}
+func (_this *structTemplateBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *structTemplateBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *structTemplateBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1505,6 +1640,12 @@ func (_this *pBigDecimalFloatBuilder) BuildFromArray(ctx *Context, arrayType eve
 func (_this *pBigDecimalFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *pBigDecimalFloatBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *pBigDecimalFloatBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *pBigDecimalFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1556,6 +1697,12 @@ func (_this *pBigFloatBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 func (_this *pBigFloatBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *pBigFloatBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *pBigFloatBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *pBigFloatBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1606,6 +1753,12 @@ func (_this *pBigIntBuilder) BuildFromArray(ctx *Context, arrayType events.Array
 }
 func (_this *pBigIntBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *pBigIntBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *pBigIntBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *pBigIntBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1678,6 +1831,12 @@ func (_this *pCompactTimeBuilder) BuildFromArray(ctx *Context, arrayType events.
 }
 func (_this *pCompactTimeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *pCompactTimeBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *pCompactTimeBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *pCompactTimeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1760,6 +1919,12 @@ func (_this *pRidBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Deci
 func (_this *pRidBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
 }
+func (_this *pRidBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *pRidBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *pRidBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1834,6 +1999,12 @@ func (_this *stringBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.De
 }
 func (_this *stringBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
+}
+func (_this *stringBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *stringBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *stringBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -1919,6 +2090,12 @@ func (_this *timeBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 func (_this *timeBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *timeBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *timeBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *timeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -1987,6 +2164,12 @@ func (_this *uintBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTyp
 }
 func (_this *uintBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *uintBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uintBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *uintBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -2060,6 +2243,12 @@ func (_this *uint8ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 func (_this *uint8ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *uint8ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint8ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *uint8ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -2125,6 +2314,12 @@ func (_this *uint8SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst ref
 }
 func (_this *uint8SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *uint8SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint8SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *uint8SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -2195,6 +2390,12 @@ func (_this *uint16ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst re
 func (_this *uint16ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *uint16ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint16ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *uint16ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -2260,6 +2461,12 @@ func (_this *uint16SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst re
 }
 func (_this *uint16SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *uint16SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint16SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *uint16SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -2330,6 +2537,12 @@ func (_this *uint32ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst re
 func (_this *uint32ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *uint32ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint32ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *uint32ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -2395,6 +2608,12 @@ func (_this *uint32SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst re
 }
 func (_this *uint32SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *uint32SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint32SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *uint32SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -2465,6 +2684,12 @@ func (_this *uint64ArrayBuilder) BuildFromUID(ctx *Context, value []byte, dst re
 func (_this *uint64ArrayBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *uint64ArrayBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint64ArrayBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *uint64ArrayBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -2531,6 +2756,12 @@ func (_this *uint64SliceBuilder) BuildFromUID(ctx *Context, value []byte, dst re
 func (_this *uint64SliceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
 }
+func (_this *uint64SliceBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uint64SliceBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
+}
 func (_this *uint64SliceBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
@@ -2596,6 +2827,12 @@ func (_this *ridBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decim
 }
 func (_this *ridBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromUID")
+}
+func (_this *ridBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *ridBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *ridBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -2668,6 +2905,12 @@ func (_this *uidBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayType
 }
 func (_this *uidBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *uidBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *uidBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *uidBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
@@ -2743,6 +2986,12 @@ func (_this *mediaBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayTy
 }
 func (_this *mediaBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events.ArrayType, value string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromStringlikeArray")
+}
+func (_this *mediaBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
+}
+func (_this *mediaBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
 func (_this *mediaBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromTime")
