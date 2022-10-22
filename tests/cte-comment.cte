@@ -113,20 +113,18 @@ multiline*/
 */
 1^"
                 }
-                {"cte"="//\r\n1"  "events"=["cs=" "n=1"] "lossyCTE"=true}
-                {"cte"="// \r\n1"  "events"=["cs= " "n=1"] "lossyCTE"=true}
-                {"cte"="// test\r\n1"  "events"=["cs= test" "n=1"] "lossyCTE"=true}
+                {"from_cte"="//\r\n1"  "events"=["cs=" "n=1"] }
+                {"from_cte"="// \r\n1"  "events"=["cs= " "n=1"] }
+                {"from_cte"="// test\r\n1"  "events"=["cs= test" "n=1"] }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 /* x */1^"
                     "events" = ["cm= x " "n=1"]
-                    "lossyCTE"=true
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 /* x */ 1^"
                     "events" = ["cm= x " "n=1"]
-                    "lossyCTE"=true
                 }
             ]
             "mustFail" = [

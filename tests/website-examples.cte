@@ -13,8 +13,7 @@ c0
             "name" = "Numeric Types"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte" = "\.%%%%
+                    "from_cte" = "\.%%%%
 {
     "boolean"       = true
     "binary int"    = -0b10001011
@@ -83,8 +82,7 @@ c0
             "name" = "String Types"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte" = "\.%%%%
+                    "from_cte" = "\.%%%%
 {
     "string" = "Strings support escape sequences: \n \t \+1f415."
     "url"    = @"https://example.com/"
@@ -164,8 +162,7 @@ c0
             "name" = "Containers"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte" = "\.%%%%
+                    "from_cte" = "\.%%%%
 {
     "list"          = [1 2.5 "a string"]
     "map"           = {"one"=1 2="two" "today"=2020-09-10}
@@ -267,8 +264,7 @@ c0
             "name" = "Graphs"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte" = "\.%%%%
+                    "from_cte" = "\.%%%%
 {
     "vertices" = [
         &a:{}

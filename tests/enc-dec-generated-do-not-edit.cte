@@ -108,10 +108,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 94 02 01|
-                    "CTE" = "|b 1|"
+                    "ToCBE" = |u8x 94 02 01|
+                    "ToCTE" = "|b 1|"
                     "Events" = [
                         "bab"
                         "acl=1"
@@ -119,10 +117,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e8 02 80 3f|
-                    "CTE" = "|f16x 1|"
+                    "ToCBE" = |u8x 7f e8 02 80 3f|
+                    "ToCTE" = "|f16x 1|"
                     "Events" = [
                         "baf16"
                         "acl=1"
@@ -130,10 +126,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e9 02 00 00 80 3f|
-                    "CTE" = "|f32x 1|"
+                    "ToCBE" = |u8x 7f e9 02 00 00 80 3f|
+                    "ToCTE" = "|f32x 1|"
                     "Events" = [
                         "baf32"
                         "acl=1"
@@ -141,10 +135,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f ea 02 00 00 00 00 00 00 f0 3f|
-                    "CTE" = "|f64x 1|"
+                    "ToCBE" = |u8x 7f ea 02 00 00 00 00 00 00 f0 3f|
+                    "ToCTE" = "|f64x 1|"
                     "Events" = [
                         "baf64"
                         "acl=1"
@@ -152,10 +144,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e3 02 01 00|
-                    "CTE" = "|i16 1|"
+                    "ToCBE" = |u8x 7f e3 02 01 00|
+                    "ToCTE" = "|i16 1|"
                     "Events" = [
                         "bai16"
                         "acl=1"
@@ -163,10 +153,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e5 02 01 00 00 00|
-                    "CTE" = "|i32 1|"
+                    "ToCBE" = |u8x 7f e5 02 01 00 00 00|
+                    "ToCTE" = "|i32 1|"
                     "Events" = [
                         "bai32"
                         "acl=1"
@@ -174,10 +162,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e7 02 01 00 00 00 00 00 00 00|
-                    "CTE" = "|i64 1|"
+                    "ToCBE" = |u8x 7f e7 02 01 00 00 00 00 00 00 00|
+                    "ToCTE" = "|i64 1|"
                     "Events" = [
                         "bai64"
                         "acl=1"
@@ -185,10 +171,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e1 02 01|
-                    "CTE" = "|i8 1|"
+                    "ToCBE" = |u8x 7f e1 02 01|
+                    "ToCTE" = "|i8 1|"
                     "Events" = [
                         "bai8"
                         "acl=1"
@@ -196,10 +180,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "CTE" = "|u 00000000-0000-0000-0000-000000000000|"
+                    "ToCBE" = |u8x 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
+                    "ToCTE" = "|u 00000000-0000-0000-0000-000000000000|"
                     "Events" = [
                         "bau"
                         "acl=1"
@@ -207,10 +189,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e2 02 01 00|
-                    "CTE" = "|u16 1|"
+                    "ToCBE" = |u8x 7f e2 02 01 00|
+                    "ToCTE" = "|u16 1|"
                     "Events" = [
                         "bau16"
                         "acl=1"
@@ -218,10 +198,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e4 02 01 00 00 00|
-                    "CTE" = "|u32 1|"
+                    "ToCBE" = |u8x 7f e4 02 01 00 00 00|
+                    "ToCTE" = "|u32 1|"
                     "Events" = [
                         "bau32"
                         "acl=1"
@@ -229,10 +207,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f e6 02 01 00 00 00 00 00 00 00|
-                    "CTE" = "|u64 1|"
+                    "ToCBE" = |u8x 7f e6 02 01 00 00 00 00 00 00 00|
+                    "ToCTE" = "|u64 1|"
                     "Events" = [
                         "bau64"
                         "acl=1"
@@ -240,10 +216,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 93 02 01|
-                    "CTE" = "|u8 1|"
+                    "ToCBE" = |u8x 93 02 01|
+                    "ToCTE" = "|u8 1|"
                     "Events" = [
                         "bau8"
                         "acl=1"
@@ -251,10 +225,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 92 00 02 01|
-                    "CTE" = "|c0 01|"
+                    "ToCBE" = |u8x 92 00 02 01|
+                    "ToCTE" = "|c0 01|"
                     "Events" = [
                         "bcb=0"
                         "acl=1"
@@ -262,10 +234,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f3 03 61 2f 62 02 01|
-                    "CTE" = "|a/b 01|"
+                    "ToCBE" = |u8x 7f f3 03 61 2f 62 02 01|
+                    "ToCTE" = "|a/b 01|"
                     "Events" = [
                         "bmedia=a/b"
                         "acl=1"
@@ -273,10 +243,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 91 02 61|
-                    "CTE" = "@\"a\""
+                    "ToCBE" = |u8x 91 02 61|
+                    "ToCTE" = "@\"a\""
                     "Events" = [
                         "brid"
                         "acl=1"
@@ -284,10 +252,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 90 02 61|
-                    "CTE" = "\"a\""
+                    "ToCBE" = |u8x 90 02 61|
+                    "ToCTE" = "\"a\""
                     "Events" = [
                         "bs"
                         "acl=1"
@@ -302,8 +268,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x ff|
+                    "ToCBE" = |u8x ff|
                     "CTE" = "/*a*/
 -1"
                     "Events" = [
@@ -312,8 +277,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x ff|
+                    "ToCBE" = |u8x ff|
                     "CTE" = "//a
 -1"
                     "Events" = [
@@ -413,9 +377,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
+                    "ToCTE" = "-1"
                     "CBE" = |u8x 95 ff|
-                    "CTE" = "-1"
                     "Events" = [
                         "pad"
                         "n=-1"
@@ -668,10 +631,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 94 02 01 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 94 02 01 9b|
+                    "ToCTE" = "[
     |b 1|
 ]"
                     "Events" = [
@@ -683,10 +644,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e8 02 80 3f 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e8 02 80 3f 9b|
+                    "ToCTE" = "[
     |f16x 1|
 ]"
                     "Events" = [
@@ -698,10 +657,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e9 02 00 00 80 3f 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e9 02 00 00 80 3f 9b|
+                    "ToCTE" = "[
     |f32x 1|
 ]"
                     "Events" = [
@@ -713,10 +670,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
+                    "ToCTE" = "[
     |f64x 1|
 ]"
                     "Events" = [
@@ -728,10 +683,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e3 02 01 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e3 02 01 00 9b|
+                    "ToCTE" = "[
     |i16 1|
 ]"
                     "Events" = [
@@ -743,10 +696,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e5 02 01 00 00 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e5 02 01 00 00 00 9b|
+                    "ToCTE" = "[
     |i32 1|
 ]"
                     "Events" = [
@@ -758,10 +709,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e7 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e7 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "[
     |i64 1|
 ]"
                     "Events" = [
@@ -773,10 +722,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e1 02 01 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e1 02 01 9b|
+                    "ToCTE" = "[
     |i8 1|
 ]"
                     "Events" = [
@@ -788,10 +735,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "[
     |u 00000000-0000-0000-0000-000000000000|
 ]"
                     "Events" = [
@@ -803,10 +748,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e2 02 01 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e2 02 01 00 9b|
+                    "ToCTE" = "[
     |u16 1|
 ]"
                     "Events" = [
@@ -818,10 +761,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e4 02 01 00 00 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e4 02 01 00 00 00 9b|
+                    "ToCTE" = "[
     |u32 1|
 ]"
                     "Events" = [
@@ -833,10 +774,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f e6 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f e6 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "[
     |u64 1|
 ]"
                     "Events" = [
@@ -848,10 +787,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 93 02 01 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 93 02 01 9b|
+                    "ToCTE" = "[
     |u8 1|
 ]"
                     "Events" = [
@@ -863,10 +800,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 92 00 02 01 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 92 00 02 01 9b|
+                    "ToCTE" = "[
     |c0 01|
 ]"
                     "Events" = [
@@ -878,10 +813,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 7f f3 03 61 2f 62 02 01 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "[
     |a/b 01|
 ]"
                     "Events" = [
@@ -893,10 +826,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 91 02 61 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 91 02 61 9b|
+                    "ToCTE" = "[
     @\"a\"
 ]"
                     "Events" = [
@@ -908,10 +839,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a 90 02 61 9b|
-                    "CTE" = "[
+                    "ToCBE" = |u8x 9a 90 02 61 9b|
+                    "ToCTE" = "[
     \"a\"
 ]"
                     "Events" = [
@@ -934,8 +863,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a ff 9b|
+                    "ToCBE" = |u8x 9a ff 9b|
                     "CTE" = "[
     /*a*/
     -1
@@ -948,8 +876,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 9a ff 9b|
+                    "ToCBE" = |u8x 9a ff 9b|
                     "CTE" = "[
     //a
     -1
@@ -1097,11 +1024,10 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 9a 95 ff 9b|
-                    "CTE" = "[
+                    "ToCTE" = "[
     -1
 ]"
+                    "CBE" = |u8x 9a 95 ff 9b|
                     "Events" = [
                         "l"
                         "pad"
@@ -1270,10 +1196,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 91 02 61 ff 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 91 02 61 ff 9b|
+                    "ToCTE" = "{
     @\"a\" = -1
 }"
                     "Events" = [
@@ -1286,10 +1210,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 90 02 61 ff 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 90 02 61 ff 9b|
+                    "ToCTE" = "{
     \"a\" = -1
 }"
                     "Events" = [
@@ -1302,8 +1224,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff ff 9b|
+                    "ToCBE" = |u8x 99 ff ff 9b|
                     "CTE" = "{
     /*a*/
     -1 = -1
@@ -1317,8 +1238,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff ff 9b|
+                    "ToCBE" = |u8x 99 ff ff 9b|
                     "CTE" = "{
     //a
     -1 = -1
@@ -1368,11 +1288,10 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 99 95 ff ff 9b|
-                    "CTE" = "{
+                    "ToCTE" = "{
     -1 = -1
 }"
+                    "CBE" = |u8x 99 95 ff ff 9b|
                     "Events" = [
                         "m"
                         "pad"
@@ -1973,10 +1892,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 94 02 01 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 94 02 01 9b|
+                    "ToCTE" = "{
     -1 = |b 1|
 }"
                     "Events" = [
@@ -1989,10 +1906,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e8 02 80 3f 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e8 02 80 3f 9b|
+                    "ToCTE" = "{
     -1 = |f16x 1|
 }"
                     "Events" = [
@@ -2005,10 +1920,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e9 02 00 00 80 3f 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e9 02 00 00 80 3f 9b|
+                    "ToCTE" = "{
     -1 = |f32x 1|
 }"
                     "Events" = [
@@ -2021,10 +1934,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
+                    "ToCTE" = "{
     -1 = |f64x 1|
 }"
                     "Events" = [
@@ -2037,10 +1948,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e3 02 01 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e3 02 01 00 9b|
+                    "ToCTE" = "{
     -1 = |i16 1|
 }"
                     "Events" = [
@@ -2053,10 +1962,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e5 02 01 00 00 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e5 02 01 00 00 00 9b|
+                    "ToCTE" = "{
     -1 = |i32 1|
 }"
                     "Events" = [
@@ -2069,10 +1976,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "{
     -1 = |i64 1|
 }"
                     "Events" = [
@@ -2085,10 +1990,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e1 02 01 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e1 02 01 9b|
+                    "ToCTE" = "{
     -1 = |i8 1|
 }"
                     "Events" = [
@@ -2101,10 +2004,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "{
     -1 = |u 00000000-0000-0000-0000-000000000000|
 }"
                     "Events" = [
@@ -2117,10 +2018,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e2 02 01 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e2 02 01 00 9b|
+                    "ToCTE" = "{
     -1 = |u16 1|
 }"
                     "Events" = [
@@ -2133,10 +2032,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e4 02 01 00 00 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e4 02 01 00 00 00 9b|
+                    "ToCTE" = "{
     -1 = |u32 1|
 }"
                     "Events" = [
@@ -2149,10 +2046,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "{
     -1 = |u64 1|
 }"
                     "Events" = [
@@ -2165,10 +2060,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 93 02 01 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 93 02 01 9b|
+                    "ToCTE" = "{
     -1 = |u8 1|
 }"
                     "Events" = [
@@ -2181,10 +2074,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 92 00 02 01 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 92 00 02 01 9b|
+                    "ToCTE" = "{
     -1 = |c0 01|
 }"
                     "Events" = [
@@ -2197,10 +2088,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 7f f3 03 61 2f 62 02 01 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "{
     -1 = |a/b 01|
 }"
                     "Events" = [
@@ -2213,10 +2102,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 91 02 61 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 91 02 61 9b|
+                    "ToCTE" = "{
     -1 = @\"a\"
 }"
                     "Events" = [
@@ -2229,10 +2116,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff 90 02 61 9b|
-                    "CTE" = "{
+                    "ToCBE" = |u8x 99 ff 90 02 61 9b|
+                    "ToCTE" = "{
     -1 = \"a\"
 }"
                     "Events" = [
@@ -2257,8 +2142,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff ff 9b|
+                    "ToCBE" = |u8x 99 ff ff 9b|
                     "CTE" = "{
     -1 = /*a*/
     -1
@@ -2272,8 +2156,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 99 ff ff 9b|
+                    "ToCBE" = |u8x 99 ff ff 9b|
                     "CTE" = "{
     -1 = //a
     -1
@@ -2433,11 +2316,10 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 99 ff 95 ff 9b|
-                    "CTE" = "{
+                    "ToCTE" = "{
     -1 = -1
 }"
+                    "CBE" = |u8x 99 ff 95 ff 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2808,10 +2690,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 94 02 01 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 94 02 01 ff ff 9b|
+                    "ToCTE" = "@(
     |b 1|
     -1
     -1
@@ -2827,10 +2707,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e8 02 80 3f ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e8 02 80 3f ff ff 9b|
+                    "ToCTE" = "@(
     |f16x 1|
     -1
     -1
@@ -2846,10 +2724,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e9 02 00 00 80 3f ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e9 02 00 00 80 3f ff ff 9b|
+                    "ToCTE" = "@(
     |f32x 1|
     -1
     -1
@@ -2865,10 +2741,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f ea 02 00 00 00 00 00 00 f0 3f ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f ea 02 00 00 00 00 00 00 f0 3f ff ff 9b|
+                    "ToCTE" = "@(
     |f64x 1|
     -1
     -1
@@ -2884,10 +2758,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e3 02 01 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e3 02 01 00 ff ff 9b|
+                    "ToCTE" = "@(
     |i16 1|
     -1
     -1
@@ -2903,10 +2775,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e5 02 01 00 00 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e5 02 01 00 00 00 ff ff 9b|
+                    "ToCTE" = "@(
     |i32 1|
     -1
     -1
@@ -2922,10 +2792,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e7 02 01 00 00 00 00 00 00 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e7 02 01 00 00 00 00 00 00 00 ff ff 9b|
+                    "ToCTE" = "@(
     |i64 1|
     -1
     -1
@@ -2941,10 +2809,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e1 02 01 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e1 02 01 ff ff 9b|
+                    "ToCTE" = "@(
     |i8 1|
     -1
     -1
@@ -2960,10 +2826,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 9b|
+                    "ToCTE" = "@(
     |u 00000000-0000-0000-0000-000000000000|
     -1
     -1
@@ -2979,10 +2843,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e2 02 01 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e2 02 01 00 ff ff 9b|
+                    "ToCTE" = "@(
     |u16 1|
     -1
     -1
@@ -2998,10 +2860,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e4 02 01 00 00 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e4 02 01 00 00 00 ff ff 9b|
+                    "ToCTE" = "@(
     |u32 1|
     -1
     -1
@@ -3017,10 +2877,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f e6 02 01 00 00 00 00 00 00 00 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f e6 02 01 00 00 00 00 00 00 00 ff ff 9b|
+                    "ToCTE" = "@(
     |u64 1|
     -1
     -1
@@ -3036,10 +2894,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 93 02 01 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 93 02 01 ff ff 9b|
+                    "ToCTE" = "@(
     |u8 1|
     -1
     -1
@@ -3055,10 +2911,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 92 00 02 01 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 92 00 02 01 ff ff 9b|
+                    "ToCTE" = "@(
     |c0 01|
     -1
     -1
@@ -3074,10 +2928,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 7f f3 03 61 2f 62 02 01 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 7f f3 03 61 2f 62 02 01 ff ff 9b|
+                    "ToCTE" = "@(
     |a/b 01|
     -1
     -1
@@ -3093,10 +2945,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 91 02 61 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 91 02 61 ff ff 9b|
+                    "ToCTE" = "@(
     @\"a\"
     -1
     -1
@@ -3112,10 +2962,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 90 02 61 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 90 02 61 ff ff 9b|
+                    "ToCTE" = "@(
     \"a\"
     -1
     -1
@@ -3146,8 +2994,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff ff 9b|
+                    "ToCBE" = |u8x 97 ff ff ff 9b|
                     "CTE" = "@(
     /*a*/
     -1
@@ -3164,8 +3011,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff ff 9b|
+                    "ToCBE" = |u8x 97 ff ff ff 9b|
                     "CTE" = "@(
     //a
     -1
@@ -3346,13 +3192,12 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 97 95 ff ff ff 9b|
-                    "CTE" = "@(
+                    "ToCTE" = "@(
     -1
     -1
     -1
 )"
+                    "CBE" = |u8x 97 95 ff ff ff 9b|
                     "Events" = [
                         "edge"
                         "pad"
@@ -3763,10 +3608,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 94 02 01 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 94 02 01 ff 9b|
+                    "ToCTE" = "@(
     -1
     |b 1|
     -1
@@ -3782,10 +3625,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e8 02 80 3f ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e8 02 80 3f ff 9b|
+                    "ToCTE" = "@(
     -1
     |f16x 1|
     -1
@@ -3801,10 +3642,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e9 02 00 00 80 3f ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e9 02 00 00 80 3f ff 9b|
+                    "ToCTE" = "@(
     -1
     |f32x 1|
     -1
@@ -3820,10 +3659,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f ea 02 00 00 00 00 00 00 f0 3f ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f ea 02 00 00 00 00 00 00 f0 3f ff 9b|
+                    "ToCTE" = "@(
     -1
     |f64x 1|
     -1
@@ -3839,10 +3676,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e3 02 01 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e3 02 01 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |i16 1|
     -1
@@ -3858,10 +3693,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e5 02 01 00 00 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e5 02 01 00 00 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |i32 1|
     -1
@@ -3877,10 +3710,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e7 02 01 00 00 00 00 00 00 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e7 02 01 00 00 00 00 00 00 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |i64 1|
     -1
@@ -3896,10 +3727,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e1 02 01 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e1 02 01 ff 9b|
+                    "ToCTE" = "@(
     -1
     |i8 1|
     -1
@@ -3915,10 +3744,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |u 00000000-0000-0000-0000-000000000000|
     -1
@@ -3934,10 +3761,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e2 02 01 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e2 02 01 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |u16 1|
     -1
@@ -3953,10 +3778,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e4 02 01 00 00 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e4 02 01 00 00 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |u32 1|
     -1
@@ -3972,10 +3795,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f e6 02 01 00 00 00 00 00 00 00 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f e6 02 01 00 00 00 00 00 00 00 ff 9b|
+                    "ToCTE" = "@(
     -1
     |u64 1|
     -1
@@ -3991,10 +3812,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 93 02 01 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 93 02 01 ff 9b|
+                    "ToCTE" = "@(
     -1
     |u8 1|
     -1
@@ -4010,10 +3829,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 92 00 02 01 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 92 00 02 01 ff 9b|
+                    "ToCTE" = "@(
     -1
     |c0 01|
     -1
@@ -4029,10 +3846,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 7f f3 03 61 2f 62 02 01 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 7f f3 03 61 2f 62 02 01 ff 9b|
+                    "ToCTE" = "@(
     -1
     |a/b 01|
     -1
@@ -4048,10 +3863,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 91 02 61 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 91 02 61 ff 9b|
+                    "ToCTE" = "@(
     -1
     @\"a\"
     -1
@@ -4067,10 +3880,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff 90 02 61 ff 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff 90 02 61 ff 9b|
+                    "ToCTE" = "@(
     -1
     \"a\"
     -1
@@ -4101,8 +3912,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff ff 9b|
+                    "ToCBE" = |u8x 97 ff ff ff 9b|
                     "CTE" = "@(
     -1
     /*a*/
@@ -4119,8 +3929,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff ff 9b|
+                    "ToCBE" = |u8x 97 ff ff ff 9b|
                     "CTE" = "@(
     -1
     //a
@@ -4316,13 +4125,12 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 97 ff 95 ff ff 9b|
-                    "CTE" = "@(
+                    "ToCTE" = "@(
     -1
     -1
     -1
 )"
+                    "CBE" = |u8x 97 ff 95 ff ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4724,10 +4532,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 94 02 01 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 94 02 01 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |b 1|
@@ -4743,10 +4549,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e8 02 80 3f 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e8 02 80 3f 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |f16x 1|
@@ -4762,10 +4566,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e9 02 00 00 80 3f 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e9 02 00 00 80 3f 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |f32x 1|
@@ -4781,10 +4583,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |f64x 1|
@@ -4800,10 +4600,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e3 02 01 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e3 02 01 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |i16 1|
@@ -4819,10 +4617,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e5 02 01 00 00 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e5 02 01 00 00 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |i32 1|
@@ -4838,10 +4634,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |i64 1|
@@ -4857,10 +4651,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e1 02 01 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e1 02 01 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |i8 1|
@@ -4876,10 +4668,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |u 00000000-0000-0000-0000-000000000000|
@@ -4895,10 +4685,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e2 02 01 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e2 02 01 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |u16 1|
@@ -4914,10 +4702,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e4 02 01 00 00 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e4 02 01 00 00 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |u32 1|
@@ -4933,10 +4719,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |u64 1|
@@ -4952,10 +4736,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 93 02 01 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 93 02 01 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |u8 1|
@@ -4971,10 +4753,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 92 00 02 01 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 92 00 02 01 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |c0 01|
@@ -4990,10 +4770,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 7f f3 03 61 2f 62 02 01 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "@(
     -1
     -1
     |a/b 01|
@@ -5009,10 +4787,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 91 02 61 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 91 02 61 9b|
+                    "ToCTE" = "@(
     -1
     -1
     @\"a\"
@@ -5028,10 +4804,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff 90 02 61 9b|
-                    "CTE" = "@(
+                    "ToCBE" = |u8x 97 ff ff 90 02 61 9b|
+                    "ToCTE" = "@(
     -1
     -1
     \"a\"
@@ -5062,8 +4836,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff ff 9b|
+                    "ToCBE" = |u8x 97 ff ff ff 9b|
                     "CTE" = "@(
     -1
     -1
@@ -5080,8 +4853,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 97 ff ff ff 9b|
+                    "ToCBE" = |u8x 97 ff ff ff 9b|
                     "CTE" = "@(
     -1
     -1
@@ -5262,13 +5034,12 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 97 ff ff 95 ff 9b|
-                    "CTE" = "@(
+                    "ToCTE" = "@(
     -1
     -1
     -1
 )"
+                    "CBE" = |u8x 97 ff ff 95 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -5609,10 +5380,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 94 02 01 9b|
-                    "CTE" = "(|b 1|
+                    "ToCBE" = |u8x 98 94 02 01 9b|
+                    "ToCTE" = "(|b 1|
 )"
                     "Events" = [
                         "node"
@@ -5623,10 +5392,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e8 02 80 3f 9b|
-                    "CTE" = "(|f16x 1|
+                    "ToCBE" = |u8x 98 7f e8 02 80 3f 9b|
+                    "ToCTE" = "(|f16x 1|
 )"
                     "Events" = [
                         "node"
@@ -5637,10 +5404,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e9 02 00 00 80 3f 9b|
-                    "CTE" = "(|f32x 1|
+                    "ToCBE" = |u8x 98 7f e9 02 00 00 80 3f 9b|
+                    "ToCTE" = "(|f32x 1|
 )"
                     "Events" = [
                         "node"
@@ -5651,10 +5416,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
-                    "CTE" = "(|f64x 1|
+                    "ToCBE" = |u8x 98 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
+                    "ToCTE" = "(|f64x 1|
 )"
                     "Events" = [
                         "node"
@@ -5665,10 +5428,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e3 02 01 00 9b|
-                    "CTE" = "(|i16 1|
+                    "ToCBE" = |u8x 98 7f e3 02 01 00 9b|
+                    "ToCTE" = "(|i16 1|
 )"
                     "Events" = [
                         "node"
@@ -5679,10 +5440,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e5 02 01 00 00 00 9b|
-                    "CTE" = "(|i32 1|
+                    "ToCBE" = |u8x 98 7f e5 02 01 00 00 00 9b|
+                    "ToCTE" = "(|i32 1|
 )"
                     "Events" = [
                         "node"
@@ -5693,10 +5452,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e7 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "(|i64 1|
+                    "ToCBE" = |u8x 98 7f e7 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "(|i64 1|
 )"
                     "Events" = [
                         "node"
@@ -5707,10 +5464,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e1 02 01 9b|
-                    "CTE" = "(|i8 1|
+                    "ToCBE" = |u8x 98 7f e1 02 01 9b|
+                    "ToCTE" = "(|i8 1|
 )"
                     "Events" = [
                         "node"
@@ -5721,10 +5476,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
-                    "CTE" = "(|u 00000000-0000-0000-0000-000000000000|
+                    "ToCBE" = |u8x 98 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "(|u 00000000-0000-0000-0000-000000000000|
 )"
                     "Events" = [
                         "node"
@@ -5735,10 +5488,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e2 02 01 00 9b|
-                    "CTE" = "(|u16 1|
+                    "ToCBE" = |u8x 98 7f e2 02 01 00 9b|
+                    "ToCTE" = "(|u16 1|
 )"
                     "Events" = [
                         "node"
@@ -5749,10 +5500,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e4 02 01 00 00 00 9b|
-                    "CTE" = "(|u32 1|
+                    "ToCBE" = |u8x 98 7f e4 02 01 00 00 00 9b|
+                    "ToCTE" = "(|u32 1|
 )"
                     "Events" = [
                         "node"
@@ -5763,10 +5512,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f e6 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "(|u64 1|
+                    "ToCBE" = |u8x 98 7f e6 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "(|u64 1|
 )"
                     "Events" = [
                         "node"
@@ -5777,10 +5524,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 93 02 01 9b|
-                    "CTE" = "(|u8 1|
+                    "ToCBE" = |u8x 98 93 02 01 9b|
+                    "ToCTE" = "(|u8 1|
 )"
                     "Events" = [
                         "node"
@@ -5791,10 +5536,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 92 00 02 01 9b|
-                    "CTE" = "(|c0 01|
+                    "ToCBE" = |u8x 98 92 00 02 01 9b|
+                    "ToCTE" = "(|c0 01|
 )"
                     "Events" = [
                         "node"
@@ -5805,10 +5548,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
-                    "CTE" = "(|a/b 01|
+                    "ToCBE" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "(|a/b 01|
 )"
                     "Events" = [
                         "node"
@@ -5819,10 +5560,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 91 02 61 9b|
-                    "CTE" = "(@\"a\"
+                    "ToCBE" = |u8x 98 91 02 61 9b|
+                    "ToCTE" = "(@\"a\"
 )"
                     "Events" = [
                         "node"
@@ -5833,10 +5572,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 90 02 61 9b|
-                    "CTE" = "(\"a\"
+                    "ToCBE" = |u8x 98 90 02 61 9b|
+                    "ToCTE" = "(\"a\"
 )"
                     "Events" = [
                         "node"
@@ -5857,8 +5594,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 ff 9b|
+                    "ToCBE" = |u8x 98 ff 9b|
                     "CTE" = "(/*a*/
     -1
 )"
@@ -5870,8 +5606,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 ff 9b|
+                    "ToCBE" = |u8x 98 ff 9b|
                     "CTE" = "(//a
     -1
 )"
@@ -6007,10 +5742,9 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 98 95 ff 9b|
-                    "CTE" = "(-1
+                    "ToCTE" = "(-1
 )"
+                    "CBE" = |u8x 98 95 ff 9b|
                     "Events" = [
                         "node"
                         "pad"
@@ -6324,10 +6058,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 94 02 01 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 94 02 01 9b|
+                    "ToCTE" = "(null
     |b 1|
 )"
                     "Events" = [
@@ -6340,10 +6072,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e8 02 80 3f 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e8 02 80 3f 9b|
+                    "ToCTE" = "(null
     |f16x 1|
 )"
                     "Events" = [
@@ -6356,10 +6086,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e9 02 00 00 80 3f 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e9 02 00 00 80 3f 9b|
+                    "ToCTE" = "(null
     |f32x 1|
 )"
                     "Events" = [
@@ -6372,10 +6100,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
+                    "ToCTE" = "(null
     |f64x 1|
 )"
                     "Events" = [
@@ -6388,10 +6114,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e3 02 01 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e3 02 01 00 9b|
+                    "ToCTE" = "(null
     |i16 1|
 )"
                     "Events" = [
@@ -6404,10 +6128,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e5 02 01 00 00 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e5 02 01 00 00 00 9b|
+                    "ToCTE" = "(null
     |i32 1|
 )"
                     "Events" = [
@@ -6420,10 +6142,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e7 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e7 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "(null
     |i64 1|
 )"
                     "Events" = [
@@ -6436,10 +6156,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e1 02 01 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e1 02 01 9b|
+                    "ToCTE" = "(null
     |i8 1|
 )"
                     "Events" = [
@@ -6452,10 +6170,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "(null
     |u 00000000-0000-0000-0000-000000000000|
 )"
                     "Events" = [
@@ -6468,10 +6184,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e2 02 01 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e2 02 01 00 9b|
+                    "ToCTE" = "(null
     |u16 1|
 )"
                     "Events" = [
@@ -6484,10 +6198,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e4 02 01 00 00 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e4 02 01 00 00 00 9b|
+                    "ToCTE" = "(null
     |u32 1|
 )"
                     "Events" = [
@@ -6500,10 +6212,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f e6 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f e6 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "(null
     |u64 1|
 )"
                     "Events" = [
@@ -6516,10 +6226,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 93 02 01 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 93 02 01 9b|
+                    "ToCTE" = "(null
     |u8 1|
 )"
                     "Events" = [
@@ -6532,10 +6240,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 92 00 02 01 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 92 00 02 01 9b|
+                    "ToCTE" = "(null
     |c0 01|
 )"
                     "Events" = [
@@ -6548,10 +6254,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "(null
     |a/b 01|
 )"
                     "Events" = [
@@ -6564,10 +6268,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 91 02 61 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 91 02 61 9b|
+                    "ToCTE" = "(null
     @\"a\"
 )"
                     "Events" = [
@@ -6580,10 +6282,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d 90 02 61 9b|
-                    "CTE" = "(null
+                    "ToCBE" = |u8x 98 7d 90 02 61 9b|
+                    "ToCTE" = "(null
     \"a\"
 )"
                     "Events" = [
@@ -6608,8 +6308,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d ff 9b|
+                    "ToCBE" = |u8x 98 7d ff 9b|
                     "CTE" = "(null
     /*a*/
     -1
@@ -6623,8 +6322,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 98 7d ff 9b|
+                    "ToCBE" = |u8x 98 7d ff 9b|
                     "CTE" = "(null
     //a
     -1
@@ -6784,11 +6482,10 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 98 7d 95 ff 9b|
-                    "CTE" = "(null
+                    "ToCTE" = "(null
     -1
 )"
+                    "CBE" = |u8x 98 7d 95 ff 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6971,10 +6668,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 91 02 61 9b ff|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 91 02 61 9b ff|
+                    "ToCTE" = "@a<
     @\"a\"
 >
 -1"
@@ -6988,10 +6683,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 90 02 61 9b ff|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 90 02 61 9b ff|
+                    "ToCTE" = "@a<
     \"a\"
 >
 -1"
@@ -7005,8 +6698,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 ff 9b ff|
+                    "ToCBE" = |u8x 7f f1 01 61 ff 9b ff|
                     "CTE" = "@a<
     /*a*/
     -1
@@ -7021,8 +6713,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 ff 9b ff|
+                    "ToCBE" = |u8x 7f f1 01 61 ff 9b ff|
                     "CTE" = "@a<
     //a
     -1
@@ -7076,12 +6767,11 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 7f f1 01 61 95 ff 9b ff|
-                    "CTE" = "@a<
+                    "ToCTE" = "@a<
     -1
 >
 -1"
+                    "CBE" = |u8x 7f f1 01 61 95 ff 9b ff|
                     "Events" = [
                         "st=a"
                         "pad"
@@ -7756,10 +7446,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7777,10 +7465,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e8 02 80 3f 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e8 02 80 3f 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7798,10 +7484,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e9 02 00 00 80 3f 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e9 02 00 00 80 3f 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7819,10 +7503,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7840,10 +7522,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e3 02 01 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e3 02 01 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7861,10 +7541,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e5 02 01 00 00 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e5 02 01 00 00 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7882,10 +7560,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e7 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e7 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7903,10 +7579,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e1 02 01 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e1 02 01 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7924,10 +7598,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7945,10 +7617,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e2 02 01 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e2 02 01 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7966,10 +7636,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e4 02 01 00 00 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e4 02 01 00 00 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -7987,10 +7655,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e6 02 01 00 00 00 00 00 00 00 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e6 02 01 00 00 00 00 00 00 00 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -8008,10 +7674,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 93 02 01 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 93 02 01 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -8029,10 +7693,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 92 00 02 01 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 92 00 02 01 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -8050,10 +7712,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f3 03 61 2f 62 02 01 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -8071,10 +7731,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 91 02 61 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 91 02 61 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -8092,10 +7750,8 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 90 02 61 9b|
-                    "CTE" = "@a<
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 90 02 61 9b|
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
@@ -8130,8 +7786,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 ff 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 ff 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -8150,8 +7805,7 @@ c0
                     ]
                 }
                 {
-                    "LossyCBE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 ff 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 ff 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -8371,14 +8025,13 @@ c0
                     ]
                 }
                 {
-                    "LossyCTE" = true
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 95 ff 9b|
-                    "CTE" = "@a<
+                    "ToCTE" = "@a<
     \"a\"
 >
 @a(
     -1
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 95 ff 9b|
                     "Events" = [
                         "st=a"
                         "s=a"

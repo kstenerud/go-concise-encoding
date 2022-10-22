@@ -316,6 +316,12 @@ func (_this *Writer) WriteFloat(value float64) {
 		}
 		return
 	}
+	if value == 0 {
+		_this.ExpandBuffer(2)
+		used := strconv.AppendFloat(_this.Buffer[:0], value, 'g', -1, 64)
+		_this.FlushBufferNotLF(len(used))
+		return
+	}
 
 	_this.ExpandBuffer(floatStringMaxByteCount)
 	used := strconv.AppendFloat(_this.Buffer[:0], value, 'x', -1, 64)
@@ -407,6 +413,11 @@ func (_this *Writer) WriteBigFloat(value *big.Float) {
 		} else {
 			_this.WritePosInfinity()
 		}
+		return
+	}
+	asFloat, accuracy := value.Float64()
+	if accuracy == big.Exact && asFloat == 0 {
+		_this.WriteFloat(asFloat)
 		return
 	}
 

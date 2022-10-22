@@ -318,7 +318,7 @@ var (
 		EvPAD.Name():    {EvN},
 	}
 
-	lossyCTE = map[string]bool{
+	noFromCTE = map[string]bool{
 		EvACL.Name():    true,
 		EvACM.Name():    true,
 		EvBAB.Name():    true,
@@ -344,7 +344,7 @@ var (
 		EvPAD.Name(): true,
 	}
 
-	lossyCBE = map[string]bool{
+	noFromCBE = map[string]bool{
 		// Chunked arrays may have been optimized
 		EvACL.Name():    true,
 		EvACM.Name():    true,
@@ -372,24 +372,37 @@ var (
 		EvCS.Name(): true,
 		EvCT.Name(): true,
 	}
+
+	noToCBE = map[string]bool{
+		EvCT.Name(): true,
+	}
 )
 
-func hasLossyCTE(events ...test.Event) bool {
+func canConvertFromCTE(events ...test.Event) bool {
 	for _, event := range events {
-		if lossyCTE[event.Name()] {
-			return true
+		if noFromCTE[event.Name()] {
+			return false
 		}
 	}
-	return false
+	return true
 }
 
-func hasLossyCBE(events ...test.Event) bool {
+func canConvertFromCBE(events ...test.Event) bool {
 	for _, event := range events {
-		if lossyCBE[event.Name()] {
-			return true
+		if noFromCBE[event.Name()] {
+			return false
 		}
 	}
-	return false
+	return true
+}
+
+func canConvertToCBE(events ...test.Event) bool {
+	for _, event := range events {
+		if noToCBE[event.Name()] {
+			return false
+		}
+	}
+	return true
 }
 
 func generateEventPrefixesAndFollowups(events ...test.Event) (eventSets []test.Events) {

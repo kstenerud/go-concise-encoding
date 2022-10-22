@@ -159,128 +159,107 @@ c0
                 }
 
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 64|
+                    "from_cbe" = |u8x 69 64|
                     "cte"      = "-100"
                     "events"   = ["n=-100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 63|
+                    "from_cbe" = |u8x 69 63|
                     "cte"      = "-99"
                     "events"   = ["n=-99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 14|
+                    "from_cbe" = |u8x 69 14|
                     "cte"      = "-20"
                     "events"   = ["n=-20"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 06|
+                    "from_cbe" = |u8x 69 06|
                     "cte"      = "-6"
                     "events"   = ["n=-6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 05|
+                    "from_cbe" = |u8x 69 05|
                     "cte"      = "-5"
                     "events"   = ["n=-5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 04|
+                    "from_cbe" = |u8x 69 04|
                     "cte"      = "-4"
                     "events"   = ["n=-4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 03|
+                    "from_cbe" = |u8x 69 03|
                     "cte"      = "-3"
                     "events"   = ["n=-3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 02|
+                    "from_cbe" = |u8x 69 02|
                     "cte"      = "-2"
                     "events"   = ["n=-2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 01|
+                    "from_cbe" = |u8x 69 01|
                     "cte"      = "-1"
                     "events"   = ["n=-1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 69 00|
+                    "from_cbe" = |u8x 69 00|
                     "events"   = ["n=-0"]
                     "cte"      = "-0"
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 00|
+                    "from_cbe" = |u8x 68 00|
                     "cte"      = "0"
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 01|
+                    "from_cbe" = |u8x 68 01|
                     "cte"      = "1"
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 02|
+                    "from_cbe" = |u8x 68 02|
                     "cte"      = "2"
                     "events"   = ["n=2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 03|
+                    "from_cbe" = |u8x 68 03|
                     "cte"      = "3"
                     "events"   = ["n=3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 04|
+                    "from_cbe" = |u8x 68 04|
                     "cte"      = "4"
                     "events"   = ["n=4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 05|
+                    "from_cbe" = |u8x 68 05|
                     "cte"      = "5"
                     "events"   = ["n=5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 06|
+                    "from_cbe" = |u8x 68 06|
                     "cte"      = "6"
                     "events"   = ["n=6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 37|
+                    "from_cbe" = |u8x 68 37|
                     "cte"      = "55"
                     "events"   = ["n=55"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 5b|
+                    "from_cbe" = |u8x 68 5b|
                     "cte"      = "91"
                     "events"   = ["n=91"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 63|
+                    "from_cbe" = |u8x 68 63|
                     "cte"      = "99"
                     "events"   = ["n=99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 68 64|
+                    "from_cbe" = |u8x 68 64|
                     "cte"      = "100"
                     "events"   = ["n=100"]
                 }
@@ -318,176 +297,147 @@ c0
                 }
 
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b ff 00|
+                    "from_cbe" = |u8x 6b ff 00|
                     "cte"      = "-255"
                     "events"   = ["n=-255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b fe 00|
+                    "from_cbe" = |u8x 6b fe 00|
                     "cte"      = "-254"
                     "events"   = ["n=-254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b c8 00|
+                    "from_cbe" = |u8x 6b c8 00|
                     "cte"      = "-200"
                     "events"   = ["n=-200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 65 00|
+                    "from_cbe" = |u8x 6b 65 00|
                     "cte"      = "-101"
                     "events"   = ["n=-101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 64 00|
+                    "from_cbe" = |u8x 6b 64 00|
                     "cte"      = "-100"
                     "events"   = ["n=-100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 63 00|
+                    "from_cbe" = |u8x 6b 63 00|
                     "cte"      = "-99"
                     "events"   = ["n=-99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 14 00|
+                    "from_cbe" = |u8x 6b 14 00|
                     "cte"      = "-20"
                     "events"   = ["n=-20"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 06 00|
+                    "from_cbe" = |u8x 6b 06 00|
                     "cte"      = "-6"
                     "events"   = ["n=-6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 05 00|
+                    "from_cbe" = |u8x 6b 05 00|
                     "cte"      = "-5"
                     "events"   = ["n=-5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 04 00|
+                    "from_cbe" = |u8x 6b 04 00|
                     "cte"      = "-4"
                     "events"   = ["n=-4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 03 00|
+                    "from_cbe" = |u8x 6b 03 00|
                     "cte"      = "-3"
                     "events"   = ["n=-3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 02 00|
+                    "from_cbe" = |u8x 6b 02 00|
                     "cte"      = "-2"
                     "events"   = ["n=-2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 01 00|
+                    "from_cbe" = |u8x 6b 01 00|
                     "cte"      = "-1"
                     "events"   = ["n=-1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6b 00 00|
+                    "from_cbe" = |u8x 6b 00 00|
                     "cte"      = "-0"
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 00 00|
+                    "from_cbe" = |u8x 6a 00 00|
                     "cte"      = "0"
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 01 00|
+                    "from_cbe" = |u8x 6a 01 00|
                     "cte"      = "1"
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 02 00|
+                    "from_cbe" = |u8x 6a 02 00|
                     "cte"      = "2"
                     "events"   = ["n=2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 03 00|
+                    "from_cbe" = |u8x 6a 03 00|
                     "cte"      = "3"
                     "events"   = ["n=3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 04 00|
+                    "from_cbe" = |u8x 6a 04 00|
                     "cte"      = "4"
                     "events"   = ["n=4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 05 00|
+                    "from_cbe" = |u8x 6a 05 00|
                     "cte"      = "5"
                     "events"   = ["n=5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 06 00|
+                    "cbefrom_" = |u8x 6a 06 00|
                     "cte"      = "6"
                     "events"   = ["n=6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 37 00|
+                    "cbefrom_" = |u8x 6a 37 00|
                     "cte"      = "55"
                     "events"   = ["n=55"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 5b 00|
+                    "from_cbe" = |u8x 6a 5b 00|
                     "cte"      = "91"
                     "events"   = ["n=91"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 63 00|
+                    "from_cbe" = |u8x 6a 63 00|
                     "cte"      = "99"
                     "events"   = ["n=99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 64 00|
+                    "from_cbe" = |u8x 6a 64 00|
                     "cte"      = "100"
                     "events"   = ["n=100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a 65 00|
+                    "from_cbe" = |u8x 6a 65 00|
                     "cte"      = "101"
                     "events"   = ["n=101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a c8 00|
+                    "from_cbe" = |u8x 6a c8 00|
                     "cte"      = "200"
                     "events"   = ["n=200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a fe 00|
+                    "from_cbe" = |u8x 6a fe 00|
                     "cte"      = "254"
                     "events"   = ["n=254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6a ff 00|
+                    "from_cbe" = |u8x 6a ff 00|
                     "cte"      = "255"
                     "events"   = ["n=255"]
                 }
@@ -524,200 +474,167 @@ c0
                 }
 
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d ff ff 00 00|
+                    "from_cbe" = |u8x 6d ff ff 00 00|
                     "cte"      = "-65535"
                     "events"   = ["n=-65535"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d e8 03 00 00|
+                    "from_cbe" = |u8x 6d e8 03 00 00|
                     "cte"      = "-1000"
                     "events"   = ["n=-1000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d ff 00 00 00|
+                    "from_cbe" = |u8x 6d ff 00 00 00|
                     "cte"      = "-255"
                     "events"   = ["n=-255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d fe 00 00 00|
+                    "from_cbe" = |u8x 6d fe 00 00 00|
                     "cte"      = "-254"
                     "events"   = ["n=-254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d c8 00 00 00|
+                    "from_cbe" = |u8x 6d c8 00 00 00|
                     "cte"      = "-200"
                     "events"   = ["n=-200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 65 00 00 00|
+                    "from_cbe" = |u8x 6d 65 00 00 00|
                     "cte"      = "-101"
                     "events"   = ["n=-101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 64 00 00 00|
+                    "from_cbe" = |u8x 6d 64 00 00 00|
                     "cte"      = "-100"
                     "events"   = ["n=-100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 63 00 00 00|
+                    "from_cbe" = |u8x 6d 63 00 00 00|
                     "cte"      = "-99"
                     "events"   = ["n=-99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 14 00 00 00|
+                    "from_cbe" = |u8x 6d 14 00 00 00|
                     "cte"      = "-20"
                     "events"   = ["n=-20"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 06 00 00 00|
+                    "from_cbe" = |u8x 6d 06 00 00 00|
                     "cte"      = "-6"
                     "events"   = ["n=-6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 05 00 00 00|
+                    "from_cbe" = |u8x 6d 05 00 00 00|
                     "cte"      = "-5"
                     "events"   = ["n=-5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 04 00 00 00|
+                    "from_cbe" = |u8x 6d 04 00 00 00|
                     "cte"      = "-4"
                     "events"   = ["n=-4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 03 00 00 00|
+                    "from_cbe" = |u8x 6d 03 00 00 00|
                     "cte"      = "-3"
                     "events"   = ["n=-3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 02 00 00 00|
+                    "from_cbe" = |u8x 6d 02 00 00 00|
                     "cte"      = "-2"
                     "events"   = ["n=-2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 01 00 00 00|
+                    "from_cbe" = |u8x 6d 01 00 00 00|
                     "cte"      = "-1"
                     "events"   = ["n=-1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6d 00 00 00 00|
+                    "from_cbe" = |u8x 6d 00 00 00 00|
                     "cte"      = "-0"
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 00 00 00 00|
+                    "from_cbe" = |u8x 6c 00 00 00 00|
                     "cte"      = "0"
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 01 00 00 00|
+                    "from_cbe" = |u8x 6c 01 00 00 00|
                     "cte"      = "1"
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 02 00 00 00|
+                    "from_cbe" = |u8x 6c 02 00 00 00|
                     "cte"      = "2"
                     "events"   = ["n=2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 03 00 00 00|
+                    "from_cbe" = |u8x 6c 03 00 00 00|
                     "cte"      = "3"
                     "events"   = ["n=3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 04 00 00 00|
+                    "from_cbe" = |u8x 6c 04 00 00 00|
                     "cte"      = "4"
                     "events"   = ["n=4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 05 00 00 00|
+                    "from_cbe" = |u8x 6c 05 00 00 00|
                     "cte"      = "5"
                     "events"   = ["n=5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 06 00 00 00|
+                    "from_cbe" = |u8x 6c 06 00 00 00|
                     "cte"      = "6"
                     "events"   = ["n=6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 37 00 00 00|
+                    "from_cbe" = |u8x 6c 37 00 00 00|
                     "cte"      = "55"
                     "events"   = ["n=55"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 5b 00 00 00|
+                    "from_cbe" = |u8x 6c 5b 00 00 00|
                     "cte"      = "91"
                     "events"   = ["n=91"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 63 00 00 00|
+                    "from_cbe" = |u8x 6c 63 00 00 00|
                     "cte"      = "99"
                     "events"   = ["n=99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 64 00 00 00|
+                    "from_cbe" = |u8x 6c 64 00 00 00|
                     "cte"      = "100"
                     "events"   = ["n=100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c 65 00 00 00|
+                    "from_cbe" = |u8x 6c 65 00 00 00|
                     "cte"      = "101"
                     "events"   = ["n=101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c c8 00 00 00|
+                    "from_cbe" = |u8x 6c c8 00 00 00|
                     "cte"      = "200"
                     "events"   = ["n=200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c fe 00 00 00|
+                    "from_cbe" = |u8x 6c fe 00 00 00|
                     "cte"      = "254"
                     "events"   = ["n=254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c ff 00 00 00|
+                    "from_cbe" = |u8x 6c ff 00 00 00|
                     "cte"      = "255"
                     "events"   = ["n=255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c e8 03 00 00|
+                    "from_cbe" = |u8x 6c e8 03 00 00|
                     "cte"      = "1000"
                     "events"   = ["n=1000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6c ff ff 00 00|
+                    "from_cbe" = |u8x 6c ff ff 00 00|
                     "cte"      = "65535"
                     "events"   = ["n=65535"]
                 }
@@ -746,236 +663,197 @@ c0
                 }
 
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 00 00 00 00 01 00 00 00|
+                    "from_cbe" = |u8x 6f 00 00 00 00 01 00 00 00|
                     "cte"      = "-4294967296"
                     "events"   = ["n=-0x100000000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f ff ff ff ff 00 00 00 00|
+                    "from_cbe" = |u8x 6f ff ff ff ff 00 00 00 00|
                     "cte"      = "-4294967295"
                     "events"   = ["n=-0xffffffff"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 00 00 01 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 00 00 01 00 00 00 00 00|
                     "cte"      = "-65536"
                     "events"   = ["n=-65536"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f ff ff 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f ff ff 00 00 00 00 00 00|
                     "cte"      = "-65535"
                     "events"   = ["n=-65535"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f e8 03 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f e8 03 00 00 00 00 00 00|
                     "cte"      = "-1000"
                     "events"   = ["n=-1000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f ff 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f ff 00 00 00 00 00 00 00|
                     "cte"      = "-255"
                     "events"   = ["n=-255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f fe 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f fe 00 00 00 00 00 00 00|
                     "cte"      = "-254"
                     "events"   = ["n=-254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f c8 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f c8 00 00 00 00 00 00 00|
                     "cte"      = "-200"
                     "events"   = ["n=-200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 65 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 65 00 00 00 00 00 00 00|
                     "cte"      = "-101"
                     "events"   = ["n=-101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 64 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 64 00 00 00 00 00 00 00|
                     "cte"      = "-100"
                     "events"   = ["n=-100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 63 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 63 00 00 00 00 00 00 00|
                     "cte"      = "-99"
                     "events"   = ["n=-99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 14 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 14 00 00 00 00 00 00 00|
                     "cte"      = "-20"
                     "events"   = ["n=-20"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 06 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 06 00 00 00 00 00 00 00|
                     "cte"      = "-6"
                     "events"   = ["n=-6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 05 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 05 00 00 00 00 00 00 00|
                     "cte"      = "-5"
                     "events"   = ["n=-5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 04 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 04 00 00 00 00 00 00 00|
                     "cte"      = "-4"
                     "events"   = ["n=-4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 03 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 03 00 00 00 00 00 00 00|
                     "cte"      = "-3"
                     "events"   = ["n=-3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 02 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 02 00 00 00 00 00 00 00|
                     "cte"      = "-2"
                     "events"   = ["n=-2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 01 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 01 00 00 00 00 00 00 00|
                     "cte"      = "-1"
                     "events"   = ["n=-1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6f 00 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6f 00 00 00 00 00 00 00 00|
                     "cte"      = "-0"
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 00 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 00 00 00 00 00 00 00 00|
                     "cte"      = "0"
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 01 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 01 00 00 00 00 00 00 00|
                     "cte"      = "1"
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 02 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 02 00 00 00 00 00 00 00|
                     "cte"      = "2"
                     "events"   = ["n=2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 03 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 03 00 00 00 00 00 00 00|
                     "cte"      = "3"
                     "events"   = ["n=3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 04 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 04 00 00 00 00 00 00 00|
                     "cte"      = "4"
                     "events"   = ["n=4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 05 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 05 00 00 00 00 00 00 00|
                     "cte"      = "5"
                     "events"   = ["n=5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 06 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 06 00 00 00 00 00 00 00|
                     "cte"      = "6"
                     "events"   = ["n=6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 37 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 37 00 00 00 00 00 00 00|
                     "cte"      = "55"
                     "events"   = ["n=55"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 5b 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 5b 00 00 00 00 00 00 00|
                     "cte"      = "91"
                     "events"   = ["n=91"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 63 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 63 00 00 00 00 00 00 00|
                     "cte"      = "99"
                     "events"   = ["n=99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 64 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 64 00 00 00 00 00 00 00|
                     "cte"      = "100"
                     "events"   = ["n=100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 65 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 65 00 00 00 00 00 00 00|
                     "cte"      = "101"
                     "events"   = ["n=101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e c8 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e c8 00 00 00 00 00 00 00|
                     "cte"      = "200"
                     "events"   = ["n=200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e fe 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e fe 00 00 00 00 00 00 00|
                     "cte"      = "254"
                     "events"   = ["n=254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e ff 00 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e ff 00 00 00 00 00 00 00|
                     "cte"      = "255"
                     "events"   = ["n=255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e e8 03 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e e8 03 00 00 00 00 00 00|
                     "cte"      = "1000"
                     "events"   = ["n=1000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e ff ff 00 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e ff ff 00 00 00 00 00 00|
                     "cte"      = "65535"
                     "events"   = ["n=65535"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 00 00 01 00 00 00 00 00|
+                    "from_cbe" = |u8x 6e 00 00 01 00 00 00 00 00|
                     "cte"      = "65536"
                     "events"   = ["n=65536"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e ff ff ff ff 00 00 00 00|
+                    "from_cbe" = |u8x 6e ff ff ff ff 00 00 00 00|
                     "cte"      = "4294967295"
                     "events"   = ["n=0xffffffff"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 6e 00 00 00 00 01 00 00 00|
+                    "from_cbe" = |u8x 6e 00 00 00 00 01 00 00 00|
                     "cte"      = "4294967296"
                     "events"   = ["n=0x100000000"]
                 }
@@ -1007,14 +885,12 @@ c0
                     "events"   = ["n=-10000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "100_00_0_00000000000_00000000_000_0"
+                    "from_cte" = "100_00_0_00000000000_00000000_000_0"
                     "cbe"      = |u8x 66 0c 00 00 00 10 61 02 25 3e 5e ce 4f 20|
                     "events"   = ["n=10000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-4_9_5__2___3"
+                    "from_cte" = "-4_9_5__2___3"
                     "cbe"      = |u8x 6b 73 c1|
                     "events"   = ["n=-49523"]
                 }
@@ -1035,68 +911,57 @@ c0
             "name" = "CTE Binary Integer"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0b0"
+                    "from_cte" = "0b0"
                     "cbe"      = |u8x 00|
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0b0"
+                    "from_cte" = "-0b0"
                     "cbe"      = |u8x 69 00|
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0b1"
+                    "from_cte" = "0b1"
                     "cbe"      = |u8x 01|
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0b101"
+                    "from_cte" = "-0b101"
                     "cbe"      = |u8x fb|
                     "events"   = ["n=-5"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0b0010100"
+                    "from_cte" = "0b0010100"
                     "cbe"      = |u8x 14|
                     "events"   = ["n=20"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0b1_0_0"
+                    "from_cte" = "-0b1_0_0"
                     "cbe"      = |u8x fc|
                     "events"   = ["n=-4"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0b0_0_1__010__1"
+                    "from_cte" = "0b0_0_1__010__1"
                     "cbe"      = |u8x 15|
                     "events"   = ["n=21"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    "from_cte" = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                     "cbe"      = |u8x 66 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01|
                     "events"   = ["n=0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    "from_cte" = "-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                     "cbe"      = |u8x 67 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01|
                     "events"   = ["n=-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
+                    "from_cte" = "0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
                     "cbe"      = |u8x 66 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01|
                     "events"   = ["n=0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
+                    "from_cte" = "-0b100000000000000_000000000000_000000000000000000000000_000000000000000000000_0000000000000000000000000000000000000000_0"
                     "cbe"      = |u8x 67 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01|
                     "events"   = ["n=-0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"]
                 }
@@ -1121,68 +986,57 @@ c0
             "name" = "CTE Octal Integer"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o0"
+                    "from_cte" = "0o0"
                     "cbe"      = |u8x 00|
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0o0"
+                    "from_cte" = "-0o0"
                     "cbe"      = |u8x 69 00|
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o1"
+                    "from_cte" = "0o1"
                     "cbe"      = |u8x 01|
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o7"
+                    "from_cte" = "0o7"
                     "cbe"      = |u8x 07|
                     "events"   = ["n=7"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0o51"
+                    "from_cte" = "-0o51"
                     "cbe"      = |u8x d7|
                     "events"   = ["n=-0o51"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o644"
+                    "from_cte" = "0o644"
                     "cbe"      = |u8x 6a a4 01|
                     "events"   = ["n=0o644"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0o777"
+                    "from_cte" = "-0o777"
                     "cbe"      = |u8x 6b ff 01|
                     "events"   = ["n=-0o777"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o1000000000000000000000000000000000000000000000"
+                    "from_cte" = "0o1000000000000000000000000000000000000000000000"
                     "cbe"      = |u8x 66 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80|
                     "events"   = ["n=0o1000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0o1000000000000000000000000000000000000000000000"
+                    "from_cte" = "-0o1000000000000000000000000000000000000000000000"
                     "cbe"      = |u8x 67 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80|
                     "events"   = ["n=-0o1000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o1000000_0000000000_00000000000_000000000000_000000"
+                    "from_cte" = "0o1000000_0000000000_00000000000_000000000000_000000"
                     "cbe"      = |u8x 66 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80|
                     "events"   = ["n=0o1000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0o7__7___7"
+                    "from_cte" = "0o7__7___7"
                     "cbe"      = |u8x 6a ff 01|
                     "events"   = ["n=0o777"]
                 }
@@ -1207,68 +1061,57 @@ c0
             "name" = "CTE Hexadecimal Integer"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0x0"
+                    "from_cte" = "0x0"
                     "cbe"      = |u8x 00|
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0x0"
+                    "from_cte" = "-0x0"
                     "cbe"      = |u8x 69 00|
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0x1"
+                    "from_cte" = "0x1"
                     "cbe"      = |u8x 01|
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0xf"
+                    "from_cte" = "0xf"
                     "cbe"      = |u8x 0f|
                     "events"   = ["n=15"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0xd4"
+                    "from_cte" = "-0xd4"
                     "cbe"      = |u8x 69 d4|
                     "events"   = ["n=-0xd4"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0xfedcba9876543210"
+                    "from_cte" = "0xfedcba9876543210"
                     "cbe"      = |u8x 6e 10 32 54 76 98 ba dc fe|
                     "events"   = ["n=0xfedcba9876543210"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0xFEDCBA9876543210"
+                    "from_cte" = "-0xFEDCBA9876543210"
                     "cbe"      = |u8x 6f 10 32 54 76 98 ba dc fe|
                     "events"   = ["n=-0xfedcba9876543210"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0x1000000000000000000000000000000000000000000000"
+                    "from_cte" = "0x1000000000000000000000000000000000000000000000"
                     "cbe"      = |u8x 66 17 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10|
                     "events"   = ["n=0x1000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "-0x1000000000000000000000000000000000000000000000"
+                    "from_cte" = "-0x1000000000000000000000000000000000000000000000"
                     "cbe"      = |u8x 67 17 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10|
                     "events"   = ["n=-0x1000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0x100000000_000000_00000_000__000_0000000000000_0000000"
+                    "from_cte" = "0x100000000_000000_00000_000__000_0000000000000_0000000"
                     "cbe"      = |u8x 66 17 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10|
                     "events"   = ["n=0x1000000000000000000000000000000000000000000000"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "0x8_8__5_a_f__d"
+                    "from_cte" = "0x8_8__5_a_f__d"
                     "cbe"      = |u8x 6c fd 5a 88 00|
                     "events"   = ["n=0x885afd"]
                 }
@@ -1304,14 +1147,12 @@ c0
                 }
 
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 08 ff ff ff ff ff ff ff ff|
+                    "from_cbe" = |u8x 67 08 ff ff ff ff ff ff ff ff|
                     "cte"      = "-18446744073709551615"
                     "events"   = ["n=-0xffffffffffffffff"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 07 00 00 00 00 00 00 01|
+                    "from_cbe" = |u8x 67 07 00 00 00 00 00 00 01|
                     "cte"      = "-281474976710656"
                     "events"   = ["n=-0x1000000000000"]
                 }
@@ -1326,224 +1167,187 @@ c0
                     "events"   = ["n=-0x100000000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 04 ff ff ff ff|
+                    "from_cbe" = |u8x 67 04 ff ff ff ff|
                     "cte"      = "-4294967295"
                     "events"   = ["n=-0xffffffff"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 03 00 00 01|
+                    "from_cbe" = |u8x 67 03 00 00 01|
                     "cte"      = "-65536"
                     "events"   = ["n=-65536"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 02 ff ff|
+                    "from_cbe" = |u8x 67 02 ff ff|
                     "cte"      = "-65535"
                     "events"   = ["n=-65535"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 02 e8 03|
+                    "from_cbe" = |u8x 67 02 e8 03|
                     "cte"      = "-1000"
                     "events"   = ["n=-1000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 ff|
+                    "from_cbe" = |u8x 67 01 ff|
                     "cte"      = "-255"
                     "events"   = ["n=-255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 fe|
+                    "from_cbe" = |u8x 67 01 fe|
                     "cte"      = "-254"
                     "events"   = ["n=-254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 c8|
+                    "from_cbe" = |u8x 67 01 c8|
                     "cte"      = "-200"
                     "events"   = ["n=-200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 65|
+                    "from_cbe" = |u8x 67 01 65|
                     "cte"      = "-101"
                     "events"   = ["n=-101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 64|
+                    "from_cbe" = |u8x 67 01 64|
                     "cte"      = "-100"
                     "events"   = ["n=-100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 63|
+                    "from_cbe" = |u8x 67 01 63|
                     "cte"      = "-99"
                     "events"   = ["n=-99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 14|
+                    "from_cbe" = |u8x 67 01 14|
                     "cte"      = "-20"
                     "events"   = ["n=-20"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 06|
+                    "from_cbe" = |u8x 67 01 06|
                     "cte"      = "-6"
                     "events"   = ["n=-6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 05|
+                    "from_cbe" = |u8x 67 01 05|
                     "cte"      = "-5"
                     "events"   = ["n=-5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 04|
+                    "from_cbe" = |u8x 67 01 04|
                     "cte"      = "-4"
                     "events"   = ["n=-4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 03|
+                    "from_cbe" = |u8x 67 01 03|
                     "cte"      = "-3"
                     "events"   = ["n=-3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 02|
+                    "from_cbe" = |u8x 67 01 02|
                     "cte"      = "-2"
                     "events"   = ["n=-2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 01|
+                    "from_cbe" = |u8x 67 01 01|
                     "cte"      = "-1"
                     "events"   = ["n=-1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 67 01 00|
+                    "from_cbe" = |u8x 67 01 00|
                     "cte"      = "-0"
                     "events"   = ["n=-0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 00|
+                    "from_cbe" = |u8x 66 01 00|
                     "cte"      = "0"
                     "events"   = ["n=0"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 01|
+                    "from_cbe" = |u8x 66 01 01|
                     "cte"      = "1"
                     "events"   = ["n=1"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 02|
+                    "from_cbe" = |u8x 66 01 02|
                     "cte"      = "2"
                     "events"   = ["n=2"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 03|
+                    "from_cbe" = |u8x 66 01 03|
                     "cte"      = "3"
                     "events"   = ["n=3"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 04|
+                    "from_cbe" = |u8x 66 01 04|
                     "cte"      = "4"
                     "events"   = ["n=4"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 05|
+                    "from_cbe" = |u8x 66 01 05|
                     "cte"      = "5"
                     "events"   = ["n=5"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 06|
+                    "from_cbe" = |u8x 66 01 06|
                     "cte"      = "6"
                     "events"   = ["n=6"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 37|
+                    "from_cbe" = |u8x 66 01 37|
                     "cte"      = "55"
                     "events"   = ["n=55"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 5b|
+                    "from_cbe" = |u8x 66 01 5b|
                     "cte"      = "91"
                     "events"   = ["n=91"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 63|
+                    "from_cbe" = |u8x 66 01 63|
                     "cte"      = "99"
                     "events"   = ["n=99"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 64|
+                    "from_cbe" = |u8x 66 01 64|
                     "cte"      = "100"
                     "events"   = ["n=100"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 65|
+                    "from_cbe" = |u8x 66 01 65|
                     "cte"      = "101"
                     "events"   = ["n=101"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 c8|
+                    "from_cbe" = |u8x 66 01 c8|
                     "cte"      = "200"
                     "events"   = ["n=200"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 fe|
+                    "from_cbe" = |u8x 66 01 fe|
                     "cte"      = "254"
                     "events"   = ["n=254"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 01 ff|
+                    "from_cbe" = |u8x 66 01 ff|
                     "cte"      = "255"
                     "events"   = ["n=255"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 02 e8 03|
+                    "from_cbe" = |u8x 66 02 e8 03|
                     "cte"      = "1000"
                     "events"   = ["n=1000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 02 ff ff|
+                    "from_cbe" = |u8x 66 02 ff ff|
                     "cte"      = "65535"
                     "events"   = ["n=65535"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 03 00 00 01|
+                    "from_cbe" = |u8x 66 03 00 00 01|
                     "cte"      = "65536"
                     "events"   = ["n=65536"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 04 ff ff ff ff|
+                    "from_cbe" = |u8x 66 04 ff ff ff ff|
                     "cte"      = "4294967295"
                     "events"   = ["n=0xffffffff"]
                 }
@@ -1558,14 +1362,12 @@ c0
                     "events"   = ["n=0x10000000000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 07 00 00 00 00 00 00 01|
+                    "from_cbe" = |u8x 66 07 00 00 00 00 00 00 01|
                     "cte"      = "281474976710656"
                     "events"   = ["n=0x1000000000000"]
                 }
                 {
-                    "lossyCBE" = true
-                    "cbe"      = |u8x 66 08 ff ff ff ff ff ff ff ff|
+                    "from_cbe" = |u8x 66 08 ff ff ff ff ff ff ff ff|
                     "cte"      = "18446744073709551615"
                     "events"   = ["n=0xffffffffffffffff"]
                 }

@@ -57,11 +57,10 @@ c0
                     |
                     "events"=["au16x=0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8 9"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e2 00|                    "events"=["au16x"]}
-                {"lossyCBE"=true  "cbe"=|u8x 7f e2 06 02 01 04 03 06 05|  "events"=["au16x=0102 0304 0506"]}
+                {"from_cbe"=|u8x 7f e2 00|                    "events"=["au16x"]}
+                {"from_cbe"=|u8x 7f e2 06 02 01 04 03 06 05|  "events"=["au16x=0102 0304 0506"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e2 1e
                         02 01 04 03 06 05 08 07 0a 09 0c 0b 0e 0d 01 00
                         02 00 03 00 04 00 05 00 06 00 07 00 08 00
@@ -69,8 +68,7 @@ c0
                     "events"=["au16x=0102 0304 0506 0708 090a 0b0c 0d0e 1 2 3 4 5 6 7 8"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e2
                         05 02 01 04 03
                         1a 06 05 08 07 0a 09 0c 0b 0e 0d 01 00 02 00
@@ -144,11 +142,10 @@ c0
                         "
                     ]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e4 00|                    "events"=["au32x"]}
-                {"lossyCBE"=true  "cbe"=|u8x 7f e4 06 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["au32x=01020304 05060708 090a0b0c"]}
+                {"from_cbe"=|u8x 7f e4 00|                    "events"=["au32x"]}
+                {"from_cbe"=|u8x 7f e4 06 04 03 02 01 08 07 06 05 0c 0b 0a 09|  "events"=["au32x=01020304 05060708 090a0b0c"]}
                 {
-                    "lossyCBE"=true
-                    "cbe" = |u8x
+                    "from_cbe" = |u8x
                         7f e4 1e
                         04 03 02 01 08 07 06 05 0c 0b 0a 09 00 0f 0e 0d
                         14 13 12 11 18 17 16 15 1c 1b 1a 19 10 1f 1e 1d
@@ -165,8 +162,7 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe" = |u8x
+                    "from_cbe" = |u8x
                         7f e4
                         07
                         04 03 02 01 08 07 06 05 0c 0b 0a 09
@@ -266,15 +262,13 @@ c0
                         "
                     ]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e6 00|  "events"=["au64x"]}
+                {"from_cbe"=|u8x 7f e6 00|  "events"=["au64x"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x 7f e6 04 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
+                    "from_cbe"=|u8x 7f e6 04 08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09|
                     "events"=["au64x=0102030405060708 090a0b0c0d0e0f00"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe" = |u8x
+                    "from_cbe" = |u8x
                         7f e6 1e
                         08 07 06 05 04 03 02 01 00 0f 0e 0d 0c 0b 0a 09
                         18 17 16 15 14 13 12 11 10 1f 1e 1d 1c 1b 1a 19
@@ -299,8 +293,7 @@ c0
                     ]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe" = |u8x
+                    "from_cbe" = |u8x
                         7f e6
                         03
                         08 07 06 05 04 03 02 01
@@ -364,16 +357,14 @@ c0
                     "cbe"=|u8x 7f e1 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08|
                     "events"=["ai8=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e1 00|                 "events"=["ai8"]}
-                {"lossyCBE"=true  "cbe"=|u8x 7f e1 0a fe ff 00 01 02|  "events"=["ai8=-2 -1 0 1 2"]}
+                {"from_cbe"=|u8x 7f e1 00|                 "events"=["ai8"]}
+                {"from_cbe"=|u8x 7f e1 0a fe ff 00 01 02|  "events"=["ai8=-2 -1 0 1 2"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x 7f e1 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
+                    "from_cbe"=|u8x 7f e1 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
                     "events"=["ai8=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e1
                         03 f9 03 fa 03 fb 03 fc 03 fd 03 fe 03 ff
                         03 00 03 01 03 02 03 03 03 04 03 05 03 06 02 07
@@ -443,11 +434,10 @@ c0
                     |
                     "events"=["ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e3 00|                                "events"=["ai16"]}
-                {"lossyCBE"=true  "cbe"=|u8x 7f e3 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["ai16=-2 -1 0 1 2"]}
+                {"from_cbe"=|u8x 7f e3 00|                                "events"=["ai16"]}
+                {"from_cbe"=|u8x 7f e3 0a fe ff ff ff 00 00 01 00 02 00|  "events"=["ai16=-2 -1 0 1 2"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e3 1e
                         f9 ff fa ff fb ff fc ff fd ff fe ff ff ff
                         00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
@@ -455,8 +445,7 @@ c0
                     "events"=["ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e3
                         0b f9 ff fa ff fb ff fc ff fd ff
                         14 fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00
@@ -520,18 +509,16 @@ c0
                     |
                     "events"=["ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e5 00|  "events"=["ai32"]}
+                {"from_cbe"=|u8x 7f e5 00|  "events"=["ai32"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e5 0a
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
                     |
                     "events"=["ai32=-2 -1 0 1 2"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e5 1e
                         f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff
                         fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00
@@ -540,8 +527,7 @@ c0
                     "events"=["ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e5
                         05
                         f9 ff ff ff fa ff ff ff
@@ -620,10 +606,9 @@ c0
                     |
                     "events"=["ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e7 00|  "events"=["ai64"]}
+                {"from_cbe"=|u8x 7f e7 00|  "events"=["ai64"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e7 0a
                         fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
                         00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
@@ -632,8 +617,7 @@ c0
                     "events"=["ai64=-2 -1 0 1 2"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e7 1e
                         f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
                         fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff
@@ -647,8 +631,7 @@ c0
                     "events"=["ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e7
                         05
                         f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff
@@ -711,11 +694,10 @@ c0
                     |
                     "events"=["af16=0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0 0"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e8 00|              "events"=["af16"]}
-                {"lossyCBE"=true  "cbe"=|u8x 7f e8 04 a8 40 fc b5|  "events"=["af16=0x1.5p2 -0x1.f8p-20"]}
+                {"from_cbe"=|u8x 7f e8 00|              "events"=["af16"]}
+                {"from_cbe"=|u8x 7f e8 04 a8 40 fc b5|  "events"=["af16=0x1.5p2 -0x1.f8p-20"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e8 1e
                         a8 40 fc b5 f8 3a 88 c4 28 40 b0 40 38 41 c0 41
                         00 00 00 80 80 7f 80 ff 00 00 00 00 00 00
@@ -723,8 +705,7 @@ c0
                     "events"=["af16=0x1.5p2 -0x1.f8p-20 0x1.fp-10 -0x1.1p+10 0x1.5p1 0x1.6p2 0x1.7p3 0x1.8p4 0 -0 inf -inf 0 0 0"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e8
                         0b
                         a8 40 fc b5 f8 3a 88 c4 28 40
@@ -791,11 +772,10 @@ c0
                     |
                     "events"=["af32=-0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0 0"]
                 }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e9 00|              "events"=["af32"]}
-                {"lossyCBE"=true  "cbe"=|u8x 7f e9 04 00 c8 fc b5 00 b1 48 d0|  "events"=["af32=-0x1.f99p-20 -0xc.8b1p30"]}
+                {"from_cbe"=|u8x 7f e9 00|              "events"=["af32"]}
+                {"from_cbe"=|u8x 7f e9 04 00 c8 fc b5 00 b1 48 d0|  "events"=["af32=-0x1.f99p-20 -0xc.8b1p30"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e9 1e
                         00 c8 fc b5 00 b1 48 d0
                         00 fd a7 3f 00 fe c8 35 00 08 92 3f
@@ -807,8 +787,7 @@ c0
                     "events"=["af32=-0x1.f99p-20 -0xc.8b1p30 0x1.4ffa 0x1.91fcp-20 0x1.241 -0x1.5d99fp33 0x1.e39011p-33 0x1.a3d33p-8 0 -0 inf -inf 0 0 0"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e9
                         03
                         00 c8 fc b5
@@ -880,15 +859,13 @@ c0
                     |
                     "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0 0"]
                  }
-                {"lossyCBE"=true  "cbe"=|u8x 7f ea 00|              "events"=["af64"]}
+                {"from_cbe"=|u8x 7f ea 00|              "events"=["af64"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x 7f ea 04 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
+                    "from_cbe"=|u8x 7f ea 04 00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3|
                     "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f ea 1e
                         00 00 cc ea f1 7f 32 be 00 10 90 ea fc 87 18 c3
                         60 26 e6 4f 31 93 68 3c 00 d9 9d 9f 33 98 35 41 80 88 42 13 48 d6 15 40
@@ -900,8 +877,7 @@ c0
                     "events"=["af64=-0x4.9ffc7ab3p-30 -0x1.887fcea901p50 0xc.4998a7f3133p-60 0x1.598339f9dd9p+20 0x5.759204d0a22 -0x9.63f99ac9e44p-15 0x6.34019f23293a -0x9.594642ff0ffp-41 0 -0 inf -inf 0 0 0"]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f ea
                         03
                         00 00 cc ea f1 7f 32 be
@@ -1032,10 +1008,9 @@ c0
                         e3db8ab4-707f-11ec-b9a7-9fb752e6248a
                     "]
                  }
-                {"lossyCBE"=true  "cbe"=|u8x 7f e0 00|              "events"=["au"]}
+                {"from_cbe"=|u8x 7f e0 00|              "events"=["au"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e0 04
                         2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
                         2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
@@ -1045,8 +1020,7 @@ c0
                         2db6b6a0-707f-11ec-aca8-4fceb7fca666
                     "]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e0 1e
                         8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
                         8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
@@ -1083,8 +1057,7 @@ c0
                     "]
                 }
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e0
                         03
                         8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
@@ -1143,8 +1116,7 @@ c0
                 {"cbe"=|u8x 94 06 05|  "events"=["ab=101"]}
                 {"cbe"=|u8x 94 3e 4d 29 6b 52|  "events"=["ab=1011001010010100110101100100101"]}
                 {
-                    "lossyCBE"=true
-                    "cbe"=|u8x
+                    "to_cbe"=|u8x
                         94
                         07 05
                         02 01
@@ -1210,9 +1182,9 @@ c0
         {
             "name" = "String (Long)"
             "mustSucceed" = [
-                {"lossyCBE"=true  "cbe"=|u8x 90 00|           "events"=["s"]}
-                {"lossyCBE"=true  "cbe"=|u8x 90 02 78|        "events"=["s=x"]}
-                {"lossyCBE"=true  "cbe"=|u8x 90 06 78 79 7a|  "events"=["s=xyz"]}
+                {"from_cbe"=|u8x 90 00|           "events"=["s"]}
+                {"from_cbe"=|u8x 90 02 78|        "events"=["s=x"]}
+                {"from_cbe"=|u8x 90 06 78 79 7a|  "events"=["s=xyz"]}
                 {
                     "cbe"=|u8x
                         90 d8 08 73 6b 79 20 e0 ae b5 e0 ae be e0

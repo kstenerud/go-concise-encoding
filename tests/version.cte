@@ -38,18 +38,18 @@ c1
             "name" = "Version specifier"
 
             "mustSucceed" = [
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="c0 1"           "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="C0 1"           "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="c0\n1"          "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="C0\n1"          "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="c0\t1"          "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="C0\t1"          "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="c0\r\n1"        "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="C0\r\n1"        "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="\r\n\t  c0 1"   "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="\r\n\t  C0 1"   "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="c0 \r\n\t   1"  "events"=["v=0" "n=1"]}
-                {"rawDocument"=true  "lossyCTE"=true  "cte"="C0 \r\n\t   1"  "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="c0 1"           "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="C0 1"           "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="c0\n1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="C0\n1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="c0\t1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="C0\t1"          "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="c0\r\n1"        "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="C0\r\n1"        "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="\r\n\t  c0 1"   "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="\r\n\t  C0 1"   "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="c0 \r\n\t   1"  "events"=["v=0" "n=1"]}
+                {"rawDocument"=true  "from_cte"="C0 \r\n\t   1"  "events"=["v=0" "n=1"]}
             ]
             "mustFail" = [
                 {"cte"="c0{}"}  // Missing whitespace

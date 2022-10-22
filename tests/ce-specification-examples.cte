@@ -141,8 +141,7 @@ null
             "name" = "Binary Floating Point"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte" = "\.%%%%
+                    "from_cte" = "\.%%%%
 [
     0xa.3fb8p+42
     0x1.0p0
@@ -313,8 +312,7 @@ null
             "name" = "Typed Array"
             "mustSucceed" = [
                 {
-                    "lossyCTE" = true
-                    "cte" = "\.%%%%
+                    "from_cte" = "\.%%%%
 [
     |u8x 9f 47 cb 9a 3c|
     |f32 1.5 0x4.f391p100 30 9.31e-30|

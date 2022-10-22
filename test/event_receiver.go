@@ -227,12 +227,15 @@ func (_this *EventReceiver) OnStringlikeArray(arrayType events.ArrayType, value 
 }
 func (_this *EventReceiver) OnMedia(mediaType string, value []byte) {
 	_this.iterate(MEDIA(mediaType, value))
+	_this.next.OnMedia(mediaType, value)
 }
 func (_this *EventReceiver) OnCustomText(customType uint64, value string) {
 	_this.iterate(CT(customType, value))
+	_this.next.OnCustomText(customType, value)
 }
 func (_this *EventReceiver) OnCustomBinary(customType uint64, value []byte) {
 	_this.iterate(CB(customType, value))
+	_this.next.OnCustomBinary(customType, value)
 }
 func (_this *EventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	switch arrayType {
@@ -276,6 +279,8 @@ func (_this *EventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 }
 func (_this *EventReceiver) OnMediaBegin(mediaType string) {
 	_this.iterate(BMEDIA(mediaType))
+	_this.arrayType = events.ArrayTypeMedia
+	_this.next.OnMediaBegin(mediaType)
 }
 func (_this *EventReceiver) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
 	switch arrayType {
@@ -286,6 +291,8 @@ func (_this *EventReceiver) OnCustomBegin(arrayType events.ArrayType, customType
 	default:
 		panic(fmt.Errorf("unknown custom type %v", arrayType))
 	}
+	_this.arrayType = arrayType
+	_this.next.OnCustomBegin(arrayType, customType)
 }
 func (_this *EventReceiver) OnArrayChunk(length uint64, moreChunks bool) {
 	if moreChunks {

@@ -10,23 +10,23 @@ c0
             "name" = "Incomplete document"
             "mustFail" = [
                 {
-                    "rawDocument" = true
+                    "raw_document" = true
                     "cbe" = |u8x 81|
                 }
                 {
-                    "rawDocument" = true
+                    "raw_document" = true
                     "cbe" = |u8x 81 01|
                 }
                 {
-                    "rawDocument" = true
+                    "raw_document" = true
                     "cte" = "c"
                 }
                 {
-                    "rawDocument" = true
+                    "raw_document" = true
                     "cte" = "c1"
                 }
                 {
-                    "rawDocument" = true
+                    "raw_document" = true
                     "cte" = "c1 "
                 }
             ]
@@ -38,9 +38,8 @@ c0
             "name" = "Padding"
             "mustSucceed" = [
                 {
-                    "cbe" = |u8x 95 95 95 7d|
-                    "lossyCTE" = true
-                    "cte" = "null"
+                    "cbe"    = |u8x 95 95 95 7d|
+                    "to_cte" = "null"
                     "events" = ["pad" "pad" "pad" "null"]
                 }
             ]
@@ -52,21 +51,19 @@ c0
             "name" = "Null"
             "mustSucceed" = [
                 {
-                    "cte" = "null"
-                    "cbe" = |u8x 7d|
-                    "events" = ["null"]
+                    "cte"      = "null"
+                    "cbe"      = |u8x 7d|
+                    "events"   = ["null"]
                 }
                 {
-                    "lossyCTE"=true
-                    "cte"="Null"
-                    "cbe" = |u8x 7d|
-                    "events"=["null"]
+                    "from_cte "= "Null"
+                    "cbe"      = |u8x 7d|
+                    "events"   = ["null"]
                 }
                 {
-                    "lossyCTE"=true
-                    "cte"="NULL"
-                    "cbe" = |u8x 7d|
-                    "events"=["null"]
+                    "from_cte" = "NULL"
+                    "cbe"      = |u8x 7d|
+                    "events"   = ["null"]
                 }
             ]
             "mustFail" = [
@@ -91,26 +88,22 @@ c0
                     "events"   = ["b=true"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "True"
+                    "from_cte" = "True"
                     "cbe"      = |u8x 79|
                     "events"   = ["b=true"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "TRUE"
+                    "from_cte" = "TRUE"
                     "cbe"      = |u8x 79|
                     "events"   = ["b=true"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "False"
+                    "from_cte" = "False"
                     "cbe"      = |u8x 78|
                     "events"   = ["b=false"]
                 }
                 {
-                    "lossyCTE" = true
-                    "cte"      = "FALSE"
+                    "from_cte" = "FALSE"
                     "cbe"      = |u8x 78|
                     "events"   = ["b=false"]
                 }
@@ -222,38 +215,32 @@ c0
                 }
                 {
                     "cbe"      = |u8x 65 a2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCTE" = true
-                    "cte"      = "A23456af-0000-0000-0000-000000000000"
+                    "from_cte" = "A23456af-0000-0000-0000-000000000000"
                     "events"   = ["uid=a23456af-0000-0000-0000-000000000000"]
                 }
                 {
                     "cbe"      = |u8x 65 b2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCTE" = true
-                    "cte"      = "B23456af-0000-0000-0000-000000000000"
+                    "from_cte" = "B23456af-0000-0000-0000-000000000000"
                     "events"   = ["uid=b23456af-0000-0000-0000-000000000000"]
                 }
                 {
                     "cbe"      = |u8x 65 c2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCTE" = true
-                    "cte"      = "C23456af-0000-0000-0000-000000000000"
+                    "from_cte" = "C23456af-0000-0000-0000-000000000000"
                     "events"   = ["uid=c23456af-0000-0000-0000-000000000000"]
                 }
                 {
                     "cbe"      = |u8x 65 d2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCTE" = true
-                    "cte"      = "D23456af-0000-0000-0000-000000000000"
+                    "from_cte" = "D23456af-0000-0000-0000-000000000000"
                     "events"   = ["uid=d23456af-0000-0000-0000-000000000000"]
                 }
                 {
                     "cbe"      = |u8x 65 e2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCTE" = true
-                    "cte"      = "E23456af-0000-0000-0000-000000000000"
+                    "from_cte" = "E23456af-0000-0000-0000-000000000000"
                     "events"   = ["uid=e23456af-0000-0000-0000-000000000000"]
                 }
                 {
                     "cbe"      = |u8x 65 f2 34 56 af 00 00 00 00 00 00 00 00 00 00 00 00|
-                    "lossyCTE" = true
-                    "cte"      = "F23456af-0000-0000-0000-000000000000"
+                    "from_cte" = "F23456af-0000-0000-0000-000000000000"
                     "events"   = ["uid=f23456af-0000-0000-0000-000000000000"]
                 }
                 {

@@ -235,6 +235,10 @@ func (_this *EventMedia) String() string {
 	}
 }
 
+type NegFFFFFFFFFFFFFFFF struct{}
+
+func (_this NegFFFFFFFFFFFFFFFF) String() string { return "-18446744073709551615" }
+
 type EventNumeric struct{ BaseEvent }
 
 func N(value interface{}) Event {
@@ -302,7 +306,17 @@ func N(value interface{}) Event {
 			}
 		}
 	case *big.Int:
-		value = big.NewInt(0).Set(v)
+		vCopy := big.NewInt(0).Set(v)
+		if u := vCopy.Uint64(); u == 0xffffffffffffffff && vCopy.Sign() < 0 {
+			vCopy.Neg(vCopy)
+			if vCopy.IsUint64() {
+				// Workaround for big.Int bug where the sign gets reset
+				value = NegFFFFFFFFFFFFFFFF{}
+				break
+			}
+			vCopy.Set(v)
+		}
+		value = vCopy
 	}
 
 	return &EventNumeric{
@@ -340,6 +354,8 @@ func N(value interface{}) Event {
 				receiver.OnDecimalFloat(v)
 			case *apd.Decimal:
 				receiver.OnBigDecimalFloat(v)
+			case NegFFFFFFFFFFFFFFFF:
+				receiver.OnNegativeInt(0xffffffffffffffff)
 			default:
 				panic(fmt.Errorf("unexpected numeric type %v for value %v", reflect.TypeOf(value), value))
 			}

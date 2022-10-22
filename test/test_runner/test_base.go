@@ -41,12 +41,12 @@ import (
 
 type BaseTest struct {
 	ceVersion   int
-	CBE         []byte   `ce:"order=1,omitempty"`
-	CTE         string   `ce:"order=2,omitempty"`
-	Events      []string `ce:"order=3,omitempty"`
-	RawDocument bool     `ce:"order=4,omitempty"`
-	Skip        bool     `ce:"order=5,omitempty"`
-	Debug       bool     `ce:"order=6,omitempty"` // When true, don't convert panics to errors.
+	CBE         []byte   `ce:"order=10,omitempty"`
+	CTE         string   `ce:"order=20,omitempty"`
+	Events      []string `ce:"order=30,omitempty"`
+	RawDocument bool     `ce:"order=40,omitempty"`
+	Skip        bool     `ce:"order=50,omitempty"`
+	Debug       bool     `ce:"order=60,omitempty"` // When true, don't convert panics to errors.
 	events      test.Events
 	context     string
 }
@@ -58,29 +58,41 @@ func (_this *BaseTest) PostDecodeInit(ceVersion int, context string) error {
 
 	_this.ceVersion = ceVersion
 	_this.context = context
-	_this.CTE = strings.TrimSpace(_this.CTE)
-	if !_this.RawDocument {
-		if len(_this.CTE) > 0 {
-			_this.CTE = fmt.Sprintf("c%v\n%v", _this.ceVersion, _this.CTE)
-		}
-		if len(_this.CBE) > 0 {
-			b := make([]byte, len(_this.CBE)+2)
-			b[0] = 0x81
-			b[1] = byte(_this.ceVersion)
-			copy(b[2:], _this.CBE)
-			_this.CBE = b
-		}
-	}
-
-	_this.events = event_parser.ParseEvents(_this.Events...)
-	if !_this.RawDocument && len(_this.events) > 0 {
-		newEvents := make(test.Events, 0, len(_this.events)+1)
-		newEvents = append(newEvents, test.V(uint64(_this.ceVersion)))
-		newEvents = append(newEvents, _this.events...)
-		_this.events = newEvents
-	}
+	_this.CTE = _this.PostDecodeCTE(_this.CTE)
+	_this.CBE = _this.PostDecodeCBE(_this.CBE)
+	_this.events = _this.PostDecodeEvents(_this.Events)
 
 	return nil
+}
+
+func (_this *BaseTest) PostDecodeCTE(cte string) string {
+	cte = strings.TrimSpace(cte)
+	if !_this.RawDocument && len(cte) > 0 {
+		cte = fmt.Sprintf("c%v\n%v", _this.ceVersion, cte)
+	}
+	return cte
+}
+
+func (_this *BaseTest) PostDecodeCBE(cbe []byte) []byte {
+	if !_this.RawDocument && len(cbe) > 0 {
+		b := make([]byte, len(cbe)+2)
+		b[0] = 0x81
+		b[1] = byte(_this.ceVersion)
+		copy(b[2:], cbe)
+		cbe = b
+	}
+	return cbe
+}
+
+func (_this *BaseTest) PostDecodeEvents(eventStrings []string) test.Events {
+	events := event_parser.ParseEvents(eventStrings...)
+	if !_this.RawDocument && len(events) > 0 {
+		newEvents := make(test.Events, 0, len(events)+1)
+		newEvents = append(newEvents, test.V(uint64(_this.ceVersion)))
+		newEvents = append(newEvents, events...)
+		events = newEvents
+	}
+	return events
 }
 
 func (_this *BaseTest) errorf(format string, args ...interface{}) error {
@@ -100,6 +112,19 @@ func (_this *BaseTest) wrapError(err error, format string, args ...interface{}) 
 }
 
 func (_this *BaseTest) cteToEvents(document string) (result test.Events, err error) {
+	if !_this.Debug {
+		defer func() {
+			if r := recover(); r != nil {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
+			}
+		}()
+	}
+
 	opts := options.DefaultCEDecoderOptions()
 	opts.DebugPanics = _this.Debug
 	decoder := cte.NewDecoder(&opts)
@@ -114,6 +139,19 @@ func (_this *BaseTest) cteToEvents(document string) (result test.Events, err err
 }
 
 func (_this *BaseTest) cbeToEvents(document []byte) (result test.Events, err error) {
+	if !_this.Debug {
+		defer func() {
+			if r := recover(); r != nil {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
+			}
+		}()
+	}
+
 	opts := options.DefaultCEDecoderOptions()
 	opts.DebugPanics = _this.Debug
 	decoder := cbe.NewDecoder(&opts)
@@ -124,59 +162,5 @@ func (_this *BaseTest) cbeToEvents(document []byte) (result test.Events, err err
 		return
 	}
 	result = collection.Events
-	return
-}
-
-func (_this *BaseTest) eventsToCte(events test.Events) (result string, err error) {
-	if !_this.Debug {
-		defer func() {
-			if r := recover(); r != nil {
-				switch v := r.(type) {
-				case error:
-					err = v
-				default:
-					err = fmt.Errorf("%v", r)
-				}
-			}
-		}()
-	}
-
-	encoder := cte.NewEncoder(nil)
-	outBuffer := &bytes.Buffer{}
-	encoder.PrepareToEncode(outBuffer)
-	receiver := rules.NewRules(encoder, nil)
-	receiver.OnBeginDocument()
-	for _, event := range events {
-		event.Invoke(receiver)
-	}
-	receiver.OnEndDocument()
-	result = outBuffer.String()
-	return
-}
-
-func (_this *BaseTest) eventsToCbe(events test.Events) (result []byte, err error) {
-	if !_this.Debug {
-		defer func() {
-			if r := recover(); r != nil {
-				switch v := r.(type) {
-				case error:
-					err = v
-				default:
-					err = fmt.Errorf("%v", r)
-				}
-			}
-		}()
-	}
-
-	encoder := cbe.NewEncoder(nil)
-	outBuffer := &bytes.Buffer{}
-	encoder.PrepareToEncode(outBuffer)
-	receiver := rules.NewRules(encoder, nil)
-	receiver.OnBeginDocument()
-	for _, event := range events {
-		event.Invoke(receiver)
-	}
-	receiver.OnEndDocument()
-	result = outBuffer.Bytes()
 	return
 }

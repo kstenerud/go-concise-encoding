@@ -233,23 +233,46 @@ func generateTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustF
 }
 
 func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest {
+	cbe := generateCBE(events...)
+	fromCBE := cbe
+	toCBE := cbe
+	cte := generateCTE(events...)
+	toCTE := cte
+
+	if canConvertFromCTE(events...) {
+		toCTE = ""
+	} else {
+		cte = ""
+	}
+	if canConvertFromCBE(events...) {
+		toCBE = nil
+	} else {
+		cbe = nil
+	}
+	if canConvertToCBE(events...) {
+		fromCBE = nil
+	} else {
+		cbe = nil
+	}
+
 	return &test_runner.MustSucceedTest{
 		BaseTest: test_runner.BaseTest{
-			CBE:    generateCbe(events...),
-			CTE:    generateCte(events...),
+			CBE:    cbe,
+			CTE:    cte,
 			Events: stringifyEvents(events...),
 		},
-		LossyCBE: hasLossyCBE(events...),
-		LossyCTE: hasLossyCTE(events...),
+		FromCBE: fromCBE,
+		ToCBE:   toCBE,
+		ToCTE:   toCTE,
 	}
 }
 
 func generateMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
 	switch testType {
 	case testTypeCbe:
-		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCbe(events...)}}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCBE(events...)}}
 	case testTypeCte:
-		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCte(events...)}}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(events...)}}
 	case testTypeEvents:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
 	default:
@@ -266,7 +289,7 @@ func generateCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 	}
 }
 
-func generateCbe(events ...test.Event) []byte {
+func generateCBE(events ...test.Event) []byte {
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
@@ -291,7 +314,7 @@ func generateCbe(events ...test.Event) []byte {
 	return result[2:]
 }
 
-func generateCte(events ...test.Event) string {
+func generateCTE(events ...test.Event) string {
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
